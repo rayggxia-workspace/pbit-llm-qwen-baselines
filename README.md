@@ -310,6 +310,16 @@ accuracy/compute tradeoff than the previous mean router. The current GPU
 implementation is slower than SDPA. See the
 [Chinese report, raw results and timing](results/direct_router_20261007/RESULTS_ZH.md).
 
+The [simple-score follow-up](experiments/router_metrics/README.md) compares six
+block scores, four selection rules and four local output-distillation attempts.
+Across 166 decode evaluations, four subblock-mean dot products followed by a max
+and a query mean/std threshold give 8k sampled-suffix PPL **9.40979 +/- 0.02632**,
+versus original **9.41898**, while retaining 29.53% of positions. At 2k the same
+nominal 30% budget gives **10.77160**, versus original **10.37356**. It removes the
+previous selector MLP but is still slower than SDPA on the measured GPU path.
+See the [method-to-result report](results/router_metrics_20261007/RESULTS_ZH.md)
+for budget drift, matched-budget controls, failed distillation and timing.
+
 ## License
 
 Apache License 2.0. Qwen model weights and WikiText-2 are obtained separately

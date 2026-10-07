@@ -111,7 +111,7 @@ def main():
         "sampling_stats":controller.summary(),"decode_seconds":elapsed_decode,"prefill_seconds":elapsed_prefill,
         "peak_allocated_bytes":torch.cuda.max_memory_allocated(),
         "precision":"BF16 model/cache, FP32 reference attention; exact prefill SDPA",
-        
+
         "router_scope":"Simple score selectors calibrated on held-out train-tail text; stochastic Bernoulli or fixed-count deterministic control. Sparse kernel skips unselected tiles.",
         "limitations":"Sampled WT2 test suffixes, not full WT2 PPL; teacher forcing; router trained on disjoint train text; prefill unchanged; no hardware p-bit device"}
     outpath.parent.mkdir(parents=True,exist_ok=True)

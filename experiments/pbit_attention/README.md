@@ -62,3 +62,17 @@ the source/result integrity audit performed when publishing this branch.
 `summarize.py` verifies all 34 archived results and their source hashes before
 regenerating the report/plot (requires matplotlib). Source files are kept with
 LF line endings so SHA256 checks also work after a Windows checkout.
+
+
+## Fixed-weight projection follow-up (2026-10-09)
+
+A separate experiment tests stochastic Q/K/V/O projections in all 24 layers with
+BF16 interfaces and offline dyadic W10/A10 grids. The original QK, softmax, PV,
+FFN, norms, RoPE and residual operations are retained; this is not a modification
+of the decode-only PV experiment above. It includes deterministic quantization
+controls, IID sample-length sweeps, independent seeds and full WT2 tests.
+
+See the [local experiment README](../../../attention_fixed_projection_20261009/README.md)
+and [complete Chinese report](../../../attention_fixed_projection_20261009/results/RESULTS_ZH.md).
+The source and results are saved in the sibling workspace directory and have not
+been published to GitHub. Hardware area, energy and native latency are not measured.

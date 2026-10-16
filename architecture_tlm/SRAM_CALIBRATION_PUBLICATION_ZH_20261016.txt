@@ -1,0 +1,39 @@
+工作区 SRAM 校准补充发布（2026-10-16）
+
+目标仓库：rayggxia-workspace/pbit-llm-qwen-baselines
+分支：pbit-tlm-attention-details-20261016（接在已发布Attention细节之后）
+
+阅读入口：
+SRAM_CACTI_CALIBRATION_V1_RESULTS_ZH_20261016.txt：结果、误差、适用范围和TLM使用规则。
+SRAM_CACTI_EXISTING_RESULTS_SS_TT_ZH_20261016.txt：已有宏及库提取结果汇总。
+MEMORY_SCHEDULING_NEXT_STEPS_ZH_20261016.txt：当前时序模型、成熟工具及下一步建议。
+results/sram_calibration_v1_20261016/：14点数值、CACTI原始配置/输出、系数与独立验证。
+
+这次发布没有更改整机默认SRAM参数、时钟或历史Attention结果，也没有声称实现了
+新的全模型bank级调度。写能量校准仍有较大误差，必须阅读报告中的误差表。
+已有宏直接查库，CACTI修正主要用于未生成尺寸的探索。
+
+可公开复现的部分：只用Python标准库即可重新拟合、核验已有数值及运行5项检查。
+在仓库根目录执行：
+python -m unittest discover -s architecture_tlm -p test_sram_cacti_calibration_v1.py -v
+python architecture_tlm/sram_cacti_calibration_v1.py fit --reference architecture_tlm/results/sram_calibration_v1_20261016/reference_points.json --raw-cacti architecture_tlm/results/sram_calibration_v1_20261016/raw/raw_cacti.json --output /your/writable/output
+
+若要重新运行CACTI，而非重用已发布输出：
+自行按本仓库既有CACTI说明准备源码及cacti可执行文件；公开输出保存了源码哈希。
+在architecture_tlm目录内，设置CACTI_SOURCE为含cache.cfg和cacti的目录，
+执行 sbatch --export=ALL sram_calibration_v1.sbatch。
+当前分区名gpu5090只是已用集群的CPU作业分区，脚本没有申请GPU，其他集群需自行改分区。
+输出默认写入results/sram_calibration_v1_20261016/rerun_raw，保留历史raw不覆盖。
+CALIBRATION_REFERENCE、CALIBRATION_RAW_OUTPUT可另外指定参考文件和输出目录。
+
+源数据的prepare步骤需要本地厂商文件；工艺库.lib/.ds/.lef/.v、原始工艺包、
+工具二进制、远程凭据和模型权重不在此发布包中。公开的是数值摘要和文件哈希，
+无需取得工艺库也可检查本轮拟合与误差计算；无法从哈希重建厂商库。
+
+SRAM_CALIBRATION_PUBLICATION_MANIFEST_20261016.json记录55个核心交付文件的源/发布哈希。
+三处可移植性修改：校准报告的工作目录改为仓库根目录，既有汇总沿用相对路径，
+sbatch用环境变量与仓库内路径。
+校准代码、数值、reference/raw哈希及系数不变。
+raw日志中CACTI模板附带的DDR IO/BoB输出未参与本轮SRAM成本计算；只解析SRAM模型节。
+
+验证记录见SRAM_CALIBRATION_PUBLICATION_VALIDATION_20261016.txt。

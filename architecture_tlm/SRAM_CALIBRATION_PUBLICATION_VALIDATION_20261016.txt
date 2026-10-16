@@ -1,0 +1,14 @@
+SRAM校准补充发布检查，2026-10-16
+
+1. 在发布工作树运行5项单元检查，全部通过：H不参与选择/拟合、精确宏查询、
+   SS周期限制、缺失尺寸拒绝、超范围/几何不匹配拒绝、双角面积一致及真实拟合数据。
+2. 从发布副本的reference_points.json与raw_cacti.json重新运行fit。
+   calibration.json与validation.csv两个输出逐字节一致。
+3. 核对交付清单55个核心文件的published_sha256，全部匹配。
+4. 核心数值与Python源码未改。sbatch与报告工作目录做了可移植性适配，既有汇总沿用相对路径。
+5. 为校准数据设置逐字节保留的Git属性，避免Windows换行归一化破坏reference哈希。
+6. 本次不改Attention/FFN/DRAM调度代码及历史结果，所以没有重跑历史整机情景、
+   新Qwen推理或PPL；没有把上次结果称为SRAM校准后整机重跑结果。
+7. 新增时序审计明确指出：完整模型片上SRAM仍为聚合带宽，bank调度是待做项。
+
+只交付数值/脚本/CACTI输出，没有工艺库.lib/.ds/.lef/.v、编译器二进制、凭据或权重。

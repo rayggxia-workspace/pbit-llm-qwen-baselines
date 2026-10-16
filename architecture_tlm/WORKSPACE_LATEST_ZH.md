@@ -10,6 +10,8 @@
 | 多层随机源 | [设计](RNG_HIERARCHY_V1_ZH.txt) | [随机源层次](rng_hierarchy.py) | [结果目录](results/rng_hierarchy_v1/) |
 | FFN本地8位随机数、64路共享 | [设计](LOCAL_SHARED_V2_ZH.txt) | [本地随机源](rng_local_shared_v2.py)、[整机调度](system_decode_local_shared_v2.py) | [18组结果](results/local_shared_v2/RESULTS_ZH.md) |
 | 外存和访存调度 | [映射说明](MAPPING_OPTIMIZATION_ZH.md) | [DRAMSys](dramsys/)、[映射](mapping_decode.py) | [调度对比](results/mapping_20261015/RESULTS_ZH.md) |
+| SRAM校准 v1（A～F拟合、H独立验证） | [校准报告](SRAM_CACTI_CALIBRATION_V1_RESULTS_ZH_20261016.txt)、[使用与复现](SRAM_CALIBRATION_PUBLICATION_ZH_20261016.txt) | [校准/查表接口](sram_cacti_calibration_v1.py) | [数值、系数和误差](results/sram_calibration_v1_20261016/) |
+| 时序与内存调度审计 | [当前实现及下一步](MEMORY_SCHEDULING_NEXT_STEPS_ZH_20261016.txt) | DRAMSys / ZigZag / 本地事务调度的分工 | 片上bank调度是后续计划，未在本次实现 |
 | SRAM参数与格式转换 | [SRAM模型](SRAM_FLEXIBLE_MODEL_ZH_20261016.txt)、[转换核算](FORMAT_CONVERSION_AUDIT_ZH_20261016.txt) | [CACTI适配](cacti_memory.py) | [CACTI结果](results/cacti_memory_20261016/) |
 
 ## 筛选和随机源的准确含义
@@ -36,3 +38,5 @@ python architecture_tlm/audit_screen_ising_v4.py architecture_tlm/results/screen
 发布检查：[验证记录](PUBLICATION_VALIDATION_20261016.md)。历史DRAMSys结果保留对应历史源码；没有将旧结果标注为新版重跑。
 
 补充：[数制转换与累加 RTL](../format_conversion_rtl_20261016/README_ZH.txt)，包含已有功能验证记录，尚无工艺库 DC/PT 面积功耗结果。
+
+SRAM校准补充：已有宏直接查库值；其他尺寸是带验证误差的探索估计。写能量尚有较大误差。未自动修改现有整机配置或重写历史Attention结果。工艺库本体不在发布包中。

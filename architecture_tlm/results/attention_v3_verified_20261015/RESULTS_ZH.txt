@@ -1,0 +1,23 @@
+Attention v3：事务一致性验证场景（不是芯片实测或 Qwen PPL）
+
+默认为合成高斯 logits；真实校准参数只能校准筛选器，不能把合成 logits 变成真实工作负载。
+所有方案保留完整24层 FFN、投影、残差、输出；--small 例外。
+默认简化 Link 外存，只有提供 --bridge 时才调用 DRAMSys。
+筛选默认计入首个 decode 的摘要冷建立；预热后结果见逐 token 时间。
+
+方案 | 上下文 | 整机 ms/token | Attention核心 ms/token | 整机 mJ/token | Attention直接 mJ/token | 保留QK比例
+dense / fixed_sc_exact | 2048 | 445.4574 | 4.4168 | 170.6562 | 1.9243 | 1.000
+pv / fixed_sc_exact | 2048 | 464.1663 | 23.1257 | 173.3026 | 2.6558 | 1.000
+ising / fixed_sc_exact | 2048 | 85676.9744 | 85232.8496 | 8939.6078 | 47.3448 | 1.000
+screen_exact / fixed_sc_exact | 2048 | 446.4691 | 5.4286 | 171.1507 | 2.3153 | 0.276
+screen_pv / fixed_sc_exact | 2048 | 460.6970 | 19.6565 | 172.6860 | 2.3942 | 0.276
+dense / fixed_sc_exact | 8192 | 458.6777 | 17.6372 | 177.7804 | 7.6954 | 1.000
+pv / fixed_sc_exact | 8192 | 489.7791 | 48.7385 | 179.7013 | 6.4330 | 1.000
+ising / fixed_sc_exact | 8192 | 341418.4657 | 340971.2567 | 35252.9284 | 185.2678 | 1.000
+screen_exact / fixed_sc_exact | 8192 | 463.1518 | 22.1112 | 179.9946 | 9.4516 | 0.286
+screen_pv / fixed_sc_exact | 8192 | 492.3149 | 51.2743 | 181.4091 | 7.8813 | 0.286
+
+Attention核心不含 Q/K/V/O 投影。Attention直接能量不含共享闲置及共享根种子；
+DRAMSys 下 DRAMPower 无分请求归因，查看整机能量；不得将此列当完整 Attention 能耗。
+Ising 为串行数字随机选点更新的明确映射，不能代表原论文并行物理 p-bit 网络。
+本次没有新的全模型质量验证。源文件、配置、逐行采样统计和事务日志保存在同目录。

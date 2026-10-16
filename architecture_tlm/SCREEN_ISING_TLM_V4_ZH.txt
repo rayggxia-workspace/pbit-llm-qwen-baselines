@@ -1,0 +1,143 @@
+QK 筛选 → 小维度 QK → Ising 宏模块 → V 稀疏累加
+2026-10-16
+
+一、整个 Attention 的数据流
+
+层输入 → RMSNorm → 准确 Q/K/V 投影 → RoPE(Q,K)、追加 KV cache
+  → 读取/更新 K 的块摘要
+  → Q 与每块四个子摘要打分 → 独立概率筛选
+  → 可选固定预算修复 → 紧凑候选索引表
+  → 只对候选位置计算准确 QK
+  → 编码偏置与有效位 → Ising 模块配置、预热、采样
+  → 模块输出局部候选索引 → 计数 → 映射原 KV 地址
+  → 稀疏读取 V、重复加法、除以样本数
+  → 合并各头 → 准确 O 投影 → 残差 → FFN
+
+整机运行继承所有24层、FFN、归一化、残差、词表层；没有只测一个孤立采样器。
+当前范围是 batch1 单 token decode，不含 prefill。
+
+关键区别：Ising 的状态读出已经完成分类采样。这里直接拿索引做 V 聚合，
+没有先估计完整概率、再准确 Softmax/CDF 采样第二遍。
+如果以后确实需要“先估计概率再抽样”的接口，那是另一条成本更高的路径。
+
+二、QK 筛选后能不能固定维度
+
+可以，但原来的独立 Bernoulli 筛选不能保证数量固定。
+新代码保留两种模式：
+
+variable：保留原来的随机数量。宏容量必须容纳实际候选；溢出直接报错。
+默认按完整上下文配置最坏情况容量，不把溢出的候选偷偷丢掉。
+
+fixed_budget：默认固定保留8个块，每块64个 token，对应512个候选槽位。
+  1. 首块、最近两块强制保留。
+  2. 概率筛选超预算时，按代理评分保留较高分的已选块。
+  3. 不足预算时，按评分从未选块补齐。
+  4. 采用显式计费的比较交换排序与索引压缩，不把预算控制视为免费操作。
+
+预算修复是新增算法，不能直接继承原筛选实验的 PPL。尤其512候选占2K的25%，
+但只占8K的6.25%，比此前8K约30%的保留量激进得多。
+
+硬件固定的是512个槽位，不一定有512个真实 token。上下文不足或最后一个块
+不满时，多余槽位的有效位为0，绝不能被采样。本版检查该约束。
+例如长度2049时，首块/最近两块加上其他5块，共449个有效位置、63个无效槽。
+
+对单 token decode，每头是：
+  Q：1×64；候选 K 转置：64×M；QK 输出：1×M。
+不是重新形成 M×M 的完整注意力矩阵，也没有改变每头64维的特征宽度。
+
+M 是候选数，N 是采样数；二者独立。默认示例恰好 M≤512、N=512。
+固定容量便于复用偏置存储、配置总线、索引编码和 Ising 网络。
+各头筛选出的地址可以不同，原始 KV cache 也仍需保存，并不会只剩512个 token。
+
+三、Ising 模块内部暂不展开
+
+接口输入：紧凑候选分数、候选数、固定容量的有效位、所需样本数。
+接口输出：0..有效候选数−1 的局部索引序列，以及首个/最后一个索引可用时间。
+外部保留局部索引→历史 token 地址表。
+
+模块参数：
+  capacity：固定槽位容量；
+  bias_bits：配置偏置位宽；
+  config_bandwidth_GBs / config_latency_ns：配置通道；
+  settle_ns：配置后稳定时间；
+  burn_ns：采样前预热；
+  sample_period_ns：相邻输出样本间隔；
+  readout_latency_ns：读出流水延迟；
+  active_base_W / active_W_per_slot：工作功耗；
+  idle_W：空闲功耗；
+  area_base_mm2 / area_mm2_per_slot：面积；
+  config_pJ_per_bit：配置能量。
+
+一个请求的服务时间由配置、稳定、预热和 N 个样本周期组成，不再乘以M做串行
+逐点更新。这是黑盒服务协议，不声称证明了内部节点可以任意并行更新。
+样本间隔也不会因为缩小M而自动变小，实际混合/相关性仍需后续标定。
+
+内部随机源、p-bit更新、抑制反馈、状态存储、索引编码器和一个输出暂存槽，
+全部包含在模块的功耗/面积参数中。外部不再对这些操作重复收取PRNG或比较器能量。
+外部32位随机叶模块仍服务 QK 的概率筛选；FFN 随机源保持现有做法。
+
+采样索引直接流向已有 scratch，模块内不积存全部N个结果。
+scratch 不够快时，有效样本周期延长，模块等待/工作能量随之增加。
+当前调度每次服务一个头，14个头和24层复用同一个宏；面积只加一份。
+下一步可以增加模块副本数并加入并发调度，而不能只把时间直接除以副本数。
+
+四、固定预算的硬件费用如何计入
+
+max4 评分、归一化、sigmoid 概率、随机判决，沿用已核对的 v3 实现。
+预算修复使用有固定比较次数的 bitonic 排序调度，记录包含评分、块索引与标志。
+每个排序阶段都计入 scratch 读取/写回和比较交换服务；随后构造紧凑索引映射。
+这是一个明确但保守的 SRAM 排序实现，不是已经优化到最小面积/功耗的电路。
+
+QK 只计算有效候选。K 读取按 GQA 组的候选并集去重，V 读取考虑有限 LRU 缓存、
+重复命中、外存突发过读。保持逻辑索引、物理访问与真实 MAC/加法数量的区别。
+
+五、当前数值与功耗的真实性边界
+
+默认数值后端是 ideal_iid_oracle：在 Python 中按候选 softmax 分布生成索引，
+用于产生可复现的地址轨迹。它不是被模拟硬件中的准确 Softmax 运算，硬件账本
+中不会出现第二套 Softmax、CDF 或串行 Ising 更新费用。
+
+这个理想接口不验证物理 Ising 网络是否混合充分、样本是否独立、偏置量化是否
+正确，更不是新 PPL。宏配置中的预热时间、周期、功耗、面积均为未标定示例值。
+默认输入仍是合成 logits，因此结果只能检查模型接线和参数敏感性。
+
+已有两个可替换入口：
+  --trace：导入真实Qwen逐层decode分数轨迹，沿用capture_attention_trace_v3.py；
+  --ising-sample-trace：导入模块仿真/实测输出，包含每行candidate_ids及local_indices。
+模块输出轨迹必须与当前候选顺序完全一致，否则报错；不能把不同筛选集合的
+同一个局部索引错误地当作相同 token。
+
+sample trace JSON 示例：
+{"provenance":{"source":"module simulation"},"rows":[
+ {"token":0,"layer":0,"head":0,"candidate_ids":[4,9],"local_indices":[1,0,1]}]}
+实际运行需要覆盖所有头/层/token，样本数必须与配置一致。
+
+六、文件与运行
+
+screen_ising_tlm_v4.py：组合路径与整机接入。
+ising_macro_v4.py：独立Ising宏接口，内部细节有意不实现。
+configs/screen_ising_v4.json：候选预算与宏参数。
+run_screen_ising_v4.py：2K/8K、固定/可变两种模式的运行入口。
+checks/test_screen_ising_v4.py：10项功能、边界、资源和账本检查。
+audit_screen_ising_v4.py：保存结果和事务日志审计。
+
+python architecture_tlm/checks/test_screen_ising_v4.py
+python architecture_tlm/run_screen_ising_v4.py
+python architecture_tlm/audit_screen_ising_v4.py architecture_tlm/results/screen_ising_v4_20261016
+
+默认完整24层、固定权重随机FFN、2K/8K、1个decode token、N=512。
+--small 可单层检查；--tokens 2 可检查后续token的摘要更新和尾块。
+--budget-blocks 4 对应256候选槽；--samples 独立控制采样数。
+--prebuilt-summary 假定摘要已在prefill阶段付费建立。
+--macro-config 可替换整个ising参数对象；--bridge 接入已有DRAMSys后端。
+默认仍为简化Link外存，不把它称为DRAMSys运行结果。
+
+结果位于 results/screen_ising_v4_20261016/，包含RESULTS_ZH.txt、summary.csv、
+逐方案JSON及压缩事务日志。新文件独立于v3串行Ising，旧实验没有被覆盖。
+
+七、本次验证结果
+
+10项自动检查通过；2K/8K × 固定/可变候选，共4组完整24层运行已完成。
+保存结果的事务审计全部通过，检查资源互斥、时间/能量账目、候选映射、
+随机数计数、Ising样本数和源代码哈希。审计记录见结果目录verification.json。
+以上验证限于事务模型的一致性，不代表硬件参数已标定或PPL已验证。

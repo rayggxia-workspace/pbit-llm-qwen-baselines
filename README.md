@@ -1,3 +1,7 @@
+## 最新事务模型（工作区，2026-10-16）
+
+见 [TLM 总索引](architecture_tlm/WORKSPACE_LATEST_ZH.md)，包含 Attention 筛选、PV 稀疏采样、Ising v3/v4 与 FFN 本地随机源。
+
 # p-bit LLM: Qwen2.5-0.5B baselines
 
 Reproducible BF16 reference measurements and inspection utilities for studying

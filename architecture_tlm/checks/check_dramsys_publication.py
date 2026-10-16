@@ -4,8 +4,9 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root))
 from run_dramsys import JOBS
-source=hashlib.sha256((root/'system_decode.py').read_bytes()).hexdigest()
-contract=hashlib.sha256((root/'configs/evidence_contract.json').read_bytes()).hexdigest()
+historical=root/'evidence/historical_dramsys'
+source=hashlib.sha256((historical/'system_decode.py').read_bytes()).hexdigest()
+contract=hashlib.sha256((historical/'evidence_contract.json').read_bytes()).hexdigest()
 for variant,context,policy,pending in JOBS:
  name=f'{variant}_{context}_{policy}'
  r=json.loads((root/'results/dramsys'/f'{name}.json').read_text())

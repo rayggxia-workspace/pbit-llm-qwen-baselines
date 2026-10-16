@@ -1,0 +1,100 @@
+SRAM 灵活建模与逐权重有效位移除
+日期：2026-10-16
+
+一、这次实际改了什么
+
+1. TLM 明确不包含逐权重有效位寄存器，位数、面积、能量均为0。
+   接口约定：整个tile装载完成后才能计算，尾部显式补零，不支持未初始化权重参与计算。
+   不改厂商宏、原始RTL/PT报告；普通调度状态、缓存元数据、Ising有效槽掩码仍然需要。
+2. 核对后发现，原TLM使用38015538的G1计算核心，早已排除了权重DFF，并未导入
+   SRAM q3中的2048个valid寄存器。因此本次不做虚假的1.204mW扣减，原始结果不会
+   因新增这个零成本约束自动下降。最新默认配置与结果明确记录这一点。
+3. 已下载官方CACTI、在Slurm CPU作业1581编译运行，不是仅建议以后再用。
+   本次不申请GPU。完成8种存储组织，并将大缓存成本可选接入最新Attention v4。
+
+二、为什么不再只复制当前微小宏
+
+同容量不等于同并行带宽。这里比较本地权重存储时同时固定：
+  32组tile；每组64×64个9bit权重；总容量144KiB；总输出宽度36864bit。
+改变一个独立bank的字宽/容量和bank数量，CACTI重新搜索各bank的内部组织。
+最终面积是各个新组织的面积之和，而不是当前144bit宏面积乘一个容量倍率。
+跨bank布线/驱动和布局空隙尚未包含。
+
+CACTI条件：55nm、400K、ITRS LSTP、单端口1RW、RAM无tag、无ECC、无电源门控。
+55nm使用通用工艺参数插值；400K是工具网格，接近但不等于125°C。
+不是ZJCX SS/1.08V库，CACTI不是PT或SRAM compiler，未强制匹配厂商电压/电路。
+
+本地权重组织（以下均为CACTI自身的可比结果）：
+每bank容量/字宽 | 并行bank数 | 总面积mm² | 同时读出一组tile的能量nJ
+576B / 144bit   | 256        | 1.691     | 1.355
+2KiB / 512bit   | 72         | 3.502     | 3.011
+4KiB / 1024bit  | 36         | 5.895     | 5.386
+8KiB / 2048bit  | 18         | 10.734    | 10.164
+
+这说明本次通用模型中，增大字宽没有自动省面积；不是证明大宏永远更差。
+搜索目标、布线、存储深度、bank划分、工艺实现都可能改变结论。本轮仅是有限候选，
+没有声称全局最优。cacti_memory.py支持--designs自定义容量、字宽与并行bank列表。
+
+原厂商微小宏参考：256个宏面积4.962mm²、内部读能量2.595nJ、CE关闭漏电1.579mW。
+同几何CACTI参考分别为1.691mm²、动态读能量1.355nJ、漏电0.186mW。
+二者不一致反映工艺、corner和模型范围差异；不能用单一系数同时校准面积/动态/漏电。
+厂商内部读能量与CACTI整个访问动态能量也并非完全相同边界。
+因此当前保留两条数据，不自动把一个小宏的比值推广为所有大宏的校准结论。
+
+三、输出保持不免费，也不重复增加一套权重寄存器
+
+实测宏已有Q保持功能，使用该宏的Q直接供计算时，不另加同规模DFF。
+CACTI只提供存储访问/面积/漏电模型，并不保证新组织可在CE关闭后保持全部输出。
+所以本地宽口组织先作为候选表，不直接将CACTI面积写成“已包括合法Q保持”的最终值。
+后续可选：
+  A. 编译器生成可Q保持的宽口bank，标定后整体替换本地权重模块；
+  B. 常规较窄SRAM分批读入本地保持单元，需另计保持单元和装载成本；
+  C. 减少同时运行的输出通道，降低同时可见权重位数，并增加调度时间。
+本轮不把B的本地保持成本当0，不因A尚未标定而继续强制复制厂商小宏。
+
+四、已接入TLM的部分：大容量缓存的成本敏感性
+
+16MiB权重缓存、1MiB scratchpad分别比较8/16个独立512bit bank。
+配置文件tlm_cost_b8.json和tlm_cost_b16.json可替换读写pJ/byte、漏电/面积密度。
+这批配置严格只替换成本，不改原有带宽、延迟、SC核、RNG、Ising、局部输出保持参数。
+权重缓存从外存装载的字节流计完整写；它不代表逐权重9bit掩码写接口。
+scratchpad的小访问目前仍按流量摊销，非完整逐字读改写/冲突仿真。
+
+完整24层、2K上下文、单token decode、当前随机FFN＋筛选＋Ising＋V稀疏累加：
+存储成本情景   | 整机mJ/token | 参数化总面积mm² | ms/token
+旧占位参数     | 174.656      | 17.768          | 476.445
+CACTI 8-bank   | 196.399      | 87.282          | 476.445
+CACTI 16-bank  | 192.849      | 86.191          | 476.445
+
+这些结果不是最终芯片预测、GPU能效对比或质量验证。数值后端仍使用合成logits和
+理想Ising采样。时间相同是成本单变量对照设计，不代表CACTI支持原有时间参数。
+例：8-bank权重缓存按100MHz整拍调度的模型峰值25.6GB/s，16-bank为51.2GB/s，
+均低于旧假设64GB/s；尚需实际bank映射/并发/冲突/互连后再更新TLM调度。
+当前生成文件明确标记cost-only，不能将这些组合宣称为时序可实现的硬件。
+
+五、文件与复现
+
+configs/system_decode_default.json：有效位零成本约束。
+system_decode.py：拒绝非零逐权重有效位配置，输出无有效位契约。
+cacti_memory.py：配置生成、运行、严格解析、单位换算、独立bank聚合、可选TLM成本导入。
+cacti_build_run.sbatch：通过Slurm编译及运行，不申请GPU。
+tools/cacti-master.zip：官方源码下载归档；tools/cacti-master/：解压源码。
+results/cacti_memory_20261016/：8组cfg/log、summary.csv、results.json、build_and_run.log。
+同目录tlm_comparison.json及3个decode.json：整机成本对照，检查能量账本闭合。
+run_cacti_tlm_compare.py：重现整机成本对照。
+
+官方来源：https://github.com/HewlettPackard/cacti
+结果provenance中保存实际C++/技术参数源文件SHA256。
+
+已有可执行文件时（Linux，cacti在源码目录）：
+python3 architecture_tlm/cacti_memory.py --source /path/to/cacti --output /path/to/new_results
+自定义候选：加 --designs designs.json，格式示例：
+[{"name":"my_bank","role":"local_weight","bytes":8192,"width":512,"replicas":72}]
+bytes为每bank物理容量，width为每bank输出bit数，replicas为真正独立并行的bank数。
+增加深度不会自动增加输出宽度；不支持/运行失败的配置标FAILED，不填0。
+
+接入Attention v4示例：
+python architecture_tlm/run_screen_ising_v4.py --contexts 2048 --selections fixed_budget --memory-cost-profile architecture_tlm/results/cacti_memory_20261016/tlm_cost_b16.json --output architecture_tlm/results/my_cacti_cost_run
+
+验证：12项整机测试、3项CACTI单位/组织/配置检查、10项Attention组合检查全部通过。
+本次保持原始PT资料和历史TLM结果，不重写旧测量，也不更改RTL。

@@ -34,6 +34,11 @@ class WeightMacro:
     compute tile residence; replacement does not invalidate an active tile.
     """
     def __init__(self,cfg,ext,energy,traffic):
+        # Architectural contract: tiles are completely loaded (tail lanes zero
+        # padded) before use. SRAM RTL's per-weight initialized flags are absent.
+        if any(cfg.get(k,0)!=0 for k in ('per_weight_validity_bits',
+                'per_weight_validity_power_W','per_weight_validity_area_mm2')):
+            raise ValueError('per-weight validity registers are excluded; load full tiles before compute')
         self.cfg=cfg
         self.ext=ext
         self.energy=energy
@@ -130,6 +135,14 @@ class DecodeModel:
         self.f=cfg['frequency_hz']
         self.period=1e9/self.f
         self.engines=cfg['sc_engines'] if variant.startswith(('fixed_sc','dual_sc')) else 0
+        architecture=cfg['rng'].get('architecture','global_pool')
+        if architecture not in ('global_pool','hierarchical_v1'):
+            raise ValueError('unknown RNG architecture')
+        self.rng_hierarchy=None
+        if self.engines and architecture=='hierarchical_v1':
+            from rng_hierarchy import HierarchicalRng
+            self.rng_hierarchy=HierarchicalRng(cfg['rng_hierarchy'],self.engines,self.f,
+                                             local_weights=variant=='dual_sc_sz')
         self.profile=evidence['profiles'][cfg['sc_profile']]
         if self.f!=self.profile['frequency_hz']:
             raise ValueError('SC frequency extrapolation disabled; use calibrated 100MHz')
@@ -138,7 +151,7 @@ class DecodeModel:
         for category in ('digital','sc_cost'):
             if any(v<0 for k,v in cfg[category].items() if isinstance(v,(int,float))):
                 raise ValueError('negative hardware parameters')
-        if self.engines and cfg['rng']['sources']<1:raise ValueError('no RNG source')
+        if self.engines and not self.rng_hierarchy and cfg['rng']['sources']<1:raise ValueError('no RNG source')
         need_random=64*cfg['samples']*cfg['rng']['input_bits_per_decision']/8
         need_logits=shape['vocab_size']*4+shape['hidden_size']*2
         need_partial=2*shape['intermediate_size']*4+need_random
@@ -191,6 +204,11 @@ class DecodeModel:
         return self.digital_free
 
     def rng_service(self,ready,bits):
+        if self.rng_hierarchy:
+            done,duration=self.rng_hierarchy.shared_words(ready,bits)
+            self.raw_bits+=bits
+            self.rng_service_ns+=duration
+            return done,duration
         r=self.cfg['rng']
         rate=r['sources']*r['source_clock_hz']*r['raw_bits_per_source_cycle']/1e9
         start=max(ready,self.rng_free)
@@ -241,8 +259,14 @@ class DecodeModel:
                 read_time=replay_bytes/scratch['bandwidth_GBs']
                 weight_rng_time=0.
                 if self.variant=='dual_sc_sz':
-                    bits=count*4096*T*self.cfg['rng']['weight_bits_per_decision']
-                    _,weight_rng_time=self.rng_service(start,bits)
+                    if self.rng_hierarchy:
+                        _,weight_rng_time=self.rng_hierarchy.weight_wave(start,count,T)
+                        # Logical expected uniform-bit demand, not physical entropy.
+                        self.raw_bits+=count*4096*T*8*128/127
+                        self.rng_service_ns+=weight_rng_time
+                    else:
+                        bits=count*4096*T*self.cfg['rng']['weight_bits_per_decision']
+                        _,weight_rng_time=self.rng_service(start,bits)
                 duration=max(kernel,read_time,weight_rng_time)
                 current=start+duration
                 self.sc_compute_ns+=kernel
@@ -301,6 +325,8 @@ class DecodeModel:
         cursor=0.;token_times=[]
         for token in range(self.cfg['decode_tokens']):
             begin=cursor
+            if token==0 and self.rng_hierarchy:
+                cursor=self.stamp('RNG_startup',cursor,self.rng_hierarchy.ensure_seeded(cursor),token=token)
             L=self.cfg['context_tokens']+token
             # Tied embedding and lm_head share the same cache address space.
             t=self.weights.request('lm_head',7*h*2,h*2,cursor)
@@ -358,11 +384,17 @@ class DecodeModel:
         if not hasattr(self.ext,'finish'):
             self.energy['external_background']+=self.cfg['external_memory']['background_W']*seconds
         self.energy['control_interconnect']+=self.cfg['control_interconnect_W']*seconds
+        rng_diagnostic=None
         if self.engines:
             rate=r['sources']*r['source_clock_hz']*r['raw_bits_per_source_cycle']
             power=r['sources']*r['source_power_W']
-            self.energy['RNG_sources']+=power*(seconds if r['always_running'] else self.rng_service_ns*1e-9)
-            self.energy['RNG_fabric_FIFO']+=r['fifo_distribution_W']*seconds
+            if self.rng_hierarchy:
+                rng_diagnostic=self.rng_hierarchy.finish(cursor)
+                for key,value in rng_diagnostic['energy_J'].items():self.energy[key]+=value
+                rate=rng_diagnostic['nominal_output_capacity_bits']/seconds
+            else:
+                self.energy['RNG_sources']+=power*(seconds if r['always_running'] else self.rng_service_ns*1e-9)
+                self.energy['RNG_fabric_FIFO']+=r['fifo_distribution_W']*seconds
             self.energy['SC_idle']+=max(0,self.engines*cursor-self.sc_active_engine_ns-self.sc_wait_engine_ns)*sc['idle_W_per_engine']*1e-9
             assert self.raw_bits<=rate*seconds*(1+1e-9)
         else:rate=0.
@@ -370,11 +402,16 @@ class DecodeModel:
         area=(w['cache_MiB']*w['area_mm2_per_MiB']+sp['capacity_MiB']*sp['area_mm2_per_MiB']+
               self.cfg['digital']['area_mm2']+self.engines*(sc['logic_area_mm2_per_engine']+w['active_tile_area_mm2'])+
               (r['sources']*r['area_mm2_per_source'] if self.engines else 0))
+        if rng_diagnostic:
+            area+=rng_diagnostic['area_mm2']-r['sources']*r['area_mm2_per_source']
         quality={'digital_bf16':11.652735,'digital_int8_ffn':11.681130}.get(self.variant)
         if self.variant=='dual_sc_sz':quality={256:127803.483024,1024:42.762909,4096:13.948997}.get(self.cfg['samples'])
-        return dict(variant=self.variant,scope='batch1 decode, full24 layers and lm_head; no prefill',
+        result=dict(variant=self.variant,scope='batch1 decode, full24 layers and lm_head; no prefill',
             implementation='Python macro-level LT model, not SystemC/TLM2 or RTL',
             config=self.cfg,quality_reference_ppl=quality,
+            weight_validity_contract=dict(per_weight_bits=0,energy_J=0,area_mm2=0,
+                policy='complete tile load before compute; zero-pad tail; no partial/uninitialized use',
+                note='legacy G1 costs never included q3 SRAM validity bank; no subtraction credit'),
             stochastic_core_power_provenance=('fixed-weight G1 per-cycle replicated with assumed shared frontend'
                 if self.variant=='fixed_sc_exact' else 'adjustable proxy from fixed-weight G1, NOT measured dual-stream core'
                 if self.variant=='dual_sc_sz' else 'no stochastic core'),
@@ -396,6 +433,12 @@ class DecodeModel:
             events=self.events,
             source_hashes={'system_decode.py':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 'evidence_contract.json':hashlib.sha256((ROOT/'configs/evidence_contract.json').read_bytes()).hexdigest()})
+        if rng_diagnostic:
+            result['rng_hierarchy']=rng_diagnostic
+            result['quality_warning']+='; hierarchical Bivium streams NOT validated by the inherited PPL'
+            result['scenario_cost_coverage']='configured scenario costs including RNG startup; uncalibrated local RNG/analog/root costs, SC dual proxy, no PHY/CTS/host/prefill'
+            result['source_hashes']['rng_hierarchy.py']=hashlib.sha256((ROOT/'rng_hierarchy.py').read_bytes()).hexdigest()
+        return result
 
 
 def load():

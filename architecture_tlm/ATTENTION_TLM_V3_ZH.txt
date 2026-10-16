@@ -1,0 +1,175 @@
+Attention v3：把算法替换接入整机事务模型
+2026-10-15
+
+一、此前哪里没有做好
+
+此前 local_shared_v2 主要完成 FFN 随机源共享和权重存储的建模。它直接继承
+system_decode.py 的 attention()：准确 QK、在线 Softmax、准确 PV。
+PV、Ising、筛选的算法评测在其他实验目录里，并没有被这个方法调用。
+
+因此，“算法跑过”和“对应硬件已进入整机 TLM”是两回事。此前将两者混合描述，
+尤其让读者以为注意力的随机源已经包含在整机模型里，是范围说明不充分。
+旧报告中基于减少 MAC 数量的估算，不能充当这三种方案的完整时延/能量结果。
+
+具体遗漏包括：
+1. 没有把抽样器、概率/CDF 缓冲、索引、V gather 和累加放入实际依赖链。
+2. 没有根据具体采样位置生成内存地址，也没有计入突发过读、重复命中、缓存容量。
+3. 没有为 Attention 接入随机源消费者。本地 FFN v2 甚至关闭了原来的共享输入
+   Bivium 银行，不能假定 Attention 可以免费调用这个已移除的服务。
+4. Ising 没有声明可执行的更新协议、预热/样本间隔、互斥更新和反馈成本。
+5. 筛选缺少历史摘要的建立、持久存储、追加 token 后的更新、评分和采样成本。
+6. 原 attention() 对片上 KV 缓冲只统计访问能量，没有占用 scratch 带宽资源。
+7. 早期单均值代理、后来的 max4 校准筛选、CTMC Ising、真实稀疏 gather 属于不同
+   实验版本；不能选用其中最省的部分拼成一个已验证架构。
+
+二、这一版新增什么
+
+文件入口：run_attention_v3.py
+事务调度：attention_tlm_v3.py
+数值轨迹参考：attention_reference_v3.py
+参数：configs/attention_v3.json
+现有筛选校准：configs/attention_max4_c2048.json、attention_max4_c8192.json
+
+方案                实际调度的数据流
+dense               分块读 K/V → 准确 QK → 在线 Softmax → 准确 PV
+pv                  读 K → 准确 QK → Softmax → CDF → 抽样索引 → V 缓存 → 加法平均
+ising               读 K → 准确 QK → 条件偏置 → 随机选点更新 → 索引 → V 加法平均
+screen_exact        更新/读摘要 → max4 评分与概率筛选 → 候选 K/V → 准确注意力
+screen_pv           同一筛选 → 候选 QK/Softmax → CDF 抽样 → V 加法平均
+
+完整模型仍运行所有层的 Q/K/V/O 投影、FFN、残差、归一化、lm_head 和 token
+选择。默认 FFN 是 local_shared_v2 的固定权重、输入 A8、64 路共享版本；也支持
+dual_sc_sz 或原始 digital_bf16。没有改写、覆盖之前的代码和结果。
+
+三、模型准确到哪一层
+
+这里“更准确”是指对声明的硬件映射做到依赖、访问、资源占用和能量账本一致，
+不是在缺少宏电路测量的情况下声称准确预测芯片功耗。
+
+每次 Attention 调用会生成：
+  • 具体的外存地址、字节数、突发对齐和完成时间；
+  • 占用共享 scratch 端口的读写事务；
+  • QK/PV MAC、向量运算、非线性、采样比较、随机字、状态更新计数；
+  • 有前后依赖的开始/结束时间；
+  • 每层每头实际选中 token 数、V 唯一索引数、重复率；
+  • 能量分项、资源容量检查、源代码 hash、工作负载来源。
+
+默认采用保守的阻塞 DMA/片上访问/计算映射。不同地址的稀疏 DMA 未假设无限
+并发；本版没有隐藏的“免费 gather”。CDF 使用固定深度二分查找，不把分类抽样
+当成一个零成本操作。后续可以在相同事务轨迹上实现非阻塞 scatter/gather 引擎。
+
+数字算子 pJ、采样器面积、PRNG、广播、SRAM 仍为可调宏参数。Python 调度器
+是 loosely timed 事务模型，不是所有模块都变成了 SystemC，也不是 RTL 周期仿真。
+提供 --bridge 时，外存通过已有真实 DRAMSys/SystemC 桥返回完成时间与 DRAMPower
+能量；未提供时仍为简化 Link。不能将后一种结果写成 DRAMSys 实测。
+
+四、几个关键硬件选择
+
+1. QK 和 PV 的 GQA 共享
+   Qwen2.5-0.5B 有 14 个 Q 头、2 个 KV 头，每个 KV 头供 7 个 Q 头使用。
+   K 读取按同组候选位置的并集去重，而不是简单地按每头重复从 DRAM 读。
+   各头筛选掩码可能不同，MAC 节省比例不等于实际 K/V 传输节省比例。
+
+2. V 采样
+   每头重复索引用计数器合并读取；算术仍按重复加法计费，最后归一化。
+   有限容量 LRU 保存 V 向量，各头共享该缓存，容量可调。外存读取对齐后可能
+   带回相邻未使用字节，按实际突发计费。跨 DMA 不假设外部有免费缓存。
+   该版本按头依次进行采样聚合，没有把跨所有头的最优批处理当作默认实现。
+
+3. 筛选
+   对应 joint_router_ffn_20261009：64 token 一块，4 个 16-token 子摘要；
+   每个子摘要与 Q 点积，取最大值，按自由块的均值/标准差归一化，使用原校准
+   偏置和温度生成 sigmoid 保留概率。首块与最近两块强制保留。
+   它不是多轮退火，也不是固定保留 K 个块。实际保留数量由概率轨迹决定。
+   摘要按层放在外存地址空间，读入片上评分；不是把所有层摘要免费常驻 SRAM。
+   默认 cold_build 将第一次 decode 的摘要建立成本计入；prefill_prebuilt 则
+   假定摘要在 prefill 已建立，代价不属于本次 decode，但也不是消失了。
+
+4. 随机源
+   Attention 新增独立消费者叶模块，沿用已有根熵/调理/种子层；根刷新后重新
+   派生该叶的种子。FFN 本地 PRNG 与权重侧逻辑保留。
+   分类抽样、筛选、Ising 需要的随机字均计数量、生产时间、分发能量和面积。
+   硬件 PRNG 与概率位宽还需质量验证；Python random 只是理想均匀参考。
+   本版 Attention 叶输出 32 位均匀随机字，FFN 的输入仍是 A8；两者不可混为
+   同一个随机源吞吐配置。Ising 是数字 LUT/比较器实现的参考映射。
+
+5. Ising 的特别限制
+   当前实现的是明确的数字参考架构：串行随机选一个非参考位，进行 heat-bath
+   更新，以硬互斥保证至多一个有效位。全零状态代表参考 token。其平稳分布是
+   softmax，但达到平稳所需时间及样本相关性不能由平稳分布本身保证。
+
+   一 sweep 定义为 L−1 次更新尝试；采样 N 次，预热 B sweep、间隔 S sweep，
+   每头更新尝试数就是 (L−1)×(B＋S×N)。默认 B=16、S=4、N=512。
+   几何等待加速只用于 Python 数值参考，硬件账本仍收取所有未改变状态的尝试。
+   RNG、偏置/状态读取和互斥更新逐次消费，不缓存整个预热窗口的随机数。
+   任意范围随机选点的拒绝采样成本采用期望值，不是最长延迟保证。
+
+   它与此前连续时间 CTMC 数值实现的有限时间轨迹不同，因此不能继承此前 PPL。
+   它也不是原论文并行异步物理 p-bit 阵列的等效功耗。要评估后者，需要提供
+   节点更新频率/功耗、反馈延迟、仲裁/抑制时序和竞争状态处理规则，再添加映射。
+   简单把串行时间除以节点数会遗漏互斥与反馈，不应这样估计。
+
+五、真实工作负载与质量边界
+
+默认输入是可复现的合成高斯 logits，用于检查路由、缓存、时间、能量账本。
+导出的原筛选校准是真实旧参数，但“真实校准＋合成 logits”仍然不是 Qwen
+真实访问轨迹。结果文件会显著标注 SYNTHETIC_GAUSSIAN_LOGITS，不输出新 PPL。
+
+要得到实际 Qwen 工作负载，在已有 decode runner 中调用：
+  from capture_attention_trace_v3 import DecodeTraceCollector
+  collector = DecodeTraceCollector({"model": "...", "dataset": "...", "seed": 0})
+  collector.add(token_index, layer_index, q_after_rope, k_cache_after_append)
+  collector.save("attention_logits.json")
+
+q 形状 [1,14,1,64]，k 形状 [1,2,L,64]，只适用于无 padding 的 batch1 decode。
+所有层、所有 decode token 都要收集；不要提供 RoPE 之前的 Q/K。
+导入 --trace attention_logits.json 后，缺行、长度不匹配和非有限值会报错，
+不会静默退回合成数据。离线捕获完整 QK 的开销不计入稀疏硬件方案。
+
+该轨迹支持固定输入下比较各 Attention 算子；多层替换会改变后续 Q/K 分布，
+若需要真实联合模型的流量，应从对应联合数值运行捕获，而非沿用原模型轨迹。
+真实 LFSR、有限概率位宽、有限样本 Ising 的 PPL 仍需另行数值评测。
+
+六、运行和检查
+
+  python architecture_tlm/checks/test_attention_v3.py
+  python architecture_tlm/checks/test_attention_trace_torch_v3.py
+  python architecture_tlm/run_attention_v3.py --output architecture_tlm/results/my_attention_run
+  python architecture_tlm/audit_attention_v3.py architecture_tlm/results/my_attention_run
+
+默认运行 2K/8K、各 5 个 Attention 路径、24 层、2 个 decode token。
+输出目录非空会拒绝覆盖。可用 --small --contexts 128 --tokens 1 做单层检查。
+可用 --variants digital_bf16 fixed_sc_exact dual_sc_sz 比较不同 FFN。
+可用 --summary-initialization prefill_prebuilt 比较摘要已在 prefill 建立的场景。
+
+结果有整机时间、整机能量、Attention 核心时间及直接能量。后两列不含投影；
+直接能量还不含共享根/闲置的归因。DRAMSys 后端只能取得整体 DRAMPower 能量，
+不能假称每个 Attention 请求都有独立 DRAMPower 能量。因此最终比较以整机列为准。
+
+这版首先解决“算法没有真正接入事务模型”的问题。待补齐真实轨迹、宏标定和
+更高并发的硬件映射后，才能据此做有可信区间的实际能效判断。
+
+七、本轮已完成的验证与结果位置
+
+13 项自动测试通过，包括与旧 max4 PyTorch 代码的评分和概率交叉核对。
+2K/8K、5 种路径、每种 24 层/2 token 的 10 个整机场景完成；逐事务资源占用、
+能量合计、操作数、地址对齐、容量和源码 hash 审计全部通过。
+双随机 FFN 与 PV 的单层集成检查也完成。
+
+正式结果：results/attention_v3_verified_20261015/RESULTS_ZH.txt
+结构化汇总：同目录 summary.csv
+审计：同目录 verification.json
+各方案 JSON：配置、分项能量、操作数、每层每头采样统计；
+各方案 transactions.jsonl.gz：压缩后的实际事务日志。
+
+本轮 2K 合成场景中，筛选每头约保留 27.6% 位置，但 GQA 候选并集导致
+K/V 主体读取量仍约为准确注意力的 96.4%，还没包括摘要本身的额外访问。
+这说明“算术节省”不能直接当成“外存节省”；真实 Qwen 的头间重合程度必须
+通过真实轨迹测量。不能把上述合成数据比例当作模型性质。
+
+本轮 Ising 数字串行参考时间很长，主要来自 (L−1)×(16＋4×512) 次/头的更新。
+这是指定参考映射的结果，不是对并行物理 p-bit 芯片速度的实测或判决。
+
+注意 JSON 的历史字段 bounds.raw_rng_bits / rng_hierarchy 描述 FFN 随机源。
+新 Attention 叶的随机消费在 actions.ATT_random_words / ATT_random_bits，
+能量在 ATT_PRNG / ATT_rng_distribution 等项；查看总量时须包含两部分。

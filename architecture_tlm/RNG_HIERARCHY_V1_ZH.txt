@@ -1,0 +1,171 @@
+随机源层次结构初版：设计、使用与验证
+日期：2026-10-15
+
+1. 实现选择
+
+本版已接入现有 DecodeModel。默认配置仍走原全局 RNG 池，只有显式选择
+rng.architecture="hierarchical_v1" 才启用层次结构。
+
+L2：EntropyBudget，物理原始样本率、每样本保守条件熵、调理块与启动等待。
+根服务：少量新种子 -> 参数化的种子扩展器 -> 32-bit 种子总线。
+L1：共享数字 PRNG 簇，只负责输入随机字；继续使用原有 SRAM 重放与广播。
+L0：每个 FFN 阵列附近的 Bivium-B 源，生成不同连接的权重概率 bit。
+
+没有照搬 OpenTitan AES masking 的完整控制逻辑。保留 Bivium 的 177-bit
+非线性状态更新关系，但采用窗口边界暂停、完整装载种子、预热的方式。
+这样不必在随机状态不断更新时做部分覆盖，也不依赖 EDN/CSRNG 接口。
+初版不重叠播种和计算；这是便于审计的保守调度，不是吞吐最优实现。
+
+参考：
+https://github.com/lowRISC/opentitan/blob/master/hw/ip/prim/rtl/prim_trivium_pkg.sv
+https://github.com/lowRISC/opentitan/blob/master/hw/ip/prim/rtl/prim_trivium.sv
+https://github.com/lowRISC/opentitan/blob/master/hw/ip/aes/rtl/aes_prng_masking.sv
+
+2. 两种仿真粒度
+
+rng_hierarchy.py 是宏级时间/成本模型，不逐 bit 跑完整 LLM。它计入冷启动、
+条件熵预算、调理、根种子扩展、分发、重播种、共享服务、本地更新、重试、
+比较选择、面积及漏电。时间单位 ns，配置能量单位 pJ，面积单位 mm²。
+
+rng_reference.py 是实际位流参考。Bivium.read_word() 按公开递推生成 bit，
+第一位在整数 bit0；分批读取和一次读取具有相同位序。FunctionalRng 使用
+SHAKE 域分离生成不同初始状态：域、epoch、engine、column、core 都参与。
+这是确定性仿真播种机制，不是物理熵源，也不是已认证的硬件根 DRBG。
+宏模型的根扩展器只建模吞吐/成本，不宣称与 SHAKE 参考具有相同硬件成本。
+
+参考模型保证状态在连续调用之间推进，概率参数变化不会自动重置 PRNG。
+重新初始化同一 seed/epoch 可精确复现实验；活跃对象 reseed 必须增加 epoch。
+共享输入和本地权重使用不同域，不能通过同一个随机字比较来做 AND 乘法。
+不同域/种子不等于数学上已证明独立，仍需统计和任务级验证。
+
+3. 默认 FFN 映射
+
+8 个 64×64 阵列，每阵列 64 列 × 4 个本地核 = 256 个 Bivium 核；共 2048 个。
+另有 8 个共享核，全部数字实例共 2056 个。每核每次更新产生 160 bit。
+每列得到 4×160/8=80 个候选 byte。只接收小于 254 的值，除以 2 得到
+0..126 上的均匀整数，取前 64 个与权重幅值 code 比较，P(bit=1)=code/127。
+code=0 与 127 分别精确给出 0 和 1；不用有偏的 byte%127。
+
+若一列不足 64 个有效候选，则该列丢弃这轮并重试；成功列冻结并保存结果。
+同一波阵列等所有列成功后消费同一个输入 bit 行。宏模型计算独立 byte 假设下
+最大重试轮数的期望，按波中的实际列数计算，不能把 8 个并行阵列服务时间串加。
+80 候选的欠供概率极小；双精度结果可能显示 success=1，并非数学上概率恰为 1。
+例如改成 64 候选后重试很常见，宏模型与参考模型均会增加周期。
+初版仍是期望时间模型，不是逐周期排队仿真或最坏延迟保证。
+
+本地动态能量按实际候选生成的期望更新次数收费；80 候选中未使用的尾部
+同样消耗能量。未参与波的阵列不收费动态更新，所有已实例化的核计漏电。
+宏模型默认更新 160 bit、预热 5 次（800 个递推步）；共享/本地预热各可配置。
+修改输出宽度时应同时评估预热策略、逻辑深度、面积和每次更新能量。
+
+输入概率使用 12-bit 随机字，参考 API 接受 0..4096 的概率 code。
+输入流可以在输出列、输出 tile 间按同一数据语义重放；权重流持续推进。
+原 TLM 的随机字 SRAM 写入/读出、广播和 scratchpad 容量仍计费。
+
+4. 物理熵与播种不会按乘法事件收费
+
+默认每次根播种消耗 256 个“经调理的种子 bit”，不是 2056×177 个物理 bit。
+每个实例分发 6×32=192 bit，完整一轮为 394752 bit = 49344 byte。
+根数字扩展可以产生这些不同状态，但不会创造同等数量的信息熵。
+177 位状态宽度也不意味着 177 位密码学安全强度。
+
+默认物理预算：4 路×1 MSample/s；1024 个聚合原始样本调理出 256 bit；
+条件熵假设 0.5 bit/sample、安全系数 0.8，256 <= 1024×0.5×0.8。
+这个条件熵必须将跨通道关联纳入保守估计，不能简单假设每路独立。
+采集一块耗时 256 μs，调理延迟 1 μs，冷启动等待 10 μs。
+根扩展 15.42 μs，分发 123.36 μs，预热 0.05 μs，初始总等待 405.83 μs。
+这些是配置计算结果，不是 Extropic 或本工艺的测量值。
+
+默认根重播种间隔 1 s，从上次播种完成计时。到期后在下一次请求边界更新；
+不补做空闲期间每一个过期事件，也不会在长事务中途强制打断。
+reseed_interval_ns=0 表示仅冷启动播种。健康失败时拒绝获取新种子；已经
+播种的 PRNG 不在模型中异步停机。动态故障/恢复策略可在下一版补充。
+未实现真实 RCT/APT 或提取器算法，healthy 仅为故障注入开关。
+
+EntropyBudget 按需采集且只缓存余下的调理输出，不假定免费预填的大 FIFO。
+当前模拟部分按全系统时间计常开功率，是保守策略；没有虚构已验证的电源门控。
+数秒级重播种的收益需要同时评估启动等待、模拟源功耗和恢复策略。
+
+5. 运行
+
+从工作区根目录，用 Python 3.10+（标准库即可）执行：
+
+  python architecture_tlm/checks/test_rng_hierarchy.py
+  python architecture_tlm/run_rng_hierarchy.py
+  python architecture_tlm/check_rng_streams.py --samples 4096
+  python architecture_tlm/audit_rng_hierarchy.py
+
+若系统默认 Python 太旧，可用已有运行时：
+  C:\Users\86134\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe
+
+完整对照写到 results/rng_hierarchy_v1/，不覆盖 results/system_decode 的历史结果。
+小规模调试建议独立目录：
+  python architecture_tlm/run_rng_hierarchy.py --small --output architecture_tlm/results/rng_hierarchy_small
+
+直接从配置构造：
+  cfg,evidence,shape = load()
+  cfg['rng']['architecture'] = 'hierarchical_v1'
+  cfg['rng_hierarchy'] = json.load(open('architecture_tlm/configs/rng_hierarchy_v1.json'))
+  result = DecodeModel(cfg,'dual_sc_sz',evidence,shape).run()
+
+fixed_sc_exact 也可使用层次结构，只配置共享核，不配置本地权重 RNG；数字
+BF16/INT8 变体不实例化这些 RNG。未知 architecture 会报错。
+
+位流接口示例（在 architecture_tlm 目录导入）：
+  from rng_reference import FunctionalRng
+  import hashlib
+  rng = FunctionalRng(hashlib.sha256(b'experiment-1').digest())
+  x = rng.input_bits([2048]*64, replay_key=('token0','input_tile0','sample0'))
+  w, stats = rng.weight_bits(engine=0, probabilities=[[64]*64 for _ in range(64)])
+  y = [sum(a*b for a,b in zip(x,col)) for col in w]
+  rng.release_replay(('token0','input_tile0','sample0'))
+
+这里是非负概率 AND 核；真实有符号权重的 sign、scale、部分和由现有 FFN 保持。
+不要把同一个 replay_key 用于不同概率参数；该错误会被接口拒绝。
+大规模运行需要及时 release_replay，避免显式重放缓存无限增长。
+
+DRAMSys 可选：
+  python architecture_tlm/run_rng_hierarchy.py --bridge /path/to/pbit_dram_bridge --output /path/to/results
+  可额外指定 --dramsys-config。
+仍复用原闭环外存实现；本机本轮没有重新编译或运行 DRAMSys，这条路径未验证。
+
+6. 已运行结果与边界
+
+完整默认 Qwen2.5 配置、24 层、context=2048、2 个 decode token、T=4096：
+                         全局池           本地层次结构
+  平均 TPOT             45054.132 ms       510.354 ms
+  情景能耗/token         6477.119 mJ       1528.291 mJ
+  参数化总面积              17.692 mm²       30.566 mm²
+
+这是 simplified Link 外存后端、既有计算成本模型和新 RNG 占位成本下的结果。
+不是实际芯片的 88 倍加速或节能证明；本地核更多，占用面积并消耗大量动态能量。
+当前每核 0.006 mm²、每次160-bit更新16 pJ 等参数全部尚未综合/PDK校准。
+本地比较/选择成本明确单列，但旧双随机 SC 核功耗仍是固定权重核的代理，
+后续需要真正的 dual datapath 综合以分清比较器与缓冲器成本，不能作精确 PPA。
+
+本次完整运行经历 2 次根播种，物理调理输出消耗 512 bit，种子总线传输
+789504 bit，本地生成的候选随机 bit 期望约 25.7054 Tbit。
+它们是不同层级的计数，不能互相当作“熵带宽”。
+
+已有全局配置的 metrics 与保存的基线一致。两种架构的计算操作数和全部
+内存/replay 流量相同；总能量、阶段时间、种子/调理输出记账检查通过。
+新测试覆盖熵预算拒绝、故障、冷启动、重播种边界、并行计费、欠供重试、
+Bivium 独立逐位递推对照、状态域分离、端点概率及输入重放契约。
+
+4096 次、64 输入×4 输出的实际位流诊断：
+  理论无符号 dot 均值 16.125984，观察值 16.112793；
+  输入/权重相关 0.00920，跨列权重相关 -0.00805，单流 lag1 -0.00314。
+  单个被观察权重连接 P(1)=0.52173，目标为64/127=0.50394。
+有限样本会波动；这里只报告诊断值，不将低相关或样本均值称为独立性证明。
+没有重新运行大模型 PPL；输出的 quality_reference_ppl 仍是旧理想采样参考。
+
+7. 下一步可以替换什么
+
+优先用本工艺的 Bivium+选择器 RTL 综合结果替换 local/shared 的面积、update_pJ、
+leakage 和 bernoulli_pJ；用模拟仿真与真实熵评估替换 entropy 参数。
+根扩展器选择和硬件实现确定后，替换 seed.expand_* 成本与吞吐。
+性能宏模型与位流参考分开，使这些替换不必逐 bit 重跑整个 TLM。
+
+暂未实现：原始模拟噪声波形接入、在线健康检测算法、后台双缓冲重播种、
+周期精确的全阵列 FIFO、位流驱动的大模型端到端精度验证和本工艺 RTL。
+这是一版可运行的系统仿真实现，以上未实现部分没有按“已经完成”计入结论。

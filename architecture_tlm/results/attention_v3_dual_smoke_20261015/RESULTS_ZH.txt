@@ -1,0 +1,14 @@
+Attention v3：事务一致性验证场景（不是芯片实测或 Qwen PPL）
+
+默认为合成高斯 logits；真实校准参数只能校准筛选器，不能把合成 logits 变成真实工作负载。
+所有方案保留完整24层 FFN、投影、残差、输出；--small 例外。
+默认简化 Link 外存，只有提供 --bridge 时才调用 DRAMSys。
+筛选默认计入首个 decode 的摘要冷建立；预热后结果见逐 token 时间。
+
+方案 | 上下文 | 整机 ms/token | Attention核心 ms/token | 整机 mJ/token | Attention直接 mJ/token | 保留QK比例
+pv / dual_sc_sz | 64 | 18.1904 | 0.0251 | 62.5980 | 0.0030 | 1.000
+
+Attention核心不含 Q/K/V/O 投影。Attention直接能量不含共享闲置及共享根种子；
+DRAMSys 下 DRAMPower 无分请求归因，查看整机能量；不得将此列当完整 Attention 能耗。
+Ising 为串行数字随机选点更新的明确映射，不能代表原论文并行物理 p-bit 网络。
+本次没有新的全模型质量验证。源文件、配置、逐行采样统计和事务日志保存在同目录。

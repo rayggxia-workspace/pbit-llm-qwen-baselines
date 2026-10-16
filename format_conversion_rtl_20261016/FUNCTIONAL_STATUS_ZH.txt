@@ -1,0 +1,38 @@
+功能验证状态：PASS
+2026-10-16
+
+远端CPU Slurm最终作业：1587，无GPU申请。
+模拟器：Icarus Verilog 12.0，Ubuntu官方二进制包，仅解压于项目目录。
+包SHA256：f19394cee05ad526e0eb3873bc6c17a5828f56df17fbe2db40cb66513a2d4667。
+源码：18类KIND=0..17转换/算术探针，输入/输出寄存包装，两类跨块累加器。
+
+通过内容：
+  组合数值逐位参考比对：607,047组。
+  寄存接口、输出有效与排空检查：4,608组。
+  浮点、定点32/40/64四条累加路径：181帧、5,463部分结果，每条均与独立参考比较。
+  功耗激励testbench：18×3=54种转换活动模式，4×2=8种累加组合，均通过输出检查。
+
+参考算法使用Python整数与精确二进制有理数，包含RNE、饱和、subnormal、NaN/Inf、
+正负零、极值、跨尺度对齐、累加溢出、末次输出和稀疏有效信号。
+BF16量化/扩展包含全位模式枚举；FP32为定向边界与随机样本，不是全2^32枚举或形式证明。
+固定随机种子20261016，向量数量及hash见results/vector_generation.json。
+功耗激励使用另外的确定性有限值合成分布，不是捕获的真实Qwen激活。
+
+本地16个参与测试的RTL/仿真源文件已与服务器source_hashes.json逐一一致。
+README、工艺库DC/PT模板是交付说明；未在用户Synopsys环境执行，不在功能仿真认证范围。
+
+已保存：
+  results/slurm_1587.log
+  results/conversion_functional.log
+  results/accum_functional.log
+  results/power_bench_checks.log
+  results/source_hashes.json
+  results/vector_generation.json
+
+没有完成/没有声称完成：工艺库综合、STA收敛、PT能量/面积、布局后寄生、PPL验证。
+两条累加路径并非逐位等价；各自与各自的精确舍入契约对比通过。
+低位宽发生饱和的测试是检查标志与行为，不表示该位宽可用于等精度LLM部署。
+
+第三方工具来源：
+https://archive.ubuntu.com/ubuntu/pool/universe/i/iverilog/iverilog_12.0-2build2_amd64.deb
+原始源码与许可：https://github.com/steveicarus/iverilog

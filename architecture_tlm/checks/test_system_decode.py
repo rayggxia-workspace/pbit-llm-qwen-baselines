@@ -43,6 +43,18 @@ class Tests(unittest.TestCase):
         expected=2*(896+4864)*4096*12+2*3*896*4864*4096*self.cfg['rng']['weight_bits_per_decision']
         self.assertAlmostEqual(r['bounds']['raw_rng_bits']/expected,1,places=12)
 
+    def test_no_per_weight_validity_bank_or_fake_savings(self):
+        now=self.small('fixed_sc_exact')
+        def legacy(c):
+            for k in list(c['weight_macro']):
+                if k.startswith('per_weight_validity') or k=='validity_policy':del c['weight_macro'][k]
+        old=self.small('fixed_sc_exact',legacy)
+        self.assertEqual(now['energy_J'],old['energy_J'])
+        self.assertEqual(now['metrics'],old['metrics'])
+        self.assertEqual(now['weight_validity_contract']['per_weight_bits'],0)
+        with self.assertRaises(ValueError):
+            self.small('fixed_sc_exact',lambda c:c['weight_macro'].update(per_weight_validity_bits=2048))
+
     def test_resident_cache_reuses_weights_on_second_token(self):
         r=self.small('digital_bf16',lambda c:c['weight_macro'].update(cache_MiB=64))
         self.assertGreater(r['weight_cache']['hits'],r['weight_cache']['misses'])

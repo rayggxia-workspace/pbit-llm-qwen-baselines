@@ -1,0 +1,9171 @@
+{
+  "variant": "fixed_sc_exact",
+  "scope": "batch1 decode, full24 layers and lm_head; no prefill",
+  "implementation": "attention_v3 explicit transactions + inherited full decode/local FFN; Python LT, optional real DRAMSys",
+  "config": {
+    "description": "Parametric batch1 steady decode; all coefficients replaceable; not measured full-chip results",
+    "context_tokens": 2048,
+    "decode_tokens": 2,
+    "frequency_hz": 100000000,
+    "samples": 4096,
+    "sc_engines": 8,
+    "tile_inputs": 64,
+    "tile_outputs": 64,
+    "sc_profile": "g1_case3",
+    "share_frontend_per_tile": true,
+    "double_buffer": true,
+    "weight_macro": {
+      "cache_MiB": 16,
+      "cache_line_bytes": 4096,
+      "load_bandwidth_GBs": 64,
+      "load_latency_ns": 20,
+      "read_pJ_per_byte": 2,
+      "write_pJ_per_byte": 3,
+      "leakage_W_per_MiB": 0.001,
+      "area_mm2_per_MiB": 0.5,
+      "active_tile_hold_W": 0.0001,
+      "active_tile_area_mm2": 0.02,
+      "local_resident_bits_per_tile": 36864,
+      "resident_read_pJ_per_tile": 50
+    },
+    "scratchpad": {
+      "capacity_MiB": 1,
+      "bandwidth_GBs": 64,
+      "read_pJ_per_byte": 2,
+      "write_pJ_per_byte": 3,
+      "leakage_W_per_MiB": 0.001,
+      "area_mm2_per_MiB": 0.5
+    },
+    "external_memory": {
+      "bandwidth_GBs": 32,
+      "burst_bytes": 256,
+      "latency_ns": 80,
+      "read_pJ_per_byte": 64,
+      "write_pJ_per_byte": 64,
+      "background_W": 0.05
+    },
+    "digital": {
+      "macs_per_cycle": 512,
+      "vector_ops_per_cycle": 64,
+      "nonlinear_ops_per_cycle": 16,
+      "mac_pJ": 2,
+      "mixed_fp_int8_mac_pJ": 2,
+      "vector_op_pJ": 1,
+      "nonlinear_op_pJ": 10,
+      "vector_interface_bytes_per_op": 4,
+      "nonlinear_interface_bytes_per_op": 8,
+      "idle_W": 0.02,
+      "area_mm2": 1,
+      "weight_chunk_bytes": 65536
+    },
+    "rng": {
+      "sources": 32,
+      "source_clock_hz": 450000000,
+      "raw_bits_per_source_cycle": 16,
+      "source_power_W": 0.0001208,
+      "input_bits_per_decision": 8,
+      "weight_bits_per_decision": 8.062992125984252,
+      "area_mm2_per_source": 0.001,
+      "fifo_distribution_W": 0.001,
+      "always_running": true,
+      "architecture": "hierarchical_v1"
+    },
+    "sc_cost": {
+      "core_multiplier": 1,
+      "dual_core_multiplier": 1,
+      "wait_W_per_engine": 0.005,
+      "idle_W_per_engine": 0.0005,
+      "logic_area_mm2_per_engine": 1,
+      "input_encode_vector_ops": 6,
+      "finalize_vector_ops_per_partial": 2
+    },
+    "control_interconnect_W": 0.01,
+    "area_budget_mm2": 100,
+    "rng_hierarchy": {
+      "cost_status": "ILLUSTRATIVE UNCALIBRATED coefficients; replace with PDK/RTL measurements before PPA claims",
+      "entropy": {
+        "channels": 4,
+        "sample_hz": 1000000,
+        "raw_samples_per_block": 1024,
+        "output_bits_per_block": 256,
+        "min_entropy_per_sample": 0.5,
+        "safety_factor": 0.8,
+        "startup_ns": 10000,
+        "conditioner_ns_per_block": 1000,
+        "healthy": true,
+        "power_W_per_channel": 0.0001,
+        "health_W": 5e-05,
+        "conditioner_pJ_per_block": 1000,
+        "area_mm2_per_channel": 0.002,
+        "health_conditioner_area_mm2": 0.02
+      },
+      "seed": {
+        "root_bits": 256,
+        "bus_bits": 32,
+        "bus_hz": 100000000,
+        "expand_bits_per_cycle": 256,
+        "expand_hz": 100000000,
+        "reseed_interval_ns": 1000000000,
+        "expand_pJ_per_bit": 0.2,
+        "bus_pJ_per_bit": 0.1,
+        "idle_W": 0.0001,
+        "area_mm2": 0.03
+      },
+      "shared": {
+        "cores": 8,
+        "output_bits": 160,
+        "clock_hz": 100000000,
+        "warmup_cycles": 5,
+        "update_pJ": 16,
+        "distribution_pJ_per_bit": 0.1,
+        "leakage_W_per_core": 1e-06,
+        "area_mm2_per_core": 0.006
+      },
+      "local": {
+        "inputs": 64,
+        "columns": 64,
+        "cores_per_column": 4,
+        "output_bits": 160,
+        "warmup_cycles": 5,
+        "update_pJ": 16,
+        "bernoulli_pJ": 0.05,
+        "leakage_W_per_core": 1e-06,
+        "area_mm2_per_core": 0.006,
+        "column_logic_area_mm2": 0.001
+      }
+    },
+    "local_shared_input": {
+      "cost_status": "UNCHARACTERIZED input LFSR/seed/route parameters; inherited SRAM/digital assumptions and dual-core proxy; not measured PPA",
+      "input_bits": 8,
+      "share_group": 64,
+      "state_bits": 32,
+      "clock_hz": 100000000,
+      "warmup_cycles": 0,
+      "update_pJ": 1.0,
+      "area_mm2": 0.001,
+      "leakage_W": 1e-06,
+      "word_to_comparators_pJ_per_bit_sink": 0.01,
+      "mask_to_columns_pJ_per_bit_sink": 0.01,
+      "checkpoint_pJ_per_bit": 0.1,
+      "checkpoint_cycles": 1,
+      "restore_pJ_per_bit": 0.1,
+      "restore_cycles": 1,
+      "child_seed_policy": "per_tile",
+      "child_rekey_interval_ns": 1000000,
+      "frontend_area_credit_mm2_per_removed_bank": 0.0,
+      "frontend_power_proxy": "one retained legacy 13-bit threshold/sign/comparator frontend per synchronized wave; no precision-scaling or clock-gating benefit claimed",
+      "root_reseed_policy": "inherited hierarchy config, default 1 second; deferred to input-tile boundary",
+      "protocol": "one local input PRNG at the synchronous FFN array cluster; same 8-bit word to 64 thresholds; checkpoint/replay across output waves; independent persistent weight RNGs"
+    },
+    "attention_v3": {
+      "status": "UNCHARACTERIZED macro coefficients; transaction-consistent, NOT measured silicon or cycle-accurate RTL",
+      "mode": "dense",
+      "samples": 512,
+      "seed": 20261015,
+      "trace_file": null,
+      "fixture_logit_std": 1.5,
+      "block_size": 64,
+      "subblocks": 4,
+      "selector_bias": -1.0,
+      "selector_temperature": 1.0,
+      "calibration_file": "architecture_tlm\\configs\\attention_max4_c2048.json",
+      "summary_initialization": "cold_build",
+      "kv_tile_tokens": 128,
+      "v_cache_bytes": 65536,
+      "uniform_bits": 32,
+      "rng_words_per_cycle": 4,
+      "rng_update_pJ_per_word": 4,
+      "rng_route_pJ_per_bit": 0.1,
+      "rng_area_mm2": 0.024,
+      "rng_idle_W": 4e-06,
+      "leaf_seed_bits": 256,
+      "sampler_comparisons_per_cycle": 4,
+      "sampler_compare_pJ": 0.1,
+      "sampler_area_mm2": 0.01,
+      "sampler_idle_W": 1e-06,
+      "ising_burn_sweeps": 16,
+      "ising_spacing_sweeps": 4,
+      "ising_cycles_per_attempt": 4,
+      "ising_control_pJ_per_attempt": 0.5,
+      "ising_state_flip_pJ": 0.2,
+      "ising_state_area_mm2_per_bit": 1e-06,
+      "ising_mapping": "serial_random_scan_hard_onehot",
+      "record_transactions": true
+    }
+  },
+  "quality_reference_ppl": null,
+  "stochastic_core_power_provenance": "fixed-weight G1 per-cycle replicated with assumed shared frontend",
+  "stochastic_activity_case": 3,
+  "sample_power_extrapolated": false,
+  "quality_warning": "NEW attention transaction mapping has NO full-model PPL claim; prior FFN/attention PPL is not a combined hardware validation",
+  "metrics": {
+    "mean_TPOT_ms": 445.457376625,
+    "first_decode_ms": 445.585102625,
+    "subsequent_decode_ms": 445.329650625,
+    "tokens_per_second": 2.2448836914015935,
+    "scenario_mJ_per_token": 170.65624751809918,
+    "parameterized_area_mm2": 17.719,
+    "area_budget_feasible": true,
+    "TTFT_ms": null,
+    "attention_ms_per_token": 4.41684,
+    "attention_direct_mJ_per_token": 1.924329599999994,
+    "attention_direct_excludes": "QK/V/O projections, shared idle, shared root and DRAMPower core when using DRAMSys; see full system energy"
+  },
+  "energy_J": {
+    "external_weights": 0.08628994048003473,
+    "weight_sram_access": 0.006741401600002951,
+    "digital_vector": 2.268134399999962e-05,
+    "digital_nonlinear": 2.3369800000000022e-06,
+    "scratch_access": 0.0004295638160000359,
+    "digital_MAC": 0.0007206993919999455,
+    "external_KV": 1.5728640000000018e-06,
+    "external_ATT_KV_fused": 0.003222011903999991,
+    "ATT_scratch": 0.00025197772800000773,
+    "ATT_MAC": 0.0003524075519999897,
+    "ATT_vector": 8.378496000000061e-06,
+    "ATT_nonlinear": 1.3883519999999768e-05,
+    "weight_resident_prepare": 7.66079999999995e-06,
+    "SC_logic_active": 0.12847571846118663,
+    "SC_shared_input_frontend": 0.0005164194508364606,
+    "SC_wait": 0.0,
+    "weight_sram_leakage": 0.014254636052000001,
+    "weight_macro_hold": 0.0007127318026,
+    "scratch_leakage": 0.0008909147532500001,
+    "digital_idle": 0.017818295065,
+    "external_background": 0.0445457376625,
+    "control_interconnect": 0.0089091475325,
+    "RNG_seed_expansion": 6.4e-12,
+    "RNG_seed_bus": 3.2e-12,
+    "RNG_local_updates": 0.0,
+    "RNG_input_updates": 8.218214400001233e-05,
+    "RNG_input_child_expansion": 2.7647999999997843e-08,
+    "RNG_input_child_bus": 1.3823999999998922e-08,
+    "RNG_input_checkpoint": 1.3823999999998922e-08,
+    "RNG_input_restore": 6.420480000001382e-08,
+    "RNG_input_word_distribution": 0.00042077257728009507,
+    "input_mask_distribution": 0.02570537926656673,
+    "RNG_entropy_analog": 0.0003563659013,
+    "RNG_entropy_health": 4.45457376625e-05,
+    "RNG_conditioner": 1e-09,
+    "RNG_seed_idle": 8.9091475325e-05,
+    "RNG_shared_leakage": 0.0,
+    "RNG_local_leakage": 0.0,
+    "RNG_input_leakage": 8.9091475325e-07,
+    "SC_idle": 0.00042502925300000007
+  },
+  "time_ns": {
+    "RNG_startup": 267020.0,
+    "embedding": 752.0,
+    "norm_rope_residual": 104749.25,
+    "QKV_projection": 6392832.0,
+    "output_projection": 4976256.0,
+    "FFN_gate_up": 526792896.0,
+    "FFN_SwiGLU": 218880.0,
+    "FFN_down": 308248704.0,
+    "lm_head": 35031504.0,
+    "token_select": 47480.0,
+    "Attention_core": 8833680.0
+  },
+  "actions": {
+    "vector_ops": 31059840,
+    "nonlinear_ops": 1622050,
+    "digital_MAC": 536553472,
+    "ATT_selected_QK_tokens": 1376592,
+    "ATT_possible_QK_tokens": 1376592,
+    "ATT_QK_MAC": 88101888,
+    "ATT_QK_vector": 1376592,
+    "ATT_QK_nonlinear": 0,
+    "ATT_online_softmax_MAC": 0,
+    "ATT_online_softmax_vector": 6958896,
+    "ATT_online_softmax_nonlinear": 1387680,
+    "ATT_PV_MAC": 88101888,
+    "ATT_PV_vector": 0,
+    "ATT_PV_nonlinear": 0,
+    "ATT_online_finalize_MAC": 0,
+    "ATT_online_finalize_vector": 43008,
+    "ATT_online_finalize_nonlinear": 672,
+    "sc_tile_frames": 153216,
+    "sc_product_trials": 2570537926656
+  },
+  "traffic": {
+    "external_weights_read_logical_bytes": 1348280320,
+    "external_weights_read_burst_bytes": 1348280320,
+    "external_weights_read_requests": 31112,
+    "weight_sram_write_bytes": 1348280320,
+    "weight_sram_read_bytes": 1348280320,
+    "scratch_vector_interface_bytes": 92594960,
+    "scratch_matrix_interface_bytes": 979968,
+    "external_KV_write_logical_bytes": 24576,
+    "external_KV_write_burst_bytes": 24576,
+    "external_KV_write_requests": 48,
+    "attention_KV_fused_useful_bytes": 50343936,
+    "attention_KV_fused_physical_bytes": 50343936,
+    "external_ATT_KV_fused_read_logical_bytes": 50343936,
+    "external_ATT_KV_fused_read_burst_bytes": 50343936,
+    "external_ATT_KV_fused_read_requests": 792,
+    "attention_scratch_read_bytes": 50343936,
+    "attention_scratch_write_bytes": 50429952,
+    "scratch_partial_bytes": 78446592
+  },
+  "external_memory_model": {
+    "backend": "simplified Link"
+  },
+  "weight_cache": {
+    "hits": 0,
+    "misses": 329170,
+    "peak_bytes": 16777216
+  },
+  "bounds": {
+    "SC_wave_compute_ms": 822.02208,
+    "RNG_service_ms": 821.82144,
+    "replay_service_ms": 0.0,
+    "raw_rng_bits": 657457152.0,
+    "source_nominal_capacity_bits": 712731802.6,
+    "scratch_peak_bytes": 609536,
+    "local_weight_resident_bits": 294912,
+    "random_word_replay_bytes": 0,
+    "retained_input_threshold_sign_logical_bits": 576,
+    "extra_probability_banks": 0
+  },
+  "energy_complete_measured": false,
+  "scenario_cost_coverage": "configured scenario costs including RNG startup; uncalibrated local RNG/analog/root costs, SC dual proxy, no PHY/CTS/host/prefill",
+  "events": [
+    {
+      "name": "RNG_startup",
+      "start_ns": 0.0,
+      "end_ns": 267020.0,
+      "layer": null,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "embedding",
+      "start_ns": 267020.0,
+      "end_ns": 267396.0,
+      "layer": null,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 267396.0,
+      "end_ns": 267436.0,
+      "layer": null,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 267436.0,
+      "end_ns": 267996.625,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 267996.625,
+      "end_ns": 401180.625,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 401180.625,
+      "end_ns": 401936.625,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 401936.625,
+      "end_ns": 585730.625,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 585730.625,
+      "end_ns": 689402.625,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 689402.625,
+      "end_ns": 690103.25,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 690103.25,
+      "end_ns": 11664955.25,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 11664955.25,
+      "end_ns": 11669515.25,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 11669515.25,
+      "end_ns": 18091363.25,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 18091363.25,
+      "end_ns": 18091503.25,
+      "layer": 0,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 18091503.25,
+      "end_ns": 18092063.875,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 18092063.875,
+      "end_ns": 18225247.875,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 18225247.875,
+      "end_ns": 18226003.875,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 18226003.875,
+      "end_ns": 18409797.875,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 18409797.875,
+      "end_ns": 18513469.875,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 18513469.875,
+      "end_ns": 18514170.5,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 18514170.5,
+      "end_ns": 29489022.5,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 29489022.5,
+      "end_ns": 29493582.5,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 29493582.5,
+      "end_ns": 35915430.5,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 35915430.5,
+      "end_ns": 35915570.5,
+      "layer": 1,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 35915570.5,
+      "end_ns": 35916131.125,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 35916131.125,
+      "end_ns": 36049315.125,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 36049315.125,
+      "end_ns": 36050071.125,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 36050071.125,
+      "end_ns": 36233865.125,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 36233865.125,
+      "end_ns": 36337537.125,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 36337537.125,
+      "end_ns": 36338237.75,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 36338237.75,
+      "end_ns": 47313089.75,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 47313089.75,
+      "end_ns": 47317649.75,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 47317649.75,
+      "end_ns": 53739497.75,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 53739497.75,
+      "end_ns": 53739637.75,
+      "layer": 2,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 53739637.75,
+      "end_ns": 53740198.375,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 53740198.375,
+      "end_ns": 53873382.375,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 53873382.375,
+      "end_ns": 53874138.375,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 53874138.375,
+      "end_ns": 54057932.375,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 54057932.375,
+      "end_ns": 54161604.375,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 54161604.375,
+      "end_ns": 54162305.0,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 54162305.0,
+      "end_ns": 65137157.0,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 65137157.0,
+      "end_ns": 65141717.0,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 65141717.0,
+      "end_ns": 71563565.0,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 71563565.0,
+      "end_ns": 71563705.0,
+      "layer": 3,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 71563705.0,
+      "end_ns": 71564265.625,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 71564265.625,
+      "end_ns": 71697449.625,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 71697449.625,
+      "end_ns": 71698205.625,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 71698205.625,
+      "end_ns": 71881999.625,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 71881999.625,
+      "end_ns": 71985671.625,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 71985671.625,
+      "end_ns": 71986372.25,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 71986372.25,
+      "end_ns": 82961224.25,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 82961224.25,
+      "end_ns": 82965784.25,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 82965784.25,
+      "end_ns": 89387632.25,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 89387632.25,
+      "end_ns": 89387772.25,
+      "layer": 4,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 89387772.25,
+      "end_ns": 89388332.875,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 89388332.875,
+      "end_ns": 89521516.875,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 89521516.875,
+      "end_ns": 89522272.875,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 89522272.875,
+      "end_ns": 89706066.875,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 89706066.875,
+      "end_ns": 89809738.875,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 89809738.875,
+      "end_ns": 89810439.5,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 89810439.5,
+      "end_ns": 100785291.5,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 100785291.5,
+      "end_ns": 100789851.5,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 100789851.5,
+      "end_ns": 107211699.5,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 107211699.5,
+      "end_ns": 107211839.5,
+      "layer": 5,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 107211839.5,
+      "end_ns": 107212400.125,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 107212400.125,
+      "end_ns": 107345584.125,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 107345584.125,
+      "end_ns": 107346340.125,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 107346340.125,
+      "end_ns": 107530134.125,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 107530134.125,
+      "end_ns": 107633806.125,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 107633806.125,
+      "end_ns": 107634506.75,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 107634506.75,
+      "end_ns": 118609358.75,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 118609358.75,
+      "end_ns": 118613918.75,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 118613918.75,
+      "end_ns": 125035766.75,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 125035766.75,
+      "end_ns": 125035906.75,
+      "layer": 6,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 125035906.75,
+      "end_ns": 125036467.375,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 125036467.375,
+      "end_ns": 125169651.375,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 125169651.375,
+      "end_ns": 125170407.375,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 125170407.375,
+      "end_ns": 125354201.375,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 125354201.375,
+      "end_ns": 125457873.375,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 125457873.375,
+      "end_ns": 125458574.0,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 125458574.0,
+      "end_ns": 136433426.0,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 136433426.0,
+      "end_ns": 136437986.0,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 136437986.0,
+      "end_ns": 142859834.0,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 142859834.0,
+      "end_ns": 142859974.0,
+      "layer": 7,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 142859974.0,
+      "end_ns": 142860534.625,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 142860534.625,
+      "end_ns": 142993718.625,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 142993718.625,
+      "end_ns": 142994474.625,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 142994474.625,
+      "end_ns": 143178268.625,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 143178268.625,
+      "end_ns": 143281940.625,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 143281940.625,
+      "end_ns": 143282641.25,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 143282641.25,
+      "end_ns": 154257493.25,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 154257493.25,
+      "end_ns": 154262053.25,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 154262053.25,
+      "end_ns": 160683901.25,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 160683901.25,
+      "end_ns": 160684041.25,
+      "layer": 8,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 160684041.25,
+      "end_ns": 160684601.875,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 160684601.875,
+      "end_ns": 160817785.875,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 160817785.875,
+      "end_ns": 160818541.875,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 160818541.875,
+      "end_ns": 161002335.875,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 161002335.875,
+      "end_ns": 161106007.875,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 161106007.875,
+      "end_ns": 161106708.5,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 161106708.5,
+      "end_ns": 172081560.5,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 172081560.5,
+      "end_ns": 172086120.5,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 172086120.5,
+      "end_ns": 178507968.5,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 178507968.5,
+      "end_ns": 178508108.5,
+      "layer": 9,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 178508108.5,
+      "end_ns": 178508669.125,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 178508669.125,
+      "end_ns": 178641853.125,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 178641853.125,
+      "end_ns": 178642609.125,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 178642609.125,
+      "end_ns": 178826403.125,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 178826403.125,
+      "end_ns": 178930075.125,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 178930075.125,
+      "end_ns": 178930775.75,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 178930775.75,
+      "end_ns": 189905627.75,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 189905627.75,
+      "end_ns": 189910187.75,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 189910187.75,
+      "end_ns": 196332035.75,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 196332035.75,
+      "end_ns": 196332175.75,
+      "layer": 10,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 196332175.75,
+      "end_ns": 196332736.375,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 196332736.375,
+      "end_ns": 196465920.375,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 196465920.375,
+      "end_ns": 196466676.375,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 196466676.375,
+      "end_ns": 196650470.375,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 196650470.375,
+      "end_ns": 196754142.375,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 196754142.375,
+      "end_ns": 196754843.0,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 196754843.0,
+      "end_ns": 207729695.0,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 207729695.0,
+      "end_ns": 207734255.0,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 207734255.0,
+      "end_ns": 214156103.0,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 214156103.0,
+      "end_ns": 214156243.0,
+      "layer": 11,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 214156243.0,
+      "end_ns": 214156803.625,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 214156803.625,
+      "end_ns": 214289987.625,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 214289987.625,
+      "end_ns": 214290743.625,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 214290743.625,
+      "end_ns": 214474537.625,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 214474537.625,
+      "end_ns": 214578209.625,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 214578209.625,
+      "end_ns": 214578910.25,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 214578910.25,
+      "end_ns": 225553762.25,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 225553762.25,
+      "end_ns": 225558322.25,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 225558322.25,
+      "end_ns": 231980170.25,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 231980170.25,
+      "end_ns": 231980310.25,
+      "layer": 12,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 231980310.25,
+      "end_ns": 231980870.875,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 231980870.875,
+      "end_ns": 232114054.875,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 232114054.875,
+      "end_ns": 232114810.875,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 232114810.875,
+      "end_ns": 232298604.875,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 232298604.875,
+      "end_ns": 232402276.875,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 232402276.875,
+      "end_ns": 232402977.5,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 232402977.5,
+      "end_ns": 243377829.5,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 243377829.5,
+      "end_ns": 243382389.5,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 243382389.5,
+      "end_ns": 249804237.5,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 249804237.5,
+      "end_ns": 249804377.5,
+      "layer": 13,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 249804377.5,
+      "end_ns": 249804938.125,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 249804938.125,
+      "end_ns": 249938122.125,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 249938122.125,
+      "end_ns": 249938878.125,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 249938878.125,
+      "end_ns": 250122672.125,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 250122672.125,
+      "end_ns": 250226344.125,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 250226344.125,
+      "end_ns": 250227044.75,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 250227044.75,
+      "end_ns": 261201896.75,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 261201896.75,
+      "end_ns": 261206456.75,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 261206456.75,
+      "end_ns": 267628304.75,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 267628304.75,
+      "end_ns": 267628444.75,
+      "layer": 14,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 267628444.75,
+      "end_ns": 267629005.375,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 267629005.375,
+      "end_ns": 267762189.375,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 267762189.375,
+      "end_ns": 267762945.375,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 267762945.375,
+      "end_ns": 267946739.375,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 267946739.375,
+      "end_ns": 268050411.375,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 268050411.375,
+      "end_ns": 268051112.0,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 268051112.0,
+      "end_ns": 279025964.0,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 279025964.0,
+      "end_ns": 279030524.0,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 279030524.0,
+      "end_ns": 285452372.0,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 285452372.0,
+      "end_ns": 285452512.0,
+      "layer": 15,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 285452512.0,
+      "end_ns": 285453072.625,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 285453072.625,
+      "end_ns": 285586256.625,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 285586256.625,
+      "end_ns": 285587012.625,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 285587012.625,
+      "end_ns": 285770806.625,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 285770806.625,
+      "end_ns": 285874478.625,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 285874478.625,
+      "end_ns": 285875179.25,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 285875179.25,
+      "end_ns": 296850031.25,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 296850031.25,
+      "end_ns": 296854591.25,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 296854591.25,
+      "end_ns": 303276439.25,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 303276439.25,
+      "end_ns": 303276579.25,
+      "layer": 16,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 303276579.25,
+      "end_ns": 303277139.875,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 303277139.875,
+      "end_ns": 303410323.875,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 303410323.875,
+      "end_ns": 303411079.875,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 303411079.875,
+      "end_ns": 303594873.875,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 303594873.875,
+      "end_ns": 303698545.875,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 303698545.875,
+      "end_ns": 303699246.5,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 303699246.5,
+      "end_ns": 314674098.5,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 314674098.5,
+      "end_ns": 314678658.5,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 314678658.5,
+      "end_ns": 321100506.5,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 321100506.5,
+      "end_ns": 321100646.5,
+      "layer": 17,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 321100646.5,
+      "end_ns": 321101207.125,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 321101207.125,
+      "end_ns": 321234391.125,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 321234391.125,
+      "end_ns": 321235147.125,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 321235147.125,
+      "end_ns": 321418941.125,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 321418941.125,
+      "end_ns": 321522613.125,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 321522613.125,
+      "end_ns": 321523313.75,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 321523313.75,
+      "end_ns": 332498165.75,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 332498165.75,
+      "end_ns": 332502725.75,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 332502725.75,
+      "end_ns": 338924573.75,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 338924573.75,
+      "end_ns": 338924713.75,
+      "layer": 18,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 338924713.75,
+      "end_ns": 338925274.375,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 338925274.375,
+      "end_ns": 339058458.375,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 339058458.375,
+      "end_ns": 339059214.375,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 339059214.375,
+      "end_ns": 339243008.375,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 339243008.375,
+      "end_ns": 339346680.375,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 339346680.375,
+      "end_ns": 339347381.0,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 339347381.0,
+      "end_ns": 350322233.0,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 350322233.0,
+      "end_ns": 350326793.0,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 350326793.0,
+      "end_ns": 356748641.0,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 356748641.0,
+      "end_ns": 356748781.0,
+      "layer": 19,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 356748781.0,
+      "end_ns": 356749341.625,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 356749341.625,
+      "end_ns": 356882525.625,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 356882525.625,
+      "end_ns": 356883281.625,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 356883281.625,
+      "end_ns": 357067075.625,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 357067075.625,
+      "end_ns": 357170747.625,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 357170747.625,
+      "end_ns": 357171448.25,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 357171448.25,
+      "end_ns": 368146300.25,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 368146300.25,
+      "end_ns": 368150860.25,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 368150860.25,
+      "end_ns": 374572708.25,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 374572708.25,
+      "end_ns": 374572848.25,
+      "layer": 20,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 374572848.25,
+      "end_ns": 374573408.875,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 374573408.875,
+      "end_ns": 374706592.875,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 374706592.875,
+      "end_ns": 374707348.875,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 374707348.875,
+      "end_ns": 374891142.875,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 374891142.875,
+      "end_ns": 374994814.875,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 374994814.875,
+      "end_ns": 374995515.5,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 374995515.5,
+      "end_ns": 385970367.5,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 385970367.5,
+      "end_ns": 385974927.5,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 385974927.5,
+      "end_ns": 392396775.5,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 392396775.5,
+      "end_ns": 392396915.5,
+      "layer": 21,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 392396915.5,
+      "end_ns": 392397476.125,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 392397476.125,
+      "end_ns": 392530660.125,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 392530660.125,
+      "end_ns": 392531416.125,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 392531416.125,
+      "end_ns": 392715210.125,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 392715210.125,
+      "end_ns": 392818882.125,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 392818882.125,
+      "end_ns": 392819582.75,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 392819582.75,
+      "end_ns": 403794434.75,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 403794434.75,
+      "end_ns": 403798994.75,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 403798994.75,
+      "end_ns": 410220842.75,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 410220842.75,
+      "end_ns": 410220982.75,
+      "layer": 22,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 410220982.75,
+      "end_ns": 410221543.375,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 410221543.375,
+      "end_ns": 410354727.375,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 410354727.375,
+      "end_ns": 410355483.375,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 410355483.375,
+      "end_ns": 410539277.375,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 410539277.375,
+      "end_ns": 410642949.375,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 410642949.375,
+      "end_ns": 410643650.0,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 410643650.0,
+      "end_ns": 421618502.0,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 421618502.0,
+      "end_ns": 421623062.0,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 421623062.0,
+      "end_ns": 428044910.0,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 428044910.0,
+      "end_ns": 428045050.0,
+      "layer": 23,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 428045050.0,
+      "end_ns": 428045610.625,
+      "layer": null,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "lm_head",
+      "start_ns": 428045610.625,
+      "end_ns": 445561362.625,
+      "layer": null,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "token_select",
+      "start_ns": 445561362.625,
+      "end_ns": 445585102.625,
+      "layer": null,
+      "token": 0,
+      "details": {}
+    },
+    {
+      "name": "embedding",
+      "start_ns": 445585102.625,
+      "end_ns": 445585478.625,
+      "layer": null,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 445585478.625,
+      "end_ns": 445585518.625,
+      "layer": null,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 445585518.625,
+      "end_ns": 445586079.25,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 445586079.25,
+      "end_ns": 445719263.25,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 445719263.25,
+      "end_ns": 445720019.25,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 445720019.25,
+      "end_ns": 445904295.25,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 445904295.25,
+      "end_ns": 446007967.25,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 446007967.25,
+      "end_ns": 446008667.875,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 446008667.875,
+      "end_ns": 456983519.875,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 456983519.875,
+      "end_ns": 456988079.875,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 456988079.875,
+      "end_ns": 463409927.875,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 463409927.875,
+      "end_ns": 463410067.875,
+      "layer": 0,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 463410067.875,
+      "end_ns": 463410628.5,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 463410628.5,
+      "end_ns": 463543812.5,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 463543812.5,
+      "end_ns": 463544568.5,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 463544568.5,
+      "end_ns": 463728844.5,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 463728844.5,
+      "end_ns": 463832516.5,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 463832516.5,
+      "end_ns": 463833217.125,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 463833217.125,
+      "end_ns": 474808069.125,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 474808069.125,
+      "end_ns": 474812629.125,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 474812629.125,
+      "end_ns": 481234477.125,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 481234477.125,
+      "end_ns": 481234617.125,
+      "layer": 1,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 481234617.125,
+      "end_ns": 481235177.75,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 481235177.75,
+      "end_ns": 481368361.75,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 481368361.75,
+      "end_ns": 481369117.75,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 481369117.75,
+      "end_ns": 481553393.75,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 481553393.75,
+      "end_ns": 481657065.75,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 481657065.75,
+      "end_ns": 481657766.375,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 481657766.375,
+      "end_ns": 492632618.375,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 492632618.375,
+      "end_ns": 492637178.375,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 492637178.375,
+      "end_ns": 499059026.375,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 499059026.375,
+      "end_ns": 499059166.375,
+      "layer": 2,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 499059166.375,
+      "end_ns": 499059727.0,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 499059727.0,
+      "end_ns": 499192911.0,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 499192911.0,
+      "end_ns": 499193667.0,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 499193667.0,
+      "end_ns": 499377943.0,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 499377943.0,
+      "end_ns": 499481615.0,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 499481615.0,
+      "end_ns": 499482315.625,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 499482315.625,
+      "end_ns": 510457167.625,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 510457167.625,
+      "end_ns": 510461727.625,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 510461727.625,
+      "end_ns": 516883575.625,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 516883575.625,
+      "end_ns": 516883715.625,
+      "layer": 3,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 516883715.625,
+      "end_ns": 516884276.25,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 516884276.25,
+      "end_ns": 517017460.25,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 517017460.25,
+      "end_ns": 517018216.25,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 517018216.25,
+      "end_ns": 517202492.25,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 517202492.25,
+      "end_ns": 517306164.25,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 517306164.25,
+      "end_ns": 517306864.875,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 517306864.875,
+      "end_ns": 528281716.875,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 528281716.875,
+      "end_ns": 528286276.875,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 528286276.875,
+      "end_ns": 534708124.875,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 534708124.875,
+      "end_ns": 534708264.875,
+      "layer": 4,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 534708264.875,
+      "end_ns": 534708825.5,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 534708825.5,
+      "end_ns": 534842009.5,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 534842009.5,
+      "end_ns": 534842765.5,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 534842765.5,
+      "end_ns": 535027041.5,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 535027041.5,
+      "end_ns": 535130713.5,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 535130713.5,
+      "end_ns": 535131414.125,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 535131414.125,
+      "end_ns": 546106266.125,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 546106266.125,
+      "end_ns": 546110826.125,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 546110826.125,
+      "end_ns": 552532674.125,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 552532674.125,
+      "end_ns": 552532814.125,
+      "layer": 5,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 552532814.125,
+      "end_ns": 552533374.75,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 552533374.75,
+      "end_ns": 552666558.75,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 552666558.75,
+      "end_ns": 552667314.75,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 552667314.75,
+      "end_ns": 552851590.75,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 552851590.75,
+      "end_ns": 552955262.75,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 552955262.75,
+      "end_ns": 552955963.375,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 552955963.375,
+      "end_ns": 563930815.375,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 563930815.375,
+      "end_ns": 563935375.375,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 563935375.375,
+      "end_ns": 570357223.375,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 570357223.375,
+      "end_ns": 570357363.375,
+      "layer": 6,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 570357363.375,
+      "end_ns": 570357924.0,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 570357924.0,
+      "end_ns": 570491108.0,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 570491108.0,
+      "end_ns": 570491864.0,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 570491864.0,
+      "end_ns": 570676140.0,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 570676140.0,
+      "end_ns": 570779812.0,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 570779812.0,
+      "end_ns": 570780512.625,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 570780512.625,
+      "end_ns": 581755364.625,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 581755364.625,
+      "end_ns": 581759924.625,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 581759924.625,
+      "end_ns": 588181772.625,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 588181772.625,
+      "end_ns": 588181912.625,
+      "layer": 7,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 588181912.625,
+      "end_ns": 588182473.25,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 588182473.25,
+      "end_ns": 588315657.25,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 588315657.25,
+      "end_ns": 588316413.25,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 588316413.25,
+      "end_ns": 588500689.25,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 588500689.25,
+      "end_ns": 588604361.25,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 588604361.25,
+      "end_ns": 588605061.875,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 588605061.875,
+      "end_ns": 599579913.875,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 599579913.875,
+      "end_ns": 599584473.875,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 599584473.875,
+      "end_ns": 606006321.875,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 606006321.875,
+      "end_ns": 606006461.875,
+      "layer": 8,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 606006461.875,
+      "end_ns": 606007022.5,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 606007022.5,
+      "end_ns": 606140206.5,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 606140206.5,
+      "end_ns": 606140962.5,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 606140962.5,
+      "end_ns": 606325238.5,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 606325238.5,
+      "end_ns": 606428910.5,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 606428910.5,
+      "end_ns": 606429611.125,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 606429611.125,
+      "end_ns": 617404463.125,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 617404463.125,
+      "end_ns": 617409023.125,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 617409023.125,
+      "end_ns": 623830871.125,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 623830871.125,
+      "end_ns": 623831011.125,
+      "layer": 9,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 623831011.125,
+      "end_ns": 623831571.75,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 623831571.75,
+      "end_ns": 623964755.75,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 623964755.75,
+      "end_ns": 623965511.75,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 623965511.75,
+      "end_ns": 624149787.75,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 624149787.75,
+      "end_ns": 624253459.75,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 624253459.75,
+      "end_ns": 624254160.375,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 624254160.375,
+      "end_ns": 635229012.375,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 635229012.375,
+      "end_ns": 635233572.375,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 635233572.375,
+      "end_ns": 641655420.375,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 641655420.375,
+      "end_ns": 641655560.375,
+      "layer": 10,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 641655560.375,
+      "end_ns": 641656121.0,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 641656121.0,
+      "end_ns": 641789305.0,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 641789305.0,
+      "end_ns": 641790061.0,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 641790061.0,
+      "end_ns": 641974337.0,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 641974337.0,
+      "end_ns": 642078009.0,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 642078009.0,
+      "end_ns": 642078709.625,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 642078709.625,
+      "end_ns": 653053561.625,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 653053561.625,
+      "end_ns": 653058121.625,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 653058121.625,
+      "end_ns": 659479969.625,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 659479969.625,
+      "end_ns": 659480109.625,
+      "layer": 11,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 659480109.625,
+      "end_ns": 659480670.25,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 659480670.25,
+      "end_ns": 659613854.25,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 659613854.25,
+      "end_ns": 659614610.25,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 659614610.25,
+      "end_ns": 659798886.25,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 659798886.25,
+      "end_ns": 659902558.25,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 659902558.25,
+      "end_ns": 659903258.875,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 659903258.875,
+      "end_ns": 670878110.875,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 670878110.875,
+      "end_ns": 670882670.875,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 670882670.875,
+      "end_ns": 677304518.875,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 677304518.875,
+      "end_ns": 677304658.875,
+      "layer": 12,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 677304658.875,
+      "end_ns": 677305219.5,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 677305219.5,
+      "end_ns": 677438403.5,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 677438403.5,
+      "end_ns": 677439159.5,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 677439159.5,
+      "end_ns": 677623435.5,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 677623435.5,
+      "end_ns": 677727107.5,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 677727107.5,
+      "end_ns": 677727808.125,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 677727808.125,
+      "end_ns": 688702660.125,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 688702660.125,
+      "end_ns": 688707220.125,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 688707220.125,
+      "end_ns": 695129068.125,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 695129068.125,
+      "end_ns": 695129208.125,
+      "layer": 13,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 695129208.125,
+      "end_ns": 695129768.75,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 695129768.75,
+      "end_ns": 695262952.75,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 695262952.75,
+      "end_ns": 695263708.75,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 695263708.75,
+      "end_ns": 695447984.75,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 695447984.75,
+      "end_ns": 695551656.75,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 695551656.75,
+      "end_ns": 695552357.375,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 695552357.375,
+      "end_ns": 706527209.375,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 706527209.375,
+      "end_ns": 706531769.375,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 706531769.375,
+      "end_ns": 712953617.375,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 712953617.375,
+      "end_ns": 712953757.375,
+      "layer": 14,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 712953757.375,
+      "end_ns": 712954318.0,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 712954318.0,
+      "end_ns": 713087502.0,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 713087502.0,
+      "end_ns": 713088258.0,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 713088258.0,
+      "end_ns": 713272534.0,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 713272534.0,
+      "end_ns": 713376206.0,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 713376206.0,
+      "end_ns": 713376906.625,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 713376906.625,
+      "end_ns": 724351758.625,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 724351758.625,
+      "end_ns": 724356318.625,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 724356318.625,
+      "end_ns": 730778166.625,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 730778166.625,
+      "end_ns": 730778306.625,
+      "layer": 15,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 730778306.625,
+      "end_ns": 730778867.25,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 730778867.25,
+      "end_ns": 730912051.25,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 730912051.25,
+      "end_ns": 730912807.25,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 730912807.25,
+      "end_ns": 731097083.25,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 731097083.25,
+      "end_ns": 731200755.25,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 731200755.25,
+      "end_ns": 731201455.875,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 731201455.875,
+      "end_ns": 742176307.875,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 742176307.875,
+      "end_ns": 742180867.875,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 742180867.875,
+      "end_ns": 748602715.875,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 748602715.875,
+      "end_ns": 748602855.875,
+      "layer": 16,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 748602855.875,
+      "end_ns": 748603416.5,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 748603416.5,
+      "end_ns": 748736600.5,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 748736600.5,
+      "end_ns": 748737356.5,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 748737356.5,
+      "end_ns": 748921632.5,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 748921632.5,
+      "end_ns": 749025304.5,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 749025304.5,
+      "end_ns": 749026005.125,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 749026005.125,
+      "end_ns": 760000857.125,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 760000857.125,
+      "end_ns": 760005417.125,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 760005417.125,
+      "end_ns": 766427265.125,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 766427265.125,
+      "end_ns": 766427405.125,
+      "layer": 17,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 766427405.125,
+      "end_ns": 766427965.75,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 766427965.75,
+      "end_ns": 766561149.75,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 766561149.75,
+      "end_ns": 766561905.75,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 766561905.75,
+      "end_ns": 766746181.75,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 766746181.75,
+      "end_ns": 766849853.75,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 766849853.75,
+      "end_ns": 766850554.375,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 766850554.375,
+      "end_ns": 777825406.375,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 777825406.375,
+      "end_ns": 777829966.375,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 777829966.375,
+      "end_ns": 784251814.375,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 784251814.375,
+      "end_ns": 784251954.375,
+      "layer": 18,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 784251954.375,
+      "end_ns": 784252515.0,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 784252515.0,
+      "end_ns": 784385699.0,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 784385699.0,
+      "end_ns": 784386455.0,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 784386455.0,
+      "end_ns": 784570731.0,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 784570731.0,
+      "end_ns": 784674403.0,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 784674403.0,
+      "end_ns": 784675103.625,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 784675103.625,
+      "end_ns": 795649955.625,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 795649955.625,
+      "end_ns": 795654515.625,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 795654515.625,
+      "end_ns": 802076363.625,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 802076363.625,
+      "end_ns": 802076503.625,
+      "layer": 19,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 802076503.625,
+      "end_ns": 802077064.25,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 802077064.25,
+      "end_ns": 802210248.25,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 802210248.25,
+      "end_ns": 802211004.25,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 802211004.25,
+      "end_ns": 802395280.25,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 802395280.25,
+      "end_ns": 802498952.25,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 802498952.25,
+      "end_ns": 802499652.875,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 802499652.875,
+      "end_ns": 813474504.875,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 813474504.875,
+      "end_ns": 813479064.875,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 813479064.875,
+      "end_ns": 819900912.875,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 819900912.875,
+      "end_ns": 819901052.875,
+      "layer": 20,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 819901052.875,
+      "end_ns": 819901613.5,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 819901613.5,
+      "end_ns": 820034797.5,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 820034797.5,
+      "end_ns": 820035553.5,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 820035553.5,
+      "end_ns": 820219829.5,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 820219829.5,
+      "end_ns": 820323501.5,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 820323501.5,
+      "end_ns": 820324202.125,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 820324202.125,
+      "end_ns": 831299054.125,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 831299054.125,
+      "end_ns": 831303614.125,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 831303614.125,
+      "end_ns": 837725462.125,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 837725462.125,
+      "end_ns": 837725602.125,
+      "layer": 21,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 837725602.125,
+      "end_ns": 837726162.75,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 837726162.75,
+      "end_ns": 837859346.75,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 837859346.75,
+      "end_ns": 837860102.75,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 837860102.75,
+      "end_ns": 838044378.75,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 838044378.75,
+      "end_ns": 838148050.75,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 838148050.75,
+      "end_ns": 838148751.375,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 838148751.375,
+      "end_ns": 849123603.375,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 849123603.375,
+      "end_ns": 849128163.375,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 849128163.375,
+      "end_ns": 855550011.375,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 855550011.375,
+      "end_ns": 855550151.375,
+      "layer": 22,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 855550151.375,
+      "end_ns": 855550712.0,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "QKV_projection",
+      "start_ns": 855550712.0,
+      "end_ns": 855683896.0,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 855683896.0,
+      "end_ns": 855684652.0,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "Attention_dense",
+      "start_ns": 855684652.0,
+      "end_ns": 855868928.0,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "output_projection",
+      "start_ns": 855868928.0,
+      "end_ns": 855972600.0,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 855972600.0,
+      "end_ns": 855973300.625,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_gate_up",
+      "start_ns": 855973300.625,
+      "end_ns": 866948152.625,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "start_ns": 866948152.625,
+      "end_ns": 866952712.625,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "FFN_down",
+      "start_ns": 866952712.625,
+      "end_ns": 873374560.625,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 873374560.625,
+      "end_ns": 873374700.625,
+      "layer": 23,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "norm_rope_residual",
+      "start_ns": 873374700.625,
+      "end_ns": 873375261.25,
+      "layer": null,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "lm_head",
+      "start_ns": 873375261.25,
+      "end_ns": 890891013.25,
+      "layer": null,
+      "token": 1,
+      "details": {}
+    },
+    {
+      "name": "token_select",
+      "start_ns": 890891013.25,
+      "end_ns": 890914753.25,
+      "layer": null,
+      "token": 1,
+      "details": {}
+    }
+  ],
+  "source_hashes": {
+    "system_decode.py": "46c148234638f2370d62b5cf2e94a7e5a088591ae3ca450e877ea1c9bb00a190",
+    "evidence_contract.json": "649accada44fc7a9518ada7b4c72f1f0d4cabc33711f7ab3e45a594a03a2da5c",
+    "rng_hierarchy.py": "067cdf76307d63c9c8e5ffc4fcf41d1794f7fa0aaab1499a49b68c8531c4d865",
+    "system_decode_local_shared_v2.py": "c8ffeb845b035454be46c855531a84fe37f167bbbac4408057f8c48e80efd33a",
+    "rng_local_shared_v2.py": "eccba37a355119b51107686bc9ba5cd7113895cb5157dc70f26124e31fe885f3",
+    "attention_tlm_v3.py": "cd8eb781dcd2ffd712fd25f61618739c6e5281297885afb165aef935d24892f7",
+    "attention_reference_v3.py": "fb5869508c7cff7568d6b332a76c9ef712096a093b490514ed4ca02dd91a32d5"
+  },
+  "rng_hierarchy": {
+    "architecture": "local_shared_v2",
+    "area_mm2": 0.059,
+    "energy_J": {
+      "RNG_seed_expansion": 6.4e-12,
+      "RNG_seed_bus": 3.2e-12,
+      "RNG_local_updates": 0.0,
+      "RNG_input_updates": 8.218214400001233e-05,
+      "RNG_input_child_expansion": 2.7647999999997843e-08,
+      "RNG_input_child_bus": 1.3823999999998922e-08,
+      "RNG_input_checkpoint": 1.3823999999998922e-08,
+      "RNG_input_restore": 6.420480000001382e-08,
+      "RNG_input_word_distribution": 0.00042077257728009507,
+      "input_mask_distribution": 0.02570537926656673,
+      "RNG_entropy_analog": 0.0003563659013,
+      "RNG_entropy_health": 4.45457376625e-05,
+      "RNG_conditioner": 1e-09,
+      "RNG_seed_idle": 8.9091475325e-05,
+      "RNG_shared_leakage": 0.0,
+      "RNG_local_leakage": 0.0,
+      "RNG_input_leakage": 8.9091475325e-07
+    },
+    "nominal_output_capacity_bits": 712731802.6,
+    "local_instances": 0,
+    "shared_instances": 0,
+    "epochs": 1,
+    "seed_events": [
+      {
+        "epoch": 0,
+        "start_ns": 0.0,
+        "end_ns": 267020.0,
+        "entropy_done_ns": 267000.0,
+        "wire_bits": 32,
+        "expand_ns": 10.0,
+        "bus_ns": 10.0,
+        "warmup_ns": 0.0,
+        "reason": "root_startup_or_periodic"
+      }
+    ],
+    "stats": {
+      "seed_wire_bits": 32.0,
+      "root_seed_bits": 256.0,
+      "seed_stall_ns": 267020.0,
+      "input_child_rekeys": 4320.0,
+      "input_child_seed_wire_bits": 138240.0,
+      "input_child_seed_ns": 86400.0,
+      "input_checkpoints": 4320.0,
+      "input_restores": 20064.0,
+      "input_word_updates": 82182144.0,
+      "input_generated_bits": 657457152.0,
+      "input_wave_busy_ns": 821821440.0
+    },
+    "entropy": {
+      "raw_samples": 1024,
+      "blocks": 1,
+      "conditioned_delivered_bits": 256,
+      "conditioned_buffer_bits": 0,
+      "healthy": true
+    },
+    "batch_success_probability": 1.0,
+    "one_array_expected_rounds": 1.0,
+    "cost_status": "ILLUSTRATIVE UNCALIBRATED coefficients; replace with PDK/RTL measurements before PPA claims",
+    "limitations": [
+      "expected IID-byte retry timing, not cycle-accurate or a worst-case bound",
+      "on-demand whole-epoch reseeding stalls at transaction boundaries",
+      "root seed expansion is parameterized; no certified DRBG or physical entropy simulation",
+      "local selectors/comparators charged here; inherited SC kernel remains a proxy",
+      "input LFSR/route/seed costs uncharacterized",
+      "root reseeding deferred until current input tile is complete",
+      "one input frontend broadcasts to synchronized output arrays; physical fanout not calibrated",
+      "same state restored across output waves; not a fresh entropy reseed per output wave"
+    ],
+    "local_input_instances": 1,
+    "input_protocol": {
+      "cost_status": "UNCHARACTERIZED input LFSR/seed/route parameters; inherited SRAM/digital assumptions and dual-core proxy; not measured PPA",
+      "input_bits": 8,
+      "share_group": 64,
+      "state_bits": 32,
+      "clock_hz": 100000000,
+      "warmup_cycles": 0,
+      "update_pJ": 1.0,
+      "area_mm2": 0.001,
+      "leakage_W": 1e-06,
+      "word_to_comparators_pJ_per_bit_sink": 0.01,
+      "mask_to_columns_pJ_per_bit_sink": 0.01,
+      "checkpoint_pJ_per_bit": 0.1,
+      "checkpoint_cycles": 1,
+      "restore_pJ_per_bit": 0.1,
+      "restore_cycles": 1,
+      "child_seed_policy": "per_tile",
+      "child_rekey_interval_ns": 1000000,
+      "frontend_area_credit_mm2_per_removed_bank": 0.0,
+      "frontend_power_proxy": "one retained legacy 13-bit threshold/sign/comparator frontend per synchronized wave; no precision-scaling or clock-gating benefit claimed",
+      "root_reseed_policy": "inherited hierarchy config, default 1 second; deferred to input-tile boundary",
+      "protocol": "one local input PRNG at the synchronous FFN array cluster; same 8-bit word to 64 thresholds; checkpoint/replay across output waves; independent persistent weight RNGs"
+    },
+    "storage": {
+      "input_live_state_bits": 32,
+      "input_checkpoint_bits": 32,
+      "random_word_replay_bytes": 0,
+      "additional_probability_banks": 0,
+      "retained_threshold_sign_logical_bits": 576,
+      "frontend_power_uses_conservative_legacy13bit_proxy": true
+    }
+  },
+  "area_note": "input module replaces 8 shared Bivium cores; checkpoint included in module area; SRAM capacity unchanged; frontend area credit defaults to zero until characterized",
+  "inherited_ffn_only_quality_reference": {
+    "ideal_IID_input_share64_A8_T4096_mean_ppl": 12.4535,
+    "hardware_lfsr_ppl_validated": false,
+    "weight_noise": "conditional Gaussian in dual numerical reference"
+  },
+  "attention_v3": {
+    "config": {
+      "status": "UNCHARACTERIZED macro coefficients; transaction-consistent, NOT measured silicon or cycle-accurate RTL",
+      "mode": "dense",
+      "samples": 512,
+      "seed": 20261015,
+      "trace_file": null,
+      "fixture_logit_std": 1.5,
+      "block_size": 64,
+      "subblocks": 4,
+      "selector_bias": -1.0,
+      "selector_temperature": 1.0,
+      "calibration_file": "architecture_tlm\\configs\\attention_max4_c2048.json",
+      "summary_initialization": "cold_build",
+      "kv_tile_tokens": 128,
+      "v_cache_bytes": 65536,
+      "uniform_bits": 32,
+      "rng_words_per_cycle": 4,
+      "rng_update_pJ_per_word": 4,
+      "rng_route_pJ_per_bit": 0.1,
+      "rng_area_mm2": 0.024,
+      "rng_idle_W": 4e-06,
+      "leaf_seed_bits": 256,
+      "sampler_comparisons_per_cycle": 4,
+      "sampler_compare_pJ": 0.1,
+      "sampler_area_mm2": 0.01,
+      "sampler_idle_W": 1e-06,
+      "ising_burn_sweeps": 16,
+      "ising_spacing_sweeps": 4,
+      "ising_cycles_per_attempt": 4,
+      "ising_control_pJ_per_attempt": 0.5,
+      "ising_state_flip_pJ": 0.2,
+      "ising_state_area_mm2_per_bit": 1e-06,
+      "ising_mapping": "serial_random_scan_hard_onehot",
+      "record_transactions": true
+    },
+    "trace": {
+      "kind": "SYNTHETIC_GAUSSIAN_LOGITS",
+      "model_ppl_validated": false,
+      "warning": "routing/memory scenario only; NOT measured Qwen attention or PPL",
+      "calibration_sha256": "df18d85c72e7cdb185ab899684a62213ab2be63376a1e1dcc1384594bf54fc91"
+    },
+    "rows": [
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 0,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 1,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 2,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 3,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 4,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 5,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 6,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 7,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 8,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 9,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 10,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 11,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 12,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 13,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 14,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 15,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 16,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 17,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 18,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 19,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 20,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 21,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 22,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 0,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 1,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 2,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 3,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 4,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 5,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 6,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 7,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 8,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 9,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 10,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 11,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 12,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 0,
+        "layer": 23,
+        "head": 13,
+        "selected_tokens": 2048,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 0,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 1,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 2,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 3,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 4,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 5,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 6,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 7,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 8,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 9,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 10,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 11,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 12,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 13,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 14,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 15,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 16,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 17,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 18,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 19,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 20,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 21,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 22,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 0,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 1,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 2,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 3,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 4,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 5,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 6,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 7,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 8,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 9,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 10,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 11,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 12,
+        "selected_tokens": 2049,
+        "samples": 0
+      },
+      {
+        "token": 1,
+        "layer": 23,
+        "head": 13,
+        "selected_tokens": 2049,
+        "samples": 0
+      }
+    ],
+    "peak_live_bytes": 71430,
+    "mapping": "blocking DMA/scratch/compute; GQA union K reads, finite LRU V cache, histogram with repeated adds",
+    "ising": "serial random-scan hard-onehot with geometric reference skipping; all attempted hardware updates charged",
+    "limitations": [
+      "macro costs uncharacterized; not a cycle-accurate or measured chip",
+      "uniform index rejection uses expected word count; numerical random.Random is ideal-uniform reference",
+      "finite uniform precision / real PRNG / BF16 rounding require independent numerical validation",
+      "no prefill; prebuilt summary mode assumes prefill already paid its construction",
+      "whole system outside Attention inherits v2 timing and interface approximations"
+    ],
+    "transactions_file": "fixed_sc_exact_dense_c2048.transactions.jsonl.gz"
+  },
+  "actual_shape": {
+    "architectures": [
+      "Qwen2ForCausalLM"
+    ],
+    "attention_dropout": 0.0,
+    "bos_token_id": 151643,
+    "eos_token_id": 151643,
+    "hidden_act": "silu",
+    "hidden_size": 896,
+    "initializer_range": 0.02,
+    "intermediate_size": 4864,
+    "max_position_embeddings": 32768,
+    "max_window_layers": 24,
+    "model_type": "qwen2",
+    "num_attention_heads": 14,
+    "num_hidden_layers": 24,
+    "num_key_value_heads": 2,
+    "rms_norm_eps": 1e-06,
+    "rope_theta": 1000000.0,
+    "sliding_window": 32768,
+    "tie_word_embeddings": true,
+    "torch_dtype": "bfloat16",
+    "transformers_version": "4.40.1",
+    "use_cache": true,
+    "use_mrope": false,
+    "use_sliding_window": false,
+    "vocab_size": 151936
+  },
+  "small": false
+}

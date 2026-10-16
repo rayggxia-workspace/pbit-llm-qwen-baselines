@@ -1,0 +1,38 @@
+# 工作区最新 TLM 文件索引（2026-10-16）
+
+发布目标：rayggxia-workspace/pbit-llm-qwen-baselines。
+这是现有实现的发布快照；本次对话提出的“原生 p-bit 直接驱动筛选”及“耦合预算筛选器”尚未实现，不能当作本版功能。
+
+| 模块 | 设计与范围 | 实现 | 已保存结果 |
+|---|---|---|---|
+| Attention v3：准确、PV采样、Ising、筛选后准确、筛选后PV采样 | [详细说明](ATTENTION_TLM_V3_ZH.txt) | [事务调度](attention_tlm_v3.py)、[概率参考](attention_reference_v3.py)、[入口](run_attention_v3.py) | [2K/8K结果](results/attention_v3_verified_20261015/RESULTS_ZH.txt) |
+| 筛选＋紧凑候选＋Ising宏模块＋V累加 v4 | [接口与边界](SCREEN_ISING_TLM_V4_ZH.txt) | [事务模型](screen_ising_tlm_v4.py)、[Ising宏](ising_macro_v4.py) | [固定/可变候选结果](results/screen_ising_v4_20261016/RESULTS_ZH.txt) |
+| 多层随机源 | [设计](RNG_HIERARCHY_V1_ZH.txt) | [随机源层次](rng_hierarchy.py) | [结果目录](results/rng_hierarchy_v1/) |
+| FFN本地8位随机数、64路共享 | [设计](LOCAL_SHARED_V2_ZH.txt) | [本地随机源](rng_local_shared_v2.py)、[整机调度](system_decode_local_shared_v2.py) | [18组结果](results/local_shared_v2/RESULTS_ZH.md) |
+| 外存和访存调度 | [映射说明](MAPPING_OPTIMIZATION_ZH.md) | [DRAMSys](dramsys/)、[映射](mapping_decode.py) | [调度对比](results/mapping_20261015/RESULTS_ZH.md) |
+| SRAM参数与格式转换 | [SRAM模型](SRAM_FLEXIBLE_MODEL_ZH_20261016.txt)、[转换核算](FORMAT_CONVERSION_AUDIT_ZH_20261016.txt) | [CACTI适配](cacti_memory.py) | [CACTI结果](results/cacti_memory_20261016/) |
+
+## 筛选和随机源的准确含义
+
+v3/v4的max4筛选仍然是摘要评分、归一化、sigmoid和独立Bernoulli判决，没有块间Ising退火。v4可选固定预算修复是显式计费的排序/补齐，也不是耦合筛选。
+
+v3对串行随机扫描Ising显式核算更新；v4将Ising内部随机源、状态、抑制反馈及读出包在宏级参数中，避免重复计费。v4默认用理想IID索引产生地址轨迹，不验证真实p-bit网络混合时间。Attention其他随机服务继续使用层次随机源；不只有FFN本地PRNG。
+
+## 复现与限制
+
+Python 3.10+；基本检查使用标准库。完整依赖和DRAMSys构建见README。旧版本的variants/local_shared_a8_64保留为历史快照；当前Attention使用目录根部的共享实现。
+
+```sh
+python architecture_tlm/checks/test_attention_v3.py
+python architecture_tlm/checks/test_screen_ising_v4.py
+python architecture_tlm/audit_attention_v3.py architecture_tlm/results/attention_v3_verified_20261015
+python architecture_tlm/audit_screen_ising_v4.py architecture_tlm/results/screen_ising_v4_20261016
+```
+
+已保存Attention结果采用合成输入，不是新Qwen PPL或芯片实测；多个硬件成本参数未标定。此前DRAMSys结果继续保留，新增Attention默认仍为Link后端，只有指定--bridge才使用DRAMSys。公开的压缩事务轨迹仅是合成地址/事件，不包含文本、KV内容或模型权重。工艺库本体、工具安装、远程凭据和编译缓存不在发布包中。
+
+部分结果中的机器绝对路径替换为相对引用，数值未变；发布清单记录源文件与发布文件SHA256。原始源码保持不变，当前模块源码哈希由审计核验。
+
+发布检查：[验证记录](PUBLICATION_VALIDATION_20261016.md)。历史DRAMSys结果保留对应历史源码；没有将旧结果标注为新版重跑。
+
+补充：[数制转换与累加 RTL](../format_conversion_rtl_20261016/README_ZH.txt)，包含已有功能验证记录，尚无工艺库 DC/PT 面积功耗结果。

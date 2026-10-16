@@ -1,0 +1,314 @@
+55nm SRAM宏生成、库参数提取与少量仿真任务单
+日期：2026-10-16
+用途：校准CACTI，并给LLM TLM提供SRAM能量、面积、时序和保持参数。
+
+【先看这一页：本次需要交付什么】
+
+第一阶段：8种宏几何配置（已有A可复用，新增7种），生成.lib/.ds/.lef/.v，
+           从文件提取参数，不运行DC/VCS/PT主流程。
+第二阶段：根据第一阶段结果选B和F两类代表宏，先检查功能，再按需要做少量PT。
+           已有A不因本任务重跑；不要求8种宏都跑PT，不要求完整LLM门级仿真。
+
+关键提醒：
+1. 本编译器当前实际列出的字宽范围只有2~160bit；512/1024bit不是单宏生成配置。
+   本任务全用64/128/144bit。需要更宽接口时由多个独立bank组成。
+2. 所有容量是单宏的物理bit容量，不把9bit权重算成1byte，也不把多个宏合并成一次访问。
+3. 库缺失的功耗/休眠/保持字段记NA和原因，不能自动填0。
+4. 本任务只生成普通SRAM和接口验证，逐权重有效位寄存器不加入实现。
+5. 生成范围合法不保证任意word/bits/mux组合合法；若编译器拒绝，按下述规则替代并记录。
+
+一、8种具体宏配置
+=================
+depth是word数量，word_bits是每个地址的bit数；容量=depth×word_bits/8。
+以下名字只是建议的独立宏名，不是已存在的厂商型号。
+
+ID | 建议宏名         | depth | word_bits | 物理容量       | 选择目的                 | 初始角色
+A  | CAL_D32_W144     | 32    | 144       | 576B           | 已有基准、小而宽           | 拟合/校验提取方法
+B  | CAL_D256_W144    | 256   | 144       | 4608B=4.5KiB   | 深度放大8倍、本地权重候选   | 拟合
+C  | CAL_D2048_W144   | 2048  | 144       | 36864B=36KiB   | 同144bit字宽的更深组织      | 拟合
+D  | CAL_D256_W64     | 256   | 64        | 2048B=2KiB     | 与B/E构成同深度字宽比较    | 拟合
+E  | CAL_D256_W128    | 256   | 128       | 4096B=4KiB     | 同深度字宽比较、常规数据字 | 拟合
+F  | CAL_D4096_W128   | 4096  | 128       | 65536B=64KiB   | 目标cache/scratch单bank量级| 拟合/接口验证
+G  | CAL_D8192_W128   | 8192  | 128       | 131072B=128KiB | 较大bank与深度外推检查     | 验证，初期不参与拟合
+H  | CAL_D4096_W144   | 4096  | 144       | 73728B=72KiB   | 验证144bit深度趋势及字宽迁移| 验证，初期不参与拟合
+
+优先级：先收齐A~F，再收G/H；若只想先做6种，就先做A~F并注明尚无独立验证点。
+A同几何且相同编译选项/PVT的数据已存在；可复制索引和hash复用，不必重新生成。
+G/H作为验证点时，应保留输出但不用于调节拟合参数，最后再检查预测误差。
+
+这些几何点不是最终芯片实例数：例如F为64KiB单bank，16个才是1MiB物理容量。
+增加深度不会增加每拍输出宽度；128bit/100MHz单端口每拍一次仅1.6GB/s理论数据宽度，
+是否支持10ns请求间隔还要看该宏的最小周期。多个bank能否同时工作取决于系统地址映射。
+144bit适合每字打包16个9bit权重；128bit宏作为常规缓存，不自动当作16个9bit权重。
+
+二、统一生成条件与不支持时的处理
+===============================
+沿用已确认的编译器：
+  IP：TMHDSPZ055ABA，ipver=0.1.0；ZJCX55nm Logic Low Leakage。
+  编译器：Meminder 202202.1.1，使用现有同版本发布包。
+  端口：同步单端口1RW；CLK上升沿读/写；bit-write。
+  首选：mux=4、vt=0（以生成头中实际VT类型为准）、lpwr=0、red=0。
+  write-through on、ECC off、center decoder on、ringless、busmode1。
+  MARE/MAR采用厂商默认已表征设置；不靠改margin获得速度。
+
+PVT建议：
+  主校准组：全部A~H生成TT1P2V25CCTYP（1.20V/25°C）。
+  SS组：同几何生成SS1P08V125CCMAX（1.08V/125°C），仅库生成/提取也很轻。
+  优先获得主组；若暂时只能做SS，可先交齐8种SS，并声明TT待补，不混角拟合。
+  两组各8份.lib（A已有可复用），.lef几何通常相同，可复用但要核对宏名/配置。
+  TT1P2V85CCTYP暂不要求；待需要温度敏感性时，优先补A/B/F/G的库文件。
+  若以后跑PT，标准单元库必须与被测宏采用一致目标PVT。
+
+输入slew/输出load：
+  生成完整Liberty查表；保留现有生成默认0.008ns slew、0.005pF load的.ds基准。
+  不通过修改默认load把不同宏结果调成一样。
+  后面另从.lib抽取0.1ns slew、0.02pF load等共同点，无需为每个点重生成宏。
+
+若组合被拒绝：
+  a. 保存完整命令、日志及拒绝原因，不能因进程exit0就认为生成成功。
+  b. 优先保持原深度/字宽，换成工具允许的mux=8；仍不行再按官方约束选择邻近配置。
+  c. 换MUX/VT/端口/IP均是结构变化，必须单独标记，不能悄悄混进同一拟合族。
+  d. 变字宽时尽量保持D/E/B的同深度比较；变深度时保持A/B/C/H的同字宽比较。
+  e. 所有指标按实际depth/word_bits计算，不保留原计划容量标签。
+  f. 若最大规模无法生成，F/G选工具能支持的邻近大bank，记录校准范围上限。
+不修改或伪造厂商.lib/.v来让不支持的组合通过。
+
+已有工具列出的范围（只表示总体范围，不表示所有组合均合法）：
+  word=32~32768；bit=2~160；mux=[4,8,16,32]；lpwr=[0,2]。
+当前不要求lpwr=2，也不要求冗余、ECC、2RW或双口宏。
+
+命令模板（参数名沿用已跑通的生成脚本；WORD/BITS/NAME/角按表替换）：
+  minder -ip TMHDSPZ055ABA -ipver 0.1.0 -word WORD -bits BITS -mux 4 \
+    -vt 0 -lpwr 0 -red 0 -wordwrite 0 -busmode 1 -ringtype ringless \
+    -corner TT1P2V25CCTYP -rename NAME -ds -ver -lib -lef
+每个ID/角使用独立输出目录，不覆盖已生成的WIDE32X144100或旧仿真目录。
+write-through/ECC/center-decode等应核对生成头中的实际值，而非只看命令默认。
+
+三、第一阶段：按文件查什么
+=========================
+
+3.1 .ds：先读规格、配置与功能协议
+--------------------------------
+请提取：
+  IP/version、实际Word/Bits/Mux/VT、读写模式、write-through、ECC/冗余、PG选项；
+  corner/process/voltage/temperature；datasheet的clock/data slew和output load条件；
+  width/height/area；宏是否支持读后CE关闭时Q保持，内容是否保持；
+  写后Q行为、部分写未选位Q行为；控制极性；MAR/MARE合法设置；
+  trcq、twcq、trc、twc、CLK高/低最小脉宽；
+  A/D/CEB/GWEB/WEB的setup/hold，必要时MAR/MARE约束。
+如果.ds没给CE关闭Q保持的明确保证，协议状态标document_missing，保留.v功能观察另列。
+通用手册中的可选NAP/RET/PWD不代表当前lpwr=0实例有这些接口。
+
+3.2 .lef：用物理尺寸确认面积
+----------------------------
+从该宏的MACRO...END块提取：
+  SIZE width BY height（单位um），面积=width×height，换算mm²需除1,000,000；
+  ORIGIN、SYMMETRY（若有）、PIN名称/方向/使用类型；
+  电源/地PIN、信号PIN主要层及位置分布概要、OBS主要层概要。
+保存原.lef即可，不要求本次做版图、GDS展开或布线。
+不要把DATABASE MICRONS坐标精度误当尺寸乘数；以LEF语法对应单位处理。
+.lef/.ds/.lib头的物理尺寸/面积应互相核对；差异超过舍入应报告。
+面积不含halo、宏间通道、利用率、CTS和额外保持电路。
+
+3.3 .lib：单位、状态漏电、读写内部能量和完整时序
+------------------------------------------------
+先提取库头和模板：
+  library/cell名；time_unit、voltage_unit、current_unit、leakage_power_unit；
+  capacitive_load_unit；nom_voltage/temperature/default_operating_conditions；
+  operating_conditions、pg_pin/voltage_map；area；memory的地址/字宽属性；
+  lu_table_template和power_lut_template的variable_1/2、index_1/2；
+  slew的阈值定义（本库为30%~70%）及输入/输出电压阈值；
+  CLK/A/D/CEB/GWEB/WEB等输入capacitance、max_transition；Q的max_capacitance等若存在。
+不能只导出values而丢掉when、related_pin、模板名或坐标轴。
+
+A. 状态漏电：
+  找cell内leakage_power()各分支的when、related_pg_pin与value。
+  分别提取CEB=1与CEB=0；若还有读/写/睡眠细分条件，逐条保存。
+  不把default_cell_leakage_power=0当作宏漏电；优先使用匹配状态的条件值。
+  当前库leakage_power_unit=1pW，例：6168744pW=6.168744uW。
+  有多个供电域时分域保存，不能漏加或重复加。
+
+B. 读写内部能量：
+  优先找pin(CLK)中的internal_power()，根据when分辨默认MARE=0的：
+    读：!MARE & !CEB & GWEB；写：!MARE & !CEB & !GWEB。
+  保存rise_power/fall_power、模板、索引及全部原始数值。
+  其他输入/输出pin有internal_power时也保存，不能假定所有宏都仅在CLK上给功耗。
+  匹配实际操作时，只计满足条件的功耗组；不把互斥的MARE=0/MARE=1组全部相加。
+  当前库1V×1mA×1ns对应1pJ；已验证表值的事件能量口径。
+  对本库一完整访问周期，应按实际rise/fall事件统计；现有fall=0，因此读写值即为
+  对应rise值，不再乘0.5，也不能先把它当W再乘一个10ns周期。
+  若新库单位/模板/事件定义不同，先标raw和待确认，不照搬上述单位结论。
+  单元内部访问能量不包含外部互连/Q负载净充放电、驱动/时钟树和漏电总成本。
+  写表若没有WEB选通数依赖，明确记录mask_scaling=not_characterized；不按9/字宽打折。
+  没有CEB=1下CLK动态功耗条目，记录standby_internal_dynamic=not_characterized，
+  另列“PT基于当前库会得到0”的事实，不将物理待机动态保证为0。
+
+C. 时序：
+  Q相关timing组：related_pin=CLK，按读/写条件提取cell_rise/cell_fall与
+  rise_transition/fall_transition。每个有效Q pin都提取；总括报告最坏pin并保留名字。
+  CLK的minimum_period、min_pulse_width；各输入的setup_rising/hold_rising等约束。
+  保存sdf_cond/when/related_pin、完整二维索引，不能默认index_1总是slew。
+  读响应延迟与最小读周期分别报告，不用1/CLK-to-Q直接作为连续请求带宽。
+  不把.v未反标的固定延迟或TB检查时刻当真实库延迟。
+
+3.4 每个宏/角统一导出的查表采样点
+--------------------------------
+完整原表必须交付；以下点用于统一汇总：
+  1) slew=0.008ns，Q load=0.005pF（与现有.ds参考条件对齐）；
+  2) slew=0.1ns，Q load=0.02pF（架构接口代表点，不声称等于最终真实负载）；
+  3) slew=0.1ns，Q load=0.1pF（负载敏感性点）。
+对一维功耗/周期表，按它实际存在的轴取0.008ns和0.1ns，不虚构负载依赖。
+setup/hold若有constrained/related transition两轴，两者都取0.1ns作统一点，
+并保留最坏约束值与原始表供后续真实接口STA使用。
+指定点不在网格上：在表范围内插值并标注方法；超出范围写NA，不外推。
+低slew/轻负载的.ds值与0.1ns/实际负载的接口STA结果允许不同，必须标条件。
+
+3.5 已有A宏的提取自检值
+---------------------
+字段                        TT1P2V25CCTYP         SS1P08V125CCMAX
+内部读能量pJ/宏访问          12.2687                10.1366
+内部写能量pJ/宏访问          15.5456                13.0666
+CEB=1漏电uW/宏              1.3956                 6.168744
+CEB=0漏电uW/宏              1.40484                6.187860
+读CLK-to-Q ns（.ds基准）     约1.119                约2.388
+最小读周期ns（.ds基准）      约1.428                约3.042
+物理面积um²                 19384.53405            19384.53405
+
+用于核对单位的例子：12.2687pJ×100MHz=1.22687mW内部读功率。
+若差一倍/千倍/百万倍，先检查事件数与单位，不继续扩大到其他7种宏。
+上述值只是已有版本的校验锚点；新生成若版本/hash/选项变化，不强制改数去对齐。
+
+四、第一阶段应交付的文件/表
+=========================
+
+推荐目录：
+  sram_calibration_20261016/
+    README_ZH.txt
+    manifest.csv
+    macro_summary.csv
+    timing_samples.csv
+    raw_tables.json
+    generation_logs/
+    A/<corner>/...lib, ...ds, ...lef, ...v
+    B/<corner>/...
+    ... H/<corner>/...
+
+manifest.csv每行一个宏/角，至少包含：
+  id, macro_name, requested_depth, actual_depth, requested_word_bits, actual_word_bits,
+  capacity_bits, capacity_bytes, port_type, mux, vt_option, vt_actual,
+  bit_write, write_through, ecc, redundancy, power_gating, center_decode,
+  corner, voltage_V, temperature_C, compiler_version, ip_version,
+  command, lib_path, ds_path, lef_path, verilog_path, sha256s, status, notes。
+
+macro_summary.csv每行一个宏/角/代表点，至少包含：
+  id, corner, clock_slew_ns, output_load_pF, area_um2, width_um, height_um,
+  Eread_internal_pJ, Ewrite_internal_pJ, leakage_ce_off_uW, leakage_ce_on_uW,
+  read_clk_to_q_max_ns, write_clk_to_q_max_ns,
+  minimum_read_period_ns, minimum_write_period_ns,
+  minimum_clk_high_ns, minimum_clk_low_ns, clk_cap_pF,
+  q_hold_documented, mask_scaling_status, ce_off_dynamic_status,
+  energy_boundary, data_source, status, notes。
+Eread等没有负载轴时可重复关联同一值，但要标明此项load-independent-in-library。
+
+timing_samples.csv保存所有输入setup/hold，以及Q输出rise/fall和最坏pin位置。
+raw_tables.json或同等原始表导出必须保存模板、条件、pin、单位与索引。
+原文件本身也须保留，方便解析出错后重新核对；不要只交截图或最后几个汇总数字。
+
+第一阶段完成检查：
+  - 所有实际生成成功的宏名/几何/角正确；Liberty可读，非空壳/黑盒。
+  - area与LEF物理面积相符；read/write表确实存在并应用正确条件。
+  - 缺项与不支持组合显式列出；失败不能标成功、不能填0。
+  - A的提取值与上节锚点在相同版本/条件下相符。
+  - .db可选，不是本阶段必需；如做LC仅用于库语法/工具兼容检查，不等于PT完成。
+本阶段无需跑综合、门级VCD、SDF、PT；完成后即可先回传并更新CACTI校准。
+
+五、第二阶段：实际仿真什么，优先只做两类
+=====================================
+
+先根据第一阶段面积/时序筛选候选。若B/F被替代，用实际选中的对应候选，不机械跑原尺寸。
+目标100MHz；先核对周期/脉宽/setup/hold和真实驱动接口。库条件不支持时调整调度周期，
+不通过修改库/忽略hold保证100MHz。
+
+5.1 功能仿真（不等于功耗，不需要先做PT）
+---------------------------------------
+优先B=本地权重bank、F=普通缓存bank；G仅在将采用该宏或发现协议差异时补测。
+沿用厂商.v，测试bench初始化后再使用，不过滤有效输出上的未知值。
+
+共同检查：
+  - 地址0、最后地址、跨边界地址、随机地址的全字写入与读回；
+  - 顺序读/重复读、顺序写、合法交替读写，同单端口不同拍执行；
+  - 低有效WEB的全字/9bit或8bit掩码写，以及未选通存储位保持；
+  - 部分写之后再显式读回验证整个存储字；不要用write-through的整字Q代替读回；
+  - CE关闭时数据内容保持；重启读取正确；MAR/MARE保持合法值；
+  - 写入与计算互斥，完整配置完成后才计算，尾部显式补零。
+
+B特有的本地保持：
+  先写好选定行，读取一次，CE关闭保持4096拍；统计读=1、写=0，Q保持且无未知输出。
+  后续切换下一行并重复。允许保持期间改变无效地址，确认协议允许的Q保持行为。
+  输出仅作为静态权重供给；不加入逐权重valid寄存器，不重新复制一套权重DFF。
+
+关于停钟：默认只测试CE关闭、时钟仍运行。只有文档允许且确实采用ICG方案时，
+才增加停钟/重启测试；功能模型通过仅是model_check，不当厂商长期保持保证。
+厂商行为模型自带延迟不代表库表时序，功能观察不能替代STA。
+
+5.2 代表性PT（先B和F，其他宏默认只使用库提取）
+------------------------------------------------
+主组使用TT额定条件，必要时B/F各补SS；宏与标准单元角必须匹配。
+采用最小wrapper和合法寄存器/驱动接口，按真实输出负载建模。
+只做SRAM接口/保持与外围，不重新包含完整OR4/PRNG/LLM核心；如合并，必须分项报告。
+不使用2048个逐权重valid位；若需就绪标志，仅保留实际必要的整bank/整tile状态。
+
+每个被选宏先用以下最少窗口：
+
+R0：CE关闭，CLK运行，输出保持，至少4096拍。
+    报宏internal/switching/leakage及wrapper/时钟驱动分别的功率。
+    库未覆盖CE关闭动态时，保留这个建模缺项；不将结果0宣称为物理严格零。
+R1：连续读256次（小宏则重复遍历），每次有效访问，确定数据约50%翻转。
+    报真实单宏读次数、动态能量/读、Q负载及slew、活动和X状态。
+R2：连续全字写256次，确定数据约50%翻转，报动态能量/写。
+R3：单次9bit或8bit掩码写256次，报告实际选通数；不能默认按比例省电。
+    不用于实际设计的掩码粒度可省略，但注明本轮没标定。
+R4（B必做）：预读一次→4096拍CE关闭Q保持→读取下一行。
+    分别记录预读动态能量、保持漏电/动态、切换延迟；避免把一次读重复算成唤醒成本。
+R5（F接口验证）：固定数量的读/写交替请求，记录接受/完成时间，检查1RW冲突及节拍。
+    用于验证wrapper服务，不把每周期可接收直接等同于多bank系统可持续带宽。
+
+可选敏感性：只有输出开关/保持/负载差异明显，才补全零和全0/全1交替模式；
+不用为了每种p值重复全部8个宏。优先完整提取库表，必要的PT由敏感项决定。
+
+最少报告：
+  - 宏实例数、实际操作次数、窗口长度、clock频率、slew/load、PVT；
+  - 宏internal/switching/leakage与wrapper分项，动态pJ/读写和保持uW；
+  - 时序setup/hold、周期/脉宽约束状态，功耗活动覆盖与宏外边界X检查；
+  - wrapper标准单元面积、宏物理面积，明确未含布局寄生/CTS的部分；
+  - 若有零时长X，单列保留并检查恢复，不能过滤后称完全无X；
+  - 与第一阶段库内部能量交叉核对，差值说明是输出负载/外围还是计数/单位问题。
+
+访问动态能量计算：
+  Eaccess_dynamic = Pinternal_plus_switching × 窗口时间 / 实际访问次数。
+  宏、wrapper分别计算；漏电单独按驻留时间计费。
+  1uW×1ns=0.001pJ；1mW×1ns=1pJ。
+  若用窗口total功率，必须说明含漏电，不能再额外叠加同一窗口漏电。
+
+六、哪些暂时不用做
+=================
+不要求每个宏跑DC/VCS/PT；不要求TT/SS之外的全PVT；不要求晶体管SPICE/GDS展开。
+不要求每种宏实际拼完整16MiB cache；不要求完整64×64随机核或4096次结果寄存下来。
+不要求启用不存在的睡眠接口；不要求硬凑512bit单宏。
+本轮不为消除工具提示擅改厂商功耗表或Q组合function。
+
+七、这批数据回来后如何使用
+=========================
+1. A~F用于分组校准CACTI的面积、读/写能量、漏电、access与cycle，指标分别校准。
+2. G/H检查独立预测误差；误差大时缩小有效范围或增加相邻点，不强行给全尺寸统一系数。
+3. 相同宏/PVT直接使用库数据；没有现成宏的组织才用校准插值或CACTI预测。
+4. B保持与F接口/PT只补库看不到的输出保持、外围、时钟、服务时序和活动差异。
+5. 宏面积、局部保持、片上bank互连、外部DRAM/PHY保持清楚边界；避免重复计费。
+6. 更大容量若超出现有校准样本范围，明确标外推；不会把128KiB宏数据当作已验证1MiB单宏。
+
+本任务单依据：
+  tmp/sram_tt_generation_38070775/options.txt（真实编译器范围）
+  sc_wide_sram100_20261014/generate_sram.sh（已跑通命令）
+  architecture_tlm/SRAM_PT_CHARACTERIZATION_ANSWERS_ZH_20261016.txt
+  architecture_tlm/SRAM_PT_CHARACTERIZATION_ANSWERS_TT_ZH_20261016.txt
+  architecture_tlm/SRAM_CALIBRATION_AND_HYBRID_TLM_PLAN_ZH_20261016.txt

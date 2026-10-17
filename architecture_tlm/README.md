@@ -1,3 +1,5 @@
+[Llama 2 7B：完整WT2基线与当前TLM结果入口](llama2_7b/RESULTS_INDEX_ZH.md)
+
 [最新中文总索引：Attention、FFN、多层随机源、外存与结果](WORKSPACE_LATEST_ZH.md)
 
 [LLaMA-1 7B 独立 TLM：当前采样、随机源、SRAM/DRAM及结果](llama7b/README_ZH.md)

@@ -38,4 +38,6 @@ LOCAL_TEST.json 是上述验证摘要；大型VCD留本地tmp，不上传Git。�
 
 ## 发布状态
 
-本地已完成；远端发布链接与提交在最终同步后追加。工艺结果尚无。
+已推送任务分支，代码提交 `36c307b`，原始验证字节保护修订 `17ef2f3`。
+PR https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/11 待审、未合并；base为原PR #8分支。
+本次进度/交接同步是后续文档提交，不改变上传脚本包。工艺结果尚无；项目看板待权限补齐。

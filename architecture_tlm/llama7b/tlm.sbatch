@@ -6,7 +6,7 @@
 #SBATCH --time=04:00:00
 #SBATCH --output=logs/tlm-%A_%a.log
 set -euo pipefail
-project=${SLURM_SUBMIT_DIR}
+project=${TLM_SNAPSHOT:-${SLURM_SUBMIT_DIR}}
 backend=${TLM_BACKEND:-link}
 policy=${TLM_POWER_POLICY:-Staggered}
 python_bin=/home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python

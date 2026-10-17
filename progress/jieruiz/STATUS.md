@@ -1,6 +1,6 @@
 # jieruiz 项目进度
 
-更新时间：2026-10-17（Asia/Shanghai）；本机 Git 凭据实际身份：jieruiz。
+更新时间：2026-10-17（Asia/Shanghai；经典结构与 RTL 补充）；本机 Git 凭据实际身份：jieruiz。
 
 | 项目 | 当前状态 |
 |---|---|
@@ -9,11 +9,11 @@
 | 分支 / PR base | task/7-ffn-cim-scheduling → pbit-tlm-attention-details-20261016 |
 | 基线提交 | 9608c0d06cf8b421cbbd348aca4fc84c5990aae7 |
 | 独立目录 | a_P_BIT/tmp/ffn-cim-issue-7-20261017/ |
-| 成果 | [报告与仿真清单](../../architecture_tlm/FFN_CIM_SCHEDULING_AND_SIMULATION_ZH_20261017.md)、计数工具、源摘录及审计 JSON |
+| 成果 | [报告与仿真清单](../../architecture_tlm/FFN_CIM_SCHEDULING_AND_SIMULATION_ZH_20261017.md)、[经典结构与选型](../../architecture_tlm/CLASSIC_AND_PROBABILISTIC_FFN_ARCHITECTURE_ZH_20261017.md)、服务计数工具、[后处理 RTL](../../architecture_tlm/rtl/ffn_epilogue_20261017/README_ZH.md) |
 | 当前阶段 | 已推送；[PR #8](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/8) 待审，未合并 |
-| 实际验证 | 已执行归档循环服务回放，独立公式与历史 tile 数/部分和字节数核对通过；最终范围和 manifest 验证见 work/jieruiz/7/ |
-| 不适用/未运行 | 没有数值推理或新编码质量对比，未运行新 BF16/PPL；没有新 RTL/DC/PT、版图或 DRAMSys |
-| 限制 | 非线性、格式转换和权重驻留仍有参数代理；本地完整 v5/v6 未在本任务集成发布 |
+| 实际验证 | 归档循环与公式核对；12 个资源/采样服务场景；新 RTL 经 Icarus 三种子各 12295 周期、双输出位宽验证；active/burst/idle 计数通过。最终范围与散列见 work/jieruiz/7/ |
+| 不适用/未运行 | 没有模型数值推理/新 BF16/PPL；没有 DC/PT、版图或新 DRAMSys。RTL 是定点近似候选，不是 BF16 等价实现 |
+| 限制 | 新后处理尚无工艺 PPA/模型回归，未启用到现有模型；原非线性、格式转换和权重驻留代理未擅自改值；完整 v5/v6 未在本任务集成发布 |
 | 待同步 | Projects 缺 read:project，看板待补权限；Issue/PR 正常同步 |
 | 接续 | [HANDOFF](../../work/jieruiz/7/HANDOFF.md)，先冻结 tile 的存储/格式接口，再按报告仿真 |
 

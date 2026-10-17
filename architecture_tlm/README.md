@@ -185,3 +185,9 @@ replay is [audit_ffn_schedule.py](audit_ffn_schedule.py), with
 [archived audit results](results/ffn_schedule_audit_20261017/audit.json).
 This does not publish the full later local v5/v6 runtime or claim new PPL,
 foundry PPA, an optimized scheduler, or a completed CIM macro. See Issue #7.
+
+Follow-up: [classic GPU/ASIC comparison and recommended architecture](CLASSIC_AND_PROBABILISTIC_FFN_ARCHITECTURE_ZH_20261017.md),
+[same-engine-count service comparison](compare_ffn_resource_schedules.py),
+and [digital SwiGLU epilogue characterization RTL](rtl/ffn_epilogue_20261017/README_ZH.md).
+The new epilogue is a fixed-point LUT approximation for characterization;
+it is not enabled in the existing model or validated as a BF16 replacement.

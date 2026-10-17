@@ -4,13 +4,15 @@
 
 **结论：目前是可以逐项核算的宏级调度，不是已经优化完毕的 FFN 硬件。gate/up 合并、输入随机源共享和权重装载双缓冲已经存在；阵列内部权重驻留、部分和格式、非线性电路及跨算子流水仍需要实现和比较。建议先验证“现有 SRAM＋外围数字计算”，再决定是否定制 CIM。**
 
+后续补充：[经典 GPU/ASIC 对照与选型](CLASSIC_AND_PROBABILISTIC_FFN_ARCHITECTURE_ZH_20261017.md)，以及[数字 SwiGLU 后处理 RTL 候选](rtl/ffn_epilogue_20261017/README_ZH.md)。后处理已有功能仿真，仍无工艺功耗或模型回归；不改变本文对原 TLM 的计数结论。
+
 ## 1. 这次究竟检查了哪一版
 
 - 正式仓库：`rayggxia-workspace/pbit-llm-qwen-baselines`；PR base 为 `pbit-tlm-attention-details-20261016`，提交 `9608c0d06cf8b421cbbd348aca4fc84c5990aae7`。
 - 本地后续实现：`a_P_BIT/architecture_tlm/memory_schedule_v5.py`、`run_pv_stream_v6.py`。这些完整后续实现尚未随本任务合入上述发布分支。本任务归档相关函数和 SHA-256，不能把摘录发布说成已发布完整 v5/v6。
 - 顶层 FFN 顺序来自 `system_decode.py:DecodeModel.run`，与上述已发布 base 字节一致；v5 部分和/片上 SRAM 行为来自 `BankedMixin.stochastic_matrix/vectors`。
 - 与历史 v6 不可变 `source_snapshot` 比对，相关三个源文件字节一致。完整源散列、配置、形状和历史结果来源见 [evidence.json](../work/jieruiz/7/evidence.json)，源码摘录见 [SOURCE_EXCERPTS.md](../work/jieruiz/7/SOURCE_EXCERPTS.md)。
-- 只做源代码审计、服务计数回放及已有事务结果提取；没有新 PPL、GPU/芯片测量、RTL 功能仿真或 DC/PT。语料/模型权重 SHA、随机质量三种子评估在本任务不适用，因为没有运行数值推理或比较新编码质量。
+- 本文原 TLM 审计只做源代码核对、服务计数回放及已有事务结果提取；没有新 PPL、GPU/芯片测量或 DC/PT。后续独立后处理 RTL 的功能仿真见上述链接，不代表原 TLM 已全部通过 RTL 验证。语料/模型权重 SHA、随机质量三种子评估对本次非数值推理任务不适用。
 
 ## 2. 当前 FFN 实际怎样算
 
@@ -182,4 +184,4 @@ python architecture_tlm/audit_ffn_schedule.py --evidence work/jieruiz/7/evidence
 
 工具默认拒绝覆盖已有结果。归档函数是受信任的项目源；不要把未知代码当作 excerpt 传入执行。源码服务回放隔离了存储/RNG/向量开销，仅用于检查循环账目。历史 2K 结果为合成事务；其历史 DRAM 能量配置问题另见 Issue #5/PR #6，本报告不使用它的能量数字得出芯片功耗结论。
 
-本次交付是分析与计数工具，不是新的 FFN 调度器、定制 CIM 宏或新实验质量结果。正式交付状态以本 Issue/PR 为准；治理 PR #2、架构审计 PR #4、DRAM/DS-CIM PR #6 仍未自动合并。
+本报告交付分析与计数工具；后续补充一个独立后处理候选，尚不是新的完整 FFN 调度器、定制 CIM 宏或新模型质量结果。正式交付状态以本 Issue/PR 为准；治理 PR #2、架构审计 PR #4、DRAM/DS-CIM PR #6 仍未自动合并。

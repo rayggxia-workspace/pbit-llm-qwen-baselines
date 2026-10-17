@@ -10,8 +10,8 @@
 | 基线提交 | `9608c0d06cf8b421cbbd348aca4fc84c5990aae7` |
 | 独立目录 | `a_P_BIT/tmp/dram-dscim-issue-5-20261017/` |
 | 成果 | [专题报告](../../architecture_tlm/DRAM_POWER_AND_DS_CIM_WEIGHT_REVIEW_ZH_20261017.md)、核心功耗profile/预检查工具、独立计价辅助工具 |
-| 当前阶段 | 本地完成，待最终测试、清单核对及PR交付；未合并 |
-| 验证范围 | 状态与完整测量环路、CLI和输入保护；4份既有统计重计价。没有新PPL/完整DRAMSys或PT |
+| 当前阶段 | 已推送；[PR #6](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/6)待审；未合并 |
+| 验证范围 | 13项测试通过；4份既有统计重计价残差≤1.67e-16J；16文件范围/37个链接/成果SHA-256核对通过。没有新PPL/完整DRAMSys或PT |
 | 辅助与交接 | [HANDOFF](../../work/jieruiz/5/HANDOFF.md)、[源清单](../../work/jieruiz/5/source_evidence.json)、[成果manifest](../../work/jieruiz/5/manifest.json) |
 | 限制 | 新profile是厂商限值核心情景，I/O/实际器件选择/完整timing尚未认证；不覆盖旧输入和历史结果 |
 | 待同步 | Projects缺read:project；Issue/PR正常同步，看板待权限补齐 |

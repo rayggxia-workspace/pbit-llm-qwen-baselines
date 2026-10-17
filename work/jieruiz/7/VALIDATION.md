@@ -8,3 +8,5 @@
 - 实际命令：`python architecture_tlm/audit_ffn_schedule.py --evidence work/jieruiz/7/evidence.json --excerpt work/jieruiz/7/stochastic_matrix_excerpt.py.txt --output <temporary-new-path>`；临时路径位于已核验的本地个人工作区 tmp 内。
 - 本记录未声称新 PPL、RTL 功能、DC/PT、版图、DRAMSys 或完整 FFN 硬件验证；没有自动映射搜索。
 - 发布时另检查准确文件范围、提交 blob 与 manifest 的 SHA-256、仓库/身份/远端基线及 PR。
+
+发布检查：目标仓库/身份/base重新核实；明确范围文件暂存；manifest各文件与暂存blob SHA-256一致；PR已创建，未合并。

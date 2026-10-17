@@ -25,3 +25,5 @@ git diff --check workspace/pbit-tlm-attention-details-20261016...HEAD
 下一步建议：冻结 fixed_sc_exact 64×64 权重载荷/展开/符号与保持接口；比较相同激励下的精确计数基线、压缩器缓存累加及真实 SRAM 接口。跨算子分组流水要收费于输入重访、局部部分和和引擎分配；不能直接把各阶段时间改成 max。
 
 尚未完成/不属于本次交付：定制 CIM 电路、完整新调度器、PT 表征、映射搜索和新随机策略 PPL。暂停/换人时沿用本记录，保留各旧任务工作树。
+
+交付状态：已推送；[PR #8](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/8) 待审，未合并；Issue #7 保持 open，等待审查验收。

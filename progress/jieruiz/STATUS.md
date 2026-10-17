@@ -10,7 +10,7 @@
 | 基线提交 | 9608c0d06cf8b421cbbd348aca4fc84c5990aae7 |
 | 独立目录 | a_P_BIT/tmp/ffn-cim-issue-7-20261017/ |
 | 成果 | [报告与仿真清单](../../architecture_tlm/FFN_CIM_SCHEDULING_AND_SIMULATION_ZH_20261017.md)、计数工具、源摘录及审计 JSON |
-| 当前阶段 | 本地完成并验证通过；任务分支提交待上传，尚未合并 |
+| 当前阶段 | 已推送；[PR #8](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/8) 待审，未合并 |
 | 实际验证 | 已执行归档循环服务回放，独立公式与历史 tile 数/部分和字节数核对通过；最终范围和 manifest 验证见 work/jieruiz/7/ |
 | 不适用/未运行 | 没有数值推理或新编码质量对比，未运行新 BF16/PPL；没有新 RTL/DC/PT、版图或 DRAMSys |
 | 限制 | 非线性、格式转换和权重驻留仍有参数代理；本地完整 v5/v6 未在本任务集成发布 |

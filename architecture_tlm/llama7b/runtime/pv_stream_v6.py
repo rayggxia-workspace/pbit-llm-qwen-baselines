@@ -14,7 +14,7 @@ import heapq
 from functools import lru_cache
 from pathlib import Path
 from attention_reference_v3 import softmax, cdf
-from memory_schedule_v5 import BankedLocalDecode
+from memory_schedule_v5 import BankedLocalDecode, BankedDigitalDecode
 from scatter_memory_v6 import coalesced_bursts, link_access_ranges
 
 
@@ -106,7 +106,7 @@ def prefix_schedule(n, heads, lanes):
     return cycles, completed
 
 
-class StreamPVDecode(BankedLocalDecode):
+class StreamPVMixin:
     def __init__(self, cfg, *args, **kwargs):
         super().__init__(cfg, *args, **kwargs)
         self.pc = cfg['pv_stream_v6']
@@ -338,3 +338,11 @@ class StreamPVDecode(BankedLocalDecode):
         for name in ('pv_stream_v6.py', 'scatter_memory_v6.py'):
             result['source_hashes'][name] = hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
         return result
+
+
+class StreamPVDecode(StreamPVMixin, BankedLocalDecode):
+    pass
+
+
+class StreamDigitalDecode(StreamPVMixin, BankedDigitalDecode):
+    pass

@@ -153,6 +153,24 @@ class AttentionAdapterTests(unittest.TestCase):
                     self.assertEqual(report['ising_macro_v4']['calls'], 2)
                     self.assertEqual(report['ising_macro_v4']['capacity'], 512)
 
+    def test_zero_budget_detection_is_charged(self):
+        m = model('pv')
+        m.source.logits = lambda token, layer, head, length: [0.] + [-1000.] * (length - 1)
+        m.attention(0, 512, 0)
+        self.assertGreater(m.actions['ATT_zero_budget_group_tiles'], 0)
+        self.assertEqual(m.actions['ATT_budget_nonzero_check_vector'],
+                         m.qheads * (512 // m.ac['kv_tile_tokens']))
+        ising = model('ising')
+        ising.attention(0, 512, 0)
+        self.assertEqual(ising.actions['ATT_ising_histogram_nonzero_vector'], ising.qheads * 512)
+
+    def test_pure_macro_owns_rng_state_area(self):
+        dense, ising = model('dense'), model('ising')
+        d, s = dense.run(), ising.run()
+        self.assertNotIn('ATT_leaf_idle', s['energy_J'])
+        self.assertAlmostEqual(s['metrics']['parameterized_area_mm2'] - d['metrics']['parameterized_area_mm2'],
+                               ising.ising_macro.area_mm2)
+
 
 if __name__ == '__main__':
     unittest.main()

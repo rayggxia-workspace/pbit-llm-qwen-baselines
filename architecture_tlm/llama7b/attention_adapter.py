@@ -56,7 +56,9 @@ class LlamaAttentionMixin:
                 and self.ext.cfg['burst_bytes'] != 64):
             raise ValueError('all comparisons require equal 64-byte bursts')
         self.screen = mode.startswith('screen')
-        self.random_attention = mode != 'dense'
+        # Pure v4 Ising owns its internal RNG, state and readout. Only a router
+        # or systematic PV consumer needs the separate external PRNG/sampler.
+        self.random_attention = mode not in ('dense', 'ising')
         self.pv_phases = defaultdict(float)
         self.pv_tiles, self.pv_stage_rows = [], []
         self.ising_rows = []
@@ -242,7 +244,12 @@ class LlamaAttentionMixin:
                 for head, indices in enumerate(selected):
                     if not indices:
                         continue
-                    t = self.transfer(t, 'scores', len(indices) * 4, True, 'score_stash',
+                    # PV stores the tile-relative exponent already charged by
+                    # tile_softmax_stats above. Its second pass only rescales
+                    # by tile/global mass and scans; no second exp is omitted.
+                    # Ising stores raw logits and performs no numerical exp.
+                    tag = 'raw_logit_stash' if self.ising_macro else 'tile_exponent_stash'
+                    t = self.transfer(t, 'scores', len(indices) * 4, True, tag,
                                       offset=(head * length + cursors[head]) * 4)
                     if not self.ising_macro:
                         t = self.transfer(t, 'stats', 16, True, 'tile_stats',
@@ -316,25 +323,31 @@ class LlamaAttentionMixin:
         for offset in range(0, length, block):
             indices = [i for i in row['indices'] if offset <= i < offset + block]
             values = {i: count for i, count in counts.items() if offset <= i < offset + block}
-            if not values:
-                self.actions['ATT_zero_budget_group_tiles'] += 1
-                score_cursor += len(indices)
-                continue
             before = t
             if not ising:
+                # A zero-budget tile still costs a budget-header read/check.
                 t = self.transfer(t, 'stats', 16, False, 'budget_read',
                                   offset=((offset // block) * self.qheads + head) * 16)
+                t = self.op(t, 'budget_nonzero_check', vec=1)
+            else:
+                # No free oracle of which histogram tiles contain outputs.
+                n = min(block, length - offset)
+                t = self.transfer(t, 'ising_counts', n * 2, False, 'ising_histogram_scan',
+                                  offset=offset * 2)
+                t = self.op(t, 'ising_histogram_nonzero', vec=n)
+            if not values:
+                self.actions['ATT_zero_budget_group_tiles'] += 1
+                t = self.phase('count_scan_and_route', before, t)
+                score_cursor += len(indices)
+                continue
+            if not ising:
                 t = self.transfer(t, 'scores', len(indices) * 4, False, 'score_scan',
                                   offset=(head * length + score_cursor) * 4)
                 t = self.prefix_scan(t, 'systematic_count_scan', len(indices))
                 t = self.transfer(t, 'counts', len(indices) * 2, True, 'tile_counts')
                 t = self.transfer(t, 'counts', len(indices) * 2, False, 'count_union_operand')
-            else:
-                n = min(block, length - offset)
-                t = self.transfer(t, 'ising_counts', n * 2, False, 'ising_histogram_scan',
-                                  offset=offset * 2)
             union = sorted(values)
-            t = self.op(t, 'union_and_compact', vec=len(indices) + 2 * len(indices))
+            t = self.op(t, 'union_and_compact', vec=(2 if ising else 3) * len(indices))
             t = self.transfer(t, 'counts', len(union) * 4, True, 'union_indices', offset=block * 2)
             t = self.transfer(t, 'counts', len(union) * 4, False, 'union_index_read', offset=block * 2)
             t = self.phase('count_scan_and_route', before, t)

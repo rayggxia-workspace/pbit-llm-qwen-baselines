@@ -23,8 +23,12 @@ class AddressSpace:
             self.regions[name]=dict(base=cursor,logical_bytes=size,allocated_bytes=allocated)
             cursor+=allocated
         allocate('lm_head',shape['vocab_size']*h*2)
+        if not shape.get('tie_word_embeddings', True):
+            allocate('embedding', shape['vocab_size']*h*2)
+        allocate('final_norm', h*2)
         bpw=2 if variant=='digital_bf16' else 1
         for layer in range(shape['num_hidden_layers']):
+            allocate(f'L{layer}/norms', h*4)
             allocate(f'L{layer}/qkv',h*(h+2*kv)*2)
             allocate(f'L{layer}/Wo',h*h*2)
             allocate(f'L{layer}/gu',h*2*m*bpw)

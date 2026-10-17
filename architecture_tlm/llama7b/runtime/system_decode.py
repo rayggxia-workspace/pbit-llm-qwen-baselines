@@ -328,17 +328,20 @@ class DecodeModel:
             if token==0 and self.rng_hierarchy:
                 cursor=self.stamp('RNG_startup',cursor,self.rng_hierarchy.ensure_seeded(cursor),token=token)
             L=self.cfg['context_tokens']+token
-            # Tied embedding and lm_head share the same cache address space.
-            t=self.weights.request('lm_head',7*h*2,h*2,cursor)
+            # LLaMA has an independent embedding; Qwen tied embeddings remain supported.
+            embedding='lm_head' if s.get('tie_word_embeddings', True) else 'embedding'
+            t=self.weights.request(embedding,7*h*2,h*2,cursor)
             cursor=self.stamp('embedding',cursor,t,token=token)
             t=self.vectors(cursor,nonlinear=h//s['num_attention_heads'])
             cursor=self.stamp('norm_rope_residual',cursor,t,token=token)
             for layer in range(layers):
-                t=self.vectors(cursor,4*h,1)
+                t=self.weights.request(f'L{layer}/norms',0,h*2,cursor)
+                self.weights.release(t)
+                t=self.vectors(t,4*h,1)
                 cursor=self.stamp('norm_rope_residual',cursor,t,layer,token)
                 t=self.digital_matrix(f'L{layer}/qkv',h,h+2*kv_dim,cursor)
                 cursor=self.stamp('QKV_projection',cursor,t,layer,token)
-                t=self.vectors(cursor,3*(h+kv_dim)+(h+2*kv_dim)) # RoPE plus QKV biases
+                t=self.vectors(cursor,3*(h+kv_dim)+(h+2*kv_dim if s.get('attention_bias', True) else 0)) # RoPE and optional QKV bias
                 address=self.ext.layout.address(f'L{layer}/KV',(L-1)*self.ext.layout.kv_token_bytes,2*kv_dim*2)
                 t=self.ext.access(t,2*kv_dim*2,'KV',True,address=address)
                 cursor=self.stamp('norm_rope_residual',cursor,t,layer,token)
@@ -346,7 +349,9 @@ class DecodeModel:
                 cursor=self.stamp('QK_softmax_PV',cursor,t,layer,token)
                 t=self.digital_matrix(f'L{layer}/Wo',h,h,cursor)
                 cursor=self.stamp('output_projection',cursor,t,layer,token)
-                t=self.vectors(cursor,5*h,1)
+                t=self.weights.request(f'L{layer}/norms',h*2,h*2,cursor)
+                self.weights.release(t)
+                t=self.vectors(t,5*h,1)
                 cursor=self.stamp('norm_rope_residual',cursor,t,layer,token)
                 if self.engines:
                     t=self.stochastic_matrix(f'L{layer}/gu',h,2*m,cursor)
@@ -366,7 +371,9 @@ class DecodeModel:
                     cursor=self.stamp('FFN_down',cursor,t,layer,token)
                 t=self.vectors(cursor,h)
                 cursor=self.stamp('norm_rope_residual',cursor,t,layer,token)
-            t=self.vectors(cursor,4*h,1)
+            t=self.weights.request('final_norm',0,h*2,cursor)
+            self.weights.release(t)
+            t=self.vectors(t,4*h,1)
             cursor=self.stamp('norm_rope_residual',cursor,t,token=token)
             t=self.digital_matrix('lm_head',h,v,cursor)
             cursor=self.stamp('lm_head',cursor,t,token=token)

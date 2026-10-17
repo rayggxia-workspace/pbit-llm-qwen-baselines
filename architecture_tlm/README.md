@@ -1,5 +1,7 @@
 [最新中文总索引：Attention、FFN、多层随机源、外存与结果](WORKSPACE_LATEST_ZH.md)
 
+[LLaMA-1 7B 独立 TLM：当前采样、随机源、SRAM/DRAM及结果](llama7b/README_ZH.md)
+
 # Qwen2.5 transaction model with DRAMSys external memory
 
 ## Screening + compact Ising sampler macro v4 (2026-10-16)

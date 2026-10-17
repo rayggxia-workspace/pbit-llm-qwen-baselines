@@ -174,3 +174,13 @@ Per-weight validity banks are excluded explicitly; full-tile initialization is r
 `results/cacti_memory_20261016` contains completed Slurm job 1581 outputs.
 `run_screen_ising_v4.py --memory-cost-profile .../tlm_cost_b16.json` is an optional
 **cost-only** sensitivity, not a foundry SS timing/area signoff or a Q-hold implementation.
+
+## Screening and K traffic audit (2026-10-17)
+
+[Chinese analysis](SCREEN_K_TRAFFIC_ANALYSIS_ZH_20261017.md) separates per-query
+QK sparsity, GQA union reads, Link256 overfetch, summary traffic and old PV
+reloads. The [audit tool](audit_screen_k_traffic.py) reconstructs recorded
+synthetic routing with exact archived calibration bytes and computes shared
+uniform bounds. [Results](results/screen_k_traffic_audit_20261017/audit.json)
+are byte accounting, not new Qwen/PPL, DRAMSys, or chip measurements. Runtime
+selection and historical results are unchanged. See Issue #9.

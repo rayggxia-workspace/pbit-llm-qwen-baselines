@@ -1,0 +1,29 @@
+def stochastic_matrix(self,name,inp,out,ready):
+    if inp%64 or out%64:raise ValueError('64x64 mapping required')
+    T=self.cfg['samples'];E=self.engines;current=ready;groups=out//64
+    self.other_peak=max(self.other_peak,out*4+64*9//8)
+    for k in range(inp//64):
+        encoded=self.vectors(current,64*self.cfg['sc_cost']['input_encode_vector_ops'])
+        current=self.rng_hierarchy.begin_tile(encoded,(self.tile_serial,name,k));self.tile_serial+=1
+        fetch_at=current
+        for j in range(0,groups,E):
+            count=min(E,groups-j)
+            loaded=self.weights.tile_ready(name,(k*groups+j)*4096,count*4096,fetch_at,tiles=count)
+            start=self.rng_hierarchy.restore_wave(max(current,loaded))
+            kernel=(T+1)*self.period
+            _,rng_time=self.rng_hierarchy.input_wave(start,count,T)
+            duration=max(kernel,rng_time);current=start+duration
+            self.weights.release(current)
+            self.raw_bits+=T*8;self.sc_compute_ns+=kernel;self.rng_service_ns+=rng_time
+            self.sc_active_engine_ns+=count*kernel;self.sc_wait_engine_ns+=count*(duration-kernel)
+            self.actions['sc_tile_frames']+=count;self.actions['sc_product_trials']+=count*4096*T
+            self.energy['SC_logic_active']+=self.body_W*count*kernel*1e-9
+            self.energy['SC_shared_input_frontend']+=self.front_W*kernel*1e-9
+            self.energy['SC_wait']+=count*max(0,duration-kernel)*self.cfg['sc_cost']['wait_W_per_engine']*1e-9
+            fetch_at=start if self.cfg['double_buffer'] else current
+        self.rng_hierarchy.end_tile()
+        current=self.vectors(current,out*self.cfg['sc_cost']['finalize_vector_ops_per_partial'])
+        current=self.work_mem.transfer(current,0,out*4,False,'partial_read')
+        current=self.work_mem.transfer(current,0,out*4,True,'partial_write')
+        self.traffic['scratch_partial_bytes']+=2*out*4
+    return current

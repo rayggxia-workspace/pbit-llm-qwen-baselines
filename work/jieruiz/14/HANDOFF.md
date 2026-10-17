@@ -13,3 +13,5 @@
 并行工作树baseline-code与tlm-code仅各自范围，通过cherry-pick61c0259、5b80767集成。后续继续前读Issue14、PR和本STATUS；提交时只stage新Llama2目录、个人work14/STATUS与必要索引。
 
 更新：1962旧pending捕获已取消；正式1963已完成，512/1K/2K/4K均1024头且输出逐bit一致，前2K IDs匹配旧Llama1。下载1960的11文件官方匹配完成；基线1961运行，完整2K PPL4.9795028452，4K尚未结束。TLM1964 Link72、1965 Staggered36、1966 NoPD8已启动；数组并发上限24/8，实际受Slurm资源调度。执行源b5964b165dfead06676580029235bf5e952b5dad、57输入不可变，PPL源9ee1ab47d0317430212364e75adb78abec9797fb。PR #15已推送草稿，不自动合并。
+
+BF16基线1961已全部完成，2K PPL4.979502845218782 / 4K4.895831220529201，13个原始成果文件含manifest字节已核验，正式存baselines/llama2_7b/results/bf16_wt2_20261017。Link72完成，DRAM36+8运行；最终后处理2069依赖1961/1964/1965/1966，report source358d8b8f943f60986f86362f7bc7aacfca531adc，输出reports/final_v1。未改执行57输入；报告修复数字/SC源hash键差异，通过11项检查并读取实际BF16与4个实际Link样本验证通过。

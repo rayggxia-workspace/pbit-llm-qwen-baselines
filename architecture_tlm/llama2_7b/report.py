@@ -39,6 +39,13 @@ SCALARS = ('backend', 'case', 'context', 'seed', 'engines', 'samples_per_head',
            'V_MiB_per_token', 'summary_MiB_per_token', 'weight_GiB_per_token',
            'work_peak_MiB', 'SRAM_MiB', 'SRAM_area_mm2',
            'DRAM_core_mJ_per_token', 'DRAM_interface_proxy_mJ_per_token', 'wall_seconds')
+COMMON_SOURCE_KEYS = frozenset((
+    'system_decode.py', 'evidence_contract.json', 'attention_reference_v3.py',
+    'attention_tlm_v3.py', 'banked_sram_v5.py', 'memory_local_sampler_v5.py',
+    'memory_schedule_v5.py', 'llama7b/attention_adapter.py', 'llama2_7b/run.py',
+    'llama2_7b/configs/model.json', 'llama2_7b/configs/sram_plan.json'))
+SC_SOURCE_KEYS = frozenset(('rng_hierarchy.py', 'rng_local_shared_v2.py',
+                            'system_decode_local_shared_v2.py'))
 
 
 def require(condition, message):
@@ -121,6 +128,61 @@ def check_keys(rows):
     missing, extra = expected_keys() - set(actual), set(actual) - expected_keys()
     require(not missing and not extra,
             'incomplete/unexpected task matrix: ' + repr(dict(missing=sorted(missing), extra=sorted(extra))))
+
+
+def canonical_source_path(name):
+    """Map diagnostic keys to the unique repository paths in the frozen input list."""
+    if '/' in name:
+        return 'architecture_tlm/' + name
+    if name == 'evidence_contract.json':
+        return 'architecture_tlm/llama7b/runtime/configs/' + name
+    return 'architecture_tlm/llama7b/runtime/' + name
+
+
+def validate_source_hashes(rows, manifest):
+    """Digital paths omit SC-only modules; common names must never change bytes."""
+    require(manifest.get('code_commit') == TLM_COMMIT and len(manifest.get('files', [])) == 57,
+            'wrong frozen source commit or input count')
+    canonical = {}
+    for record in manifest['files']:
+        path = record['path']
+        require(not Path(path).is_absolute() and '..' not in Path(path).parts and '\\' not in path,
+                'unsafe frozen input path')
+        require(path not in canonical and re.fullmatch('[0-9a-f]{64}', record.get('sha256', '')) is not None,
+                'duplicate/invalid canonical source digest')
+        canonical[path] = record['sha256']
+    union, variants = {}, {}
+    for row in rows:
+        require(row['case'] in CASES, 'unknown source variant')
+        hashes = row['source_hashes']
+        variant = ('digital_bf16' if row['case'] == 'bf16_dense' else
+                   'digital_int8_ffn' if row['case'] == 'int8_dense' else 'fixed_sc_exact')
+        expected = COMMON_SOURCE_KEYS | (SC_SOURCE_KEYS if variant == 'fixed_sc_exact' else frozenset())
+        require(set(hashes) == expected,
+                'unexpected source key set for ' + variant + ': ' + repr(sorted(set(hashes) ^ expected)))
+        if variant in variants:
+            require(hashes == variants[variant], 'mixed complete source bytes within variant ' + variant)
+        else:
+            variants[variant] = dict(hashes)
+        for name, sha256 in hashes.items():
+            require(name not in union or union[name] == sha256, 'mixed source bytes for common key ' + name)
+            require(canonical.get(canonical_source_path(name)) == sha256,
+                    'source digest differs from frozen canonical input: ' + name)
+            union[name] = sha256
+    return dict(digital_keys=sorted(COMMON_SOURCE_KEYS), sc_additional_keys=sorted(SC_SOURCE_KEYS),
+                union_sha256=union, variant_keys={name:sorted(value) for name,value in variants.items()},
+                contract='Every reported source key matches the frozen 57-input manifest; common names agree across variants; full dictionaries agree within each variant.')
+
+
+def frozen_manifest_at(project, expected_sha256):
+    """Discover a matching immutable snapshot, without relying on report location."""
+    candidates = [project/'EXECUTION_MANIFEST.json',
+                  project/'architecture_tlm/llama2_7b/EXECUTION_MANIFEST.json',
+                  Path(__file__).with_name('EXECUTION_MANIFEST.json')]
+    candidates.extend(sorted(project.glob('*/architecture_tlm/llama2_7b/EXECUTION_MANIFEST.json')))
+    matches = [path for path in candidates if path.is_file() and digest(path) == expected_sha256]
+    require(bool(matches), 'cannot find frozen 57-input EXECUTION_MANIFEST with recorded byte SHA')
+    return read_json(matches[0]), matches[0]
 
 
 @lru_cache(maxsize=4)
@@ -411,13 +473,14 @@ def collect(args):
                 rows.append(compact(path, backend, identity, digest(identity_path)))
     check_keys(rows)
     require(len({r['input_snapshot_sha256'] for r in rows}) == 1, 'mixed execution snapshots')
-    # Verify all source paths common to all cases, not just the entrypoint hash.
-    require(all(r['source_hashes'] == rows[0]['source_hashes'] for r in rows), 'mixed engine source bytes')
+    execution_manifest, execution_manifest_path = frozen_manifest_at(args.project, rows[0]['input_snapshot_sha256'])
+    source_validation = validate_source_hashes(rows, execution_manifest)
     trace_paths = sorted((args.project/'outputs/traces').glob('c*.trace.json'))
     require({int(p.name.split('.')[0][1:]) for p in trace_paths} == set(CONTEXTS), 'missing/unexpected trace contexts')
     manifest = dict(project=str(args.project.resolve()), report_source_sha256=digest(Path(__file__)),
         model_identity=identity, model_identity_artifact=artifact(identity_path),
         code_commit=TLM_COMMIT, baseline_code_commit=BASELINE_COMMIT,
+        execution_manifest_artifact=artifact(execution_manifest_path), source_validation=source_validation,
         results=len(rows), expected_full_results=len(expected_keys()), missing_cases=[],
         completeness_by_backend={backend:sum(r['backend'] == backend for r in rows) for backend in BACKENDS},
         scope='Full WT2 BF16 PPL independent from single real BF16 routing query/context TLM; no joint SC quality or measured ASIC energy',

@@ -1,5 +1,6 @@
 """Small synthetic records test report rejection contracts, never model quality."""
 import copy
+import hashlib
 import importlib.util
 import json
 import math
@@ -124,6 +125,55 @@ class ReportContracts(unittest.TestCase):
         for bad in (rows[:-1], rows+[rows[0]], rows+[dict(rows[0],context=8192)]):
             with self.assertRaises(ValueError):
                 report.check_keys(bad)
+
+    def source_fixture(self):
+        union = {name:hashlib.sha256(name.encode()).hexdigest()
+                 for name in report.COMMON_SOURCE_KEYS | report.SC_SOURCE_KEYS}
+        records = [dict(path=report.canonical_source_path(name),sha256=value,bytes=1)
+                   for name,value in union.items()]
+        records += [dict(path=f'fixture/unused_{i}.txt',sha256='7'*64,bytes=1)
+                    for i in range(57-len(records))]
+        manifest = dict(code_commit=report.TLM_COMMIT,files=records)
+        common = {name:union[name] for name in report.COMMON_SOURCE_KEYS}
+        rows = [dict(case=case,source_hashes=copy.deepcopy(common if case in report.CASES[:2] else union))
+                for case in ('bf16_dense','int8_dense','sc_dense','sc_pv')]
+        return rows,manifest
+
+    def test_digital_and_sc_source_key_sets_are_intentionally_different(self):
+        rows,manifest = self.source_fixture()
+        validation = report.validate_source_hashes(rows,manifest)
+        self.assertEqual(len(rows[0]['source_hashes']),11)
+        self.assertEqual(len(rows[2]['source_hashes']),14)
+        self.assertEqual(set(validation['union_sha256']),report.COMMON_SOURCE_KEYS|report.SC_SOURCE_KEYS)
+
+    def test_common_variant_and_canonical_source_tampering_rejected(self):
+        for kind in ('within_variant','cross_variant','canonical','missing_sc','extra_digital'):
+            rows,manifest = self.source_fixture()
+            if kind == 'within_variant':
+                rows[3]['source_hashes']['rng_hierarchy.py'] = '0'*64
+            if kind == 'cross_variant':
+                rows[0]['source_hashes']['system_decode.py'] = '0'*64
+            if kind == 'canonical':
+                manifest['files'][0]['sha256'] = '0'*64
+            if kind == 'missing_sc':
+                rows[2]['source_hashes'].pop('rng_hierarchy.py')
+            if kind == 'extra_digital':
+                rows[0]['source_hashes']['rng_hierarchy.py'] = '0'*64
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
+                report.validate_source_hashes(rows,manifest)
+
+    def test_frozen_manifest_discovery_requires_original_bytes(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as folder:
+            project = Path(folder)
+            path = project/'tlm_b5964b165dfe/architecture_tlm/llama2_7b/EXECUTION_MANIFEST.json'
+            path.parent.mkdir(parents=True)
+            _,manifest = self.source_fixture()
+            report.write_json(path,manifest)
+            result,found = report.frozen_manifest_at(project,report.digest(path))
+            self.assertEqual(result,manifest)
+            self.assertEqual(found,path)
+            with self.assertRaises(ValueError):
+                report.frozen_manifest_at(project,'0'*64)
 
     def test_dense_and_sampled_ledgers(self):
         dense = self.compact(raw_record())

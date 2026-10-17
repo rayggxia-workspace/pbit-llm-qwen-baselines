@@ -29,6 +29,8 @@ def trace_probabilities(path):
 def compact(path, backend):
     d = json.loads(path.read_text(encoding='utf-8'))
     n = d['config']['decode_tokens']
+    if n != 1:
+        raise ValueError('This report contract is single-query decode; multi-token K/V denominators require length summation')
     a, tr, e, tm = d['actions'], d['traffic'], d['energy_J'], d['time_ns']
     assert math.isclose(sum(e.values()) * 1000 / n, d['metrics']['scenario_mJ_per_token'], rel_tol=1e-10)
     assert d['actual_shape']['num_hidden_layers'] == 32

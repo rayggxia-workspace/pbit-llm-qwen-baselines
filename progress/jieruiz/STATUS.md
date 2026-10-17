@@ -9,7 +9,7 @@
 | 分支 / PR base | task/12-llama7b-tlm → pbit-tlm-attention-details-20261016 |
 | Base | 9608c0d06cf8b421cbbd348aca4fc84c5990aae7 |
 | 独立目录 | a_P_BIT/tmp/llama7b-tlm-issue12-20261017/ |
-| 当前阶段 | 本地代码和验证完成；Slurm完整DRAMSys运行中，尚未作为全部完成发布 |
+| 当前阶段 | 已推送；[PR #13](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/13) 草稿；Slurm完整DRAMSys运行中，尚未作为全部完成发布 |
 | 执行源码 | 84c131951b9ce69a52778e8725d62a21ab9cc40f；不可变tlm_84c131951b9c快照 |
 | 已完成 | 真实BF16捕获1877，3上下文原样/捕获逐位一致；Link数组1878全部60项完成；SRAM容量/MHA实际地址/9项Attention＋3项架构＋6项DRAM检查通过 |
 | 运行中 | DRAMSys1879：18项Staggered；1896：4项NoPowerDown；只用Slurm CPU，不使用额外GPU |

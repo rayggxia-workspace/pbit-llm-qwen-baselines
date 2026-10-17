@@ -1,6 +1,6 @@
 # Issue #12：LLaMA-1 7B TLM 交接
 
-负责人 @jieruiz，正式目标 rayggxia-workspace/pbit-llm-qwen-baselines。独立目录 `C:/Users/86134/Documents/a_P_BIT/tmp/llama7b-tlm-issue12-20261017`，分支 `task/12-llama7b-tlm`，PR base为已发布TLM分支9608c0d。开始前已读取最新README/协作AGENTS/TLM索引/Issue/PR/本人状态，未发现重复LLaMA任务，建立Issue12并assignee jieruiz。
+负责人 @jieruiz，正式目标 rayggxia-workspace/pbit-llm-qwen-baselines。独立目录 `C:/Users/86134/Documents/a_P_BIT/tmp/llama7b-tlm-issue12-20261017`，分支 `task/12-llama7b-tlm`，PR base为已发布TLM分支9608c0d。开始前已读取最新README/协作AGENTS/TLM索引/Issue/PR/本人状态，未发现重复LLaMA任务，建立Issue12并assignee jieruiz。当前已推送，PR #13为草稿，待完整DRAMSys结果；未合并。
 
 ## 已完成与版本
 

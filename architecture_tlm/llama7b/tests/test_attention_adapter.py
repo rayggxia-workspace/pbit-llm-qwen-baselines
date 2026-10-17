@@ -94,6 +94,7 @@ class AttentionAdapterTests(unittest.TestCase):
                 self.assertEqual(actual_k, allowed_k)
                 self.assertEqual(m.traffic['attention_summary_build_K_physical_bytes'], 0)
                 self.assertGreater(m.traffic['attention_summary_read_physical_bytes'], 0)
+                self.assertEqual(m.actions['ATT_summary_update_vector'], m.kheads * m.dim)
                 if mode != 'screen_exact':
                     self.assertEqual(m.actions['ATT_V_sample_events'], 64)
 

@@ -170,6 +170,41 @@ class LlamaAttentionMixin:
                         vec=sum(len(row['indices']) for row in rows))
         return t, rows
 
+    def summary(self, t, length, layer):
+        """Prefill covers L-1 keys; insert the newest key on EVERY decode call."""
+        if (layer not in self.summary_built
+                and self.ac['summary_initialization'] == 'cold_build'):
+            # Explicit cold construction reads all K and includes the new key.
+            return super().summary(t, length, layer)
+        self.summary_built.add(layer)
+        name = f'L{layer}/summary'
+        size = self.kheads * math.ceil(length / 64) * 4 * self.dim * 4
+        offset = (((length - 1) // 64) * 4 + ((length - 1) % 64) // 16)
+        offset *= self.kheads * self.dim * 4
+        update = self.kheads * self.dim * 4
+        address = self.ext.layout.address(name, offset, update)
+        if (length - 1) % 16:
+            t = self.ranges(t, [(address, update)], 'summary_update')
+            t = self.transfer(t, 'summary', update, True, 'summary_update_fill')
+            t = self.transfer(t, 'summary', update, False, 'summary_update_operand')
+        # The just-projected K is resident at the attention boundary.  This
+        # consumes its local operand; it is never fetched again from DRAM.
+        t = self.transfer(t, 'KV', self.kheads * self.vecbytes, False, 'new_K_summary_operand')
+        t = self.op(t, 'summary_update', vec=self.kheads * self.dim)
+        t = self.transfer(t, 'summary', update, True, 'summary_updated_sum')
+        t = self.transfer(t, 'summary', update, False, 'summary_writeback_operand')
+        start = t
+        t = self.ext.access(t, update, 'ATT_summary', True, address=address)
+        self.record('DRAM_summary_update_write', start, t, address=address,
+                    bytes=update, resource='external_memory')
+        base = self.ext.layout.address(name, 0, size)
+        t = self.ranges(t, [(base, size)], 'summary_read')
+        t = self.transfer(t, 'summary', size, True, 'summary_fill')
+        t = self.transfer(t, 'summary', size, False, 'summary_operand')
+        t = self.op(t, 'summary_means', vec=self.kheads * math.ceil(length / 16) * self.dim,
+                    nl=math.ceil(length / 16))
+        return t, size
+
     def _qk(self, t, length, layer, rows, fused):
         block = self.ac['kv_tile_tokens']
         cursors = [0] * self.qheads
@@ -402,7 +437,7 @@ class LlamaAttentionMixin:
         result['llama_attention'] = dict(
             mode=self.ac['mode'], selector='max4; fixed bias/temperature; no model-specific calibration',
             candidate_sharing='MHA: each head owns a distinct K/V tensor; no cross-head union amplification',
-            summary_boundary='prefill construction excluded; all decode reads and later incremental updates charged',
+            summary_boundary='prefill covers L-1 keys; newest-key summary update charged on every decode, including first',
             budget_rows=self.pv_stage_rows, tiles=self.pv_tiles,
             phase_ms_per_token={k: v / 1e6 / self.cfg['decode_tokens'] for k, v in self.pv_phases.items()},
             ising_rows=self.ising_rows,

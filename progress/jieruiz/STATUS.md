@@ -10,8 +10,8 @@
 | 基线提交 | `9608c0d06cf8b421cbbd348aca4fc84c5990aae7` |
 | 独立工作目录 | `a_P_BIT/tmp/architecture-readiness-issue-3-20261017/` |
 | 本地成果 | [架构审计报告](../../architecture_tlm/ARCHITECTURE_READINESS_REVIEW_ZH_20261017.md) |
-| 当前阶段 | 本地源码/文献审计完成，待文档检查与任务分支PR交付；未合并 |
-| 验证 | 本任务仅文档检查与来源核对；没有新PPL、DRAMSys、RTL/PT或芯片结果 |
+| 当前阶段 | 已完成文档检查并推送；[PR #4](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/4)待审；未合并 |
+| 验证 | 6文件范围、4个相对链接、UTF-8/LF、17个本地证据哈希、5个成果提交字节散列一致通过；没有新PPL、DRAMSys、RTL/PT或芯片结果 |
 | 辅助资料 | [交接](../../work/jieruiz/3/HANDOFF.md)、[源文件版本及哈希](../../work/jieruiz/3/source_evidence.json)、[成果清单](../../work/jieruiz/3/manifest.json) |
 | 阻塞 / 待同步 | Projects v2缺`read:project`，看板仍待有权限后同步；不影响Issue/PR |
 

@@ -34,6 +34,8 @@
 - 只读解析实际BF16与4个实际2K/4K Link输出通过；另用3种数字BF16/数字W8/SC路径核canonical源码SHA通过。没有重跑或修改原始结果来适配报告。
 - 最终后处理Slurm2069依赖1961/1964/1965/1966全成功；必须116个唯一key齐全才产生正式汇总。源358d8b8f943f60986f86362f7bc7aacfca531adc，与执行源分开。
 
-最终结果及发布manifest就绪后，再核116key、逐项时间/能量和、真实K/V与样本事件守恒、源码/原始成果SHA和Git blob。正在运行的DRAM任务不能提前写完成。
+最终验收：1964全部72项、1965全部36项、1966全部8项及后处理2069已完成，116项唯一key齐全；逐项时间/能量闭合、真实K/V与样本事件守恒、canonical源码/输入SHA全部通过。独立只读审计重算116项到56组summary及CSV，逐格复核中文主表、K/V与摘要表，均一致。没有在等候中的性能作业。
+
+额外只读SHA采集索引44个DRAM案例的88份原始gzip请求/bridge日志，路径/字节/SHA保留于DRAM_ARTIFACT_INDEX.json；实际bridge、libdramsys、libDRAMPower哈希与此前审计运行库一致。该采集未改变任何原始输入/成果。发布检查另外核对索引44组双文件与cases对应关系、57冻结输入及逐文件Git blob字节；验证命令 `python work/jieruiz/14/verify_delivery.py --staged`，结果写入发布manifest。
 
 解释边界：原BF16 PPL与单条真实QK地址oracle均不证明随机FFN/筛选/Ising联合质量。TLM不是芯片/GPU能效实测，部分算子与PHY/布线仍未标定。

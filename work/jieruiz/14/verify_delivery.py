@@ -58,6 +58,19 @@ def verify(record=False,staged=False,allow_pending=False):
     assert all(r['source_commit']==frozen['code_commit'] and r['workload']['kind']=='REAL_LLAMA2_7B_POST_ROPE_QK_LOGITS' for r in cases)
     assert all(math.isclose(sum(r['energy_mJ_per_token'].values()),r['mJ_per_token'],rel_tol=1e-10) for r in cases)
     assert all(r['input_snapshot_sha256']==digest(MODEL/'EXECUTION_MANIFEST.json') for r in cases)
+    external=read(current/'DRAM_ARTIFACT_INDEX.json')
+    assert external['DRAM_cases']==44 and len(external['original_artifacts'])==88
+    expected={(r['backend'],f"c{r['context']}_{r['case']}_e{r['engines']}_s{r['seed']}") for r in cases if r['backend'].startswith('dramsys_')}
+    actual={}
+    for row in external['original_artifacts']:
+        assert row['bytes']>0 and re.fullmatch(r'[0-9a-f]{64}',row['sha256'])
+        assert row['path'].startswith(external['project']+'/outputs/'+row['backend']+'/')
+        actual.setdefault((row['backend'],row['case']),[]).append(row['path'])
+    assert set(actual)==expected and all(len(v)==2 for v in actual.values())
+    assert all(any(p.endswith('.bridge.log') for p in v) and any(p.endswith('.requests.jsonl.gz') for p in v) for v in actual.values())
+    assert external['bridge']['sha256']=='900e8257e255a01c59ed1770f8fda5901163003e0c8f21636baefc2cb662c868'
+    assert external['linked_libraries']['libdramsys.so']['sha256']=='67f608ec3b7938f032414d1798b674eb9519cd339807b12b582ca7c2714b23c3'
+    assert external['linked_libraries']['libDRAMPower.so']['sha256']=='33cc1cc40c4969cd3582beb40a7443c49249ea653938efffdb27c2835263f456'
     for path in list(MODEL.rglob('*.md'))+list(BASELINE.glob('*.md')):
         for target in re.findall(r'\]\(([^)]+)\)',path.read_text(encoding='utf-8-sig')):
             if '://' in target or target.startswith('#'):continue
@@ -96,7 +109,7 @@ def verify(record=False,staged=False,allow_pending=False):
                 blob=subprocess.check_output(['git','show',':'+row['path']],cwd=ROOT)
                 assert blob==raw,'Git staged byte mismatch: '+row['path']
     print(json.dumps({'immutable_inputs':57,'baseline_artifacts_verified':len(baseline),'capture_contexts':4,
-        'TLM_cases':116,'release_artifacts':len(artifacts),'staged_blobs_verified':staged}))
+        'TLM_cases':116,'original_DRAM_artifacts_indexed':88,'release_artifacts':len(artifacts),'staged_blobs_verified':staged}))
 
 
 if __name__=='__main__':

@@ -1,6 +1,6 @@
 # Issue #14：Llama 2 7B交接
 
-更新 2026-10-18T00:05:44+08:00（Asia/Shanghai）；负责人 @jieruiz。全部116项本地汇总完成，准备推送并转PR #15待审。
+更新 2026-10-18T00:05:44+08:00（Asia/Shanghai）；负责人 @jieruiz。全部116项及完整BF16基线已推送；PR #15待审，未合并。
 
 正式仓库 `rayggxia-workspace/pbit-llm-qwen-baselines`，分支 `task/14-llama2-baseline-tlm`，PR15 base `pbit-tlm-attention-details-20261016` @07d03385a3b16b1f81a987c031f667c13876edf1。独立目录 `C:/Users/86134/Documents/a_P_BIT/tmp/llama2-7b-issue14-20261017`。PR待审不等于合并；Issue14待验收保持open。最终交付SHA以PR头和Issue发布评论为准，不将文档自身SHA写入其内容形成循环。
 

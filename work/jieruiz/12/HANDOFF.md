@@ -4,6 +4,8 @@
 
 ## 已完成与版本
 
+- 子任务均使用独立工作树：`tmp/llama7b-trace-issue12-20261017`（task/12-trace-capture）、`tmp/llama7b-dram-issue12-20261017`（task/12-dram-config）、`tmp/llama7b-attention-issue12-20261017`（task/12-attention-adapter）；代码通过cherry-pick集成，没有共用未提交状态。父任务复核后补上纯Ising面积去重、零预算扫描及完整LLaMA参数分配检查。
+
 - `architecture_tlm/llama7b/runtime/` 是最新本地v5/v6与来源核查DRAM profile的独立快照，来源表在SOURCE_SNAPSHOT.json；后续必要差异有Git历史和EXECUTION_MANIFEST。
 - 模型32层/32Q32KV/4096/11008，独立embedding和完整norm参数，原生512/1024/2048单decode；没有8K外推。
 - 当次TLM代码提交 **84c131951b9ce69a52778e8725d62a21ab9cc40f**，服务器不可变快照 `tlm_84c131951b9c/`。不得为修测试而编辑这个目录。

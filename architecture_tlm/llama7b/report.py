@@ -123,6 +123,21 @@ def collect(args):
             if '_dram' in path.name:
                 continue
             rows.append(compact(path, backend))
+    cases = ['bf16_dense','int8_dense','sc_dense','sc_pv','sc_screen_exact','sc_screen_pv','sc_ising','sc_screen_ising']
+    expected = set()
+    for backend, contexts in [('link_Staggered',[512,1024,2048]), ('dramsys_Staggered',[2048])]:
+        for context in contexts:
+            for case in cases:
+                for seed in ([0] if case in cases[:3] else [0,1,2]):
+                    expected.add((backend,context,case,8,seed))
+    for engines in [16,32,64]:
+        for case in ['sc_dense','sc_screen_pv']:
+            expected.add(('link_Staggered',2048,case,engines,0))
+    for case in ['bf16_dense','sc_dense','sc_screen_pv','sc_screen_ising']:
+        expected.add(('dramsys_NoPowerDown',2048,case,8,0))
+    actual = [(r['backend'],r['context'],r['case'],r['engines'],r['seed']) for r in rows]
+    if len(set(actual)) != len(actual) or not set(actual) <= expected:
+        raise ValueError('duplicate or unexpected scenario keys')
     (args.output / 'cases.json').write_text(json.dumps(rows, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
     scalar_keys = ['backend','case','context','seed','engines','samples_per_head','ms_per_token','mJ_per_token','area_mm2','area_feasible','attention_ms_per_token','FFN_ms_per_token','QK_fraction','K_physical_fraction','V_physical_fraction','K_MiB_per_token','V_MiB_per_token','summary_MiB_per_token','weight_GiB_per_token','work_peak_MiB','SRAM_MiB','SRAM_area_mm2','DRAM_core_mJ_per_token','DRAM_interface_proxy_mJ_per_token','wall_seconds']
     with (args.output / 'cases.csv').open('w', encoding='utf-8', newline='') as f:
@@ -148,7 +163,7 @@ def collect(args):
     (args.output / 'summary.json').write_text(json.dumps(summary, indent=2)+'\n', encoding='utf-8', newline='\n')
     # Exact trace/validation identities remain distinct from new PPL or measured power.
     manifest = dict(project=str(args.project), report_source_sha256=digest(Path(__file__)),
-        results=len(rows), expected_full_results=82,
+        results=len(rows), expected_full_results=len(expected), missing_cases=sorted(expected-set(actual)),
         completeness_by_backend={b:sum(r['backend']==b for r in rows) for b in ['link_Staggered','dramsys_Staggered','dramsys_NoPowerDown']},
         scope='single public WT2 decode query per context; real BF16 QK address oracle, no joint SC numeric inference or new PPL',
         trace_artifacts=[dict(path=str(p),bytes=p.stat().st_size,sha256=digest(p)) for p in sorted((args.project/'outputs/traces').glob('*.json'))],

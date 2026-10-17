@@ -32,4 +32,4 @@ export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 CUBLAS_WORKSPACE_CONFIG=:4096:8
 
 exec /opt/slurm/21.08.8/bin/srun "$PYTHON" -u architecture_tlm/llama2_7b/capture_trace.py \
   --model "$MODEL_PATH" --data "$DATA_PATH" --output "$OUTPUT_ROOT" \
-  --identity-manifest "$IDENTITY_MANIFEST" --contexts 512 1024 2048 4096 --decode-tokens 1 --seed 0 --atol 0 --rtol 0
+  --identity-manifest "$IDENTITY_MANIFEST" --contexts 512 1024 2048 4096 --decode-tokens 1 --seed 0 --segment-start 201979 --atol 0 --rtol 0

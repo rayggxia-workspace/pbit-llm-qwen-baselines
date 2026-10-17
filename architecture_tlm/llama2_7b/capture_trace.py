@@ -187,6 +187,7 @@ def main(argv=None):
     parser.add_argument("--contexts", nargs="+", type=int, default=[512, 1024, 2048, 4096])
     parser.add_argument("--decode-tokens", type=int, default=1)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--segment-start", type=int)
     parser.add_argument("--atol", type=float, default=0.0)
     parser.add_argument("--rtol", type=float, default=0.0)
     args = parser.parse_args(argv)
@@ -249,9 +250,20 @@ def main(argv=None):
     tokenizer = AutoTokenizer.from_pretrained(args.model, local_files_only=True)
     ids = tokenizer(args.data.read_text(encoding="utf-8"), add_special_tokens=False,
                     return_tensors="pt").input_ids
-    start, window = select_window(ids, args.contexts, args.seed, args.decode_tokens)
+    if args.segment_start is None:
+        start, window = select_window(ids, args.contexts, args.seed, args.decode_tokens)
+    else:
+        start = args.segment_start
+        span = max(args.contexts) + args.decode_tokens - 1
+        if start < 0 or start + span > ids.shape[1]:
+            raise ValueError("Matched corpus segment is outside tokenized data")
+        window = ids[:, start:start + span]
+    prefix_hash = hashlib.sha256(window[:, :2048].numpy().tobytes()).hexdigest()
+    if start == 201979 and prefix_hash != "5c208664955a0c5e4d2fb19d1a018559bf02eccd36d6aafb2a77b0e5d8cabca8":
+        raise RuntimeError("Llama2 tokenizer no longer matches verified Llama1 2K comparison tokens")
     provenance["data"].update(source_tokens=ids.shape[1], segment_start_token=start,
                               segment_tokens=window.shape[1],
+                              first_2048_ids_sha256=prefix_hash,
                               segment_ids_sha256=hashlib.sha256(window.numpy().tobytes()).hexdigest())
     model = AutoModelForCausalLM.from_pretrained(args.model, local_files_only=True,
         torch_dtype=torch.bfloat16, attn_implementation="sdpa", use_safetensors=True,
@@ -288,6 +300,7 @@ def main(argv=None):
             if any(len(row["logits"]) != context + row["token"] for row in collector.rows):
                 raise RuntimeError("Captured cache length violates TLM convention")
             detail = dict(provenance, context=context, decode_tokens=args.decode_tokens,
+                          context_input_ids_sha256=hashlib.sha256(window[:, :context].numpy().tobytes()).hexdigest(),
                           validation=checks, atol=args.atol, rtol=args.rtol)
             trace = args.output / f"c{context}.trace.json"
             save_json(trace, dict(provenance=detail, rows=collector.rows))

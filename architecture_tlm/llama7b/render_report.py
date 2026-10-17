@@ -18,8 +18,9 @@ def render(directory):
     by = {(r['backend'],r['context'],r['case'],r['engines']):r for r in summaries}
     lines = ['# LLaMA-1 7B：当前架构 TLM 结果', '',
         '模型与Qwen结果独立保存。32层、32Q/32KV MHA、hidden4096、FFN11008；原生512/1024/2048、单步decode。',
+        '仿真从既有KV开始，排除prefill、主机、PHY及CTS；数字/随机核仍有未标定系数。',
         '真实BF16 QK来自核验过的公开WT2窗口；捕获前后输出逐位一致。随机种子只改变硬件地址选择。**没有新PPL或实测芯片/GPU能效。**', '',
-        '固定硬件：100MHz，默认8个64×64随机阵列、T4096、A8/64路本地PRNG共享、数字SiLU；统一8MiB校准SS SRAM、16 lane；2通道2rank 16GiB DDR4。PV按原上下文1/16：32/64/128样本。', '',
+        'SC方案：100MHz，默认8个64×64随机阵列、T4096、A8/64路本地PRNG共享、数字SiLU；所有方案统一8MiB校准SS SRAM、16 lane和2通道2rank 16GiB DDR4。准确基线不配置SC阵列。PV按原上下文1/16：32/64/128样本。', '',
         f"本次已汇总 **{len(cases)}/82** 项：`{index['completeness_by_backend']}`。缺项时表格只列实际完成结果。", '',
         '## 先看 TLM 实际发出的读取事务', '',
         '以下为2K、完整32层、默认8阵列的三种子均值。分母分别为所有K、所有V各读一次；候选K与物理K在本布局中相等。摘要另算，不藏在K比例里。', '',
@@ -42,7 +43,8 @@ def render(directory):
             lines.append(f"| {LABELS[case]} | {len(r['seeds'])} | {r['ms_per_token']:.2f} | {r['mJ_per_token']:.2f} | {r['DRAM_core_mJ_per_token']:.2f} | {sram:.2f} | {r['area_mm2']:.2f} |")
     if not any(r['backend']=='dramsys_Staggered' for r in summaries):
         lines.append('| 完整DRAMSys仍在运行 | — | — | — | — | — | — |')
-    lines += ['', '读表时分开两件事：Attention替换应与相同随机FFN的`sc_dense`比较；随机FFN本身应与`bf16_dense`和`int8_dense`比较。不要把低位权重减少的流量全部归功于随机计算。', '']
+    lines += ['', '读表时分开两件事：Attention替换应与相同随机FFN的`sc_dense`比较；随机FFN本身应与`bf16_dense`和`int8_dense`比较。不要把低位权重减少的流量全部归功于随机计算。',
+              '没有随机地址选择的三种dense路径，其TLM计数/时序确定，所以只运行seed0；筛选/PV/Ising地址路径各运行0/1/2。这里没有用这些种子验证FFN数值噪声。', '']
     for base_case, changed in [('sc_dense','sc_screen_pv'),('bf16_dense','sc_screen_pv'),('int8_dense','sc_screen_pv')]:
         a=by.get(('dramsys_Staggered',2048,base_case,8)); b=by.get(('dramsys_Staggered',2048,changed,8))
         if a and b:

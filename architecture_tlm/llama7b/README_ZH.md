@@ -1,6 +1,6 @@
 # LLaMA-1 7B：独立完整模型 TLM
 
-任务 [Issue #12](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/12)，负责人 @jieruiz。正式代码、配置、验证和结果均放在本目录；不覆盖 Qwen 和早期 LLaMA 实验。结果入口为 `results/current/`，模型原始轨迹和完整事务日志按成果索引保存在已授权服务器。
+任务 [Issue #12](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/12)，负责人 @jieruiz。正式代码、配置、验证和结果均放在本目录；不覆盖 Qwen 和早期 LLaMA 实验。结果入口为 [完整中文总表](results/current/RESULTS_ZH.md)，模型原始轨迹和完整事务日志按成果索引保存在已授权服务器。
 
 这次把当前 Qwen 的优化迁入 LLaMA，并补上两者的实际结构差异。这里的准确 BF16 基线是**同一 ASIC 资源假设下的 TLM 基线**，不是 RTX 5090 的性能或功耗。真实 GPU 只用于生成核验过的 QK 轨迹。
 

@@ -1,6 +1,6 @@
 # Issue #12：LLaMA-1 7B TLM 交接
 
-负责人 @jieruiz，正式目标 rayggxia-workspace/pbit-llm-qwen-baselines。独立目录 `C:/Users/86134/Documents/a_P_BIT/tmp/llama7b-tlm-issue12-20261017`，分支 `task/12-llama7b-tlm`，PR base为已发布TLM分支9608c0d。开始前已读取最新README/协作AGENTS/TLM索引/Issue/PR/本人状态，未发现重复LLaMA任务，建立Issue12并assignee jieruiz。全部代码与82项结果已推送，PR #13待审，未合并。Issue12验收清单已更新，保持open待评审；Projects仍待权限。
+负责人 @jieruiz，正式目标 rayggxia-workspace/pbit-llm-qwen-baselines。独立目录 `C:/Users/86134/Documents/a_P_BIT/tmp/llama7b-tlm-issue12-20261017`，分支 `task/12-llama7b-tlm`，PR base为已发布TLM分支9608c0d。开始前已读取最新README/协作AGENTS/TLM索引/Issue/PR/本人状态，未发现重复LLaMA任务，建立Issue12并assignee jieruiz。全部代码与82项结果已推送；用户2026-10-17明确授权直接合并PR #13。合并与Issue关闭的实际结果、merge SHA以PR #13和Issue #12最终验收评论为准；本合并前记录不预写尚未响应的merge结果。Projects仍待权限。验收依据见MERGE_ACCEPTANCE.md。
 
 ## 已完成与版本
 
@@ -29,8 +29,8 @@
 1. 重读Issue12最新讨论及相关PR，核验身份/远端，不默认推到个人origin。
 2. 执行 `python work/jieruiz/12/verify_delivery.py` 复核输入与发布成果；修改后重新生成manifest并核对暂存blob。
 3. 如需重做后处理，使用新输出目录调用report.py，保持服务器原始结果字节不变。大trace与requests gzip按ARTIFACT_INDEX访问。
-4. 评审本任务PR；若有新架构/数值实验需求，建立独立Issue/分支/执行快照，不重新提交旧数组。
-5. PR待审不自动合并或关闭Issue。Projects缺read:project，保留看板待同步。
+4. 用户已授权合并本任务PR；合并记录和Issue关闭状态见GitHub。如有新架构/数值实验需求，建立独立Issue/分支/执行快照，不重新提交旧数组。
+5. 保留原始提交历史，核实PR merged后再关闭Issue12。不将此PR自动改为main，其他任务仍保持独立。Projects缺read:project，保留看板待同步。
 
 ## 解释边界
 

@@ -288,17 +288,15 @@ def main(argv=None):
                 raise RuntimeError(f"Missing rows: {len(collector.rows)} != {expected_rows}")
             if any(len(row["logits"]) != context + row["token"] for row in collector.rows):
                 raise RuntimeError("Captured cache length violates TLM convention")
-            destination = args.output / f"context_{context}"
-            destination.mkdir(exist_ok=False)
             detail = dict(provenance, context=context, decode_tokens=args.decode_tokens,
                           validation=checks, atol=args.atol, rtol=args.rtol)
-            trace = destination / "trace.json"
+            trace = args.output / f"c{context}.trace.json"
             save_json(trace, dict(provenance=detail, rows=collector.rows))
             summary = dict(context=context, decode_tokens=args.decode_tokens, rows=expected_rows,
                            path=str(trace.relative_to(args.output)), bytes=trace.stat().st_size,
                            sha256=sha256(trace), elapsed_seconds=time.perf_counter()-started,
                            validation=checks)
-            save_json(destination / "validation.json", summary)
+            save_json(args.output / f"c{context}.validation.json", summary)
             outputs.append(summary)
             print(json.dumps(summary, ensure_ascii=False), flush=True)
             del collector, baseline, captured

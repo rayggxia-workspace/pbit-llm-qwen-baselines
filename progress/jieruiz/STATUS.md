@@ -11,7 +11,7 @@
 | 独立目录 | a_P_BIT/tmp/screen-k-traffic-issue9-20261017/ |
 | 当前阶段 | 已推送；[PR #10](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/10) 待审，未合并 |
 | 成果 | [正式分析](../../architecture_tlm/SCREEN_K_TRAFFIC_ANALYSIS_ZH_20261017.md)、审计工具与结果、原始校准字节归档 |
-| 实际验证 | 原选择器重建两组记录，QK 留存/K 组并集/物理字节与历史完全一致；其他检查见 work/jieruiz/9/ |
+| 实际验证 | 原选择器重建两组记录一致；补充MHA/GQA区别；旧LLaMA-1 7B筛选3种子×32层候选与组并集逐项相等；没有新推理。其他检查见 work/jieruiz/9/ |
 | 未运行 | 没有模型推理、训练、新 BF16/PPL、新 DRAMSys、RTL或DC/PT；不把合成输入作为真实模型稀疏率 |
 | 限制 | 组级共同预算、v6 PV＋筛选、摘要压缩均为后续候选；共享随机数仅计算理论期望，未启用 |
 | 待同步 | Projects 缺 read:project，看板待权限补齐；Issue/PR正常同步 |

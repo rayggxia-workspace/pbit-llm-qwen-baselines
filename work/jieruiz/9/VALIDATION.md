@@ -11,3 +11,7 @@
 - 复核命令：python architecture_tlm/audit_screen_k_traffic.py --output <new-temporary-file.json>。
 
 发布核对：身份/仓库/base重新确认，明确文件范围提交，所有成果与暂存blob SHA匹配；原始校准byte保持不变。PR已创建，未合并。
+
+## MHA/GQA与旧LLaMA实验补充
+
+只读核对两套历史实验：joint_pv目录没有QK筛选；qk_ising目录确实包含QK块筛选。后者两种筛选方案各3种子×32层，逐项断言候选比例等于KV组并集，均值匹配原summary（26.1631%与26.0795%）。记录源码/结果SHA和已有语料/权重分片SHA出处，未重新核验大权重，也不猜缺失revision。筛选结果属于4096-token固定后缀协议，非完整WT2；Python仍gather全部候选V，逻辑比例不是物理DRAM读数。没有重跑PPL或修改旧结果。GQA/MHA的25%保留示例只作数学说明。

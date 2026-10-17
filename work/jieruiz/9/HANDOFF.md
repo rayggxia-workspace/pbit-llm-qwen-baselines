@@ -24,3 +24,5 @@ git diff --check workspace/pbit-tlm-attention-details-20261016...HEAD
 恢复时先读 Issue #9/PR 最新讨论。工具拒绝覆盖输出；新生成 JSON 除机器路径外以记录值为准。下一步先捕获真实同一 decode 实例的全部 Q 头 logits/masks，量化 group overlap 与保留 attention mass；再测试组级共同预算和64B实际DMA，随后再集成筛选与v6 PV。不要把降低PV样本数当作已经降低前面K读取。
 
 交付状态：已推送，[PR #10](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/10) 待审，未合并；Issue #9保持open。Projects仍待权限补齐。
+
+本轮接续：报告第10节区分KV共享与候选共享。旧LLaMA有两套实验：joint_pv仅PV；qk_ising确实做过筛选。后者MHA的候选与KV组并集逐层相等，约26%；PPL为32×128后缀协议，非完整WT2。已纠正初次只找到PV目录的检索遗漏。文件SHA与metadata边界见llama7b_history_evidence.json；没有新远端作业。

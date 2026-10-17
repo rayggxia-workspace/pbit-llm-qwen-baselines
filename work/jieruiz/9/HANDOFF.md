@@ -22,3 +22,5 @@ git diff --check workspace/pbit-tlm-attention-details-20261016...HEAD
 ```
 
 恢复时先读 Issue #9/PR 最新讨论。工具拒绝覆盖输出；新生成 JSON 除机器路径外以记录值为准。下一步先捕获真实同一 decode 实例的全部 Q 头 logits/masks，量化 group overlap 与保留 attention mass；再测试组级共同预算和64B实际DMA，随后再集成筛选与v6 PV。不要把降低PV样本数当作已经降低前面K读取。
+
+交付状态：已推送，[PR #10](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/10) 待审，未合并；Issue #9保持open。Projects仍待权限补齐。

@@ -9,3 +9,5 @@
 - 3个新文档相对链接通过；git diff --check通过。发布时另核对明确文件范围、提交blob SHA和远端状态。
 - 没有BF16/PPL、完整DRAMSys、RTL/DC/PT或芯片测试。合成高斯输入不能代表真实Qwen头间相关性；没有改变运行时默认。
 - 复核命令：python architecture_tlm/audit_screen_k_traffic.py --output <new-temporary-file.json>。
+
+发布核对：身份/仓库/base重新确认，明确文件范围提交，所有成果与暂存blob SHA匹配；原始校准byte保持不变。PR已创建，未合并。

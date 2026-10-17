@@ -11,3 +11,5 @@
 已有验证：基线协议9tests、TLM结构/身份7tests；4K合成结构可运行但不是模型质量结论。还需实际下载、GPU PPL/capture、完整TLM与SHA核验。代码和结果只有本地/服务器，未宣称推送/合并。Projects仍缺read:project。
 
 并行工作树baseline-code与tlm-code仅各自范围，通过cherry-pick61c0259、5b80767集成。后续继续前读Issue14、PR和本STATUS；提交时只stage新Llama2目录、个人work14/STATUS与必要索引。
+
+更新：1962旧pending捕获已取消；正式1963已完成，512/1K/2K/4K均1024头且输出逐bit一致，前2K IDs匹配旧Llama1。下载1960的11文件官方匹配完成；基线1961运行，完整2K PPL4.9795028452，4K尚未结束。TLM1964 Link72、1965 Staggered36、1966 NoPD8已启动；数组并发上限24/8，实际受Slurm资源调度。执行源b5964b165dfead06676580029235bf5e952b5dad、57输入不可变，PPL源9ee1ab47d0317430212364e75adb78abec9797fb。PR #15已推送草稿，不自动合并。

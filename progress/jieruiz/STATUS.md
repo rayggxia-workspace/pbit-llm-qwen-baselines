@@ -6,10 +6,10 @@
 
 - 分支task/14-llama2-baseline-tlm，PR base pbit-tlm-attention-details-20261016 @07d03385a3b16b1f81a987c031f667c13876edf1；独立目录tmp/llama2-7b-issue14-20261017。
 - 用户已明确授权直接使用镜像。ModelScope shakechen/Llama-2-7b-hf @e61a2c602c83286a3ffbadaa29c20ad1160a8c4e；权重分片与官方meta-llama @01c7f73d771dfac7d292323805ebc428287df4f9的LFS SHA匹配，小文件另核Git blob。不发送token或cookies。
-- Slurm：下载1960运行；BF16完整WT2基线1961在下载后启动；最初捕获1962待替换为匹配Llama1文本窗口的新源快照。实际运行状态以后续Issue14交接为准。
+- Slurm：下载1960完成，11文件与官方记录逐字节匹配；真实捕获1963四上下文逐bit一致，1962旧pending捕获已取消；基线1961运行中，2K完整PPL=4.9795028452；TLM1964/1965/1966运行中。
 - 已完成本地基线9项协议测试及TLM7项契约检查；源代码已提交本地。4K支持与PV256已实现，旧Llama1和Qwen结果只读。
-- 正式结果尚未生成；不能把合成结构检查作为真实Llama2结果/PPL。下一步完成镜像SHA核验、原样BF16基线及真实QK捕获，再提交2K/4K主DRAMSys和4上下文Link。
-- 本次代码尚未推送或建PR；Projects缺read:project，看板待权限补齐。
+- 实际捕获验证已取回；116项真实轨迹TLM已提交并运行。下一步等待4K PPL与完整DRAMSys完成，再汇总和发布成果SHA；不能把合成结构检查作为真实Llama2结果。
+- 本次代码已推送并建立PR #15（草稿，未合并），Issue #14同步；Projects缺read:project，看板待权限补齐。
 
 ## 已交付历史：LLaMA-1 7B（Issue #12）
 

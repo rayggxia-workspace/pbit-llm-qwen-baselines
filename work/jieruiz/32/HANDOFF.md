@@ -21,3 +21,5 @@
 2113的39/39输出已收回并核SHA；128token T256 old55019.2039/input20.2729/weight426.3751/both15.7239，均3seed；BF16同片段14.329108。both T64/128/1024为30.4481/18.9260/14.8325。gu-only15.7192，down-only14.7346。详见qwen/results/dual_range_20261018/；所有替换仍是前缀PPL。
 
 依赖2113完成后的2142（prepare）与2143（最多2GPU、8替换配置）已提交2048token确认，共10输出。2142已通过，2048token BF16参考9.328747。剩余确认仍运行；不要重交。收取工具tmp/range-correction-20261019/collect32.py --confirm。分析脚本已正式发布在实验目录，可用授权原件重建小型汇总。
+
+PR34已创建并附到当前任务，base为PR31分支，已推送7bd3e2b，未合并。最新Issue33为amlink1219负责Attention价值核查计划，与本FFN任务无文件范围重叠；未接管其分支或个人状态。

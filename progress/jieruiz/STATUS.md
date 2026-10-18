@@ -8,12 +8,12 @@
 |---|---|
 | 分支/base | task/16-model-folders → pbit-tlm-attention-details-20261016 @7a506365cce42fd257f2645aa589b624e7d77116 |
 | 独立目录 | C:/Users/86134/Documents/a_P_BIT/tmp/model-folders-issue16-20261018 |
-| 当前阶段 | 三个模型目录及本地验证已完成，准备上传独立PR |
+| 当前阶段 | 代码与目录已推送；[PR #17](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/17)待审，未合并 |
 | 范围 | qwen/、llama1/、llama2/统一运行、配置、基线和结果入口，共享模块与历史路径不动 |
 | 验证 | 24次命令检查、17个源码/结果SHA锚点、93链接、119冻结输入通过；3模型参数/退出码透传和4类越界路径检查通过 |
 | 成果/交接 | work/jieruiz/16/；三个目录的README/project.json；根README |
 | 阻塞/待同步 | Projects缺read:project；无模型/数据阻塞，本次无远端计算作业 |
-| 下一步 | 上传已验证代码与目录索引，通过独立PR交付，再同步实际状态 |
+| 下一步 | 评审PR #17；合并前保持Issue16 open，未自动合并目录整理PR |
 
 ## 已合并任务
 

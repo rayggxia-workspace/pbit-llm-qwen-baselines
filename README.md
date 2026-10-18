@@ -318,3 +318,7 @@ and different readout precision. See the
 
 Apache License 2.0. Qwen model weights and WikiText-2 are obtained separately
 and remain subject to their own licenses and terms.
+
+## FFN精度与短流基线（2026-10-18）
+
+Llama 2全部32层FFN的完整WT2对照、128拍分层三种子、256枚举和DS-CIM条件核对见[实验说明](experiments/llama2_ffn_precision/README_ZH.md)及[原文比较](experiments/llama2_ffn_precision/DS_CIM_COMPARISON_AND_BASELINES_ZH.md)。已完成16/26项；Attention保持原BF16，剩余评测仍在Slurm运行，不代表新硬件能效实测。

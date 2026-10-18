@@ -1,29 +1,21 @@
 # jieruiz 项目进度
 
-更新 2026-10-18T16:41:08+08:00；实际GitHub登录@jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
+更新时间 2026-10-18T17:53:23+08:00；实际GitHub登录@jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
 
-## 当前 Issue19：Llama2 FFN精度与低于256拍
+## 当前Issue19：FFN精度与短流基线
 
-- 分支：task/19-llama2-ffn-precision；PR base=pbit-tlm-attention-details-20261016 @dd9f12b8cc25f474cafb54b1a58f2be20506cd9e。
-- 工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/llama2-ffn-precision-issue19-20261018。数值子任务独立目录tmp/llama2-ffn-numeric-issue19-20261018，提交a03fde7已cherry-pick为e10896e。
-- 范围：只读核对Qwen既有PPL；Llama2全32FFN的W8/A8/Q10/采样消融。Attention保持准确BF16 SDPA。Llama1不测，不训练。
-- 实际状态：BF16 2081已复现2K4.9795028452/4K4.8958312205；Q10与enum256完整PPL/NLL相同，5.0488010814；CUDA追加2090已18/18通过。当前收回14/26完整替换PPL，64分层三种子6.758371±0.008464，128分层当前3/3种子。PR20草稿已存在、未合并，Issue19开放；新增文献/功耗分析已推送数据提交a691fece9485，没有新PT功耗测量。
-- 方案：完整WT2 noBOS，2K/stride512；新BF16同时重跑2K/4K。固定尺度取train前8192tokens，测试数据不参与校准；A8为8位幅度+符号，不是通常signed INT8。
-- 已知缺口：Qwen旧A12结果不等价当前A8；新Q10从未接LLM PPL。统计计数参考使用FP32矩阵恢复，不是完整有限位硬件模型。
-- 成果：experiments/llama2_ffn_precision/；辅助与交接work/jieruiz/19/。
-- 阻塞/待同步：无模型或语料阻塞。Projects缺read:project待同步。Issue7的脏工艺checkout只读，不覆盖或发布。
-- 下一步：收集数组2084确定性精度分解与低T分层/中点/历史IID三种子完整PPL；通过各输出ARTIFACT_MANIFEST验证实际产物；任务分支/PR交付并持续记录完成项。执行源码快照a8ea21f75ae6d736b2bc0136f8ee55977b082060不变；只增测试的独立快照3ea0541。
+- 独立工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/llama2-ffn-precision-issue19-20261018；分支task/19-llama2-ffn-precision；PR20到pbit-tlm-attention-details-20261016 @dd9f12b8cc25f474cafb54b1a58f2be20506cd9e。
+- 用户本轮明确授权保留基线并合并；本地新增DS-CIM原文核对与结果整理已完成，尚待最终上传/合并，实际回执随后写入同Issue。
+- 已收回16/26完整FFN替换PPL：IID256三种子6.256753±0.005911，分层64为6.758371±0.008464，分层128为5.308904±0.001642；IID4096首种子5.091985，另两种子仍运行。无采样W8+A8准确SiLU为5.038305，原BF16为4.979503；Q10与enum256的完整NLL相等。
+- 已实际验证：模型/语料/token/配置SHA、原BF16重新运行；服务器2082为17/17、追加2090为18/18；新收回产物全部按原manifest逐SHA核对；v4分析16项同口径通过。仅本地无Torch环境测试会跳过相关项，不代替服务器验证。
+- 当前运行：原数组2084，8/9对应IID4096种子1/2运行；10-15、22/23排队，最多2GPU。执行快照a8ea21f75ae6d736b2bc0136f8ee55977b082060不变，未取消/重交/覆盖。
+- 范围：只测Llama2全部32FFN；Attention仍原BF16，无PV/Ising；不测Llama1，不训练，不改RTL或工艺数据。数值恢复为FP32统计参考，非完整bit-true硬件。
+- DS-CIM对照：128拍归随机舍入/混合unary；DS-CIM的二维优化PRNG、偏移编码、SRR与旧普通双流/OR不同；论文LLM为256拍误差注入且有3.4/7.2个百分点平均准确率损失。Issue5/PR6只读，不接管。
+- 已知缺口：RNE低位对照、逐投影与尺度/共享粒度消融、原权重+FP32内核控制、真实PRNG及完整定点硬件。没有新PT功耗或同精度能效证据。
+- 正式成果：experiments/llama2_ffn_precision/、llama2/results/ffn_precision_20261018/；辅助work/jieruiz/19/。权重和逐窗长NLL留既有服务器个人项目。
+- 阻塞/待同步：无评测数据阻塞；Projects缺read:project待同步。Issue19保留开放，合并本阶段基线不等于剩余评测已完成。
+- 下一步：核最终差异/manifest后上传并按授权合并PR20，写实际merge回执；随后收集剩余2084结果，另用任务分支/PR追加，保持原件SHA。
 
-## 已交付
+## 既有交付
 
-Issue14/PR15 Llama2 BF16+116 TLM已合并7a506365；Issue16/PR17三模型入口和PR18状态回执已合并，当前base为dd9f12b。
-Issue12/PR13 Llama1已合并07d0338。此前治理/硬件/筛选等独立分支维持原审查状态。
-
-## 分层效果与功耗文献追加分析
-
-- 当前收回14/26项完整替换PPL，全部核模型/语料/token/配置/校准/源码一致。64拍三种子均值6.758371±0.008464；128拍当前3/3种子，数值见正式报告。IID256已2/3，不能把2种子均值当三种子正式结论。
-- 结论：64拍尚不保精度；小概率z及粗事件是重要线索，未做逐矩阵因果消融。相同T的分层方差不增不等于T缩小4倍仍保PPL。
-- 功耗：平均W可能同量级，E=P×t；有序门限使单路帧内至多1翻转，但PRNG/时钟/累加等不同比。当前没有分层VCD/SAIF/PT，不能宣称实测节能倍数。旧PPA含12bit独立源/寄存器且不含RNG/SRAM，不直接迁移。
-- 资料：experiments/llama2_ffn_precision/STRATIFIED_EFFECT_ENERGY_LITERATURE_ZH.md、analysis/EFFECT_AUDIT_20261018_v3.json；4篇primary文献及RTL证据SHA位于work/jieruiz/19/。
-- 调度：128三种子和midpoint64/128均已完成；其他原对照仍运行/排队，仍最多2GPU。midpoint64=5.995513，优于分层64；midpoint128=5.412020，略差于分层128。midpoint128是向零截去幅度低位，不是最优RNE；不宣称随机已优于所有确定性方法。
-- 发布：继续同Issue19/草稿PR20；本次追加分析与14项完整替换结果已推送并核验数据提交a691fece94858fe751da78ccea74077df865c10f；Issue19评论已同步https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19#issuecomment-6247732705。Projects无read:project待同步；没有新硬件功耗实测。
+Llama2基线+116TLM为Issue14/PR15，已合并7a506365；三模型入口Issue16/PR17及回执PR18已合并，base dd9f12b。Llama1 Issue12/PR13已合并07d0338。治理/DS-CIM/硬件/筛选其他独立分支维持原审查状态。

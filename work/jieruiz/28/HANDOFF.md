@@ -16,3 +16,5 @@
 - 权限/阻塞：仓库admin/push已核实。Projects此前缺read:project，本次未重新核验看板权限，待同步；备忘录不因这一项延迟其它交付。远程队列本次未实时检查，旧2084状态仅是此前记录。
 - PR：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29。
 - 下一步：审阅PR29/31；合并前保持对应Issue open。精确短测不需重跑，完整精确随机WT2仍未做；后续先依据已确认短T退化决定是否优化编码/内核，不盲目开长评测。
+
+Issue32/PR34范围修正已完成49输出并同步备忘录5.2及任务索引。执行源17c89c3；所有替换仍是128/2048token前缀，完整随机WT2未做；模型运行不混入本文件文档任务验证。PR34未合并。Issue33由amlink1219负责Attention计划，未修改其分支或个人STATUS。

@@ -8,6 +8,8 @@
 
 - Server-side tests must create temporary checkpoints under the verified personal project directory (pass an explicit `dir` to `TemporaryDirectory`); do not rely on the shared host's default temporary directory. Keep execution snapshots immutable after submitting a job and record later test-only fixes separately.
 
+- When staging a minimal server snapshot, include test fixtures and imported data/configuration files in its source manifest. Run tests from the extracted snapshot rather than only from a full checkout, and pass a CPU Slurm preflight before allocating a GPU; preserve failed snapshots and job identities.
+
 ## Workspace collaboration rules（2026-10-16）
 
 本规则适用于本仓库及其 LLM 实验、RTL、TLM、文档和发布任务。执行用户明确授权的任务时，持续完成修改、适当验证、任务分支上传、PR 和进度同步；遇到权限、环境、数据阻塞，应完成不受影响的部分并如实记录待办，不把本地完成写成远端已完成。
@@ -63,3 +65,9 @@
 - 继续遵守 README 的同模型、分词器、语料、精度、window/stride、种子对照要求；随机方案记录采样数并至少报告三个独立种子。
 - 既有 P-DNN 层原理及后续变更继续维护 `experiments/pdnn_ffn/P_DNN_FFN_DESIGN_ZH.md`，不是被个人 STATUS 替代。
 - 当前 TLM 已发布入口位于分支 `pbit-tlm-attention-details-20261016` 的 `architecture_tlm/WORKSPACE_LATEST_ZH.md`；该分支未自动合入 main。阅读版本与限制后再接续，不将宏级模型结果宣称为实测芯片性能。
+
+## Attention 架构验收口径（用户 2026-10-19 指定）
+
+- 概率 Attention 的主目标是降低面积、能量与延迟；允许有限质量损失。以同模型、同语料协议下完整模型 PPL 增量约束比较完整数字 Attention 与概率方案的 PPA；尚未约定具体 PPL 预算时报告质量与成本曲线，不擅自写成用户已接受某个阈值。局部 TV/NMSE、采样独立性用于诊断，不能代替完整模型验收或单独决定架构优劣。
+- 数字对照须有可追溯实现依据，包含分块在线/融合 Softmax、GQA 的 K/V 复用，并区分 QK/Softmax/PV 核心与含 QKV、RoPE、KV 追加、Wo 的完整 Attention。注明归一化、残差、FFN、lm_head 的边界；不强制数字方案物化完整概率矩阵。
+- 面积/能量/延迟比较必须使用明确数制、资源共享、驻留容量和数据流；把假设的资源速率下界、宏表局部成本、同工艺综合、功率分析与芯片实测分开。FP32 概率乘 V 不得按纯 BF16 MAC 免费计费；SRAM fabric 若为读写合计，DMA 写入和计算读出须各计一次。缺失项保持未完成，不用旧占位系数补成完整 PPA。

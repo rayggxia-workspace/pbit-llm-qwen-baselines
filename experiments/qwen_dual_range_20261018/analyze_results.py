@@ -23,12 +23,12 @@ for tokens,suffix,collection in [(128,'','collection32.json'),(2048,'_prefix2048
   c=json.loads((HERE/collection).read_text(encoding='utf-8'))
   artifacts.append(dict(prefix_tokens=tokens,server_output=c['server_output'],collected_at=c['collected_at'],files=c['files']))
 groups=[]
-keys=sorted({(v['prefix_tokens'],v.get('variant',''),v['kind'],v.get('scope',''),v.get('cycles',0)) for v in rows})
+keys=sorted({(v['prefix_tokens'],v.get('variant',''),v['kind'],v.get('scope',''),v.get('cycles',0)) for v in rows if v['kind']!='baseline'})
 for tokens,variant,kind,scope,cycles in keys:
  selected=[v for v in rows if (v['prefix_tokens'],v.get('variant',''),v['kind'],v.get('scope',''),v.get('cycles',0))==(tokens,variant,kind,scope,cycles)]
  values=[v['ppl'] for v in selected if v['ppl'] is not None]
  groups.append(dict(prefix_tokens=tokens,variant=variant,kind=kind,scope=scope,cycles=cycles,completed=len(selected),ppl_mean=statistics.mean(values) if values else None,ppl_std=statistics.pstdev(values) if values else None))
-write('SUMMARY.json',dict(execution_commit=head,rows=rows,groups=groups,expected_primary=39,expected_confirmation=10,primary_completed=sum(v['prefix_tokens']==128 for v in rows),confirmation_completed=sum(v['prefix_tokens']==2048 for v in rows),warning='All replacements are prefix PPL, not full WT2. bf16_full is repeated unchanged full-corpus reference.'))
+write('SUMMARY.json',dict(execution_commit=head,rows=rows,groups=groups,references=references,expected_primary=39,expected_confirmation=10,primary_completed=sum(v['prefix_tokens']==128 for v in rows),confirmation_completed=sum(v['prefix_tokens']==2048 for v in rows),warning='All replacements are prefix PPL, not full WT2. bf16_full is repeated unchanged full-corpus reference.'))
 write('ARTIFACT_INDEX.json',dict(issue=32,execution_commit=head,artifacts=artifacts,access='Original calibration and per-case long diagnostics stay in the authorized personal server project. Teacher activations were transient GPU tensors and were not persisted. No weights/text/activation arrays included in Git.',old_calibration_index='experiments/qwen_dual_iid_exact_20261018/CALIBRATION_ARTIFACTS.json'))
 diag=json.loads((HERE/'raw'/head/'projection_diagnostics.json').read_text(encoding='utf-8'))
 metrics=['input_mean_probability','weight_mean_probability','input_encoding_nmse','weight_reencoding_nmse','deterministic_projection_nmse','input_variance_nmse_T256','extra_weight_variance_nmse_T256','dual_total_mse_nmse_T256']
@@ -67,7 +67,7 @@ lines+=['',
 'teacher局部输入平均概率：gate/up从4.93%升到20.40%，down从0.761%升到16.588%；W从约14～16%升到约29～30%。双方修正后，down总NMSE约降低40倍。保留旧W8均值的row64_ideal与严格R8结果非常接近，新增权重概率舍入不是主要误差来源。','',
 '## 范围实现与限制','',
 '旧实现A和W本来已有独立尺度。问题是固定A范围来自8192个train token的最大包络，W范围来自64×64 tile，典型值只用到小部分概率范围。新A用每token/64通道absmax，新W用每输出行/64输入absmax。A/W均为独立8位概率q/256，最大幅度S=M×256/255；W从相同旧W8解码值重编码。','',
-'输入动态absmax需要在线归约和尺度恢复，权重尺度元数据比旧tile多64倍。本次是数值定位，不是已经证明更省能的硬件方案；不能继承原固定范围的PPA。完整随机WT2尚未运行，也没有新训练、RTL/PT或TLM结果。','',
+'输入动态absmax需要在线归约和尺度恢复，权重尺度元数据比旧tile多64倍。这里W8指来源的旧有符号INT8权重，新概率阈值为8位外加符号，不能默认为原signed INT8存储布局不变。本次是数值定位，不是已经证明更省能的硬件方案；不能继承原固定范围的PPA。完整随机WT2尚未运行，也没有新训练、RTL/PT或TLM结果。','',
 '源码见`experiments/qwen_dual_range_20261018/`；原始结果、完整命令/配置/环境/hash及授权位置见ARTIFACT_INDEX.json和work/jieruiz/32/提交回执。']
 (OUT/'RESULTS_ZH.md').write_text('\n'.join(lines)+'\n',encoding='utf-8',newline='\n')
 print(json.dumps({'primary_completed':sum(v['prefix_tokens']==128 for v in rows),'confirmation_completed':sum(v['prefix_tokens']==2048 for v in rows),'published_files':[p.name for p in OUT.iterdir() if p.is_file()]}))

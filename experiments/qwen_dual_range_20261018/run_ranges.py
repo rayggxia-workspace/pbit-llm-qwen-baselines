@@ -252,7 +252,10 @@ def summarize(args):
             **value['configuration'],ppl=value['perplexity'],nll=value['nll'],
             tokens=value['scored_tokens'],seconds=value['forward_seconds']))
     groups = []
-    keys = sorted({(r.get('variant',''),r['kind'],r.get('scope',''),r.get('cycles',0)) for r in rows})
+    # Post-execution summary-only fix: full/prefix references are different
+    # protocols and must never be averaged together. Sampled groups only.
+    keys = sorted({(r.get('variant',''),r['kind'],r.get('scope',''),r.get('cycles',0))
+                   for r in rows if r['kind'] != 'baseline'})
     for variant, kind, scope, cycles in keys:
         selected = [r for r in rows if (r.get('variant',''),r['kind'],r.get('scope',''),r.get('cycles',0)) == (variant,kind,scope,cycles)]
         values = [r['ppl'] for r in selected if r['ppl'] is not None]
@@ -260,6 +263,7 @@ def summarize(args):
             completed=len(selected),ppl_mean=statistics.mean(values) if values else None,
             ppl_std=statistics.pstdev(values) if values else None))
     write_json(output / 'summary.json',dict(rows=rows,groups=groups,
+        references=[r for r in rows if r['kind'] == 'baseline'],
         expected=39,completed=len(rows),prefix_tokens=args.prefix_tokens,
         warning='Only bf16_full is full WT2. All replacement PPL results are a fixed test-prefix diagnostic.'))
     print(json.dumps({'completed':len(rows),'expected':39,'groups':groups}),flush=True)

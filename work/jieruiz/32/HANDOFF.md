@@ -23,3 +23,5 @@
 依赖2113完成后的2142（prepare）与2143（最多2GPU、8替换配置）已提交2048token确认，共10输出。2142已通过，2048token BF16参考9.328747。剩余确认仍运行；不要重交。收取工具tmp/range-correction-20261019/collect32.py --confirm。分析脚本已正式发布在实验目录，可用授权原件重建小型汇总。
 
 PR34已创建并附到当前任务，base为PR31分支，已推送7bd3e2b，未合并。最新Issue33为amlink1219负责Attention价值核查计划，与本FFN任务无文件范围重叠；未接管其分支或个人状态。
+
+后处理修订：审查发现原summary分组key会把full/prefix BF16混在baseline组；正文表格原本逐reference读取，未受影响。现排除baseline采样分组、单列references，test_summary_protocol本地通过；旧17c89c3未执行summarize，所有模型结果不变。局部默认TempDirectory受sandbox限制的首次本地测试未通过，后改为明确项目work目录并通过。

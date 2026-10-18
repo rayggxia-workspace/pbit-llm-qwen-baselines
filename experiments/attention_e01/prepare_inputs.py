@@ -30,6 +30,8 @@ def main():
         raise ValueError('Unrecognized config variant; inspect semantics and provenance first')
     files=[]
     for name,entry in identities['files'].items():
+        if variant['label']=='upstream_original_recorded_sources_json':
+            entry=identities.get('upstream_original_files',{}).get(name,entry)
         if name.startswith('model/'):
             relative=name.split('/',1)[1]
             path=run.inside(model/relative,personal_root)

@@ -33,6 +33,25 @@ def inside(path, personal_root, exists=True):
     return target
 
 
+def environment_python(path, personal_root):
+    """Preserve the venv executable path; its base Python symlink is read-only.
+
+    Resolving bin/python to /usr/bin/python would discard the virtual environment.
+    Validate the personal venv directory separately from the base executable.
+    """
+    executable = Path(path)
+    if not executable.is_absolute():
+        raise ValueError('Python environment path must be absolute')
+    bin_dir = inside(executable.parent, personal_root)
+    venv_root = inside(bin_dir.parent, personal_root)
+    if not (venv_root/'pyvenv.cfg').is_file():
+        raise ValueError('An explicit personal virtual environment is required')
+    base = executable.resolve(strict=True)
+    if personal_root not in base.parents and not (base.parent==Path('/usr/bin') and base.name.startswith('python')):
+        raise ValueError('Python base resolves outside the personal root or system interpreter')
+    return executable
+
+
 def save(path, data):
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
 
@@ -86,7 +105,8 @@ def main():
     config = json.loads(config_path.read_text(encoding='utf-8'))
     if config.get('schema') != 'attention-e01-run-v1' or config.get('ready') is not True:
         raise ValueError('Supply a reviewed ready=true server configuration')
-    paths = {key:inside(config[key], personal_root) for key in ['model','text','expected_manifest','python']}
+    paths = {key:inside(config[key], personal_root) for key in ['model','text','expected_manifest']}
+    paths['python'] = environment_python(config['python'], personal_root)
     output_root = inside(config['output_root'], personal_root, exists=False)
     output_root.mkdir(parents=True, exist_ok=True)
     stage_output = output_root/(args.stage+'-'+os.environ['SLURM_JOB_ID'])

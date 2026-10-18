@@ -8,6 +8,18 @@ import run
 
 
 class DriverTests(unittest.TestCase):
+    def test_environment_executable_path_preserves_virtualenv(self):
+        with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent) as folder:
+            root=Path(folder).resolve();venv=root/'venv';bin_dir=venv/'bin';bin_dir.mkdir(parents=True)
+            (venv/'pyvenv.cfg').write_text('include-system-site-packages = false\n',encoding='utf-8')
+            executable=bin_dir/'python';executable.write_bytes(b'placeholder')
+            self.assertEqual(run.environment_python(executable,root),executable)
+            with self.assertRaisesRegex(ValueError,'absolute'):
+                run.environment_python('venv/bin/python',root)
+            (venv/'pyvenv.cfg').unlink()
+            with self.assertRaisesRegex(ValueError,'virtual environment'):
+                run.environment_python(executable,root)
+
     def test_personal_scope_and_symlink_escape(self):
         with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent) as folder:
             root=Path(folder).resolve(); inside=root/'source';inside.mkdir()

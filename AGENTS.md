@@ -63,3 +63,15 @@
 - 继续遵守 README 的同模型、分词器、语料、精度、window/stride、种子对照要求；随机方案记录采样数并至少报告三个独立种子。
 - 既有 P-DNN 层原理及后续变更继续维护 `experiments/pdnn_ffn/P_DNN_FFN_DESIGN_ZH.md`，不是被个人 STATUS 替代。
 - 当前 TLM 已发布入口位于分支 `pbit-tlm-attention-details-20261016` 的 `architecture_tlm/WORKSPACE_LATEST_ZH.md`；该分支未自动合入 main。阅读版本与限制后再接续，不将宏级模型结果宣称为实测芯片性能。
+
+
+## amlink1219 hardware-design workspace（2026-10-18）
+
+- 本节补充用户在本机的硬件架构设计协作要求，上方原复现及协作规则逐字保留。只约束本用户的操作身份，不改变其他成员的身份或任务所有权。
+- 本人的 GitHub 登录名为 `amlink1219`，ID `75301230`；首次使用认证渠道及切换凭据后核实 `/user`，发布前核对目标权限和所有解析后的 push URL。目标仅为 `rayggxia-workspace/pbit-llm-qwen-baselines`；不使用身份不符的连接器，不回退旧上游。
+- 个人进度为 `progress/amlink1219/STATUS.md`，辅助资料及可执行交接为 `work/amlink1219/<Issue编号>/`。本次是既有 Issue #1 的本机规范落地子项，负责人 `amlink1219`；Issue #1 原负责人仍为 `jieruiz`，未接管其 PR #2。实际硬件实现的新范围另建或接续对应 Issue。
+- 继续执行一任务一 Issue/分支、独立并行目录、开工/恢复/发布前检查 Issue/PR/成员 STATUS/HANDOFF、明确验收、限定文件范围、实际验证、任务 PR 交付和有权限的看板同步。缺少权限仍完成可执行部分，并记录尚未上传或同步的内容。
+- 恢复硬件设计前，先读根 `PROJECT_MEMORY_ZH.md` 第 0、1、12 节及对应子系统。若 PR #29 尚未合并，用 `git fetch origin` 后 `git show origin/task/28-project-memory:PROJECT_MEMORY_ZH.md` 读取待审版本并注明来源，不把它当成已集成代码。随后重新核对 Issue #19、#22、#30 等实际状态。
+- 当前主要集成分支为 `pbit-tlm-attention-details-20261016`，不是默认 main；此为截至 2026-10-18 的导航，恢复时重新确认。其他成员拥有的 Issue #19/22/30 及既有评审分支只读，不重复启动或覆盖其运行快照。
+- 硬件目标围绕质量、能量、面积和延迟一起决策；同一数制和质量目标下比较确定性低位/位串行与随机计算。输入侧/双侧随机、自然 IID/PRNG/分层/枚举、原生 p-bit/数字随机字、数值参考/RTL/PT/TLM 分开记录。SRAM、权重/KV、随机源/分发、计数累加、非线性、格式转换和接口均计费。
+- 本次权限核验是时点快照：`amlink1219` pull=true、push=false、triage=false；Projects 查询缺 `read:project`。详细回执见 `work/amlink1219/1/REMOTE_SNAPSHOT.json`。恢复后重新核实；权限不足时明确“本地已完成、未上传、未创建 PR、看板待同步”，不换账号或擅自修改权限。

@@ -27,6 +27,9 @@ Issue [#19](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues
 
 仍缺的关键Qwen对照：最新W8+A8 x/z且无采样的完整PPL；2026-10-17新Q10 RTL后处理连接FFN后的PPL。旧全模型INT10实验还改了Attention/Norm/残差和LUT，不能代替这个Q10消融。`joint_ffn_attention_20261009/results/RESULTS_ZH.md`中的固定段后缀PPL也不能代替完整WT2。
 
+
+最新实际效果、功率/能量区分及相关文献见[分层采样分析](STRATIFIED_EFFECT_ENERGY_LITERATURE_ZH.md)。64拍三种子PPL约6.758，尚未接近5.038的量化基线；128拍结果以链接中的完整记录为准，不能只用最大方差界预测模型精度。
+
 ## 为什么256拍完整遍历精确
 
 当前编码是幅度整数`a=round(256*abs(x)/S)`，截到0～255，概率为`a/256`，符号单独保存。注意：**这实际是8位幅度加符号，不是总共8位的signed INT8。**
@@ -81,7 +84,7 @@ C = floor(a/w) + Bernoulli((a mod w)/w)
 - 参考：不变`baselines/llama2_7b/evaluate.py`重跑，noBOS，WT2全部335687token中的335686个next-token目标各计一次，窗口2K/4K，stride512，FP32 CE和FP64总NLL。
 - BF16作业2081已完成：2K PPL **4.979502845218782**，4K **4.895831220529201**，与旧参考完全相同。GPU评测时间分别114.06s/229.55s，不是ASIC时间。
 - 数值/CUDA作业2082：17/17通过，无跳过，含Q10原oracle、带符号整数点积、共享联合分布和整个FFN的枚举一致性。另以独立测试快照3ea0541提交2090，补上正式确定性开关下的CUDA IID后端测试，18/18通过；未修改执行中的评测快照。
-- 校准作业2083已完成；完整PPL数组2084，26项、最多2GPU并行。已完成W8-only PPL4.9809463739、W8+A8准确SiLU PPL5.0383045615、同数制Q10 PPL5.0488010814；enum256_q10与确定性Q10的完整PPL及总NLL完全相同。其余随机/分层/midpoint运行或排队；[实时收回结果与散列](../../llama2/results/ffn_precision_20261018/RESULTS_ZH.md)。
+- 校准作业2083已完成；完整PPL数组2084，26项、最多2GPU并行。已完成W8-only PPL4.9809463739、W8+A8准确SiLU PPL5.0383045615、同数制Q10 PPL5.0488010814；enum256_q10与确定性Q10的完整PPL及总NLL完全相同。分层新增结果见下方更新，其他未完成项仍运行或排队；[实时收回结果与散列](../../llama2/results/ffn_precision_20261018/RESULTS_ZH.md)。
 - 固定尺度：仅train前8192token，4个2048窗；BF16 teacher层输入求每64组Sx，向上取2次幂；W8+A8 x→准确FP32 SwiGLU求每64组Sz并向上取2次幂。所有候选复用同一校准文件，不用test调参。本次A8校准与历史Qwen的A12校准明确不同。
 - 数值边界：权重每64×64tile对称INT8（±127）；x/z按a/256+sign；g/u保持FP32或进入单独Q10后处理。Q10严格复用Issue7的16位Q10输入、256项Q16 sigmoid LUT、INT64中间计算、RNE及24位Q10输出。输入g/u溢出计数单独记录，不把饱和当作免费正确转换。
 - 分解：W8-only；W8+A8准确SiLU；同数制+Q10；Q10+完整enum256；准确SiLU下IID256/4096与分层16/32/64/128分别三种子；midpoint16/32/64/128各一次。配置逐项冻结在`configs/`。

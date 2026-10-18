@@ -11,3 +11,7 @@
 下一步：服务器Slurm prepare先运行全部测试、重新核身份和原BF16完整WT2，再输出teacher逐投影方差；通过READY后提交37项数组（最多2GPU）。核结果SHA，报告无采样误差/采样方差/2×2改进/分支消融；更新代码/汇总/索引PR和长期备忘录。动态absmax和64倍权重尺度元数据是新增硬件成本，本次不估PPA。Projects权限待同步。
 
 部署修订：5e12524的Git blob为LF，但git archive按默认autocrlf导出为CRLF，Slurm拒绝，未生成作业。已为新实验显式设置text/eol=lf，使用新提交新快照重试，原快照保留。原Issue30冻结归档不改。
+
+## 实际运行更新
+
+源17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee；prepare2112通过kernel8/8、共享counts/理论方差测试、完整原BF16 PPL11.652735047455899（299077token）和teacher局部诊断。数组2113已提交37替换配置，最多2GPU。回执见SUBMISSION_PREPARE.json / SUBMISSION_ARRAY.json。当前尚未收齐替换PPL。继续使用collect32.py逐SHA收回，不重交。

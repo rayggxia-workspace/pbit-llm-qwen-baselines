@@ -11,7 +11,7 @@ set -euo pipefail
 : "${E01_SOURCE_MANIFEST:?Set immutable snapshot source manifest absolute path}"
 : "${E01_SOURCE_COMMIT:?Set exact source commit}"
 : "${E01_SOURCE_ROOT:?Set immutable snapshot root}"
-: "${E01_STAGE:?baseline_capture, micro_pilot or micro_full}"
+: "${E01_STAGE:?preflight, baseline_capture, micro_pilot or micro_full}"
 export PYTHONIOENCODING=utf-8
 export PYTHONUTF8=1
 export HF_HUB_OFFLINE=1

@@ -8,6 +8,8 @@
 
 - Server-side tests must create temporary checkpoints under the verified personal project directory (pass an explicit `dir` to `TemporaryDirectory`); do not rely on the shared host's default temporary directory. Keep execution snapshots immutable after submitting a job and record later test-only fixes separately.
 
+- When staging a minimal server snapshot, include test fixtures and imported data/configuration files in its source manifest. Run tests from the extracted snapshot rather than only from a full checkout, and pass a CPU Slurm preflight before allocating a GPU; preserve failed snapshots and job identities.
+
 ## Workspace collaboration rules（2026-10-16）
 
 本规则适用于本仓库及其 LLM 实验、RTL、TLM、文档和发布任务。执行用户明确授权的任务时，持续完成修改、适当验证、任务分支上传、PR 和进度同步；遇到权限、环境、数据阻塞，应完成不受影响的部分并如实记录待办，不把本地完成写成远端已完成。

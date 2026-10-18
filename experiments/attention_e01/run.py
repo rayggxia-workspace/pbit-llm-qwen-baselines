@@ -64,6 +64,7 @@ def check_source(manifest_path, commit):
     required = {
         'baselines/common.py', 'baselines/perplexity.py',
         'architecture_tlm/attention_reference_v3.py',
+        'config/qwen2.5-0.5b-config.json',
         *('experiments/attention_e01/'+name for name in [
             'run.py', 'capture.py', 'verify_inputs.py', 'microbench.py',
             'test_capture_contract.py', 'test_microbench.py', 'test_driver.py',
@@ -81,7 +82,7 @@ def check_source(manifest_path, commit):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--stage', required=True, choices=['baseline_capture','micro_pilot','micro_full'])
+    parser.add_argument('--stage', required=True, choices=['preflight','baseline_capture','micro_pilot','micro_full'])
     parser.add_argument('--config', required=True)
     parser.add_argument('--source-manifest', required=True)
     parser.add_argument('--source-commit', required=True)
@@ -135,7 +136,12 @@ def main():
 
     phase_output = None
     try:
-        if gpu_stage:
+        if args.stage=='preflight':
+            run([HERE/'verify_inputs.py','--model',paths['model'],'--text',paths['text'],
+                 '--expected-manifest',paths['expected_manifest'],'--output',stage_output/'verified_inputs.json'])
+            run(['-m','unittest','discover','-s',HERE,'-p','test_*.py'])
+            summary['preflight_passed']=True
+        elif gpu_stage:
             verification = stage_output/'verified_inputs.json'
             run([HERE/'verify_inputs.py','--model',paths['model'],'--text',paths['text'],
                  '--expected-manifest',paths['expected_manifest'],'--output',verification])

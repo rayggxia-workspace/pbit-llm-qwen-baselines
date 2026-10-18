@@ -1,6 +1,6 @@
 # Issue19 可执行交接
 
-当前状态（2026-10-18）：已收回16/26项，见文末“用户授权合并本阶段基线”与个人STATUS。以下较早段落作为带时间的历史保留；其中“待提交”“12项”等不是当前状态。用户已授权合并PR20，剩余评测继续，Issue19保持开放。
+当前状态（2026-10-18）：已收回16/26项，见文末“用户授权合并本阶段基线”与个人STATUS。以下较早段落作为带时间的历史保留；其中“待提交”“12项”等不是当前状态。PR20已合并40ea9f1，剩余评测继续，Issue19保持开放。
 
 更新时间 2026-10-18T14:54:31+08:00，负责人@jieruiz。状态细节见../../../../progress/jieruiz/STATUS.md。
 
@@ -63,3 +63,7 @@ BF162081完成且复现旧结果；CUDA2082的17测试全通过；校准2083完�
 此前按时间追加的10/12/14项段落均为历史状态；以本节及STATUS为当前事实。新收回IID256_s2和IID4096_s0，现16/26项。分析v4保留新数据、不覆盖v1～v3。DS_CIM_COMPARISON_AND_BASELINES_ZH.md记录原文p2～p6核对及128拍分类、比较缺口。无源码/RTL修改，无新模型作业。
 
 数组2084_8/9运行，其余10-15、22/23待排队；数据仍在个人项目outputs，获取脚本tmp/issue19_collect.py核全部原始SHA后只收小型JSON。更新RESULTS与publication manifest，analysis输出必须新文件名。GitHub实际已核jieruiz管理员；PR20干净可合并、无保护/ruleset/required checks，不需绕过审查。先推本次更新，再核head SHA、ready并merge；实际merge回执另同步，未发生前不写已合并。保留Issue19开放和源分支，下一次追加结果使用合并后的独立任务分支。
+
+## 实际合并回执 2026-10-18T17:57:41+08:00
+
+PR20已合并到`pbit-tlm-attention-details-20261016`，merge `40ea9f121c27ed7ea6e8a2e653e92246f3adcbfa`，head `1cbf4168b8d2e37dbd398d88e5823c3db009eecd`。已核GitHub实际merged=true，Issue19评论https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19#issuecomment-6248484271。MERGE_RECEIPT.json保存回执；本回执checkout `C:/Users/86134/Documents/a_P_BIT/tmp/issue19-merge-receipt-20261018`、分支`task/19-merge-receipt-20261018`。原实验checkout/源分支保留；剩余2084作业和源码a8ea21f不变。下一次从最新base新建独立结果分支，不向已合并PR20重复提交。Projects仍缺read:project待同步。

@@ -51,3 +51,7 @@ BF162081完成且复现旧结果；CUDA2082的17测试全通过；校准2083完�
 文献4篇primary已核实，包括P2LSG直接测试LHS；有序单边分层不是通用双流AND/Ising替代。功率和能量分开，尚未生成新PT数据。优先级24/25已设Nice0，等待midpoint64/128；其他旧对照保留，不取消。新输出获取仍使用同collector/renderer；analysis工具只接受已提交LF源码，并要求新JSON文件名，旧分析v1不覆盖。新增结果后可生成v2并更新报告表，而不是改v1字节。
 
 最终补收midpoint64=5.9955130639、midpoint128=5.4120198259，均完整PPL；目前14/26替换结果。分析v3保留新数据且不重写v1/v2。64拍随机不如midpoint，128随机略好但对照为有偏截断，不是最优RNE。源码快照始终未改，既有0..25数组不新增或取消；后续按squeue查剩余6..15、22/23。
+
+## 本轮发布回执 2026-10-18T16:41:08+08:00
+
+数据/分析已实际推送a691fece94858fe751da78ccea74077df865c10f，PR20草稿未合并，Issue19最新评论：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19#issuecomment-6247732705。EFFECT_PUBLICATION_RECEIPT.json为已完成远端动作回执。共165个Git blob原始SHA/大小匹配；14/26项完整替换PPL收回。剩余12项仍运行或排队（交接时6/7运行）。这次没有新PT测量或RTL修改；论文调研与条件能耗情景已完成。下一步主动收集其他结果，按同manifest验证后更新同PR；不要重跑已完成作业或修改快照。

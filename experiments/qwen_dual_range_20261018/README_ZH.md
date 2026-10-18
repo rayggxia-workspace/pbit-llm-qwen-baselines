@@ -20,3 +20,7 @@ Issue32，依赖Issue30 / PR31的安全公开源码。只改数值范围，不�
 权重逐行范围元数据是旧tile范围的64倍；动态输入需要在线absmax及尺度恢复。这是数值定位，不代表免费硬件改进，也不直接继承旧PPA。
 
 原始校准由现有授权服务器提供，沿用旧CALIBRATION_ARTIFACTS与SHA，不能单靠Git获得。权重、语料、激活和长结果不入Git；只发布代码、小型汇总和文件SHA索引。原执行快照不可覆盖，新的测试修复使用新提交与新快照。
+
+128token改善后增加2048token确认（不是完整WT2）：old/both期望控制各1项，both双随机T128/256各3seed，另跑完整与前缀BF16参考，共10输出。该确认使用相同17c89c3执行源，在首轮数组结束后才运行；命令与依赖见work/jieruiz/32/SUBMISSION_CONFIRMATION.json。
+
+结果汇总脚本`analyze_results.py`在执行源冻结后添加，只读分析，不修改数值内核。授权证据目录内需有submission32.json、raw/<execution_sha>/、可选raw/<execution_sha>_prefix2048/及collection32*.json。执行`python analyze_results.py --evidence-dir <本地授权证据目录> --checkout <正式checkout>`会重建qwen/results/dual_range_20261018/的小型汇总、中文报告和原件SHA索引。模型、原始校准和逐case长诊断仍需授权访问。

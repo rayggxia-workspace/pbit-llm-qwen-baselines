@@ -15,3 +15,9 @@
 ## 实际运行更新
 
 源17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee；prepare2112通过kernel8/8、共享counts/理论方差测试、完整原BF16 PPL11.652735047455899（299077token）和teacher局部诊断。数组2113已提交37替换配置，最多2GPU。回执见SUBMISSION_PREPARE.json / SUBMISSION_ARRAY.json。当前尚未收齐替换PPL。继续使用collect32.py逐SHA收回，不重交。
+
+## 首轮完成与更长确认
+
+2113的39/39输出已收回并核SHA；128token T256 old55019.2039/input20.2729/weight426.3751/both15.7239，均3seed；BF16同片段14.329108。both T64/128/1024为30.4481/18.9260/14.8325。gu-only15.7192，down-only14.7346。详见qwen/results/dual_range_20261018/；所有替换仍是前缀PPL。
+
+依赖2113完成后的2142（prepare）与2143（最多2GPU、8替换配置）已提交2048token确认，共10输出。2142已通过，2048token BF16参考9.328747。剩余确认仍运行；不要重交。收取工具tmp/range-correction-20261019/collect32.py --confirm。分析脚本已正式发布在实验目录，可用授权原件重建小型汇总。

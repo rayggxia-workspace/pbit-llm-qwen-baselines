@@ -1,6 +1,6 @@
 # p-bit LLM 项目长期备忘录
 
-更新日期：2026-10-18。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)。
+更新日期：2026-10-18。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，已推送至 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)，待审、未合并。
 
 本文件保存项目目标、用户决策、算法分支、实验口径、架构与证据入口，用于长对话压缩、换会话或换人后的恢复。它不替代原始结果、manifest、最新 Issue/PR 和运行日志。历史讨论不等于已实现；以下明确区分已验证、情景估计和待验证。
 
@@ -299,7 +299,7 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 22 / 25 | open / 未合并 | Qwen短流A8共享64 RTL与条件能量 |
 | 23 / 24 | open / 未合并 | 论文推荐清单 |
 | 26 / 27 | open / 未合并 | 17篇原文总结；当前报告SHA为41d5118da9d0b259e1ee54453362251ed020e5f2e06baa6a7179bf07844c7970 |
-| 28 / 本任务PR | open | 本备忘录、恢复入口和状态索引 |
+| 28 / 29 | open / 已推送待审、未合并 | 本备忘录、恢复入口和状态索引 |
 
 Issue19此前交接记录的Slurm数组为2084，8/9等子项尚在运行或排队；这只是此前STATUS快照，不是本次查询实时队列。继续前必须查当前squeue与原manifest，不取消/重交已有作业。精确入口：`tmp/llama2-ffn-precision-issue19-20261018/work/jieruiz/19/HANDOFF.md`及该目录个人STATUS。
 

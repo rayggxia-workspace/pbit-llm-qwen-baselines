@@ -24,7 +24,7 @@ def main():
             assert digest(path)==r['sha256'],r['path']
         state['source_commit']=manifest['code_commit'];state['source_files_verified']=len(manifest['files']);save()
         commands=[('tests',[sys.executable,'-X','utf8','-m','unittest','discover','-s','architecture_tlm/attention_comparison','-p','test_evaluate.py','-v']),
-                  ('batch',[sys.executable,'-X','utf8','architecture_tlm/attention_comparison/evaluate.py','--batch-config','architecture_tlm/attention_comparison/comparison_config.json','--output',str(output/'results')])]
+                  ('batch',[sys.executable,'-X','utf8','architecture_tlm/attention_comparison/evaluate.py','--batch-config','architecture_tlm/attention_comparison/comparison_config.json','--source-commit',manifest['code_commit'],'--output',str(output/'results')])]
         for name,command in commands:
             state['stage']=name;save()
             with (output/(name+'.stdout.txt')).open('w',encoding='utf-8') as stdout,(output/(name+'.stderr.txt')).open('w',encoding='utf-8') as stderr:

@@ -10,3 +10,7 @@
 6. ppa目录是DC/PT模板而非运行结果。100MHz相同SS条件；同27bit累加器比较IID/strat/enum，再测短流缩位。需要用户工艺环境返回hierarchy power、area、timing、coverage、窗口和网表/VCD/SHA；保持配置/seed装载与计算能量分开。
 7. 发现Windows core.autocrlf使3个旧锚点工作字节变化，已恢复为Git blob，新增窄-text；工作文件和旧manifest SHA现吻合，源语义不改。不要为过检查改hash。
 8. 本阶段交付应为任务分支/PR，未获本次新RTL的合并指令，不把PR待审写成已合并。更新Issue22验收/STATUS，Projects缺read:project待同步。Issue19不关闭。
+
+## 最终本地整合
+
+RTL已cherry-pick为87a8102，原代理提交fb6e428；source provenance和各摘要最终hash一致。34个Git blob与zip逐字节核对、15个相对链接通过。交付包`C:/Users/86134/Documents/a_P_BIT/sc_short_stream_20261018_issue22.zip`，SHA256 `2963729f0886ba44623babd9a9e5a47fd28bfda59687450046919639149bdbca`，索引DELIVERY_MANIFEST.json。36配置252帧/202496样本、7活动窗口为实际本地Icarus；没有新DC/PT/PPL。PPA模板未在商业工具运行。接下来上传/PR并记录实际状态，不把未合并写为完成。

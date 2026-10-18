@@ -14,3 +14,7 @@
 ## 最终本地整合
 
 RTL已cherry-pick为87a8102，原代理提交fb6e428；source provenance和各摘要最终hash一致。34个Git blob与zip逐字节核对、15个相对链接通过。交付包`C:/Users/86134/Documents/a_P_BIT/sc_short_stream_20261018_issue22.zip`，SHA256 `2963729f0886ba44623babd9a9e5a47fd28bfda59687450046919639149bdbca`，索引DELIVERY_MANIFEST.json。36配置252帧/202496样本、7活动窗口为实际本地Icarus；没有新DC/PT/PPL。PPA模板未在商业工具运行。接下来上传/PR并记录实际状态，不把未合并写为完成。
+
+## 已实际上传
+
+PR #25 `https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/25`已创建并附本任务，head `92db8122028b0a5d329d8e9e4eccd680b7912768`；Issue22验收/结果评论已同步：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/22#issuecomment-6248822425。当前未合并、Issue开放，不能标记已合并。PUBLICATION_RECEIPT.json含同时间其他open PR范围供接续查看。后续补实测需新冻结配置和结果，勿覆盖results_v1或原仿真摘要。

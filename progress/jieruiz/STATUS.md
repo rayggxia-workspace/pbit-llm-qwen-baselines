@@ -26,13 +26,13 @@ Llama2基线+116TLM为Issue14/PR15，已合并7a506365；三模型入口Issue16/
 
 - 更新时间：2026-10-18T20:52:51+08:00；负责人@jieruiz；Issue：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/26。
 - 独立工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/pbit-reading-synthesis-issue26-20261018；分支task/26-pbit-reading-synthesis；base pbit-tlm-attention-details-20261016 @3553996bf014a29dee7fdb2250a3965e8fd881a4。
-- 阶段：原总结已推送PR27（待审、未合并）；用户补充Current Digitizers全文后，已在同一Issue/分支完成补读与报告更新，待追加推送。并行Issue19/22/23不接管。
+- 阶段：补读修订0666794已推PR27；当前17项主文已齐，PR待审、未合并。并行Issue19/22/23不接管。
 - 成果：architecture_tlm/PBIT_LLM_READING_SYNTHESIS_ZH_20261018.md；原清单未改，用户pbit_llm_master_report_20261012目录保存同字节副本；SHA256 41d5118da9d0b259e1ee54453362251ed020e5f2e06baa6a7179bf07844c7970。
 - 阅读：17项均有全文/完整官方资料。Current Digitizers用户8页PDF已读，视觉核对p3–7；原来的主文访问缺口已消除，源PDF未上传。
 - 实际验证：17行总表及17个逐篇条目、27份源资料字节SHA、UTF-8/LF、原清单SHA不变和同字节副本；独立技术复核通过，两处边界澄清已纳入。无新模型/PPL、RTL/PT、TLM、服务器任务。
 - 证据/交接：work/jieruiz/26/SOURCE_EVIDENCE.json、MANIFEST.json、VALIDATION.json、HANDOFF.md；公开Git不含论文原文或受限工艺资料。
 - 阻塞/待同步：无主文访问阻塞；论文原始数据/完整位片合并细节不足仍限制复现。Projects缺read:project，看板待同步。
-- 下一步：推送本次补读修订到PR27并同步Issue；随后审阅报告。未启动模型或硬件实验。
+- 下一步：审阅PR27。无需补主文；完整复现仍受论文数据/实现细节限制，未启动新模型或硬件实验。
 
 ## 实际发布回执
 
@@ -41,3 +41,5 @@ Llama2基线+116TLM为Issue14/PR15，已合并7a506365；三模型入口Issue16/
 - 报告SHA256 `cfed61fc7eb8e3d12b802a50f8b601ae89c5f8a1f2a7781460a4c8ae09d03c05`；Git blob、26份源资料及本地同字节副本均通过；初次Git未选择账号的推送失败已通过固定credential.username=jieruiz解决，最终推送成功，无凭据外泄。
 - Projects缺read:project仍待同步；Current Digitizers全文仍未取得。其余16项的阅读和本次报告已交付。
 - 下一步：审阅PR27。本回执随后同分支提交推送；无需重跑模型或硬件实验。
+
+补充全文实际发布回执：提交 `0666794adad1a1c6c51dcdd8a0d9d565fdac9281` 已推同一PR27（open、未合并）；Issue同步 https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/26#issuecomment-6250159763。17项主文已齐；最新报告SHA256 `41d5118da9d0b259e1ee54453362251ed020e5f2e06baa6a7179bf07844c7970`，27份源字节与用户同字节副本校验通过。此回执随后同分支上传；后续为PR审阅，不需要新模型/电路实验。

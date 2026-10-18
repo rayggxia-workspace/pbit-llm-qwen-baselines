@@ -28,3 +28,5 @@
 - 新结论：sCDC替代模拟crossbar列ADC，非逐项随机乘法；均值为tanh(alpha I/2)需器件感知训练；1/2/4采样、160张MNIST、单器件时间复用；180nm后版图读出PPA，非整机实测。延迟降低30.2%与速度提高43.3%已区分。没有继承到我们数字FFN的节能倍率。
 - 验证：27份源字节、17条总结、UTF-8/LF、同字节副本；独立复核PASS。Git提交后再验证--git-ref HEAD。无新PPL/RTL/PT/TLM或服务器任务。
 - 当前新增改动本地已完成，继续同一task/26分支和PR27追加推送；发布后记录真实commit。Projects仍缺read:project。
+
+补充全文实际发布回执：提交 `0666794adad1a1c6c51dcdd8a0d9d565fdac9281` 已推同一PR27（open、未合并）；Issue同步 https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/26#issuecomment-6250159763。17项主文已齐；最新报告SHA256 `41d5118da9d0b259e1ee54453362251ed020e5f2e06baa6a7179bf07844c7970`，27份源字节与用户同字节副本校验通过。此回执随后同分支上传；后续为PR审阅，不需要新模型/电路实验。

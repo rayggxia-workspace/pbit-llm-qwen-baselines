@@ -1,5 +1,7 @@
 # p-bit LLM：Qwen / LLaMA-1 / Llama 2
 
+开始或恢复工作先读 [项目长期备忘录](PROJECT_MEMORY_ZH.md) 和 [协作与复现规则](AGENTS.md)。备忘录汇总FFN、随机矩阵、Attention、逐层架构、TLM、存储、随机源及结果入口；实时任务状态以最新Issue/PR和交接为准。
+
 按模型从以下三个顶层目录进入：
 
 | 模型目录 | 当前内容 | 主要结果 |

@@ -1,23 +1,20 @@
 # jieruiz 项目进度
 
-更新时间 2026-10-18T17:53:23+08:00；实际GitHub登录@jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
+更新 2026-10-18T18:30:38+08:00；实际登录@jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
 
-## 当前Issue19：FFN精度与短流基线
+## 当前Issue22：Qwen短流能耗与RTL
 
-- 独立工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/llama2-ffn-precision-issue19-20261018；分支task/19-llama2-ffn-precision；PR20到pbit-tlm-attention-details-20261016 @dd9f12b8cc25f474cafb54b1a58f2be20506cd9e。
-- 阶段基线PR20已实际合并到pbit-tlm-attention-details-20261016，merge `40ea9f121c27ed7ea6e8a2e653e92246f3adcbfa`，源码head `1cbf4168b8d2e37dbd398d88e5823c3db009eecd`。Issue19同步评论：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19#issuecomment-6248484271。16/26项已交付；剩余评测未完成，Issue19仍开放。
-- 已收回16/26完整FFN替换PPL：IID256三种子6.256753±0.005911，分层64为6.758371±0.008464，分层128为5.308904±0.001642；IID4096首种子5.091985，另两种子仍运行。无采样W8+A8准确SiLU为5.038305，原BF16为4.979503；Q10与enum256的完整NLL相等。
-- 已实际验证：模型/语料/token/配置SHA、原BF16重新运行；服务器2082为17/17、追加2090为18/18；新收回产物全部按原manifest逐SHA核对；v4分析16项同口径通过。仅本地无Torch环境测试会跳过相关项，不代替服务器验证。
-- 当前运行：原数组2084，8/9对应IID4096种子1/2运行；10-15、22/23排队，最多2GPU。执行快照a8ea21f75ae6d736b2bc0136f8ee55977b082060不变，未取消/重交/覆盖。
-- 范围：只测Llama2全部32FFN；Attention仍原BF16，无PV/Ising；不测Llama1，不训练，不改RTL或工艺数据。数值恢复为FP32统计参考，非完整bit-true硬件。
-- DS-CIM对照：128拍归随机舍入/混合unary；DS-CIM的二维优化PRNG、偏移编码、SRR与旧普通双流/OR不同；论文LLM为256拍误差注入且有3.4/7.2个百分点平均准确率损失。Issue5/PR6只读，不接管。
-- 已知缺口：RNE低位对照、逐投影与尺度/共享粒度消融、原权重+FP32内核控制、真实PRNG及完整定点硬件。没有新PT功耗或同精度能效证据。
-- 正式成果：experiments/llama2_ffn_precision/、llama2/results/ffn_precision_20261018/；辅助work/jieruiz/19/。权重和逐窗长NLL留既有服务器个人项目。
-- 阻塞/待同步：无评测数据阻塞；Projects缺read:project待同步。Issue19保留开放，合并本阶段基线不等于剩余评测已完成。
-- 下一步：收集剩余2084结果，先核原manifest，再从最新TLM base创建独立结果分支/PR追加；保持执行快照与原件SHA。不得重开已完成基线或把旧PR20当未合并。
+- Issue：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/22；负责人@jieruiz。
+- 分支task/22-qwen-short-stream；base=pbit-tlm-attention-details-20261016 @3553996bf014a29dee7fdb2250a3965e8fd881a4；checkout=C:/Users/86134/Documents/a_P_BIT/tmp/qwen-short-stream-issue22-20261018。
+- 本地已完成：旧Qwen A8固定W/share64协议和源SHA核对；源码提交62a34e7可复算4组同功率TLM敏感性；独立重跑4组数值一致；100MHz旧锚点与附加功率假设核算；DC/PT模板和明确回填范围。
+- 条件结果：T4096/256/128/64的SC核+前端为64.496/4.046/2.031/1.023mJ/token，整模型170.495/59.802/56.724/55.395mJ/token；不是新PT、GPU、详细DRAMSys或同精度结果。
+- RTL独立子目录tmp/qwen-short-stream-rtl-issue22-20261018、分支task/22-short-stream-rtl；实际36配置252帧/202496有效样本逐拍通过，7组代表活动窗口通过；待合入本任务交付分支和最终hash核验。含内/外源、帧计数复用、精确G1、seed重播和strat256无RNG更新控制。
+- 正式成果：qwen/energy/short_stream_20261018/，sc_short_stream_20261018/；辅助资料work/jieruiz/22/。权重/概率由外部帧内稳定接口提供，不新增银行；SRAM与上游seed保持另计。
+- 证据限制：Qwen分层64/128尚未测PPL，本轮未提交GPU训练/评测；具体xorshift序列也未做模型质量验证；没有DC/PT工具或工艺库运行，不报告新面积/功率。TLM外存为Link，成本若干仍是旧占位。
+- 复现修复：Windows autocrlf改变3个旧Qwen锚点工作副本；恢复为已签SHA的Git blob字节，并用窄范围-text属性防再转换；旧源内容及manifest未改，5锚点检查通过。
+- 当前远端状态：Issue22已创建；本地报告/RTL待最终上传与PR，未合并。Projects缺read:project待同步；其他工艺/模型任务不覆盖。
+- 下一步：合入RTL、核source/manifest/blob/链接，打包，上传任务分支和PR并同步本STATUS；工艺方依据包内ppa说明回填PPA后再替换旧代理，精度补测另冻结协议。
 
-## 既有交付
+## 其他仍开放任务
 
-Llama2基线+116TLM为Issue14/PR15，已合并7a506365；三模型入口Issue16/PR17及回执PR18已合并，base dd9f12b。Llama1 Issue12/PR13已合并07d0338。治理/DS-CIM/硬件/筛选其他独立分支维持原审查状态。
-
-合并回执记录：2026-10-18T17:57:41+08:00，独立checkout `C:/Users/86134/Documents/a_P_BIT/tmp/issue19-merge-receipt-20261018`，分支`task/19-merge-receipt-20261018`。仅同步既成合并事实，不改运行快照或数值产物。
+Issue19的阶段基线PR20已合并40ea9f1，回执PR21合并3553996；其剩余Slurm评测不因本任务而取消或标记完成，见work/jieruiz/19/HANDOFF.md。治理/DS-CIM/FFN后处理/筛选的其他待审分支保持原状态。

@@ -15,3 +15,9 @@
 BF162081完成且复现旧结果；CUDA2082的17测试全通过；校准2083完成；完整PPL数组2084（0-25%2）运行中。见numeric_submission.json和suite_submission.json。快照a8ea21f不可改。首批是w8_only、a8_exact，后续a8_q10/enum256_q10再到准确SiLU的随机采样。完整日志留服务器logs/ppl-2084_<array index>.log；squeue/sacct使用绝对Slurm路径。获取脚本本机tmp/issue19_collect.py，只取有最终manifest的目录并逐SHA核验；不把半成品summary视为完成。
 
 已收回并逐SHA验证：bf16_reference、calibration、w8_only、a8_exact，位于llama2/results/ffn_precision_20261018。实际完整PPL W8=4.9809463739276145，W8+A8=5.038304561452122。其余不虚报完成；PUBLICATION_MANIFEST负责本次发布的文件字节。
+
+## PR20和追加结果
+
+任务分支已推送，草稿PR20已创建并附本任务，未合并。4/26项替换PPL完成：W8-only、A8精确、A8 Q10、enum256 Q10。最后二者完整PPL5.048801081382167及total_nll543526.2572862941完全相等。数值误差参考为FP32矩阵恢复，不是整个硬件的bit-true仿真。额外只增测试快照3ea0541的Slurm2090已18/18通过；评测快照a8ea21f不变。
+
+数组2084的IID4/5已启动；对任务5以及待测6-15、22-25设置Nice=1000，让后续64/128拍分层优先；仍最多2GPU，没有取消或覆盖任何数值产物。该变更只影响调度顺序，不改变配置或样本。没有自动心跳/自动收集作业；下次接续需主动squeue/sacct、运行本机tmp/issue19_collect.py和issue19_results_doc.py后核验manifest，再更新同PR/Issue。

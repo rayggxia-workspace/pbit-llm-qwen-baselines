@@ -1,3 +1,24 @@
+# p-bit LLM：Qwen / LLaMA-1 / Llama 2
+
+按模型从以下三个顶层目录进入：
+
+| 模型目录 | 当前内容 | 主要结果 |
+|---|---|---|
+| [qwen/](qwen/README.md) | Qwen2.5-0.5B基线、概率FFN、Attention v3/v4及硬件资料入口 | 原BF16/任务分数、历史数值实验与TLM；不同版本分别标注 |
+| [llama1/](llama1/README.md) | LLaMA-1 7B：当前标准TLM、真实BF16 QK捕获 | 82项TLM；本次替换方案没有新联合PPL |
+| [llama2/](llama2/README.md) | Llama 2 7B Base：完整BF16基线、当前标准TLM | BF16 WT2 PPL2K4.979503 / 4K4.895831；116项TLM |
+
+每个目录内有`run.py`、`project.json`以及`configs/`、`baselines/`、`tlm/`、`results/`入口。模型运行、配置、结果和证据边界均独立列出。`architecture_tlm/`中的共享引擎、SRAM/DRAM和随机源继续共用；历史已签SHA的代码/成果保留原路径以复现旧命令。目录整理不改变算法或重算历史数据。其他分支（含Qwen3.5）的成果尚需各自合并，不在这里自动宣称已集成。
+
+```sh
+python qwen/run.py check
+python llama1/run.py check
+python llama2/run.py check
+python llama2/run.py tlm --help
+```
+
+以下保留原有资料与复现说明。
+
 ## 最新事务模型（工作区，2026-10-16）
 
 见 [TLM 总索引](architecture_tlm/WORKSPACE_LATEST_ZH.md)，包含 Attention 筛选、PV 稀疏采样、Ising v3/v4 与 FFN 本地随机源。

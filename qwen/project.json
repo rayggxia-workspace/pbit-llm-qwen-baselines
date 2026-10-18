@@ -1,0 +1,142 @@
+{
+  "model": "Qwen2.5-0.5B Base",
+  "repository": "Qwen/Qwen2.5-0.5B",
+  "evidence": [
+    "原始BF16基线、任务分数、历史随机FFN实验见所列结果。",
+    "当前目标分支中的Qwen Attention入口为v3/v4历史实现，默认合成输入、固定样本512；不要混称Llama分支的比例PV/有限bank标准。",
+    "Qwen3.5等其他分支成果不因本次整理而自动合入。"
+  ],
+  "locations": {
+    "code": [
+      {
+        "label": "基线代码",
+        "path": "baselines/"
+      },
+      {
+        "label": "Qwen2上游模型实现",
+        "path": "upstream/modeling_qwen2.py"
+      },
+      {
+        "label": "概率FFN实验",
+        "path": "experiments/pdnn_ffn/"
+      },
+      {
+        "label": "Attention v3入口",
+        "path": "architecture_tlm/run_attention_v3.py"
+      },
+      {
+        "label": "Ising v4入口",
+        "path": "architecture_tlm/run_screen_ising_v4.py"
+      }
+    ],
+    "configs": [
+      {
+        "label": "模型配置",
+        "path": "config/qwen2.5-0.5b-config.json"
+      },
+      {
+        "label": "硬件配置",
+        "path": "architecture_tlm/configs/"
+      },
+      {
+        "label": "上游源码版本与SHA",
+        "path": "sources.json"
+      }
+    ],
+    "baselines": [
+      {
+        "label": "原始基线结果",
+        "path": "results/base_bf16/"
+      },
+      {
+        "label": "基线协议",
+        "path": "baselines/BASELINES.md"
+      }
+    ],
+    "results": [
+      {
+        "label": "全部历史数值实验",
+        "path": "results/"
+      },
+      {
+        "label": "Attention v3",
+        "path": "architecture_tlm/results/attention_v3_verified_20261015/RESULTS_ZH.txt"
+      },
+      {
+        "label": "Ising v4",
+        "path": "architecture_tlm/results/screen_ising_v4_20261016/RESULTS_ZH.txt"
+      },
+      {
+        "label": "共享随机源",
+        "path": "architecture_tlm/results/local_shared_v2/RESULTS_ZH.md"
+      },
+      {
+        "label": "硬件总索引",
+        "path": "architecture_tlm/WORKSPACE_LATEST_ZH.md"
+      }
+    ],
+    "shared": [
+      {
+        "label": "SRAM、DRAMSys、随机源与数字/随机算子",
+        "path": "architecture_tlm/"
+      },
+      {
+        "label": "格式转换RTL",
+        "path": "format_conversion_rtl_20261016/"
+      },
+      {
+        "label": "已有P-DNN实验与复现规则",
+        "path": "experiments/pdnn_ffn/P_DNN_FFN_DESIGN_ZH.md"
+      }
+    ]
+  },
+  "commands": {
+    "baseline": {
+      "script": "baselines/perplexity.py",
+      "scope": "Original BF16 PPL; requires local weights/data and GPU dependencies."
+    },
+    "tlm": {
+      "script": "architecture_tlm/run_attention_v3.py",
+      "scope": "Historical Qwen v3; synthetic by default, fixed sample count. See project evidence."
+    },
+    "ising": {
+      "script": "architecture_tlm/run_screen_ising_v4.py",
+      "scope": "Historical Qwen v4 Ising macro; not a physical p-bit validation."
+    },
+    "capture": {
+      "script": "architecture_tlm/capture_attention_trace_v3.py",
+      "scope": "GPU capture; submit work through Slurm."
+    }
+  },
+  "schema_version": 1,
+  "directory": "qwen",
+  "snapshot_base_commit": "7a506365cce42fd257f2645aa589b624e7d77116",
+  "repository_root_paths": true,
+  "anchors": [
+    {
+      "path": "config/qwen2.5-0.5b-config.json",
+      "bytes": 681,
+      "sha256": "479dcf0c5286339e41ad3992cd08ae88a467c4187587936248e2b7c96283484b"
+    },
+    {
+      "path": "sources.json",
+      "bytes": 1341,
+      "sha256": "29df5263d0df87189ba64e4f3320a5b8853d03c9e8bea64682b3f4ebe64ffd1b"
+    },
+    {
+      "path": "results/base_bf16/wikitext2_perplexity.json",
+      "bytes": 625,
+      "sha256": "ce97d7b1c61c20525fa694f1d94f6bb3165708b3dbb054aeb694f00cb98771dc"
+    },
+    {
+      "path": "architecture_tlm/run_attention_v3.py",
+      "bytes": 6026,
+      "sha256": "0bd5cc3b81012da86705d834211db360a83d2a332ec2e327450a7a48aa8eae9a"
+    },
+    {
+      "path": "architecture_tlm/run_screen_ising_v4.py",
+      "bytes": 6570,
+      "sha256": "47abb3c3cfebfd5799d5276bc0a78dab3e171728942ee6c6a568aca03490e877"
+    }
+  ]
+}

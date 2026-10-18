@@ -1,0 +1,148 @@
+{
+  "model": "Llama 2 7B Base",
+  "repository": "meta-llama/Llama-2-7b-hf",
+  "evidence": [
+    "原BF16完整WT2滑窗PPL：2K4.9795028452 / 4K4.8958312205，stride512，无额外BOS/EOS。",
+    "当前标准TLM共116项：72 Link＋36 Staggered＋8 NoPowerDown；原生4K。",
+    "上述PPL不属于随机替换联合模型；TLM不是GPU或芯片能效实测。"
+  ],
+  "locations": {
+    "code": [
+      {
+        "label": "模型TLM、身份校验、捕获、汇总",
+        "path": "architecture_tlm/llama2_7b/"
+      },
+      {
+        "label": "完整BF16基线实现",
+        "path": "baselines/llama2_7b/"
+      }
+    ],
+    "configs": [
+      {
+        "label": "模型与硬件配置",
+        "path": "architecture_tlm/llama2_7b/configs/"
+      },
+      {
+        "label": "权重/分词器固定身份",
+        "path": "architecture_tlm/llama2_7b/configs/model_identity.json"
+      },
+      {
+        "label": "57项冻结执行输入",
+        "path": "architecture_tlm/llama2_7b/EXECUTION_MANIFEST.json"
+      }
+    ],
+    "baselines": [
+      {
+        "label": "BF16基线协议",
+        "path": "baselines/llama2_7b/README_ZH.md"
+      },
+      {
+        "label": "完整WT2基线结果",
+        "path": "baselines/llama2_7b/results/bf16_wt2_20261017/RESULTS_ZH.md"
+      }
+    ],
+    "results": [
+      {
+        "label": "当前完整结果入口",
+        "path": "architecture_tlm/llama2_7b/RESULTS_INDEX_ZH.md"
+      },
+      {
+        "label": "116项完整中文总表",
+        "path": "architecture_tlm/llama2_7b/results/current/RESULTS_ZH.md"
+      },
+      {
+        "label": "原始成果索引",
+        "path": "architecture_tlm/llama2_7b/results/current/ARTIFACT_INDEX.json"
+      },
+      {
+        "label": "DRAM事务与实际运行库SHA",
+        "path": "architecture_tlm/llama2_7b/results/current/DRAM_ARTIFACT_INDEX.json"
+      }
+    ],
+    "shared": [
+      {
+        "label": "Llama1/Llama2共用的冻结MHA引擎",
+        "path": "architecture_tlm/llama7b/runtime/"
+      },
+      {
+        "label": "共用MHA适配",
+        "path": "architecture_tlm/llama7b/attention_adapter.py"
+      },
+      {
+        "label": "SRAM、DRAMSys、随机源与数字/随机算子",
+        "path": "architecture_tlm/"
+      },
+      {
+        "label": "格式转换RTL",
+        "path": "format_conversion_rtl_20261016/"
+      },
+      {
+        "label": "已有P-DNN实验与复现规则",
+        "path": "experiments/pdnn_ffn/P_DNN_FFN_DESIGN_ZH.md"
+      }
+    ]
+  },
+  "commands": {
+    "baseline": {
+      "script": "baselines/llama2_7b/evaluate.py",
+      "scope": "Original BF16 complete WT2; local verified weights/data; Slurm GPU."
+    },
+    "tlm": {
+      "script": "architecture_tlm/llama2_7b/run.py",
+      "scope": "Full32-layer decode with strict real Llama2 trace identity or explicit synthetic."
+    },
+    "capture": {
+      "script": "architecture_tlm/llama2_7b/capture_trace.py",
+      "scope": "Verified BF16 QK GPU capture; submit through Slurm."
+    },
+    "report": {
+      "script": "architecture_tlm/llama2_7b/report.py",
+      "scope": "116-case server report only; no new experiment."
+    },
+    "verify": {
+      "script": "architecture_tlm/llama2_7b/verify_snapshot.py",
+      "scope": "Verify 57 original immutable input bytes."
+    }
+  },
+  "schema_version": 1,
+  "directory": "llama2",
+  "snapshot_base_commit": "7a506365cce42fd257f2645aa589b624e7d77116",
+  "repository_root_paths": true,
+  "anchors": [
+    {
+      "path": "architecture_tlm/llama2_7b/configs/model.json",
+      "bytes": 426,
+      "sha256": "392fe322d7a38dcc6f0469bc19ca16c333de7c600a2470a318cc899b3a05ace6"
+    },
+    {
+      "path": "architecture_tlm/llama2_7b/configs/model_identity.json",
+      "bytes": 4356,
+      "sha256": "8ba3ccc3acf4b1a38a8c41a71ecafa8f4a0c1f53900a6298a32088dd57847d74"
+    },
+    {
+      "path": "architecture_tlm/llama2_7b/EXECUTION_MANIFEST.json",
+      "bytes": 11437,
+      "sha256": "7257d4bdcde794ff02f347603179c78f0cbddae1c9babb5802ac91dd634a6be7"
+    },
+    {
+      "path": "architecture_tlm/llama2_7b/run.py",
+      "bytes": 13985,
+      "sha256": "208ed54e7ee7763d1c8003bffd1b2b3b0e1e859682c53e4299801886c61451c6"
+    },
+    {
+      "path": "architecture_tlm/llama2_7b/results/current/RESULTS_ZH.md",
+      "bytes": 13900,
+      "sha256": "5f19b5a3aacde593599f6c658ffa486ed46703a0bb5cbbe9b13b45222f3d81fa"
+    },
+    {
+      "path": "baselines/llama2_7b/results/bf16_wt2_20261017/summary.json",
+      "bytes": 1495,
+      "sha256": "4460bdda498bf270d6001c96fdbdaed1c88838d2989db4eafe75b3a1e16ac7c6"
+    },
+    {
+      "path": "architecture_tlm/llama2_7b/results/current/DRAM_ARTIFACT_INDEX.json",
+      "bytes": 31470,
+      "sha256": "dbbba4640455b617549ff06879ddd06e44c414b6c63f3debbe321e72cad61274"
+    }
+  ]
+}

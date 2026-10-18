@@ -2,7 +2,7 @@
 
 负责人 `amlink1219`；[Issue35](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/35)，承接[Issue33计划](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/33)。独立分支 `task/35-attention-e01`，base `3553996bf014a29dee7fdb2250a3965e8fd881a4`。
 
-当前阶段是本地实现与验证，服务器连接阻塞。没有远端作业ID、当次BF16参考或真实输入实验结果。最新状态以 `../../work/amlink1219/35/HANDOFF.md` 为准。
+2026-10-19已完成服务器执行：CPU2160 39/39测试通过，GPU2161完整BF16参考与无扰捕获通过，CPU2162 pilot12/12与2163 full465/465完成。见[正式结果](../../qwen/results/attention_e01_20261019/RESULTS_ZH.md)和[交接](../../work/amlink1219/35/HANDOFF.md)。尚无仓库push权限，分支/PR未上传。
 
 ## 比较什么
 
@@ -26,14 +26,14 @@
 
 ## 输入身份与执行阶段
 
-`expected_identity.json` 复用项目已公开的Issue30/32哈希记录。模型权重、tokenizer、原始test及完整token序列分别核验。登记的709字节服务器config与681字节原始upstream config各有独立SHA；不能覆盖其中任何一个来“修复”哈希。verifier同时检查模型语义形状，不把某个config字节版本冒称官方原件。训练数据不参与本次实验，其历史SHA只作索引。
+`expected_identity.json` 复用项目已公开的Issue30/32哈希记录，并另登记本人服务器原始upstream下载清单及其Git-blob/LFS依据。模型权重、tokenizer、原始test及完整token序列分别核验。709字节save_pretrained服务器config与681字节原始upstream config各有独立SHA，相关tokenizer/generation文件也按整套版本选择；不能覆盖其中任何一个来“修复”哈希。verifier同时检查模型语义形状，不把某个config字节版本冒称官方原件。训练数据不参与本次实验，其历史SHA只作索引。
 
 服务器当前授权账户/home是 `Weican_Chen`、`/home/Weican_Chen`；每次写入和提交前实时核验。仓库历史记录里的其他用户环境/模型路径不构成本任务的读写授权。`run_config.template.json` 故意为 `ready=false`，路径尚未现场确认，不能直接提交。
 
 1. 连接恢复后，先只读核验身份/home、节点角色、Slurm分区、本人队列、本人目录下可用环境和输入；不要读取他人私有目录。缺个人环境或模型时先记录，再通过CPU Slurm staging任务准备，不能在登录节点大规模下载/安装。
 2. 本地提交所有执行源，生成source manifest和不可变快照；上传前核对目标个人目录，不覆盖历史快照。核验LF、SHA并 `bash -n experiments/attention_e01/run.sbatch`。
 3. 个人Python轻量调用 `prepare_inputs.py --model ABS_MODEL --text ABS_TEST --output NEW_MANIFEST`，将已固定SHA绑定到现场确认的个人路径；大文件哈希仍在计算节点完成。将review后的run配置设为ready=true，记录其SHA。
-4. 原子检查本人无GPU任务后，提交**一个** `baseline_capture` GPU作业（gpu5090、gres gpu:1、4CPU、16GiB、45分钟上限）。内部先输入核验/单测、128token BF16及短捕获，再完整BF16和2048token真实捕获，任何门槛失败即停。
+4. 先提交显式隐藏GPU的CPU `preflight`，核验实际解包快照的全部输入和测试fixture。通过后原子检查本人无GPU任务，提交**一个** `baseline_capture` GPU作业（gpu5090、gres gpu:1、4CPU、16GiB、45分钟上限）。内部先输入核验/单测、128token BF16及短捕获，再完整BF16和2048token真实捕获，任何门槛失败即停。
 5. GPU完成后记录调度终态/退出码，核对stage_summary与制品SHA。将trace路径/SHA和capture_report写入一份新配置，然后CPU作业 `micro_pilot`，显式CUDA_VISIBLE_DEVICES空字符串。CPU作业不请求GPU。
 6. 12-case pilot通过后再独立提交CPU `micro_full`。单case120秒超时；增量JSONL及时flush，保留失败；已有结果目录拒绝覆盖。没有通过的pilot时full拒绝启动。
 7. 回收小型结果、制品哈希和日志；原始trace、完整每case数组留授权个人存储。用任务分支/PR发布，回读远端；无push权限时只同步本人Issue并保留待推送文件。
@@ -45,5 +45,7 @@
 ```text
 python -m unittest discover -s experiments/attention_e01 -p "test_*.py" -v
 ```
+
+实际执行记录可用 `python experiments/attention_e01/summarize.py --run-root RUN_ROOT --output NEW_REPORT_DIR` 汇总；输入是含pilot/full的微基准根，输出CSV、JSON和中文报告。它核验实际case/seed、journal SHA及缺失/失败，保留原始记录。该汇总工具在执行快照完成后单独验证，不改写旧快照。
 
 这些测试不等于GPU捕获通过。实际输出逐项保存源提交/文件SHA、配置SHA、输入SHA、job/allocation、环境、命令、耗时和结果SHA。短链相关诊断不证明稳态；uniform在M>S时经验TV很大是有限样本现象，需要同S的IID对照。有效样本数按类别指示/实际V投影诊断，不用类别编号的自相关代替。本轮S最大512，低于ESS最小诊断阈值1024，因此正式输出会标记insufficient_samples；长期混合/ESS验证属于后续E1c，不能从本轮短链得到。

@@ -1,5 +1,6 @@
 """CPU invariants/statistical checks; no checkpoint/data downloads."""
 import unittest
+import importlib.util
 from unittest.mock import patch
 
 import torch
@@ -19,6 +20,21 @@ def original():
 
 
 class Tests(unittest.TestCase):
+    @unittest.skipUnless(importlib.util.find_spec('transformers'),
+                         'Frozen regression requires the existing transformers environment')
+    def test_legacy_matches_frozen_shared_ffn(self):
+        from run_shared import SharedFFN
+        for kind in ('fixed', 'dual'):
+            module = original()
+            x = torch.randn(3, 64)
+            old = SharedFFN(module, {'x': [4.], 'g': [4.], 'u': [4.]},
+                'fixed_exact' if kind == 'fixed' else 'dual_exact', bits=8,
+                cycles=128, seed=2, layer=3, variant='sz_group',
+                backend='binomial', sz=[4.], sharing=64, weight=kind)
+            new = RangeFFN(module, {'x': [4.]}, [4.], kind=kind,
+                cycles=128, seed=2, layer=3)
+            torch.testing.assert_close(new(x), old(x), rtol=2e-6, atol=2e-6)
+
     def test_dynamic_a8_endpoints_sign_and_zero(self):
         x = torch.zeros(2, 128)
         x[0, :4] = torch.tensor([-3., 3., -1., 1.])

@@ -1,3 +1,15 @@
+# Issue32：Qwen双随机范围缩放
+
+- 负责人jieruiz；Issue32；分支task/32-qwen-dual-range；独立目录tmp/qwen-dual-range-issue32-20261018。
+- base为PR31的6102c83，目标PR base task/30-qwen-dual-iid-public；PR尚未创建。
+- 当前本地实现和数学核对中；已核远端规则、身份及队列，不把本地完成当远端已完成。
+- 范围：全部24FFN、准确Attention，输入/权重独立范围的2×2对照及mean/fixed控制、gu/down消融，128-token快速PPL。新模型参数/原始激活不入Git。
+- 实际验证：AST、37配置唯一性；本地CPU torch2.4.1的数学方差验证通过，kernel7项通过，旧版回归缺transformers本地跳过，服务器必须补跑。
+- 下一步：冻结新提交、个人项目Slurm准备作业核BF16和teacher诊断；通过后数组最多2GPU；收回SHA后更新PR/Issue/备忘录。
+- 交接：work/jieruiz/32/HANDOFF.md；Projects权限待同步。
+
+以下保留此前阶段状态：
+
 # jieruiz 项目进度
 
 ## Issue30：Qwen双随机IID精确短流核查

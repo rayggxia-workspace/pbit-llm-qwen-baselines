@@ -197,6 +197,7 @@ def main():
     metadata = [{"row_id": f"l{layer:02d}_h{head:02d}", "layer": layer, "head": head,
                  "kv_head": head // 7, "start_token": args.start_token,
                  "query_token": end - 1, "candidate_start": args.start_token,
+                 "query_position_id": args.tokens - 1, "position_ids": "window-relative 0..tokens-1",
                  "candidate_end_exclusive": end, "candidate_order": "ascending original prefix",
                  "head_dim": 64} for layer, head in selected]
     output.mkdir(parents=True, exist_ok=False)
@@ -225,6 +226,7 @@ def main():
         "seed": args.seed, "dtype": "BF16 unchanged model; captured last-query QK FP32 and V BF16->FP32",
         "window": {"start_token": args.start_token, "tokens": args.tokens, "add_special_tokens": False,
                    "use_cache": False, "token_id_sha256_le_int64": token_id_sha,
+                   "position_ids": "implicit window-relative 0..tokens-1, as unchanged PPL scorer",
                    "query_source": "last query of unchanged BF16 prefill; not a timed KV-cache decode"},
         "full_corpus_token_identity": {"tokens": int(all_ids.shape[-1]), "sha256_le_int64": all_ids_sha},
         "full_model_logits_bitwise_equal": True, "full_model_logits_sha256_bf16": model_logits_sha,

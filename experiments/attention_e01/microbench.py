@@ -424,7 +424,25 @@ def _execute_case(case):
     return evaluate_case(case, _WORKER_TRACE, _WORKER_CONFIG)
 
 
-def run(trace_path, output, phase, config, synthetic_only=False):
+def execution_source_identity(source_manifest_sha256=None):
+    """Bind pilot gates to actual sources, including standalone execution.
+
+    A driver manifest is extra provenance, not a substitute for checking the
+    bytes loaded here. A passing pilot must be rerun after either engine or
+    reused serial-sampler code changes.
+    """
+    if source_manifest_sha256 is not None:
+        source_manifest_sha256 = source_manifest_sha256.lower()
+        if len(source_manifest_sha256) != 64 or any(c not in "0123456789abcdef" for c in source_manifest_sha256):
+            raise ValueError("source_manifest_sha256 must be a 64-character hexadecimal digest")
+    return {
+        "microbench.py": sha256(Path(__file__).resolve()),
+        "architecture_tlm/attention_reference_v3.py": sha256(REPO_ROOT / "architecture_tlm/attention_reference_v3.py"),
+        "source_manifest_sha256": source_manifest_sha256,
+    }
+
+
+def run(trace_path, output, phase, config, synthetic_only=False, source_manifest_sha256=None):
     trace = load_trace(trace_path, synthetic_only)
     for index in config["real_row_indices"]:
         if index >= len(trace["logits"]):
@@ -432,6 +450,7 @@ def run(trace_path, output, phase, config, synthetic_only=False):
         if max(config["candidate_counts"]) > trace["lengths"][index]:
             raise ValueError("selected trace row too short for requested M")
     context = {"schema": SCHEMA, "config": config, "trace": trace["provenance"],
+               "execution_sources": execution_source_identity(source_manifest_sha256),
                "synthetic_only": synthetic_only, "numpy": np.__version__, "python": platform.python_version()}
     fingerprint = hashlib.sha256(_json_bytes(context)).hexdigest()
     phase_dir = Path(output) / phase
@@ -508,10 +527,11 @@ def main():
     parser.add_argument("--output", required=True, help="new output root; creates pilot/ and full/ subdirectories")
     parser.add_argument("--phase", required=True, choices=("pilot", "full"))
     parser.add_argument("--config", help="flat JSON overrides of bounded E1 settings")
+    parser.add_argument("--source-manifest-sha256", help="optional driver source-manifest digest, also bound into the pilot gate")
     parser.add_argument("--synthetic-only", action="store_true", help="explicit fixture-only run, no sourced model results")
     args = parser.parse_args()
     config = normalize_config(json.loads(Path(args.config).read_text(encoding="utf-8")) if args.config else {})
-    summary = run(args.trace, args.output, args.phase, config, args.synthetic_only)
+    summary = run(args.trace, args.output, args.phase, config, args.synthetic_only, args.source_manifest_sha256)
     return 0 if summary["gate_passed"] else 1
 
 

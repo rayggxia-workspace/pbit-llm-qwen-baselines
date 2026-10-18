@@ -199,6 +199,53 @@ class KernelTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "refusing to overwrite"):
                 mb.run(str(trace), str(base / "out"), "pilot", config)
 
+    def test_pilot_gate_binds_both_source_files_and_driver_manifest(self):
+        # Fake successful worker replies isolate gate behavior. The pilot
+        # exercises no scientific numerical workload in this regression test.
+        class Reply:
+            def get(self, timeout):
+                return {"status": "ok", "correctness_invariants_passed": True}, {"v_output": np.zeros(2)}
+
+        class Pool:
+            def apply_async(self, function, args):
+                return Reply()
+
+            def close(self):
+                pass
+
+            def join(self):
+                pass
+
+        class Context:
+            def Pool(self, *args, **kwargs):
+                return Pool()
+
+        config = mb.normalize_config({"candidate_counts": [8], "sample_counts": [2], "real_row_indices": [0]})
+        original_hash = mb.sha256
+        manifest_digest = "a" * 64
+        with tempfile.TemporaryDirectory(dir=Path(__file__).parent) as temporary:
+            base = Path(temporary)
+            trace = base / "trace.npz"
+            np.savez(trace, logits=np.zeros((1, 8), dtype=np.float32), values=np.zeros((1, 8, 2), dtype=np.float32))
+            with mock.patch.object(mb.mp, "get_context", return_value=Context()), mock.patch("builtins.print"):
+                summary = mb.run(str(trace), str(base / "out"), "pilot", config, source_manifest_sha256=manifest_digest)
+            self.assertTrue(summary["gate_passed"])
+            context = json.loads((base / "out/pilot/run_context.json").read_text(encoding="utf-8"))
+            self.assertEqual(context["execution_sources"]["microbench.py"], original_hash(mb.__file__))
+            self.assertEqual(context["execution_sources"]["architecture_tlm/attention_reference_v3.py"],
+                             original_hash(mb.REPO_ROOT / "architecture_tlm/attention_reference_v3.py"))
+            self.assertEqual(context["execution_sources"]["source_manifest_sha256"], manifest_digest)
+            for changed_path in (Path(mb.__file__), mb.REPO_ROOT / "architecture_tlm/attention_reference_v3.py"):
+                def changed_hash(path):
+                    return "b" * 64 if Path(path).resolve() == changed_path.resolve() else original_hash(path)
+                with self.subTest(changed_source=changed_path.name), mock.patch.object(mb, "sha256", side_effect=changed_hash):
+                    with self.assertRaisesRegex(ValueError, "passing 12-case pilot"):
+                        mb.run(str(trace), str(base / "out"), "full", config, source_manifest_sha256=manifest_digest)
+            with self.assertRaisesRegex(ValueError, "passing 12-case pilot"):
+                mb.run(str(trace), str(base / "out"), "full", config, source_manifest_sha256="c" * 64)
+            with self.assertRaisesRegex(ValueError, "64-character hexadecimal"):
+                mb.execution_source_identity("invalid")
+
 
 if __name__ == "__main__":
     unittest.main()

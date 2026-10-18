@@ -46,4 +46,4 @@
 
 ## 交付状态
 
-本地已提交代码并完成服务器实验，GitHub账号amlink1219对正式workspace仍push=false，任务分支未上传、PR未创建。Issue35将同步实际结果并保持open；Projects缺权限待同步。不使用其他账号或历史个人仓库替代。实际远端与交接见[HANDOFF](../../../work/amlink1219/35/HANDOFF.md)。
+本地已提交代码并完成服务器实验，GitHub账号amlink1219对正式workspace仍push=false，任务分支未上传、PR未创建。Issue35实际结果已同步并回读，保持open；Projects本次查询返回INSUFFICIENT_SCOPES（缺read:project），待权限同步。不使用其他账号或历史个人仓库替代。实际远端与交接见[HANDOFF](../../../work/amlink1219/35/HANDOFF.md)。

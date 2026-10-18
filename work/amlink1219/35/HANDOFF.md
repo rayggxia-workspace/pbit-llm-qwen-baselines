@@ -11,3 +11,5 @@
 远端代码交付未完成：amlink1219当前push=false/triage=false；Issue35可更新，Projects待权限。无需更换账号/旧库，无PR创建或分支推送。权限恢复后先核身份、remote/pushurl、最新Issue/PR/分支；按explicit文件范围push task/35-attention-e01并PR至确认base，回读并更新Issue。Issue保持open直到PR验收；Issue33计划仍在另一工作树，不接管FFN Issue32/PR34。
 
 本机辅助控制与恢复回执在 `E:/BaiduSyncdisk/p-bit/DAC_2026_Draft_Proceedings/DAC_2026_Draft_Proceedings/outputs/pbit_attention_e01_20261019`，包括server_control.py、stage/submit intent与receipt、源snapshot tar及失败记录。它们含本机SSH入口引用，未作为业务代码上传；不输出凭据。恢复先读实际job receipt和terminal，网络模糊失败不得重放提交。服务器原始下载manifest在本目录original_model_download_identity.json；原始版tokenizer和prior-server另存版不可混写。
+
+Issue35实际结果摘要已通过本人账号更新并回读一致；远端协作回执REMOTE_SYNC.json。Projects本次只读查询返回INSUFFICIENT_SCOPES，缺read:project；未改权限或看板。代码/完整报告仍未推送，无PR。结果内容提交9d0b80f，后续状态回执提交由Git日志标识。

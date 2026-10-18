@@ -21,3 +21,14 @@
 Llama2基线+116TLM为Issue14/PR15，已合并7a506365；三模型入口Issue16/PR17及回执PR18已合并，base dd9f12b。Llama1 Issue12/PR13已合并07d0338。治理/DS-CIM/硬件/筛选其他独立分支维持原审查状态。
 
 合并回执记录：2026-10-18T17:57:41+08:00，独立checkout `C:/Users/86134/Documents/a_P_BIT/tmp/issue19-merge-receipt-20261018`，分支`task/19-merge-receipt-20261018`。仅同步既成合并事实，不改运行快照或数值产物。
+
+## Issue23：p-bit LLM推荐阅读清单
+
+更新时间2026-10-18T18:26:00+08:00；负责人/实际登录jieruiz。Issue：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/23。
+
+- 独立checkout：C:/Users/86134/Documents/a_P_BIT/tmp/pbit-reading-list-issue23-20261018；分支task/23-pbit-reading-list；base pbit-tlm-attention-details-20261016 @3553996bf014a29dee7fdb2250a3965e8fd881a4。
+- 本地文件已完成：architecture_tlm/PBIT_LLM_RECOMMENDED_READING_ZH_20261018.md，用户master_report目录有同字节副本。17项文献/官方资料，6项优先精读，覆盖动态GEMM、原生p-bit、采样注意力及非随机/系统对照。
+- 实际验证：主要题录/原文及证据边界复核、UTF-8/LF、本地链接存在、同字节副本和SHA；MANIFEST与SOURCE_REVIEW在work/jieruiz/23。Current digitizer仅摘要/官方介绍，全文待下载，正文有标注。
+- 无新增模型/PPL/TLM/RTL/PPA实验；未改Issue19/22运行快照或其他任务实现。文档任务的模型/数据/种子字段不适用。
+- 远端发布/PR与看板状态发生后同步到本段和HANDOFF；当前不宣称已合并。下一步核对Git blob并通过任务PR交付。
+- Projects已实际复核：GraphQL返回INSUFFICIENT_SCOPES，缺read:project，看板待同步；其余文档交付照常进行。

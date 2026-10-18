@@ -12,3 +12,11 @@
 - 未完成：Current Digitizers全文与补充未取得；APS要求授权、MIT仅摘要，不能填未验证的采样数/PPA。未启动任何新实验，未改变Issue19的Slurm任务或Issue22/23文件。
 - 已核项目权限：本账号可push；Projects GraphQL缺read:project，未同步看板。相关任务Issue23/PR24、Issue22/PR25仍独立open，不能把本报告当它们合并回执。
 - 下一步：核Git blob与文件范围、推workspace任务分支并创建关联Issue26的PR；按实际回执同步Issue/STATUS。等待审阅；不得把PR创建写成合并，不自动关闭Issue。
+
+## 实际发布回执
+
+- 已推送文档提交 `e84b25932e293801c8ab009a02a1a448007b386f`；PR #27：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/27，目标pbit-tlm-attention-details-20261016，open、merged=false，已附当前任务。
+- Issue26验收清单与评论已同步：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/26#issuecomment-6250003655；保持open等待审阅，不宣称已合并。
+- 报告SHA256 `cfed61fc7eb8e3d12b802a50f8b601ae89c5f8a1f2a7781460a4c8ae09d03c05`；Git blob、26份源资料及本地同字节副本均通过；初次Git未选择账号的推送失败已通过固定credential.username=jieruiz解决，最终推送成功，无凭据外泄。
+- Projects缺read:project仍待同步；Current Digitizers全文仍未取得。其余16项的阅读和本次报告已交付。
+- 下一步：审阅PR27。本回执随后同分支提交推送；无需重跑模型或硬件实验。

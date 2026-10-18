@@ -33,3 +33,11 @@ Llama2基线+116TLM为Issue14/PR15，已合并7a506365；三模型入口Issue16/
 - 证据/交接：work/jieruiz/26/SOURCE_EVIDENCE.json、MANIFEST.json、VALIDATION.json、HANDOFF.md；公开Git不含论文原文或受限工艺资料。
 - 阻塞/待同步：Current Digitizers需合法全文后补评；Projects实际查询缺read:project，未同步看板。不影响本次文献报告交付。
 - 下一步：审阅本任务PR；若补到Current Digitizers全文，再补正文/补充的阵列、采样和PPA边界。实验建议不等于已授权启动新实验。
+
+## 实际发布回执
+
+- 已推送文档提交 `e84b25932e293801c8ab009a02a1a448007b386f`；PR #27：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/27，目标pbit-tlm-attention-details-20261016，open、merged=false，已附当前任务。
+- Issue26验收清单与评论已同步：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/26#issuecomment-6250003655；保持open等待审阅，不宣称已合并。
+- 报告SHA256 `cfed61fc7eb8e3d12b802a50f8b601ae89c5f8a1f2a7781460a4c8ae09d03c05`；Git blob、26份源资料及本地同字节副本均通过；初次Git未选择账号的推送失败已通过固定credential.username=jieruiz解决，最终推送成功，无凭据外泄。
+- Projects缺read:project仍待同步；Current Digitizers全文仍未取得。其余16项的阅读和本次报告已交付。
+- 下一步：审阅PR27。本回执随后同分支提交推送；无需重跑模型或硬件实验。

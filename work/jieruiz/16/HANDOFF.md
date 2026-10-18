@@ -1,11 +1,9 @@
-# Issue16交接
+# Issue16合并交接
 
-更新 2026-10-18T12:58:30+08:00，负责人@jieruiz；task/16-model-folders，base 7a506365cce42fd257f2645aa589b624e7d77116，独立目录C:/Users/86134/Documents/a_P_BIT/tmp/model-folders-issue16-20261018。
+更新 2026-10-18T13:55:40+08:00，负责人@jieruiz。三模型目录PR #17已实际合入pbit-tlm-attention-details-20261016，merge `8cb76da45502469a5e5e66947b25f63ca3f0f6fe`，原头 `df459fe082a86a702c435db25ec646ce714e49d4`。用户已确认合并要求；此前待审状态不是权限阻塞。
 
-已完成本地三个模型目录、代码/配置/基线/结果索引和运行分派；路径/参数透传/不可变SHA验证已通过，代码和索引已推送；PR #17待审、未合并。原Llama2 PR15已合并、Issue14已关闭，merge见MERGE_ACCEPTANCE.md。
+目录整理正式范围为qwen/、llama1/、llama2/、scripts/model_workspace.py与根README。三个目录各有配置、运行、基线、TLM和结果入口，历史实现/结果原字节和共享硬件模块未移动。24次命令、93链接、17锚点、119冻结输入及Git字节核验通过；本次没有新GPU/DRAM/Slurm作业。模型/数据/参数/原成果版本沿用project.json和原manifest，不生成新质量或芯片性能数字。
 
-正式新增范围qwen/、llama1/、llama2/、scripts/model_workspace.py；根README只添加模型入口，个人STATUS及work/jieruiz/16为交付资料。没有移动历史源或结果；本次无Slurm/训练作业。接续先读Issue16、PR #17与STATUS，再按VALIDATION.md实际记录验证，不能把本地完成写为已上传。Projects仍缺read:project待同步。
+本目录MERGE_RECEIPT.json记录PR17确切验收；本次只更新合并状态和回执，另通过同Issue的文档PR同步到目标分支。该文档PR最终状态见Issue16评论，不以提前写入的状态代替GitHub确认。任务分支task/16-model-folders、独立目录C:/Users/86134/Documents/a_P_BIT/tmp/model-folders-issue16-20261018；没有重置、删除其他成员工作树，也未合main或其他待审任务。
 
-模型/数据/硬件/采样配置与既有成果相同，路径与原字节SHA见各project.json及旧EXECUTION_MANIFEST/ARTIFACT索引。本任务属于目录/入口调整，不产生新的模型质量或芯片性能数字。新源码/资料SHA见manifest.json；最终提交见PR头/Issue评论，避免manifest自引用。
-
-实际交付PR：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/17。目录代码已推送、原Llama2 PR15已合并；二者状态分开。Issue16等待目录PR验收，不自动关闭。最终交付提交见Issue16评论和PR头。
+Llama2 PR15与LLaMA1 PR13均已合并，记录保持。Issue16在文档回执同步确认后关闭。恢复时读Issue16最终评论、PR17 merged状态、个人STATUS；不重复实验或目录上传。Projects仍缺read:project，只有看板同步待有权限成员操作。

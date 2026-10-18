@@ -1,6 +1,6 @@
 # jieruiz 项目进度
 
-更新 2026-10-18T12:58:30+08:00（Asia/Shanghai）；实际登录@jieruiz，正式仓库rayggxia-workspace/pbit-llm-qwen-baselines。
+更新 2026-10-18T13:55:40+08:00（Asia/Shanghai）；实际登录@jieruiz，正式仓库rayggxia-workspace/pbit-llm-qwen-baselines。
 
 ## 当前：Issue16 三模型目录
 
@@ -8,12 +8,12 @@
 |---|---|
 | 分支/base | task/16-model-folders → pbit-tlm-attention-details-20261016 @7a506365cce42fd257f2645aa589b624e7d77116 |
 | 独立目录 | C:/Users/86134/Documents/a_P_BIT/tmp/model-folders-issue16-20261018 |
-| 当前阶段 | 代码与目录已推送；[PR #17](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/17)待审，未合并 |
+| 当前阶段 | 三模型目录已实际合并；[PR #17](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/17)，merge `8cb76da45502469a5e5e66947b25f63ca3f0f6fe` |
 | 范围 | qwen/、llama1/、llama2/统一运行、配置、基线和结果入口，共享模块与历史路径不动 |
 | 验证 | 24次命令检查、17个源码/结果SHA锚点、93链接、119冻结输入通过；3模型参数/退出码透传和4类越界路径检查通过 |
 | 成果/交接 | work/jieruiz/16/；三个目录的README/project.json；根README |
 | 阻塞/待同步 | Projects缺read:project；无模型/数据阻塞，本次无远端计算作业 |
-| 下一步 | 评审PR #17；合并前保持Issue16 open，未自动合并目录整理PR |
+| 下一步 | 本任务已验收交付；最终回执及Issue关闭状态见Issue16评论。无运行中作业；Projects看板待权限同步 |
 
 ## 已合并任务
 

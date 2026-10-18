@@ -9,6 +9,8 @@
 | 基线与协议 | [baselines/](baselines/README.md) |
 | 已有结果与SHA | [results/](results/README.md) |
 
+2026-10-18新增：[FFN精度分解与低于256拍采样](../experiments/llama2_ffn_precision/README_ZH.md)（Issue19）。新BF16复测与CUDA核心验证已通过，26项替换PPL已用Slurm提交；实时完成状态见该任务结果索引，不将排队项视为已有结果。
+
 已有证据与限制：
 
 - 原BF16完整WT2滑窗PPL：2K4.9795028452 / 4K4.8958312205，stride512，无额外BOS/EOS。

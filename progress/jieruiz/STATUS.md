@@ -1,6 +1,6 @@
 # jieruiz 项目进度
 
-更新时间 2026-10-18T20:34:24+08:00；实际GitHub登录@jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
+更新时间 2026-10-18T20:52:51+08:00；实际GitHub登录@jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
 
 ## 当前Issue19：FFN精度与短流基线
 
@@ -24,15 +24,15 @@ Llama2基线+116TLM为Issue14/PR15，已合并7a506365；三模型入口Issue16/
 
 ## 当前Issue26：17项推荐文献原文阅读总结
 
-- 更新时间：2026-10-18T20:34:24+08:00；负责人@jieruiz；Issue：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/26。
+- 更新时间：2026-10-18T20:52:51+08:00；负责人@jieruiz；Issue：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/26。
 - 独立工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/pbit-reading-synthesis-issue26-20261018；分支task/26-pbit-reading-synthesis；base pbit-tlm-attention-details-20261016 @3553996bf014a29dee7fdb2250a3965e8fd881a4。
-- 阶段：本地已完成；任务分支/PR发布后追加回执，尚未合并。与清单Issue23/PR24、短流Issue22/PR25及运行中Issue19保持独立，未接管实验或修改其快照。
-- 成果：architecture_tlm/PBIT_LLM_READING_SYNTHESIS_ZH_20261018.md；原清单未改，用户pbit_llm_master_report_20261012目录保存同字节副本；SHA256 cfed61fc7eb8e3d12b802a50f8b601ae89c5f8a1f2a7781460a4c8ae09d03c05。
-- 阅读：17项全覆盖，16项有全文/完整官方资料；Current Digitizers DOI10.1103/s86j-5jcr仅摘要。p-PIM主文和补充已读，SANTA明确区分v1/v2，Z1T源码和配置固定revision。
-- 实际验证：17行总表及17个逐篇条目、26份源资料字节SHA、UTF-8/LF、原清单SHA不变和同字节副本；独立技术复核通过，两处边界澄清已纳入。无新模型/PPL、RTL/PT、TLM、服务器任务。
+- 阶段：原总结已推送PR27（待审、未合并）；用户补充Current Digitizers全文后，已在同一Issue/分支完成补读与报告更新，待追加推送。并行Issue19/22/23不接管。
+- 成果：architecture_tlm/PBIT_LLM_READING_SYNTHESIS_ZH_20261018.md；原清单未改，用户pbit_llm_master_report_20261012目录保存同字节副本；SHA256 41d5118da9d0b259e1ee54453362251ed020e5f2e06baa6a7179bf07844c7970。
+- 阅读：17项均有全文/完整官方资料。Current Digitizers用户8页PDF已读，视觉核对p3–7；原来的主文访问缺口已消除，源PDF未上传。
+- 实际验证：17行总表及17个逐篇条目、27份源资料字节SHA、UTF-8/LF、原清单SHA不变和同字节副本；独立技术复核通过，两处边界澄清已纳入。无新模型/PPL、RTL/PT、TLM、服务器任务。
 - 证据/交接：work/jieruiz/26/SOURCE_EVIDENCE.json、MANIFEST.json、VALIDATION.json、HANDOFF.md；公开Git不含论文原文或受限工艺资料。
-- 阻塞/待同步：Current Digitizers需合法全文后补评；Projects实际查询缺read:project，未同步看板。不影响本次文献报告交付。
-- 下一步：审阅本任务PR；若补到Current Digitizers全文，再补正文/补充的阵列、采样和PPA边界。实验建议不等于已授权启动新实验。
+- 阻塞/待同步：无主文访问阻塞；论文原始数据/完整位片合并细节不足仍限制复现。Projects缺read:project，看板待同步。
+- 下一步：推送本次补读修订到PR27并同步Issue；随后审阅报告。未启动模型或硬件实验。
 
 ## 实际发布回执
 

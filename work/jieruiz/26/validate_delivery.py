@@ -37,7 +37,9 @@ def main():
     assert [int(n) for n in re.findall(r'^\| (\d+) \|', table, re.M)] == list(range(1, 18))
     assert len(re.findall(r'^### (?:2\.[1-6]|3\.\d+) ', body, re.M)) == 17
     assert len(evidence['coverage']) == 17
-    assert evidence['no_full_text'][0]['number'] == 14 and len(evidence['no_full_text']) == 1
+    assert evidence['no_full_text'] == [], 'All17 full sources are now available'
+    assert evidence['devices_three']['current_digitizers']['main_text_status'].startswith('FULL')
+    assert '17项现在均已取得全文' in body
     assert all(link.startswith('https://') for link in re.findall(r'\]\(([^\n)]+)\)', body))
     checked = 0
     if args.verify_local_sources:
@@ -49,7 +51,7 @@ def main():
     if args.user_copy:
         assert args.user_copy.read_bytes() == (ROOT / manifest['document']['path']).read_bytes()
     print(json.dumps({'status': 'PASS', 'individual_reviews': 17,
-                      'abstract_only': [14], 'source_byte_checks': checked,
+                      'abstract_only': [], 'source_byte_checks': checked,
                       'same_byte_copy_checked': bool(args.user_copy),
                       'git_blob_ref': args.git_ref,
                       'document_sha256': manifest['document']['sha256']}))

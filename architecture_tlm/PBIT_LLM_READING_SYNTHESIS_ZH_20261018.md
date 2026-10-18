@@ -1,12 +1,12 @@
 # p-bit LLM 推荐文献原文阅读总结与设计建议
 
-核对日期：2026-10-18。对应 Issue [#26](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/26)，负责人 `jieruiz`。
+核对日期：2026-10-18；同日补读用户提供的Current Digitizers全文并更新。对应 Issue [#26](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/26)，负责人 `jieruiz`。
 
 本文件对应用户指定的 `PBIT_LLM_RECOMMENDED_READING_ZH_20261018.md`，按原清单顺序覆盖全部17项。原清单保持不变；其仓库交付见 [PR #24](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/24)。本次阅读检查了可取得原文的方法、架构图、主要评估和限制，而不是只整理题名与摘要。下文将“原文核实”和“对本项目的判断”分开；建议不代表已经实现或测得收益。
 
 ## 1. 先给出结论与访问情况
 
-**17项中，16项取得了全文或完整官方技术资料；1项仍只能读到摘要：第14篇 Stochastic Nanomagnets as Current Digitizers for Efficient Probabilistic Machine Learning。** APS要求授权，MIT官方页只有摘要；本次未找到可正常取得的作者公开全文。因此不对它的具体电路、采样数或能效作全文级判断。[APS入口](https://journals.aps.org/prapplied/abstract/10.1103/s86j-5jcr)、[MIT介绍](https://www.rle.mit.edu/stochastic-nanomagnets-as-current-digitizers-for-efficient-probabilistic-machine-learning/)
+**17项现在均已取得全文或完整官方技术资料。** 第14篇 Stochastic Nanomagnets as Current Digitizers for Efficient Probabilistic Machine Learning 此前受APS授权限制，只能读到摘要；用户随后提供8页期刊PDF，本次已补读全文并视觉核对第3–7页图表，原先的访问缺口已消除。APS在线入口仍要求授权，但不影响本次阅读；受许可PDF不上传Git。[论文标识](https://doi.org/10.1103/s86j-5jcr)
 
 p-PIM 的部分网页/PDF入口出现验证码，但通过官方 Europe PMC 取得主文XML及补充材料，已核实关键图和补充实验；不属于全文缺失。FIGNA使用用户本地IEEE全文。SANTA清单链接是v1，本次另读了用户本地v2，以下关于整模型decode的数字明确来自v2，不能混用版本、章节和表号。
 
@@ -27,7 +27,7 @@ p-PIM 的部分网页/PDF入口出现验证码，但通过官方 Europe PMC 取�
 | 11 | ICCAD 2018低差异计算 | 全文 | 多维乘法数值实验、综合 | 一维表示与二维乘积覆盖的区别 |
 | 12 | tubGEMM，2024预印本 | 全文v1 | 精确整数算子、后综合PPA | 无RNG的temporal-unary对照 |
 | 13 | ASTRA，GLSVLSI 2025 | 全文 | 光器件/电路/架构模拟、OPT-350质量 | 光学乘法加电荷域归约 |
-| 14 | Current Digitizers，PR Applied 2025 | **仅摘要** | 摘要称器件与MNIST验证，细节未核实 | 可能降低模拟CIM的ADC开销，待全文 |
+| 14 | Current Digitizers，PR Applied 2025 | 用户补充全文 | 单器件硬件在环、MNIST子集、读出电路后版图仿真 | 模拟列求和后，用概率读出替代ADC |
 | 15 | FIGNA，HPCA 2024 | 用户本地全文 | 综合功耗、SystemC、语言模型数值 | BF16/INT混合数字基线与转换摊销 |
 | 16 | NeuPIMs，ASPLOS 2024 | 全文 | NPU/DRAM联合模拟、GPU基线 | 数据布局、资源并行与批间调度 |
 | 17 | LLMCompass，ISCA 2024 | 全文 | GPU/TPU校验的时延与面积模型 | 分块搜索、存储层次与校准方法 |
@@ -158,11 +158,25 @@ GLSVLSI 2025，DOI 10.1145/3716368.3735299。[机构全文](https://api.mountain
 
 ### 3.8 Stochastic Nanomagnets as Current Digitizers for Efficient Probabilistic Machine Learning
 
-Physical Review Applied 24, 044012，2025，DOI 10.1103/s86j-5jcr。[APS摘要](https://journals.aps.org/prapplied/abstract/10.1103/s86j-5jcr)、[MIT摘要](https://www.rle.mit.edu/stochastic-nanomagnets-as-current-digitizers-for-efficient-probabilistic-machine-learning/)。**全文未取得。**
+Physical Review Applied 24, 044012，2025，DOI 10.1103/s86j-5jcr。[论文标识](https://doi.org/10.1103/s86j-5jcr)。**已补读用户提供的8页期刊全文。** 重点：§III-A–D、Fig.3–8、Table I–II，尤其PDF第3–7页。
 
-**仅摘要可核实。** 三端SOT驱动sMTJ作为模拟电流到随机数字输出的接口，目标是替代传统交叉阵列ADC；摘要提到partial-sum与MNIST验证。无法据此确认阵列分块、采样数、校准、外围成本或完整能效。
+**原文核实：计算发生在哪里。** 电阻交叉阵列用电压×电导及列电流求和完成模拟MVM；sMTJ位于列输出端，将输入电流转换成概率状态。它替换的是ADC读出，并非把每项乘法改成两路随机流AND。大矩阵分成子阵列，各列部分和分别归一化、限幅，经sCDC采样后在数字域组合；仍有比较、计数和部分和合并。正文未完整展开新路径所有位片/子块合并细节；Fig.1的shift-and-add是传统ADC基线示意，不能将其当作新路径的完整实现。Fig.4的比较器可用反相器实现，Fig.7的实验读出/计数及额外非线性由软件配合完成，不能等同于完整片上阵列或所有激活均由器件替代。
 
-**项目判断。** 值得补全文，尤其看partial-sum和读出误差是否适配我们。如果采用普通SRAM加纯数字计数，此文的ADC替代价值不会自然出现。取得全文前，不将其数字写入能耗模型。
+**概率输出不是线性电流编码。** 主文Eq.(1)为 `P(AP)=sigmoid(α·I)`，P/AP按−1/+1解码。由此可推导平均输出为 `2·sigmoid(α·I)−1=tanh(α·I/2)`；计数平均本身不会恢复线性的I。论文通过器件感知训练、可训练归一化参数β和STE适应这一非线性，电流限制在±0.8mA，实测α约3.061 mA⁻¹。对分块结构而言，不能假定“各块非线性读出后相加”等于原来的连续点积；这是需要训练适应的计算边界。
+
+**采样与质量条件。** 网络使用二值权重和低位输入，主要比较1/4位DAC、1/2/4次sMTJ采样；4次采样的计数只有5种可能值，并非8位线性ADC精度。硬件实验是软件交叉阵列、真实单个sMTJ按列顺序复用，MNIST只取160张、每类16张；最高硬件准确率95.63%，不是完整1万张测试或LLM PPL。Fig.3以10MHz记录器件波形，不等于证明每100ns都有独立有效样本；器件相关时间仍需单独校准。
+
+**PPA是另一层验证。** §III-D/Table I采用TSMC 0.18µm后版图仿真：64×64阵列的64列共享一个ADC，sMTJ方案则每8列共享一个sCDC，即共8个。Table II使用缩放器件模型，P/AP驻留时间均取5ns；这不是实验中原器件的整机吞吐实测。下表是该读出组织的比较，不包含完整MVM、整网络或GPU整卡。
+
+| Table I读出方案 | 面积（µm²） | 能量（pJ） | 延迟（ns） |
+|---|---:|---:|---:|
+| 6位ADC-based CDC | 911244.6 | 12064.0 | 480.0 |
+| 2位ADC-based CDC | 59244.6 | 1388.2 | 480.0 |
+| sMTJ-based sCDC | 7352.2 | 455.2 | 335.0 |
+
+按表值计算，相对2位ADC读出，面积约缩小8.06倍、能量降低约3.05倍；延迟缩短约30.2%，等价于速度提高约43.3%。ADC基准含TIA；2位ADC部分指标按引用文献缩放，sCDC在Cadence中实现及后版图仿真。不能把这一倍率当作整LLM节能，也不能把1～4次神经元采样当成我们INT8随机乘法所需拍数。
+
+**项目判断。** 这篇对“模拟CIM列归约＋p-bit非线性读出＋器件感知训练”很有启发，可以减少昂贵的列ADC。但我们当前普通SRAM、数字随机乘法和精确计数路径本来没有列ADC，不能直接继承3.05倍收益；若额外把数字部分和转为电流驱动p-bit，还需计DAC/电流驱动、限幅、配置、计数及误差。它也没有直接实现原SwiGLU。若另开原生p-bit重训路线，应联合比较子阵列大小、β/温度、采样数与外围能量；当前保持Qwen/Llama权重的主线仍以同口径PPL及PT验证为准。主文注明原始数据未公开，完整复现还受数据可得性限制。
 
 ### 3.9 FIGNA: Integer Unit-Based Accelerator Design for FP-INT GEMM Preserving Numerical Accuracy
 
@@ -197,7 +211,7 @@ ISCA 2024。[作者全文](https://augustning.com/assets/papers/llmcompass-isca-
 | 数字随机乘法 | 用一位事件估计乘积 | SNG、共享布线、归约、时间累加、重编码 | SASCHA、DS-CIM |
 | 确定性/混合unary | 用时长或排列编码数值，随机余量可选 | 计数、比较、状态、最坏周期 | Dither、SC-CNN、tubGEMM |
 | 随机地址选择 | 抽取要读的向量，直接减少读取 | 分布生成、索引、去重、稀疏gather | SANTA |
-| 原生概率器件/网络 | 输入决定状态概率，承担非线性或采样 | 建立/混合、相关性、输入配置、读出、耦合 | p-PIM、Z1T |
+| 原生概率器件/网络 | 输入决定状态概率，承担非线性或采样 | 建立/混合、相关性、输入配置、读出、耦合 | p-PIM、Current Digitizers、Z1T |
 
 这是本次归纳，不是四类收益已经在我们模型上测得。物理tanh p-bit与均匀随机字＋比较器不能按同一种能量、同一种独立样本率处理。论文里的确定性unary也可以研究，但应诚实命名，不把无RNG对照当作物理随机器件的优势。
 
@@ -265,6 +279,7 @@ SANTA与NeuPIMs共同提示：K和V是不同访问问题。K筛选的摘要可�
 
 - 阅读依据为原清单17项，不新增训练或硬件结果。模型/分词器/语料/种子字段对这次文献任务不适用；后续实验仍需遵循仓库复现规则。
 - SANTA本地v2 PDF SHA-256：`19be9065451d31a6f646ec31e1e8caee0a7ea6694780808ddfef236b48b70ffc`；DS-CIM本地PDF：`6f736516b0534d81e3c0a08eb3822674b827c344e8051353a02ebfeab6ef9aef`；FIGNA本地PDF：`d4bfd00ab334a744be0d89d6ce3d792254e5afd7c70c4c6a16830b0bf7b1e072`。
+- 补充的Current Digitizers用户PDF共8页，SHA-256：`3281c29a64261886d3356028d3e93692f8d421dd6d16128d18644767c4c94cfc`。原文输入保留在用户Downloads目录，没有改写或上传Git。
 - 其余下载字节、公开URL、章节/页码、图表核查与访问失败/替代入口见仓库 `work/jieruiz/26/SOURCE_EVIDENCE.json`。原文PDF、受许可资料和长图像只保留在本地阅读目录，Git提交摘要和索引。
 - 仓库正式入口为本文件；用户资料目录 `pbit_llm_master_report_20261012/` 保留同字节副本。文件散列和交接在 `work/jieruiz/26/`；原推荐清单未改。
-- Current Digitizers仍缺全文。取得全文后优先补其partial-sum组织、器件相关时间、ADC替代边界和外围能量；本次不把摘要推测写成已读结论。
+- Current Digitizers全文缺口已补齐，本清单没有仍缺主文的条目。其器件数据、权重/训练代码及相关性信息不足以完整复现，属于复现限制，不能写成已测得LLM效果。

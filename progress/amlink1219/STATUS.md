@@ -1,5 +1,17 @@
 # amlink1219 项目进度
 
+更新时间：2026-10-19T02:14:44.046675+08:00；负责人amlink1219。
+
+## Issue37：完整数字Attention vs QK概率筛选＋Ising（本地/服务器完成，待PR）
+
+- 目标rayggxia-workspace/pbit-llm-qwen-baselines；分支task/37-attention-comparison；工作目录E:/BaiduSyncdisk/p-bit/DAC_2026_Draft_Proceedings/DAC_2026_Draft_Proceedings/workspace_projects/ac37。远端base pbit-tlm-attention-details-20261016 @3553996，依赖本地Issue36 d3c6514；执行源7f1cc0d5c3e967f4983727c726b7e1d6e36e7873。
+- Slurm2164 CPU1分配COMPLETED/0:0，23源SHA通过，9/9快照测试，32/32完整24层条件TLM完成；无GPU/PPL/RTL。首终态已保存，40返回文件独立SHA核验；服务器/home/Weican_Chen/projects/attention-compare-issue37保留冻结快照与原始结果。无本任务在运行作业。
+- 正式代码/报告architecture_tlm/attention_comparison，结果architecture_tlm/results/attention_comparison_20261019，辅助work/amlink1219/37。2K D0完整29.480ms、条件10.057mJ/0.341W；P/S32 27.963ms/8.961mJ，S128 33.038ms/9.495mJ，S512 49.921ms/11.080mJ（三seed均值，100ns，warm，pending32）。全部占位参数条件值，物理完整PPA/PPL为空。
+- 2K/S128宏输出周期需约<=17.27ns才在该固定映射延迟上胜过D0；S512只加快宏仍不足。当前P缓冲2K256KiB/8K448KiB，D0仅64KiB，不能从小宏面积推断全模块省面积。8K仅保留6.25%候选，质量未验收。数字screen_exact使用variable候选，不是fixed P的单模块消融。
+- 本人Issue37同步实际结果并保持open；当前amlink1219 push=false，分支未上传、PR未创建；Projects缺read:project待同步。获得权限后先复核最新Issue/PR/base，按HANDOFF/PR_BODY只推本任务分支，不换账号/旧库。
+
+## 此前状态（保留）
+
 更新时间：2026-10-19T01:40:28.893502+08:00；负责人amlink1219；正式目标rayggxia-workspace/pbit-llm-qwen-baselines。
 
 ## Issue36：完整数字Attention参考（本地完成，待PR交付）

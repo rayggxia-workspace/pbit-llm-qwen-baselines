@@ -8,6 +8,23 @@ except ImportError:
 
 @unittest.skipIf(torch is None, 'PyTorch is unavailable locally; execute via Slurm')
 class PipelineTest(unittest.TestCase):
+    @unittest.skipUnless(torch is not None and torch.cuda.is_available(), 'CUDA is required')
+    def test_cuda_iid_under_actual_deterministic_flags(self):
+        from experiments.llama2_ffn_precision.numeric import sample_counts
+        torch.use_deterministic_algorithms(True)
+        q = torch.zeros(8192, 64, device='cuda', dtype=torch.int16)
+        q[:, 1:32], q[:, 32:] = 64, 128
+        def gen():
+            return torch.Generator(device='cuda').manual_seed(19)
+        a = sample_counts(q, 4096, 'iid', generator=gen(), chunk_groups=1)
+        b = sample_counts(q, 4096, 'iid', generator=gen(), chunk_groups=8192)
+        self.assertTrue(torch.equal(a, b))
+        self.assertTrue((a[:, 0] == 0).all())
+        self.assertTrue((a[:, 1] <= a[:, 32]).all())
+        self.assertTrue(torch.equal(a[:, 1:32], a[:, 1:2].expand(-1, 31)))
+        self.assertLess(abs(a[:, 1].float().mean().item() - 1024), 2.)
+        self.assertLess(abs(a[:, 32].float().mean().item() - 2048), 2.)
+
     @unittest.skipUnless(torch is not None and torch.cuda.is_available(), 'CUDA is required by the actual wrapper')
     def test_enumeration_matches_deterministic_whole_ffn(self):
         from experiments.llama2_ffn_precision.run import make_mlp_class

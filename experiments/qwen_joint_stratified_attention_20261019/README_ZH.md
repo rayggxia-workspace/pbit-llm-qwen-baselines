@@ -40,3 +40,11 @@ FFN的input/product generator与Attention selector/sampler彼此独立；复用�
 先在原模型上安装上游Attention controller，再替换FFN；自有guard在替换之后检查全部参数和6个冻结FFN权重buffers的对象/存储/version，可变统计/RNG排除。异常时恢复Attention和hooks。不得通过禁用上游install校验或修改原源码绕过guard。
 
 模型/语料/源/配置/目标位置/输出SHA、逐段NLL、24层执行统计、实际候选比例/采样重复、GPU耗时与Slurm作业均记录。69等历史完整FFN结果保留原协议；联合项另放qwen/results/joint_stratified_attention_20261019。大原件、权重和运行校准制品留本人授权服务器；Git只发布代码/汇总/索引。无新PT/PPA/TLM能效结论。
+
+## 完整cached确认
+
+`run_full.py`/`run_full.sbatch`另冻结新提交，保留d61原后缀快照。重新校验模型/文本/冻结依赖及d61成功门禁的制品与原源码；不重复相同环境下刚完成的向量化BF16参考。随后先做batch16、batch32各一个2047-token真实前缀的B4T32+S512显存试运行，两项成功才生成READY允许完整worker。
+
+完整矩阵22项：1个新cached BF16、3种FFN单独各3seed、原FFN及3种FFN配S128 Ising各3seed。统一batch32、window2048/stride1024，292窗口、299077目标，每目标独立24层调用审计；首次长窗与尾窗也覆盖，12357次decode forward。S128固定，不是逐query固定L/16。前缀Attention仍为原SDPA，FFN前缀同样替换；与旧向量化或batch8后缀结果不混成同协议。未生成结果的任务仍标记运行中，不提前填值。
+
+离线统计脚本`summarize_results.py`复核目标位置/模型/批形状和三seed齐全，再报告PPL算术平均、seed总体标准差及平均NLL。联合交互按每seed `Ljoint-Lffn-Lattention+Lbaseline`，避免相加PPL。小seed标准差不代表语料不确定性；CTMC相同seed的轨迹可能随logit/事件消耗改变，不能假定全部随机数逐位配对。

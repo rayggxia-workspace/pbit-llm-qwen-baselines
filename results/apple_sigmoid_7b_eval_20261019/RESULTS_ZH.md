@@ -1,14 +1,36 @@
-# Apple 7B 配对模型：完整 WT2 结果
+# Apple 7B 配对模型：完整六任务与 WikiText-2
 
-| 原始检查点，FP32参数/计算 | 完整WT2 PPL | 计分token |
+原始 FP32 权重与 FP32 计算，TF32 关闭；harness 0.4.8，0-shot，seed 0。
+GPU Slurm2542 于北京时间2026-10-19 21:55:48完成，归档终态为COMPLETED/0:0；CPU收尾2543验证每模型19,965题、六项逐题样本行数及SHA，无缺失项。
+
+| 任务 | 题数 | Softmax raw acc | Sigmoid raw acc | Sigmoid−Softmax（百分点） |
+|---|---:|---:|---:|---:|
+| BoolQ | 3270 | 71.6208% | 76.3609% | +4.7401 |
+| PIQA | 1838 | 75.5713% | 76.4962% | +0.9249 |
+| HellaSwag | 10042 | 53.3061% | 53.6547% | +0.3485 |
+| WinoGrande | 1267 | 69.3765% | 68.6661% | -0.7103 |
+| ARC-Easy | 2376 | 72.1801% | 73.2323% | +1.0522 |
+| ARC-Challenge | 1172 | 40.1024% | 40.5290% | +0.4266 |
+| 六项算术均值 | 每模型19,965 | 63.6929% | 64.8232% | +1.1303 |
+
+主表全部使用raw acc，未把HellaSwag/ARC等任务的acc_norm混进均值。两种口径、每项标准误差、完整题数、提示模板和种子均保存在float32/<model>/<task>.json及PAIRED_TASKS.json；单项标准误差不是两模型训练种子间的置信区间。
+
+| 补充长度归一化指标 | Softmax acc_norm | Sigmoid acc_norm |
 |---|---:|---:|
-| Softmax Attention | 5.911825276082767 | 317546 |
-| Sigmoid Attention | 5.88607319951146 | 317546 |
+| PIQA | 77.0403% | 77.4211% |
+| HellaSwag | 71.4897% | 71.6292% |
+| ARC-Easy | 68.7710% | 69.6970% |
+| ARC-Challenge | 41.8942% | 42.7474% |
 
-两者完整语料token为317547，首token无前文不计分，其余每个target恰好一次；window2048/stride1024、同一原始文本和原SentencePiece及换行预处理。逐窗计分覆盖、NLL总和及PPL指数关系均已核对；精确文本/token/结果SHA见PAIRED_PPL.json与float32/<model>/ppl.json。Sigmoid的本组PPL比Softmax低约0.436%，属于这两个配对训练检查点在该协议的结果，不能推出所有模型的质量优势或p-bit硬件收益。
+| 完整WT2，window2048/stride1024 | PPL | 计分token |
+|---|---:|---:|
+| Softmax | 5.911825276082767 | 317546 |
+| Sigmoid | 5.88607319951146 | 317546 |
 
-GPU作业2542仍在运行六项完整准确率；两模型各六项两题试跑已经通过，不能将它们当正式准确率。六项数据固定版本、19,965题/67,106请求的分词审计、原始FP32 CPU/GPU18-token对齐均通过，详见原始JSON。权重/原分词器下载2865对象、50.17GB的来源MD5与SHA索引、完整WT2文本SHA也已校验。
+本组Sigmoid在六项中的五项raw acc较高，WinoGrande较低；六项均值高1.1303个百分点，PPL低约0.436%。这些是两个分别预训练的官方配对检查点的结果，不是同一权重运行时改激活的因果实验，也未验证有限p-bit采样或硬件收益。
 
-BF16 GPU2538/2539在预检处失败，未执行正式PPL/准确率；2540诊断未解决全部差异。当前表仅为官方原始未量化FP32权重/计算，BF16数值一致性仍待修复，不将FP32验证继承为BF16部署通过。FP32软件执行时间不是数字/P-bit硬件PPA数据。全部历史快照、失败状态和版本索引保留。
+核验：16份正式小型JSON逐字节匹配CPU收尾SHA索引；两模型六项配置/模板/版本/种子/题数一致，逐项成绩与summary一致，均值及PPL重算通过；9份本地核心源码与服务器run-v6的SHA一致。大逐题JSONL留本人服务器，finalizer已核对其行数并记录SHA。final_artifact_manifest.json共69项，含完整结果与冻结源码；其SHA由finalization_status.json锚定。服务器根/home/Weican_Chen/projects/apple-sigmoid-7b-eval-20261019，正式原件在reports/float32/{softmax,sigmoid}/。不上传权重、数据、环境或逐题题干。
 
-六任务集合来自Zotero DS-CIM表II：BoolQ、PIQA、HellaSwag、WinoGrande、ARC-e、ARC-c。本次明确使用harness0.4.8/0-shot，不声称重现该论文未固定所有模板细节的LLaMA数字。代码/结果已推任务Draft PR67，未合并；看板因缺read:project待同步。大权重、数据及逐题原始样本留本人服务器。
+BF16 GPU2538/2539未通过数值门禁，2540诊断保留；本报告只给原始FP32参考。原生CPU/GPU短前向、因果及padding门禁已通过；完整评估为无KV缓存的全前向，不把缓存一致性列为已测。stderr的not-a-git-repository来自harness可选版本查询；代码版本由Git提交与冻结源码SHA独立定位。
+
+任务集合依据DS-CIM表II；本次冻结harness0.4.8/0-shot，不宣称严格复现DS-CIM的LLaMA表格。PR67交付，是否已上传/待审/合并以work/amlink1219/65/PUBLICATION.json和远端PR实时状态为准。Projects权限不足时单独列待同步。

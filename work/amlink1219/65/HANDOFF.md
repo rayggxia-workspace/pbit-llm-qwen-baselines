@@ -25,3 +25,9 @@ DS-CIM Zotero NQ8CM3TZ / RC92PCQQ，表II六项BoolQ、PIQA、HellaSwag、WinoGr
 全量PPL结果已实际推送 d120381e089fcf8cbd56ac9aeca250118c85497b，Draft PR67 head和远端ref均核验，57项稳定Git blob SHA通过。六项准确率仍在2542运行。stderr中的not-a-git-repository来自harness读取Git版本的可选记录；执行源码由固定run-v6 manifest与代码提交定位，不因此重交或更改运行目录。
 
 已提交CPU-only收尾作业2543，afterany:2542；它会及时保存2542终态、核对每模型六项逐题行数并写reports/final_artifact_manifest.json和finalization_status.json。这里只是提交，尚未宣称收尾执行成功。恢复先读这两个文件，再取回小型准确率汇总和SHA索引；大JSONL留服务器，不重复提交2542或收尾作业。
+
+## 2026-10-20 收齐完整六任务（本地已核验，等待本轮发布回执）
+
+2542已于北京时间2026-10-19 21:55:48完成；保留的原始调度终态COMPLETED/0:0。2543应用收尾完成、两模型各19,965题、无缺失，69项SHA索引已取回；当前scontrol旧记录过期，不用队列消失代替完成证据。16份正式小型JSON与服务器索引相符、9份核心源与run-v6相同，两模型模板/版本/种子/题数一致，汇总、均值和PPL核对通过。
+
+raw acc六项均值Softmax63.692864%、Sigmoid64.823195%，差+1.130331个百分点；完整WT2仍为5.911825276082767/5.88607319951146，原始FP32。BF16待修复，未产生p-bit或PPA结果。所有逐题样本在原服务器reports/float32/，不重交2542/2543。正式结果与可复核模板已归档results/apple_sigmoid_7b_eval_20261019；以本轮PUBLICATION回执和PR67实时状态判定远端交付。

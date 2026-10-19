@@ -27,7 +27,7 @@ def configurations():
              for n in (64, 128, 512) for s in (0, 1, 2)]
     for r in rows:
         r.update(batch=16, burn=16., spacing=4., selection='fixed', budget_blocks=8,
-                 target_fraction=.30, max_length=2048)
+                 target_fraction=.30, context=2048)
     return rows
 
 

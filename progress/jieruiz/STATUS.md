@@ -1,6 +1,6 @@
-# Issue68：本地存储清理已完成，待上传
+# Issue68：本地清理已完成，已推送PR待审
 
-2026-10-19；jieruiz；task/68-local-storage-cleanup；base 6197f24a9cc03ab0dc5e2e72297457f638e37292；tmp/local-cleanup-issue68-20261019。用户授权本地项目清理，实际回收逻辑空间3.133GiB。正式报告maintenance/storage_cleanup_20261019，原始日志与恢复zip留本地，work/jieruiz/68保存索引/交接。17个已合并本人审核工作树的恢复分支仍在；唯一Qwen权重SHA核验通过。当前本地完成、未上传、无PR，不宣称已合并。下一步限定文件提交、推送workspace任务分支、PR和Issue同步。Projects read:project待同步；无新GPU/PPL/TLM/EDA。
+2026-10-19；jieruiz；task/68-local-storage-cleanup；base 6197f24a9cc03ab0dc5e2e72297457f638e37292；tmp/local-cleanup-issue68-20261019。用户授权本地项目清理，实际回收逻辑空间3.133GiB。正式报告maintenance/storage_cleanup_20261019，原始日志与恢复zip留本地，work/jieruiz/68保存索引/交接。17个已合并本人审核工作树的恢复分支仍在；唯一Qwen权重SHA核验通过。本地清理实际完成，已推送并创建PR#69（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/69），PR待审未合并。下一步审阅后验收；本次不自动合并或关闭Issue。Projects read:project待同步；无新GPU/PPL/TLM/EDA。
 
 以下为继承的历史状态，保留原时点：
 

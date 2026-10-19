@@ -31,3 +31,5 @@
 源码脚本随本报告归档；其中的计划和回执为一次性、不可重复执行。完整清理前盘点、删除计划和逐文件回执仍在本机 `tmp/local_cleanup_20261019/`，大小和SHA索引见 `work/jieruiz/68/LOCAL_ARTIFACT_INDEX.json`。
 
 本任务没有新模型质量测试、RTL/PT、TLM或GPU结果。模型/数据版本、种子、计分协议不适用于磁盘清理；保留模型散列及Git代码版本已经记录。Projects看板此前缺read:project，待同步，未宣称已更新。
+
+交付状态：本地清理已执行；[PR #69](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/69)已创建并推送，待审未合并。

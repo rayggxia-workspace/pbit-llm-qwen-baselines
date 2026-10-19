@@ -1,0 +1,53 @@
+{
+  "issue": 32,
+  "commit": "17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee",
+  "output": "/home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/outputs/17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee_prefix2048",
+  "prepare_job": "2142",
+  "array_job": "2143",
+  "after_primary_array": "2113",
+  "cases": [
+    0,
+    12,
+    13,
+    14,
+    15,
+    25,
+    26,
+    27
+  ],
+  "prefix_tokens": 2048,
+  "expected_outputs": 10,
+  "prepare_command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--gres=gpu:1",
+    "--cpus-per-task=4",
+    "--mem=20G",
+    "--time=02:00:00",
+    "--export=ALL",
+    "--dependency=afterok:2113",
+    "--job-name=range32-check",
+    "--output=/home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/logs/confirm-prepare-%j.log",
+    "--error=/home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/logs/confirm-prepare-%j.err",
+    "--wrap=exec /opt/slurm/21.08.8/bin/srun /home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python -B -u /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/snapshots/17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee/experiments/qwen_dual_range_20261018/run_ranges.py prepare --model /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/models/Qwen2.5-0.5B --data /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/data/wikitext-2 --project-root /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32 --output /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/outputs/17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee_prefix2048 --code-commit 17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee --prefix-tokens 2048"
+  ],
+  "array_command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--gres=gpu:1",
+    "--cpus-per-task=4",
+    "--mem=20G",
+    "--time=02:00:00",
+    "--export=ALL",
+    "--dependency=afterok:2142",
+    "--array=0,12-15,25-27%2",
+    "--job-name=range32-2k",
+    "--output=/home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/logs/confirm-%A_%a.log",
+    "--error=/home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/logs/confirm-%A_%a.err",
+    "--wrap=exec /opt/slurm/21.08.8/bin/srun /home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python -B -u /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/snapshots/17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee/experiments/qwen_dual_range_20261018/run_ranges.py worker --model /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/models/Qwen2.5-0.5B --data /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/data/wikitext-2 --project-root /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32 --output /home/Hongjie_Zeng/projects/pbit-qwen-dual-range-20261018-issue32/outputs/17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee_prefix2048 --code-commit 17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee --prefix-tokens 2048 --index \"$SLURM_ARRAY_TASK_ID\""
+  ],
+  "submitted_at": "2026-10-18T15:30:10.680972+00:00",
+  "scope": "Longer prefix confirmation chosen after promising paired 128token comparison; all24FFN, no training"
+}

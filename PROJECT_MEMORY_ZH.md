@@ -220,15 +220,32 @@ T64补测执行源a7bae630c62f08165a01192fe4226d9beac34e7c，Slurm2298/2299全�
 
 正式结果qwen/results/fixedw_multiscale_20261019/{RESULTS_ZH.md,SUMMARY.json,ARTIFACT_INDEX.json}，实现experiments/qwen_fixedw_multiscale_20261019/，交接work/jieruiz/46/。原件服务器/home/Hongjie_Zeng/projects/pbit-qwen-fixedw-multiscale-20261019-issue46/outputs/e6f29b113405df53f2ca32b084d9de0dc9859343/；Git只发布代码/汇总/索引，不发布权重、文本或校准。PR47待审未合并，Issue46保持open；Projects新查询仍缺read:project，看板待同步。后续优先四档RTL/归约/尺度恢复PPA；T64全量已完成，不重复已验证76项。
 
-## 5.6 多档缩放＋粗细分层：Issue46续测（运行中）
+## 5.6 多档缩放＋粗细分层：Issue46完整结果（2026-10-19）
 
-2026-10-19用户要求同协议比较分层与缩放、最佳档数，以及缩放之后是否只需更粗的分层；核对真正报告语言PPL的SC工作。仍接续Issue46/PR47、task/46-fixedw-multiscale，不接管成员Attention Issue48。新正式实现experiments/qwen_multiscale_stratified_20261019，旧76项不覆盖。
+接续用户要求同协议比较分层和缩放、档数、粗细分层及真实语言PPL文献。仍为Issue46/PR47、task/46-fixedw-multiscale，未接管Attention Issue48。实现experiments/qwen_multiscale_stratified_20261019，正式总表/图/文献qwen/results/multiscale_stratified_20261019/{COMPARISON_ZH.md,COMPARISON.json,COMPARISON.png,LITERATURE_ZH.md}。
 
-冻结执行db27fa3d7ed8eced13513f0cad10061a3cc59a71已实际发布；Slurm2308已通过模型/原文/token核验、13新/12旧multiscale/8旧range/shared测试，原BF16完整再次11.652735。2309为67配置（最多4GPU）：同T64的B1/2/3/4/6/8档与IID/细K64，B2/4的粗K4/16与T16/32细分层，dynamic/B4的T128细分层，4个mean。旧同源dynamic/B4/B8的IID64仅经身份/算法等价复核后导入。配置详见新README和work/jieruiz/46/STRATIFIED_SUBMISSION.json。新结果尚在收回，不根据早期单seed断言。
+执行db27fa3d7ed8eced13513f0cad10061a3cc59a71，Slurm2308/2309全部完成，本人队列空。67完整配置＋2BF16共69计分、72服务器原件逐bytes/SHA及37执行源blob通过；13新核/12旧multiscale/8range/shared测试通过。新后处理K分组与cfg篡改fixture通过（合成测试，不是PPL），图已视觉检查。模型/文本/token/固定依赖与前两批一致，原BF16完整再次11.652735。结果提交c8ea878c5bf2dc9c37e12a1b4595d8f2fc5c45ed已实际发布。原76输出不覆盖，合计145输出条目、154服务器原件，各批计分协议不同分别保留manifest。
 
-K层把0..255均分，区间内每层T/K次有放回均匀随机，跨层独立、组内64路/跨幅度档共享。K1严格旧IID，K=T是细随机分层而非IID；K256为完全覆盖无随机。局部恢复方差S²×u(1-u)/(TK)，缩放和分层作用可叠加；不能据此代替完整PPL。此前完整分层是Llama2，不是Qwen，两模型协议/尺度不同不能直接排名。
+全部24FFN、同固定W8、原Attention、无训练；mean控制不是全网络期望。B为幅度档数，S/S4/S16等；K为均匀门限分层数，层内T/K次有放回，跨层独立、同64路/跨幅度档共享。K1严格原IID；K=T是受控细随机分层；K256完全覆盖无随机。局部恢复方差S²×u(1-u)/(TK)，两机制可叠加，但整网PPL不保证单调。
 
-文献边界：DS-CIM LLaMA六任务无PPL；SCOPE小型字符RNN与XNOR-LSTM有语言PPL但不是现代预训练LLM直接替换；SCMP公开代码使用Sobol/Owen、局部尺度/敏感INT旁路，本次未获取结果归档，仅作方法线索。正式文献说明将保存在qwen/results/multiscale_stratified_20261019/LITERATURE_ZH.md。无新PPA/物理源测量，PR47/29未合并；Projects缺read:project。
+| 同T64，三seed均值±总体标准差 | IID K1 | 细分层K64 |
+|---|---:|---:|
+| B1 | 17.800039±0.013904 | 11.861552±0.003298 |
+| B2 | 13.324329±0.008113 | 11.703316±0.001176 |
+| B3 | 13.064200±0.014960 | 11.692746±0.000593 |
+| B4 | 13.038027±0.010666 | 11.693775±0.001432 |
+| B6 | 13.036766±0.011718 | 11.694073±0.000768 |
+| B8 | 13.038505±0.012030 | 11.693854±0.000628 |
+
+dynamic64仅改细K64为11.768589±0.003298，K128为11.700228±0.000201。单PoT档与dynamic absmax的顶档/端点不同；不要将其混为一行。各档mean约11.680～11.687，支持有限流是主要可改进项，不等于纯权重量化损失。
+
+缩放后粗分层仍有效：T64/B4，K4/16/64分别11.893101±0.003607、11.736863±0.004758、11.693775±0.001432；B2分别12.015205±0.002574、11.773086±0.002320、11.703316±0.001176。K16已接近细覆盖，但同质量可缩短T：B4细T16/32/64/128分别11.900826±0.003825、11.736131±0.000243、11.693775±0.001432、11.683928±0.000383；B2细T16/32为12.048887±0.000542、11.769199±0.001183。
+
+当前建议：B2/T32为简化候选（相对BF16约+1.00%），B4/T32为更低损失候选（+0.716%），B4/T16为激进短流（+2.129%），B4/T64为低损失（+0.352%）。B3～4后增档无明显收益，未宣称B3显著优于4；未测B3的T16/32，未测T16/32同T IID。此前IID“128次折中”不能继续作为分层方案的结论。B4/T64/K16与B4/T32/K32几乎同PPL，优先考察较短T而不只减少K。
+
+细K=T可理解为幅度码低位随机舍入；使用物理随机低位加区间控制，不是自然IID精度已被解决。区间计数器可研究复用现有流计数器；档号/准确跨档归约/移位/符号端点仍收费，W步长未保证PoT。GPU数值参考不是有限宽RTL或ASIC时序；无新PPA/能量面积实测，无基础任务或Llama新评测。
+
+文献：DS-CIM LLaMA六任务未报告PPL；SCOPE小型字符RNN与XNOR-LSTM有真实语言PPL但非预训练LLM直接替换；SCMP公开代码采用Sobol/Owen、局部尺度/敏感INT旁路，归档未获取，仅方法线索。详细primary链接见LITERATURE_ZH。PR47/29仍待审未合并，Projects缺read:project待同步。原件位于既有个人项目outputs/db27fa3d7ed8eced13513f0cad10061a3cc59a71/，Git仅汇总/索引，无权重/文本/校准原件。
 
 ## 6 随机源、p-bit与相关性
 
@@ -411,7 +428,7 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 30 / 31 | closed / 已合并d589f152 | 精确短流参考47输出，完整精确随机WT2未做 |
 | 32 / 34、38 | closed / 已合并5b71d4e、c1555ae | 范围49输出＋真实分布/项目入口，完整随机/裁剪WT2未做 |
 | 39 / 40 | 实验完成，PR待审未合并 | 裁剪/固定PoT范围65替换；独立目录tmp/qwen-ffn-clipping-issue39-20261019 |
-| 46 / 47 | 实验完成，PR待审未合并 | 固定W8＋输入多档；65首批＋11项T64补测，完整WT2三seed，目录tmp/qwen-fixedw-multiscale-20261019 |
+| 46 / 47 | 实验完成，PR待审未合并 | 固定W8多档＋分层；145输出/154原件，含67新完整配置，目录tmp/qwen-fixedw-multiscale-20261019 |
 | 33 / 待核验 | open，负责人amlink1219 | Attention价值核查与实验计划；与FFN Issue32分开，不接管他人状态 |
 
 Issue19此前交接记录的Slurm数组为2084，8/9等子项尚在运行或排队；这只是此前STATUS快照，不是本次查询实时队列。继续前必须查当前squeue与原manifest，不取消/重交已有作业。精确入口：`tmp/llama2-ffn-precision-issue19-20261018/work/jieruiz/19/HANDOFF.md`及该目录个人STATUS。

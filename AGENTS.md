@@ -89,3 +89,11 @@
 ## Historical Attention quality evidence
 
 - Before declaring model-level Attention PPL evidence absent, inspect the historical algorithm branches and the executable dispatch, rather than only the current TLM integration tree or a mode name. Record all-layer coverage, prefill/decode coverage, suffix versus full-corpus scoring, FFN state, and whether sampling is accurate-Softmax IID, ideal CTMC, or a finite physical/network model. A separate screening result and Ising result do not establish their joint PPL.
+
+## amlink1219 后续FFN仿真参考（用户2026-10-19指定）
+
+- 后续本人的FFN行为/数值仿真主参考采用PR47已合并的固定W8＋多档幅度＋随机门限分层：B4/T32/K32，显式传policy=pot4、mode=sampled、cycles=32、strata=32，不沿用原类的128/1默认。采用版本、SHA、工厂和方法边界见architecture_tlm/ffn_stratified_reference/。B2/T32/K32、B4/T16/K16、B4/T64/K64作为简化、短流、低误差对照。
+- B是幅度尺度档数、K是0..255门限区间数、T是每投影阶段总采样数；保持共享64路及跨档共享门限、gate/up共享x抽样、z独立重编码、固定W8、符号/满幅旁路和FP32 SiLU/归约，不能替成各通道独立Binomial、自然IID或双侧随机。
+- Attention-only继续保留原FFN控制；联合仿真显式声明分层FFN在prefill/decode均替换，复用准确版本的双路径Guard/计分审计。FFN的T/K与Ising的burn/spacing/S分别记录，不把分层门限直接当Ising去相关方法。
+- 本次采用是行为参考，不是已验收的RTL/PPA默认。T32包含x与z各一帧，整FFN周期由调度和其余模块决定。新增硬件实现需计入缩放/区间控制/随机分发/累加/非线性/格式转换/存储，并比较直接随机舍入＋低位确定性矩阵。旧PPL/旧TLM结果不因规则更新而重命名或继承。
+- Issue50/PR52的完整联合确认由原负责人继续；恢复先查最新Issue/PR/交接，不重复提交记录中的运行任务。完整WT2与4096目标后缀分别标注，不把单独FFN全量结论或待审PR写成联合全量已完成。

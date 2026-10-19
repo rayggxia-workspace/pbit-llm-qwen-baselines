@@ -1,3 +1,11 @@
+# Issue33：采用分层FFN作为后续仿真主参考（2026-10-19）
+
+负责人amlink1219；分支task/33-stratified-ffn-reference，独立目录workspace_projects/fa33；base集成ed0c7a4e8e9546ec89895135efff36aa8a00d568（PR42已合并）。主参考B4/T32/K32，正式配置/复用入口architecture_tlm/ffn_stratified_reference；PR47已经合并，FFN-only完整WT2三seed11.736131±0.000243（BF1611.652735，+0.716%），为既有结果核查，本次未重跑PPL。代码/配置已通过13项核心测试、4profile接口和4源码SHA验证，本次采用变更尚待上传。
+
+PR52读取e3c5e957c3769b5fc6867b42a52facace647a83b，仍Draft未合并；已发布B4T32联合S六档4096目标后缀曲线，完整2430/2461在公开记录中尚未收齐，本任务不重复其工作。FFN-only与联合、后缀与完整、T/K与Ising S分别记录。新参考不改变旧Attention-only原FFN控制或TLM物理PPA默认。
+
+原Issue48/PR49结果已在8dd1b06a上传待审，34/34后缀实验完成；Issue33原PR42现已合并。旧进度段落仅为历史快照，最新协作状态以远端Issue/PR为准。交接见work/amlink1219/33/HANDOFF.md。
+
 # amlink1219 项目进度
 
 更新时间：2026-10-19T03:58:53.771030+00:00；负责人amlink1219（GitHub id75301230）。

@@ -37,3 +37,6 @@ Slurm2298/2299全部结束，本人队列空，11项计分/14原件SHA/31执行�
 
 
 2026-10-19最终回执：T64结果a4a15018与备忘录c59ac5d均已实际发布，17项新发布blob与旧20项原发布blob核验通过；Issue评论https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46#issuecomment-6261116248。PR47 ready待审未合并，Issue46open，Projects缺read:project待同步。T64_DELIVERY_RECEIPT记录完整回执；下一步审阅/验收或独立RTL/PPA，不重跑76项。
+
+
+2026-10-19接续Issue46：固定相同W8，新增experiments/qwen_multiscale_stratified_20261019，67项完整WT2+2BF16对照；扫描B1/2/3/4/6/8与K1/4/16/T，无训练/Attention变化。新13项kernel、旧12项严格IID与mean回归通过；独立审核67唯一配置及analyzer K1/K4分组和篡改拒绝通过。源码准备冻结，尚未提交Slurm，不宣称新PPL。执行前保持只读旧快照；后续提交/作业与成果另记STRATIFIED_*。

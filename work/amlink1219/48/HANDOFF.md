@@ -1,3 +1,7 @@
+# 远端状态已核验
+
+结果提交`c2811a61e94226cc79607d91dfeba0d0b9dac992`已推送PR49（draft，待审未合并）；Issue48阶段与结果评论已更新。执行源仍为11f1d6eea2776e201f2021081f8b0fbae2cc455e；完整联合WT2及物理PPA尚未执行，Projects缺scope。此交付回执随后的元数据提交不改变实验源/成果。
+
 # Issue48 接续：34项曲线完成，结果准备交付
 
 负责人amlink1219；GitHub id75301230；唯一目标rayggxia-workspace/pbit-llm-qwen-baselines。分支task/48-attention-joint-ppl；独立目录workspace_projects/aj48；PR49 base task/35-attention-e01，待审未合并。执行源11f1d6eea2776e201f2021081f8b0fbae2cc455e，不可变服务器snapshot同完整SHA；文档/结果提交另记，不能以当前HEAD代替执行源。

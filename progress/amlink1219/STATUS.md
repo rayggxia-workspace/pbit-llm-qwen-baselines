@@ -1,3 +1,7 @@
+# Issue48远端交付核验
+
+结果提交`c2811a61e94226cc79607d91dfeba0d0b9dac992`已在目标仓库任务分支核验，[PR49](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/49)待审未合并（draft=True）；[Issue48结果评论](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/48#issuecomment-6262037367)与阶段清单已同步。34/34后缀案例及全部成果SHA已回收，当前无本任务运行作业；联合完整WT2未执行，Projects缺scope待同步。下面保留本轮结果及历史快照；准确版本与文件索引见Issue48 PUBLICATION/DELIVERY_MANIFEST。
+
 # Issue48：联合Attention采样曲线完成（2026-10-19）
 
 Slurm2380 COMPLETED/0:0，34/34项、S32/64/128/256/512/1024各3seed；原FFN、全部24层decode、准确prefill，4096固定WT2后缀目标/seed。匹配SDPA=10.371557；筛选准确PV=10.895520。联合完整WT2确认尚未执行，不能混称。

@@ -206,17 +206,19 @@ dynamic64为历史每token64路absmax对照；pot1/4/8的顶档S由当前每toke
 
 执行源e6f29b113405df53f2ca32b084d9de0dc9859343。Slurm2234核验9个模型/语料文件及源/token hash，12项新kernel、8项旧range与共享counts测试通过；原BF16完整WT2再次精确复现11.652735047455899，299077目标。2235完成41项512前缀；2276完成预注册22项完整WT2。合计65项计分、无skip/pending，68原件逐bytes/SHA收回，30项执行Git blob复核；本人最终squeue空。服务器来源为既有个人项目，模型revision/语料均未改变。
 
-| 完整WT2，3seed均值±总体标准差 | T128 | T256 |
-|---|---:|---:|
-| dynamic64 | 12.925563±0.006728 | 12.257885±0.003676 |
-| pot4 | 12.309561±0.001471 | 11.989865±0.002580 |
-| pot8 | 12.315184±0.003122 | 11.990151±0.004012 |
+| 完整WT2，3seed均值±总体标准差 | T64补测 | T128 | T256 |
+|---|---:|---:|---:|
+| dynamic64 | 14.559275±0.005839 | 12.925563±0.006728 | 12.257885±0.003676 |
+| pot4 | 13.038027±0.010666 | 12.309561±0.001471 | 11.989865±0.002580 |
+| pot8 | 13.038505±0.012030 | 12.315184±0.003122 | 11.990151±0.004012 |
 
-原BF16完整11.652735；同W8、无A编码、FP32 FFN控制11.681130。四档无采样编码控制11.680940；mean是确定性编码路径，不是非线性随机网络整体的数学期望。四档T128/256相对原BF16 PPL约增加5.64%/2.89%；八档未显示进一步收益。T64仅完成512前缀（四档13.7909、BF16同前缀12.0892），**不能宣称64拍完整WT2已验证**。没有新基础任务或Llama结果。
+原BF16完整11.652735；同W8、无A编码、FP32 FFN控制11.681130。四档无采样编码控制11.680940；mean是确定性编码路径，不是非线性随机网络整体的数学期望。四档T128/256相对原BF16 PPL约增加5.64%/2.89%；八档未显示进一步收益。T64此前仅512前缀，因此未进入首批完整主表；用户追问后已补完完整WT2，四档相对BF16增加11.888%，八档仍无明显收益。64次更激进，128次为当前折中候选、256次精度更好；未声明任务性能几乎无损。没有新基础任务或Llama结果。
+
+T64补测执行源a7bae630c62f08165a01192fe4226d9beac34e7c，Slurm2298/2299全部完成，11项新增计分（2BF16＋9完整T64），14服务器原件逐SHA与31源码blob复核。两批模型/文本/token/冻结依赖一致，kernel与测试文件同字节；原BF16完整再次精确复现11.652735。新结果提交a4a15018b9fd7344be916a21c3bf098c929fc5eb已实际发布PR47；正式补充qwen/results/fixedw_multiscale_t64_20261019/，新原件位于同个人项目outputs/a7bae630c62f08165a01192fe4226d9beac34e7c/。首批65项原件与SUMMARY/ARTIFACT_INDEX保持不变，首批RESULTS新增64/128/256联合表。合计76项输出、82服务器原件，需分别用两批manifest核验。
 
 硬件边界：T是每个x/z采样阶段流长度，不是整层或整token周期；幅度档号、多桶计数、符号/端点、跨档对齐与存储需收费。旧W8量化步长并非强制二次幂，故输入PoT不等于全部尺度恢复只有移位。本轮无PT/PPA、物理随机源回放或新TLM能效；GPU参考耗时不能当ASIC周期。W侧随机共享是此前提出的候选，**本轮固定W没有权重随机流，因此没有测试双随机W共享PPL**。
 
-正式结果qwen/results/fixedw_multiscale_20261019/{RESULTS_ZH.md,SUMMARY.json,ARTIFACT_INDEX.json}，实现experiments/qwen_fixedw_multiscale_20261019/，交接work/jieruiz/46/。原件服务器/home/Hongjie_Zeng/projects/pbit-qwen-fixedw-multiscale-20261019-issue46/outputs/e6f29b113405df53f2ca32b084d9de0dc9859343/；Git只发布代码/汇总/索引，不发布权重、文本或校准。PR47待审未合并，Issue46保持open；Projects新查询仍缺read:project，看板待同步。后续优先四档RTL/归约/尺度恢复PPA，或按需要独立评估完整T64，不重复这65项。
+正式结果qwen/results/fixedw_multiscale_20261019/{RESULTS_ZH.md,SUMMARY.json,ARTIFACT_INDEX.json}，实现experiments/qwen_fixedw_multiscale_20261019/，交接work/jieruiz/46/。原件服务器/home/Hongjie_Zeng/projects/pbit-qwen-fixedw-multiscale-20261019-issue46/outputs/e6f29b113405df53f2ca32b084d9de0dc9859343/；Git只发布代码/汇总/索引，不发布权重、文本或校准。PR47待审未合并，Issue46保持open；Projects新查询仍缺read:project，看板待同步。后续优先四档RTL/归约/尺度恢复PPA；T64全量已完成，不重复已验证76项。
 
 ## 6 随机源、p-bit与相关性
 
@@ -399,7 +401,7 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 30 / 31 | closed / 已合并d589f152 | 精确短流参考47输出，完整精确随机WT2未做 |
 | 32 / 34、38 | closed / 已合并5b71d4e、c1555ae | 范围49输出＋真实分布/项目入口，完整随机/裁剪WT2未做 |
 | 39 / 40 | 实验完成，PR待审未合并 | 裁剪/固定PoT范围65替换；独立目录tmp/qwen-ffn-clipping-issue39-20261019 |
-| 46 / 47 | 实验完成，PR待审未合并 | 固定W8＋输入1/4/8档；65项含完整WT2三seed，目录tmp/qwen-fixedw-multiscale-20261019 |
+| 46 / 47 | 实验完成，PR待审未合并 | 固定W8＋输入多档；65首批＋11项T64补测，完整WT2三seed，目录tmp/qwen-fixedw-multiscale-20261019 |
 | 33 / 待核验 | open，负责人amlink1219 | Attention价值核查与实验计划；与FFN Issue32分开，不接管他人状态 |
 
 Issue19此前交接记录的Slurm数组为2084，8/9等子项尚在运行或排队；这只是此前STATUS快照，不是本次查询实时队列。继续前必须查当前squeue与原manifest，不取消/重交已有作业。精确入口：`tmp/llama2-ffn-precision-issue19-20261018/work/jieruiz/19/HANDOFF.md`及该目录个人STATUS。

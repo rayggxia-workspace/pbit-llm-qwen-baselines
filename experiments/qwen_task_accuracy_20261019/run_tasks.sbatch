@@ -19,7 +19,7 @@ PY=/home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python
 if [[ "$ACTION" == data ]]; then
   export CUDA_VISIBLE_DEVICES=""
   "$PY" -B experiments/qwen_task_accuracy_20261019/test_plan.py
-  "$PY" -B experiments/qwen_task_accuracy_20261019/test_cached_score.py
+  "$PY" -B -m unittest experiments.qwen_task_accuracy_20261019.test_cached_score
 fi
 exec "$PY" -B experiments/qwen_task_accuracy_20261019/run_tasks.py "$ACTION" \
   --model /home/Hongjie_Zeng/pbit_llm/models/Qwen2.5-0.5B \

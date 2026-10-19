@@ -89,3 +89,5 @@
 ## Decode Attention quality execution
 
 - A decode-only Attention patch must not be evaluated by an unchanged multi-token window call and reported as candidate PPL: audit that every scored target executes every replaced layer through the single-token path. Preserve matched cached SDPA controls, exact target coverage, prefill scope, candidate-valid masks, original FFN/weights, and separate suffix/full-corpus protocols.
+
+- Integration-equivalence gates must use matching operators, dtypes and layouts. For Attention, compare the wrapper with the original BF16 SDPA core before using an explicit FP32 reference as a separate quality control; record its numerical difference instead of imposing or silently relaxing an identity threshold. All pilot comparison cases must use the same scored token set.

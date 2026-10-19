@@ -103,7 +103,12 @@ def main():
         from experiments.attention_joint_ising.evaluate import evaluate_case
         cases=matrix(config)
         if args.stage=='gpu_preflight':
-            cases=[{**cases[0],'examples':4,'decode':8,'batch':4},{**cases[1],'examples':4,'decode':8,'batch':4},{**cases[2],'examples':4,'decode':8,'batch':4},*[{**cases[5],'samples':n,'examples':4,'decode':4,'batch':4} for n in [32,128,512,1024]]]
+            cases=[{**cases[0],'examples':4,'decode':8,'batch':4,'audit_logits':True},
+                   {**cases[0],'examples':4,'decode':8,'batch':4,'audit_logits':True},
+                   {**cases[1],'mode':'digital_sdpa','examples':4,'decode':8,'batch':4,'audit_logits':True},
+                   {**cases[1],'examples':4,'decode':8,'batch':4},
+                   {**cases[2],'examples':4,'decode':8,'batch':4},
+                   *[{**cases[5],'samples':n,'examples':4,'decode':8,'batch':4} for n in [32,128,512,1024]]]
             for i,c in enumerate(cases):c['case_id']=f'pilot_{i:03d}'
         elif args.stage=='full_confirm':
             selected=config.get('full_confirm_samples');assert isinstance(selected,int) and selected in config['samples']
@@ -117,7 +122,16 @@ def main():
             case.update(source_commit=args.source_commit,input_report=str(output/'inputs_verified.json'),model_revision=inputs['model_revision'],token_sha256=token_hash)
             signal.alarm(int(config['max_case_seconds']))
             begin=time.monotonic()
-            result=evaluate_case(model,token_ids,case,calibration)
+            logits_hash=hashlib.sha256();handle=None
+            if case.get('audit_logits'):
+                def hash_logits(module,inputs,values):
+                    logits_hash.update(str(tuple(values.shape)).encode())
+                    logits_hash.update(values.detach().contiguous().cpu().view(torch.uint8).numpy().tobytes())
+                handle=model.lm_head.register_forward_hook(hash_logits)
+            try:result=evaluate_case(model,token_ids,case,calibration)
+            finally:
+                if handle is not None:handle.remove()
+            if case.get('audit_logits'):result['scored_logits_sha256']=logits_hash.hexdigest()
             signal.alarm(0)
             result.update(execution_source_commit=args.source_commit,input_manifest_sha256=inputs['expected_manifest_sha256'],full_model_state_before_sha256=before,case_wall_seconds=time.monotonic()-begin)
             path=output/(case['case_id']+'.json');save(path,result)
@@ -127,9 +141,12 @@ def main():
         after=state_hash(model,torch);assert before==after,'Model parameters/buffers changed during Attention evaluation'
         summary['model_state_after_sha256']=after
         if args.stage=='gpu_preflight':
-            p0=json.loads((output/'pilot_000.json').read_text(encoding='utf-8'));p1=json.loads((output/'pilot_001.json').read_text(encoding='utf-8'))
-            assert abs(p0['mean_nll']-p1['mean_nll'])<0.003,'Manual digital reference deviates from matched SDPA'
-            summary['smoke_digital_vs_sdpa_delta_nll']=p1['mean_nll']-p0['mean_nll']
+            p0=json.loads((output/'pilot_000.json').read_text(encoding='utf-8'));p1=json.loads((output/'pilot_001.json').read_text(encoding='utf-8'));p2=json.loads((output/'pilot_002.json').read_text(encoding='utf-8'));p3=json.loads((output/'pilot_003.json').read_text(encoding='utf-8'))
+            assert p0['scored_logits_sha256']==p1['scored_logits_sha256'],'Raw SDPA is not bitwise reproducible on the registered pilot'
+            assert p0['scored_logits_sha256']==p2['scored_logits_sha256'],'Adapter with original SDPA core changes scored logits'
+            assert p0['nll_sum']==p1['nll_sum']==p2['nll_sum']
+            summary['wrapper_original_sdpa_logits_bitwise_equal']=True
+            summary['smoke_manual_FP32_vs_BF16_sdpa_delta_nll']=p3['mean_nll']-p0['mean_nll']
             summary['suffix_sweep_estimate_upper_seconds']=sum(r['wall_seconds'] for r in summary['cases'] if r['mode']=='screen_ising')/4*128*34
         summary['passed']=True
     except BaseException as error:

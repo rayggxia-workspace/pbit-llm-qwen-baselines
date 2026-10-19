@@ -1,3 +1,9 @@
+# 首次门禁与诊断修订
+
+CPU2327 COMPLETED/0:0；35测试及18源/模型/数据SHA通过。GPU2331 FAILED/1:0，原BF16完整精确复现11.652735，但短32target的manual FP32 vs原BF16 SDPA差异触发原.003门禁。参数/缓冲前后SHA一致；失败小型原件已SHA回收，不将该门禁失败称模型方案失败。
+
+新修订新增同BF16 SDPA核心的wrapper控制及两次原SDPA重现，逐位hash全部计分logits。只有该严格接入检查通过后才跑正式曲线；manualFP32作为数值路径差异另报。所有pilot统一4段×8目标。当前38/38 CPU测试通过，待新CPU/GPU门禁，不覆盖旧fb032e0快照或2327/2331。
+
 # Issue48 联合 Attention PPL 交接
 
 负责人amlink1219；分支task/48-attention-joint-ppl；独立目录workspace_projects/aj48。PR base为task/35-attention-e01，明确依赖其输入身份核验代码；既有PR不自动合并。正式代码experiments/attention_joint_ising。

@@ -1,0 +1,149 @@
+{
+  "task": {
+    "issue": 7,
+    "branch": "task/7-ffn-cim-scheduling",
+    "worktree": "C:\\Users\\86134\\Documents\\a_P_BIT\\tmp\\ffn-cim-issue-7-20261017",
+    "base": "9608c0d06cf8b421cbbd348aca4fc84c5990aae7"
+  },
+  "scope": "Qwen2.5-0.5B batch-one decode; scheduling audit, not PPL or chip measurements",
+  "sources": {
+    "memory_schedule_v5.py": {
+      "sha256": "936d4a66603071d4c8ad72297295838c528fa73fca84ebc727eed73e4675a83d",
+      "local_path": "C:\\Users\\86134\\Documents\\a_P_BIT\\architecture_tlm\\memory_schedule_v5.py",
+      "matches_immutable_v6_snapshot": true
+    },
+    "system_decode.py": {
+      "sha256": "3e26c7969c7f7e8dac3add66467d8d36d74f1d94ffc805f6b73d43f50e74f790",
+      "local_path": "C:\\Users\\86134\\Documents\\a_P_BIT\\architecture_tlm\\system_decode.py",
+      "matches_immutable_v6_snapshot": true,
+      "matches_published_base_bytes": true
+    },
+    "rng_local_shared_v2.py": {
+      "sha256": "eccba37a355119b51107686bc9ba5cd7113895cb5157dc70f26124e31fe885f3",
+      "local_path": "C:\\Users\\86134\\Documents\\a_P_BIT\\architecture_tlm\\rng_local_shared_v2.py"
+    },
+    "run_pv_stream_v6.py": {
+      "sha256": "43605f140d9394e2ed0765338d1837777672c847025c736341b821ed6c493d14",
+      "local_path": "C:\\Users\\86134\\Documents\\a_P_BIT\\architecture_tlm\\run_pv_stream_v6.py"
+    },
+    "configs/system_decode_default.json": {
+      "sha256": "f6fcd2f59ada393eba421c91a44547700d6e100764549143103d542c09738ab0",
+      "local_path": "C:\\Users\\86134\\Documents\\a_P_BIT\\architecture_tlm\\configs\\system_decode_default.json"
+    },
+    "configs/memory_schedule_v5_recommended.json": {
+      "sha256": "95e98d37432a70fba2a0cb11b07853ce6a4f5fa19ca3ded2559db91c58a28a2f",
+      "local_path": "C:\\Users\\86134\\Documents\\a_P_BIT\\architecture_tlm\\configs\\memory_schedule_v5_recommended.json"
+    },
+    "configs/model_config.json": {
+      "sha256": "479dcf0c5286339e41ad3992cd08ae88a467c4187587936248e2b7c96283484b",
+      "local_path": "C:\\Users\\86134\\Documents\\a_P_BIT\\architecture_tlm\\configs\\model_config.json"
+    }
+  },
+  "shape": {
+    "architectures": [
+      "Qwen2ForCausalLM"
+    ],
+    "attention_dropout": 0.0,
+    "bos_token_id": 151643,
+    "eos_token_id": 151643,
+    "hidden_act": "silu",
+    "hidden_size": 896,
+    "initializer_range": 0.02,
+    "intermediate_size": 4864,
+    "max_position_embeddings": 32768,
+    "max_window_layers": 24,
+    "model_type": "qwen2",
+    "num_attention_heads": 14,
+    "num_hidden_layers": 24,
+    "num_key_value_heads": 2,
+    "rms_norm_eps": 1e-06,
+    "rope_theta": 1000000.0,
+    "sliding_window": 32768,
+    "tie_word_embeddings": true,
+    "torch_dtype": "bfloat16",
+    "transformers_version": "4.40.1",
+    "use_cache": true,
+    "use_mrope": false,
+    "use_sliding_window": false,
+    "vocab_size": 151936
+  },
+  "config": {
+    "samples": 4096,
+    "frequency_hz": 100000000,
+    "sc_engines": 8,
+    "sc_cost": {
+      "core_multiplier": 1,
+      "dual_core_multiplier": 1,
+      "wait_W_per_engine": 0.005,
+      "idle_W_per_engine": 0.0005,
+      "logic_area_mm2_per_engine": 1,
+      "input_encode_vector_ops": 6,
+      "finalize_vector_ops_per_partial": 2
+    },
+    "digital": {
+      "macs_per_cycle": 512,
+      "vector_ops_per_cycle": 64,
+      "nonlinear_ops_per_cycle": 16,
+      "mac_pJ": 2,
+      "mixed_fp_int8_mac_pJ": 2,
+      "vector_op_pJ": 1,
+      "nonlinear_op_pJ": 10,
+      "vector_interface_bytes_per_op": 4,
+      "nonlinear_interface_bytes_per_op": 8,
+      "idle_W": 0.02,
+      "area_mm2": 1,
+      "weight_chunk_bytes": 65536
+    },
+    "decode_tokens": 2,
+    "local_shared_input": {
+      "cost_status": "UNCHARACTERIZED input LFSR/seed/route parameters; inherited SRAM/digital assumptions and dual-core proxy; not measured PPA",
+      "input_bits": 8,
+      "share_group": 64,
+      "state_bits": 32,
+      "clock_hz": 100000000,
+      "warmup_cycles": 0,
+      "update_pJ": 1.0,
+      "area_mm2": 0.001,
+      "leakage_W": 1e-06,
+      "word_to_comparators_pJ_per_bit_sink": 0.01,
+      "mask_to_columns_pJ_per_bit_sink": 0.01,
+      "checkpoint_pJ_per_bit": 0.1,
+      "checkpoint_cycles": 1,
+      "restore_pJ_per_bit": 0.1,
+      "restore_cycles": 1,
+      "child_seed_policy": "per_tile",
+      "child_rekey_interval_ns": 1000000,
+      "frontend_area_credit_mm2_per_removed_bank": 0.0,
+      "frontend_power_proxy": "one retained legacy 13-bit threshold/sign/comparator frontend per synchronized wave; no precision-scaling or clock-gating benefit claimed",
+      "root_reseed_policy": "inherited hierarchy config, default 1 second; deferred to input-tile boundary",
+      "protocol": "one local input PRNG at the synchronous FFN array cluster; same 8-bit word to 64 thresholds; checkpoint/replay across output waves; independent persistent weight RNGs"
+    },
+    "double_buffer": true
+  },
+  "historical": {
+    "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\architecture_tlm\\results\\pv_stream_v6_20261016\\dramsys\\job_2\\c2048_stream_ratio.json",
+    "sha256": "337ad4ba71313c8c61ff79e7ef54b7a74f2e7af46865a3023664f3ced928f74e",
+    "kind": "previous synthetic DRAMSys/TLM result; not rerun in this audit; historical DRAM energy not certified",
+    "time_ns": {
+      "RNG_startup": 267020.0,
+      "embedding": 1305.1877999901772,
+      "norm_rope_residual": 299999.1639997994,
+      "QKV_projection": 16446122.5,
+      "output_projection": 12769075.0,
+      "FFN_gate_up": 535970208.0,
+      "FFN_SwiGLU": 454800.0,
+      "FFN_down": 325766616.0,
+      "lm_head": 90124914.62439996,
+      "token_select": 0.0,
+      "Attention_core": 14071253.3360002
+    },
+    "metrics": {
+      "mean_TPOT_ms": 498.0856569061
+    },
+    "actions": {
+      "sc_tile_frames": 153216,
+      "sc_product_trials": 2570537926656
+    },
+    "partial_bytes": 78446592
+  }
+}

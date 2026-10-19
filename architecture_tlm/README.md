@@ -178,3 +178,20 @@ Per-weight validity banks are excluded explicitly; full-tile initialization is r
 `results/cacti_memory_20261016` contains completed Slurm job 1581 outputs.
 `run_screen_ising_v4.py --memory-cost-profile .../tlm_cost_b16.json` is an optional
 **cost-only** sensitivity, not a foundry SS timing/area signoff or a Q-hold implementation.
+
+## FFN scheduling and digital CIM audit (2026-10-17)
+
+[Chinese report and simulation checklist](FFN_CIM_SCHEDULING_AND_SIMULATION_ZH_20261017.md)
+traces the existing fused gate/up, digital SwiGLU and down stages, identifies
+resident-weight and partial-sum implementation gaps, and separates ordinary
+SRAM-plus-logic from custom digital CIM characterization. The source accounting
+replay is [audit_ffn_schedule.py](audit_ffn_schedule.py), with
+[archived audit results](results/ffn_schedule_audit_20261017/audit.json).
+This does not publish the full later local v5/v6 runtime or claim new PPL,
+foundry PPA, an optimized scheduler, or a completed CIM macro. See Issue #7.
+
+Follow-up: [classic GPU/ASIC comparison and recommended architecture](CLASSIC_AND_PROBABILISTIC_FFN_ARCHITECTURE_ZH_20261017.md),
+[same-engine-count service comparison](compare_ffn_resource_schedules.py),
+and [digital SwiGLU epilogue characterization RTL](rtl/ffn_epilogue_20261017/README_ZH.md).
+The new epilogue is a fixed-point LUT approximation for characterization;
+it is not enabled in the existing model or validated as a BF16 replacement.

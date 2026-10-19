@@ -2,7 +2,7 @@
 
 负责人 `amlink1219`；[Issue35](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/35)，承接[Issue33计划](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/33)。独立分支 `task/35-attention-e01`，base `3553996bf014a29dee7fdb2250a3965e8fd881a4`。
 
-2026-10-19已完成服务器执行：CPU2160 39/39测试通过，GPU2161完整BF16参考与无扰捕获通过，CPU2162 pilot12/12与2163 full465/465完成。见[正式结果](../../qwen/results/attention_e01_20261019/RESULTS_ZH.md)和[交接](../../work/amlink1219/35/HANDOFF.md)。尚无仓库push权限，分支/PR未上传。
+2026-10-19已完成服务器执行：CPU2160 39/39测试通过，GPU2161完整BF16参考与无扰捕获通过，CPU2162 pilot12/12与2163 full465/465完成。见[正式结果](../../qwen/results/attention_e01_20261019/RESULTS_ZH.md)和[交接](../../work/amlink1219/35/HANDOFF.md)。本轮已补传至[PR #43](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/43)，待审、未合并。
 
 ## 比较什么
 

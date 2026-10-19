@@ -1,3 +1,5 @@
+> 已发布：[PR #43](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/43)，待审、未合并。当前正文见PR_BODY_CURRENT.md；以下为原待发布草稿，权限/发布状态仅指当时时点。
+
 # Attention E0/E1 数字基线与有限Ising采样实测
 
 现有Attention的理想Ising接口不能证明原生p-bit优于数字Softmax。本变更新增常规数字数值参考、online PV、数字IID/systematic和有限串行Ising对照，以及有源/输入hash和CPU/GPU门禁的Slurm驱动。

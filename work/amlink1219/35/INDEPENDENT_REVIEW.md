@@ -1,0 +1,7 @@
+# 独立复核
+
+数值实现和捕获实现由隔离工作树分别开发；独立只读审查确认输出契约、BF16 RNE、exp2换底、online重缩放、systematic单相位、既有精确事件压缩及Ising尝试更新计数。审查提出的微基准结果未纳入stage清单、pilot未绑定源hash两项均已修正并有测试。后续真实服务器发现最小快照遗漏测试config，失败2159保留；增加完整归档解包测试与CPU2160后GPU2161通过。venv系统Python符号链接保留虚拟环境调用路径，原始tokenizer文件身份与另一个服务器快照分别登记。
+
+实际结果独立复核另见VALIDATION；三seed和单窗口结果不作普遍硬件优势结论。所有代码、方法审查与实验验证边界明确区分。
+
+实际结果独立复核：28份已下载小文件的大小/SHA全匹配；BF16窗口/计分/PPL、24个真实SDPA调用、完整token SHA、无扰捕获、465/465记录和journal SHA一致，FP32/PWL及同M/S三seed统计复核。原始trace和每case NPZ未下载，本地独立复核不包含其payload再次散列；477项case记录的payload SHA与计算节点最终stage清单一致。

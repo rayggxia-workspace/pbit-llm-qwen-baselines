@@ -1,3 +1,10 @@
+# Project memory and resuming work
+
+- Before starting or resuming any LLM task, read the repository-root `PROJECT_MEMORY_ZH.md`, especially sections 0, 1, 12 and the section for the current subsystem; then check the latest remote Issue/PR, `progress/<verified-GitHub-login>/STATUS.md` and task HANDOFF. The memo is a navigation and decision record, not a replacement for current evidence or repository rules.
+- Preserve user decisions, negative results, evaluation protocols and unresolved limitations. Update the memo when a major result, design decision, handoff, publication or merge changes the project state. Distinguish physical IID randomness, PRNG/stratified sequences, approximate numerical references, RTL/PT and macro TLM estimates.
+- Keep a same-byte reading copy at the local `a_P_BIT/PROJECT_MEMORY_ZH.md` when working in that workspace. Do not rely on chat history or claim inaccessible future conversations automatically remember the project. If the file cannot be read, report the missing project context before repeating expensive experiments.
+- This section implements the user's 2026-10-18 request for durable cross-session project memory, Issue #28. All existing reproducibility and collaboration rules below remain in force.
+
 # Experiment reproducibility
 
 - Before comparing a new coding or architecture against recorded results, verify model revision and train/test text SHA-256, then rerun the unchanged BF16 reference in the experiment environment.

@@ -1,0 +1,12 @@
+{
+  "schema": "digital_attention_reference_v1",
+  "scope": "Qwen2.5-0.5B Base, batch1 single-token decode, all24layers QKV/RoPE/KV append/QK/onlineSoftmax/PV/Wo; RMSNorm/residual/FFN/lm_head/prefill excluded",
+  "model": {"layers": 24, "hidden": 896, "query_heads": 14, "kv_heads": 2, "head_dim": 64, "batch": 1},
+  "contexts": [512, 2048, 8192],
+  "tile_tokens": 64,
+  "precision": {"input_weight_KV_output": "BF16", "QK_accumulator_score": "FP32", "probability_sum_PV_accumulator": "FP32", "PV_multiply": "FP32_probability_times_exactly_extended_BF16_V", "exp_reciprocal": "mathematical_stable_reference_not_bit_true_RTL"},
+  "compute": {"clock_hz": 100000000, "abstract_mac_slots_per_cycle": 512, "vector_ops_per_cycle": 64, "exp_ops_per_cycle": 16, "reciprocal_ops_per_cycle": 1, "physical_head_slots_per_group": 8, "status": "ASSUMPTION: shared abstract FP32-capable slots, no characterized pipeline/area/power"},
+  "memory": {"sram_macro_id": "E", "corner": "SS", "sram_clock_hz": 100000000, "lanes": 16, "macros_per_lane": 1, "fabric_GBs": 16, "stripe_bytes": 16, "DDR_peak_GBs": 29.850746268656714, "DRAM_service_cap_GBs": 16, "weights_resident": false, "projection_staging_bytes": 32768, "extra_work_bytes": 8192, "status": "fabric/service caps are assumptions; fabric bandwidth is aggregate read+write on one shared bus; offchip peak is source-model maximum, not measured throughput"},
+  "sources": {"sram_table": "architecture_tlm/results/sram_calibration_v1_20261016/exact_macro_table.csv", "dram_provenance": "architecture_tlm/dramsys/provenance.json"},
+  "quality": {"prior_BF16_PPL": 11.652735047455899, "source": "qwen/results/attention_e01_20261019/RESULTS_ZH.md", "new_PPL_run": false, "warning": "prior unmodified BF16 SDPA anchor; not bit-true validation of this proposed hardware"}
+}

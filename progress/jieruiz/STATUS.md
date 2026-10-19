@@ -1,3 +1,15 @@
+# Issue51 论文任务与质量指标对照补充
+
+- 日期2026-10-19；负责人/已核验登录jieruiz；独立目录tmp/paper-task-map-issue51-20261019，分支task/51-paper-task-map，base TLM @856105beaefaee307ba1a9b1972aa61d8f82ba59。
+- 原PR53已合并（merge856105b），不是待审状态。用户追加要求保存论文—任务—指标对照，沿用Issue51，使用独立补充分支；不向已合并PR53继续推交付。
+- 新文件architecture_tlm/LLM_PAPER_TASK_METRIC_MAP_ZH_20261019.md，11项主表、1项非LLM补充、3项待全文；任务含义、指标方向、AFM shot、GLUE口径与原文不明确之处均单列。用户资料目录同字节副本。
+- 实际验证：原文与官方评分配置核对、UTF-8/LF、表格结构、相对链接、SHA及用户副本一致；独立复核通过并已发布，Git blob与用户副本逐字节一致。文献任务无新模型/PPL/训练/TLM/RTL/PT/PPA/Slurm。
+- 正式文档58aaa7a已原样发布，补充PR56待审未合并（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/56）；Issue51保持开放直到补充验收。Projects此前缺read:project，待同步。既有任务状态保留为历史，不据其推定运行状态。
+
+- 最终同步：原PR54已被并行审阅合并e0abc39；新文件入口改从该最新版本另起task/51-task-map-memory @0027d2c，PR57待审未合并（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/57）。没有force更新、没有覆盖主维护/根副本；Issue51已更新，PR56正文远端/本地/用户副本逐字节验证通过。下一步审阅PR56/57；Projects仍待权限。
+
+以下为继承的历史状态，时间与PR状态以对应任务最新回执为准。
+
 # Issue46：多档＋分层完整结果已发布，PR47待审未合并
 
 2026-10-19，jieruiz；task/46-fixedw-multiscale，base c1555ae；tmp/qwen-fixedw-multiscale-20261019。执行db27fa3，Slurm2308/2309结束，69计分/72原件/37源blob/23新发布blob核验，旧17/20清单分别验证。结果c8ea878已发布，4档fine T16/32/64=11.900826/11.736131/11.693775，2档T3211.769199；正式总表/图/LITERATURE在qwen/results/multiscale_stratified_20261019，work/jieruiz/46/STRATIFIED_DELIVERY_RECEIPT为回执。备忘录1fe0c92远端与根副本同字节，Issue46/28及PR47同步；PR47未合并、Issue46open，无新PPA，Projects待同步：GraphQL permission unavailable: Your token has not been granted the required scopes to execute this query. The 'id' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['repo', 'user', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.。下一步审阅验收，或独立验证RTL/能效，不重跑145输出条目。
@@ -321,3 +333,85 @@ Issue19的阶段基线PR20已合并40ea9f1，回执PR21合并3553996；其剩余
 - 治理任务[Issue #1](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/1) / [PR #2](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/2)仍待审；其分支和文件没有被本任务覆盖。
 - 本次读取了历史成员评审、已发布TLM索引，以及本地v5/v6实现和审计；这些本地v6代码/大轨迹未随本报告上传。
 - 下一步：按报告优先级拆分后续实现任务。优先冻结数值参考、闭合SRAM至SC阵列接口和真实trace，之后再优化调度/标定PPA；本次没有将这些计划标记为已实现。
+
+## PR40 原始交付状态（历史时点）
+
+源head：3fc3e07d74318d83f2657d8e2f58d87aa5c9ac7c。以下保留该任务新增的历史状态；最新合并状态以Issue55/相应Issue和GitHub为准。
+
+# Issue39：结果已推送，PR40待审未合并
+
+2026-10-19；负责人jieruiz；独立分支task/39-ffn-clipping，目录tmp/qwen-ffn-clipping-issue39-20261019；base c1555ae。
+结果提交6642594已实际发布，PR40已ready for review、未合并；Issue39仍open等待验收。65替换+6参考共71输出，79原件SHA/源快照复核、22发布文件Git blob校验通过；全部结果已齐，本人squeue为空。新10/旧8/共享/方差验证通过，两次完整BF1611.652735复现。
+正式成果qwen/results/ffn_clipping_20261019/，设计experiments/qwen_ffn_clipping_20261019/；交付回执work/jieruiz/39/DELIVERY_RECEIPT.json。执行源6b57b92/e0cf563不可变；全部替换分数仍为512/2048前缀，未做完整随机WT2/新PPA。长期备忘录560f88e已推送PR29，根阅读副本相同。
+阻塞/待同步：Projects缺read:project，看板未同步；没有PPL结果缺失。Slurm无sacct且旧控制器记录过期，未获得全部历史退出码，未把不可查记录称失败。下一步审阅/验收PR40；若进一步研究需独立文本或完整WT2验证温和裁剪。
+
+以下保留历史记录：
+
+# Issue39结果已完成，准备交付
+
+2026-10-19T11:09:36+08:00；负责人jieruiz；分支task/39-ffn-clipping；PR40到pbit-tlm-attention-details-20261016，独立目录tmp/qwen-ffn-clipping-issue39-20261019；base c1555ae。
+两批65项替换＋6项基线共71输出齐全，收集逐SHA/执行源复核通过；新10+旧8/共享/方差验证通过，两次完整BF1611.652735复现。结果qwen/results/ffn_clipping_20261019/，方法experiments/qwen_ffn_clipping_20261019/。替换分数仅512/2048前缀；无新PT/PPA或完整随机WT2。PR待审未合并，Issue保持open；下一步上传最终汇总/manifest并同步长期备忘录；Projects权限待同步。
+
+以下保留历史记录：
+
+# Issue39实际运行状态
+
+2026-10-19；jieruiz；task/39-ffn-clipping；执行源6b57b92305cab5dbee2a53c0c65cb297ac976261，独立目录tmp/qwen-ffn-clipping-issue39-20261019，base c1555ae。源码已推送；Slurm2167已成功、2168数组运行；PPL结果未全部齐全。
+本地10/10新kernel、服务器新10+旧8及共享/方差验证通过；完整BF1611.652735复现；8192train校准完成。无新PPA。成果experiments/qwen_ffn_clipping_20261019/，回执work/jieruiz/39/SUBMISSION.json；下一步收集/核验/PR交付；Projects权限待同步。
+
+以下保留历史记录：
+
+# Issue39：截断与固定分组二次幂尺度
+
+2026-10-19；负责人jieruiz；分支task/39-ffn-clipping；base c1555ae；独立目录tmp/qwen-ffn-clipping-issue39-20261019。
+已核实远端规则、身份及分工；目前本地实现中，尚未提交/上传/提交Slurm。正式代码experiments/qwen_ffn_clipping_20261019/；交接work/jieruiz/39/HANDOFF.md。
+下一步：kernel与数值测试，冻结执行源，Slurm BF16门控及train校准，再跑裁剪/固定尺度PPL。无新PT/PPA结果；Projects权限待同步。
+
+以下为继承的历史状态，不代表本任务已完成：
+
+## PR29 原始交付状态（历史时点）
+
+源head：d3861072ff88dbc4e66f2a7844eed4f8ec97245b。以下保留该任务新增的历史状态；最新合并状态以Issue55/相应Issue和GitHub为准。
+
+# PR47合并回执已同步（2026-10-19）
+
+GitHub实际操作账号jieruiz；用户明确授权合并。PR47于15:44:54（北京时间）合入pbit-tlm-attention-details-20261016，merge bef83e54b9da0081c51f393044d2156ce11a34b9；head5518a0a、base c1555ae，合并树与审核树完全相同。Issue46于15:46:38按验收完成关闭。独立审核25项核测试及145结果/154原件等通过；未重跑GPU或新增PPA。PROJECT_MEMORY对应状态已更新，PR29仍待审未合并。Projects新查询仍缺read:project，正式看板待同步。本次通过task/28-project-memory及PR29追加合并回执，最终发布head以远端分支为准；不修改原执行快照。
+
+以下保留历史状态：
+
+## 当前Issue28：全项目长期备忘录
+
+- 更新时间：2026-10-19；实际GitHub登录jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
+- Issue28：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28；分支task/28-project-memory；base pbit-tlm-attention-details-20261016 @3553996bf014a29dee7fdb2250a3965e8fd881a4。
+- 工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/project-memory-issue28-20261018；阶段：内容提交bcda21d905a327eeb41c353808bdcc7185472fc5已推送，PR29已创建待审、未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29。
+- 成果：根PROJECT_MEMORY_ZH.md，覆盖用户决策、FFN/随机矩阵、Attention、模型、逐层架构、随机源、SRAM/DRAM、TLM、质量/PPA、负面结果和任务入口；AGENTS/README新增恢复阅读规则。混合根同名备忘录及AGENTS阅读入口已同步。
+- 验证：FFN和TLM独立事实复核通过；内部链接、原规则保留、UTF-8/LF、源资料hash和阅读副本一致核验；详见work/jieruiz/28/VALIDATION.json。未产生新PPL、训练、PT或TLM结果；Git blob校验和发布回执随后补充。
+- 关键发现：旧双随机完整PPL为Gaussian参考，精确二项仅短片段；旧本地test raw不符合完整WT2 hash，必须重新核验服务器数据。
+- 并行任务：Issue19剩余Llama2评测继续，不接管/重交；Issue22/PR25短流RTL、Issue23/PR24清单和Issue26/PR27全文总结均open待审。PR27当前17篇主文已齐，head e848f791b11e7bc17f22d18323125f5928fbcd19，不能沿用旧“缺全文”状态。
+- 阻塞/待同步：Projects此前缺read:project，本次未重新验证看板权限，待同步；无备忘录文件阻塞。运行队列没有本次实时查询。
+- 后续实际进展：备忘录交付后已单独建立Issue30/PR31，Slurm2111的47输出全部完成，完整BF16复现、45项短测逐SHA收回；精确双随机短T仍差。新结果和边界已同步PROJECT_MEMORY第5.1节。安全公开分支task/30-qwen-dual-iid-public只含代码/汇总/索引，原始校准及逐case原件留服务器；原执行快照不变。
+- 后续Issue32/PR34完成范围修正49输出，模型实验属于Issue32；第5.2节已追加，原始范围和新数值/硬件成本边界同时保留。
+- 范围合并回执：PR31/34/38已实际合入TLM，Issue30/32关闭，当前集成c1555ae；真实分布/裁剪审计同步备忘录5.3。Projects重新查询仍缺read:project。
+- 下一步：审阅PR29（备忘录仍待审）；完整精确随机WT2尚未做，不因短测完成而宣称全量完成，不盲目开几十个长任务。Issue28/30在PR合并前仍open。
+
+以下保留之前阶段交接；日期较旧的任务运行状态不当作实时队列。
+
+
+
+2026-10-19追加Issue39/PR40：65项裁剪/固定PoT替换＋6基线共71输出齐，79产物SHA与源快照复核；512/T256动态13.9529、0.95范围13.7701（小改善、非显著结论）；2048动态10.6569、0.75裁剪14.1020、固定PoT A/W333.2295。完整随机WT2未做，无新PPA。第5.4节和Issue索引已更新；本任务仍是文档维护，实验属于Issue39。根阅读副本一致。PR40最终结果22文件blob核验通过，未合并；PR29仍待审未合并，Projects缺read:project。
+
+
+2026-10-19补充Issue46/PR47：固定W8输入多尺度65项已完成，完整WT2四档T12812.309561、T25611.989865，原BF1611.652735；68原件SHA/30源blob复核。备忘录§5.5记录代码/数据/Slurm与硬件边界，PR47未合并，无新PPA；根阅读副本同字节。
+
+
+2026-10-19 T64完整补测已发布：Issue46/PR47，结果提交a4a15018，执行a7bae630，Slurm2298/2299结束。4档T6413.038027±0.010666、8档13.038505±0.012030（3seed/299077目标），BF1611.652735；11项新增计分/14原件/31源blob核验。§5.5与§12已同步，新正式目录fixedw_multiscale_t64_20261019，旧65项不覆盖，无PPA，PR47/29未合并；Projects缺read:project。根阅读副本同字节。
+
+
+2026-10-19新增§5.6运行状态：Issue46多档＋分层，执行db27fa3，Slurm2308通过、2309运行67完整配置；旧76项不覆盖。根阅读副本一致，新PPL未收齐，PR47未合并。
+
+
+2026-10-19多档＋分层完成：§5.6与§12同步69新计分/72原件/37源blob，db27fa3，Slurm2308/2309结束，结果c8ea878已发布。B4细T16/32/64为11.900826/11.736131/11.693775，B2/T3211.769199；粗K16T64与fineK32T32相近。根副本一致，PR47/29未合并，无PPA。
+
+2026-10-19追加§5.7/Issue50：34后缀主项＋12诊断/64原件完成，B4T32联合Ising128/512 PPL11.197813/11.055307，对照10.371557；完整22项Slurm2430仍在运行（53dd0ff），不称全量完成。PR52草稿、依赖PR47；根阅读副本同字节，Projects待同步。
+
+2026-10-19§5.7.1：Ising次数15新项已完成，B4T32 S32..1024后缀12.065755/11.514886/11.197813/11.066594/11.055307/11.006579，准确PV10.970368；sourcec0fd，21新原件/49源blob，Slurm2440/2441完成。完整S128的2430与新S256/512的2461仍运行，不称完整完成。保留刚合入的Issue51质量预算补充；根副本同字节，PR52草稿/Issue50open，Projects待同步。

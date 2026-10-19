@@ -15,7 +15,7 @@ SRUN=/opt/slurm/21.08.8/bin/srun
 cd "$PBIT_SNAPSHOT"
 ARGS=(--model "$PBIT_PROJECT_ROOT/models/Qwen2.5-0.5B" --data "$PBIT_PROJECT_ROOT/data/wikitext-2"
  --project-root "$PBIT_PROJECT_ROOT" --output "$PBIT_PROJECT_ROOT/outputs/$PBIT_CODE_COMMIT"
- --code-commit "$PBIT_CODE_COMMIT")
+ --code-commit "$PBIT_CODE_COMMIT" --prepare-suite "${PBIT_SUITE:-standard}")
 if [[ "${PBIT_ACTION:-prepare}" == prepare ]]; then
  exec "$SRUN" "$PY" -B -u run_multiscale.py prepare "${ARGS[@]}"
 else

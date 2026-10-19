@@ -25,7 +25,12 @@ def cases(phase):
             mode=mode,cycles=cycles,seed=seed,full=full,input_tokens=None if full else 512,
             probability_bits=8,sharing=64,bins=1 if policy in ('dynamic64','pot1') else int(policy[3:]),
             exponent_spacing=2 if policy.startswith('pot') else None))
-    full=phase=='full'
+    full=phase in ('full','t64')
+    if phase=='t64':
+        for policy in ('dynamic64','pot4','pot8'):
+            for seed in SEEDS:add(policy,'sampled',64,seed,full=True)
+        assert len(rows)==9
+        return rows
     add('dynamic64','w8_only',full=full)
     if not full:
         for policy in POLICIES:
@@ -76,7 +81,8 @@ def prepare(args):
             token_ids_sha256=hashlib.sha256(selected.numpy().tobytes()).hexdigest(),
             slurm_job_id=os.environ.get('SLURM_JOB_ID')))
         if not passed:raise ValueError('Unchanged full BF16 failed; no replacement comparisons')
-    suite=dict(screen=cases('screen'),full=cases('full'),code_commit=args.code_commit,
+    suite=dict(screen=cases('screen'),full=cases('full'),t64=cases('t64'),code_commit=args.code_commit,
+        executed_phases=['t64'] if args.prepare_suite=='t64' else ['screen','full'],
         created_utc=datetime.now(timezone.utc).isoformat(),attention='original BF16 SDPA',
         no_training=True,no_seed_selection=True,full_stage_requires_manual_runtime_review=True,
         full_skip_gate='sampled configuration skipped if corresponding three-seed 512prefix mean PPL > 1.5 x W8_only prefix; skip is not a full PPL result',
@@ -84,7 +90,10 @@ def prepare(args):
         selection='full candidates dynamic64/pot4/pot8 at T128/T256 fixed before screen')
     write_json(output/'suite.json',suite)
     write_json(output/'READY.json',dict(code_commit=args.code_commit,baseline_gate_passed=True,
-        identity_sha256=digest(output/'identity.json'),suite_sha256=digest(output/'suite.json'),screen_cases=41,full_cases=22))
+        identity_sha256=digest(output/'identity.json'),suite_sha256=digest(output/'suite.json'),
+        screen_cases=0 if args.prepare_suite=='t64' else 41,
+        full_cases=0 if args.prepare_suite=='t64' else 22,
+        t64_cases=9 if args.prepare_suite=='t64' else 0))
 
 def worker(args):
     import torch,transformers
@@ -100,7 +109,7 @@ def worker(args):
     cfg=cases(args.phase)[args.index]
     target=output/'runs'/(cfg['name']+'.json')
     if target.exists():raise FileExistsError(target)
-    if cfg['full'] and cfg['mode']=='sampled':
+    if args.phase=='full' and cfg['mode']=='sampled':
         screen=[json.loads((output/'runs'/(c['name']+'.json')).read_text(encoding='utf-8'))
             for c in cases('screen') if c['policy']==cfg['policy'] and c['mode']=='sampled' and c['cycles']==cfg['cycles']]
         ref=next(c for c in cases('screen') if c['mode']=='w8_only')
@@ -145,7 +154,8 @@ def main():
     p.add_argument('action',choices=['prepare','worker'])
     for key in ('model','data','project-root','output','code-commit'):p.add_argument('--'+key,required=True)
     p.add_argument('--index',type=int,default=0)
-    p.add_argument('--phase',choices=['screen','full'],default='screen')
+    p.add_argument('--phase',choices=['screen','full','t64'],default='screen')
+    p.add_argument('--prepare-suite',choices=['standard','t64'],default='standard')
     a=p.parse_args()
     if len(a.code_commit)!=40:p.error('Exact execution SHA required')
     {'prepare':prepare,'worker':worker}[a.action](a)

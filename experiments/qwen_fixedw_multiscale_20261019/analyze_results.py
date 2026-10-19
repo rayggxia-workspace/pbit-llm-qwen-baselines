@@ -64,7 +64,8 @@ def summarize(source, destination, remote_root):
         raise ValueError('Mixed execution commits in metadata')
     planned = [dict(name='bf16_full', mode='baseline', full=True),
                dict(name='bf16_n512', mode='baseline', full=False)]
-    planned += suite['screen'] + suite['full']
+    phases=suite.get('executed_phases',['screen','full'])
+    planned += [case for phase in phases for case in suite[phase]]
     expected = {c['name']: c for c in planned}
     if len(expected) != len(planned):
         raise ValueError('Duplicate planned configuration names')

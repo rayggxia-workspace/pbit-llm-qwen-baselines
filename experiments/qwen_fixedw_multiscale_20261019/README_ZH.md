@@ -27,3 +27,5 @@ T是每次x/z随机编码阶段的流长度，不是整层FFN或整token的总�
 ## 运行
 
 `run_multiscale.py prepare`生成identity/suite/READY及原BF16参考；`worker --phase screen|full --index N`运行预定单项。模型与语料路径由命令显式给出，全部GPU任务通过run.sbatch提交，不能在登录节点执行评测。
+
+2026-10-19补测：用户追问64次，接续Issue46/PR47。`prepare --prepare-suite t64`重新验证身份、原BF16完整参考和单测；`worker --phase t64 --index 0..8`运行dynamic64/pot4/pot8各3seed的完整WT2，不沿用前缀筛查门槛。kernel与数值算法不变，新执行快照和输出独立，不能覆盖首批e6f29b1的65项原件。suite.executed_phases明确区分这11项与首批65项；早先“64仅前缀”是补测前的状态。

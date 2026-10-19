@@ -16,3 +16,8 @@
 
 
 完整评估已提交：screen41项已齐且无错误；Slurm2276为预定22项full，最多4GPU，执行源仍e6f29b1。完整结果尚未产生；前缀4档T256约12.2230、dynamic约12.8165、BF16约12.0892，不混称全量。完整原BF16已复现11.652735047455899/299077。服务器新12+旧8/共享计数验证通过。
+
+
+## 全部结果已核验（2026-10-19T14:04:56+08:00）
+
+65项计分全部齐（41screen+22full+2BF16），无skip/pending；新方案完整WT2已完成。原件逐bytes/SHA与执行Git blob复核通过，结果qwen/results/fixedw_multiscale_20261019/。执行源e6f29b1不可覆盖；analysis后续提交未改变执行快照。PR47待审未合并，Issue46保持open直到验收/合并；Projects仍缺read:project。未跑新训练/PPA/物理源或TLM。T64仅512前缀，未完整验证。

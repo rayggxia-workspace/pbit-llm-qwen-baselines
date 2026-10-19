@@ -326,3 +326,8 @@ and remain subject to their own licenses and terms.
 ## FFN精度与短流基线（2026-10-18）
 
 Llama 2全部32层FFN的完整WT2对照、128拍分层三种子、256枚举和DS-CIM条件核对见[实验说明](experiments/llama2_ffn_precision/README_ZH.md)及[原文比较](experiments/llama2_ffn_precision/DS_CIM_COMPARISON_AND_BASELINES_ZH.md)。已完成16/26项；Attention保持原BF16，剩余评测仍在Slurm运行，不代表新硬件能效实测。
+
+
+## 固定INT8权重、输入多尺度短流（2026-10-19）
+
+[完整WT2与三种子结果](qwen/results/fixedw_multiscale_20261019/RESULTS_ZH.md)：全部24FFN保留同一固定W8，输入4/8档二次幂编码，T128/256完整滑窗；原BF16 Attention不变。4档T128约12.31、T256约11.99，原BF1611.652735。另有T64/单档512前缀筛查，不能混称全量；没有新PPA或修改TLM默认。

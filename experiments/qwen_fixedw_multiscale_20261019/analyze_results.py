@@ -36,7 +36,7 @@ def aggregate_diagnostics(records):
     result = {}
     for signal in ('x', 'z'):
         count = sum(r.get(signal + '_values', 0) for r in records)
-        part = dict(values=int(count), layer_call_records=len(records))
+        part = dict(values=int(count), layer_summary_records=len(records))
         for metric in ('mean_probability', 'zero_fraction', 'clip_fraction', 'p1_fraction'):
             part[metric] = sum(r.get(signal + '_values', 0) * r.get(signal + '_' + metric, 0.)
                                for r in records) / max(count, 1)
@@ -219,6 +219,7 @@ def summarize(source, destination, remote_root):
        '各层x/z概率、零码率、真实裁剪率、恒1率按实际values加权，档占用按bin_counts求和。它们来自各自传播路径；完整滑窗包含重叠窗口，跨seed也重复，不能称为原BF16 teacher或不重复语料的激活分布。', '',
        '元数据含执行commit、配置SHA、模型revision、模型/分词器/原文/token和源文件SHA。ARTIFACT_INDEX.json列出服务器原件位置、bytes、SHA-256；原始长JSON不复制进Git。', '',
        '这是理想IID联合分布与FP32线性恢复的数值评估，不是有限位宽RTL、物理随机源回放或新PPA/PT/TLM结果。GPU前向秒数不能作为ASIC周期。']
+    lines += ['', 'T表示每次x/z采样阶段的流长度，不等于整层或整token总周期。旧W8量化步长未改、未保证为二次幂；输入PoT不代表所有尺度恢复都只需移位。若再限制权重步长为PoT，需独立验证PPL。']
     if pending:
         lines += ['', '## 未完成项', ''] + ['- `' + name + '`' for name in pending]
     with (destination/'RESULTS_ZH.md').open('w', encoding='utf-8', newline='\n') as stream:

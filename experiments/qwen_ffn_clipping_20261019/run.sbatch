@@ -17,7 +17,7 @@ ARGS=(--model "$PBIT_PROJECT_ROOT/models/Qwen2.5-0.5B" --data "$PBIT_PROJECT_ROO
  --project-root "$PBIT_PROJECT_ROOT" --output "$PBIT_PROJECT_ROOT/outputs/$PBIT_CODE_COMMIT"
  --code-commit "$PBIT_CODE_COMMIT")
 if [[ "${PBIT_ACTION:-prepare}" == prepare ]]; then
- exec "$SRUN" "$PY" -B -u run_clipping.py prepare "${ARGS[@]}"
+ exec "$SRUN" "$PY" -B -u "${PBIT_DRIVER:-run_clipping.py}" prepare "${ARGS[@]}"
 else
- exec "$SRUN" "$PY" -B -u run_clipping.py worker "${ARGS[@]}" --index "$SLURM_ARRAY_TASK_ID"
+ exec "$SRUN" "$PY" -B -u "${PBIT_DRIVER:-run_clipping.py}" worker "${ARGS[@]}" --index "$SLURM_ARRAY_TASK_ID"
 fi

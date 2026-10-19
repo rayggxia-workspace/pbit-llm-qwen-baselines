@@ -1,3 +1,9 @@
+# Issue48：联合Attention采样曲线完成（2026-10-19）
+
+Slurm2380 COMPLETED/0:0，34/34项、S32/64/128/256/512/1024各3seed；原FFN、全部24层decode、准确prefill，4096固定WT2后缀目标/seed。匹配SDPA=10.371557；筛选准确PV=10.895520。联合完整WT2确认尚未执行，不能混称。
+
+CPU2362 38/38；GPU2365原BF16完整WT2锚点及同BF16 wrapper逐位接入通过，参数/输入/目标/结果SHA通过。本任务无运行作业。结果位于qwen/results/attention_joint_ising_20261019；执行源11f1d6eea2776e201f2021081f8b0fbae2cc455e，PR49 base task/35-attention-e01，待审未合并；准确上传回执见work/amlink1219/48/PUBLICATION.json。Projects缺scope待同步。以下旧段落均为历史快照，接续以Issue48 HANDOFF/VALIDATION为准。
+
 # Issue48：Slurm2380正式联合PPL扫描运行中（2026-10-19）
 
 PR49待审未合并，base task/35-attention-e01；执行源11f1d6eea2776e201f2021081f8b0fbae2cc455e。CPU2362完成38/38测试；GPU2365完成，原BF16完整WT2复现11.652735047455899，同BF16 SDPA wrapper和原模型逐位相同、参数前后SHA一致。

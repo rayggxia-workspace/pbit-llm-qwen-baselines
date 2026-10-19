@@ -8,15 +8,17 @@
 
 - 64位置一块，4个16位置子摘要取最大q点积。采用历史WT2-train校准的bias/temperature、当前分数均值/标准差和独立Bernoulli。`moment.pt`的固定Git源与SHA见`calibration_provenance.json`，没有新拟合。
 - 主对照采用v4的Bernoulli后配额修复，首块及最近两块计入8块预算；修复按mandatory、原始选中、分数和索引排序。不是把概率筛选替成纯Top-K。
-- 8块最多512个有效候选。部分尾块按实际长度计费，padding为负无穷，不允许参与类别抽样。完整KV保留；Q头每7个共享一个KV头。
-- `ctmc.py`压缩硬one-hot热浴的empty/active驻留时间，从最大logit类别开始，按`burn+spacing*k`观测。出生事件的multinomial不是Softmax目标IID。固定256事件块保持同logits下各S共享样本前缀，覆盖不足追加，事件上限明确报错。
+- 8块最多512个有效候选。部分尾块按实际长度计数，padding为负无穷，不允许参与类别抽样。完整KV保留；Q头每7个共享一个KV头。逐Q头候选率不能代替共享KV头的候选并集及物理访存量。
+- `ctmc.py`压缩硬one-hot热浴的empty/active驻留时间，从最大logit类别开始，按`burn+spacing*k`观测。出生事件的multinomial不是Softmax目标IID。固定256事件块在同logits、相同sampler起始RNG状态的一次调用内保持各S共享样本前缀；覆盖不足追加，事件上限明确报错。不同S消耗的事件块数可能不同，后续query的sampler RNG位置会分叉，不能宣称整场逐query都共享样本前缀。
 - Ising主路径不计算Softmax目标概率；`screen_iid`是单独的数字控制组。采样索引映射到原V地址，FP32均值后恢复BF16。这里是理想强互斥CTMC行为模型，不包含器件偏差、有限反馈延迟或已标定的物理时钟。
 
 ## 预注册首轮矩阵
 
-2K主上下文、原始FFN；固定8块、burn16、gap4，S=32/64/128/256/512/1024，各seed0/1/2。共34项：原SDPA与手写FP32 full-core数字参考2项；筛选后准确PV三seed3项；联合Ising六档×三seed18项；筛选后IID的S32/128/512×三seed9项；无筛选Ising S512 seed0及变量约30%筛选Ising S512 seed0各1项。
+2K初始上下文、原始FFN；128个计分query的实际KV长度为2048..2175，不做滑窗截断。固定8块、burn16、gap4，S=32/64/128/256/512/1024，各seed0/1/2。共34项：原SDPA与手写FP32 full-core数字参考2项；筛选后准确PV三seed3项；联合Ising六档×三seed18项；筛选后IID的S32/128/512×三seed9项；无筛选Ising S512 seed0及变量约30%筛选Ising S512 seed0各1项。
 
 Router与sampler使用独立的逐层随机域，种子不含S/backend。固定batch与步序下控制router的uniform流；S改变会改变后续模型hidden/score，因此候选可以自然改变，不能冻结教师候选冒充模型级评估。不同batch排程不宣称同一逐样本随机轨迹。
+
+手写`digital_exact`使用显式FP32 QK/Softmax/PV，与原BF16 fused SDPA的数值路径不同；质量报告分别列相对两者的变化。`digital_sdpa`使用与原模型相同的BF16 SDPA核心，只用于接入门禁，不能把两类数字控制之间的差异全部归因于筛选或Ising。
 
 ## 计分范围
 
@@ -41,3 +43,7 @@ python -B -X utf8 -m unittest discover -s experiments/attention_joint_ising -p t
 ```
 
 运行状态、实际job_id、通过/未通过项以`work/amlink1219/48/HANDOFF.md`和个人STATUS为准，不把代码就绪或作业提交写成实验完成。
+
+## 首轮已执行结果
+
+Slurm2380已完成34/34项；[结果表与范围](../../qwen/results/attention_joint_ising_20261019/RESULTS_ZH.md)、[曲线图](../../qwen/results/attention_joint_ising_20261019/sampling_ppl.png)、[SHA索引](../../qwen/results/attention_joint_ising_20261019/ARTIFACTS.json)。匹配SDPA=10.371557，筛选准确PV三seed=10.895520。这是全部24层decode的4096目标/seed后缀PPL；联合完整WT2确认尚未执行，不能将上方full协议实现或完整BF16锚点当作该确认。

@@ -31,3 +31,5 @@
 - 实际验证：UTF-8/LF、表格列数、相对链接、用户副本字节/SHA；逐项主源核对与独立只读审核。模型/数据版本、种子、服务器作业等本任务不适用：没有新实验。
 - 命令与准备脚本：tmp/emerging-quality-preflight-20261019/prepare_task_map.py；恢复先核Issue51/后续PR与本分支远端head，再读TASK_MAP_MANIFEST。Git CLI fetch网络失败，但本地共享Git对象已有经API核实的最新base；将用Git Data API原样发布文本提交。
 - 下一步：提交限定文件，创建补充PR至TLM分支，核Git blob与用户副本，更新Issue51。Projects权限待同步；旧PR54为备忘录提案，未视为已合并或根阅读副本已更新。
+
+- 补充发布回执：58aaa7ac7c330ab3d6a5ae0d669ed10057fbb24c已通过Git Data API原样上传；PR56已创建并附本任务（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/56），待审未合并。独立复核通过，已采纳CQADupStackGisRetrieval与all-MiniLM-L6-v2的具体名称；最终文档SHA256 6bdf8dc22f3a24b69f2eb8948f32697f25cb1fdd227549c56d92ee313127dbe4，Git blob/本地/用户副本完全一致。

@@ -330,4 +330,4 @@ Llama 2全部32层FFN的完整WT2对照、128拍分层三种子、256枚举和DS
 
 ## 固定INT8权重、输入多尺度短流（2026-10-19）
 
-[完整WT2与三种子结果](qwen/results/fixedw_multiscale_20261019/RESULTS_ZH.md)：全部24FFN保留同一固定W8，输入4/8档二次幂编码，T128/256完整滑窗；原BF16 Attention不变。4档T128约12.31、T256约11.99，原BF1611.652735。另有T64/单档512前缀筛查，不能混称全量；没有新PPA或修改TLM默认。
+[完整WT2与三种子结果](qwen/results/fixedw_multiscale_20261019/RESULTS_ZH.md)：全部24FFN保留同一固定W8，输入4/8档二次幂编码，T128/256完整滑窗；原BF16 Attention不变。4档T128约12.31、T256约11.99，原BF1611.652735。已[补完T64完整WT2三种子](qwen/results/fixedw_multiscale_t64_20261019/RESULTS_ZH.md)：4档13.0380±0.0107、8档13.0385±0.0120，较BF16增加约11.89%；单档pot1仍只有512前缀。没有新PPA或修改TLM默认。

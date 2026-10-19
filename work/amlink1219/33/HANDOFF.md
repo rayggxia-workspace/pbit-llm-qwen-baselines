@@ -1,3 +1,9 @@
+# 分层FFN参考采用已上传（当前状态）
+
+已核验目标任务分支结果提交`e8eec4c8deb296db4c4ed937c5c46192a782c6f4`，[PR58](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/58)开放待审、未合并，接续Issue33。B4/T32/K32主参考及三个对照、源码SHA、13项CPU核心测试和4profile接口均已交付。此前“本地待提交”等段落保留为历史准备快照，准确回执见STRATIFIED_REFERENCE_PUBLICATION.json。
+
+本次没有新模型PPL/GPU作业、未改TLM/PPA默认；PR52完整联合仍未收齐，恢复重新核状态。看板scope不足待同步。稳定manifest不含易变进度/交接/发布回执，后续元数据提交不改变已核验的方法和配置。
+
 # 当前接续：分层FFN采用（2026-10-19）
 
 Issue33本人负责；分支task/33-stratified-ffn-reference；目录workspace_projects/fa33；base=ed0c7a4e8e9546ec89895135efff36aa8a00d568。新增architecture_tlm/ffn_stratified_reference的版本锁定配置、原StratifiedFFN工厂和方法说明，追加本用户的AGENTS规则，未改他人FFN源码、进度或运行任务。本次采用变更本地CPU验证已通过，尚待提交/推送及PR。

@@ -45,3 +45,7 @@ python qwen/run.py tlm --help
 ## 多档缩放＋随机分层：完整WT2短流（2026-10-19）
 
 [联合结果与图](results/multiscale_stratified_20261019/COMPARISON_ZH.md)：固定同一W8、全24FFN、Attention原版；新增67配置＋2BF16参考均收齐。四档细分层T16/32/64为11.900826/11.736131/11.693775（各3seed），BF1611.652735；两档T32为11.769199。3～4档后无明显额外收益，缩放后粗K4/16也有效；K>1是受控随机分层，不能冒称自然IID。只给数值精度，无新PPA/整机能耗结论。
+
+## 短流FFN与实际Attention、Ising次数PPL（2026-10-19）
+
+[三种FFN联合后缀对照](results/joint_stratified_attention_20261019/RESULTS_ZH.md)与[六档Ising观测次数曲线](results/ising_sample_sweep_20261019/RESULTS_ZH.md)：全24层计分decode实际执行筛选、候选QK、有限CTMC及V采样，FFN在prefill/decode均替换。固定B4T32，S32/64/128/256/512/1024的4096目标后缀PPL均值为12.065755/11.514886/11.197813/11.066594/11.055307/11.006579；同筛选准确PV参考10.970368，原BF16后缀10.371557。均为三seed，后缀不是完整WT2。原完整S128对照Slurm2430、新S256/512确认Slurm2461仍运行；不提前填写全量联合结果，无新任务指标或PPA。

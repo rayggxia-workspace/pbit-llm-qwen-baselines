@@ -1,34 +1,32 @@
-# Issue50：后缀联合验证已发布准备，完整WT2运行中
+# Issue50：Ising次数后缀PPL曲线完成，完整确认运行中
 
-更新时间：2026-10-19；负责人：GitHub jieruiz。Issue50 / PR52草稿，未合并。
+2026-10-19；负责人GitHub jieruiz；正式目标rayggxia-workspace/pbit-llm-qwen-baselines。
 
-- 目标：rayggxia-workspace/pbit-llm-qwen-baselines；分支task/50-joint-ffn-attention；原始base task/46-fixedw-multiscale@5518a0a；PR47已合并bef83e54，PR52已改为pbit-tlm-attention-details-20261016。独立目录C:/Users/86134/Documents/a_P_BIT/tmp/qwen-joint-issue50-20261019。
-- 已推送阶段结果：34主项＋12准确Softmax诊断，三seed、4096后缀目标。已生成正式报告、三seed/逐段NLL/交互汇总、64服务器原件SHA及输入版本索引；阶段结果已推送ae4bd9a1ddd160c06175863eef3862d5cf7409f0；PR52草稿未合并，完整联合评测仍运行。
-- 原BF16匹配后缀10.371557；B2T32/B4T32/B4T16的Ising128联合PPL为11.232234/11.197813/11.402422，Ising512为11.066401/11.055307/11.201607；主要损失来自Attention，未见明显联合放大。这不是完整WT2结论。
-- 主执行d61b2861edc91e00495268d39a738edb3599f87f；Slurm2381、2382、2412完成；模型/文本哈希及原BF16完整门禁11.652735复现；38上游＋10联合＋13FFN测试通过，2完整计划测试通过；SDPA包装器计分logits双路径逐字节一致。
-- 全部24层计分decode Attention和FFN真实执行；FFN同时作用prefill；prefill Attention准确SDPA。筛选为max4/Bernoulli/固定8块修补，并非Ising退火；有限硬onehot CTMC Ising直接V索引平均，没有二次PV抽样。无新训练、PT、TLM或芯片PPA。
-- 完整执行53dd0ff6a04218dc9f2b692464d5b16da284cf17；Slurm2429显存门禁通过，峰值16.23/16.31GiB；Slurm2430运行22项完整299077目标cached对照（batch32、S128、三seed），尚无收齐的完整质量结论。运行快照不修改，已存在结果不覆盖，不重复提交。
-- Slurm2425保留失败诊断：原过大32×2047-prefix pilot OOM，实际完整计划没有这个形状；新pilot覆盖32×1023正常前缀。早期aeccb归档CRLF检查在提交作业前拒绝，未运行；该归档也保留，已加LF规则。
-- 正式成果：qwen/results/joint_stratified_attention_20261019/{RESULTS_ZH.md,SUFFIX_SUMMARY.json,FALLBACK_SUMMARY.json,INPUT_IDENTITY.json,ARTIFACT_INDEX.json,FULL_PREPARATION.json}；执行代码experiments/qwen_joint_stratified_attention_20261019/。
-- 服务器：/home/Hongjie_Zeng/projects/pbit-qwen-joint-ffn-attention-20261019-issue50；outputs/d61b2861...保存后缀，outputs/53dd0ff6...保存完整。moment.pt为公开历史train校准，只记录SHA，不重上传。
-- 协作：Issue48/amlink1219的独立Attention扫描不覆盖、不访问其个人目录；已在两Issue记录分工。Projects缺read:project，看板待同步。PR47已合并；PR52未合并，Issue50保持open。
-- 下一步：核对当前远端状态后，按HANDOFF收集Slurm2430；22项齐全时用summarize_results.py --phase full生成FULL_SUMMARY，核验每目标一次/24层audit/原件与Git blob SHA，追加完整结论后再结束任务。当前不能把启动任务或后缀完成写成完整已完成。
+- Issue50 / PR52草稿未合并；分支task/50-joint-ffn-attention，base pbit-tlm-attention-details-20261016；目录C:/Users/86134/Documents/a_P_BIT/tmp/qwen-joint-issue50-20261019。原依赖PR47已合并bef83e54。
+- 本次只测PPL，固定B4T32/K32、max4固定8块、burn16/spacing4；全24计分decode Attention，FFN在prefill/decode均替换，Attention多token prefill仍准确SDPA。保留有限hardonehot CTMC，不替成Softmax IID，V索引平均即PV采样。
+- 主阶段34项＋12诊断此前已发布。新增Slurm2440门禁与2441的15项（三seed）已完成；49执行源Git blob和模型/文本哈希通过，未改BF16后缀10.37155678462956重新复现，2采样计划测试通过。16新计分原件＋5准备文件共21原件SHA已索引。
+- 本地新报告待上传：S32/64/128/256/512/1024的B4T32联合后缀PPL为12.065755/11.514886/11.197813/11.066594/11.055307/11.006579。准确PV参考10.970368；原BF16后缀10.371557。256/512均值差约0.011，三seed尚不支持明确质量差异或等价结论。所有这些是4096目标后缀，不是全量。
+- S128/512及FFN-only复用旧d61/batch8。原FFN六档曲线复用成员Issue48/PR49公开summary（publication8dd1b06a/execution11f1d6ee），未访问其个人目录、未重复作业。权重/文本/token/目标一致，配置和分词器部分原始元数据字节不同，已记录，不能宣称所有文件相同。
+- 新执行c0fd54446d843f0b21e94bf138c692048e518c86，原d61与53dd快照均不修改。Slurm2461已提交6项B4T32 S256/512各3seed完整cached确认；同299077目标、2048/1024、batch32。复用53dd实际显存门禁，worker检查数值内核未变。完整2461尚未收齐。
+- 原完整Slurm2430的22项仍运行，含B4T32 S128、FFN-only/原BF16；不重复提交。其新cached BF16已11.652118067865489；完整联合结果未收齐不提前填值。sacct存储关闭，以completed原件/READY/实时squeue核验。
+- 正式新成果qwen/results/ising_sample_sweep_20261019/{RESULTS_ZH.md,SUMMARY.json,PPL_CURVE.png/svg/csv,PREPARATION.json,ARTIFACT_INDEX.json,references/}。早期三FFN联合报告仍在qwen/results/joint_stratified_attention_20261019/，保留原协议。
+- 服务器本人项目/home/Hongjie_Zeng/projects/pbit-qwen-joint-ffn-attention-20261019-issue50；新outputs/c0fd5444...、旧full outputs/53dd0ff6...；源码分别冻结在snapshots/对应SHA/。大权重/文本/运行校准不上传。
+- 随机数说明：S为每query/head保留观测数，时间16+4k，不是ESS或物理更新拍。FFN32拍是独立参数；未训练/新增任务指标/PT/PPA/TLM。seed标准差不等于语料CI。
+- 下一步：核对远端Issue/PR、本人队列及回执再收集2461与2430。待相同full协议对照齐全后追加全量结论；不要修改运行快照或重复提交。Projects缺read:project，看板待有权限者同步；Issue50保持open，不因后缀阶段结束而关闭。
 
-## 可直接继续的命令
+## 直接继续
 
-首先按AGENTS核对memo§0/1/12/5.7、最新Issue50/PR52、PR47和Issue48；确认当前squeue/sacct，不重复提交。SSH只使用本机已有配置，凭据不进Git。仓库根执行：
+1. 按AGENTS重读根memo§0/1/5.7/12及最新Issue50/PR52、STATUS；检查squeue，不重复已有Slurm2430/2461。
+2. 所有回执在work/jieruiz/50/SAMPLE_PREPARE_SUBMISSION.json（2440）、SAMPLE_SUFFIX_SUBMISSION.json（2441）、SAMPLE_FULL_SUBMISSION.json（2461）及此前FULL_SUBMISSION.json（2430）；含完整命令/源SHA/服务器目录。239x/2425失败诊断保留，不是当前错误。
+3. 在仓库根用Python3执行下面只读收集；本机现代Python为C:/Users/86134/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe。SSH配置仅本机，不进Git：
 
 ```powershell
-python experiments/qwen_joint_stratified_attention_20261019/collect_results.py --ssh-config C:/Users/86134/.ssh/lab-server-ai.ssh_config --host lab-server-ai --remote-root /home/Hongjie_Zeng/projects/pbit-qwen-joint-ffn-attention-20261019-issue50/outputs/53dd0ff6a04218dc9f2b692464d5b16da284cf17 --output C:/Users/86134/Documents/a_P_BIT/tmp/joint50_full_collected.json
-python experiments/qwen_joint_stratified_attention_20261019/summarize_results.py C:/Users/86134/Documents/a_P_BIT/tmp/joint50_full_collected.json qwen/results/joint_stratified_attention_20261019/FULL_SUMMARY.json --phase full
+python experiments/qwen_joint_stratified_attention_20261019/collect_results.py --ssh-config C:/Users/86134/.ssh/lab-server-ai.ssh_config --remote-root /home/Hongjie_Zeng/projects/pbit-qwen-joint-ffn-attention-20261019-issue50/outputs/c0fd54446d843f0b21e94bf138c692048e518c86 --output C:/Users/86134/Documents/a_P_BIT/tmp/sample50_collected.json
+python experiments/qwen_joint_stratified_attention_20261019/collect_results.py --ssh-config C:/Users/86134/.ssh/lab-server-ai.ssh_config --remote-root /home/Hongjie_Zeng/projects/pbit-qwen-joint-ffn-attention-20261019-issue50/outputs/53dd0ff6a04218dc9f2b692464d5b16da284cf17 --output C:/Users/86134/Documents/a_P_BIT/tmp/joint50_full_collected.json
 ```
 
-第二条只在全部22项完成后运行；不齐会拒绝缺seed/缺对照。使用可用的Python3（本机现代路径为C:/Users/86134/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe）。远程推理仅通过Slurm，不在login节点运行。所有完整任务已提交，重交前必须核实失败项和制品，不重复计算。
+4. 后缀重现需旧d61原件（已索引，不能只拿旧完整11.65）：使用相同collector从outputs/d61b2861edc91e00495268d39a738edb3599f87f收集为tmp/joint50_collected.json，再运行summarize_sample_sweep.py --new tmp/sample50_collected.json --old tmp/joint50_collected.json --upstream qwen/results/ising_sample_sweep_20261019/references/summary.json --output指定新摘要。全部输入/目标/批形状/seed守卫必须通过。
+5. 2430全部22项齐全后，用summarize_results.py的--phase full产生原完整FULL_SUMMARY；2461仅6个新full cell，不能直接给该脚本冒充完整22项。需要把53dd的原BF16/B4T32-only/S128和c0fd的S256/S512按相同full target SHA、batch32、源数值文件核对后单独汇总。不得与batch8后缀比较绝对PPL。
+6. 结果/逐段NLL/24层audit/原件SHA/Git blob复核后更新正式报告、任务进度/PR/Issue及唯一memo。原FFN公开参考只读，不覆盖成员分支。看板缺scope待同步，不影响其他交付。
 
-FULL_SUBMISSION.json给出2430完整命令；FULL_PREPARE_SUBMISSION.json为2429，FAILED_MEMORY_PREPARE_2425.json保留失败前置；PREPARE/SUFFIX/FALLBACK_SUBMISSION.json为2381/2382/2412。SLURM_ACCOUNTING.txt为收集时快照，不代替恢复时实时查询。完整结果与旧向量化BF16、batch8后缀严格分开；完整原始BF16参考应取本批full/none_sdpa_S128_s0.json。
-
-完整状态更新后，重新生成制品SHA索引、核对代码源53dd0ff与服务器identity.joint_sources中的45个Git blob；每种FFN与Attention种子分域独立。不要用last_sampler_stats当全程事件计数；不要把同seed当完全相同CTMC轨迹。正式结果不要放个人work目录；未提交的原始收集JSON仍在本机tmp及服务器，不公开权重/数据/校准/工艺库。
-
-完整阶段最新快照：新cached BF16已完成299077目标，PPL11.652118067865489（约149.46秒）；其余完整联合对照尚在运行，见FULL_PROGRESS.json，不用原向量化11.652735直接代替本批匹配参考。Slurm历史sacct接口返回“accounting storage is disabled”，因此完成依据为status=completed计分原件、READY及实时squeue，未把空sacct响应当成功。
-
-发布回执：PUBLISHED_RESULTS_RECEIPT.json；正式阶段结果提交ae4bd9a1ddd160c06175863eef3862d5cf7409f0，Issue50已更新，完整Slurm2430未收齐，不能关闭任务。
+当前新PPL报告/图/CSV和源码在本地，执行c0fd代码已推送；后缀结果本次待发布。原件均在本人服务器，未提交大模型、文本、runtime moment.pt或工艺库。

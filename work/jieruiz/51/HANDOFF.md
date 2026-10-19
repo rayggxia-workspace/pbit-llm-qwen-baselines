@@ -21,3 +21,13 @@
 - 正文SHA256为a542b46cf3750138de91ce7c0b46cbefd6cfa7a291b45d7b27dc413bdfc174d8；EVIDENCE为f6274bea585f2b2f12af2815fd2a4c38d7272f72063954ff54ef791f10963783。14复算、UTF-8/LF、用户副本与正文/EVIDENCE Git blob字节核验通过；独立文档审核未发现发布阻断项，已采纳AFM W16与W4参考区别。
 - 备忘录检测到主维护者更新至b347f6af，已在独立目录重放小补丁并保留所有继承文字，不改原维护目录或根阅读副本；补丁发布状态后续追加。Issue51保持开放待审，Projects待权限。
 - 备忘录补丁56e417eab5ca30354a1b1f960437f1352e736faa已实际原样上传，PR54已创建并附本任务：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/54，base task/28-project-memory @b347f6af，待审未合并。根副本继续跟随唯一主维护版本，不能将待审补丁称已同步到根文件。
+
+## 论文任务对照补充 2026年10月19日
+
+- 用户要求将任务/指标解释保存成文件，并按论文说明实际使用的任务。沿用Issue51；已核远端PR53实际合并为856105beaefaee307ba1a9b1972aa61d8f82ba59，Issue51仍open。
+- 本补充独立目录：C:/Users/86134/Documents/a_P_BIT/tmp/paper-task-map-issue51-20261019；分支task/51-paper-task-map；base为上述TLM merge。没有改旧任务工作树或其他成员文件。
+- 正式文件：architecture_tlm/LLM_PAPER_TASK_METRIC_MAP_ZH_20261019.md；用户副本：C:/Users/86134/Documents/a_P_BIT/pbit_llm_master_report_20261012/LLM_PAPER_TASK_METRIC_MAP_ZH_20261019.md；SHA256：6bdf8dc22f3a24b69f2eb8948f32697f25cb1fdd227549c56d92ee313127dbe4。单独TASK_MAP_MANIFEST记录，未重写旧MANIFEST与其已签成果。
+- 11主表论文区分9项应用质量与2项工作负载清单；1项图像随机ReRAM补充，3项待全文。不把Kelle Qasper/TriviaQA的泛称Accuracy补成已确认F1，不把ARTEMIS泛称GLUE补成七项。
+- 实际验证：UTF-8/LF、表格列数、相对链接、用户副本字节/SHA；逐项主源核对与独立只读审核。模型/数据版本、种子、服务器作业等本任务不适用：没有新实验。
+- 命令与准备脚本：tmp/emerging-quality-preflight-20261019/prepare_task_map.py；恢复先核Issue51/后续PR与本分支远端head，再读TASK_MAP_MANIFEST。Git CLI fetch网络失败，但本地共享Git对象已有经API核实的最新base；将用Git Data API原样发布文本提交。
+- 下一步：提交限定文件，创建补充PR至TLM分支，核Git blob与用户副本，更新Issue51。Projects权限待同步；旧PR54为备忘录提案，未视为已合并或根阅读副本已更新。

@@ -1,3 +1,11 @@
+## Issue65：Apple7B配对质量基线（2026-10-19，进度快照）
+
+负责人amlink1219；独立分支task/65-apple-sigmoid-7b-eval / workspace_projects/sa7。下载2517完成：2865文件/50.17GB、来源MD5和SHA；六任务19份parquet与完整WT2文本SHA已校验，2537全部19,965题/67,106请求分词边界通过。
+
+原始未量化FP32两模型的CPU2541及GPU2542数值对齐均通过，单GPU2542按smoke→两个完整WT2→完整六任务执行，输出reports/float32/<model>/；完整质量结果尚未收齐。BF16 GPU2538/2539预检失败，诊断2540未解决全差异，均单独留档；不将FP32通过写成BF16通过。
+
+正式实现experiments/apple_sigmoid_7b_eval，证据results/apple_sigmoid_7b_eval_20261019，精确交接work/amlink1219/65/HANDOFF.md。当前本地待发布，之后以PUBLICATION回执及最新Issue65/PR为准；Projects缺read:project待同步。未修改或重复同事Issue50/59任务；不重交仍运行的2542。
+
 本轮p-attention能量调研已上传`a0d08a4208fe505c81aa150abf807fd5e622a0f2`，PR63开放待审未合并；远端ref/PR head及17项稳定制品Git blob已核验，回执P_ATTENTION_PUBLICATION.json。无新模型/训练/PPL/PPA；同事Issue50/59不重交。
 
 ## 2026-10-19 可训练能量p-attention调研
@@ -156,3 +164,5 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 辅助/交接：work/amlink1219/<Issue>/。本地工作目录及原任务提交见各PUBLICATION.json；旧STATUS可从原提交恢复。
 原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
 下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。
+
+Issue65追加：原始FP32 CPU2541及GPU2542两模型对齐已通过；2542按smoke→两模型完整WT2→六任务运行，正式质量未收齐。详见work/amlink1219/65；当前GPU不重交。

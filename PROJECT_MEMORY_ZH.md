@@ -629,3 +629,10 @@ Issue30开始前另查本人squeue为空；这说明旧作业当时不在队列�
 - 2026-10-19，用户授权合并：PR31/34/38均已合入TLM，Issue30/32已关闭；补充8192train-token真实直方图、极值能量与裁剪口径，保留未跑裁剪PPL/未测PPA边界。
 
 - 2026-10-19，PR47独立审核与用户授权合并：25项核测试、145计分/154原件、98次执行blob和60次发布blob检查通过；合并提交`bef83e54b9da0081c51f393044d2156ce11a34b9`，两个父提交及与审核head同树均核实，Issue46于15:46:38（北京时间）按验收完成关闭。[审核记录](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/47#pullrequestreview-5568295057)及[合并回执](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46#issuecomment-6262300688)已在线。GitHub集成403不等于仓库账号无权限；本机jieruiz已核实admin/push并成功合并。Projects仍缺read:project。没有新GPU推理或PPA，K>1仍为受控分层；PR29继续待审，不随PR47合并。
+
+
+## Apple Sigmoid Attention 7B配对质量参考（Issue65，2026-10-19）
+
+负责人amlink1219；独立目录workspace_projects/sa7。按用户指定DS-CIM表II确认BoolQ/PIQA/HellaSwag/WinoGrande/ARC-e/ARC-c，论文未固定所有harness细节，本次明确0-shot/0.4.8，不称复现其LLaMA数字。官方Apple两个step250000检查点和原SP已下载校验，服务器模型根/home/Weican_Chen/models/apple-sigmoid-attention-7b。SP32000词片，嵌入/输出32768；Gala原生AXLearn配置与Llama/Qwen不同。
+
+方法/状态与索引见experiments/apple_sigmoid_7b_eval、results/apple_sigmoid_7b_eval_20261019和work/amlink1219/65/HANDOFF.md。BF16 GPU移植预检失败，未产生正式质量结果；先以未量化原始FP32权重和FP32计算建立高精度质量参考，分开列精度。当前运行状态须查实时Issue/作业，不能由本记录推断已经完成。没有p-bit采样或硬件PPA验收结论；不改Issue50/59的Qwen任务。

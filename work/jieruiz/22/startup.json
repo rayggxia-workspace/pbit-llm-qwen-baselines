@@ -1,0 +1,249 @@
+{
+  "time_utc": "2026-10-18T10:09:36.659236+00:00",
+  "user": "jieruiz",
+  "repo": "rayggxia-workspace/pbit-llm-qwen-baselines",
+  "permissions": {
+    "admin": true,
+    "maintain": true,
+    "push": true,
+    "triage": true,
+    "pull": true
+  },
+  "base": "pbit-tlm-attention-details-20261016",
+  "base_sha": "3553996bf014a29dee7fdb2250a3965e8fd881a4",
+  "issues": [
+    {
+      "number": 19,
+      "title": "Llama2-7B FFN精度分解PPL与低于256拍采样分析",
+      "assignees": [
+        "jieruiz"
+      ]
+    },
+    {
+      "number": 9,
+      "title": "分析筛选加PV注意力的K读取并集与突发放大并评估改进",
+      "assignees": [
+        "jieruiz"
+      ]
+    },
+    {
+      "number": 7,
+      "title": "核对FFN随机矩阵调度并制定数字CIM仿真与优化方案",
+      "assignees": [
+        "jieruiz"
+      ]
+    },
+    {
+      "number": 5,
+      "title": "核实DRAMPower功耗基线并解析DS-CIM的SRAM权重复用实现",
+      "assignees": [
+        "jieruiz"
+      ]
+    },
+    {
+      "number": 3,
+      "title": "审计当前概率LLM架构的可用性缺口与访存调度改进依据",
+      "assignees": [
+        "jieruiz"
+      ]
+    },
+    {
+      "number": 1,
+      "title": "建立 workspace 协作规则、Issue/PR 交付和个人进度交接规范",
+      "assignees": [
+        "jieruiz"
+      ]
+    }
+  ],
+  "prs": [
+    {
+      "number": 11,
+      "title": "增加SwiGLU单通道100MHz TT/SS功耗面积表征流程",
+      "head": "task/7-epilogue-ppa100",
+      "base": "task/7-ffn-cim-scheduling"
+    },
+    {
+      "number": 10,
+      "title": "分析GQA筛选的K读取并集与访存放大",
+      "head": "task/9-screen-k-traffic",
+      "base": "pbit-tlm-attention-details-20261016"
+    },
+    {
+      "number": 8,
+      "title": "明确FFN经典调度并补充数字SwiGLU表征RTL",
+      "head": "task/7-ffn-cim-scheduling",
+      "base": "pbit-tlm-attention-details-20261016"
+    },
+    {
+      "number": 6,
+      "title": "核实DRAMPower输入并提供Micron核心电流情景与DS-CIM权重设计分析",
+      "head": "task/5-dram-dscim-audit",
+      "base": "pbit-tlm-attention-details-20261016"
+    },
+    {
+      "number": 4,
+      "title": "审计概率LLM架构可用性缺口与Attention调度验证方法",
+      "head": "task/3-architecture-readiness",
+      "base": "pbit-tlm-attention-details-20261016"
+    },
+    {
+      "number": 2,
+      "title": "建立 workspace 协作规则、个人进度和 Issue/PR 交接规范",
+      "head": "collab/issue-1-governance",
+      "base": "main"
+    }
+  ],
+  "related": {
+    "issue19": {
+      "title": "Llama2-7B FFN精度分解PPL与低于256拍采样分析",
+      "body": "负责人：@jieruiz。\n\n用户要求：核对Qwen此前是否已完成BF16/量化/Q10/随机FFN的PPL分解；若Llama2-7B未测则补测，Llama1本次不测。同时严格分析单边随机固定权重中8位门限可完整枚举的情况下，随机方案是否应低于256拍。\n\n范围：在当前TLM主线@dd9f12b8cc25f474cafb54b1a58f2be20506cd9e新增独立Llama2 FFN数值评测，Attention全程原样准确SDPA；先重跑不变BF16，核模型/分词器/语料SHA，再依次比较确定性权重/激活量化、Q10 LUT和相同数制下的随机矩阵。使用Slurm、不可变快照、完整WT2滑窗PPL，随机正式比较至少3种子。均衡/完整门限遍历和低于256拍作为明确区分的确定性/随机对照，不伪称物理p-bit实测。\n\n同时只读核对Qwen已有结果与旧协议，不重复宣称或覆盖；不运行Llama1、不训练新模型、不改已有硬件或历史结果。Q10源从Issue7的已验证算术候选固定散列引入，工艺脚本/结果仍在原任务不碰；与Issue7的PPA互不覆盖。\n\n验收：\n- [x] 记录Qwen既有覆盖与缺口，严格区分完整PPL/后缀PPL、Attention设置及编码。\n- [x] 建立Llama2位明确的量化/Q10/采样协议、功能对照与不可变代码/配置来源。\n- [ ] 以Slurm执行新BF16参考、校准和分解评测；准确记录已完成/排队/运行与产物SHA。\n- [x] 分析256/255/端点和符号等精确枚举条件，对IID/均衡短序列/确定性及位串行给出公平结论，避免未经验证的低采样质量主张。\n- [x] 通过任务分支/PR、个人STATUS/HANDOFF交付，长数据/权重留已授权服务器。\n\n新增工作目录使用Issue编号；无同范围open Issue。Projects仍缺read:project待同步。"
+    },
+    "issue7": {
+      "title": "核对FFN随机矩阵调度并制定数字CIM仿真与优化方案",
+      "body": "负责人：@jieruiz\n\n范围：回应用户关于定制数字CIM仿真和当前FFN调度是否最优的问题；核对已发布TLM与本地v5/v6中gate/up、数字SiLU与逐元素乘法、down矩阵、部分和及权重供给的真实边界；给出可复现周期/流量核算、优化约束和55nm工艺验证方案。\n\n非目标：不重跑训练或宣称新PPL；不替换历史参数/结果；不冒充已实现定制CIM或证明全局最优；不混入Issue #5的DRAM修复代码。\n\n依赖与协作：已读Issue #1/#3/#5和PR #2/#4/#6、本人交接。#5负责DRAM/DS-CIM来源，本任务仅跟进FFN流水与仿真接口。base为pbit-tlm-attention-details-20261016 @9608c0d06cf8b421cbbd348aca4fc84c5990aae7；独立任务分支和worktree。正式报告及核算工具在architecture_tlm，个人资料work/jieruiz/<Issue>/。\n\n验收：\n- [x] 逐项区分源码已经实现的融合/双缓冲和仍为吞吐/能量代理的部分。\n- [x] 核算64×64、8引擎、4096采样的服务周期和中间流量，附源文件SHA-256。\n- [x] 给出无需改SRAM和真正定制CIM两条仿真路径、PT需要的活动/模式及宏级回填参数。\n- [x] 说明优化优先级、资源/精度约束和未验证项，通过独立分支PR交付并同步状态。\n\nProjects看板：已有凭据缺read:project，Issue/PR正常同步，看板待补权限。\n\n当前阶段：已推送，PR #8 待审，未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/8 。本次仅服务计数/历史时间/源代码审计，没有新PPL、RTL/DC/PT或版图。验证和源/成果SHA见work/jieruiz/7。Projects仍待权限补齐。\n\n本轮补充已推送至同一PR #8：经典GPU/ASIC对照、12个服务计数场景、数字SwiGLU单通道近似RTL与3种子逐周期功能/三模式活动仿真。没有工艺PPA或新PPL；不代表完整FFN或CIM已验证。源码、验证及交付索引见PR和work/jieruiz/7。仍待审/未合并，后续工艺表征由用户环境执行；Projects看板仍待权限。"
+    }
+  },
+  "last_issue19_comments": [
+    {
+      "url": "https://api.github.com/repos/rayggxia-workspace/pbit-llm-qwen-baselines/issues/comments/6247732705",
+      "html_url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19#issuecomment-6247732705",
+      "issue_url": "https://api.github.com/repos/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19",
+      "id": 6247732705,
+      "node_id": "IC_kwDOVKwYs88AAAABdGTV4Q",
+      "user": {
+        "login": "jieruiz",
+        "id": 169070146,
+        "node_id": "U_kgDOChPOQg",
+        "avatar_url": "https://avatars.githubusercontent.com/u/169070146?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/jieruiz",
+        "html_url": "https://github.com/jieruiz",
+        "followers_url": "https://api.github.com/users/jieruiz/followers",
+        "following_url": "https://api.github.com/users/jieruiz/following{/other_user}",
+        "gists_url": "https://api.github.com/users/jieruiz/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/jieruiz/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/jieruiz/subscriptions",
+        "organizations_url": "https://api.github.com/users/jieruiz/orgs",
+        "repos_url": "https://api.github.com/users/jieruiz/repos",
+        "events_url": "https://api.github.com/users/jieruiz/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/jieruiz/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "created_at": "2026-10-18T08:39:38Z",
+      "updated_at": "2026-10-18T08:39:38Z",
+      "body": "接续用户本轮分层效果/功耗/文献问题，已更新PR #20至`a691fece94858fe751da78ccea74077df865c10f`（草稿未合并）。\n\n| 方案 | 完整2K WT2 PPL | 完成种子 |\n|---|---:|---:|\n| 原BF16 | 4.979503 | 参考 |\n| W8+A8准确SiLU，无采样 | 5.038305 | 确定性 |\n| IID256 | 6.252346 / 6.254443 | 2/3 |\n| 分层64 | 6.758371 ± 0.008464 | 3/3 |\n| 分层128 | 5.308904 ± 0.001642 | 3/3 |\n| midpoint64 | 5.995513 | 确定性 |\n| midpoint128 | 5.412020 | 确定性 |\n\n同模型、同完整WT2协议、相同准确Attention；当前14/26替换完整结果已核原始SHA。128拍三种子比现有IID256更好且采样减半，但仍高于量化基线约5.37%。最大方差上界不能代替实际编码分布/PPL。全部数字及同口径审核由EFFECT_AUDIT_20261018_v3.json记录。\n\n功率与能量分开：旧PPA不是新A8/share64分层波形，当前没有新PT实测；有序流低翻转是理论及RTL结构分析。不能把128/256周期比直接当整机能效，也不能跳过位串行确定性基线。4篇原始研究证明LHS/低差异/dither已有系统工作；通用双流乘法需要联合分布和格式管理，非本特例直接替换。\n\n[专题报告](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/19-llama2-ffn-precision/experiments/llama2_ffn_precision/STRATIFIED_EFFECT_ENERGY_LITERATURE_ZH.md)。保留未完成验收项与运行中数组2084，Issue不关闭；Projects权限阻塞未虚报。",
+      "author_association": "MEMBER",
+      "pin": null,
+      "reactions": {
+        "url": "https://api.github.com/repos/rayggxia-workspace/pbit-llm-qwen-baselines/issues/comments/6247732705/reactions",
+        "total_count": 0,
+        "+1": 0,
+        "-1": 0,
+        "laugh": 0,
+        "hooray": 0,
+        "confused": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      },
+      "performed_via_github_app": null,
+      "minimized": null
+    },
+    {
+      "url": "https://api.github.com/repos/rayggxia-workspace/pbit-llm-qwen-baselines/issues/comments/6248484271",
+      "html_url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19#issuecomment-6248484271",
+      "issue_url": "https://api.github.com/repos/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19",
+      "id": 6248484271,
+      "node_id": "IC_kwDOVKwYs88AAAABdHBNrw",
+      "user": {
+        "login": "jieruiz",
+        "id": 169070146,
+        "node_id": "U_kgDOChPOQg",
+        "avatar_url": "https://avatars.githubusercontent.com/u/169070146?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/jieruiz",
+        "html_url": "https://github.com/jieruiz",
+        "followers_url": "https://api.github.com/users/jieruiz/followers",
+        "following_url": "https://api.github.com/users/jieruiz/following{/other_user}",
+        "gists_url": "https://api.github.com/users/jieruiz/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/jieruiz/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/jieruiz/subscriptions",
+        "organizations_url": "https://api.github.com/users/jieruiz/orgs",
+        "repos_url": "https://api.github.com/users/jieruiz/repos",
+        "events_url": "https://api.github.com/users/jieruiz/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/jieruiz/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "created_at": "2026-10-18T09:56:26Z",
+      "updated_at": "2026-10-18T09:56:26Z",
+      "body": "已按用户明确授权合并阶段基线 PR #20 到 `pbit-tlm-attention-details-20261016`，实际 merge `40ea9f121c27ed7ea6e8a2e653e92246f3adcbfa`，head `1cbf4168b8d2e37dbd398d88e5823c3db009eecd`。\n\n16/26完整替换PPL已收回且原manifest/Git blob核SHA；128分层三种子5.308904±0.001642，IID256为6.256753±0.005911，IID4096首种子5.091985。DS-CIM原文核对与比较缺口已随PR合并。\n\n剩余10项Slurm评测继续，未取消/覆盖执行快照，Issue19保持开放。后续结果另任务分支/PR追加。没有新PT能耗；Projects缺read:project仍待同步。",
+      "author_association": "MEMBER",
+      "pin": null,
+      "reactions": {
+        "url": "https://api.github.com/repos/rayggxia-workspace/pbit-llm-qwen-baselines/issues/comments/6248484271/reactions",
+        "total_count": 0,
+        "+1": 0,
+        "-1": 0,
+        "laugh": 0,
+        "hooray": 0,
+        "confused": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      },
+      "performed_via_github_app": null,
+      "minimized": null
+    },
+    {
+      "url": "https://api.github.com/repos/rayggxia-workspace/pbit-llm-qwen-baselines/issues/comments/6248505524",
+      "html_url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19#issuecomment-6248505524",
+      "issue_url": "https://api.github.com/repos/rayggxia-workspace/pbit-llm-qwen-baselines/issues/19",
+      "id": 6248505524,
+      "node_id": "IC_kwDOVKwYs88AAAABdHCgtA",
+      "user": {
+        "login": "jieruiz",
+        "id": 169070146,
+        "node_id": "U_kgDOChPOQg",
+        "avatar_url": "https://avatars.githubusercontent.com/u/169070146?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/jieruiz",
+        "html_url": "https://github.com/jieruiz",
+        "followers_url": "https://api.github.com/users/jieruiz/followers",
+        "following_url": "https://api.github.com/users/jieruiz/following{/other_user}",
+        "gists_url": "https://api.github.com/users/jieruiz/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/jieruiz/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/jieruiz/subscriptions",
+        "organizations_url": "https://api.github.com/users/jieruiz/orgs",
+        "repos_url": "https://api.github.com/users/jieruiz/repos",
+        "events_url": "https://api.github.com/users/jieruiz/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/jieruiz/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "created_at": "2026-10-18T09:58:55Z",
+      "updated_at": "2026-10-18T09:58:55Z",
+      "body": "合并回执和个人STATUS/HANDOFF已通过PR #21 同步并合并，merge `3553996bf014a29dee7fdb2250a3965e8fd881a4`。阶段基线本身为PR20/`40ea9f1`，Issue19仍开放，剩余评测继续。仅更新3个记录文件，无源码或数值修改。Projects缺read:project待同步。",
+      "author_association": "MEMBER",
+      "pin": null,
+      "reactions": {
+        "url": "https://api.github.com/repos/rayggxia-workspace/pbit-llm-qwen-baselines/issues/comments/6248505524/reactions",
+        "total_count": 0,
+        "+1": 0,
+        "-1": 0,
+        "laugh": 0,
+        "hooray": 0,
+        "confused": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      },
+      "performed_via_github_app": null,
+      "minimized": null
+    }
+  ]
+}

@@ -1,4 +1,14 @@
+[Llama 2 7B：完整WT2基线与当前TLM结果入口](llama2_7b/RESULTS_INDEX_ZH.md)
+
 [最新中文总索引：Attention、FFN、多层随机源、外存与结果](WORKSPACE_LATEST_ZH.md)
+
+[LLaMA-1 7B 独立 TLM：当前采样、随机源、SRAM/DRAM及结果](llama7b/README_ZH.md)
+## DRAM power-input review and DS-CIM weight mapping (2026-10-17)
+
+[Review, source-backed core-current profile, and limits](DRAM_POWER_AND_DS_CIM_WEIGHT_REVIEW_ZH_20261017.md).
+`dram_power_profile.py --require-core-profile` checks explicit new scenarios;
+legacy defaults/results are retained. This does not certify IO/PHY energy,
+device timing, or a physical DS-CIM implementation.
 
 # Qwen2.5 transaction model with DRAMSys external memory
 
@@ -174,3 +184,29 @@ Per-weight validity banks are excluded explicitly; full-tile initialization is r
 `results/cacti_memory_20261016` contains completed Slurm job 1581 outputs.
 `run_screen_ising_v4.py --memory-cost-profile .../tlm_cost_b16.json` is an optional
 **cost-only** sensitivity, not a foundry SS timing/area signoff or a Q-hold implementation.
+
+## FFN scheduling and digital CIM audit (2026-10-17)
+
+[Chinese report and simulation checklist](FFN_CIM_SCHEDULING_AND_SIMULATION_ZH_20261017.md)
+traces the existing fused gate/up, digital SwiGLU and down stages, identifies
+resident-weight and partial-sum implementation gaps, and separates ordinary
+SRAM-plus-logic from custom digital CIM characterization. The source accounting
+replay is [audit_ffn_schedule.py](audit_ffn_schedule.py), with
+[archived audit results](results/ffn_schedule_audit_20261017/audit.json).
+This does not publish the full later local v5/v6 runtime or claim new PPL,
+foundry PPA, an optimized scheduler, or a completed CIM macro. See Issue #7.
+
+Follow-up: [classic GPU/ASIC comparison and recommended architecture](CLASSIC_AND_PROBABILISTIC_FFN_ARCHITECTURE_ZH_20261017.md),
+[same-engine-count service comparison](compare_ffn_resource_schedules.py),
+and [digital SwiGLU epilogue characterization RTL](rtl/ffn_epilogue_20261017/README_ZH.md).
+The new epilogue is a fixed-point LUT approximation for characterization;
+it is not enabled in the existing model or validated as a BF16 replacement.
+## Screening and K traffic audit (2026-10-17)
+
+[Chinese analysis](SCREEN_K_TRAFFIC_ANALYSIS_ZH_20261017.md) separates per-query
+QK sparsity, GQA union reads, Link256 overfetch, summary traffic and old PV
+reloads. The [audit tool](audit_screen_k_traffic.py) reconstructs recorded
+synthetic routing with exact archived calibration bytes and computes shared
+uniform bounds. [Results](results/screen_k_traffic_audit_20261017/audit.json)
+are byte accounting, not new Qwen/PPL, DRAMSys, or chip measurements. Runtime
+selection and historical results are unchanged. See Issue #9.

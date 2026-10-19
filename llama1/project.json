@@ -1,0 +1,122 @@
+{
+  "model": "LLaMA-1 7B",
+  "repository": "huggyllama/llama-7b",
+  "evidence": [
+    "当前标准TLM共82项：60 Link＋18 Staggered＋4 NoPowerDown。",
+    "三个上下文512/1024/2048的真实BF16 QK捕获逐bit验证。",
+    "本次标准随机FFN/比例PV/max4/Ising没有新的联合PPL；BF16 TLM不是GPU实测基线。"
+  ],
+  "locations": {
+    "code": [
+      {
+        "label": "模型TLM、捕获、汇总",
+        "path": "architecture_tlm/llama7b/"
+      },
+      {
+        "label": "MHA适配",
+        "path": "architecture_tlm/llama7b/attention_adapter.py"
+      }
+    ],
+    "configs": [
+      {
+        "label": "模型与SRAM配置",
+        "path": "architecture_tlm/llama7b/configs/"
+      },
+      {
+        "label": "审计DRAM配置",
+        "path": "architecture_tlm/llama7b/dram/"
+      },
+      {
+        "label": "62项冻结执行输入",
+        "path": "architecture_tlm/llama7b/EXECUTION_MANIFEST.json"
+      }
+    ],
+    "baselines": [
+      {
+        "label": "BF16捕获与证据边界",
+        "path": "architecture_tlm/llama7b/README_ZH.md"
+      },
+      {
+        "label": "实际捕获验证",
+        "path": "work/jieruiz/12/capture_validation/"
+      }
+    ],
+    "results": [
+      {
+        "label": "82项完整中文总表",
+        "path": "architecture_tlm/llama7b/results/current/RESULTS_ZH.md"
+      },
+      {
+        "label": "原始成果SHA索引",
+        "path": "architecture_tlm/llama7b/results/current/ARTIFACT_INDEX.json"
+      }
+    ],
+    "shared": [
+      {
+        "label": "Llama1/Llama2共用的冻结硬件运行时",
+        "path": "architecture_tlm/llama7b/runtime/"
+      },
+      {
+        "label": "SRAM、DRAMSys、随机源与数字/随机算子",
+        "path": "architecture_tlm/"
+      },
+      {
+        "label": "格式转换RTL",
+        "path": "format_conversion_rtl_20261016/"
+      },
+      {
+        "label": "已有P-DNN实验与复现规则",
+        "path": "experiments/pdnn_ffn/P_DNN_FFN_DESIGN_ZH.md"
+      }
+    ]
+  },
+  "commands": {
+    "tlm": {
+      "script": "architecture_tlm/llama7b/run.py",
+      "scope": "Full32-layer decode ASIC TLM; no new PPL."
+    },
+    "capture": {
+      "script": "architecture_tlm/llama7b/capture_trace.py",
+      "scope": "BF16 QK GPU capture; submit through Slurm."
+    },
+    "report": {
+      "script": "architecture_tlm/llama7b/report.py",
+      "scope": "Summarize an existing completed server project; no new experiment."
+    },
+    "verify": {
+      "script": "architecture_tlm/llama7b/verify_snapshot.py",
+      "scope": "Verify 62 original immutable input bytes."
+    }
+  },
+  "schema_version": 1,
+  "directory": "llama1",
+  "snapshot_base_commit": "7a506365cce42fd257f2645aa589b624e7d77116",
+  "repository_root_paths": true,
+  "anchors": [
+    {
+      "path": "architecture_tlm/llama7b/configs/model.json",
+      "bytes": 435,
+      "sha256": "51bbb58a4640b74c538ecd881478b1a1bc5da654b2b82f0db647addf1f5eaf7e"
+    },
+    {
+      "path": "architecture_tlm/llama7b/EXECUTION_MANIFEST.json",
+      "bytes": 10804,
+      "sha256": "e2180e3f6d5c33f5001b7ba42c689155ed1c574d16d9452c3c02e4963fa6ea69"
+    },
+    {
+      "path": "architecture_tlm/llama7b/run.py",
+      "bytes": 7537,
+      "sha256": "39918d14e4bf55c85728d4ecf986acc68abc6f5e5b881fc70d2252ba740690bf"
+    },
+    {
+      "path": "architecture_tlm/llama7b/results/current/RESULTS_ZH.md",
+      "bytes": 7197,
+      "sha256": "9e2b5ecd717fd26e9f4f7b2579bce9ef58fe319e7f023161b0c030495d0e43ef"
+    },
+    {
+      "path": "architecture_tlm/llama7b/results/current/ARTIFACT_INDEX.json",
+      "bytes": 22976,
+      "sha256": "92a363cb80c5f5288403c521d73c10b7755c0fab459a2c5897f681baacdab8ca"
+    }
+  ]
+}

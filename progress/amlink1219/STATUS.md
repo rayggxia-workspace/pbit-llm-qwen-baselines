@@ -8,7 +8,7 @@
 
 Issue50/PR52完整联合及Issue59代表任务属于jieruiz，只读公开结果，本任务不重交、不改变其状态。训练数据版本、H100实际调度/配额和本人存储尚需在执行Issue冻结。文献仅公开本批状态，不上传全库书目/PDF。
 
-当前文档本地完成，待任务分支PR交付；真实发布状态以work/amlink1219/61/PUBLICATION.json及最新远端为准。看板按实际GraphQL响应记录，权限不足不影响报告交付。不自动合并或关闭Issue61。
+研究交付已推送777b3e51aec48c5c689c78e2257e18243c18c4b8，PR#63开放待审、未合并（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/63）；远端ref、PR head、13项文件范围和稳定manifest的Git blob已核验。真实回执见work/amlink1219/61/PUBLICATION.json。看板按实际GraphQL响应记录，权限不足不影响报告交付。不自动合并或关闭Issue61。
 
 以下为继承历史记录，最新协作状态需重新查询远端：
 

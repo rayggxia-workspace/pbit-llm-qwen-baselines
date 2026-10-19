@@ -29,3 +29,5 @@ python -B work/amlink1219/61/validate_research.py
 ## 发布与待同步
 
 本文件创建时报告本地完成，发布后的真实分支/PR/提交回执另见PUBLICATION.json；没有该回执不能称已上传。Issue验收和看板按实际响应记录，不自动合并或关闭Issue。Zotero仅发布本批条目键/状态/附件SHA；全库去重快照和PDF留本机既有库，不进入Git。
+
+实际研究交付已上传：结果提交`777b3e51aec48c5c689c78e2257e18243c18c4b8`，PR#63（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/63）开放待审、未合并；远端ref/PR head及文件范围已核验，回执PUBLICATION.json。后续元数据提交不改变稳定manifest所核研究内容。

@@ -33,3 +33,5 @@
 - 下一步：提交限定文件，创建补充PR至TLM分支，核Git blob与用户副本，更新Issue51。Projects权限待同步；旧PR54为备忘录提案，未视为已合并或根阅读副本已更新。
 
 - 补充发布回执：58aaa7ac7c330ab3d6a5ae0d669ed10057fbb24c已通过Git Data API原样上传；PR56已创建并附本任务（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/56），待审未合并。独立复核通过，已采纳CQADupStackGisRetrieval与all-MiniLM-L6-v2的具体名称；最终文档SHA256 6bdf8dc22f3a24b69f2eb8948f32697f25cb1fdd227549c56d92ee313127dbe4，Git blob/本地/用户副本完全一致。
+
+- 最终同步回执：PR54在本补充发布中被其他审阅任务合并，merge e0abc39。旧7b6b853补丁更新远端引用时安全检查停止，未force、未覆盖其新提交；改从实际最新合并创建独立tmp/paper-task-map-memory-issue51-20261019，分支task/51-task-map-memory @0027d2c3ba8a5407e7a308c8b1f824336801c34a，PR57（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/57）已推送待审未合并。原PR54历史待审描述已由本回执替代。Issue51最新正文/验收清单已同步，PR56保持待审未合并。最终校验见TASK_MAP_MANIFEST；无新实验。

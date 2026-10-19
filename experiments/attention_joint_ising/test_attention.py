@@ -75,6 +75,30 @@ if torch is not None:
             return k, v
 
 
+    def reference_qwen_sdpa(a, hidden_states, cache, cos, sin, cache_position):
+        """Independent transcription of pinned Qwen2SdpaAttention:578-637.
+
+        Uses original dtype, nontrivial RoPE, real projection modules and an
+        independent cache. This is a wrapper regression, not a GPU/PPL claim.
+        """
+        b, n, _ = hidden_states.shape
+        query = a.q_proj(hidden_states).view(b, n, a.num_heads, a.head_dim).transpose(1, 2)
+        key = a.k_proj(hidden_states).view(b, n, a.num_key_value_heads, a.head_dim).transpose(1, 2)
+        value = a.v_proj(hidden_states).view(b, n, a.num_key_value_heads, a.head_dim).transpose(1, 2)
+        def rotate(x):
+            first, second = x[..., :x.shape[-1] // 2], x[..., x.shape[-1] // 2:]
+            return torch.cat((-second, first), dim=-1)
+        cos1, sin1 = cos.unsqueeze(1), sin.unsqueeze(1)
+        query, key = query * cos1 + rotate(query) * sin1, key * cos1 + rotate(key) * sin1
+        key, value = cache.update(key, value, a.layer_idx, {'sin': sin, 'cos': cos, 'cache_position': cache_position})
+        def repeat(x):
+            batch, heads, length, dim = x.shape
+            return x[:, :, None, :, :].expand(batch, heads, a.num_key_value_groups, length, dim).reshape(batch, a.num_heads, length, dim)
+        out = torch.nn.functional.scaled_dot_product_attention(query, repeat(key), repeat(value),
+            attn_mask=None, dropout_p=0.0, is_causal=False)
+        return a.o_proj(out.transpose(1, 2).contiguous().view(b, n, a.hidden_size))
+
+
 @unittest.skipIf(torch is None, 'Torch is not installed in this Python runtime')
 class AttentionTests(unittest.TestCase):
     def setUp(self):
@@ -221,6 +245,42 @@ class AttentionTests(unittest.TestCase):
         layer = c.stats()['layers']['0']
         self.assertEqual(layer['query_rows'], 8)
         self.assertEqual(layer['query_token_rows'], 2)
+
+    def test_bf16_sdpa_core_bit_identical_to_original_invocation(self):
+        c = self.controller(mode='digital_sdpa')
+        a = self.model.model.layers[0].self_attn
+        q, k, v = (x.to(torch.bfloat16) for x in
+                   (torch.randn(2, 4, 1, 2), torch.randn(2, 2, 67, 2), torch.randn(2, 2, 67, 2)))
+        expected = torch.nn.functional.scaled_dot_product_attention(q, k.repeat_interleave(2, 1),
+            v.repeat_interleave(2, 1), attn_mask=None, dropout_p=0., is_causal=False)
+        with patch.object(torch.Tensor, 'float', side_effect=AssertionError('SDPA input dtype must stay BF16')):
+            got = c._core(a, q, k, v)
+        self.assertEqual(got.dtype, torch.bfloat16)
+        self.assertTrue(torch.equal(got, expected))
+        layer = c.stats()['layers']['0']
+        self.assertEqual(layer['query_token_rows'], 2)
+        self.assertEqual(layer['query_rows'], 8)
+        self.assertEqual(layer['candidate_min'], 67)
+        self.assertEqual(layer['sample_events'], 0)
+
+    def test_bf16_sdpa_wrapper_bit_identical_with_rope_and_gqa_cache(self):
+        self.model.to(dtype=torch.bfloat16)
+        c = self.controller(mode='digital_sdpa')
+        a = self.model.model.layers[0].self_attn
+        reference, patched = FakeCache(), FakeCache()
+        initial_k, initial_v = torch.randn(2, 2, 5, 2).bfloat16(), torch.randn(2, 2, 5, 2).bfloat16()
+        reference.data[0], patched.data[0] = (initial_k.clone(), initial_v.clone()), (initial_k.clone(), initial_v.clone())
+        for position in (5, 6):
+            x = torch.randn(2, 1, 8).bfloat16()
+            angle = torch.randn(2, 1, 2)
+            cos, sin = angle.cos().bfloat16(), angle.sin().bfloat16()
+            cache_position = torch.tensor([position])
+            expected = reference_qwen_sdpa(a, x, reference, cos, sin, cache_position)
+            got, _, returned_cache = a(x, past_key_value=patched, position_embeddings=(cos, sin), cache_position=cache_position)
+            self.assertTrue(torch.equal(got, expected))
+            self.assertIs(returned_cache, patched)
+            self.assertTrue(all(torch.equal(x, y) for x, y in zip(reference.data[0], patched.data[0])))
+        self.assertEqual(c.stats()['layers']['0']['query_token_rows'], 4)
 
 
 if __name__ == '__main__':

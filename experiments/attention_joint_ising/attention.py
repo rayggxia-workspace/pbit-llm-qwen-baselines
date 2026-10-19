@@ -16,7 +16,8 @@ except ImportError:  # Pure policy tests remain runnable in a stdlib environment
     F = None
 
 
-MODES = ('screen_ising', 'screen_exact', 'screen_iid', 'digital_exact', 'ising_only')
+MODES = ('screen_ising', 'screen_exact', 'screen_iid', 'digital_exact', 'ising_only',
+         'digital_sdpa')
 METRICS = ('query_rows', 'query_token_rows', 'possible_candidates', 'selected_candidates',
            'padded_qk_candidates', 'selected_blocks', 'raw_selected_blocks',
            'quota_added', 'quota_removed', 'GQA_union_candidates',
@@ -57,6 +58,15 @@ def _rope(q, k, cos, sin):
         return torch.cat((-second, first), dim=-1)
     cos, sin = cos.unsqueeze(1), sin.unsqueeze(1)
     return q * cos + rotate_half(q) * sin, k * cos + rotate_half(k) * sin
+
+
+def _repeat_kv(hidden_states, n_rep):
+    # Same expand/reshape layout as upstream/modeling_qwen2.py:280-289.
+    batch, heads, length, dim = hidden_states.shape
+    if n_rep == 1:
+        return hidden_states
+    return hidden_states[:, :, None, :, :].expand(batch, heads, n_rep, length, dim).reshape(
+        batch, heads * n_rep, length, dim)
 
 
 class JointAttentionController:
@@ -208,6 +218,16 @@ class JointAttentionController:
         batch_size, heads, _, dim = q.shape
         length = k.shape[-2]
         chosen, raw = self._select(a, q, k)
+        if self.mode == 'digital_sdpa':
+            # Wrapper diagnostic: preserve input dtype and the exact original
+            # Qwen SDPA invocation. Do not materialize FP32 scores/softmax here.
+            out = F.scaled_dot_product_attention(
+                q, _repeat_kv(k, a.num_key_value_groups),
+                _repeat_kv(v, a.num_key_value_groups),
+                attn_mask=None, dropout_p=0.0, is_causal=False)
+            counts = torch.full((batch_size * heads,), length, device=q.device, dtype=torch.long)
+            self._record_core(a, q, length, chosen, raw, counts, length, False, 0)
+            return out
         tokens = chosen.repeat_interleave(64, dim=-1)[..., :length].reshape(-1, length)
         counts = tokens.sum(-1)
         if not bool((counts > 0).all()):
@@ -242,6 +262,12 @@ class JointAttentionController:
         else:
             values = v[batch[:, None], kvhead[:, None], index].float()
             out = torch.bmm(logits.softmax(-1).unsqueeze(1), values).squeeze(1)
+        self._record_core(a, q, length, chosen, raw, counts, width, sampled, adjacent)
+        return out.reshape(batch_size, heads, 1, dim).to(q.dtype)
+
+    def _record_core(self, a, q, length, chosen, raw, counts, width, sampled, adjacent):
+        batch_size, heads = q.shape[:2]
+        state = self._state[a.layer_idx]
         sizes = (length - torch.arange(chosen.shape[-1], device=q.device) * 64).clamp(1, 64)
         union = chosen.reshape(batch_size, a.num_key_value_heads, a.num_key_value_groups, -1).any(2)
         items = (batch_size * heads, batch_size, batch_size * heads * length, counts.sum(),
@@ -254,7 +280,6 @@ class JointAttentionController:
         state['metrics'] = values if state['metrics'] is None else state['metrics'] + values
         state['candidate_min'] = counts.min() if state['candidate_min'] is None else torch.minimum(state['candidate_min'], counts.min())
         state['candidate_max'] = counts.max() if state['candidate_max'] is None else torch.maximum(state['candidate_max'], counts.max())
-        return out.reshape(batch_size, heads, 1, dim).to(q.dtype)
 
     def _dispatch(self, a, hidden_states, attention_mask=None, position_ids=None,
                   past_key_value=None, output_attentions=False, use_cache=False,
@@ -305,6 +330,7 @@ class JointAttentionController:
                     target_fraction=self.target_fraction,
                     calibration=('provided' if self.calibration is not None else 'UNCALIBRATED_bias0_temperature1') if self.mode.startswith('screen_') else 'not_used',
                     installed_layers=len(self._originals), layers=layers, totals=total,
+                    core_precision='model_dtype_SDPA_wrapper_diagnostic' if self.mode == 'digital_sdpa' else 'FP32_QK_and_exact_Softmax_PV_or_sampled_V_mean',
                     metric_units={'query_rows': 'batch-times-Q-heads per decode call',
                                   'query_token_rows': 'batch tokens per decode call'},
                     rng_scope='independent per-layer selector/sampler streams; seed excludes S/backend; paired only for fixed batch and step ordering',

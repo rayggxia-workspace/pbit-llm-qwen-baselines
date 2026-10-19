@@ -3,6 +3,12 @@
 [最新中文总索引：Attention、FFN、多层随机源、外存与结果](WORKSPACE_LATEST_ZH.md)
 
 [LLaMA-1 7B 独立 TLM：当前采样、随机源、SRAM/DRAM及结果](llama7b/README_ZH.md)
+## DRAM power-input review and DS-CIM weight mapping (2026-10-17)
+
+[Review, source-backed core-current profile, and limits](DRAM_POWER_AND_DS_CIM_WEIGHT_REVIEW_ZH_20261017.md).
+`dram_power_profile.py --require-core-profile` checks explicit new scenarios;
+legacy defaults/results are retained. This does not certify IO/PHY energy,
+device timing, or a physical DS-CIM implementation.
 
 # Qwen2.5 transaction model with DRAMSys external memory
 

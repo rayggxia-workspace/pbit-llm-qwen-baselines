@@ -1,3 +1,15 @@
+# Issue51 论文任务与质量指标对照补充
+
+- 日期2026-10-19；负责人/已核验登录jieruiz；独立目录tmp/paper-task-map-issue51-20261019，分支task/51-paper-task-map，base TLM @856105beaefaee307ba1a9b1972aa61d8f82ba59。
+- 原PR53已合并（merge856105b），不是待审状态。用户追加要求保存论文—任务—指标对照，沿用Issue51，使用独立补充分支；不向已合并PR53继续推交付。
+- 新文件architecture_tlm/LLM_PAPER_TASK_METRIC_MAP_ZH_20261019.md，11项主表、1项非LLM补充、3项待全文；任务含义、指标方向、AFM shot、GLUE口径与原文不明确之处均单列。用户资料目录同字节副本。
+- 实际验证：原文与官方评分配置核对、UTF-8/LF、表格结构、相对链接、SHA及用户副本一致；独立复核通过并已发布，Git blob与用户副本逐字节一致。文献任务无新模型/PPL/训练/TLM/RTL/PT/PPA/Slurm。
+- 正式文档58aaa7a已原样发布，补充PR56待审未合并（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/56）；Issue51保持开放直到补充验收。Projects此前缺read:project，待同步。既有任务状态保留为历史，不据其推定运行状态。
+
+- 最终同步：原PR54已被并行审阅合并e0abc39；新文件入口改从该最新版本另起task/51-task-map-memory @0027d2c，PR57待审未合并（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/57）。没有force更新、没有覆盖主维护/根副本；Issue51已更新，PR56正文远端/本地/用户副本逐字节验证通过。下一步审阅PR56/57；Projects仍待权限。
+
+以下为继承的历史状态，时间与PR状态以对应任务最新回执为准。
+
 # Issue46：多档＋分层完整结果已发布，PR47待审未合并
 
 2026-10-19，jieruiz；task/46-fixedw-multiscale，base c1555ae；tmp/qwen-fixedw-multiscale-20261019。执行db27fa3，Slurm2308/2309结束，69计分/72原件/37源blob/23新发布blob核验，旧17/20清单分别验证。结果c8ea878已发布，4档fine T16/32/64=11.900826/11.736131/11.693775，2档T3211.769199；正式总表/图/LITERATURE在qwen/results/multiscale_stratified_20261019，work/jieruiz/46/STRATIFIED_DELIVERY_RECEIPT为回执。备忘录1fe0c92远端与根副本同字节，Issue46/28及PR47同步；PR47未合并、Issue46open，无新PPA，Projects待同步：GraphQL permission unavailable: Your token has not been granted the required scopes to execute this query. The 'id' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['repo', 'user', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.。下一步审阅验收，或独立验证RTL/能效，不重跑145输出条目。

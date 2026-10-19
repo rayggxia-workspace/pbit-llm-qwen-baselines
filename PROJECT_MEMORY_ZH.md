@@ -1,6 +1,6 @@
 # p-bit LLM 项目长期备忘录
 
-更新日期：2026-10-19。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19已实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`，实际合并回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)；旧任务索引保留日期并由第12.1节更新。
+更新日期：2026-10-19。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19已实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`，实际合并回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)；Issue59记忆追加已由[PR64](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/64)推送待审、未合并。旧任务索引保留日期并由第12.1节更新。
 
 本文件保存项目目标、用户决策、算法分支、实验口径、架构与证据入口，用于长对话压缩、换会话或换人后的恢复。它不替代原始结果、manifest、最新 Issue/PR 和运行日志。历史讨论不等于已实现；以下明确区分已验证、情景估计和待验证。
 
@@ -302,9 +302,19 @@ dynamic64仅改细K64为11.768589±0.003298，K128为11.700228±0.000201。单Po
 
 新cached scorer让第一答案token也由单tokendecode预测，全部24层Attention/FFN审计；候选分支恢复KV cache、RNG和筛选summary，避免分支污染。多token prefill Attention仍准确，FFN在prefill/decode均替换。准备题的prompt均小于512 token，固定8×64块预算会保留全部K，因此这些短题不能验证长上下文QK筛选效果；需同时记录每个实际计分query的候选覆盖。
 
-初始13项scorer＋2项计划CPU测试通过，Slurm CPU2473完成；GPU2474复现原BF16完整WT2 PPL11.652735，但某两token候选的向量化/cached sumLL差0.1168触发每token0.05门禁，没有绕过。新源075574增加独立naive cached基线（各候选重算prefix，不使用cache clone或首query共享），以sumLL差1e-5及greedy严格核对；CPU2475/GPU2476现已全部READY通过，新BF16完整WT2仍为11.652735，9项pilot均完成。向量化BF16不同GEMM/SDPA形状差异保留为诊断，不作为cached分支错误的豁免；pilot少量题目不作任务准确率结论。
+初始13项scorer＋2项计划CPU测试通过，Slurm CPU2473完成；GPU2474复现原BF16完整WT2 PPL11.652735，但某两token候选的向量化/cached sumLL差0.1168触发每token0.05门禁，没有绕过。新源075574增加独立naive cached基线（各候选重算prefix，不使用cache clone或首query共享），以sumLL差1e-5及greedy严格核对；CPU2475/GPU2476现已全部READY通过，独立cached reference与分支scorer逐候选sumLL最大差0.0，新BF16完整WT2仍为11.652735，9项pilot均完成。向量化对照的最大每token平均sumLL差0.05839，12题pilot的判对错标志一致；不同BF16 GEMM/SDPA形状差异仅作诊断，不作为cached分支错误的豁免，也不从pilot得出正式替换准确率结论。
 
-**正式39项已于2026-10-19T09:13:52Z（北京时间17:13:52）提交，正式分数仍待完成**：BF16三任务数组2477（indices0/13/26）；ARC-E12项2478（14～25）、PIQA12项2479（1～12）、Hella1000的12项2480（27～38），各最多2GPU且afterok2477；CPU汇总2481在全部worker afterany后执行。提交回执为本地`tmp/task59_workers_submission.json`，实际恢复入口仍为Issue59 STATUS/HANDOFF。自动collector独立源`0d4be877714ace3f1b360c4d74b62e563850e9bc`只改收集，不改075574数值快照；新增15项collector CPU测试在本地modern Python通过，不能写成新GPU准确率结果。
+**正式39项已于2026-10-19T09:13:52Z（北京时间17:13:52）提交**：BF16三任务数组2477（indices0/13/26）；ARC-E12项2478（14～25）、PIQA12项2479（1～12）、Hella1000的12项2480（27～38），各最多2GPU且afterok2477；CPU汇总2481在全部worker afterany后执行。提交回执为本地`tmp/task59_workers_submission.json`，实际恢复入口仍为Issue59 STATUS/HANDOFF。自动collector独立源`0d4be877714ace3f1b360c4d74b62e563850e9bc`只改收集，不改075574数值快照；新增15项collector CPU测试在本地modern Python通过。
+
+截至2026-10-19T09:19Z，**3/39项新原BF16基线已完成，36项替换评测仍运行/排队**；ARC-E/PIQA FFN-only已开始，Hella任务等待资源。下表是本次matched cached计分器的原BF16，不能与旧native-vectorized基线互换；替换准确率尚未完成，不能据此报告损失或保持不变。
+
+| 任务与实际范围 | N | 原BF16 acc（%） | 原BF16 acc_norm（%） |
+|---|---:|---:|---:|
+| PIQA validation全量 | 1838 | 70.511425 | 69.967356 |
+| ARC-Easy test全量 | 2376 | 64.393939 | 58.333333 |
+| HellaSwag validation固定seed20261019子集 | 1000 | 41.900000 | 52.400000 |
+
+三项原件已哈希索引到Issue59任务分支的`qwen/results/task_accuracy_20261019/`。本备忘录首轮追加`e32f7318be629de300cf2ab69854203dba516cbf`已推送至task/28-project-memory，并建立[PR64](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/64)，base为集成分支，待审、未合并；不再把这次追加写成旧PR29未合并。
 
 失败2471为package调用错误，修复准备后2472已取消，二者没有模型运行，旧失败快照保留。用户允许停止不必要任务，已仅取消本人待排队的2430_19/20/21（B4T16联合三seed），保留已有原件与取消回执，其余最佳配置的完整确认不受影响。实时状态继续查Issue59的STATUS/HANDOFF，不能据本快照重复提交或把pilot称完整任务评测；本节为Issue28文档同步，没有新训练、PT/PPA或TLM。
 
@@ -521,7 +531,7 @@ Issue7（实际TT/SS DC/VCS/PT）、Issue22（短流硬件/质量后续）、Iss
 
 收尾补充PR58已审核并合入`88764ec8f6f00ed05f4ab337902bd23ad08cc4a8`：采用B4/T32/K32及B2T32/B4T16/B4T64行为参考，入口`architecture_tlm/ffn_stratified_reference/`直接复用47四个锁定核心。原TLM/PPA默认和Attention-only原FFN对照不变；25项原核心测试、4profile输出/RNG等价通过，Python3.8临时Path兼容shim限制见Issue55证据。含58后本批共23项，21实际合并、49/52仍draft。
 
-2026-10-19新增Issue59/PR62代表任务准确率，见第5.8节及`tmp/qwen-task-accuracy-issue59-20261019/work/jieruiz/59/HANDOFF.md`。PR62依赖PR52、未合并；075574源的2475/2476已READY通过，正式39项于09:13:52Z提交2477/2478/2479/2480、自动汇总2481，正式分数待完成。旧2474门禁诊断保留；该条是新任务时点快照，不改写下方早期状态或原实验原件。
+2026-10-19新增Issue59/PR62代表任务准确率，见第5.8节及`tmp/qwen-task-accuracy-issue59-20261019/work/jieruiz/59/HANDOFF.md`。PR62依赖PR52、未合并；075574源的2475/2476已READY通过，正式39项于09:13:52Z提交2477/2478/2479/2480、自动汇总2481；09:19Z为三项原BF16完成、36替换项运行/排队。记忆追加PR64已推送待审、未合并；旧2474门禁诊断保留。该条是新任务时点快照，不改写下方早期状态或原实验原件。
 
 ### 12.2 早期远端状态快照（原文保留）
 

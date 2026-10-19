@@ -1,12 +1,12 @@
-# Issue28：代表任务准确率的记忆同步（本地待发布）
+# Issue28：代表任务准确率记忆已发布PR64，追加基线本地待同步
 
-2026-10-19，已同步北京时间17:13:52正式提交回执；负责人/实际认证`jieruiz`；正式仓库`rayggxia-workspace/pbit-llm-qwen-baselines`。canonical目录`tmp/project-memory-issue28-20261018`，分支`task/28-project-memory`；本轮起点为已集成的`b2527f12924a53da7334afbe78c752c101814193`。PR29已实际合并，Issue28持续维护open；本轮补充尚未推送、未创建新PR，交由当前主任务统一发布，不能向已关闭PR29写成待审更新。
+2026-10-19，已同步09:19Z三项新原BF16基线；负责人/实际认证`jieruiz`；正式仓库`rayggxia-workspace/pbit-llm-qwen-baselines`。canonical目录`tmp/project-memory-issue28-20261018`，分支`task/28-project-memory`；原集成起点为`b2527f12924a53da7334afbe78c752c101814193`。PR29已实际合并，Issue28持续维护open；首轮追加e32f731已推送并建立PR64（base集成分支，待审未合并）。本次三项基线补充尚未推送，交由当前主任务统一发布，不写成远端已经包含。
 
 已核验canonical起始clean、GitHub身份、Issue28/PR29/PR62。两次git fetch分别连接重置/不可连接；只读GitHub API核实当前integration恰为同一个b2527f1，`git merge --ff-only`确认Already up to date，未reset或覆盖并行集成。已读最新AGENTS、README、memo及历史STATUS/HANDOFF，保留Issue55的23项审核/21项合并记录。
 
-本轮仅同步`PROJECT_MEMORY_ZH.md`第5.8节和第12.1节、本人STATUS及Issue28 HANDOFF，根阅读副本由正式memo复制并核字节。Issue59/PR62首源348c8286，PIQA1838/ARC-E2376全量、Hella1000固定子集，BF16/FFN-only/Ising64/128/512共39配置。13scorer＋2plan CPU通过；2474原BF16完整WT2 11.652735，但向量化/cached候选sumLL差0.1168触发原门禁，未绕过。新075574源2475/2476已全部READY，独立naive cached sumLL1e-5及greedy严格核对通过，9pilot完成，新BF16完整WT2仍11.652735。正式数组2477 baseline三任务、2478 ARC-E12项、2479 PIQA12项、2480 Hella1000的12项于09:13:52Z提交，后三者afterok2477；CPU汇总2481 afterany。collector-only源0d4be877，15collector本地CPU通过；075574数值源不改，无正式准确率可报。候选缓存/RNG/summary恢复和首答案token真实decode边界、短prompt不能验证长context筛选均已记录。实验属于Issue59，本次文档维护不启动模型/Slurm/PT/TLM。
+本轮仅同步memo、本人STATUS及Issue28 HANDOFF，根阅读副本由正式memo复制并核字节。Issue59/PR62首源348c8286，PIQA1838/ARC-E2376全量、Hella1000固定子集，BF16/FFN-only/Ising64/128/512共39配置。13scorer＋2plan CPU通过；2474原BF16完整WT2 11.652735，但向量化/cached候选sumLL差0.1168触发原门禁，未绕过。新075574源2475/2476 READY，独立naive cached与scorer逐候选sumLL最大差0.0且greedy通过，向量化最大mean/token差0.05839仅作BF16形状诊断，12pilot题判对错一致；9pilot配置完成。正式2477～2480及汇总2481不变；09:19Z原BF16三项已完成：PIQA acc/acc_norm70.511425/69.967356%、ARC-E64.393939/58.333333%、Hella1000 41.9/52.4%；新matched cached基线不能与旧native-vectorized互换。36替换项仍运行/排队，无正式替换准确率，原件已hash索引到任务分支qwen/results/task_accuracy_20261019。collector-only源0d4be877，15collector本地CPU通过；075574数值源不改。短prompt不能验证长context筛选的边界保留；实验属于Issue59，本次文档维护不启动模型/Slurm/PT/TLM。
 
-验证：UTF-8/LF、`git diff --check`、仅三项正式文件范围、根副本/Git blob字节一致（提交后复核）。下一步：主任务核实2477～2481最新状态，再统一发布独立后续PR和Issue同步；Projects此前缺read:project待同步，本轮没有重查或声称看板已更新。
+验证：UTF-8/LF、`git diff --check`、仅三项正式文件范围、根副本/Git blob字节一致（提交后复核），PR64已在线核实open/未合并且head为e32f731。下一步：主任务核实2478～2481最新状态，将本补充与主59成果统一发布并同步Issue；Projects此前缺read:project待同步，本轮没有重查或声称看板已更新。
 
 ## 以下为继承的历史任务状态，保留时间与发布语境
 

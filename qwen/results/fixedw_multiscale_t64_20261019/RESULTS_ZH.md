@@ -58,3 +58,6 @@ SUMMARY.json逐项保留配置、种子、计分目标、PPL/NLL、耗时及原�
 这是理想IID联合分布与FP32线性恢复的数值评估，不是有限位宽RTL、物理随机源回放或新PPA/PT/TLM结果。GPU前向秒数不能作为ASIC周期。
 
 T表示每次x/z采样阶段的流长度，不等于整层或整token总周期。旧W8量化步长未改、未保证为二次幂；输入PoT不代表所有尺度恢复都只需移位。若再限制权重步长为PoT，需独立验证PPL。
+
+
+后续同协议结果：[多档＋分层完整对照](../multiscale_stratified_20261019/COMPARISON_ZH.md)，包含T16/32/64/128与粗K4/16；本批原件、SUMMARY及ARTIFACT_INDEX未改写。

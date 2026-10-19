@@ -1,3 +1,9 @@
+# Issue46：多档＋分层69项已核验，准备发布
+
+2026-10-19，jieruiz；task/46-fixedw-multiscale/PR47，base c1555ae，工作目录tmp/qwen-fixedw-multiscale-20261019。执行db27fa3，Slurm2308/2309完成，69计分/72原件/37源blob核验，BF1611.652735。4档T32细分层11.736131、2档T3211.769199；正式目录qwen/results/multiscale_stratified_20261019，回执work/jieruiz/46/STRATIFIED_*，旧76项保留。结果本地完成，待提交推送、PR/备忘录同步；PR47未合并，Projects缺read:project，无新PPA。下一步发布核验并交接。
+
+以下历史：
+
 # Issue46：多档缩放＋分层，完整WT2扫描运行中
 
 2026-10-19，jieruiz；task/46-fixedw-multiscale / PR47，base c1555ae；目录tmp/qwen-fixedw-multiscale-20261019。冻结执行db27fa3已实际发布，Slurm2308通过、2309运行67完整配置（最多4GPU）；原BF16再次11.652735。13新核/12旧核/8range/shared通过；后处理K分组fixture通过。新PPL尚未收齐，不宣称全量完成。交接work/jieruiz/46/STRATIFIED_SUBMISSION.json；文献qwen/results/multiscale_stratified_20261019/LITERATURE_ZH.md。已追加长期备忘录§5.6，afbe90b已发布且根副本一致。下一步收回69计分/72原件逐SHA、同身份导入旧IID对照、绘图/总结、PR和备忘录同步。PR47/29未合并，Projects缺read:project。

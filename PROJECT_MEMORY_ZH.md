@@ -220,6 +220,16 @@ T64补测执行源a7bae630c62f08165a01192fe4226d9beac34e7c，Slurm2298/2299全�
 
 正式结果qwen/results/fixedw_multiscale_20261019/{RESULTS_ZH.md,SUMMARY.json,ARTIFACT_INDEX.json}，实现experiments/qwen_fixedw_multiscale_20261019/，交接work/jieruiz/46/。原件服务器/home/Hongjie_Zeng/projects/pbit-qwen-fixedw-multiscale-20261019-issue46/outputs/e6f29b113405df53f2ca32b084d9de0dc9859343/；Git只发布代码/汇总/索引，不发布权重、文本或校准。PR47待审未合并，Issue46保持open；Projects新查询仍缺read:project，看板待同步。后续优先四档RTL/归约/尺度恢复PPA；T64全量已完成，不重复已验证76项。
 
+## 5.6 多档缩放＋粗细分层：Issue46续测（运行中）
+
+2026-10-19用户要求同协议比较分层与缩放、最佳档数，以及缩放之后是否只需更粗的分层；核对真正报告语言PPL的SC工作。仍接续Issue46/PR47、task/46-fixedw-multiscale，不接管成员Attention Issue48。新正式实现experiments/qwen_multiscale_stratified_20261019，旧76项不覆盖。
+
+冻结执行db27fa3d7ed8eced13513f0cad10061a3cc59a71已实际发布；Slurm2308已通过模型/原文/token核验、13新/12旧multiscale/8旧range/shared测试，原BF16完整再次11.652735。2309为67配置（最多4GPU）：同T64的B1/2/3/4/6/8档与IID/细K64，B2/4的粗K4/16与T16/32细分层，dynamic/B4的T128细分层，4个mean。旧同源dynamic/B4/B8的IID64仅经身份/算法等价复核后导入。配置详见新README和work/jieruiz/46/STRATIFIED_SUBMISSION.json。新结果尚在收回，不根据早期单seed断言。
+
+K层把0..255均分，区间内每层T/K次有放回均匀随机，跨层独立、组内64路/跨幅度档共享。K1严格旧IID，K=T是细随机分层而非IID；K256为完全覆盖无随机。局部恢复方差S²×u(1-u)/(TK)，缩放和分层作用可叠加；不能据此代替完整PPL。此前完整分层是Llama2，不是Qwen，两模型协议/尺度不同不能直接排名。
+
+文献边界：DS-CIM LLaMA六任务无PPL；SCOPE小型字符RNN与XNOR-LSTM有语言PPL但不是现代预训练LLM直接替换；SCMP公开代码使用Sobol/Owen、局部尺度/敏感INT旁路，本次未获取结果归档，仅作方法线索。正式文献说明将保存在qwen/results/multiscale_stratified_20261019/LITERATURE_ZH.md。无新PPA/物理源测量，PR47/29未合并；Projects缺read:project。
+
 ## 6 随机源、p-bit与相关性
 
 双流误差追加诊断见Issue30公开结果目录 `ERROR_DIAGNOSIS_ZH.md`。已有47项的T4096精确双流x概率层均值5.3492%、z0.8255%；T256/4096最大z裁剪约0.000964%/0.001767%，不支持大面积饱和是当前主因。在同一固定输入/尺度下，独立权重流增加非负条件方差；经SwiGLU和多层传播的主导位置仍待消融。DS-CIM使用加128偏移、128粒度FP8对齐、优化PRNG/seed及SRR，LLM为T256误差pattern注入和六任务准确率，不能等同本项目IID逐连接短测，也不能认为加SRR就会比现有精确计数更准。

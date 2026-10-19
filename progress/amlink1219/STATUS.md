@@ -1,3 +1,9 @@
+# Issue48：Slurm2380正式联合PPL扫描运行中（2026-10-19）
+
+PR49待审未合并，base task/35-attention-e01；执行源11f1d6eea2776e201f2021081f8b0fbae2cc455e。CPU2362完成38/38测试；GPU2365完成，原BF16完整WT2复现11.652735047455899，同BF16 SDPA wrapper和原模型逐位相同、参数前后SHA一致。
+
+Slurm2380在本人gpu5090分配中运行34项2K初始上下文后缀PPL矩阵，每seed4096目标、24层decode、原FFN。尚未完整回收扫描结果，不是完整WT2联合结果。作业/源/输出见work/amlink1219/48/RUNNING_2380.json；中断先查询2380，不重复提交。Projects缺scope待同步。以下旧段落为历史快照，不代表当前作业。
+
 # Issue48：联合筛选＋有限时间Ising模型PPL（实现完成，待Slurm门禁）
 
 负责人amlink1219；分支task/48-attention-joint-ppl，目录workspace_projects/aj48，PR base task/35-attention-e01（复用其输入身份核验）。原FFN保持，24层decode联合路径，S32/64/128/256/512/1024三seed；34项后缀矩阵已注册，完整确认需独立cached计分。

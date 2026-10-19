@@ -1,3 +1,13 @@
+# 当前接续点：正式作业2380运行中
+
+2026-10-19；执行源11f1d6eea2776e201f2021081f8b0fbae2cc455e已推送PR49。CPU2362 COMPLETED/0:0（38测试），GPU2365 COMPLETED/0:0（原BF16完整PPL及同BF16 wrapper逐位一致）。GPU2331原失败留档，没有覆盖旧快照。
+
+在本机资料根用Python313执行 outputs/attention_joint_ppl_20261019/monitor_compact.py sweep，只读检查2380；终态立即落本机terminal_sweep_2380.txt。完成后 collect_stage.py sweep 2380 回收本人目录的小型JSON，逐项SHA核验，再 summarize_results.py --source .../raw/sweep-2380 --output 新目录。不要重交已存在submission intent/receipt；SSH断开不等于作业停止。
+
+冻结源位于本人服务器 /home/Weican_Chen/projects/attention-joint-issue48/snapshots/11f1d6eea2776e201f2021081f8b0fbae2cc455e；输出outputs/sweep-2380。34项注册见experiments/attention_joint_ising/registered_suffix_cases.json。完整WT2确认仅在曲线与耗时核验后注册少量案例，不把4096后缀称完整299077目标。Projects同步仍缺read:project/project scope。
+
+以下保留历史准备/失败记录；“待提交/待门禁”等旧句已被上方当前状态替代。
+
 # 首次门禁与诊断修订
 
 CPU2327 COMPLETED/0:0；35测试及18源/模型/数据SHA通过。GPU2331 FAILED/1:0，原BF16完整精确复现11.652735，但短32target的manual FP32 vs原BF16 SDPA差异触发原.003门禁。参数/缓冲前后SHA一致；失败小型原件已SHA回收，不将该门禁失败称模型方案失败。

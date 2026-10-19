@@ -150,6 +150,10 @@ Bernoulli行为仿真中计算sigmoid用于定义概率，并不意味着原生�
 
 学习筛选器有[SeerAttention](https://arxiv.org/abs/2410.13276)和[DeepSeek-V3.2](https://arxiv.org/abs/2512.02556)依据：前者以主Attention块级目标训练门控，所核实验主要是prefill；后者先冻结主模型蒸馏indexer再继续训练。它们不证明当前decode、GQA、p-bit有相同收益，也不证明只改Ising就能修复漏选。
 
+### 5.4.1 可训练能量p-attention（2026-10-19核查）
+
+用户提出能量函数直接采样V索引。核查PR52固定head后确认现有screen_ising已使用score差→logistic birth/death→hard-onehot CTMC，没有先算数字Softmax；TLM地址oracle另列。新可训练部分是低复杂度条件能量和实际短链，配合筛选器减少候选、K/V访问及观测预算。详见[p-attention可行性报告](p_attention_feasibility_20261019/README_ZH.md)及PLAN：优先P1类别能量，独立sigmoid/multi-on mask、binary/tree另列P2，不把确定性7B或小规模Ising训练当有限p-bit大模型/PPA验证。未执行新训练/PPL，不重复Issue50/59作业。
+
 ### 5.5 梯度和随机性必须匹配部署
 
 建议初版采用 `soft + stopgrad(hardware-soft)`：真实有限采样前向，平滑函数反向；明确这是有偏代理梯度。采样是离散的，不能因PyTorch可反传就叫精确随机梯度。小模块可用多seed有限差分/REINFORCE对照方向；完整CTMC梯度还涉及事件路径和等待时间。[Bengio等](https://arxiv.org/abs/1308.3432)

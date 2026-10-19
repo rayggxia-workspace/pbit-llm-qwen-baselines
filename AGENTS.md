@@ -95,7 +95,7 @@
 
 ## Historical Attention quality evidence
 
-- Before declaring model-level Attention PPL evidence absent, inspect the historical algorithm branches and the executable dispatch, rather than only the current TLM integration tree or a mode name. Record all-layer coverage, prefill/decode coverage, suffix versus full-corpus scoring, FFN state, and whether sampling is accurate-Softmax IID, ideal CTMC, or a finite physical/network model. A separate screening result and Ising result do not establish their joint PPL.
+- Before declaring model-level Attention PPL evidence absent, inspect the historical algorithm branches and the executable dispatch, rather than only the current TLM integration tree or a mode name. Record all-layer coverage, prefill/decode coverage, suffix versus full-corpus scoring, FFN state, and whether sampling is accurate-Softmax IID, ideal CTMC, or a finite physical/network model. A separate screening result and Ising result do not establish their joint PPL. Before claiming that an energy sampler removes an existing digital Softmax, trace the active behavioral dispatch separately from the TLM address oracle; distinguish exact-score categorical Gibbs, learned energy, and independent or coupled multi-on masks.
 
 ## amlink1219 后续FFN仿真参考（用户2026-10-19指定）
 

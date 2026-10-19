@@ -1,13 +1,13 @@
 # p-bit LLM 项目长期备忘录
 
-更新日期：2026-10-18。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，已推送至 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)，待审、未合并。
+更新日期：2026-10-19。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，已推送至 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)，待审、未合并。
 
 本文件保存项目目标、用户决策、算法分支、实验口径、架构与证据入口，用于长对话压缩、换会话或换人后的恢复。它不替代原始结果、manifest、最新 Issue/PR 和运行日志。历史讨论不等于已实现；以下明确区分已验证、情景估计和待验证。
 
 ## 0 恢复工作先读这里
 
 1. 目标是利用物理随机源/p-bit降低LLM的能量、面积，同时保持可接受的质量与速度；不能为了利用随机源就假定随机计算一定胜过定点计算。
-2. 正式仓库是 `rayggxia-workspace/pbit-llm-qwen-baselines`，当前主要集成分支为 `pbit-tlm-attention-details-20261016`。`main` 和历史个人仓库都可能落后。2026-10-18核实该集成分支为 `3553996bf014a29dee7fdb2250a3965e8fd881a4`。
+2. 正式仓库是 `rayggxia-workspace/pbit-llm-qwen-baselines`，当前主要集成分支为 `pbit-tlm-attention-details-20261016`。`main` 和历史个人仓库都可能落后。2026-10-19范围与分布补充实际合并后，集成提交为 `c1555ae6594c863011a70845d88c950a68de732b`；远端Git树与本地验证树相同。
 3. 三个模型入口是 [qwen](qwen/README.md)、[llama1](llama1/README.md)、[llama2](llama2/README.md)。Qwen3.5是另一组历史实验，不能默认已并入本分支。
 4. FFN有两大方向：重新训练的P-DNN/多阈值AND网络；保留预训练权重、改变矩阵算术的随机计算。不能把前者N=4/16路径与后者T=256/4096拍混用。
 5. 当前随机矩阵参考使用INT8权重、概率幅度码和单独符号；主接口/残差保留BF16。固定权重随机输入、双侧随机、普通OR、互斥OR是不同算法。
@@ -139,11 +139,11 @@ BF16原版为11.652735。来源：本地 `pbit_shared_rng_ffn_20261015/results/R
 
 表为预先固定seed0/1/2的均值，标准差及逐项SHA见结果。当前编码短T退化在精确分布下也存在；不能只归因于Gaussian近似，也不能据此否定其它权重共享/编码/互斥设计。没有新训练、OR、SRR或物理源回放。
 
-公开安全交付分支 `task/30-qwen-dual-iid-public`，目录 `tmp/qwen-dual-iid-public-issue30-20261018/`；原执行SHA `ad14096615054a7ef0a72e43f670863e4a205b11`仅本地和服务器保存，公开源码逐SHA对应。原始校准数据推送被自动审批拒绝后，已改为仅发布代码/汇总/校验索引：两份校准与逐case长JSON留既有服务器个人项目，未绕过拒绝或将旧执行历史推送。公开PR31已创建，未合并。完整精确随机WT2尚未补测。
+公开安全交付分支 `task/30-qwen-dual-iid-public`，目录 `tmp/qwen-dual-iid-public-issue30-20261018/`；原执行SHA `ad14096615054a7ef0a72e43f670863e4a205b11`仅本地和服务器保存，公开源码逐SHA对应。原始校准数据推送被自动审批拒绝后，已改为仅发布代码/汇总/校验索引：两份校准与逐case长JSON留既有服务器个人项目，未绕过拒绝或将旧执行历史推送。PR31于2026-10-19实际合入TLM，merge `d589f152b46d0d4db6f2036af53f967fc5942faa`，Issue30已关闭。完整精确随机WT2尚未补测。
 
 ## 5.2 独立范围修正：Issue32 / PR34
 
-2026-10-18，执行源`17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee`，单独目录`tmp/qwen-dual-range-issue32-20261018`、分支`task/32-qwen-dual-range`；[PR34](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/34)依赖PR31，待审未合并。源码和[结果报告](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/32-qwen-dual-range/qwen/results/dual_range_20261018/RESULTS_ZH.md)在独立实验目录及qwen/results/dual_range_20261018。Slurm2112/2113完成首轮39输出；2142/2143完成2048token确认10输出，49原件逐SHA收回。原BF16完整WT2重新复现11.652735047455899（299077目标），所有模型/语料/token/冻结源hash及8项kernel/旧实现回归、共享counts和方差测试通过。
+2026-10-18，执行源`17c89c3c86f8b1c0aafe42a3eaa1d354c1e539ee`，单独目录`tmp/qwen-dual-range-issue32-20261018`、分支`task/32-qwen-dual-range`；[PR34](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/34)依赖PR31；二者于2026-10-19已实际合入TLM，PR34合并提交`5b71d4e2d00dca0d493576c60849b5ef14ddd17e`；分布/入口补充PR38也已合并`c1555ae6594c863011a70845d88c950a68de732b`，Issue32已关闭。源码和[结果报告](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/32-qwen-dual-range/qwen/results/dual_range_20261018/RESULTS_ZH.md)在独立实验目录及qwen/results/dual_range_20261018。Slurm2112/2113完成首轮39输出；2142/2143完成2048token确认10输出，49原件逐SHA收回。原BF16完整WT2重新复现11.652735047455899（299077目标），所有模型/语料/token/冻结源hash及8项kernel/旧实现回归、共享counts和方差测试通过。
 
 输入和权重**原本已有独立尺度**。修正的是范围利用率：A从训练固定包络改为每token/64通道absmax；W从64×64 tile改为每输出行/64输入absmax，从相同旧W8解码值重编码。新概率为8位q/256加独立符号，S=maxabs×256/255；自然IID、A共享64、W逐连接独立、准确计数；准确Attention、无训练、无OR或种子挑选。
 
@@ -161,6 +161,20 @@ BF16原版为11.652735。来源：本地 `pbit_shared_rng_ffn_20261015/results/R
 teacher同输入局部理论T256 NMSE（24层等权）gate10.12%→0.95%、up21.11%→2.26%、down51.50%→1.28%；只改A时down约2.93%、只改W约25.15%。旧down新增W方差39.81%，A共享方差11.04%，均值偏差0.648%；收紧A同时降低两类方差，因此A范围是更有效干预，但W噪声仍重要。输入平均p从gate/up4.93%、down0.761%变为20.40%、16.588%，W约14～16%变为29～30%。这是train前16teacher-token的线性投影理论误差，不能外推为全层因果贡献。
 
 数值改善有硬件成本：在线absmax/概率尺度恢复、权重尺度元数据增加64倍；新W概率阈值8位外加符号，布局尚未定稿，不能默称原signed INT8存储不变。本轮没有新PT/TLM或节能实测。剩余短流误差更偏向SwiGLU前g/u路径，需更广语料/完整PPL再确认。原始长诊断/校准留授权服务器，teacher激活仅临时GPU张量、未持久化。
+
+## 5.3 实际编码分布与裁剪审计（2026-10-19）
+
+用户认为可牺牲罕见大值以改善多数小值精度，并明确授权将缩放合入项目。范围PR31/34和补充[PR38](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/38)均已实际合并；当前项目首页与qwen/README提供入口。合入版本为分组absmax，不主动百分位裁剪；没有把新数值方案直接作为TLM默认或宣称新PPA。
+
+新审计源`622e0efd9d64ea73e27a9a213edb3a238b6ef688`，Slurm2166，前8192train-token、4×2048窗口、24层原BF16 teacher；9模型/语料与冻结文件/token hash通过，原BF16完整PPL11.652735047455899复现，4项分布单测通过。仅统计，不跑随机/裁剪模型PPL，不保存原始激活。原2165在shell启动处失败、Python未执行；重交同不可变快照已记录。原49项结果不变。
+
+旧SwiGLU输出z按元素数加权：q=0约29.537%，1～3约54.156%，4～15约15.438%，16～63约0.837%，64～127约0.028%，128～255约0.002872%。共99.131%落在0～15；高码实际27462个，不能说只有一个极端值。旧平均q2.04156、中位1、90分位5、99分位14、99.9分位40；dynamic64平均q43.57899、零码2.605%。这是8192token计数加权统计，不与此前16token层均值1.949/30.93%混作同一批样本。新q99=255是每64组最大值映射到满幅的结果，不代表大量数值裁剪。
+
+旧Sz乘0.5时只截约0.00283%值，但它们承载约22.384%原平方能量；实际截断SSE/原能量约2.400%，含8位舍入的总编码NMSE约2.594%，旧未缩紧的编码NMSE约0.562%。被截值能量不等于实际损失，平方能量也不等于语义/PPL贡献。标量重构误差不能直接当矩阵输出误差或PPL。
+
+裁剪仍值得独立测试：目标是裁剪偏差＋有限T采样方差，然后用独立PPL验收。可考虑温和百分位或少数极值确定性旁路；不能仅因占比小就删除。阈值由train校准，测试文本不用于选最佳值。本次没有验证裁剪能改善整网。
+
+[报告与入口](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/pbit-tlm-attention-details-20261016/qwen/results/dual_range_20261018/DISTRIBUTION_ZH.md)，新小型总表/索引为DISTRIBUTION_SUMMARY/ARTIFACT_INDEX。旧work32/MANIFEST以45063d8为版本边界，新DISTRIBUTION_MANIFEST单列11文件。Git传输网络失败后经同一jieruiz账号Git Data API上传，4个commit/tree SHA逐个完全相同；没有改执行历史。2026-10-19再查Projects仍缺read:project，Issue/PR已同步，看板待同步。
 
 ## 6 随机源、p-bit与相关性
 
@@ -340,8 +354,8 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 23 / 24 | open / 未合并 | 论文推荐清单 |
 | 26 / 27 | open / 未合并 | 17篇原文总结；当前报告SHA为41d5118da9d0b259e1ee54453362251ed020e5f2e06baa6a7179bf07844c7970 |
 | 28 / 29 | open / 已推送待审、未合并 | 本备忘录、恢复入口和状态索引 |
-| 30 / 31 | open / 已推送待审、未合并 | Qwen双随机精确短流核查，47/47完成；完整精确随机WT2未做 |
-| 32 / 34 | open / 已推送待审、未合并 | 独立范围修正49输出已完成，128/2048token前缀；完整随机WT2未做 |
+| 30 / 31 | closed / 已合并d589f152 | 精确短流参考47输出，完整精确随机WT2未做 |
+| 32 / 34、38 | closed / 已合并5b71d4e、c1555ae | 范围49输出＋真实分布/项目入口，完整随机/裁剪WT2未做 |
 | 33 / 待核验 | open，负责人amlink1219 | Attention价值核查与实验计划；与FFN Issue32分开，不接管他人状态 |
 
 Issue19此前交接记录的Slurm数组为2084，8/9等子项尚在运行或排队；这只是此前STATUS快照，不是本次查询实时队列。继续前必须查当前squeue与原manifest，不取消/重交已有作业。精确入口：`tmp/llama2-ffn-precision-issue19-20261018/work/jieruiz/19/HANDOFF.md`及该目录个人STATUS。
@@ -379,3 +393,5 @@ Issue30开始前另查本人squeue为空；这说明旧作业当时不在队列�
 - 2026-10-18，Issue30/PR31：首版备忘录交付后完成47项精确短流风险检查，补充第5.1节和结果索引；该模型测试属于独立任务，不混称Issue28进行了模型实验。
 
 - 2026-10-18，Issue32/PR34：独立A/W范围对照、逐投影理论诊断及128/2048token确认共49输出完成；自然IID低T明显改善，保留动态范围成本及前缀协议边界。
+
+- 2026-10-19，用户授权合并：PR31/34/38均已合入TLM，Issue30/32已关闭；补充8192train-token真实直方图、极值能量与裁剪口径，保留未跑裁剪PPL/未测PPA边界。

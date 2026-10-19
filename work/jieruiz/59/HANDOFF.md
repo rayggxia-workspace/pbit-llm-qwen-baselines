@@ -13,3 +13,9 @@
 - 用户授权只取消本人未运行2430_19/20/21 B4T16冗余全量PPL，保留最佳B4T32。回执已提交。未训练/新PPA/修改Attention或FFN数值核。
 - 下一步：先核实Issue59/PR62/最新本目录及本人队列；只读收集已封存full JSON+对应documents原件，按SHA核验。用collector --input下载目录 --execution-commit075574... --output SUMMARY.json --report RESULTS_ZH.md（命令参数之间需空格）；不得拼接进度冒充完整，至少三seed齐再下联合结论。继续更新PR62、Issue59及备忘录。
 - 长期记忆本次补充在Issue28/PR64待审、未合并；根PROJECT_MEMORY同字节阅读副本已更新。Projects此前缺read:project，看板待同步，Issue/PR写入可用。
+
+## 2026-10-19 17:51北京时间实时更新
+
+已完成11/39、28项运行/排队，无worker traceback。首次联合结果ARC-E S64 seed0完整2376题：acc63.4680%、acc_norm58.4175%，参考64.3939%/58.3333%，仅一seed不作三seed质量结论。耗时1084.16s；FFN-only ARC-E三个seed已齐，原件按SHA与严格collector验证。
+
+按真实decode前向工作量和当前每task两个并行槽估时：ARC-E S64三seed约18:05～18:15；PIQA/Hella首个联合seed约18:20～18:40；三个任务S64各三seed约19:00～19:20；全部S64/128/512各三seed约21:00～22:00。均为2026-10-19北京时间的动态估计，不是Slurm保证。按ctx长度分组、候选最长长度决定batch步数，不能用题数百分比简单外推。未调整作业/并行数/随机源，输入与快照不变。RUNTIME/DECODE_WORK为本次原始状态快照。

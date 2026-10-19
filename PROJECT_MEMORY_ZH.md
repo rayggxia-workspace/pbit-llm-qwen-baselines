@@ -1,6 +1,6 @@
 # p-bit LLM 项目长期备忘录
 
-更新日期：2026-10-19。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19正文审核通过，实际合并回执以[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)为准；旧任务索引保留日期并由第12.1节更新。
+更新日期：2026-10-19。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19已实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`，实际合并回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)为准；旧任务索引保留日期并由第12.1节更新。
 
 本文件保存项目目标、用户决策、算法分支、实验口径、架构与证据入口，用于长对话压缩、换会话或换人后的恢复。它不替代原始结果、manifest、最新 Issue/PR 和运行日志。历史讨论不等于已实现；以下明确区分已验证、情景估计和待验证。
 
@@ -483,6 +483,7 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | #24 | `pbit-tlm-attention-details-20261016` | `2ede802c3725cceca50eb3bccfdb33653c3fcde5` |
 | #25 | `pbit-tlm-attention-details-20261016` | `c0ca336657757967e9c0512da17453e1f3181586` |
 | #27 | `pbit-tlm-attention-details-20261016` | `1ec98aee2f28bd4f21f48bf6d31c95787e430e9b` |
+| #29 | `pbit-tlm-attention-details-20261016` | `20a2565e0465846891c0a4ad0976e4395e7d3ecf` |
 | #40 | `pbit-tlm-attention-details-20261016` | `e4798f70cb57a864cbbfeb20b83674e1dadc1c4b` |
 | #41 | `pbit-tlm-attention-details-20261016` | `82229d54750d65b925f72050f0d8478bc2013c90` |
 | #42 | `pbit-tlm-attention-details-20261016` | `ed0c7a4e8e9546ec89895135efff36aa8a00d568` |
@@ -494,13 +495,15 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | #56 | `pbit-tlm-attention-details-20261016` | `fdceb386d9abe993f494ec09945ef8da35863bb1` |
 | #57 | `task/28-project-memory` | `d3861072ff88dbc4e66f2a7844eed4f8ec97245b` |
 
-PR29科学正文已审核；源head为`d3861072ff88dbc4e66f2a7844eed4f8ec97245b`，刷新至集成基线`fdceb386d9abe993f494ec09945ef8da35863bb1`后交付。PR29实际合并回执及本批完整报告见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)。#11随#8、#45随#44的内容已进入集成；#54与#57随PR29交付，不能仅凭子分支合并声称已进入集成。#2的实际目标仍为main，其余正式科研集成位于TLM分支。
+PR29科学正文已审核并实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`；源head为`d3861072ff88dbc4e66f2a7844eed4f8ec97245b`，刷新至集成基线`fdceb386d9abe993f494ec09945ef8da35863bb1`后交付。PR29实际合并回执及本批完整报告见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)。#11随#8、#45随#44的内容已进入集成；#54与#57已随PR29进入集成；依赖合并与最终进入集成仍分别保留回执。#2的实际目标仍为main，其余正式科研集成位于TLM分支。
 
 #49（`8dd1b06aa465b3bdaaed60ae321c5362983ae169`）与#52（最后补审资料为`e3c5e957c3769b5fc6867b42a52facace647a83b`）保留draft：完整确认/质量验收未完成，不替作者标为ready，不启动重复作业。后续恢复须重新读取实时head及Slurm。
 
 Issue7（实际TT/SS DC/VCS/PT）、Issue22（短流硬件/质量后续）、Issue37（最终质量与硬件验收）、Issue28（持续记忆维护）继续开放；48/50随草稿工作继续。其他本批有限交付的Issue按实际验收回执处理。仓库合并权限可用；Projects看板的read:project仍待同步，不把看板授权范围与仓库写权限混为一谈。
 
 本轮独立审核未启动新GPU/服务器/许可EDA实验。硬件TLM的13项测试、4组数值重放和84源/结果blob保留通过；最终科学集成`e4798f70cb57a864cbbfeb20b83674e1dadc1c4b`的102项CPU测试为101通过/1个Windows符号链接权限跳过，另1协议fixture通过，43/44/45/40汇总复现。后续文献/备忘录交付须核对科学blob未变。
+
+本批有限范围Issue3/5/9/23/26/33/35/36/39/51已实际验收关闭；Issue7/22/28/37保留开放并更新剩余事项。22项审核报告和20份实际合并回执由Issue55交付，详见`work/jieruiz/55/REVIEW_ZH.md`及机器可读记录。
 
 ### 12.2 早期远端状态快照（原文保留）
 

@@ -21,3 +21,6 @@
 ## 全部结果已核验（2026-10-19T14:04:56+08:00）
 
 65项计分全部齐（41screen+22full+2BF16），无skip/pending；新方案完整WT2已完成。原件逐bytes/SHA与执行Git blob复核通过，结果qwen/results/fixedw_multiscale_20261019/。执行源e6f29b1不可覆盖；analysis后续提交未改变执行快照。PR47待审未合并，Issue46保持open直到验收/合并；Projects仍缺read:project。未跑新训练/PPA/物理源或TLM。T64仅512前缀，未完整验证。
+
+
+最终发布回执：结果提交312bc4d已实际发布，20文件Git blob与RESULTS_MANIFEST一致；PR47已ready for review、未合并，Issue46保持open。Issue评论https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46#issuecomment-6260853264。备忘录35fc829已推送PR29，根阅读副本与远端同字节。下一步审阅/验收PR47，若继续才做T64全量或RTL/PPA，不重复65项已完成实验。Projects缺read:project待同步。

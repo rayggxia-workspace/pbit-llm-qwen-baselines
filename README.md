@@ -28,6 +28,10 @@ python llama2/run.py tlm --help
 Reproducible BF16 reference measurements and inspection utilities for studying
 p-bit replacements inside the feed-forward network of Qwen2.5-0.5B Base.
 
+## Qwen随机FFN范围缩放（2026-10-19已合入）
+
+[实现说明](experiments/qwen_dual_range_20261018/README_ZH.md)、[已验证前缀PPL](qwen/results/dual_range_20261018/RESULTS_ZH.md)及[真实量化分布/裁剪诊断](qwen/results/dual_range_20261018/DISTRIBUTION_ZH.md)。该可选实验保留原BF16 Attention，没有修改模型基线或TLM默认配置；动态定标的硬件成本另行评估。
+
 ## Transaction model with DRAMSys external memory
 
 [architecture_tlm/](architecture_tlm/README.md) contains the full 24-layer

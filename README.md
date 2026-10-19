@@ -1,3 +1,5 @@
+> Workspace 协作入口：[AGENTS.md](AGENTS.md)。任务通过 Issue、独立分支和 PR 交付；个人进度见 `progress/<GitHub用户名>/STATUS.md`。
+
 # p-bit LLM: Qwen2.5-0.5B baselines
 
 Reproducible BF16 reference measurements and inspection utilities for studying

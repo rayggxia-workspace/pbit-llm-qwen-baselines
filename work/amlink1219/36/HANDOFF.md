@@ -1,3 +1,7 @@
+# 本轮补传状态（2026-10-19）
+
+权限已恢复，当前为发布准备阶段；尚未推送/创建PR。实时状态以PUBLICATION.json及本人STATUS为准。以下交接保留原执行时点；其中无push权限/未发布描述仅指原时点。原manifest应按原交付提交验证。
+
 # Issue36 交接
 
 负责人amlink1219；2026-10-19。正式目标仅为 `rayggxia-workspace/pbit-llm-qwen-baselines`；[Issue36](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/36)。

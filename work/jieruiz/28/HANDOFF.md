@@ -35,3 +35,6 @@ Issue32/PR34范围修正已完成49输出并同步备忘录5.2及任务索引。
 
 
 2026-10-19多档＋分层完成：§5.6与§12同步69新计分/72原件/37源blob，db27fa3，Slurm2308/2309结束，结果c8ea878已发布。B4细T16/32/64为11.900826/11.736131/11.693775，B2/T3211.769199；粗K16T64与fineK32T32相近。根副本一致，PR47/29未合并，无PPA。
+
+
+2026-10-19 PR47合并同步：用户已明确授权且本机jieruiz实际合并；merge bef83e54b9da0081c51f393044d2156ce11a34b9，Issue46已closed/completed。PROJECT_MEMORY第0/5.5/5.6/12/15节同步实际远端状态，PR29保持待审，不替代新PPL或硬件验证。Projects新查询仍缺read:project。本次通过task/28-project-memory和既有PR29追加文档回执；最终发布head以远端分支为准，发布后将正式文件同字节复制至a_P_BIT根并核对Git blob。合并回执work/jieruiz/28/PR47_MERGE_RECEIPT_20261019.json；原任务源码/产物均未修改。

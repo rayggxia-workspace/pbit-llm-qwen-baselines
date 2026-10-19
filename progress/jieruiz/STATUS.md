@@ -1,3 +1,9 @@
+# PR47合并回执已同步（2026-10-19）
+
+GitHub实际操作账号jieruiz；用户明确授权合并。PR47于15:44:54（北京时间）合入pbit-tlm-attention-details-20261016，merge bef83e54b9da0081c51f393044d2156ce11a34b9；head5518a0a、base c1555ae，合并树与审核树完全相同。Issue46于15:46:38按验收完成关闭。独立审核25项核测试及145结果/154原件等通过；未重跑GPU或新增PPA。PROJECT_MEMORY对应状态已更新，PR29仍待审未合并。Projects新查询仍缺read:project，正式看板待同步。本次通过task/28-project-memory及PR29追加合并回执，最终发布head以远端分支为准；不修改原执行快照。
+
+以下保留历史状态：
+
 # jieruiz 项目进度
 
 ## 当前Issue28：全项目长期备忘录

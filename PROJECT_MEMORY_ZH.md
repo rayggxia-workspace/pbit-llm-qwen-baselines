@@ -7,7 +7,7 @@
 ## 0 恢复工作先读这里
 
 1. 目标是利用物理随机源/p-bit降低LLM的能量、面积，同时保持可接受的质量与速度；不能为了利用随机源就假定随机计算一定胜过定点计算。
-2. 正式仓库是 `rayggxia-workspace/pbit-llm-qwen-baselines`，当前主要集成分支为 `pbit-tlm-attention-details-20261016`。`main` 和历史个人仓库都可能落后。2026-10-19范围与分布补充实际合并后，集成提交为 `c1555ae6594c863011a70845d88c950a68de732b`；远端Git树与本地验证树相同。
+2. 正式仓库是 `rayggxia-workspace/pbit-llm-qwen-baselines`，当前主要集成分支为 `pbit-tlm-attention-details-20261016`。`main` 和历史个人仓库都可能落后。2026-10-19 PR47按用户授权实际合并后，集成提交为 `bef83e54b9da0081c51f393044d2156ce11a34b9`；其Git树与已审核head `5518a0a23e2bfec2b428542a9e4ce94b27c78d4a` 相同。
 3. 三个模型入口是 [qwen](qwen/README.md)、[llama1](llama1/README.md)、[llama2](llama2/README.md)。Qwen3.5是另一组历史实验，不能默认已并入本分支。
 4. FFN有两大方向：重新训练的P-DNN/多阈值AND网络；保留预训练权重、改变矩阵算术的随机计算。不能把前者N=4/16路径与后者T=256/4096拍混用。
 5. 当前随机矩阵参考使用INT8权重、概率幅度码和单独符号；主接口/残差保留BF16。固定权重随机输入、双侧随机、普通OR、互斥OR是不同算法。
@@ -218,7 +218,7 @@ T64补测执行源a7bae630c62f08165a01192fe4226d9beac34e7c，Slurm2298/2299全�
 
 硬件边界：T是每个x/z采样阶段流长度，不是整层或整token周期；幅度档号、多桶计数、符号/端点、跨档对齐与存储需收费。旧W8量化步长并非强制二次幂，故输入PoT不等于全部尺度恢复只有移位。本轮无PT/PPA、物理随机源回放或新TLM能效；GPU参考耗时不能当ASIC周期。W侧随机共享是此前提出的候选，**本轮固定W没有权重随机流，因此没有测试双随机W共享PPL**。
 
-正式结果qwen/results/fixedw_multiscale_20261019/{RESULTS_ZH.md,SUMMARY.json,ARTIFACT_INDEX.json}，实现experiments/qwen_fixedw_multiscale_20261019/，交接work/jieruiz/46/。原件服务器/home/Hongjie_Zeng/projects/pbit-qwen-fixedw-multiscale-20261019-issue46/outputs/e6f29b113405df53f2ca32b084d9de0dc9859343/；Git只发布代码/汇总/索引，不发布权重、文本或校准。PR47待审未合并，Issue46保持open；Projects新查询仍缺read:project，看板待同步。后续优先四档RTL/归约/尺度恢复PPA；T64全量已完成，不重复已验证76项。
+正式结果qwen/results/fixedw_multiscale_20261019/{RESULTS_ZH.md,SUMMARY.json,ARTIFACT_INDEX.json}，实现experiments/qwen_fixedw_multiscale_20261019/，交接work/jieruiz/46/。原件服务器/home/Hongjie_Zeng/projects/pbit-qwen-fixedw-multiscale-20261019-issue46/outputs/e6f29b113405df53f2ca32b084d9de0dc9859343/；Git只发布代码/汇总/索引，不发布权重、文本或校准。PR47已于2026-10-19 15:44:54（北京时间）合入TLM，merge `bef83e54b9da0081c51f393044d2156ce11a34b9`；Issue46验收后已关闭。Projects新查询仍缺read:project，看板待同步。后续优先四档RTL/归约/尺度恢复PPA；T64全量已完成，不重复已验证76项。
 
 ## 5.6 多档缩放＋粗细分层：Issue46完整结果（2026-10-19）
 
@@ -245,7 +245,7 @@ dynamic64仅改细K64为11.768589±0.003298，K128为11.700228±0.000201。单Po
 
 细K=T可理解为幅度码低位随机舍入；使用物理随机低位加区间控制，不是自然IID精度已被解决。区间计数器可研究复用现有流计数器；档号/准确跨档归约/移位/符号端点仍收费，W步长未保证PoT。GPU数值参考不是有限宽RTL或ASIC时序；无新PPA/能量面积实测，无基础任务或Llama新评测。
 
-文献：DS-CIM LLaMA六任务未报告PPL；SCOPE小型字符RNN与XNOR-LSTM有真实语言PPL但非预训练LLM直接替换；SCMP公开代码采用Sobol/Owen、局部尺度/敏感INT旁路，归档未获取，仅方法线索。详细primary链接见LITERATURE_ZH。PR47/29仍待审未合并，Projects缺read:project待同步。原件位于既有个人项目outputs/db27fa3d7ed8eced13513f0cad10061a3cc59a71/，Git仅汇总/索引，无权重/文本/校准原件。
+文献：DS-CIM LLaMA六任务未报告PPL；SCOPE小型字符RNN与XNOR-LSTM有真实语言PPL但非预训练LLM直接替换；SCMP公开代码采用Sobol/Owen、局部尺度/敏感INT旁路，归档未获取，仅方法线索。详细primary链接见LITERATURE_ZH。PR47已按用户授权合入TLM（merge `bef83e54b9da0081c51f393044d2156ce11a34b9`），Issue46已关闭；PR29仍待审未合并。Projects新查询缺read:project待同步。原件位于既有个人项目outputs/db27fa3d7ed8eced13513f0cad10061a3cc59a71/，Git仅汇总/索引，无权重/文本/校准原件。
 
 ## 6 随机源、p-bit与相关性
 
@@ -428,7 +428,7 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 30 / 31 | closed / 已合并d589f152 | 精确短流参考47输出，完整精确随机WT2未做 |
 | 32 / 34、38 | closed / 已合并5b71d4e、c1555ae | 范围49输出＋真实分布/项目入口，完整随机/裁剪WT2未做 |
 | 39 / 40 | 实验完成，PR待审未合并 | 裁剪/固定PoT范围65替换；独立目录tmp/qwen-ffn-clipping-issue39-20261019 |
-| 46 / 47 | 实验完成，PR待审未合并 | 固定W8多档＋分层；145输出/154原件，含67新完整配置，目录tmp/qwen-fixedw-multiscale-20261019 |
+| 46 / 47 | closed / 已合并bef83e54 | 固定W8多档＋分层；145输出/154原件，含67新完整配置，目录tmp/qwen-fixedw-multiscale-20261019 |
 | 33 / 待核验 | open，负责人amlink1219 | Attention价值核查与实验计划；与FFN Issue32分开，不接管他人状态 |
 
 Issue19此前交接记录的Slurm数组为2084，8/9等子项尚在运行或排队；这只是此前STATUS快照，不是本次查询实时队列。继续前必须查当前squeue与原manifest，不取消/重交已有作业。精确入口：`tmp/llama2-ffn-precision-issue19-20261018/work/jieruiz/19/HANDOFF.md`及该目录个人STATUS。
@@ -468,3 +468,5 @@ Issue30开始前另查本人squeue为空；这说明旧作业当时不在队列�
 - 2026-10-18，Issue32/PR34：独立A/W范围对照、逐投影理论诊断及128/2048token确认共49输出完成；自然IID低T明显改善，保留动态范围成本及前缀协议边界。
 
 - 2026-10-19，用户授权合并：PR31/34/38均已合入TLM，Issue30/32已关闭；补充8192train-token真实直方图、极值能量与裁剪口径，保留未跑裁剪PPL/未测PPA边界。
+
+- 2026-10-19，PR47独立审核与用户授权合并：25项核测试、145计分/154原件、98次执行blob和60次发布blob检查通过；合并提交`bef83e54b9da0081c51f393044d2156ce11a34b9`，两个父提交及与审核head同树均核实，Issue46于15:46:38（北京时间）按验收完成关闭。[审核记录](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/47#pullrequestreview-5568295057)及[合并回执](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46#issuecomment-6262300688)已在线。GitHub集成403不等于仓库账号无权限；本机jieruiz已核实admin/push并成功合并。Projects仍缺read:project。没有新GPU推理或PPA，K>1仍为受控分层；PR29继续待审，不随PR47合并。

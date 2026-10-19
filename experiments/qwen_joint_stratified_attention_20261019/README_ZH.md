@@ -1,0 +1,42 @@
+# 三种短流分层FFN与实际Attention联合验证
+
+Issue50，负责人jieruiz；分支task/50-joint-ffn-attention，PR依赖base为task/46-fixedw-multiscale@5518a0a。复用Issue48/PR49冻结源11f1d6eea2776e201f2021081f8b0fbae2cc455e，不接管amlink1219的原Attention扫描或Slurm2380。原代码按字节保存于upstream_attention，来源/制品SHA见UPSTREAM_MANIFEST.json。
+
+## 被测路径
+
+- FFN：B2/T32/K32、B4/T32/K32、B4/T16/K16。相同历史固定W8，全24层，prefill与decode都替换；g/up输入共享64路分层门限，连续FP32 SiLU(g)×u后z独立编码，输出转BF16。未训练。
+- Attention：全部24层单token decode走max4摘要＋历史train校准sigmoid/Bernoulli筛块＋固定8块额度修补，候选精确QK，有限时间hard-onehot CTMC Ising，观测索引直接V gather/平均。
+- Ising的burn16、spacing4保留，计分主路径不先计算Softmax目标再IID。V选择就是PV采样，不额外重复抽一次。理想硬互斥CTMC不是物理器件或有限抑制延迟电路实测。
+- 固定8块最多512个有效候选，尾块可能较少。QKV、RoPE、KV cache、Wo、BF16残差保留；多token Attention prefill仍准确SDPA。
+
+## 为什么改用cached计分
+
+旧整窗2048/stride1024的FFN PPL程序每次q_len>1，会绕过decode-only Attention补丁；不能把它用于联合结果并仍称Attention已替换。
+
+本任务先用与上游相同的32个linspace起点：每段prefill2047个token，然后128个被计分查询逐token执行，共4096目标，batch8。Attention与FFN各自独立hook核对每个被计分目标都经过24层，不允许只安装而不执行。所有对照使用同一位置和token SHA。
+
+这是**固定后缀PPL，不是完整WT2**。原BF16完整299077目标/11.652735重新复现只作为环境/数据门禁；后缀损失应相对新匹配后缀BF16，不能与11.65直接相减。full接口采用同窗口目标覆盖的cached方案，每个计分query真走替换；它与整窗BF16排程不要求逐bit相同，必须另配匹配参考，并先看实际运行时间。
+
+## 冻结的首批矩阵与门禁
+
+CPU：全部38项冻结上游测试、10项联合集成测试及13项FFN核测试；未安装Torch应失败，不将skip当通过。GPU：核验模型/语料/源与原BF16完整参考，再跑8项短pilot。none和B4/T32各自原SDPA与同BF16 digital_sdpa wrapper的所有计分logits SHA必须一致；手写FP32 QK不是这个严格接入对照。
+
+通过门禁并检查耗时后，提交34项匹配后缀：
+
+| 对照 | 数量 |
+|---|---:|
+| 原FFN＋原Attention | 1 |
+| 3种FFN＋原Attention，各3seed | 9 |
+| 原FFN／3种FFN × 联合Attention S128/S512 × 3seed | 24 |
+
+S128约为初始2K长度的1/16；S512是保守的较高采样预算，约1/4，不能冒充同稀疏率。S是本批固定参数；完整cached的上下文逐query变化，不能称全程恰为L/16。仅重做必要的S128/512 Attention-only匹配对照用于联合交互分析，不重复Issue48的S32..1024全曲线。seed固定0/1/2，无挑选。
+
+若完整链表现不佳，预注册fallback为4种FFN状态（含none）×3seed的screen_iid S128：同筛选、候选准确Softmax、PV采样，用于定位有限Ising与筛选损失。不会把fallback冒称原Ising链。
+
+## 随机性与复现
+
+FFN的input/product generator与Attention selector/sampler彼此独立；复用历史种子域，S不进入Attention seed。相同batch/段顺序才能配对；改batch或协议需要单列。FFN在prefill也开启，因此KV不是由原FFN生成的“干净缓存”。
+
+先在原模型上安装上游Attention controller，再替换FFN；自有guard在替换之后检查全部参数和6个冻结FFN权重buffers的对象/存储/version，可变统计/RNG排除。异常时恢复Attention和hooks。不得通过禁用上游install校验或修改原源码绕过guard。
+
+模型/语料/源/配置/目标位置/输出SHA、逐段NLL、24层执行统计、实际候选比例/采样重复、GPU耗时与Slurm作业均记录。69等历史完整FFN结果保留原协议；联合项另放qwen/results/joint_stratified_attention_20261019。大原件、权重和运行校准制品留本人授权服务器；Git只发布代码/汇总/索引。无新PT/PPA/TLM能效结论。

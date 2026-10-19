@@ -23,3 +23,5 @@ DS-CIM Zotero NQ8CM3TZ / RC92PCQQ，表II六项BoolQ、PIQA、HellaSwag、WinoGr
 完整WT2已收齐：原始FP32 Softmax5.911825276082767，Sigmoid5.88607319951146，同317546计分token，逐窗覆盖/NLL/PPL与文本/token SHA通过。质量作业2542仍运行六项；已推结果提交6d3d5d5a64a7709aab5733f38269c1b331521cd2和Draft https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/67，未合并。下一步只读取2542及reports/float32/{softmax,sigmoid}/任务JSON、逐题JSONL和six_task_summary.json，成功收齐后归档SHA并更新本PR，不重交。
 
 全量PPL结果已实际推送 d120381e089fcf8cbd56ac9aeca250118c85497b，Draft PR67 head和远端ref均核验，57项稳定Git blob SHA通过。六项准确率仍在2542运行。stderr中的not-a-git-repository来自harness读取Git版本的可选记录；执行源码由固定run-v6 manifest与代码提交定位，不因此重交或更改运行目录。
+
+已提交CPU-only收尾作业2543，afterany:2542；它会及时保存2542终态、核对每模型六项逐题行数并写reports/final_artifact_manifest.json和finalization_status.json。这里只是提交，尚未宣称收尾执行成功。恢复先读这两个文件，再取回小型准确率汇总和SHA索引；大JSONL留服务器，不重复提交2542或收尾作业。

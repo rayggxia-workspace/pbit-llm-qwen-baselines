@@ -34,3 +34,6 @@
 ## T64完整结果已收回（2026-10-19）
 
 Slurm2298/2299全部结束，本人队列空，11项计分/14原件SHA/31执行源码blob通过；两批模型、原文、token和冻结依赖一致，BF16完整精确复现11.652735。4档T64为13.038027±0.010666，8档13.038505±0.012030，dynamic64为14.559275±0.005839，均3seed/299077目标。正式补充qwen/results/fixedw_multiscale_t64_20261019/，首批报告新增联合表但旧SUMMARY/ARTIFACT_INDEX及原始65项不改。结果本地已整理，待提交上传并同步Issue/备忘录；PR47未合并，无PPA，Projects缺read:project待同步。下一步核验发布回执或审阅PR，不重复已完成76项。
+
+
+2026-10-19最终回执：T64结果a4a15018与备忘录c59ac5d均已实际发布，17项新发布blob与旧20项原发布blob核验通过；Issue评论https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46#issuecomment-6261116248。PR47 ready待审未合并，Issue46open，Projects缺read:project待同步。T64_DELIVERY_RECEIPT记录完整回执；下一步审阅/验收或独立RTL/PPA，不重跑76项。

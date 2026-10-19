@@ -141,7 +141,19 @@ def summarize(source, destination, remote_root):
     artifacts = [dict(relative_path=str(p.relative_to(source)).replace('\\', '/'),
                        bytes=p.stat().st_size, sha256=digest(p),
                        remote_path=remote_root.rstrip('/') + '/' + str(p.relative_to(source)).replace('\\', '/'))
-                 for p in sorted(source.rglob('*')) if p.is_file()]
+                 for p in sorted(source.rglob('*'))
+                 if p.is_file() and p.name != 'COLLECTION_INDEX.json']
+    collection = source / 'COLLECTION_INDEX.json'
+    collection_record = None
+    if collection.exists():
+        collected = read(collection)
+        if collected.get('execution_commit') != commit or collected.get('remote_output') != remote_root:
+            raise ValueError('Collector receipt execution/location mismatch')
+        actual = {a['relative_path']: {'bytes': a['bytes'], 'sha256': a['sha256']} for a in artifacts}
+        if collected.get('files') != actual:
+            raise ValueError('Collected originals do not match the collector byte/SHA receipt')
+        collection_record = dict(relative_path=collection.name, bytes=collection.stat().st_size,
+                                 sha256=digest(collection), location='local collector receipt; not a server original')
     now = datetime.now(timezone.utc).isoformat()
     status = dict(expected=len(planned), completed=sum(r['status']=='completed' for r in rows),
                   skipped=sum(r['status']=='skipped' for r in rows), pending=len(pending),
@@ -165,6 +177,7 @@ def summarize(source, destination, remote_root):
     write_json(destination/'SUMMARY.json', summary)
     write_json(destination/'ARTIFACT_INDEX.json', dict(issue=46, execution_commit=commit,
        generated_utc=now, remote_root=remote_root, status=status, artifacts=artifacts,
+       local_collection_receipt=collection_record,
        access='Original run diagnostics remain in authorized personal server storage; Git contains summaries and byte/SHA indexes only. No model weights, text, activation arrays, or calibration data are copied.'))
     lines = ['# 固定INT8权重＋输入多尺度随机编码', '',
              'Issue46；执行源 `' + commit + '`。', '',

@@ -272,6 +272,28 @@ dynamic64仅改细K64为11.768589±0.003298，K128为11.700228±0.000201。单Po
 
 完整原件在同本人项目outputs/53dd0ff6.../；已对其45项执行源Git blob与服务器SHA核验。恢复按work/jieruiz/50/HANDOFF.md核实Slurm2430，22项齐后生成FULL_SUMMARY.json并追加结论，不重复提交。当前仅阶段结果完成，Issue50/PR52保持open/draft，PR47已合并；Projects缺read:project，看板待同步。无新PPA/TLM能效结论。
 
+### 5.7.1 固定B4T32、只改变Ising观测次数（同Issue50）
+
+2026-10-19用户要求只用PPL判断次数变化。新源c0fd54446d843f0b21e94bf138c692048e518c86；Slurm2440重新核验模型/语料、49项执行源Git blob和原BF16后缀10.37155678462956，采样计划2测试通过；Slurm2441完成15新项（S32/64/256/1024各3seed＋筛选后准确PV三seed）。旧B4T32 S128/S512和FFN-only不重跑；原FFN六档参考复用成员Issue48/PR49公开summary，publication8dd1b06a、execution11f1d6ee、Slurm2380，未访问其个人服务器目录。
+
+以下为固定32段×128目标=4096目标、batch8的**后缀PPL**均值（各3seed），不是完整WT2。burn16/spacing4、max4固定8块、FFN B4/T32/K32均不变；S为每query/head保留CTMC观测数，时刻16+4k，不是硬件更新拍或ESS。
+
+| S | 原FFN＋相同Attention（成员已发表） | B4T32＋相同Attention |
+|---:|---:|---:|
+| 32 | 11.996331 | 12.065755 |
+| 64 | 11.376921 | 11.514886 |
+| 128 | 11.163005 | 11.197813 |
+| 256 | 11.024839 | 11.066594 |
+| 512 | 10.980212 | 11.055307 |
+| 1024 | 10.924655 | 11.006579 |
+| 筛选后准确Softmax/PV，不采样 | 10.895520 | 10.970368 |
+
+只看本轮后缀，1024最低；256/512均值差0.011，小于各自seed标准差0.026/0.017，尚不支持明确差异或等价结论。准确PV是候选内取消采样的参考，不是PPL数学下界；不能把所有残差归Ising或把5%当发表通用标准。原FFN与本任务权重/文本/token/目标一致，原始配置/分词器部分元数据字节不同，已披露，不宣称所有输入文件逐字节相同；重叠S128/512均值完全匹配。
+
+新正式成果qwen/results/ising_sample_sweep_20261019/{RESULTS_ZH.md,SUMMARY.json,PPL_CURVE.png/svg/csv,ARTIFACT_INDEX.json,PREPARATION.json,references/}；12公开制品Git blob/摘要字节重现/25项逐段NLL核验通过，图已视觉检查。新16计分原件＋5准备文件=21文件及旧10个对照原件均用SHA索引，留本人同一项目outputs/c0fd5444.../。原源快照不修改，没有新训练、任务基准、PT/PPA/TLM。
+
+经后缀审阅，Slurm2461已提交6项B4T32 S256/S512各3seed完整cached确认（299077目标、2048/1024、batch32），复用53dd已验证实际显存门禁并校验数值内核未变；旧Slurm2430的S128和匹配BF16/FFN-only继续运行，不重复提交。**两组完整联合任务均未收齐**；恢复按work/jieruiz/50/HANDOFF.md核实2430/2461、按同full目标SHA合并对照，不把后缀或启动任务写成完整完成。PR52仍草稿未合并，Issue50保持open，Projects权限待同步。
+
 ## 6 随机源、p-bit与相关性
 
 双流误差追加诊断见Issue30公开结果目录 `ERROR_DIAGNOSIS_ZH.md`。已有47项的T4096精确双流x概率层均值5.3492%、z0.8255%；T256/4096最大z裁剪约0.000964%/0.001767%，不支持大面积饱和是当前主因。在同一固定输入/尺度下，独立权重流增加非负条件方差；经SwiGLU和多层传播的主导位置仍待消融。DS-CIM使用加128偏移、128粒度FP8对齐、优化PRNG/seed及SRR，LLM为T256误差pattern注入和六任务准确率，不能等同本项目IID逐连接短测，也不能认为加SRR就会比现有精确计数更准。
@@ -464,7 +486,7 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 32 / 34、38 | closed / 已合并5b71d4e、c1555ae | 范围49输出＋真实分布/项目入口，完整随机/裁剪WT2未做 |
 | 39 / 40 | 实验完成，PR待审未合并 | 裁剪/固定PoT范围65替换；独立目录tmp/qwen-ffn-clipping-issue39-20261019 |
 | 46 / 47 | closed / 已合并bef83e54 | 固定W8多档＋分层；145输出/154原件，含67新完整配置，目录tmp/qwen-fixedw-multiscale-20261019 |
-| 50 / 52 | 34后缀主项＋12诊断完成，完整22项Slurm2430运行；PR草稿未合并 | 三种短流FFN＋实际筛选/有限Ising/V采样；见§5.7和tmp/qwen-joint-issue50-20261019 |
+| 50 / 52 | 34后缀主项＋12诊断＋15次数扫描完成；完整2430/2461运行，PR草稿未合并 | 三种FFN联合及固定B4T32的S32..1024 PPL；见§5.7/5.7.1和tmp/qwen-joint-issue50-20261019 |
 | 51 / 53 | 文献报告PR53待审，未合并 | 新器件/随机LLM的PPL和任务指标；独立目录tmp/emerging-quality-issue51-20261019，备忘录补丁以Issue28最新主维护版本提出 |
 | 33 / 待核验 | open，负责人amlink1219 | Attention价值核查与实验计划；与FFN Issue32分开，不接管他人状态 |
 

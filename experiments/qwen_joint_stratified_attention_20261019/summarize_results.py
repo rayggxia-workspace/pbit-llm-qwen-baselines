@@ -10,7 +10,9 @@ def summarize(collected, phase):
     indexed = {row['path']: row for row in collected['files']}
     entries = []
     for row in collected['rows']:
-        if not row['path'].startswith(phase + '/'):
+        matched_control = (phase == 'fallback' and row['path'].startswith('suffix/')
+                           and row['data'].get('configuration', {}).get('mode') == 'sdpa')
+        if not row['path'].startswith(phase + '/') and not matched_control:
             continue
         d = row['data']; c = d['configuration']; audit = d['execution_audit']
         if not (d['status'] == 'completed' and audit['every_scored_target_executed_all_24_layers']

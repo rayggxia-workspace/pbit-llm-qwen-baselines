@@ -48,3 +48,5 @@ FFN的input/product generator与Attention selector/sampler彼此独立；复用�
 完整矩阵22项：1个新cached BF16、3种FFN单独各3seed、原FFN及3种FFN配S128 Ising各3seed。统一batch32、window2048/stride1024，292窗口、299077目标，每目标独立24层调用审计；首次长窗与尾窗也覆盖，12357次decode forward。S128固定，不是逐query固定L/16。前缀Attention仍为原SDPA，FFN前缀同样替换；与旧向量化或batch8后缀结果不混成同协议。未生成结果的任务仍标记运行中，不提前填值。
 
 离线统计脚本`summarize_results.py`复核目标位置/模型/批形状和三seed齐全，再报告PPL算术平均、seed总体标准差及平均NLL。联合交互按每seed `Ljoint-Lffn-Lattention+Lbaseline`，避免相加PPL。小seed标准差不代表语料不确定性；CTMC相同seed的轨迹可能随logit/事件消耗改变，不能假定全部随机数逐位配对。
+
+2026-10-19发布前复核：PR47已由并行会话合并bef83e54，PR52已改为集成分支pbit-tlm-attention-details-20261016；原始执行快照和基线5518a0a保留，不重新运行相同实验。主34项＋12诊断见qwen/results/joint_stratified_attention_20261019/RESULTS_ZH.md；完整22项Slurm2430仍运行。

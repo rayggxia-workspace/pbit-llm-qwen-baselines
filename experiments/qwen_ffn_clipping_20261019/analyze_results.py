@@ -17,7 +17,7 @@ def write(p,v):
 
 
 def summarize(collections_paths,output):
-    rows=[]; artifacts=[]; executions=[]; calibration_info=[]
+    rows=[]; artifacts=[]; executions=[]; calibration_info=[]; first_calibration=None
     for cp in collections_paths:
         evidence=json.loads(Path(cp).read_text(encoding='utf-8'))
         assert evidence['source_rechecked']
@@ -31,8 +31,13 @@ def summarize(collections_paths,output):
                 server_path=sub['output']+'/'+rel,**e))
         executions.append(dict(commit=sub['commit'],jobs=[sub['prepare_job'],sub['array_job']],
             source_rechecked=True,expected_replacements=sub['cases'],output=sub['output'],
+            model_repository=identity['model_repository'],model_revision=identity['model_revision'],
+            model_data_files={k:dict(bytes=v['bytes'],sha256=v['sha256']) for k,v in identity['files'].items()},
+            corpus_tokens=identity['tokens'],
             identity_sha256=digest(raw/'identity.json'),calibration_sha256=digest(raw/'static_calibration.json')))
         cal=json.loads((raw/'static_calibration.json').read_text(encoding='utf-8'))
+        if first_calibration is None: first_calibration=cal['layers']
+        else: assert first_calibration==cal['layers'], 'Train calibration changed across execution snapshots'
         exponents={}
         import math
         for stage in ('x','z'):
@@ -49,6 +54,7 @@ def summarize(collections_paths,output):
             d=json.loads(f.read_text(encoding='utf-8'));cfg=d['configuration']
             assert d['scored_tokens']==d['input_tokens']-1
             row=dict(configuration=cfg,execution_commit=sub['commit'],protocol=d['protocol'],
+                configuration_sha256=d.get('configuration_sha256'),
                 perplexity=d['perplexity'],nll=d['nll'],tokens=d['scored_tokens'],
                 forward_seconds=d['forward_seconds'],artifact_sha256=digest(f),
                 token_ids_sha256=d['token_ids_sha256'])
@@ -57,6 +63,9 @@ def summarize(collections_paths,output):
             else:
                 assert d['code_commit']==sub['commit'] and d['attention']=='unchanged BF16 SDPA'
                 ds=list(d['diagnostics'].values());assert len(ds)==24
+                row['worst_z_encoding_layers']=sorted([
+                    dict(layer=int(k),encoding_nmse=v['z_encoding_nmse'],clip_fraction=v['z_clip_fraction'])
+                    for k,v in d['diagnostics'].items()],key=lambda x:x['encoding_nmse'],reverse=True)[:3]
                 for stage in ('x','z'):
                     count=sum(x[stage+'_values'] for x in ds)
                     for stat in ('mean_probability','zero_fraction','clip_fraction','p_one_fraction'):
@@ -86,6 +95,7 @@ def summarize(collections_paths,output):
         rows=rows,limitations=['Replacement scores are fixed prefixes, not full WT2',
         'Mild follow-up registered after .75 mean failure; exploratory same text, not independent final score',
         'No new training/RTL/PT/TLM or physical RNG replay',
+        'Restoration/linear reduction uses FP32 reference, not a complete fixed-width bit-true ASIC datapath',
         'No calibration values or raw activations published'])
     out=Path(output);write(out/'SUMMARY.json',summary)
     write(out/'ARTIFACT_INDEX.json',dict(artifacts=artifacts,storage='Existing authorized personal server projects; access required',
@@ -107,7 +117,7 @@ def summarize(collections_paths,output):
         'control是原dynamic64/row64，最高概率255/256；dynamic100_one只改为满幅显式恒1。dynamic095/090/075/050把每组当次最大幅度分别乘0.95/0.90/0.75/0.50，超出范围恒1；dynamic_z050仅缩z。fixed999/fixed9999用8192个train-token、逐层每64通道99.9/99.99绝对值分位，推理不求最大值。potA将激活尺度向上取2的幂；potAW额外将同一W8的权重行组尺度向上取2的幂。', '',
         '主53case与补充12case来自两个不可变提交；补充在最早0.75无采样结果失败后注册，加入0.95/0.90和端点对照。它是同一文本上的探索，不能当独立最终评估。主2048确认三策略在任何test结果之前固定，没有按512成绩挑选。', '',
         'g/u先恢复FP32，再准确SiLU(g)×u，然后以z自己的范围重编码供Wd。没有全比特流非线性。静态阈值来自原BF16 teacher，传播噪声造成的漂移由test PPL覆盖；不保证所有部署文本越界率相同。', '',
-        '完整模型质量、真实PRNG相关性、物理源偏差、进一步权重裁剪和新PPA均未由本轮验证。输入和权重分布、固定尺度电路成本及参考论文见[电路分析](../../../experiments/qwen_ffn_clipping_20261019/SCALING_HARDWARE_ZH.md)。', '',
+        '完整模型质量、真实PRNG相关性、物理源偏差、进一步权重裁剪和新PPA均未由本轮验证。计数分布准确，但尺度恢复/线性归约为FP32参考，尚未模拟真实固定累加位宽、对齐丢位与溢出。输入和权重分布、固定尺度电路成本及参考论文见[电路分析](../../../experiments/qwen_ffn_clipping_20261019/SCALING_HARDWARE_ZH.md)。', '',
         '逐项执行提交、job、hash见SUMMARY/ARTIFACT_INDEX；原始校准及逐case详细diagnostics在索引指向的授权服务器，未公开上传。', '']
     (out/'RESULTS_ZH.md').write_text('\n'.join(lines),encoding='utf-8',newline='\n')
     print(json.dumps(dict(results=len(rows),groups=len(grouped),artifacts=len(artifacts),output=str(out))))

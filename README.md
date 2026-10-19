@@ -326,3 +326,8 @@ and remain subject to their own licenses and terms.
 ## FFN精度与短流基线（2026-10-18）
 
 Llama 2全部32层FFN的完整WT2对照、128拍分层三种子、256枚举和DS-CIM条件核对见[实验说明](experiments/llama2_ffn_precision/README_ZH.md)及[原文比较](experiments/llama2_ffn_precision/DS_CIM_COMPARISON_AND_BASELINES_ZH.md)。已完成16/26项；Attention保持原BF16，剩余评测仍在Slurm运行，不代表新硬件能效实测。
+
+
+## FFN裁剪与固定二次幂尺度（2026-10-19）
+
+见[Issue39前缀PPL与证据边界](qwen/results/ffn_clipping_20261019/RESULTS_ZH.md)。八项主策略及端点/温和裁剪补充共65项替换对照已完成，Attention保持原BF16；完整WT2仅重跑原BF16基线，不能把替换前缀分数称为完整PPL。固定范围的质量与电路开销分别记录，没有修改TLM默认。

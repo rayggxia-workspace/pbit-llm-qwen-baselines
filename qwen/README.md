@@ -35,3 +35,8 @@ python qwen/run.py tlm --help
 - [分布与裁剪诊断](results/dual_range_20261018/DISTRIBUTION_ZH.md)：teacher真实编码直方图和标量裁剪误差，不是裁剪模型PPL。
 
 这是一项可选实验实现，没有改变原BF16基线或TLM默认配置。历史执行源17c89c3和校验原件保持不变。
+
+
+## FFN裁剪与固定二次幂尺度（2026-10-19）
+
+见[Issue39前缀PPL与证据边界](results/ffn_clipping_20261019/RESULTS_ZH.md)。八项主策略及端点/温和裁剪补充共65项替换对照已完成，Attention保持原BF16；完整WT2仅重跑原BF16基线，不能把替换前缀分数称为完整PPL。固定范围的质量与电路开销分别记录，没有修改TLM默认。

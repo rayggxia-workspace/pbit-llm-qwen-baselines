@@ -1,3 +1,10 @@
+# Issue39结果已完成，准备交付
+
+2026-10-19T11:09:36+08:00；负责人jieruiz；分支task/39-ffn-clipping；PR40到pbit-tlm-attention-details-20261016，独立目录tmp/qwen-ffn-clipping-issue39-20261019；base c1555ae。
+两批65项替换＋6项基线共71输出齐全，收集逐SHA/执行源复核通过；新10+旧8/共享/方差验证通过，两次完整BF1611.652735复现。结果qwen/results/ffn_clipping_20261019/，方法experiments/qwen_ffn_clipping_20261019/。替换分数仅512/2048前缀；无新PT/PPA或完整随机WT2。PR待审未合并，Issue保持open；下一步上传最终汇总/manifest并同步长期备忘录；Projects权限待同步。
+
+以下保留历史记录：
+
 # Issue39实际运行状态
 
 2026-10-19；jieruiz；task/39-ffn-clipping；执行源6b57b92305cab5dbee2a53c0c65cb297ac976261，独立目录tmp/qwen-ffn-clipping-issue39-20261019，base c1555ae。源码已推送；Slurm2167已成功、2168数组运行；PPL结果未全部齐全。

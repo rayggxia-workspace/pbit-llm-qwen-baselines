@@ -1,3 +1,17 @@
+# Issue61：硬件感知训练研究与待执行计划（当前状态）
+
+日期2026-10-19；负责人amlink1219；task/61-hardware-aware-training，独立目录workspace_projects/ht61；base集成88764ec8f6f00ed05f4ab337902bd23ad08cc4a8。身份75301230、目标repo1420564659和push/admin=true已核实。Issue33已关闭、PR58已合并；下方旧“PR58待审”等文字是历史快照。
+
+用户确认较充足H100。本次核Extropic Z1T及一手训练文献、旧P-DNN/AND/variance负结果，提出当前B4/T32/K32到T16的真实短流微调、QK筛选器/有限Ising蒸馏、原生sigmoid/tanh激活及从头训练、DyT独立对照。正式报告与JSON在architecture_tlm/，来源和可执行交接见work/amlink1219/61。
+
+本地56个精确条件Binomial均值/方差案例、SiLU/tanh恒等式、非线性顺序反例、同参数宽度、相对链接与4个既有源码SHA校核通过；仅CPU标准库检查，不是PPL、训练或PPA。独立只读评审后补DyT的embedding/alpha初始化。没有新训练、H100申请、Slurm任务、checkpoint或数据下载。
+
+Issue50/PR52完整联合及Issue59代表任务属于jieruiz，只读公开结果，本任务不重交、不改变其状态。训练数据版本、H100实际调度/配额和本人存储尚需在执行Issue冻结。文献仅公开本批状态，不上传全库书目/PDF。
+
+当前文档本地完成，待任务分支PR交付；真实发布状态以work/amlink1219/61/PUBLICATION.json及最新远端为准。看板按实际GraphQL响应记录，权限不足不影响报告交付。不自动合并或关闭Issue61。
+
+以下为继承历史记录，最新协作状态需重新查询远端：
+
 # 分层FFN参考采用已上传（当前状态）
 
 已核验目标任务分支结果提交`e8eec4c8deb296db4c4ed937c5c46192a782c6f4`，[PR58](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/58)开放待审、未合并，接续Issue33。B4/T32/K32主参考及三个对照、源码SHA、13项CPU核心测试和4profile接口均已交付。此前“本地待提交”等段落保留为历史准备快照，准确回执见STRATIFIED_REFERENCE_PUBLICATION.json。

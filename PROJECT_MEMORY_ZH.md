@@ -75,6 +75,18 @@ P-DNN原理和后续变更的正式长期文件继续是 [P_DNN_FFN_DESIGN_ZH.md
 
 历史训练式多阈值AND：20层N16完整WT2 PPL为12.741809（单seed）；24层N16为13.587396±0.003214（3 seeds），N4为15.128474±0.007446。这些使用连续投影/读出，不代表4096拍随机矩阵已被压到16拍。来源：本地 `pbit_llm_master_report_20261012/PBIT_LLM_MASTER_REPORT_ZH.md` 第3.1节及其结果索引。
 
+### 3.1 面向现有硬件的训练研究增量：Issue61（2026-10-19）
+
+用户说明有较充足H100，希望针对硬件训练/微调，重点为SiLU与p-bit sigmoid/tanh。负责人amlink1219；[研究计划](architecture_tlm/HARDWARE_AWARE_TRAINING_PLAN_ZH_20261019.md)和[结构化矩阵](architecture_tlm/hardware_training_plan_20261019.json)明确为待执行，尚无新训练/PPL/PPA。
+
+`x*sigmoid(x)`本来就是SiLU；保持函数的有限Bernoulli/双极均值，与sigmoid/tanh GLU及两矩阵tanh是不同实验。Extropic Z1T确有原生tanh/稀疏结构从头训练，但扩展曲线未含激活量化，不能据其32样本延迟估算宣称有限采样质量已验收。
+
+优先三线：现有B4/T32/K32下的真实共享短流感知微调，目标T16；教师蒸馏QK筛选器，再微调有限Ising；原生激活转换与从头训练。已有sigmoid/tanh P-DNN、多阈值AND和方差正则不可重复当新尝试；20层K4/N4方差正则三seed未胜过control，见报告原件。
+
+训练保持分层/共享相关结构，不能只训练期望或独立Gaussian后宣称部署有效。T（FFN）、N（激活）、S（Ising）分别记录；W8 shadow/QAT或LoRA合并后要重新导出量化。两矩阵同参数比较宽度为原GLU的1.5倍；DyT含初始化/embedding缩放对照，后续单独消融。
+
+Issue50/PR52联合质量和Issue59代表任务仍属jieruiz，本任务只读公开成果，不重复其作业或改变其状态。执行训练前另明确子任务、数据revision/SHA、scheduler资源与本人存储；本研究未申请或验证H100分配。协作/来源/数值校核与Zotero摘要入口 `work/amlink1219/61/`。
+
 ## 4 随机矩阵运算的定义
 
 ### 4.1 编码与数制

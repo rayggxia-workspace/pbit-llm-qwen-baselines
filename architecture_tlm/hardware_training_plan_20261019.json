@@ -1,0 +1,312 @@
+{
+  "schema": "pbit-hardware-training-research-v1",
+  "issue": 61,
+  "owner": "amlink1219",
+  "status": "proposed_not_executed",
+  "date": "2026-10-19",
+  "resource_assumption": "User reports many H100s; no allocation verified or requested in this research task",
+  "base_commit": "88764ec8f6f00ed05f4ab337902bd23ad08cc4a8",
+  "model": {
+    "id": "Qwen/Qwen2.5-0.5B",
+    "variant": "Base",
+    "revision": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+    "layers": 24,
+    "d_model": 896,
+    "ffn_width": 4864,
+    "q_heads": 14,
+    "kv_heads": 2,
+    "head_dim": 64
+  },
+  "deployment_reference": {
+    "weights": "symmetric INT8, historical 64x64 tile scale; frozen-W8 and newly trained/exported-W8 are separate cases",
+    "B": 4,
+    "T_x": 32,
+    "T_z": 32,
+    "K_x": 32,
+    "K_z": 32,
+    "shared_group": 64,
+    "gate_up_share_x": true,
+    "z_independent_encoding": true,
+    "nonlinearity_reference": "FP32 SiLU(g)*u",
+    "status": "existing behavioral reference; not physical PPA"
+  },
+  "sample_symbols": {
+    "T": "FFN input samples per projection stage",
+    "K": "R8 threshold strata",
+    "N": "activation retained samples",
+    "S": "Ising retained observations per query/head; not ESS"
+  },
+  "candidate_functions": [
+    {
+      "id": "A0",
+      "z": "u*g*sigmoid(g)",
+      "role": "original baseline"
+    },
+    {
+      "id": "A1",
+      "z": "u*g*mean(Bernoulli(sigmoid(g)))",
+      "role": "finite-sample implementation; conditional expectation preserved only given g,u"
+    },
+    {
+      "id": "A2",
+      "z": "u*g*(1+mean(spin(tanh(g/2))))/2",
+      "role": "A1 bipolar identity; not an independent architecture claim"
+    },
+    {
+      "id": "A3",
+      "z": "u*mean(Bernoulli(sigmoid(alpha*g+bias)))",
+      "role": "sigmoid GLU; function changed, 3 matrices"
+    },
+    {
+      "id": "A4",
+      "z": "u*mean(spin(tanh(alpha*g+bias)))",
+      "role": "tanh GLU; function changed, 3 matrices"
+    },
+    {
+      "id": "A5",
+      "z": "u*c*g*mean(Bernoulli(sigmoid(alpha*g+bias)))",
+      "initialization": {
+        "alpha": 1,
+        "bias": 0,
+        "c": 1
+      },
+      "role": "learnable curve adaptation, 3 matrices"
+    },
+    {
+      "id": "A6",
+      "y": "W2[gamma*mean(spin(tanh(alpha*W1*x+bias)))]",
+      "role": "two-matrix native FFN; new input/hidden stream contract"
+    }
+  ],
+  "finetune": {
+    "training_tokens_ladder": [
+      4000000,
+      32000000,
+      128000000
+    ],
+    "context_first": 2048,
+    "context_confirmation": 8192,
+    "training_seeds": [
+      0,
+      1,
+      2
+    ],
+    "evaluation_rng_seeds": [
+      101,
+      102,
+      103
+    ],
+    "loss_initial": {
+      "logits_KL_teacher_to_student": 0.8,
+      "CE": 0.2,
+      "KD_temperature": 1,
+      "ablation": "CE only; extra feature losses tested separately"
+    },
+    "arms": [
+      {
+        "id": "F",
+        "priority": "A",
+        "goal": "T16 matches untrained T32 quality; T8 exploratory",
+        "T": [
+          32,
+          16,
+          8
+        ],
+        "K_equals_T": true,
+        "first_Tx_equals_Tz": true,
+        "training_methods": [
+          "none",
+          "deployment-supported calibration only",
+          "shadow-weight QAT exporting new W8"
+        ],
+        "attention": "original accurate"
+      },
+      {
+        "id": "G",
+        "priority": "A",
+        "goal": "activation hardwareization and fewer amplitude multiplies",
+        "candidates": [
+          "A0",
+          "A1",
+          "A3",
+          "A4",
+          "A5"
+        ],
+        "identity_control": "A2",
+        "N": [
+          1,
+          4,
+          16,
+          64
+        ],
+        "coverage": [
+          [
+            12
+          ],
+          [
+            0,
+            12,
+            23
+          ],
+          "all24"
+        ],
+        "projection_first": "accurate digital",
+        "projection_confirmation": "W8 B4 stratified"
+      },
+      {
+        "id": "Q",
+        "priority": "A",
+        "goal": "improve retained block quality, then reduce candidates and finite Ising samples",
+        "candidate_blocks": [
+          8,
+          6,
+          4
+        ],
+        "block_tokens": 64,
+        "S": [
+          512,
+          128,
+          64
+        ],
+        "burn": 16,
+        "gap": 4,
+        "warmup": "frozen backbone, teacher block mass; max target ablation",
+        "first_operator": "candidate-exact Softmax/PV diagnostic, not Ising",
+        "final_operator": "finite hard-onehot CTMC; selected V mean; no resampling",
+        "FFN_first": "original accurate"
+      }
+    ],
+    "controls": [
+      "unmodified BF16",
+      "untrained hardware at same budget",
+      "digital fine-tuning with same tokens/teacher",
+      "mean-function training then real-sample deployment"
+    ],
+    "gradient": "real hardware forward; soft surrogate backward, explicitly biased; module gradient checks before training"
+  },
+  "from_scratch": {
+    "families": [
+      "SwiGLU",
+      "sigmoid-GLU",
+      "two-matrix tanh FFN"
+    ],
+    "initial_attention": "standard causal GQA with RoPE",
+    "initial_norm": "RMSNorm",
+    "width_matching": "3*d*m_GLU = 2*d*m_tanh, hence m_tanh=1.5*m_GLU; align 64 and report actual parameter delta",
+    "stages": [
+      {
+        "id": "R1",
+        "total_params_range": [
+          100000000,
+          150000000
+        ],
+        "tokens": 3000000000,
+        "train_seeds": 3,
+        "arms": "3 families"
+      },
+      {
+        "id": "R2",
+        "total_params_range": [
+          350000000,
+          500000000
+        ],
+        "tokens": 10000000000,
+        "train_seeds": 3,
+        "arms": "2 best plus matching baseline"
+      },
+      {
+        "id": "R3",
+        "total_params_range": [
+          1000000000,
+          1500000000
+        ],
+        "tokens": 30000000000,
+        "train_seeds": 2,
+        "arms": "best native family and matching SwiGLU baseline"
+      }
+    ],
+    "activation_N": [
+      8,
+      16,
+      32,
+      64,
+      128
+    ],
+    "secondary_factorial": {
+      "norm": [
+        "RMSNorm",
+        "DyT"
+      ],
+      "activation": [
+        "ideal",
+        "finite sampled"
+      ]
+    },
+    "comparison": [
+      "same token budget",
+      "same parameter count",
+      "same training FLOPs",
+      "separate complete deployment cost match"
+    ],
+    "not_required": [
+      "Z1 fan-in4",
+      "GCA",
+      "same graph connectivity as Extropic"
+    ],
+    "Qwen_parameter_match_example": {
+      "d": 896,
+      "glu_width": 4864,
+      "tanh_width": 7296,
+      "FFN_matrix_parameters_each": 13074432
+    },
+    "DyT_initialization": {
+      "embedding_gain_initial": "sqrt(d), learnable; separate ablation",
+      "alpha_initial": "select by width and attention/other placement on independent validation; do not assume universal 0.5",
+      "source": "https://arxiv.org/html/2503.10622"
+    }
+  },
+  "data": {
+    "train_revision": null,
+    "train_path": null,
+    "status": "must be selected, licensed and hashed in execution task; no dataset downloaded",
+    "test_for_training": false,
+    "hyperparameters_selected_on": "independent validation",
+    "final_tests": [
+      "full WT2 2048/1024",
+      "unseen text",
+      "ARC-E",
+      "HellaSwag",
+      "PIQA where appropriate"
+    ]
+  },
+  "deployment_noise": {
+    "required": [
+      "actual R8 stratified joint distribution",
+      "64-lane sharing",
+      "gate/up shared x",
+      "z independently encoded",
+      "p1 endpoint and sign",
+      "finite activation field hold/stream contract",
+      "finite Ising CTMC path"
+    ],
+    "device_parameters": "synthetic sensitivity scan until measured; do not label calibrated"
+  },
+  "acceptance": {
+    "user_quality_threshold": null,
+    "illustrative_relative_PPL_percent": [
+      0.5,
+      1,
+      2,
+      5
+    ],
+    "objective": "lower complete energy/area/latency at an accepted quality budget; no assumed advantage",
+    "physical_PPA_status": "not measured by this task"
+  },
+  "coordination": {
+    "issue50_PR52_owner": "jieruiz",
+    "issue59_owner": "jieruiz",
+    "no_duplicate_existing_jobs": true,
+    "submitted_jobs": [],
+    "new_trained_checkpoints": []
+  }
+}

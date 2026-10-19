@@ -196,6 +196,28 @@ teacher同输入局部理论T256 NMSE（24层等权）gate10.12%→0.95%、up21.
 
 正式结果/实现见[PR40](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/40)，qwen/results/ffn_clipping_20261019/RESULTS_ZH.md和SUMMARY/ARTIFACT_INDEX，交接work/jieruiz/39/。原始校准、长JSON留授权服务器，无新PT/PPA/完整采样WT2。PR待审未合并，Issue39保持open；Projects仍缺read:project待同步。
 
+## 5.5 固定INT8权重＋输入幅度分桶：Issue46 / PR47
+
+2026-10-19用户授权：权重保留固定INT8，只对输入按幅度选择不同二次幂范围，测试自然随机T<=256。新[Issue46](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46)/[PR47](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/47)，分支task/46-fixedw-multiscale，目录tmp/qwen-fixedw-multiscale-20261019，base c1555ae。与Attention成员PR42-45分开，不修改TLM默认。
+
+全部24FFN，Attention保留原BF16 SDPA。固定相同历史64×64 symmetric INT8解码矩阵，**没有再做权重概率重编码**；不能用此前row64概率再编码的decoded矩阵冒充同一W8。gate/up共用一次x采样，FP32 SiLU(g)×u后z独立编码；输出转BF16。无训练、无OR、无Gaussian、无分层/枚举或种子挑选。
+
+dynamic64为历史每token64路absmax对照；pot1/4/8的顶档S由当前每token/64通道maxabs向上取二次幂，后续档为S/4、S/16等，每元素选择能容纳自己的最小档，不物理重排通道、不主动截断大值。四档需2bit档号，八档需3bit，另外保留幅度q8、符号和恒1端点语义。跨档仍共享同一R8；shared_counts准确模拟自然IID联合计数，不是lane独立二项。先恢复各lane的sign×Si×Ci/T再F.linear，与按档精确归约实数算术等价，尚非有限宽bittrue。**动态顶档与此前失败的静态分位范围不同。**
+
+执行源e6f29b113405df53f2ca32b084d9de0dc9859343。Slurm2234核验9个模型/语料文件及源/token hash，12项新kernel、8项旧range与共享counts测试通过；原BF16完整WT2再次精确复现11.652735047455899，299077目标。2235完成41项512前缀；2276完成预注册22项完整WT2。合计65项计分、无skip/pending，68原件逐bytes/SHA收回，30项执行Git blob复核；本人最终squeue空。服务器来源为既有个人项目，模型revision/语料均未改变。
+
+| 完整WT2，3seed均值±总体标准差 | T128 | T256 |
+|---|---:|---:|
+| dynamic64 | 12.925563±0.006728 | 12.257885±0.003676 |
+| pot4 | 12.309561±0.001471 | 11.989865±0.002580 |
+| pot8 | 12.315184±0.003122 | 11.990151±0.004012 |
+
+原BF16完整11.652735；同W8、无A编码、FP32 FFN控制11.681130。四档无采样编码控制11.680940；mean是确定性编码路径，不是非线性随机网络整体的数学期望。四档T128/256相对原BF16 PPL约增加5.64%/2.89%；八档未显示进一步收益。T64仅完成512前缀（四档13.7909、BF16同前缀12.0892），**不能宣称64拍完整WT2已验证**。没有新基础任务或Llama结果。
+
+硬件边界：T是每个x/z采样阶段流长度，不是整层或整token周期；幅度档号、多桶计数、符号/端点、跨档对齐与存储需收费。旧W8量化步长并非强制二次幂，故输入PoT不等于全部尺度恢复只有移位。本轮无PT/PPA、物理随机源回放或新TLM能效；GPU参考耗时不能当ASIC周期。W侧随机共享是此前提出的候选，**本轮固定W没有权重随机流，因此没有测试双随机W共享PPL**。
+
+正式结果qwen/results/fixedw_multiscale_20261019/{RESULTS_ZH.md,SUMMARY.json,ARTIFACT_INDEX.json}，实现experiments/qwen_fixedw_multiscale_20261019/，交接work/jieruiz/46/。原件服务器/home/Hongjie_Zeng/projects/pbit-qwen-fixedw-multiscale-20261019-issue46/outputs/e6f29b113405df53f2ca32b084d9de0dc9859343/；Git只发布代码/汇总/索引，不发布权重、文本或校准。PR47待审未合并，Issue46保持open；Projects新查询仍缺read:project，看板待同步。后续优先四档RTL/归约/尺度恢复PPA，或按需要独立评估完整T64，不重复这65项。
+
 ## 6 随机源、p-bit与相关性
 
 双流误差追加诊断见Issue30公开结果目录 `ERROR_DIAGNOSIS_ZH.md`。已有47项的T4096精确双流x概率层均值5.3492%、z0.8255%；T256/4096最大z裁剪约0.000964%/0.001767%，不支持大面积饱和是当前主因。在同一固定输入/尺度下，独立权重流增加非负条件方差；经SwiGLU和多层传播的主导位置仍待消融。DS-CIM使用加128偏移、128粒度FP8对齐、优化PRNG/seed及SRR，LLM为T256误差pattern注入和六任务准确率，不能等同本项目IID逐连接短测，也不能认为加SRR就会比现有精确计数更准。
@@ -377,6 +399,7 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 30 / 31 | closed / 已合并d589f152 | 精确短流参考47输出，完整精确随机WT2未做 |
 | 32 / 34、38 | closed / 已合并5b71d4e、c1555ae | 范围49输出＋真实分布/项目入口，完整随机/裁剪WT2未做 |
 | 39 / 40 | 实验完成，PR待审未合并 | 裁剪/固定PoT范围65替换；独立目录tmp/qwen-ffn-clipping-issue39-20261019 |
+| 46 / 47 | 实验完成，PR待审未合并 | 固定W8＋输入1/4/8档；65项含完整WT2三seed，目录tmp/qwen-fixedw-multiscale-20261019 |
 | 33 / 待核验 | open，负责人amlink1219 | Attention价值核查与实验计划；与FFN Issue32分开，不接管他人状态 |
 
 Issue19此前交接记录的Slurm数组为2084，8/9等子项尚在运行或排队；这只是此前STATUS快照，不是本次查询实时队列。继续前必须查当前squeue与原manifest，不取消/重交已有作业。精确入口：`tmp/llama2-ffn-precision-issue19-20261018/work/jieruiz/19/HANDOFF.md`及该目录个人STATUS。

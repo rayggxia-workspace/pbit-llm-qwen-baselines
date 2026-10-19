@@ -50,3 +50,9 @@ FFN的input/product generator与Attention selector/sampler彼此独立；复用�
 离线统计脚本`summarize_results.py`复核目标位置/模型/批形状和三seed齐全，再报告PPL算术平均、seed总体标准差及平均NLL。联合交互按每seed `Ljoint-Lffn-Lattention+Lbaseline`，避免相加PPL。小seed标准差不代表语料不确定性；CTMC相同seed的轨迹可能随logit/事件消耗改变，不能假定全部随机数逐位配对。
 
 2026-10-19发布前复核：PR47已由并行会话合并bef83e54，PR52已改为集成分支pbit-tlm-attention-details-20261016；原始执行快照和基线5518a0a保留，不重新运行相同实验。主34项＋12诊断见qwen/results/joint_stratified_attention_20261019/RESULTS_ZH.md；完整22项Slurm2430仍运行。
+
+## Ising观测次数扫描（同Issue50）
+
+用户要求目前只测PPL。固定B4T32/K32、筛选8块、burn16/spacing4，`run_samples.py`新增S32/64/256/1024各3seed及筛选后准确PV三seed（15项）。已有S128/S512、FFN-only、BF16均从原d61的同batch8/4096目标结果复用，不重算；原FFN六档曲线来自成员Issue48/PR49已公开原件。新的prepare先复核模型/数据/旧源、再重跑完全不改的同目标后缀BF16门禁10.37155678462956，成功才生成READY。
+
+S是每个head/query保留的CTMC观测数，观测时间为16+4k，k=1..S；不是硬件时钟拍或有效独立样本数。只改变S，候选随真实模型hidden自然改变，不能冻结教师候选。通过后缀审阅后，完整phase仅新增B4T32的S256/S512各3seed（6项），匹配batch32/2048/1024，复用正在运行的53dd/Slurm2430的S128及BF16/FFN-only，不重提。worker核验原53dd实际显存门禁和数值内核源码一致；原执行快照不修改。

@@ -24,3 +24,8 @@
 
 
 最终发布回执：结果提交312bc4d已实际发布，20文件Git blob与RESULTS_MANIFEST一致；PR47已ready for review、未合并，Issue46保持open。Issue评论https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46#issuecomment-6260853264。备忘录35fc829已推送PR29，根阅读副本与远端同字节。下一步审阅/验收PR47，若继续才做T64全量或RTL/PPA，不重复65项已完成实验。Projects缺read:project待同步。
+
+
+## T64完整WT2补测（2026-10-19）
+
+用户追问64次，接续Issue46/PR47。新执行源a7bae630c62f08165a01192fe4226d9beac34e7c，kernel/test与首批e6f29b1完全相同；12单测及41/22/9配置数检查通过。Slurm2298重新跑身份/原BF16与测试，2299为dynamic64/pot4/pot8的64次完整WT2各3seed，最多4GPU，无前缀skip门槛。旧65项和快照不覆盖。当前只已提交，未宣称新PPL结果；下一步收回11项输出与3份元数据，逐SHA核验并补充完整T64表。

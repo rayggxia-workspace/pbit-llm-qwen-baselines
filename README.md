@@ -328,6 +328,14 @@ and remain subject to their own licenses and terms.
 Llama 2全部32层FFN的完整WT2对照、128拍分层三种子、256枚举和DS-CIM条件核对见[实验说明](experiments/llama2_ffn_precision/README_ZH.md)及[原文比较](experiments/llama2_ffn_precision/DS_CIM_COMPARISON_AND_BASELINES_ZH.md)。已完成16/26项；Attention保持原BF16，剩余评测仍在Slurm运行，不代表新硬件能效实测。
 
 
+## 固定INT8权重、输入多尺度短流（2026-10-19）
+
+[完整WT2与三种子结果](qwen/results/fixedw_multiscale_20261019/RESULTS_ZH.md)：全部24FFN保留同一固定W8，输入4/8档二次幂编码，T128/256完整滑窗；原BF16 Attention不变。4档T128约12.31、T256约11.99，原BF1611.652735。已[补完T64完整WT2三种子](qwen/results/fixedw_multiscale_t64_20261019/RESULTS_ZH.md)：4档13.0380±0.0107、8档13.0385±0.0120，较BF16增加约11.89%；单档pot1仍只有512前缀。没有新PPA或修改TLM默认。
+
+
+## 多档缩放＋随机分层：完整WT2短流（2026-10-19）
+
+[联合结果与图](qwen/results/multiscale_stratified_20261019/COMPARISON_ZH.md)：固定同一W8、全24FFN、Attention原版；新增67配置＋2BF16参考均收齐。四档细分层T16/32/64为11.900826/11.736131/11.693775（各3seed），BF1611.652735；两档T32为11.769199。3～4档后无明显额外收益，缩放后粗K4/16也有效；K>1是受控随机分层，不能冒称自然IID。只给数值精度，无新PPA/整机能耗结论。
 ## FFN裁剪与固定二次幂尺度（2026-10-19）
 
 见[Issue39前缀PPL与证据边界](qwen/results/ffn_clipping_20261019/RESULTS_ZH.md)。八项主策略及端点/温和裁剪补充共65项替换对照已完成，Attention保持原BF16；完整WT2仅重跑原BF16基线，不能把替换前缀分数称为完整PPL。固定范围的质量与电路开销分别记录，没有修改TLM默认。

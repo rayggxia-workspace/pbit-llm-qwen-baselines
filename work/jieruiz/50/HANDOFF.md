@@ -28,3 +28,5 @@ python experiments/qwen_joint_stratified_attention_20261019/summarize_results.py
 FULL_SUBMISSION.json给出2430完整命令；FULL_PREPARE_SUBMISSION.json为2429，FAILED_MEMORY_PREPARE_2425.json保留失败前置；PREPARE/SUFFIX/FALLBACK_SUBMISSION.json为2381/2382/2412。SLURM_ACCOUNTING.txt为收集时快照，不代替恢复时实时查询。完整结果与旧向量化BF16、batch8后缀严格分开；完整原始BF16参考应取本批full/none_sdpa_S128_s0.json。
 
 完整状态更新后，重新生成制品SHA索引、核对代码源53dd0ff与服务器identity.joint_sources中的45个Git blob；每种FFN与Attention种子分域独立。不要用last_sampler_stats当全程事件计数；不要把同seed当完全相同CTMC轨迹。正式结果不要放个人work目录；未提交的原始收集JSON仍在本机tmp及服务器，不公开权重/数据/校准/工艺库。
+
+完整阶段最新快照：新cached BF16已完成299077目标，PPL11.652118067865489（约149.46秒）；其余完整联合对照尚在运行，见FULL_PROGRESS.json，不用原向量化11.652735直接代替本批匹配参考。Slurm历史sacct接口返回“accounting storage is disabled”，因此完成依据为status=completed计分原件、READY及实时squeue，未把空sacct响应当成功。

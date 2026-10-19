@@ -72,3 +72,5 @@ FFN使用相同历史固定INT8权重，A8幅度码、共享64路的分尺度分
 仓库文件：SUFFIX_SUMMARY.json、FALLBACK_SUMMARY.json保留每seed/每段NLL与审计；INPUT_IDENTITY.json记录模型/语料/源码版本；ARTIFACT_INDEX.json指向服务器原始文件。完整命令/环境/配置SHA在原件及work/jieruiz/50回执中。可复用的只读收集器与离线统计分别为experiments/qwen_joint_stratified_attention_20261019/collect_results.py及summarize_results.py；接续命令见work/jieruiz/50/HANDOFF.md。种子FFN和Attention分域独立；相同种子也不保证不同logit下CTMC消耗相同轨迹。
 
 本次不提供新的TLM、PT或芯片能效结论。Issue48成员的Attention独立扫描不覆盖；PR47已合并bef83e54，PR52已改为TLM集成分支且仍为草稿、未合并，Projects缺read:project看板待同步。
+
+完整阶段最新快照：新cached BF16已完成299077目标，PPL11.652118067865489（约149.46秒）；其余完整联合对照尚在运行，见FULL_PROGRESS.json，不用原向量化11.652735直接代替本批匹配参考。Slurm历史sacct接口返回“accounting storage is disabled”，因此完成依据为status=completed计分原件、READY及实时squeue，未把空sacct响应当成功。

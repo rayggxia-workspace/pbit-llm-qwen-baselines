@@ -13,3 +13,5 @@
 - 服务器：/home/Hongjie_Zeng/projects/pbit-qwen-joint-ffn-attention-20261019-issue50；outputs/d61b2861...保存后缀，outputs/53dd0ff6...保存完整。moment.pt为公开历史train校准，只记录SHA，不重上传。
 - 协作：Issue48/amlink1219的独立Attention扫描不覆盖、不访问其个人目录；已在两Issue记录分工。Projects缺read:project，看板待同步。PR47已合并；PR52未合并，Issue50保持open。
 - 下一步：核对当前远端状态后，按HANDOFF收集Slurm2430；22项齐全时用summarize_results.py --phase full生成FULL_SUMMARY，核验每目标一次/24层audit/原件与Git blob SHA，追加完整结论后再结束任务。当前不能把启动任务或后缀完成写成完整已完成。
+
+完整阶段最新快照：新cached BF16已完成299077目标，PPL11.652118067865489（约149.46秒）；其余完整联合对照尚在运行，见FULL_PROGRESS.json，不用原向量化11.652735直接代替本批匹配参考。Slurm历史sacct接口返回“accounting storage is disabled”，因此完成依据为status=completed计分原件、READY及实时squeue，未把空sacct响应当成功。

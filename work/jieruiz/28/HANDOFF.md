@@ -1,5 +1,18 @@
 # Issue 28 交接
 
+## 2026-10-19：Issue59/PR62记忆PR64待审，三项基线追加本地待发布
+
+- 实际认证`jieruiz`，目标`rayggxia-workspace/pbit-llm-qwen-baselines`；canonical为本目录对应checkout `tmp/project-memory-issue28-20261018`、分支`task/28-project-memory`。开始clean，HEAD为`b2527f12924a53da7334afbe78c752c101814193`。已只读核实Issue28open、PR29merged、PR62open/draft且base `task/50-joint-ffn-attention`、head348c8286。
+- 两次git fetch因连接reset/不可连接失败；GitHub API独立核实当前集成仍为同一b2527f1，与本地HEAD及workspace ref相等；`git merge --ff-only`返回Already up to date。未reset、未改其他成员文件或主Issue59 checkout。
+- 保留最新Issue55集成和历史规则。本次只改正式memo、本人STATUS、本HANDOFF；根`a_P_BIT/PROJECT_MEMORY_ZH.md`仅从正式memo复制同字节。PR29已经合并；e32f731已推送并建立PR64（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/64，base集成分支，open、未合并，本次API已核实）。本次三项基线追加尚未推送，主任务统一处理；不要把本地补充写成远端已经包含。
+- 同步的Issue59范围：PIQA1838/ARC-E2376全量；HellaSwag固定seed20261019的1000题子集；官方Harness0.4.8 acc/候选字符长度acc_norm；新BF16、B4T32-only三seed、joint Ising64/128/512各三seed，共39项。新cached首答案token与全24层审计、候选KV/RNG/summary恢复、短prompt保留allK的限制均记录。执行源`348c8286bc8bc8e6ee00ec9876b3224b751f4800`。
+- 记录时点状态：13scorer＋2plan CPU通过，2473准备完成；2474 BF16完整WT2 11.652735，但向量化/cached某两token候选sumLL差0.1168触发原0.05/token门禁，未绕过。新源`075574ec94307202f3187845d6d7417f1e98ba48`增加独立naive cached（每choice重算prefix、无clone/首query共享），2475/2476全部READY：逐choice sumLL与scorer最大差0.0且greedy严格通过，新BF16完整WT2仍11.652735、9pilot完成。向量化mean/token最大差0.05839、12pilot题correctness flags一致，只作BF16不同形状诊断，不作正式替换准确率结论。
+- 正式39项已于2026-10-19T09:13:52Z提交：baseline2477（indices0/13/26）；ARC-E2478（14～25）、PIQA2479（1～12）、Hella1000 2480（27～38）各12项、各最多2GPU、afterok2477；CPU collector2481 afterany全部worker。回执`a_P_BIT/tmp/task59_workers_submission.json`；collector-only源`0d4be877714ace3f1b360c4d74b62e563850e9bc`，15collector本地modern Python测试通过，不修改075574数值源。09:19Z为3/39done：新matched cached原BF16的PIQA acc/acc_norm70.511425/69.967356%、ARC-E64.393939/58.333333%、Hella1000 41.9/52.4%；36替换项运行/排队，ARC-E/PIQA FFN-only已start、Hella等待资源。不能与旧native-vectorized基线互换；正式原件已hash索引到Issue59任务分支qwen/results/task_accuracy_20261019。恢复看Issue59 HANDOFF，不能重复提交。
+- 2471package调用失败、2472取消均无模型运行，失败快照保留。仅取消本人pending 2430_19/20/21（B4T16）；保留最优完整评测及原件。任务实际运行由Issue59负责人继续，本次文档任务不提交/取消任何Slurm任务。
+- 验证：`git diff --check`、UTF-8/LF、严格三文件差异和根副本字节/Git blob核验；本次文档维护无新PPL/训练/RTL/PT/PPA/TLM。下一步由主任务先查2477～2481最新状态，再新PR发布并同步Issue28/59及根副本；看板缺read:project历史待同步，不宣称已更新。
+
+## 以下为历史交接，保留原日期和当时状态
+
 日期：2026-10-18；负责人：@jieruiz。正式仓库rayggxia-workspace/pbit-llm-qwen-baselines。
 
 - 独立分支：task/28-project-memory；base pbit-tlm-attention-details-20261016 @3553996bf014a29dee7fdb2250a3965e8fd881a4。
@@ -42,3 +55,5 @@ Issue32/PR34范围修正已完成49输出并同步备忘录5.2及任务索引。
 2026-10-19追加§5.7/Issue50：34后缀主项＋12诊断/64原件完成，B4T32联合Ising128/512 PPL11.197813/11.055307，对照10.371557；完整22项Slurm2430仍在运行（53dd0ff），不称全量完成。PR52草稿、依赖PR47；根阅读副本同字节，Projects待同步。
 
 2026-10-19§5.7.1：Ising次数15新项已完成，B4T32 S32..1024后缀12.065755/11.514886/11.197813/11.066594/11.055307/11.006579，准确PV10.970368；sourcec0fd，21新原件/49源blob，Slurm2440/2441完成。完整S128的2430与新S256/512的2461仍运行，不称完整完成。保留刚合入的Issue51质量预算补充；根副本同字节，PR52草稿/Issue50open，Projects待同步。
+
+2026-10-19 17:51：Issue59/PR62首个联合ARC-E S64单seed已完成，11/39；memo5.8.1追加经验证原件入口与动态ETA，其他28项继续运行/排队。root副本与canonical保持同字节；该状态补充待同PR64推送，未宣称三seed完成。

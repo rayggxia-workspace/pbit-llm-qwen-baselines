@@ -1,3 +1,15 @@
+# Issue28：代表任务准确率记忆已发布PR64，追加基线本地待同步
+
+2026-10-19，已同步09:19Z三项新原BF16基线；负责人/实际认证`jieruiz`；正式仓库`rayggxia-workspace/pbit-llm-qwen-baselines`。canonical目录`tmp/project-memory-issue28-20261018`，分支`task/28-project-memory`；原集成起点为`b2527f12924a53da7334afbe78c752c101814193`。PR29已实际合并，Issue28持续维护open；首轮追加e32f731已推送并建立PR64（base集成分支，待审未合并）。本次三项基线补充尚未推送，交由当前主任务统一发布，不写成远端已经包含。
+
+已核验canonical起始clean、GitHub身份、Issue28/PR29/PR62。两次git fetch分别连接重置/不可连接；只读GitHub API核实当前integration恰为同一个b2527f1，`git merge --ff-only`确认Already up to date，未reset或覆盖并行集成。已读最新AGENTS、README、memo及历史STATUS/HANDOFF，保留Issue55的23项审核/21项合并记录。
+
+本轮仅同步memo、本人STATUS及Issue28 HANDOFF，根阅读副本由正式memo复制并核字节。Issue59/PR62首源348c8286，PIQA1838/ARC-E2376全量、Hella1000固定子集，BF16/FFN-only/Ising64/128/512共39配置。13scorer＋2plan CPU通过；2474原BF16完整WT2 11.652735，但向量化/cached候选sumLL差0.1168触发原门禁，未绕过。新075574源2475/2476 READY，独立naive cached与scorer逐候选sumLL最大差0.0且greedy通过，向量化最大mean/token差0.05839仅作BF16形状诊断，12pilot题判对错一致；9pilot配置完成。正式2477～2480及汇总2481不变；09:19Z原BF16三项已完成：PIQA acc/acc_norm70.511425/69.967356%、ARC-E64.393939/58.333333%、Hella1000 41.9/52.4%；新matched cached基线不能与旧native-vectorized互换。36替换项仍运行/排队，无正式替换准确率，原件已hash索引到任务分支qwen/results/task_accuracy_20261019。collector-only源0d4be877，15collector本地CPU通过；075574数值源不改。短prompt不能验证长context筛选的边界保留；实验属于Issue59，本次文档维护不启动模型/Slurm/PT/TLM。
+
+验证：UTF-8/LF、`git diff --check`、仅三项正式文件范围、根副本/Git blob字节一致（提交后复核），PR64已在线核实open/未合并且head为e32f731。下一步：主任务核实2478～2481最新状态，将本补充与主59成果统一发布并同步Issue；Projects此前缺read:project待同步，本轮没有重查或声称看板已更新。
+
+## 以下为继承的历史任务状态，保留时间与发布语境
+
 本任务收尾补审PR58已实际合并`88764ec8f6f00ed05f4ab337902bd23ad08cc4a8`；总计23项、21合并、49/52留draft。首批22项/20合并的冻结回执保留在下文，新参考单独验证，不作为新完整PPL/PPA。报告通过PR60交付。
 
 # jieruiz 当前进度：Issue55 PR审核已交付
@@ -431,3 +443,5 @@ GitHub实际操作账号jieruiz；用户明确授权合并。PR47于15:44:54（�
 2026-10-19追加§5.7/Issue50：34后缀主项＋12诊断/64原件完成，B4T32联合Ising128/512 PPL11.197813/11.055307，对照10.371557；完整22项Slurm2430仍在运行（53dd0ff），不称全量完成。PR52草稿、依赖PR47；根阅读副本同字节，Projects待同步。
 
 2026-10-19§5.7.1：Ising次数15新项已完成，B4T32 S32..1024后缀12.065755/11.514886/11.197813/11.066594/11.055307/11.006579，准确PV10.970368；sourcec0fd，21新原件/49源blob，Slurm2440/2441完成。完整S128的2430与新S256/512的2461仍运行，不称完整完成。保留刚合入的Issue51质量预算补充；根副本同字节，PR52草稿/Issue50open，Projects待同步。
+
+2026-10-19 17:51：Issue59/PR62首个联合ARC-E S64单seed已完成，11/39；memo5.8.1追加经验证原件入口与动态ETA，其他28项继续运行/排队。root副本与canonical保持同字节；该状态补充待同PR64推送，未宣称三seed完成。

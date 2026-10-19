@@ -10,3 +10,6 @@
 
 
 本地冻结前验证：12/12新kernel测试通过，dynamic64固定W与旧参考逐位相同，跨档/跨W tile逐拍R8计数恢复等价。runner编译和41/22配置计数通过，依赖source_manifest已加入worker复核。尚未提交服务器。
+
+
+已实际提交：执行源e6f29b113405df53f2ca32b084d9de0dc9859343；Slurm prepare2234、screen2235(41配置最多4GPU)。完整新方案PPL未生成，full尚未提交。归档SHA见SUBMISSION.json；不可覆盖快照。

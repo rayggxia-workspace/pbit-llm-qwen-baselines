@@ -1,3 +1,7 @@
+# 本轮补传状态（2026-10-19）
+
+权限已恢复，当前为发布准备阶段；尚未推送/创建PR。实时状态以PUBLICATION.json及本人STATUS为准。以下交接保留原执行时点；其中无push权限/未发布描述仅指原时点。原manifest应按原交付提交验证。
+
 # Issue35 可继续执行的交接
 
 更新时间2026-10-19T00:58:24.860054+08:00；负责人amlink1219。目标rayggxia-workspace/pbit-llm-qwen-baselines，分支task/35-attention-e01，本地目录`E:/BaiduSyncdisk/p-bit/DAC_2026_Draft_Proceedings/DAC_2026_Draft_Proceedings/workspace_projects/pbit-attention-issue35`；base3553996。执行快照879050031ac1cc7757e3b7f54e19c25dc40faf72；不要修改服务器已执行快照。最终本地发布提交由Git日志/外部delivery_receipt标识，避免自引用。

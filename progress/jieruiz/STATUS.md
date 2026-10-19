@@ -1,3 +1,14 @@
+# Issue51 新器件LLM质量指标核查
+
+- 更新时间2026-10-19；实际登录/负责人jieruiz；Issue51；独立目录tmp/emerging-quality-issue51-20261019，分支task/51-emerging-quality，base TLM c1555ae。
+- 本地报告与14项原文数值复算完成：architecture_tlm/EMERGING_LLM_QUALITY_METRICS_ZH_20261019.md及EVIDENCE JSON；用户资料目录同字节副本。5%降级为自定工程预算，未宣称会议阈值；Kelle/DS-CIM/FeFET/PCM等质量指标分开。
+- 11项主表样本；缺VQT-CiM/HEIRS/DBC可核质量表的全文，已单列下载入口。不把缺数补成精确结果。
+- 验证：UTF-8/LF、2本地链接、14算术项、资料副本及SHA完成，发布时核Git blob；文献整理无新模型/PPL/TLM/RTL/PPA/Slurm，不改Issue46/48/50。
+- 当前本地完成，任务PR待创建；备忘录向Issue28主维护分支提供独立小补丁，不覆盖其他工作树。Projects缺read:project，待同步。
+- 辅助资料work/jieruiz/51；后续实际发布状态写HANDOFF/本段。
+
+以下保留旧任务状态，不作为本任务实时作业信息。
+
 # Issue32：范围缩放已合并，分布审计补充
 
 - 更新时间2026-10-19；负责人jieruiz；PR31合并d589f152，PR34合并5b71d4e，目标为pbit-tlm-attention-details-20261016。原49项输出及20文件manifest在合并提交核验一致。

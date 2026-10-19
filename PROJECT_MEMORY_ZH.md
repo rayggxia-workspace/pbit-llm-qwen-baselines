@@ -505,6 +505,8 @@ Issue7（实际TT/SS DC/VCS/PT）、Issue22（短流硬件/质量后续）、Iss
 
 本批有限范围Issue3/5/9/23/26/33/35/36/39/51已实际验收关闭；Issue7/22/28/37保留开放并更新剩余事项。22项审核报告和20份实际合并回执由Issue55交付，详见`work/jieruiz/55/REVIEW_ZH.md`及机器可读记录。
 
+收尾补充PR58已审核并合入`88764ec8f6f00ed05f4ab337902bd23ad08cc4a8`：采用B4/T32/K32及B2T32/B4T16/B4T64行为参考，入口`architecture_tlm/ffn_stratified_reference/`直接复用47四个锁定核心。原TLM/PPA默认和Attention-only原FFN对照不变；25项原核心测试、4profile输出/RNG等价通过，Python3.8临时Path兼容shim限制见Issue55证据。含58后本批共23项，21实际合并、49/52仍draft。
+
 ### 12.2 早期远端状态快照（原文保留）
 
 2026-10-18通过GitHub API核实，登录 `jieruiz`；有仓库admin/push权限。目标仍按项目审查流程用PR交付，不把权限等同于所有PR已批准。

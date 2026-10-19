@@ -1,8 +1,8 @@
 # GitHub PR批量审查与合并记录
 
-2026-10-19；正式仓库rayggxia-workspace/pbit-llm-qwen-baselines；任务与后续回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)。本轮审核22项，实际合并20项，#49和#52保留draft。此前单独完成的#47与后续发布本报告的PR不计入这22项。
+2026-10-19；正式仓库rayggxia-workspace/pbit-llm-qwen-baselines；任务与后续回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)。首批审核22项、合并20项；收尾新增#58补审并合并，总计审核23项、实际合并21项，#49和#52保留draft。此前#47与本报告PR60均不计入23项。
 
-最终科研集成为`20a2565e0465846891c0a4ad0976e4395e7d3ecf`。#11随#8、#45随#44、#54/#57随#29的内容均已进入该集成；19项非main合并提交的祖先关系已逐一核验。#2实际合入main。
+首批科研集成截止`20a2565e0465846891c0a4ad0976e4395e7d3ecf`；补充#58后的集成为`88764ec8f6f00ed05f4ab337902bd23ad08cc4a8`。#11随#8、#45随#44、#54/#57随#29的内容均已进入该集成；19项非main合并提交的祖先关系已逐一核验。#2实际合入main。
 
 | PR | 最初审核范围head → 最终放行head | 实际目标分支 | 实际merge SHA |
 |---|---|---|---|
@@ -28,6 +28,8 @@
 | [#54](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/54) | `56e417eab5ca30354a1b1f960437f1352e736faa` → `52d0b905bac9c971fa45658168d40438db860cd6` | `task/28-project-memory` | `e0abc39fb4fb83510fabb5c6ef22dcc8e3c39a6b` |
 | [#56](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/56) | `d8b4593e31b00c2f67fd6d1a77ccd2bfce593a97` → `1930d5b94ddcaec2535bda11db6623ca0244342e` | `pbit-tlm-attention-details-20261016` | `fdceb386d9abe993f494ec09945ef8da35863bb1` |
 | [#57](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/57) | `0027d2c3ba8a5407e7a308c8b1f824336801c34a` → `dbf25a4786a1aa5be3505bc984b017689af80ace` | `task/28-project-memory` | `d3861072ff88dbc4e66f2a7844eed4f8ec97245b` |
+
+补充[#58](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/58)：原head `9b43ba070a5b30a666c6a23519a09b57798438fa`，最终放行 `07e1ec3426fbcfb07c3ed7524fb3324bbef92532`，实际合入TLM `88764ec8f6f00ed05f4ab337902bd23ad08cc4a8`。新增4profile行为工厂，锁定四个47核心文件，不改已有数学实现；13+12核心测试、12manifest及四profile输出/RNG状态等价核验通过。CPU来源检查原生3.12通过；Torch接口测试使用3.8并在临时runner补齐标准Path.is_relative_to，原仓库要求3.10+。没有源码兼容改动或新GPU/PPL/PPA。
 
 上述“最初”表示本轮最初清单或新增发现时的精确head；并行作者更新与集成刷新后的实际放行head单列，未沿用旧head自动批准。JSON另保留独立内容复核head、精确base提交、回执时间与本地审计来源SHA。
 
@@ -68,4 +70,4 @@
 
 集成回归：科学提交`e4798f70`的102项CPU unittest为101通过、1项Windows符号链接权限跳过，另1个协议fixture通过；#43/#44/#45/#40汇总全部复现。硬件/TLM在`1ec98aee`通过DRAM13项测试、四组TLM数值重放及84个源码/结果blob保留检查。后续合并到`20a2565e`只新增文献与记忆文档，科学源码、配置及结果不变，见[树核验](FINAL_TREE_PROOF.json)、[CPU回归](evidence/attention_ffn_regression.json)和[硬件回归](evidence/hardware_regression.json)。
 
-逐项完整SHA、base、验证范围、限制与来源见[REVIEW.json](REVIEW.json)，实际Issue处置回执在`issues/`。本文只陈述上述22项的审查和实际处置，不包含随后发布该报告的新PR。
+逐项完整SHA、base、验证范围、限制与来源见[REVIEW.json](REVIEW.json)，实际Issue处置回执在`issues/`。本文记录首批22项和补充#58共23项的处置；不将报告PR60计入待审成果。初始科学回归的冻结提交保持不变，#58新增接口另见[evidence](evidence/hardware_pr58_review.json)。

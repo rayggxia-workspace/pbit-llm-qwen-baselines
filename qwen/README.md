@@ -15,6 +15,8 @@
 - 当前目标分支中的Qwen Attention入口为v3/v4历史实现，默认合成输入、固定样本512；不要混称Llama分支的比例PV/有限bank标准。
 - Qwen3.5等其他分支成果不因本次整理而自动合入。
 
+2026-10-18新增：[固定权重短流能量估算与RTL表征](energy/short_stream_20261018/REPORT_ZH.md)（Issue22）。比较4096/256/128/64拍；只有旧成本代理下的TLM敏感性和RTL功能验证，不代表Qwen短流PPL或新PT实测。
+
 ```sh
 python qwen/run.py info
 python qwen/run.py check
@@ -35,3 +37,13 @@ python qwen/run.py tlm --help
 - [分布与裁剪诊断](results/dual_range_20261018/DISTRIBUTION_ZH.md)：teacher真实编码直方图和标量裁剪误差，不是裁剪模型PPL。
 
 这是一项可选实验实现，没有改变原BF16基线或TLM默认配置。历史执行源17c89c3和校验原件保持不变。
+
+
+## 固定INT8权重、输入多尺度短流（2026-10-19）
+
+[完整WT2与三种子结果](results/fixedw_multiscale_20261019/RESULTS_ZH.md)：全部24FFN保留同一固定W8，输入4/8档二次幂编码，T128/256完整滑窗；原BF16 Attention不变。4档T128约12.31、T256约11.99，原BF1611.652735。已[补完T64完整WT2三种子](results/fixedw_multiscale_t64_20261019/RESULTS_ZH.md)：4档13.0380±0.0107、8档13.0385±0.0120，较BF16增加约11.89%；单档pot1仍只有512前缀。没有新PPA或修改TLM默认。
+
+
+## 多档缩放＋随机分层：完整WT2短流（2026-10-19）
+
+[联合结果与图](results/multiscale_stratified_20261019/COMPARISON_ZH.md)：固定同一W8、全24FFN、Attention原版；新增67配置＋2BF16参考均收齐。四档细分层T16/32/64为11.900826/11.736131/11.693775（各3seed），BF1611.652735；两档T32为11.769199。3～4档后无明显额外收益，缩放后粗K4/16也有效；K>1是受控随机分层，不能冒称自然IID。只给数值精度，无新PPA/整机能耗结论。

@@ -1,0 +1,476 @@
+{
+  "kind": "read-only history and architecture check, not a new experiment",
+  "pv_only_experiment": {
+    "kind": "read-only history and architecture check, not a new experiment",
+    "root": "C:\\Users\\86134\\Documents\\a_P_BIT\\llama7b_joint_pv_20261014",
+    "files": [
+      {
+        "path": "README_ZH.md",
+        "sha256": "162ecbf3fec4ac91c43e68a2b75a286565836825ae9e2b75ea79d2d573386dce",
+        "bytes": 2217
+      },
+      {
+        "path": "attention.py",
+        "sha256": "f7d54e910116e0f42aae609e3411f8c6dfa0139a1b905d15389f3cb620ecbc58",
+        "bytes": 6049
+      },
+      {
+        "path": "model.py",
+        "sha256": "ce1f008a2681fb42d35b71c2cde652d4bf1e3ed2cc78f65baa0c8e173176b8a3",
+        "bytes": 2211
+      },
+      {
+        "path": "results/RESULTS_ZH.md",
+        "sha256": "09163cdcacb1715adf72de610b85f53f516e1ad2b0ba16746bf8d1eb0595de26",
+        "bytes": 3284
+      },
+      {
+        "path": "results/summary.json",
+        "sha256": "89f9a64d1b1ed724ca389e755fdbce0b13f9ae36aaa8b6de93895c341444ddf7",
+        "bytes": 4636
+      },
+      {
+        "path": "results/formal/attention_pv_seed0.json",
+        "sha256": "939974c4f569a5cebe2bdae17c2406aca2696f71011d9f3965645525d2fece6e",
+        "bytes": 55069
+      }
+    ],
+    "model_architecture_reported": "LLaMA-1 7B, 32Q/32KV MHA",
+    "model_revision": "not present in inspected metadata; not inferred from model path",
+    "full_model_sha256": "not present in inspected metadata; protected_sha256 excludes MLP and is not full model SHA",
+    "metadata_subset": {
+      "variant": "attention_pv",
+      "variant_config": [
+        "original",
+        "iid"
+      ],
+      "seed": 0,
+      "samples": 512,
+      "attention_config": "exact Q/K/softmax; dense P@V or 512-sample IID P@V; all32 layers",
+      "context": 2048,
+      "stride": 1024,
+      "batch_size": 1,
+      "model_path": "/home/Hongjie_Zeng/pbit_llm/models/LLaMA-7B",
+      "original_parameter_count": 6738415616,
+      "source_sha256": {
+        "evaluate.py": "150eab139c5fb27e487244c1f749ebb9c0b42070530f2430c7dcacb9ff34126a",
+        "model.py": "ce1f008a2681fb42d35b71c2cde652d4bf1e3ed2cc78f65baa0c8e173176b8a3",
+        "attention.py": "f7d54e910116e0f42aae609e3411f8c6dfa0139a1b905d15389f3cb620ecbc58",
+        "fixed_ffn.py": "814041b8aafba6eaa807e84037541d62a8a979d3d68df2c0594b55ebc2927598",
+        "streaming_ffn.py": "ca04aad6e873d103105644047a6f6618beb129e5ee682f3fedd978b65508a682",
+        "calibration_ffn.json": "73b7739f9a6a8f24f990966735112c0a121172a05bd71c4ebd8b5e1f8bf50d30"
+      },
+      "protected_sha256": "fcc861754c4db385e8d5f04ea0f1f2284f54b60a87da3e90009806bc2b43afbe",
+      "slurm_job_id": "1454"
+    },
+    "attention_call_counts": [
+      [
+        327,
+        0
+      ]
+    ],
+    "first_layer_logical_fractions": {
+      "unique_v_fraction": 0.24764207041242578,
+      "kv_group_union_v_fraction": 0.24764207041242578
+    },
+    "old_summary_PV_diagnostics": {
+      "unique_v_fraction_mean": 0.06996188722268377,
+      "kv_group_union_v_fraction_mean": 0.06996188722268377
+    },
+    "critical_scope": "old path computes full QK/softmax and samples PV only; no QK screen, no physical DRAM trace",
+    "controlled_math_example": {
+      "per_head_retention": 0.25,
+      "group": 7,
+      "GQA_union_independent": 0.86651611328125,
+      "GQA_selected_vs_full_MHA": 0.12378801618303571,
+      "MHA_selected_vs_full_MHA": 0.25
+    }
+  },
+  "qk_screening_experiment": {
+    "root": "C:\\Users\\86134\\Documents\\a_P_BIT\\llama7b_qk_ising_20261014",
+    "model_architecture": "LLaMA-1 7B; 32 Q / 32 KV, MHA, group size 1",
+    "model_source": "huggyllama/llama-7b converted mirror",
+    "model_revision": "HF commit revision not found; not inferred",
+    "model_file_sha256_from_baseline_readme": {
+      "model-00001-of-00002.safetensors": "d43476fdd2fca0c44d55ee930039dd5dafb6331764dc0b5e5f89c60b551fcc12",
+      "model-00002-of-00002.safetensors": "94712c4b457815e0f8aaa4f78170aebba2b9ee3339ff2b40fceb983338fbafee"
+    },
+    "protocol": "32 uniformly selected WT2 suffixes, 2047-token exact SDPA prefill then 128 teacher-forced cached decode steps; 4096 scored tokens; not full WT2 sliding-window",
+    "selector": "64-token block mean, scaled dot query + log(block size); nominal budget 0.5; Bernoulli inclusion; first and last two blocks forced; not Qwen max4 controlled comparison",
+    "files": [
+      {
+        "path": "README_ZH.md",
+        "bytes": 1980,
+        "sha256": "fb3cc94403ec2f0d77a13e88f63e1f36c3a0fde4db2c7b181d5e815400b8d214"
+      },
+      {
+        "path": "attention.py",
+        "bytes": 9969,
+        "sha256": "d8a431fe1debdd9b4250edbedc6ef7faf7c51c9ab0d616ebb39fff0fd467c078"
+      },
+      {
+        "path": "sampling.py",
+        "bytes": 3503,
+        "sha256": "67d08dc79447c6cab0b4630846ea1321be3b821baaefc1a7cc008ee43f95e38b"
+      },
+      {
+        "path": "model.py",
+        "bytes": 2376,
+        "sha256": "0cebf80df15ce026913e0e58858806c62fe9aa48ada1caba43a3d0642e8788db"
+      },
+      {
+        "path": "evaluate.py",
+        "bytes": 9570,
+        "sha256": "d5fb7c4e5f1ae71efc9e28395862fb67ea56e8f3b32d28946d07ac94221962d6"
+      },
+      {
+        "path": "results/summary.json",
+        "bytes": 2194,
+        "sha256": "b9b495a3ed103a1ddbcc8218073cf47e825d38bea48a89f492ddb2f35e18dc1f"
+      },
+      {
+        "path": "results/formal/ffn_screen_dense_seed0.json",
+        "bytes": 70148,
+        "sha256": "4a39dd62221c7c259e91af90a0fbf56e84ce54313871f30683b3c59f120d1faa"
+      },
+      {
+        "path": "results/formal/ffn_screen_dense_seed1.json",
+        "bytes": 70177,
+        "sha256": "67ce0831f2295cbefa51f1b44b98e5706c1fec9fd1a47b0ef5fbdc80d49a260d"
+      },
+      {
+        "path": "results/formal/ffn_screen_dense_seed2.json",
+        "bytes": 70146,
+        "sha256": "d716a7f96d7ae2318d506c52d8c4a04fddc976d939257faf46c0e24b3da3aa25"
+      },
+      {
+        "path": "results/formal/ffn_screen_ising_seed0.json",
+        "bytes": 70659,
+        "sha256": "1c20d01eabfe07f1aa098e50e0c710b934d473dec9084b1837a6306776791ddb"
+      },
+      {
+        "path": "results/formal/ffn_screen_ising_seed1.json",
+        "bytes": 70682,
+        "sha256": "a340c23d1cb850cff588d41f53efde63566d190e3453eae03a5ddb4632ee47d8"
+      },
+      {
+        "path": "results/formal/ffn_screen_ising_seed2.json",
+        "bytes": 70678,
+        "sha256": "904d99aab1d4ff945796cf8b6b907a06089c47fb74827f1bddaf9592eca349bb"
+      }
+    ],
+    "summary": {
+      "variants": {
+        "original_sdpa": {
+          "ppl": [
+            4.9871425074578575
+          ],
+          "mean": 4.9871425074578575,
+          "stdev": 0.0,
+          "decode_seconds_mean": 61.19157129153609
+        },
+        "ffn_dense": {
+          "ppl": [
+            5.210451802267251,
+            5.210009486104054,
+            5.200980417721026
+          ],
+          "mean": 5.20714723536411,
+          "stdev": 0.005345197917696552,
+          "decode_seconds_mean": 1174.9293455838535,
+          "candidate_fraction_mean": 1.0,
+          "unique_v_fraction_mean": 1.0
+        },
+        "ffn_iid": {
+          "ppl": [
+            5.36783297470491,
+            5.3626462691559285,
+            5.339696658330633
+          ],
+          "mean": 5.35672530073049,
+          "stdev": 0.01497352580722484,
+          "decode_seconds_mean": 1190.2593760670472,
+          "candidate_fraction_mean": 1.0,
+          "unique_v_fraction_mean": 0.046711620060117295
+        },
+        "ffn_screen_dense": {
+          "ppl": [
+            5.597525393342525,
+            5.502052171036557,
+            5.594470984448471
+          ],
+          "mean": 5.564682849609184,
+          "stdev": 0.05426125484426068,
+          "decode_seconds_mean": 1224.618496985485,
+          "candidate_fraction_mean": 0.2616307021260064,
+          "unique_v_fraction_mean": 0.2616307021260064
+        },
+        "ffn_ising": {
+          "ppl": [
+            5.431042385894133,
+            5.350788768328107,
+            5.400123736422469
+          ],
+          "mean": 5.393984963548236,
+          "stdev": 0.04047745276582477,
+          "decode_seconds_mean": 1248.145675285409,
+          "candidate_fraction_mean": 1.0,
+          "unique_v_fraction_mean": 0.04608400555471471
+        },
+        "ffn_screen_ising": {
+          "ppl": [
+            5.870724662428489,
+            5.76019507605888,
+            5.805514448508076
+          ],
+          "mean": 5.812144728998481,
+          "stdev": 0.05556228784252254,
+          "decode_seconds_mean": 1289.5166178635943,
+          "candidate_fraction_mean": 0.2607950133337897,
+          "unique_v_fraction_mean": 0.035126168120583924
+        }
+      },
+      "relative_to_ffn_dense": {
+        "ffn_iid": 0.02872553023861646,
+        "ffn_screen_dense": 0.06866247449599405,
+        "ffn_ising": 0.035881015023970564,
+        "ffn_screen_ising": 0.11618597790466856
+      }
+    },
+    "formal_checks": [
+      {
+        "variant": "ffn_screen_dense",
+        "seed": 0,
+        "layers_checked": 32,
+        "all_candidate_equal_kv_union": true,
+        "candidate_fraction_mean": 0.2616760340624445,
+        "kv_group_union_fraction_mean": 0.2616760340624445,
+        "unique_v_fraction_mean": 0.2616760340624445,
+        "perplexity": 5.597525393342525,
+        "scored_tokens": 4096,
+        "metadata_subset": {
+          "context": 2048,
+          "examples": 32,
+          "decode": 128,
+          "samples": 512,
+          "burn": 16.0,
+          "spacing": 4.0,
+          "block_ratio": 0.5,
+          "block_size": 64,
+          "precision": "BF16 model interface; FP32 attention reference and CE",
+          "ffn_config": "all32 fixed group_max, W8, magnitude12+sign, input4096/output3072, interval256, burn25%, ideal sigmoid",
+          "attention_config": "all32 decode; 64-token block-mean QK screening and/or hard-exclusion CTMC Ising categorical samples",
+          "corpus_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+          "source_sha256": {
+            "evaluate.py": "d5fb7c4e5f1ae71efc9e28395862fb67ea56e8f3b32d28946d07ac94221962d6",
+            "model.py": "0cebf80df15ce026913e0e58858806c62fe9aa48ada1caba43a3d0642e8788db",
+            "attention.py": "d8a431fe1debdd9b4250edbedc6ef7faf7c51c9ab0d616ebb39fff0fd467c078",
+            "sampling.py": "67d08dc79447c6cab0b4630846ea1321be3b821baaefc1a7cc008ee43f95e38b",
+            "fixed_ffn.py": "814041b8aafba6eaa807e84037541d62a8a979d3d68df2c0594b55ebc2927598",
+            "streaming_ffn.py": "ca04aad6e873d103105644047a6f6618beb129e5ee682f3fedd978b65508a682",
+            "calibration_ffn.json": "73b7739f9a6a8f24f990966735112c0a121172a05bd71c4ebd8b5e1f8bf50d30"
+          },
+          "protected_sha256": "fcc861754c4db385e8d5f04ea0f1f2284f54b60a87da3e90009806bc2b43afbe",
+          "slurm_job_id": "1473",
+          "slurm_array_task_id": "7"
+        }
+      },
+      {
+        "variant": "ffn_screen_dense",
+        "seed": 1,
+        "layers_checked": 32,
+        "all_candidate_equal_kv_union": true,
+        "candidate_fraction_mean": 0.26154664328898297,
+        "kv_group_union_fraction_mean": 0.26154664328898297,
+        "unique_v_fraction_mean": 0.26154664328898297,
+        "perplexity": 5.502052171036557,
+        "scored_tokens": 4096,
+        "metadata_subset": {
+          "context": 2048,
+          "examples": 32,
+          "decode": 128,
+          "samples": 512,
+          "burn": 16.0,
+          "spacing": 4.0,
+          "block_ratio": 0.5,
+          "block_size": 64,
+          "precision": "BF16 model interface; FP32 attention reference and CE",
+          "ffn_config": "all32 fixed group_max, W8, magnitude12+sign, input4096/output3072, interval256, burn25%, ideal sigmoid",
+          "attention_config": "all32 decode; 64-token block-mean QK screening and/or hard-exclusion CTMC Ising categorical samples",
+          "corpus_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+          "source_sha256": {
+            "evaluate.py": "d5fb7c4e5f1ae71efc9e28395862fb67ea56e8f3b32d28946d07ac94221962d6",
+            "model.py": "0cebf80df15ce026913e0e58858806c62fe9aa48ada1caba43a3d0642e8788db",
+            "attention.py": "d8a431fe1debdd9b4250edbedc6ef7faf7c51c9ab0d616ebb39fff0fd467c078",
+            "sampling.py": "67d08dc79447c6cab0b4630846ea1321be3b821baaefc1a7cc008ee43f95e38b",
+            "fixed_ffn.py": "814041b8aafba6eaa807e84037541d62a8a979d3d68df2c0594b55ebc2927598",
+            "streaming_ffn.py": "ca04aad6e873d103105644047a6f6618beb129e5ee682f3fedd978b65508a682",
+            "calibration_ffn.json": "73b7739f9a6a8f24f990966735112c0a121172a05bd71c4ebd8b5e1f8bf50d30"
+          },
+          "protected_sha256": "fcc861754c4db385e8d5f04ea0f1f2284f54b60a87da3e90009806bc2b43afbe",
+          "slurm_job_id": "1474",
+          "slurm_array_task_id": "8"
+        }
+      },
+      {
+        "variant": "ffn_screen_dense",
+        "seed": 2,
+        "layers_checked": 32,
+        "all_candidate_equal_kv_union": true,
+        "candidate_fraction_mean": 0.26166942902659174,
+        "kv_group_union_fraction_mean": 0.26166942902659174,
+        "unique_v_fraction_mean": 0.26166942902659174,
+        "perplexity": 5.594470984448471,
+        "scored_tokens": 4096,
+        "metadata_subset": {
+          "context": 2048,
+          "examples": 32,
+          "decode": 128,
+          "samples": 512,
+          "burn": 16.0,
+          "spacing": 4.0,
+          "block_ratio": 0.5,
+          "block_size": 64,
+          "precision": "BF16 model interface; FP32 attention reference and CE",
+          "ffn_config": "all32 fixed group_max, W8, magnitude12+sign, input4096/output3072, interval256, burn25%, ideal sigmoid",
+          "attention_config": "all32 decode; 64-token block-mean QK screening and/or hard-exclusion CTMC Ising categorical samples",
+          "corpus_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+          "source_sha256": {
+            "evaluate.py": "d5fb7c4e5f1ae71efc9e28395862fb67ea56e8f3b32d28946d07ac94221962d6",
+            "model.py": "0cebf80df15ce026913e0e58858806c62fe9aa48ada1caba43a3d0642e8788db",
+            "attention.py": "d8a431fe1debdd9b4250edbedc6ef7faf7c51c9ab0d616ebb39fff0fd467c078",
+            "sampling.py": "67d08dc79447c6cab0b4630846ea1321be3b821baaefc1a7cc008ee43f95e38b",
+            "fixed_ffn.py": "814041b8aafba6eaa807e84037541d62a8a979d3d68df2c0594b55ebc2927598",
+            "streaming_ffn.py": "ca04aad6e873d103105644047a6f6618beb129e5ee682f3fedd978b65508a682",
+            "calibration_ffn.json": "73b7739f9a6a8f24f990966735112c0a121172a05bd71c4ebd8b5e1f8bf50d30"
+          },
+          "protected_sha256": "fcc861754c4db385e8d5f04ea0f1f2284f54b60a87da3e90009806bc2b43afbe",
+          "slurm_job_id": "1475",
+          "slurm_array_task_id": "9"
+        }
+      },
+      {
+        "variant": "ffn_screen_ising",
+        "seed": 0,
+        "layers_checked": 32,
+        "all_candidate_equal_kv_union": true,
+        "candidate_fraction_mean": 0.26102304605406773,
+        "kv_group_union_fraction_mean": 0.26102304605406773,
+        "unique_v_fraction_mean": 0.03516840161290351,
+        "perplexity": 5.870724662428489,
+        "scored_tokens": 4096,
+        "metadata_subset": {
+          "context": 2048,
+          "examples": 32,
+          "decode": 128,
+          "samples": 512,
+          "burn": 16.0,
+          "spacing": 4.0,
+          "block_ratio": 0.5,
+          "block_size": 64,
+          "precision": "BF16 model interface; FP32 attention reference and CE",
+          "ffn_config": "all32 fixed group_max, W8, magnitude12+sign, input4096/output3072, interval256, burn25%, ideal sigmoid",
+          "attention_config": "all32 decode; 64-token block-mean QK screening and/or hard-exclusion CTMC Ising categorical samples",
+          "corpus_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+          "source_sha256": {
+            "evaluate.py": "d5fb7c4e5f1ae71efc9e28395862fb67ea56e8f3b32d28946d07ac94221962d6",
+            "model.py": "0cebf80df15ce026913e0e58858806c62fe9aa48ada1caba43a3d0642e8788db",
+            "attention.py": "d8a431fe1debdd9b4250edbedc6ef7faf7c51c9ab0d616ebb39fff0fd467c078",
+            "sampling.py": "67d08dc79447c6cab0b4630846ea1321be3b821baaefc1a7cc008ee43f95e38b",
+            "fixed_ffn.py": "814041b8aafba6eaa807e84037541d62a8a979d3d68df2c0594b55ebc2927598",
+            "streaming_ffn.py": "ca04aad6e873d103105644047a6f6618beb129e5ee682f3fedd978b65508a682",
+            "calibration_ffn.json": "73b7739f9a6a8f24f990966735112c0a121172a05bd71c4ebd8b5e1f8bf50d30"
+          },
+          "protected_sha256": "fcc861754c4db385e8d5f04ea0f1f2284f54b60a87da3e90009806bc2b43afbe",
+          "slurm_job_id": "1479",
+          "slurm_array_task_id": "13"
+        }
+      },
+      {
+        "variant": "ffn_screen_ising",
+        "seed": 1,
+        "layers_checked": 32,
+        "all_candidate_equal_kv_union": true,
+        "candidate_fraction_mean": 0.26066713290222443,
+        "kv_group_union_fraction_mean": 0.26066713290222443,
+        "unique_v_fraction_mean": 0.03513248639171112,
+        "perplexity": 5.76019507605888,
+        "scored_tokens": 4096,
+        "metadata_subset": {
+          "context": 2048,
+          "examples": 32,
+          "decode": 128,
+          "samples": 512,
+          "burn": 16.0,
+          "spacing": 4.0,
+          "block_ratio": 0.5,
+          "block_size": 64,
+          "precision": "BF16 model interface; FP32 attention reference and CE",
+          "ffn_config": "all32 fixed group_max, W8, magnitude12+sign, input4096/output3072, interval256, burn25%, ideal sigmoid",
+          "attention_config": "all32 decode; 64-token block-mean QK screening and/or hard-exclusion CTMC Ising categorical samples",
+          "corpus_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+          "source_sha256": {
+            "evaluate.py": "d5fb7c4e5f1ae71efc9e28395862fb67ea56e8f3b32d28946d07ac94221962d6",
+            "model.py": "0cebf80df15ce026913e0e58858806c62fe9aa48ada1caba43a3d0642e8788db",
+            "attention.py": "d8a431fe1debdd9b4250edbedc6ef7faf7c51c9ab0d616ebb39fff0fd467c078",
+            "sampling.py": "67d08dc79447c6cab0b4630846ea1321be3b821baaefc1a7cc008ee43f95e38b",
+            "fixed_ffn.py": "814041b8aafba6eaa807e84037541d62a8a979d3d68df2c0594b55ebc2927598",
+            "streaming_ffn.py": "ca04aad6e873d103105644047a6f6618beb129e5ee682f3fedd978b65508a682",
+            "calibration_ffn.json": "73b7739f9a6a8f24f990966735112c0a121172a05bd71c4ebd8b5e1f8bf50d30"
+          },
+          "protected_sha256": "fcc861754c4db385e8d5f04ea0f1f2284f54b60a87da3e90009806bc2b43afbe",
+          "slurm_job_id": "1480",
+          "slurm_array_task_id": "14"
+        }
+      },
+      {
+        "variant": "ffn_screen_ising",
+        "seed": 2,
+        "layers_checked": 32,
+        "all_candidate_equal_kv_union": true,
+        "candidate_fraction_mean": 0.26069486104507683,
+        "kv_group_union_fraction_mean": 0.26069486104507683,
+        "unique_v_fraction_mean": 0.03507761635713715,
+        "perplexity": 5.805514448508076,
+        "scored_tokens": 4096,
+        "metadata_subset": {
+          "context": 2048,
+          "examples": 32,
+          "decode": 128,
+          "samples": 512,
+          "burn": 16.0,
+          "spacing": 4.0,
+          "block_ratio": 0.5,
+          "block_size": 64,
+          "precision": "BF16 model interface; FP32 attention reference and CE",
+          "ffn_config": "all32 fixed group_max, W8, magnitude12+sign, input4096/output3072, interval256, burn25%, ideal sigmoid",
+          "attention_config": "all32 decode; 64-token block-mean QK screening and/or hard-exclusion CTMC Ising categorical samples",
+          "corpus_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+          "source_sha256": {
+            "evaluate.py": "d5fb7c4e5f1ae71efc9e28395862fb67ea56e8f3b32d28946d07ac94221962d6",
+            "model.py": "0cebf80df15ce026913e0e58858806c62fe9aa48ada1caba43a3d0642e8788db",
+            "attention.py": "d8a431fe1debdd9b4250edbedc6ef7faf7c51c9ab0d616ebb39fff0fd467c078",
+            "sampling.py": "67d08dc79447c6cab0b4630846ea1321be3b821baaefc1a7cc008ee43f95e38b",
+            "fixed_ffn.py": "814041b8aafba6eaa807e84037541d62a8a979d3d68df2c0594b55ebc2927598",
+            "streaming_ffn.py": "ca04aad6e873d103105644047a6f6618beb129e5ee682f3fedd978b65508a682",
+            "calibration_ffn.json": "73b7739f9a6a8f24f990966735112c0a121172a05bd71c4ebd8b5e1f8bf50d30"
+          },
+          "protected_sha256": "fcc861754c4db385e8d5f04ea0f1f2284f54b60a87da3e90009806bc2b43afbe",
+          "slurm_job_id": "1461",
+          "slurm_array_task_id": "15"
+        }
+      }
+    ],
+    "limitations": [
+      "No new model inference or BF16 reference rerun in this history audit.",
+      "Logical candidate K is gathered before QK; no physical DRAM or fused sparse-kernel measurement.",
+      "Python gathers all candidate V even for Ising; unique_v_fraction is nonzero-weight address fraction, not physical V reads.",
+      "Baseline README shard hashes are provenance records; weights were not rehashed in this audit."
+    ],
+    "baseline_readme": {
+      "path": "llama7b_baseline_20261014/README_ZH.md",
+      "bytes": 2790,
+      "sha256": "06cb0a5326bac6b138229e69c2ec279f0f8e40f9a4a8f92c6202833d882f7e05"
+    }
+  }
+}

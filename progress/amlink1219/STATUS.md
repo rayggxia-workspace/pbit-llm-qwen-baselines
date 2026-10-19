@@ -1,3 +1,5 @@
+本轮activation-only研究已上传`de10df308c78d5983ad4e1461518e8c9dc8d514d`，PR63开放待审、未合并；远端ref/PR head及18项稳定制品Git blob已核，实际回执ACTIVATION_ONLY_PUBLICATION.json。没有新模型PPL、训练或PPA。
+
 本轮用户限定三投影＋连续up＋仅激活p-bit；精确A/B/C未找到执行/PPL，A只在历史§27提案。旧双支/AND/SC不得按名称迁移结论。activation_only报告、结构化计划、21tip/506历史对象审计、StochA直接负面先例和Zotero本批核验已整理；未训练。
 
 用户再次核实门控历史：双路gate/value及三投影K4 AND-bank均已做，不能把保留门控/多位编码当新主线。当前优先训练B4/T32/K32随机计算FFN；旧结构须明确新增条件和数字/原实现对照。报告§4.2与JSON已纠正，未启动训练。

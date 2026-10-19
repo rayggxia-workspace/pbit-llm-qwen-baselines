@@ -104,3 +104,8 @@
 - Attention-only继续保留原FFN控制；联合仿真显式声明分层FFN在prefill/decode均替换，复用准确版本的双路径Guard/计分审计。FFN的T/K与Ising的burn/spacing/S分别记录，不把分层门限直接当Ising去相关方法。
 - 本次采用是行为参考，不是已验收的RTL/PPA默认。T32包含x与z各一帧，整FFN周期由调度和其余模块决定。新增硬件实现需计入缩放/区间控制/随机分发/累加/非线性/格式转换/存储，并比较直接随机舍入＋低位确定性矩阵。旧PPL/旧TLM结果不因规则更新而重命名或继承。
 - Issue50/PR52的完整联合确认由原负责人继续；恢复先查最新Issue/PR/交接，不重复提交记录中的运行任务。完整WT2与4096目标后缀分别标注，不把单独FFN全量结论或待审PR写成联合全量已完成。
+
+## FFN candidate recommendations and existing negative results
+
+- Before recommending a previously tried FFN as a new priority, inspect its matched multi-layer PPL, high-sample and continuous-input controls. Single-layer feasibility does not override a failed multi-layer result. Historical two-projection students already used floating-point weights; W8 is a deployment constraint, not an established remedy for their quality loss.
+- Separate input bit width, hidden representation and sample count. Four-bit input results with a single-bit hidden layer do not establish four-bit-hidden or twenty-layer success. Repeating identical sigmoid p-bits reduces sampling variance without changing the mean encoding; a multi-stochastic-layer mean-field surrogate is not automatically the exact infinite-sample network or a PPL lower bound.

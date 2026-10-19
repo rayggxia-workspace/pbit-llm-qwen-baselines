@@ -1,3 +1,6 @@
+
+用户纠正后的增量：旧两投影全路径降为高风险诊断，加入匹配20层连续入口与四层4bit原件、表示/采样/结构控制门禁；补充AGENTS防止按单层结果重复优先推荐失败扩层路线。没有新训练或质量结果。
+
 # Issue61 硬件感知训练调研交接
 
 负责人 amlink1219（GitHub75301230）；正式目标rayggxia-workspace/pbit-llm-qwen-baselines（repo1420564659）。2026-10-19核验push/admin=true。分支task/61-hardware-aware-training，独立本地目录workspace_projects/ht61；base集成88764ec8f6f00ed05f4ab337902bd23ad08cc4a8。不是旧个人上游。

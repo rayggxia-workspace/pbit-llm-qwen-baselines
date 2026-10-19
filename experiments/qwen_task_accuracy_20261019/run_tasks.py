@@ -123,6 +123,46 @@ def vector_reference(model, docs, tasks):
     return rows
 
 
+def naive_cached_reference(model, docs):
+    """Original deterministic BF16; independently recompute prefix per choice.
+
+    No shared first logits, deepcopy, branch snapshot or sampler is used. Batch
+    shape is the same so this isolates target alignment/cache branching from
+    different BF16 GEMM/SDPA reduction shapes in vectorized scoring.
+    """
+    import torch
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for doc in docs:
+        groups[(len(doc['context_ids']),len(doc['choices_ids']))].append(doc)
+    result={}
+    with torch.inference_mode():
+        for signature in sorted(groups):
+            group=groups[signature]
+            for start in range(0,len(group),16):
+                batch=group[start:start+16]
+                for choice in range(signature[1]):
+                    context=torch.tensor([d['context_ids'] for d in batch],device='cuda',dtype=torch.long)
+                    cache=model.model(input_ids=context[:,:-1],use_cache=True).past_key_values
+                    answers=[d['choices_ids'][choice] for d in batch]
+                    scores=torch.zeros(len(batch),device='cuda',dtype=torch.float64)
+                    greedy=torch.ones(len(batch),device='cuda',dtype=torch.bool)
+                    for step in range(max(map(len,answers))):
+                        input_ids=context[:,-1:] if step==0 else torch.tensor(
+                            [[a[step-1] if step-1<len(a) else 0] for a in answers],device='cuda',dtype=torch.long)
+                        out=model.model(input_ids=input_ids,past_key_values=cache,use_cache=True)
+                        cache=out.past_key_values
+                        logits=model.lm_head(out.last_hidden_state[:,-1]).float()
+                        target=torch.tensor([a[step] if step<len(a) else 0 for a in answers],device='cuda')
+                        active=torch.tensor([step<len(a) for a in answers],device='cuda')
+                        ll=logits.log_softmax(-1).gather(-1,target[:,None]).squeeze(-1).double()
+                        scores+=torch.where(active,ll,0.)
+                        greedy&=(~active)|(logits.argmax(-1)==target)
+                    for d,score,exact,answer in zip(batch,scores.tolist(),greedy.tolist(),answers):
+                        result.setdefault(d['id'],[]).append(dict(logprob=score,is_greedy=exact,tokens=len(answer)))
+    return result
+
+
 def score_case(a, cfg, docs, tasks, path):
     import torch
     import transformers
@@ -195,6 +235,8 @@ def prepare(a):
                   for name in TASKS}
     vector = {name:vector_reference(model,docs,tasks) for name,docs in pilot_docs.items()}
     write(out/'bf16_vector_task_pilot.json',vector)
+    naive = {name:naive_cached_reference(model,docs) for name,docs in pilot_docs.items()}
+    write(out/'bf16_independent_cached_pilot.json',naive)
     del model
     import torch
     torch.cuda.empty_cache()
@@ -212,12 +254,17 @@ def prepare(a):
             differences=[abs(x['logprob']-y['logprob'])/x['tokens']
                          for x,y in zip(reference['choices'],other['choices'])]
             same=reference['metrics']==other['metrics']
+            independent=naive[name][reference['id']]
+            exact_diffs=[abs(x['logprob']-y['logprob']) for x,y in zip(independent,other['choices'])]
+            exact_greedy=all(x['is_greedy']==y['is_greedy'] for x,y in zip(independent,other['choices']))
             bridge.append(dict(id=reference['id'],max_mean_token_logprob_difference=max(differences),
-                               same_task_decisions=same))
-            if max(differences)>.05 or not same:
-                raise ValueError('BF16 cached/vector task bridge failed: '+reference['id'])
+                same_vectorized_correctness_flags=same, independent_cached_max_sum_logprob_difference=max(exact_diffs),
+                independent_cached_greedy_equal=exact_greedy))
+            if max(exact_diffs)>1e-5 or not exact_greedy:
+                raise ValueError('Independent original cached scoring mismatch: '+reference['id'])
     write(out/'BF16_TASK_BRIDGE.json',dict(passed=True,records=bridge,
-        tolerance='max per-choice mean absolute sum-logprob difference / answer tokens <=0.05 nats and same official acc/acc_norm decisions on 12 longest-prompt pilot docs'))
+        tolerance='independent naive cached reference: per-choice sum logprob <=1e-5 absolute and identical greedy flags; exact batch shapes; 12 longest-prompt pilot docs',
+        vectorized='diagnostic only; one-shot BF16 and cached BF16 have different GEMM/SDPA shapes and need not have identical logprobs or all near-tie decisions; fresh cached BF16 is task comparator'))
     write(out/'suite.json', dict(configurations=configurations(), tasks=list(TASKS),
         protocol='official 0shot multiple-choice likelihood; cached unpadded model; shared first scored decode query; independent branches restored',
         count=len(TASKS)*len(configurations()), task_statistics=meta['statistics']))

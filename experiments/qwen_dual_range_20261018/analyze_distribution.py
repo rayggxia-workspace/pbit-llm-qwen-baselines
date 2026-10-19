@@ -31,7 +31,11 @@ def activation_measure(value, probability, decoded, scale):
     q = (probability * 256).round().to(torch.int64)
     histogram = torch.bincount(q.reshape(-1), minlength=256)
     maximum = scale * (255. / 256.)
-    clipped = value.abs() > maximum
+    # Endpoint multiply/divide can differ by a few FP32 ulps. Count material
+    # overflow, not those roundoff-only differences at dynamic group maxima.
+    tolerance = 8 * torch.finfo(torch.float32).eps * torch.maximum(
+        value.abs(), maximum).clamp_min(1e-20)
+    clipped = value.abs() > maximum + tolerance
     limited = value.sign() * torch.minimum(value.abs(), maximum)
     stats = torch.stack((probability.sum(dtype=torch.float64),
         (decoded-value).square().sum(dtype=torch.float64),
@@ -120,6 +124,7 @@ def audit(args):
         activation_policies=['legacy', 'dynamic64'], weight_policies=['legacy', 'row64'],
         clipping_factors=list(CLIP_FACTORS), clipping_scope='legacy activation scales only',
         source='Unmodified BF16 teacher; nonoverlapping train-prefix windows',
+        clipping_count_tolerance='8 FP32 eps relative to max(abs(value), reconstruction_limit)',
         no_sampling=True, no_training=True, no_raw_activations_saved=True)
     identity = verify(args.model, args.data, output/'identity.json')
     identity.update(distribution_execution_commit=args.code_commit,

@@ -1,6 +1,8 @@
 # 本轮补传状态（2026-10-19）
 
-权限已恢复，当前为发布准备阶段；尚未推送/创建PR。实时状态以PUBLICATION.json及本人STATUS为准。以下交接保留原执行时点；其中无push权限/未发布描述仅指原时点。原manifest应按原交付提交验证。
+分支已推送，[PR #45](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/45)待审、未合并；Issue保持open。amlink1219当前Admin/push权限已核实。看板GraphQL仍缺read:project，待同步。最新个人汇总见progress/amlink1219/STATUS.md；PUBLICATION.json记录原交付提交，DELIVERY_MANIFEST.json记录补传后文件SHA。
+
+以下交接保留原执行时点，其中无push权限/未发布描述属于历史状态；原manifest按原提交验证。
 
 # Issue37 交接
 

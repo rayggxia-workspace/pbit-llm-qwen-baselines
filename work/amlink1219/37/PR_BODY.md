@@ -1,3 +1,5 @@
+> 已发布：[PR #45](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/45)，待审、未合并。当前正文见PR_BODY_CURRENT.md；以下为原待发布草稿，权限/发布状态仅指当时时点。
+
 此前Attention保存结果混合了core/全模型范围、两token均值/首冷token和不同内存资源，无法据此判断QK概率筛选＋Ising对完整Attention的收益。本变更增加同边界条件事务模型：QKV/RoPE/KV追加/core/Wo，明确投影权重stream、GQA并集、有限DMA、真实SRAM峰值、宏服务和功率/能量分账。
 
 Slurm2164 CPU作业COMPLETED/0:0，23源SHA通过，9/9快照测试、32/32全24层场景完成；归档及40文件SHA回收通过，后处理三份汇总逐字节复现。2K默认S512比D0条件延迟高69.34%、代理能量高10.17%；S32有小幅成本改善，S128有能量/延迟tradeoff，给出约17.27ns宏输出预算。新增报告区分SRAM库值与未标定逻辑/DRAM/Ising参数，完整物理PPA和PPL保持null。

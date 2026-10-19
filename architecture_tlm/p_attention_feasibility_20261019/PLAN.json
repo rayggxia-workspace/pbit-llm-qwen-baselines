@@ -1,0 +1,176 @@
+{
+  "schema": "p-attention-energy-feasibility-v1",
+  "status": "proposed_not_executed",
+  "owner": "amlink1219",
+  "issue": 61,
+  "PR": 63,
+  "model_runs": [],
+  "PPL_tolerance": null,
+  "current_sampler": {
+    "source_PR_head": "e3c5e957c3769b5fc6867b42a52facace647a83b",
+    "frozen_attention_commit": "11f1d6eea2776e201f2021081f8b0fbae2cc455e",
+    "E": "minus exact candidate score",
+    "birth": "sigmoid(score_i-score_ref)",
+    "death": "1-birth",
+    "state": "empty(max-score reference) or one active non-reference indicator",
+    "explicit_softmax_in_screen_ising": false,
+    "burn": 16,
+    "spacing": 4,
+    "first_observation_time": 20,
+    "time_unit": "dimensionless single-site unit-rate Poisson clock; not ns or hardware cycles",
+    "prefill": "accurate SDPA",
+    "decode": "replaced for single-token calls"
+  },
+  "primary_route": {
+    "id": "P1",
+    "pipeline": [
+      "distilled block selector",
+      "cheap conditional energy generator",
+      "finite categorical CTMC",
+      "sampled V gather-average",
+      "output projection"
+    ],
+    "energy_candidates": [
+      "head/layer temperature",
+      "field quantization 8/6/4 bit",
+      "low-rank post-RoPE q/k scorer",
+      "limited QK/O adaptation"
+    ],
+    "no_automatic_K_savings": true,
+    "no_dense_C_squared_J": true
+  },
+  "alternatives": {
+    "P0": "existing exact-score energy; no training required for the stationary identity",
+    "P2_mask": "deterministic sigmoid attention then actual Bernoulli sum masks; not normalized categorical",
+    "P2_structured": "sparse conditional energy/binary/tree as separate trained architectures"
+  },
+  "matrix": {
+    "candidate_blocks": [
+      4,
+      6,
+      8
+    ],
+    "block_tokens": 64,
+    "candidate_counts": [
+      256,
+      384,
+      512
+    ],
+    "microbenchmark_only_C": [
+      64
+    ],
+    "observations_S": [
+      32,
+      64,
+      128,
+      256,
+      512
+    ],
+    "baseline_burn_gap": [
+      16,
+      4
+    ],
+    "one_axis_burn_trials": [
+      0,
+      4
+    ],
+    "one_axis_gap_trials": [
+      1,
+      2
+    ],
+    "field_bits": [
+      8,
+      6,
+      4
+    ],
+    "rank_candidates": [
+      16,
+      32,
+      64
+    ],
+    "rank_location": "post original RoPE; added projection/cache costs explicit; does not silently remove QKV"
+  },
+  "training": {
+    "order": [
+      "selector only",
+      "same-candidate energy distribution and AV transfer",
+      "actual finite-chain KD/CE",
+      "limited joint selector/energy/QKO then SC FFN combination"
+    ],
+    "tokens_ladder": [
+      4000000,
+      32000000,
+      128000000
+    ],
+    "train_seeds": [
+      0,
+      1,
+      2
+    ],
+    "deploy_seeds": [
+      0,
+      1,
+      2
+    ],
+    "extra_unseen_rng_seeds": true,
+    "cold_and_warm_initialization": true,
+    "realized_finite_chain_not_IID": true,
+    "teacher": [
+      "accurate full Attention block mass",
+      "sampled-query candidate KL",
+      "on-the-fly AV output",
+      "logits KD and CE"
+    ],
+    "teacher_probability_matrix_full_N_squared_storage_required": false,
+    "surrogate_gradient": "if used, labeled biased; true deployed finite-chain forward required",
+    "data_revision_and_SHA": "must verify before execution; no corpus newly acquired here",
+    "energy_only_target": "candidate-renormalized teacher pT,C and yT,C; full-teacher omission and end-to-end output errors reported separately"
+  },
+  "evaluation": {
+    "FFN_first": "original BF16",
+    "FFN_joint": "fixed W8/B4/T32/K32 after attention-only validation",
+    "full_WT2": {
+      "window": 2048,
+      "stride": 1024,
+      "deploy_path_scoring": "cached/guarded; actual replaced decode layer coverage"
+    },
+    "downstream": [
+      "ARC-Easy",
+      "HellaSwag"
+    ],
+    "quality": [
+      "full-teacher omitted mass",
+      "energy-expression error",
+      "finite-chain AV error",
+      "full PPL",
+      "downstream accuracy",
+      "seed variance"
+    ],
+    "chain": [
+      "initialization TV",
+      "illegal states",
+      "observations versus ESS",
+      "site-clock time",
+      "actual transitions",
+      "correlation",
+      "device probability bias"
+    ],
+    "hardware": [
+      "online-softmax GQA digital complete Attention",
+      "same cheap scorer plus digital softmax",
+      "digital sigmoid plus PRNG",
+      "native pbit including field/load/feedback/readout",
+      "K/V actual byte unions and bursts",
+      "complete attention and system scopes"
+    ],
+    "published_or_silicon_PPA": false
+  },
+  "constraints": [
+    "do not replay colleague Issue50/59 jobs",
+    "no automatic GPU job or training in research task",
+    "training-only Softmax allowed and separately costed",
+    "no full K traffic reduction from V sampling alone",
+    "no assumed fixed PPL threshold",
+    "no automatic merge or Issue closure"
+  ]
+}

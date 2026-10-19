@@ -1501,3 +1501,11 @@ N=16仍比原模型高约9.35%，但明显优于N=4。增加路径平均能够�
 `train_joint_multithreshold_and.py`，评估为`evaluate_multi_layer_multithreshold_and.py`。
 14份完整测试结果、40份检查点身份和执行源码哈希已核对，详见
 [二十层AND完整报告](../../results/multithreshold_and_twenty_layer_20261002/RESULTS_ZH.md)。
+
+## 35. 单激活替换的精确范围核查（2026-10-19，尚未执行）
+
+用户限定保留Qwen gate/up/down和连续up，仅用p-bit替换激活。第27节的`g*u*Bernoulli(sigmoid(g))`是A方案提案，不是已执行结果；sigmoid-GLU/tanh-GLU只采激活的B/C也未在本次21tip/506可达Python对象范围内找到模型封装、dispatch或正式PPL。
+
+第23–26节的双支门控、第33–34节的两bank AND、历史三流乘积均多采了其他分支/幅度，不等于本次方案。已有正负结果保持，不能按名字相似迁移成A/B/C验证。
+
+精确公式、文献负面证据、受控实验、硬件成本和可达历史局限见[activation-only可行性报告](../../architecture_tlm/activation_only_feasibility_20261019/README_ZH.md)。三投影/连续up下p-bit只替代非线性，输出端仍需幅度门控/均值恢复。第一阶段原BF16投影，第二阶段才接当前W8/B4T32；所有模型实现、训练/PPL/PPA仍待执行，勿将数学检查或本段提案当成完成实验。

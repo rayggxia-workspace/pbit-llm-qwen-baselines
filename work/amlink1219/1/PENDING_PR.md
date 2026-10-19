@@ -1,3 +1,5 @@
+> 已发布：[PR #41](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/41)，待审、未合并。当前正文见PR_BODY_CURRENT.md；以下为原待发布草稿，权限/发布状态仅指当时时点。
+
 为 amlink1219 建立可恢复的硬件架构设计协作入口，避免本机旧上游 checkout、落后的默认 main 和最新 workspace 集成状态混用。在现有 AGENTS 后追加本机身份、工作入口和设计边界，完整保留原复现与协作规则；新增本人 STATUS、最新远端核查、来源 SHA 和可执行交接。
 
 Refs #1。本次是既有治理任务的本机落地子项，负责人 amlink1219；原 Issue 负责人及 PR #2 保持原状态。本 PR 不关闭整体 Issue #1。

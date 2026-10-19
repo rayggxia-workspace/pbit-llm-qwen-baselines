@@ -2,7 +2,7 @@
 
 第二轮实际完成42个已结束任务工作副本回收，逻辑7.377GiB，两轮累计10.510GiB。原分支及42个archive/cleanup-20261019 refs保留；独有440.0文件、补充bundle保留本地project_archives/cleanup_20261019_round2，恢复清单ROUND2_RECOVERY_INDEX。根/仓库AGENTS规则已追加，当前任务稀疏检出maintenance/progress/work；其他成员/活跃任务不动。
 
-正式第二轮资料已本地生成，待追加提交、推送原PR69及更新Issue68。待审未合并；不自动关闭Issue。下一步只需交付文档/规则，不重复执行清理脚本。唯一Qwen权重SHA再次核验；没有新PPL/硬件实验，没有改页面文件。canonical备忘录若有追加将由本PR同步，保留同字节阅读副本。
+正式第二轮资料通过原PR69交付，当前待审未合并；不自动关闭Issue。下一步按PR实际head审阅/验收，不重复执行清理脚本。唯一Qwen权重SHA再次核验；没有新PPL/硬件实验，没有改页面文件。canonical备忘录若有追加将由本PR同步，保留同字节阅读副本。
 
 以下为第一轮交接：
 

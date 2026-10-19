@@ -1,6 +1,6 @@
 # p-bit LLM 项目长期备忘录
 
-更新日期：2026-10-19。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19已实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`，实际合并回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)；Issue59记忆追加已由[PR64](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/64)推送待审、未合并。旧任务索引保留日期并由第12.1节更新。
+更新日期：2026-10-19。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19已实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`，实际合并回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)；Issue59记忆追加[PR64](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/64)已实际合并`679fd269ecaa4883bd79619d2f39d6ade2a7daca`；研究PR63已合并`4f2d953395a7335e0f15b0546c91cdac73c81169`。旧任务索引保留日期并由第12.1节更新。
 
 本文件保存项目目标、用户决策、算法分支、实验口径、架构与证据入口，用于长对话压缩、换会话或换人后的恢复。它不替代原始结果、manifest、最新 Issue/PR 和运行日志。历史讨论不等于已实现；以下明确区分已验证、情景估计和待验证。
 
@@ -560,6 +560,8 @@ Issue7（实际TT/SS DC/VCS/PT）、Issue22（短流硬件/质量后续）、Iss
 收尾补充PR58已审核并合入`88764ec8f6f00ed05f4ab337902bd23ad08cc4a8`：采用B4/T32/K32及B2T32/B4T16/B4T64行为参考，入口`architecture_tlm/ffn_stratified_reference/`直接复用47四个锁定核心。原TLM/PPA默认和Attention-only原FFN对照不变；25项原核心测试、4profile输出/RNG等价通过，Python3.8临时Path兼容shim限制见Issue55证据。含58后本批共23项，21实际合并、49/52仍draft。
 
 2026-10-19新增Issue59/PR62代表任务准确率，见第5.8节及`tmp/qwen-task-accuracy-issue59-20261019/work/jieruiz/59/HANDOFF.md`。PR62依赖PR52、未合并；075574源的2475/2476已READY通过，正式39项于09:13:52Z提交2477/2478/2479/2480、自动汇总2481；09:19Z为三项原BF16完成、36替换项运行/排队。记忆追加PR64已推送待审、未合并；旧2474门禁诊断保留。该条是新任务时点快照，不改写下方早期状态或原实验原件。
+
+2026-10-19第二轮（Issue55，用户要求继续）：审查5项，PR63研究设计已合并`4f2d953395a7335e0f15b0546c91cdac73c81169`、PR64记忆已合并`679fd269ecaa4883bd79619d2f39d6ade2a7daca`；49/52同旧head仍draft，62新draft公开11/39且依赖未合PR52，均保留。174数学检查与30评分/collector CPU夹具检查通过，不等于训练或新0.5B/GPU验证。Issue61按研究范围关闭、28持续维护，详见`work/jieruiz/55/round2/REVIEW_ZH.md`。上方PR64“待审/待推送”与任务进度保留为旧时点，最新合并状态由本条及Issue55回执覆盖。
 
 ### 12.2 早期远端状态快照（原文保留）
 

@@ -15,6 +15,8 @@
 - 当前目标分支中的Qwen Attention入口为v3/v4历史实现，默认合成输入、固定样本512；不要混称Llama分支的比例PV/有限bank标准。
 - Qwen3.5等其他分支成果不因本次整理而自动合入。
 
+2026-10-18新增：[固定权重短流能量估算与RTL表征](energy/short_stream_20261018/REPORT_ZH.md)（Issue22）。比较4096/256/128/64拍；只有旧成本代理下的TLM敏感性和RTL功能验证，不代表Qwen短流PPL或新PT实测。
+
 ```sh
 python qwen/run.py info
 python qwen/run.py check

@@ -1,0 +1,52 @@
+{
+  "issue": 55,
+  "round": 2,
+  "base": "b2527f12924a53da7334afbe78c752c101814193",
+  "prs": [
+    {
+      "number": 64,
+      "title": "备忘录：补充任务准确率协议、门禁与39项Slurm评测入口",
+      "head": "6497bfdce739e1a2905b36fd7ead45bc240eadd3",
+      "head_ref": "task/28-project-memory",
+      "base_ref": "pbit-tlm-attention-details-20261016",
+      "draft": false,
+      "body": "PR29已合并后，本次继续维护Issue28的单一正式备忘录入口。新增Issue59/PR62的三项代表任务、固定子集、真实decode计分、BF16门禁及正式Slurm2477～2481状态，明确当前分数尚未收齐、短context不验证QK筛选。保留旧失败快照和数值差异诊断；不新增模型质量结论。只改PROJECT_MEMORY_ZH.md、本人STATUS、Issue28 HANDOFF；根阅读副本与Git blob字节SHA25640a7aa62eb2ab91dd805bcfd776d3a8fa102dc7ce1cb6b26f8969b13d82dc7f0一致，UTF8/LF、diff范围验证通过。Refs #28、#59；关联实验PR #62。"
+    },
+    {
+      "number": 63,
+      "title": "research: p-bit训练、单激活替换与能量p-attention可行性",
+      "head": "743c3e8998349a6a6a40b412879030144b2e83cb",
+      "head_ref": "task/61-hardware-aware-training",
+      "base_ref": "pbit-tlm-attention-details-20261016",
+      "draft": false,
+      "body": "本PR整理面向p-bit硬件的训练路线：短流FFN、单激活替换、QK筛选蒸馏，以及学习能量p-attention。\n\n保留Qwen三投影和连续up的activation-only报告区分A随机SiLU、B/C sigmoid/tanh门控，记录旧实验与直接负面文献边界。\n\n本轮新增p-attention报告核查：PR52当前类别CTMC已从原始score差直接采样，没有先算数字Softmax；新工作应是低成本条件能量与实际有限链训练，配合块筛选减少候选和K/V访问。提供P0/P1/P2定义、6项文献及限制、候选内/完整教师控制、观测/预热/间隔和公平数字PPA矩阵；独立mask、稀疏耦合及binary/tree另列结构。\n\n实际验证：新增38对精确详细平衡、有限时间偏差、非对称proposal校正、编码与mask比值检查；旧56案例和固定源SHA复核通过；独立审阅后明确候选内教师输出，原9项与新增8项稳定制品Git blob SHA校核。本轮Zotero新增4、复用2，5PDF＋1既有HTML附件已读回核验。\n\n所有新方案仍为待执行计划：没有新模型实现、训练、PPL、GPU/Slurm或PPA，不重交Issue50/59同事作业，不自动合并。Projects沿既有scope限制待同步。Refs #61。"
+    },
+    {
+      "number": 62,
+      "title": "Qwen联合概率模型：代表任务准确率与Ising采样数对照",
+      "head": "ebc2d14a4f191a268227faf62b6085d58022bbdc",
+      "head_ref": "task/59-qwen-task-accuracy",
+      "base_ref": "task/50-joint-ffn-attention",
+      "draft": true,
+      "body": "新增Qwen2.5-0.5B Base任务准确率，比较原BF16、B4T32 FFN-only及联合筛选/有限Ising/V采样的S64/128/512，各随机配置3seed。PIQA1838和ARC-E2376全量，HellaSwag固定预选1000/10042题，共39项。\n\n评分沿用lm_eval0.4.8官方任务/分词边界及acc、字符长度acc_norm；无padding缓存teacher forcing让第一答案token和后续都真实执行24层decode替换。首query共享，候选分支恢复KV/摘要/RNG，选项置换一致；数值核不改、未训练。前缀Attention仍准确。短题均<512token，固定8块不裁剪K，不能把这些准确率当成长上下文QK筛选证明。\n\n已实际通过：13项评分功能测试（微型24层Qwen2夹具）+2计划测试，15项汇总负面测试；Slurm2475 CPU与2476真实0.5B GPU门禁。新BF16完整WT2再次11.652735；12题独立naive cached参考与评分器候选总分最大差0.0。一次性向量化BF16有不同舍入，仅作诊断，正式用匹配cached BF16对照。\n\n当前3/39完成，新BF16 PIQA acc70.5114%/acc_norm69.9674%，ARC-E64.3939%/58.3333%，Hella1000子集41.9%/52.4%。36项替换还在Slurm2478/2479/2480运行或排队，结束后2481自动核验汇总；不提前报告采样质量。原件、完成题数、SHA和75项执行源核对在qwen/results/task_accuracy_20261019/。真实执行075574ec，collector独立0d4be877；运行快照不修改。\n\n旧失败快照和BF16数值诊断保留，详情PREPARATION_ZH.md；仅按用户授权取消本人未开始的2430_19/20/21冗余PPL，最佳B4T32任务及原件保留。数据/权重/大型逐题原件不进Git。Projects缺read:project待同步。\n\nRefs #59；依赖PR #52，base暂task/50-joint-ffn-attention。长期备忘录同步PR #64。"
+    },
+    {
+      "number": 52,
+      "title": "Qwen随机FFN与实际Attention联合PPL及Ising观测次数曲线",
+      "head": "e3c5e957c3769b5fc6867b42a52facace647a83b",
+      "head_ref": "task/50-joint-ffn-attention",
+      "base_ref": "pbit-tlm-attention-details-20261016",
+      "draft": true,
+      "body": "在24层解码中联合短流FFN与max4概率筛选、候选准确QK、有限hard-onehot CTMC Ising和直接V索引平均；FFN在prefill/decode都替换，Attention多token prefill仍准确SDPA。通过cached计分与独立hooks确保每个计分目标实际执行所有24层。\n\n三种FFN主对照34项＋准确Softmax诊断12项此前完成。本次固定B4T32/K32，只改变Ising观测数；15新后缀（S32/64/256/1024各3seed＋准确PV三seed）已完成。已有128/512不重跑，原FFN六档曲线复用成员PR49公开数据和SHA。下表为同4096目标后缀PPL三seed均值，不是完整WT2。\n\n| Ising观测数S | 原FFN（复用PR49） | 固定B4T32 FFN |\n|---:|---:|---:|\n| 32 | 11.996331 | 12.065755 |\n| 64 | 11.376921 | 11.514886 |\n| 128 | 11.163005 | 11.197813 |\n| 256 | 11.024839 | 11.066594 |\n| 512 | 10.980212 | 11.055307 |\n| 1024 | 10.924655 | 11.006579 |\n\n同筛选准确Softmax/准确PV：原FFN10.895520，B4T32为10.970368；原BF16后缀10.371557，B4T32-only10.427377。只看本轮后缀，1024最低；256和512仅差约0.011，小于各自seedSD0.026/0.017，不能由此证明等价。准确PV是诊断参考，不是PPL数学下界；不使用自定5%代替质量验收。S是每query/head保留观测数，burn16/gap4固定，不是ESS或硬件更新拍。\n\n新增执行c0fd54446d843f0b21e94bf138c692048e518c86，Slurm2440重验模型/语料并重新复现未修改BF16后缀；2441完成15项。2采样计划测试、49执行源码Git blob、12公开制品Git blob、25项逐段NLL、摘要字节重现与批形状不匹配拒绝均通过，PNG视觉检查通过。21新原件及旧10个复用原件SHA可查。原FFN引用权重/text/token/targets一致，但部分原始元数据字节不同已披露，不宣称所有文件相同。\n\n完整确认仍运行：旧Slurm2430/53dd的22项（含S128及匹配BF16/FFN-only）；新Slurm2461/c0fd的6项（B4T32 S256/512各3seed），统一299077目标、2048/1024、batch32。新cached BF16已11.652118067865489；完整联合结果未收齐，不提前填值，不改快照或重复提交。新full复用实际显存门禁并校验数值内核未变。\n\n正式报告：qwen/results/ising_sample_sweep_20261019/RESULTS_ZH.md，另含SUMMARY、PNG/SVG/CSV、输入和SHA索引及公开参考原件；旧三FFN报告保留qwen/results/joint_stratified_attention_20261019。进度/交接在work/jieruiz/50和progress/jieruiz/STATUS.md，唯一长期memo§5.7.1已同步（保留并行Issue51补充）。只评估PPL，无新训练、任务benchmark、PT/PPA或TLM默认改变。\n\nPR52保持draft未合并，Issue50保持open；Projects缺read:project看板待同步。Refs #50。\n"
+    },
+    {
+      "number": 49,
+      "title": "experiment: joint screened Ising Attention PPL across six sample counts",
+      "head": "8dd1b06aa465b3bdaaed60ae321c5362983ae169",
+      "head_ref": "task/48-attention-joint-ppl",
+      "base_ref": "task/35-attention-e01",
+      "draft": true,
+      "body": "将max4概率QK筛块→候选精确QK→有限时间强互斥CTMC Ising→V索引累加接入Qwen2.5-0.5B全部24层decode，保留原FFN、投影和准确SDPA prefill。此前历史结果没有覆盖这个同一路组合。\n\nSlurm2380已完成34/34项。S32/64/128/256/512/1024各三个seed，burn16/gap4、固定8块最多512候选。每seed32段×128目标＝4096固定WT2后缀计分，初始上下文2048并增长至2175。匹配原SDPA PPL 10.371557，另有显式FP32数字、筛选准确PV、筛选IID和两项桥接。三seed波动不是语料置信区间。\n\n|S|联合PPL均值 ± seed SD|相对匹配SDPA|\n|---:|---:|---:|\n|32|11.996331 ± 0.050601|+15.666%|\n|64|11.376921 ± 0.038391|+9.693%|\n|128|11.163005 ± 0.007407|+7.631%|\n|256|11.024839 ± 0.004998|+6.299%|\n|512|10.980212 ± 0.001083|+5.869%|\n|1024|10.924655 ± 0.008958|+5.333%|\n\n实际验证：CPU2362 38/38；GPU2365原BF16完整WT2锚点11.652735047455899、同BF16 wrapper计分logits逐位一致。执行源11f1d6eea2776e201f2021081f8b0fbae2cc455e；源/配置/输入/逐项结果SHA核验，所有4096目标均经过24层decode，阶段前后模型状态SHA相同。保留旧GPU2331失败及诊断修订，未覆盖失败快照。[结果及限制](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/c2811a61e94226cc79607d91dfeba0d0b9dac992/qwen/results/attention_joint_ising_20261019/RESULTS_ZH.md)。\n\n本轮为整模型后缀PPL，**联合完整WT2确认尚未执行**，不能直接减去完整WT2锚点，也不等同所有prefill替换。理想硬互斥CTMC不含器件非理想/物理反馈时延；GPU软件耗时不作ASIC PPA。用户尚未指定可接受PPL增量，曲线不冒充质量验收。完整语料确认与后续PPA映射另续；无盲目追加全矩阵。\n\nRefs #48。PR依赖task/35-attention-e01的输入核验；不自动合并或关闭Issue。Projects缺read:project/project scope，看板待同步。"
+    }
+  ]
+}

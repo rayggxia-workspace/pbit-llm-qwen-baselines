@@ -1,0 +1,260 @@
+{
+  "schema": "planning specification, not an executable simulator config",
+  "issue": 33,
+  "status": "planned; no experiment run",
+  "base_commit": "3553996bf014a29dee7fdb2250a3965e8fd881a4",
+  "owner": "amlink1219",
+  "primary_model": "Qwen/Qwen2.5-0.5B Base",
+  "ffn": "unchanged BF16 during Attention isolation",
+  "quality": {
+    "main_delta_nll_nats_per_token": 0.01,
+    "sensitivity": [
+      0.005,
+      0.02
+    ],
+    "stochastic_seeds": [
+      0,
+      1,
+      2
+    ],
+    "borderline_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "full_ppl_protocol": {
+      "context": 2048,
+      "stride": 1024,
+      "corpus": "WikiText-2 raw test with verified original SHA",
+      "max_randomized_variants": 3,
+      "max_formal_runs": 11,
+      "native_runtime_gate": "no per-update Python full-WT2 by default; fast surrogate must be held-out validated and labelled"
+    },
+    "base_formal_runs_max": 11,
+    "borderline_extension_runs_max": 6,
+    "max_runs_with_separate_borderline_extension": 17,
+    "extension_is_separate_stage": true,
+    "long_context_status": "8K cost stress only; separate same-context quality batch max 10 if later promoted"
+  },
+  "traces": {
+    "calibration_source": "disjoint train windows",
+    "test_windows": 8,
+    "decode_positions_per_window": 8,
+    "contexts": [
+      512,
+      2048,
+      8192
+    ],
+    "rows_first_screen": 96,
+    "sample_selection": "fixed coverage before looking at results"
+  },
+  "E1": {
+    "stages": {
+      "E1a": 81,
+      "E1b": 324,
+      "E1c": 71,
+      "E2": 111,
+      "E5": 36
+    },
+    "E1a_probability_thresholds": {
+      "output": "FP32",
+      "TV_max": 0.001,
+      "row_sum_abs_max": 1e-05
+    },
+    "E1b": {
+      "M": [
+        64,
+        512,
+        2048
+      ],
+      "S": [
+        32,
+        128,
+        512
+      ],
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "profiles": [
+        "uniform",
+        "peaked",
+        "real"
+      ],
+      "cases": 324,
+      "metric": "actual V error and matched IID sample bands"
+    },
+    "E1c": {
+      "small_M": [
+        4,
+        8
+      ],
+      "burn": [
+        0,
+        16,
+        64
+      ],
+      "spacing": [
+        1,
+        4,
+        16
+      ],
+      "long_configs_max": 3,
+      "diagnostic_outputs_initial": 131072,
+      "pilot_wall_seconds": 120,
+      "per_config_wall_cap_seconds": 1800,
+      "caveat": "large-M empirical TV/rare indicators require finite-sample reference and sufficient diagnostics; do not infer from task S"
+    }
+  },
+  "E2": {
+    "target_keep_fractions": [
+      0.125,
+      0.25,
+      0.5
+    ],
+    "selector_backends": [
+      "top_budget",
+      "digital_bernoulli",
+      "trng_comparator",
+      "native_sigmoid"
+    ],
+    "native_cells_sensitivity": [
+      1,
+      4,
+      16,
+      32,
+      128
+    ],
+    "fixed_forced_blocks": "first and most recent two",
+    "contexts": [
+      512,
+      2048,
+      8192
+    ],
+    "target_fraction_scope": "total blocks including forced",
+    "matrix_rows": 111,
+    "infeasible_skip_rows": 24,
+    "feasible_rows": 87,
+    "dense_control_rows": 3
+  },
+  "RNG": {
+    "architectures": [
+      "R1_hierarchical",
+      "R2_local_TRNG",
+      "R3_native_router_hybrid",
+      "R4_native_categorical_hybrid"
+    ],
+    "reseed_time_s": [
+      null,
+      1,
+      0.001
+    ],
+    "reseed_query_groups": [
+      1,
+      16,
+      256,
+      4096
+    ],
+    "seed_domain": [
+      "run",
+      "root_epoch",
+      "token",
+      "layer",
+      "head",
+      "purpose",
+      "chain",
+      "counter"
+    ],
+    "cross_stream_rho_stress": [
+      0,
+      0.01,
+      0.05,
+      0.1,
+      0.25
+    ],
+    "read_interval_over_tau": [
+      0.1,
+      1,
+      4,
+      16
+    ],
+    "must_preserve_ffn_replay": true
+  },
+  "PPA": {
+    "process_target": "same available 55nm library; native without same-process model is a target sweep only",
+    "clock_target_MHz": 100,
+    "digital_lanes": [
+      1,
+      4,
+      16
+    ],
+    "tiles": [
+      32,
+      64,
+      128
+    ],
+    "score_bits_sensitivity": [
+      8,
+      12,
+      16
+    ],
+    "bias_bits_sensitivity": [
+      6,
+      8,
+      10,
+      12,
+      16
+    ],
+    "primary_numeric_boundary": "FP32 reference; BF16 IO with FP32 internals as separately verified point",
+    "area_comparison": [
+      "same resource",
+      "same throughput",
+      "same area"
+    ],
+    "memory_boundary": [
+      "on-chip resident microbench",
+      "KV external DRAMSys"
+    ]
+  },
+  "native_sensitivity": {
+    "config_bandwidth_GBs": [
+      1,
+      4,
+      16
+    ],
+    "effective_sample_period_ns": [
+      1,
+      10,
+      100,
+      1000
+    ],
+    "parallel_macros": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "cost_status": "unmeasured points are target conditions, not device claims"
+  },
+  "schedule_workdays": {
+    "E0": "1",
+    "E1": "2-3",
+    "E2": "3-4",
+    "E3": "4-6 after runtime pilot",
+    "E4": "5-8 with library/license",
+    "E5": "7-10 only after quality/PPA gates"
+  },
+  "formal_implementations_present": false,
+  "all_matrix_rows_are_plans": true,
+  "matrix_counts": {
+    "E1a": 81,
+    "E1b": 324,
+    "E1c": 71,
+    "E2": 111,
+    "E5": 36
+  },
+  "matrix_total_rows": 623
+}

@@ -85,3 +85,7 @@
 - 数字对照须有可追溯实现依据，包含分块在线/融合 Softmax、GQA 的 K/V 复用，并区分 QK/Softmax/PV 核心与含 QKV、RoPE、KV 追加、Wo 的完整 Attention。注明归一化、残差、FFN、lm_head 的边界；不强制数字方案物化完整概率矩阵。
 - 面积/能量/延迟比较必须使用明确数制、资源共享、驻留容量和数据流；把假设的资源速率下界、宏表局部成本、同工艺综合、功率分析与芯片实测分开。FP32 概率乘 V 不得按纯 BF16 MAC 免费计费；SRAM fabric 若为读写合计，DMA 写入和计算读出须各计一次。缺失项保持未完成，不用旧占位系数补成完整 PPA。
 - 比较已保存的 Attention 汇总前，核对 decode token 数、首 token/均值、摘要 cold-build/prefill-prebuilt/增量更新和完整模块边界；旧 v3 两 token 均值与 v4 单个冷 token 不能直接作为同协议加速/节能比。候选保留率、GQA 并集、物理突发字节、DMA 请求数与 SRAM 峰值分别记录，不按逐头保留率缩放访存或按较低平均功率判定省能。
+
+## Decode Attention quality execution
+
+- A decode-only Attention patch must not be evaluated by an unchanged multi-token window call and reported as candidate PPL: audit that every scored target executes every replaced layer through the single-token path. Preserve matched cached SDPA controls, exact target coverage, prefill scope, candidate-valid masks, original FFN/weights, and separate suffix/full-corpus protocols.

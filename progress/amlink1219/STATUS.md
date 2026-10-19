@@ -1,3 +1,11 @@
+# Issue48：联合筛选＋有限时间Ising模型PPL（实现完成，待Slurm门禁）
+
+负责人amlink1219；分支task/48-attention-joint-ppl，目录workspace_projects/aj48，PR base task/35-attention-e01（复用其输入身份核验）。原FFN保持，24层decode联合路径，S32/64/128/256/512/1024三seed；34项后缀矩阵已注册，完整确认需独立cached计分。
+
+35/35本机真实Torch CPU测试通过、无skip；包括CTMC有限时间/非IID/采样前缀、配额/GQA/因果/原参数保持、每计分目标24层调用及完整目标集合。服务器第二次SSH已恢复，当前已核本人队列空；尚未提交本任务作业或得到新模型PPL。代码与小型旧train校准来源见experiments/attention_joint_ising；接续work/amlink1219/48/HANDOFF.md。
+
+以下保留此前发布进度快照：
+
 # amlink1219 项目进度
 
 更新时间：2026-10-19T03:58:53.771030+00:00；负责人amlink1219（GitHub id75301230）。

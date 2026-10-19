@@ -25,3 +25,13 @@ python qwen/run.py tlm --help
 `--dry-run`只列出命令；不加载模型、不仿真。动作后参数原样传入，路径以调用者当前目录为准；脚本本身按绝对位置定位。任意工作目录均可用该run.py的绝对路径。GPU评测/捕获继续使用原Slurm脚本，不在登录节点直接运行。新输出应显式传`--output`，不要覆盖历史结果。
 
 历史实现和已签SHA成果保留原路径、原字节，运行入口直接调用原脚本；没有复制一套可分叉的模型实现。共享SRAM、DRAM、随机源与通用算子继续共用，未因本次整理改变采样协议或质量结论。[返回项目首页](../README.md)。
+
+## 已合入的随机FFN范围缩放
+
+2026-10-19，精确双随机参考PR31及独立范围缩放PR34已合入`pbit-tlm-attention-details-20261016`（范围合并提交5b71d4e）。
+
+- [实现与运行说明](../experiments/qwen_dual_range_20261018/README_ZH.md)：A按当前token每64通道缩放，W按每输出行每64输入缩放；准确Attention、自然IID、无训练。
+- [49项结果与限制](results/dual_range_20261018/RESULTS_ZH.md)：128/2048token前缀PPL及mean/fixed/分支对照；不能冒称完整随机WT2或硬件节能实测。
+- [分布与裁剪诊断](results/dual_range_20261018/DISTRIBUTION_ZH.md)：teacher真实编码直方图和标量裁剪误差，不是裁剪模型PPL。
+
+这是一项可选实验实现，没有改变原BF16基线或TLM默认配置。历史执行源17c89c3和校验原件保持不变。

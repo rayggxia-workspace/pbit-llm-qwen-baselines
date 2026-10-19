@@ -1,3 +1,7 @@
+# 本轮补传状态（2026-10-19）
+
+权限已恢复，当前为发布准备阶段；尚未推送/创建PR。实时状态以PUBLICATION.json及本人STATUS为准。以下交接保留原执行时点；其中无push权限/未发布描述仅指原时点。原manifest应按原交付提交验证。
+
 # Issue33 可继续执行的交接
 
 负责人amlink1219，时间2026-10-18T23:30:29+08:00。目标rayggxia-workspace/pbit-llm-qwen-baselines；Issue https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/33；本地任务目录 `E:/BaiduSyncdisk/p-bit/DAC_2026_Draft_Proceedings/DAC_2026_Draft_Proceedings/workspace_projects/pbit-attention-issue33`，分支`task/33-attention-value-plan`，base `3553996bf014a29dee7fdb2250a3965e8fd881a4`。本次仅调研和实验安排，没有执行任何新模型/RTL/PT/TLM/Slurm任务。

@@ -1,3 +1,5 @@
+本轮p-attention能量调研已上传`a0d08a4208fe505c81aa150abf807fd5e622a0f2`，PR63开放待审未合并；远端ref/PR head及17项稳定制品Git blob已核验，回执P_ATTENTION_PUBLICATION.json。无新模型/训练/PPL/PPA；同事Issue50/59不重交。
+
 ## 2026-10-19 可训练能量p-attention调研
 
 接续Issue61/PR63，核查PR52 e3c5e957c3769b5fc6867b42a52facace647a83b仍开放未合并。现有screen_ising已经不显式计算Softmax，直接score差热浴CTMC；新路线是蒸馏筛选器＋低维/低位条件能量＋实际有限链训练，独立mask与binary/tree作为另一结构。报告architecture_tlm/p_attention_feasibility_20261019/README_ZH.md；计划未执行，没有新模型/PPL/GPU/PPA。现有原始/负面证据保持，Issue50/59作业不重交。数学核验与文献入库回执在work/amlink1219/61/p_attention/。Projects仍按既有scope待同步。

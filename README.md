@@ -1,3 +1,24 @@
+# p-bit LLM：Qwen / LLaMA-1 / Llama 2
+
+按模型从以下三个顶层目录进入：
+
+| 模型目录 | 当前内容 | 主要结果 |
+|---|---|---|
+| [qwen/](qwen/README.md) | Qwen2.5-0.5B基线、概率FFN、Attention v3/v4及硬件资料入口 | 原BF16/任务分数、历史数值实验与TLM；不同版本分别标注 |
+| [llama1/](llama1/README.md) | LLaMA-1 7B：当前标准TLM、真实BF16 QK捕获 | 82项TLM；本次替换方案没有新联合PPL |
+| [llama2/](llama2/README.md) | Llama 2 7B Base：完整BF16基线、当前标准TLM | BF16 WT2 PPL2K4.979503 / 4K4.895831；116项TLM |
+
+每个目录内有`run.py`、`project.json`以及`configs/`、`baselines/`、`tlm/`、`results/`入口。模型运行、配置、结果和证据边界均独立列出。`architecture_tlm/`中的共享引擎、SRAM/DRAM和随机源继续共用；历史已签SHA的代码/成果保留原路径以复现旧命令。目录整理不改变算法或重算历史数据。其他分支（含Qwen3.5）的成果尚需各自合并，不在这里自动宣称已集成。
+
+```sh
+python qwen/run.py check
+python llama1/run.py check
+python llama2/run.py check
+python llama2/run.py tlm --help
+```
+
+以下保留原有资料与复现说明。
+
 ## 最新事务模型（工作区，2026-10-16）
 
 见 [TLM 总索引](architecture_tlm/WORKSPACE_LATEST_ZH.md)，包含 Attention 筛选、PV 稀疏采样、Ising v3/v4 与 FFN 本地随机源。
@@ -6,6 +27,10 @@
 
 Reproducible BF16 reference measurements and inspection utilities for studying
 p-bit replacements inside the feed-forward network of Qwen2.5-0.5B Base.
+
+## Qwen随机FFN范围缩放（2026-10-19已合入）
+
+[实现说明](experiments/qwen_dual_range_20261018/README_ZH.md)、[已验证前缀PPL](qwen/results/dual_range_20261018/RESULTS_ZH.md)及[真实量化分布/裁剪诊断](qwen/results/dual_range_20261018/DISTRIBUTION_ZH.md)。该可选实验保留原BF16 Attention，没有修改模型基线或TLM默认配置；动态定标的硬件成本另行评估。
 
 ## Transaction model with DRAMSys external memory
 
@@ -297,3 +322,17 @@ and different readout precision. See the
 
 Apache License 2.0. Qwen model weights and WikiText-2 are obtained separately
 and remain subject to their own licenses and terms.
+
+## FFN精度与短流基线（2026-10-18）
+
+Llama 2全部32层FFN的完整WT2对照、128拍分层三种子、256枚举和DS-CIM条件核对见[实验说明](experiments/llama2_ffn_precision/README_ZH.md)及[原文比较](experiments/llama2_ffn_precision/DS_CIM_COMPARISON_AND_BASELINES_ZH.md)。已完成16/26项；Attention保持原BF16，剩余评测仍在Slurm运行，不代表新硬件能效实测。
+
+
+## 固定INT8权重、输入多尺度短流（2026-10-19）
+
+[完整WT2与三种子结果](qwen/results/fixedw_multiscale_20261019/RESULTS_ZH.md)：全部24FFN保留同一固定W8，输入4/8档二次幂编码，T128/256完整滑窗；原BF16 Attention不变。4档T128约12.31、T256约11.99，原BF1611.652735。已[补完T64完整WT2三种子](qwen/results/fixedw_multiscale_t64_20261019/RESULTS_ZH.md)：4档13.0380±0.0107、8档13.0385±0.0120，较BF16增加约11.89%；单档pot1仍只有512前缀。没有新PPA或修改TLM默认。
+
+
+## 多档缩放＋随机分层：完整WT2短流（2026-10-19）
+
+[联合结果与图](qwen/results/multiscale_stratified_20261019/COMPARISON_ZH.md)：固定同一W8、全24FFN、Attention原版；新增67配置＋2BF16参考均收齐。四档细分层T16/32/64为11.900826/11.736131/11.693775（各3seed），BF1611.652735；两档T32为11.769199。3～4档后无明显额外收益，缩放后粗K4/16也有效；K>1是受控随机分层，不能冒称自然IID。只给数值精度，无新PPA/整机能耗结论。

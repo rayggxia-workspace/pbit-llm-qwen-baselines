@@ -1,5 +1,16 @@
 # Issue 28 交接
 
+## 2026-10-19 17:08：Issue59/PR62记忆同步，本地待统一发布
+
+- 实际认证`jieruiz`，目标`rayggxia-workspace/pbit-llm-qwen-baselines`；canonical为本目录对应checkout `tmp/project-memory-issue28-20261018`、分支`task/28-project-memory`。开始clean，HEAD为`b2527f12924a53da7334afbe78c752c101814193`。已只读核实Issue28open、PR29merged、PR62open/draft且base `task/50-joint-ffn-attention`、head348c8286。
+- 两次git fetch因连接reset/不可连接失败；GitHub API独立核实当前集成仍为同一b2527f1，与本地HEAD及workspace ref相等；`git merge --ff-only`返回Already up to date。未reset、未改其他成员文件或主Issue59 checkout。
+- 保留最新Issue55集成和历史规则。本次只改正式memo第5.8节/第12.1节、本人STATUS、本HANDOFF；根`a_P_BIT/PROJECT_MEMORY_ZH.md`仅从正式memo复制同字节。PR29已经合并，本次新提交尚未推送或创建PR，主任务统一处理发布；不要把本地更新写成已远端完成。
+- 同步的Issue59范围：PIQA1838/ARC-E2376全量；HellaSwag固定seed20261019的1000题子集；官方Harness0.4.8 acc/候选字符长度acc_norm；新BF16、B4T32-only三seed、joint Ising64/128/512各三seed，共39项。新cached首答案token与全24层审计、候选KV/RNG/summary恢复、短prompt保留allK的限制均记录。执行源`348c8286bc8bc8e6ee00ec9876b3224b751f4800`。
+- 记录时点状态：15项CPU测试通过，Slurm2473准备完成，2474 WT2/pilot中，正式39项数组未提交、无新准确率。2471package调用失败、2472取消均无模型运行。仅取消本人pending 2430_19/20/21（B4T16）；保留最优完整评测及原件。任务实际运行由Issue59负责人继续，本次不提交/取消任何Slurm任务。
+- 验证：`git diff --check`、UTF-8/LF、严格三文件差异和根副本字节/Git blob核验；无新PPL/训练/RTL/PT/PPA/TLM。下一步由主任务先查最新2474/数组状态、按需要补确切状态，再新PR发布并同步Issue28/59及根副本；看板缺read:project历史待同步，不宣称已更新。
+
+## 以下为历史交接，保留原日期和当时状态
+
 日期：2026-10-18；负责人：@jieruiz。正式仓库rayggxia-workspace/pbit-llm-qwen-baselines。
 
 - 独立分支：task/28-project-memory；base pbit-tlm-attention-details-20261016 @3553996bf014a29dee7fdb2250a3965e8fd881a4。

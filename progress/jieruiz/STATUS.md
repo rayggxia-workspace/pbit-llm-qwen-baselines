@@ -1,3 +1,15 @@
+# Issue28：代表任务准确率的记忆同步（本地待发布）
+
+2026-10-19 17:08（北京时间）；负责人/实际认证`jieruiz`；正式仓库`rayggxia-workspace/pbit-llm-qwen-baselines`。canonical目录`tmp/project-memory-issue28-20261018`，分支`task/28-project-memory`；本轮起点为已集成的`b2527f12924a53da7334afbe78c752c101814193`。PR29已实际合并，Issue28持续维护open；本轮补充尚未推送、未创建新PR，交由当前主任务统一发布，不能向已关闭PR29写成待审更新。
+
+已核验canonical起始clean、GitHub身份、Issue28/PR29/PR62。两次git fetch分别连接重置/不可连接；只读GitHub API核实当前integration恰为同一个b2527f1，`git merge --ff-only`确认Already up to date，未reset或覆盖并行集成。已读最新AGENTS、README、memo及历史STATUS/HANDOFF，保留Issue55的23项审核/21项合并记录。
+
+本轮仅同步`PROJECT_MEMORY_ZH.md`第5.8节和第12.1节、本人STATUS及Issue28 HANDOFF，根阅读副本由正式memo复制并核字节。Issue59/PR62执行源348c8286，PIQA1838/ARC-E2376全量、Hella1000固定子集，BF16/FFN-only/Ising64/128/512共39配置；15项CPU通过，2473准备done、2474 WT2/pilot中、正式数组未提交，无任务准确率可报。候选缓存/RNG/summary恢复和首答案token真实decode边界、短prompt不能验证长context筛选均已记录。实验属于Issue59，本次文档维护不启动模型/Slurm/PT/TLM。
+
+验证：UTF-8/LF、`git diff --check`、仅三项正式文件范围、根副本/Git blob字节一致（提交后复核）。下一步：主任务核实2474及正式数组最新状态，再统一补文档、发布独立后续PR和Issue同步；Projects此前缺read:project待同步，本轮没有重查或声称看板已更新。
+
+## 以下为继承的历史任务状态，保留时间与发布语境
+
 本任务收尾补审PR58已实际合并`88764ec8f6f00ed05f4ab337902bd23ad08cc4a8`；总计23项、21合并、49/52留draft。首批22项/20合并的冻结回执保留在下文，新参考单独验证，不作为新完整PPL/PPA。报告通过PR60交付。
 
 # jieruiz 当前进度：Issue55 PR审核已交付

@@ -1,3 +1,7 @@
+# 本轮补传状态（2026-10-19）
+
+权限已恢复，当前为发布准备阶段；尚未推送/创建PR。实时状态以PUBLICATION.json及本人STATUS为准。以下交接保留原执行时点；其中无push权限/未发布描述仅指原时点。原manifest应按原交付提交验证。
+
 # amlink1219 硬件设计接入交接
 
 时间：2026-10-18T22:39:51+08:00；本地落地负责人amlink1219；关联既有Issue1，不改变其原assignee。正式目标 `https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines`。

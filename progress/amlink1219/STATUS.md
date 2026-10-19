@@ -1,13 +1,23 @@
 # amlink1219 项目进度
 
-- 更新时间：2026-10-18T22:39:51+08:00；认证身份 `amlink1219`（75301230），目标 `https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines`。
-- 本对话目标：完成 p-bit for LLM 硬件架构设计；本轮是协作接入与当前状态核查，不代表硬件设计已完成。
-- 关联任务：既有 Issue #1 的本机规范落地子项，子项负责人 amlink1219；原Issue负责人jieruiz不变，未新建重复任务或接管PR2。
-- 本地目录：`E:/BaiduSyncdisk/p-bit/DAC_2026_Draft_Proceedings/DAC_2026_Draft_Proceedings/workspace_projects/pbit-llm-qwen-baselines`；分支 `task/1-amlink1219-hardware-onboarding`；base `pbit-tlm-attention-details-20261016` @ `3553996bf014a29dee7fdb2250a3965e8fd881a4`。本任务PR尚未创建，分支尚未推送。
-- 已完成（本地）：身份/权限/remote核实；读取最新规则、README、协作、状态、相关Issue/PR和交接；保留原规则并完善DAC根与专用项目根AGENTS；建立本人进度、范围、SHA与可执行交接。
-- 实际验证：见 `work/amlink1219/1/VALIDATION.json`。本轮只做文档与溯源核查，不声称重新运行模型、PPL、RTL/PT、TLM或服务器任务。
-- 成果：`AGENTS.md`、本文件、`work/amlink1219/1/`；DAC资料根AGENTS仅作本机导航，不能整树上传。来源API与字节备份在DAC根 `outputs/pbit_hardware_onboarding_20261018/`。
-- 他人进度：Issue19阶段PR20/21已合并，剩余评测未齐；Issue22/PR25短流RTL待审；Issue28/PR29备忘录待审；Issue30双随机精确评估由jieruiz负责。均不接管、不重复启动；远程作业状态本轮未实时查询。
-- 阻塞：目标push=false/triage=false；无法向正式目标推送并创建本任务交付PR，Issue验收/label未更新。Projects缺read:project，看板未同步。Windows沙箱启动helper_sandbox_lock_failed；仅通过授权诊断/工作命令推进，未改ACL或关闭沙箱。
-- 下一步：重新核实amlink1219权限及最新Issue/PR；有write后按HANDOFF核diff和文件清单，推送本任务分支，创建/更新关联Issue1的PR，再同步实际状态。有新硬件设计范围另建/接续Issue；不回退旧库或换账号。
-- 远端已同步：[Issue1真实进度评论](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/1#issuecomment-6251225780)，作者及全文回读一致；仅评论成功，任务分支/PR/标签/验收/看板仍待同步。本地提交由Git日志及审查目录delivery_receipt.json标识。
+更新时间：2026-10-19T03:54:44.427669+00:00；负责人amlink1219（GitHub id75301230）。
+正式目标：rayggxia-workspace/pbit-llm-qwen-baselines（repository id1420564659）。2026-10-19实时核验push/admin均为true。
+本轮补传基线：pbit-tlm-attention-details-20261016 @c1555ae6594c863011a70845d88c950a68de732b；阶段：权限恢复，完成本地发布准备；尚未推送或创建PR。
+没有自动合并或关闭Issue；分支、PR待审与已合并分别记录。Projects同步状态见各任务PUBLICATION.json。
+
+| Issue | 分支 / PR | 本轮结果与验证 |
+|---|---|---|
+| [#1](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/1) | [task/1-amlink1219-hardware-onboarding](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/tree/task/1-amlink1219-hardware-onboarding)；准备补传，尚未创建PR | 协作规范与本机交接；原manifest 9/9。 |
+| [#33](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/33) | [task/33-attention-value-plan](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/tree/task/33-attention-value-plan)；准备补传，尚未创建PR | 文献与623行实验计划；原manifest 15/15，计划不等于已执行。 |
+| [#35](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/35) | [task/35-attention-e01](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/tree/task/35-attention-e01)；准备补传，尚未创建PR | 原BF16完整WT2 PPL11.652735047455899；CPU39/39，pilot12/12、full465/465；原manifest74/74。 |
+| [#36](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/36) | [task/36-digital-attention-reference](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/tree/task/36-digital-attention-reference)；准备补传，尚未创建PR | 在线Softmax+GQA数字参考，10/10解析测试及3上下文账本；原manifest16/16；完整PPA未闭合。 |
+| [#37](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/37) | [task/37-attention-comparison](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/tree/task/37-attention-comparison)；准备补传，尚未创建PR | Slurm2164完成，9/9快照测试、32/32事务场景、40返回文件SHA；原manifest68/68；完整物理PPA和PPL尚未验证。 |
+
+Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR base为上述集成分支。
+各分支使用相同的AGENTS规则并集与个人进度总表，避免共享文档相互覆盖；正式代码和成果仍按任务分支隔离。
+历史执行提交、配置、输入版本、Slurm终态和原始成果散列均保持；原manifest按PUBLICATION.json中的pre_publication_commit读取，不能用后续更新的STATUS/HANDOFF冒充原字节。
+
+正式入口：Issue33 architecture_tlm/ATTENTION_PBIT_VALUE_AND_EXPERIMENT_PLAN_ZH_20261018.md；Issue35 experiments/attention_e01 与 qwen/results/attention_e01_20261019；Issue36 architecture_tlm/digital_attention_reference；Issue37 architecture_tlm/attention_comparison。
+辅助/交接：work/amlink1219/<Issue>/。本地工作目录及原任务提交见各PUBLICATION.json；旧STATUS可从原提交恢复。
+原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
+下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。

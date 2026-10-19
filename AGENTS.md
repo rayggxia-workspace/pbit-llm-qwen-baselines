@@ -64,14 +64,24 @@
 - 既有 P-DNN 层原理及后续变更继续维护 `experiments/pdnn_ffn/P_DNN_FFN_DESIGN_ZH.md`，不是被个人 STATUS 替代。
 - 当前 TLM 已发布入口位于分支 `pbit-tlm-attention-details-20261016` 的 `architecture_tlm/WORKSPACE_LATEST_ZH.md`；该分支未自动合入 main。阅读版本与限制后再接续，不将宏级模型结果宣称为实测芯片性能。
 
+## Server snapshot preflight
+
+- When staging a minimal server snapshot, include test fixtures and imported data/configuration files in its source manifest. Run tests from the extracted snapshot rather than only from a full checkout, and pass a CPU Slurm preflight before allocating a GPU; preserve failed snapshots and job identities.
 
 ## amlink1219 hardware-design workspace（2026-10-18）
 
-- 本节补充用户在本机的硬件架构设计协作要求，上方原复现及协作规则逐字保留。只约束本用户的操作身份，不改变其他成员的身份或任务所有权。
+- 本节补充用户在本机的硬件架构设计协作要求，上方原复现及协作规则完整保留。只约束本用户的操作身份，不改变其他成员的身份或任务所有权。
 - 本人的 GitHub 登录名为 `amlink1219`，ID `75301230`；首次使用认证渠道及切换凭据后核实 `/user`，发布前核对目标权限和所有解析后的 push URL。目标仅为 `rayggxia-workspace/pbit-llm-qwen-baselines`；不使用身份不符的连接器，不回退旧上游。
-- 个人进度为 `progress/amlink1219/STATUS.md`，辅助资料及可执行交接为 `work/amlink1219/<Issue编号>/`。本次是既有 Issue #1 的本机规范落地子项，负责人 `amlink1219`；Issue #1 原负责人仍为 `jieruiz`，未接管其 PR #2。实际硬件实现的新范围另建或接续对应 Issue。
+- 个人进度为 `progress/amlink1219/STATUS.md`，辅助资料及可执行交接为 `work/amlink1219/<Issue编号>/`。2026-10-18的本机规范落地是既有 Issue #1 的子项，负责人 `amlink1219`；Issue #1 原负责人仍为 `jieruiz`，未接管其 PR #2。实际硬件实现的新范围另建或接续对应 Issue。
 - 继续执行一任务一 Issue/分支、独立并行目录、开工/恢复/发布前检查 Issue/PR/成员 STATUS/HANDOFF、明确验收、限定文件范围、实际验证、任务 PR 交付和有权限的看板同步。缺少权限仍完成可执行部分，并记录尚未上传或同步的内容。
 - 恢复硬件设计前，先读根 `PROJECT_MEMORY_ZH.md` 第 0、1、12 节及对应子系统。若 PR #29 尚未合并，用 `git fetch origin` 后 `git show origin/task/28-project-memory:PROJECT_MEMORY_ZH.md` 读取待审版本并注明来源，不把它当成已集成代码。随后重新核对 Issue #19、#22、#30 等实际状态。
 - 当前主要集成分支为 `pbit-tlm-attention-details-20261016`，不是默认 main；此为截至 2026-10-18 的导航，恢复时重新确认。其他成员拥有的 Issue #19/22/30 及既有评审分支只读，不重复启动或覆盖其运行快照。
 - 硬件目标围绕质量、能量、面积和延迟一起决策；同一数制和质量目标下比较确定性低位/位串行与随机计算。输入侧/双侧随机、自然 IID/PRNG/分层/枚举、原生 p-bit/数字随机字、数值参考/RTL/PT/TLM 分开记录。SRAM、权重/KV、随机源/分发、计数累加、非线性、格式转换和接口均计费。
-- 本次权限核验是时点快照：`amlink1219` pull=true、push=false、triage=false；Projects 查询缺 `read:project`。详细回执见 `work/amlink1219/1/REMOTE_SNAPSHOT.json`。恢复后重新核实；权限不足时明确“本地已完成、未上传、未创建 PR、看板待同步”，不换账号或擅自修改权限。
+- `work/amlink1219/1/REMOTE_SNAPSHOT.json`保存的是2026-10-18身份和权限时点快照，不代表当前权限。开始、恢复和发布前重新核实；权限不足时如实记录未上传或待同步项，不换账号或擅自修改权限。
+
+## Attention 架构验收口径（用户 2026-10-19 指定）
+
+- 概率 Attention 的主目标是降低面积、能量与延迟；允许有限质量损失。以同模型、同语料协议下完整模型 PPL 增量约束比较完整数字 Attention 与概率方案的 PPA；尚未约定具体 PPL 预算时报告质量与成本曲线，不擅自写成用户已接受某个阈值。局部 TV/NMSE、采样独立性用于诊断，不能代替完整模型验收或单独决定架构优劣。
+- 数字对照须有可追溯实现依据，包含分块在线/融合 Softmax、GQA 的 K/V 复用，并区分 QK/Softmax/PV 核心与含 QKV、RoPE、KV 追加、Wo 的完整 Attention。注明归一化、残差、FFN、lm_head 的边界；不强制数字方案物化完整概率矩阵。
+- 面积/能量/延迟比较必须使用明确数制、资源共享、驻留容量和数据流；把假设的资源速率下界、宏表局部成本、同工艺综合、功率分析与芯片实测分开。FP32 概率乘 V 不得按纯 BF16 MAC 免费计费；SRAM fabric 若为读写合计，DMA 写入和计算读出须各计一次。缺失项保持未完成，不用旧占位系数补成完整 PPA。
+- 比较已保存的 Attention 汇总前，核对 decode token 数、首 token/均值、摘要 cold-build/prefill-prebuilt/增量更新和完整模块边界；旧 v3 两 token 均值与 v4 单个冷 token 不能直接作为同协议加速/节能比。候选保留率、GQA 并集、物理突发字节、DMA 请求数与 SRAM 峰值分别记录，不按逐头保留率缩放访存或按较低平均功率判定省能。

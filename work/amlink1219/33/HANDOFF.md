@@ -1,3 +1,11 @@
+# 2026-10-19 Attention质量证据核查接续
+
+本次恢复已核最新Issue/PR/成员状态：其他成员Issue46/PR47属FFN，不接管。先读根architecture_tlm/ATTENTION_QUALITY_EVIDENCE_AUDIT_ZH_20261019.md及本目录QUALITY_AUDIT_20261019.json。此前“没有完整模型PPL”的宽泛表述应改为：历史已有24层模型级后缀PPL，但没有查到当前max4筛选→真实Ising同一路的联合/完整WT2质量验收。
+
+已完成历史代码分支与数值核查；没有新job_id/模型运行。接续按报告第“接续实验只补缺口”节建立具体实现/执行Issue，在独立工作树做原FFN、当前预算的联合模型。不要重新跑140项旧矩阵，也不把精确Softmax后IID叫Ising。当前核查通过PR42补交，不关闭Issue。
+
+下面保留原交接历史时点：
+
 # 本轮补传状态（2026-10-19）
 
 分支已推送，[PR #42](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/42)待审、未合并；Issue保持open。amlink1219当前Admin/push权限已核实。看板GraphQL仍缺read:project，待同步。最新个人汇总见progress/amlink1219/STATUS.md；PUBLICATION.json记录原交付提交，DELIVERY_MANIFEST.json记录补传后文件SHA。

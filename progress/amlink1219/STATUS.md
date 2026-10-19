@@ -1,3 +1,11 @@
+# Attention历史质量证据核查（2026-10-19T06:28:37.698199+00:00）
+
+负责人amlink1219；Issue33 / PR42补充。已确认历史全部24层decode Attention PPL：单独Ising、max4筛选、筛选＋准确Softmax IID及随机投影＋Ising；各自协议/FFN不同，所核Attention结果是WT2短后缀。尚未找到max4筛选→有限时间Ising同一路联合PPL，当前固定512候选/S32/128配置也未质量验收。
+
+报告architecture_tlm/ATTENTION_QUALITY_EVIDENCE_AUDIT_ZH_20261019.md；固定源与SHA索引work/amlink1219/33/QUALITY_AUDIT_20261019.json。未启动新GPU/Slurm或重跑旧实验。后续只补该联合路径、原FFN隔离对照和当前成本模型配置的质量，完整WT2与decode后缀分别记录。其余PR仍待审未合并，Projects仍待授权。
+
+以下保留此前五项发布时点进度：
+
 # amlink1219 项目进度
 
 更新时间：2026-10-19T03:58:53.771030+00:00；负责人amlink1219（GitHub id75301230）。

@@ -1,3 +1,9 @@
+# Issue46：多档＋分层完整结果已发布，PR47待审未合并
+
+2026-10-19，jieruiz；task/46-fixedw-multiscale，base c1555ae；tmp/qwen-fixedw-multiscale-20261019。执行db27fa3，Slurm2308/2309结束，69计分/72原件/37源blob/23新发布blob核验，旧17/20清单分别验证。结果c8ea878已发布，4档fine T16/32/64=11.900826/11.736131/11.693775，2档T3211.769199；正式总表/图/LITERATURE在qwen/results/multiscale_stratified_20261019，work/jieruiz/46/STRATIFIED_DELIVERY_RECEIPT为回执。备忘录1fe0c92远端与根副本同字节，Issue46/28及PR47同步；PR47未合并、Issue46open，无新PPA，Projects待同步：GraphQL permission unavailable: Your token has not been granted the required scopes to execute this query. The 'id' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['repo', 'user', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.。下一步审阅验收，或独立验证RTL/能效，不重跑145输出条目。
+
+以下历史：
+
 # Issue46：多档＋分层69项已核验，准备发布
 
 2026-10-19，jieruiz；task/46-fixedw-multiscale/PR47，base c1555ae，工作目录tmp/qwen-fixedw-multiscale-20261019。执行db27fa3，Slurm2308/2309完成，69计分/72原件/37源blob核验，BF1611.652735。4档T32细分层11.736131、2档T3211.769199；正式目录qwen/results/multiscale_stratified_20261019，回执work/jieruiz/46/STRATIFIED_*，旧76项保留。结果本地完成，待提交推送、PR/备忘录同步；PR47未合并，Projects缺read:project，无新PPA。下一步发布核验并交接。

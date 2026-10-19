@@ -53,3 +53,6 @@ Slurm2298/2299全部结束，本人队列空，11项计分/14原件SHA/31执行�
 ## 多档＋分层结果本地核验完成（2026-10-19）
 
 Slurm2308/2309结束、本人队列空，69计分/72服务器原件/37执行源blob核验。4档细分层T16/32/64/128=11.900826/11.736131/11.693775/11.683928；2档T32=11.769199；同T64四档K4/16=11.893101/11.736863，均3seed完整WT2。原BF16精确11.652735。正式结果qwen/results/multiscale_stratified_20261019/，COMPARISON与图/LITERATURE为总入口，旧76输出不覆盖。当前本地结果已完整整理，待提交发布/更新PR及长期备忘录；PR47未合并、无新PPA，Projects缺read:project待同步。
+
+
+最终发布回执：结果c8ea878及备忘录1fe0c92已实际发布；三批23/17/20文件清单分别在各自结果commit核验，69新计分/72原件/37源blob齐。Issue评论https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46#issuecomment-6261698331。PR47 ready待审未合并，Issue46open，无PPA；看板状态GraphQL permission unavailable: Your token has not been granted the required scopes to execute this query. The 'id' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['repo', 'user', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.。下一步审阅验收或独立RTL/PT验证，不重复145个已完成输出条目；未测B3短T或同T16/32 IID。

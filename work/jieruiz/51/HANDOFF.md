@@ -13,3 +13,11 @@
 - 准备/核验脚本位于tmp/emerging-quality-preflight-20261019/prepare_delivery.py；来源与正式成果SHA见MANIFEST。
 - Projects实际GraphQL返回INSUFFICIENT_SCOPES、缺read:project，未同步看板。
 - 下一步：核文档范围后推任务分支PR至TLM base；长期备忘录在独立更新分支向task/28-project-memory提交小补丁，保持唯一主维护文件和根阅读副本不被并行覆盖。实际远端动作发生后补回执。
+
+## 已发生的发布动作
+
+- 主报告两个本地提交16c3459/a07d695已通过GitHub Git Data API逐blob和tree原样上传；远端head为a07d695ce703129635c14fe5bbaec249c3170c1d，与本地一致。Git网络连接失败，改用认证API，不涉及自动审批拒绝或上传范围变化。
+- PR53已创建并附当前任务：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/53。实际base已并行推进至bef83e54，PR为mergeable=true、clean、未合并；已避开Issue46的STATUS插入位置并保留其状态。
+- 正文SHA256为a542b46cf3750138de91ce7c0b46cbefd6cfa7a291b45d7b27dc413bdfc174d8；EVIDENCE为f6274bea585f2b2f12af2815fd2a4c38d7272f72063954ff54ef791f10963783。14复算、UTF-8/LF、用户副本与正文/EVIDENCE Git blob字节核验通过；独立文档审核未发现发布阻断项，已采纳AFM W16与W4参考区别。
+- 备忘录检测到主维护者更新至b347f6af，已在独立目录重放小补丁并保留所有继承文字，不改原维护目录或根阅读副本；补丁发布状态后续追加。Issue51保持开放待审，Projects待权限。
+- 备忘录补丁56e417eab5ca30354a1b1f960437f1352e736faa已实际原样上传，PR54已创建并附本任务：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/54，base task/28-project-memory @b347f6af，待审未合并。根副本继续跟随唯一主维护版本，不能将待审补丁称已同步到根文件。

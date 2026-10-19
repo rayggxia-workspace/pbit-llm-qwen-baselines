@@ -2,7 +2,7 @@
 
 The d61 suffix preparation remains immutable. This runner rechecks input hashes,
 inherits only its successful unchanged-BF16 environment gate, and measures a new
-matched cached BF16 reference. Two real worst-prefix memory pilots must pass
+matched cached BF16 reference. Two real prefix-shape memory pilots must pass
 before any batch32 full case is admitted. Import and plan tests need no Torch.
 """
 import argparse
@@ -46,7 +46,8 @@ def cases(phase='full'):
     if phase == 'memory':
         for batch in (16, FULL_BATCH):
             add('b4_t32', 'screen_ising', name=f'memory_B{batch}_b4_t32_S512_s0',
-                samples=512, examples=batch, decode=4, batch=batch, protocol='suffix')
+                samples=512, examples=batch, decode=4, batch=batch, protocol='suffix',
+                context=2048 if batch == 16 else 1024)
     else:
         add('none', 'sdpa')
         for ffn in joint.FFNS:
@@ -67,7 +68,7 @@ def validate_case(cfg, phase):
     expected = {'full': 'full', 'memory': 'suffix'}
     if phase not in expected or cfg.get('protocol') != expected[phase]:
         raise ValueError('phase/protocol mismatch')
-    if cfg.get('context') != 2048 or cfg.get('stride') != 1024:
+    if cfg.get('context') not in ((2048,) if phase == 'full' else (1024, 2048)) or cfg.get('stride') != 1024:
         raise ValueError('full confirmation uses the frozen 2048/1024 plan')
     if phase == 'full' and cfg.get('batch') != FULL_BATCH:
         raise ValueError('all matched full cases require the approved batch32')
@@ -140,8 +141,9 @@ def prepare(a):
     (out / 'full_plan_tests.stdout.txt').write_text(check.stdout, encoding='utf-8', newline='\n')
     (out / 'full_plan_tests.stderr.txt').write_text(check.stderr, encoding='utf-8', newline='\n')
     check.check_returncode()
-    # These execute actual FFNs on 16x2047 then 32x2047-token prefixes, plus four
-    # scored queries. Full normal prefix length is only1023, so this is stricter.
+    # A deliberately larger 32x2047 pilot OOMed on31.37GiB before any full job.
+    # Actual full scoring batches have1023 prefix tokens; the initial long
+    # window has batch1/no prefill. Cover16x2047 then the actual32x1023 shape.
     import torch
     for cfg in cases('memory'):
         result = joint.evaluate(a, cfg, identity)

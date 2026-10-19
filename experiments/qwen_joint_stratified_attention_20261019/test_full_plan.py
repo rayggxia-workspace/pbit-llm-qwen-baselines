@@ -29,6 +29,7 @@ class FullPlanTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_case(cases('full')[0], 'unknown')
         self.assertEqual([row['batch'] for row in cases('memory')], [16, 32])
+        self.assertEqual([row['context'] for row in cases('memory')], [2048, 1024])
         self.assertNotIn('torch', sys.modules)
 
 

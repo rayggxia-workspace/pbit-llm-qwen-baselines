@@ -43,7 +43,7 @@ FFN的input/product generator与Attention selector/sampler彼此独立；复用�
 
 ## 完整cached确认
 
-`run_full.py`/`run_full.sbatch`另冻结新提交，保留d61原后缀快照。重新校验模型/文本/冻结依赖及d61成功门禁的制品与原源码；不重复相同环境下刚完成的向量化BF16参考。随后先做batch16、batch32各一个2047-token真实前缀的B4T32+S512显存试运行，两项成功才生成READY允许完整worker。
+`run_full.py`/`run_full.sbatch`另冻结新提交，保留d61原后缀快照。重新校验模型/文本/冻结依赖及d61成功门禁的制品与原源码；不重复相同环境下刚完成的向量化BF16参考。先做16×2047和32×1023-token真实前缀的B4T32+S512显存试运行，两项成功才生成READY允许完整worker。此前Slurm2425在不属于完整计划的更大32×2047前缀pilot上显存不足，16×2047已通过（16.23GiB）；没有提交完整worker。实际完整计划首窗无prefill且batch1，其余正常prefill仅1023，所以修正pilot覆盖实际batch形状，原失败快照保留。
 
 完整矩阵22项：1个新cached BF16、3种FFN单独各3seed、原FFN及3种FFN配S128 Ising各3seed。统一batch32、window2048/stride1024，292窗口、299077目标，每目标独立24层调用审计；首次长窗与尾窗也覆盖，12357次decode forward。S128固定，不是逐query固定L/16。前缀Attention仍为原SDPA，FFN前缀同样替换；与旧向量化或batch8后缀结果不混成同协议。未生成结果的任务仍标记运行中，不提前填值。
 

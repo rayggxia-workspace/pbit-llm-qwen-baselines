@@ -1,3 +1,7 @@
+## Issue65 最新：完整原始FP32 WT2已完成，六任务运行中
+
+Softmax PPL5.911825276082767、Sigmoid5.88607319951146，同317546计分token，window2048/stride1024；完整逐窗覆盖、原文/token SHA及NLL指数关系通过。GPU2542继续六任务，尚未收齐；BF16 GPU移植另为待修复项。代码/索引已推6d3d5d5a64a7709aab5733f38269c1b331521cd2，Draft PR67待审未合并。看板缺read:project待同步。精确证据results/apple_sigmoid_7b_eval_20261019，交接work/amlink1219/65；不重交2542。
+
 ## Issue65：Apple7B配对质量基线（2026-10-19，进度快照）
 
 负责人amlink1219；独立分支task/65-apple-sigmoid-7b-eval / workspace_projects/sa7。下载2517完成：2865文件/50.17GB、来源MD5和SHA；六任务19份parquet与完整WT2文本SHA已校验，2537全部19,965题/67,106请求分词边界通过。

@@ -19,3 +19,5 @@ DS-CIM Zotero NQ8CM3TZ / RC92PCQQ，表II六项BoolQ、PIQA、HellaSwag、WinoGr
 待办：收齐真实质量结果、校验计分数/来源/命令/版本/结果SHA，保存小型汇总和原始逐题输出索引；大权重/数据/原始样本保留本人服务器。通过本任务PR交付，区分已推送/待审/合并。看板GraphQL缺read:project，待同步；不修改账号、凭据scope或权限。当前尚无正式质量结果；以实时报告为准。
 
 更新：原始FP32的CPU2541和GPU2542两模型对齐均已通过。当前唯一GPU质量作业2542，source/gpu_fp32_worker.py，source/run-v6；动态应用reports/gpu_fp32_status.json，正式输出reports/float32/<model>/。scontrol show job 2542，并读取logs/quality-fp32-2542.out/err；先核验已存在作业与完成文件，不重复提交。
+
+完整WT2已收齐：原始FP32 Softmax5.911825276082767，Sigmoid5.88607319951146，同317546计分token，逐窗覆盖/NLL/PPL与文本/token SHA通过。质量作业2542仍运行六项；已推结果提交6d3d5d5a64a7709aab5733f38269c1b331521cd2和Draft https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/67，未合并。下一步只读取2542及reports/float32/{softmax,sigmoid}/任务JSON、逐题JSONL和six_task_summary.json，成功收齐后归档SHA并更新本PR，不重交。

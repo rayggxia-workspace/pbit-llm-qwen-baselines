@@ -1,16 +1,14 @@
-# 当前可核验结果
+# Apple 7B 配对模型：完整 WT2 结果
 
-已完成：两个官方 Apple 7B 检查点和原分词器，共2865文件、50,174,620,426字节，来源对象 generation/MD5及本地SHA全部记录。下载Slurm2517实测COMPLETED/ExitCode0:0，首次调度终态及应用回执同时保存。
+| 原始检查点，FP32参数/计算 | 完整WT2 PPL | 计分token |
+|---|---:|---:|
+| Softmax Attention | 5.911825276082767 | 317546 |
+| Sigmoid Attention | 5.88607319951146 | 317546 |
 
-六任务公开数据已固定来源提交与SHA，在本人服务器离线加载成功。完整 WT2 raw test为1,290,590字节，SHA-256 173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08，与项目基线匹配。原生推断环境导入已通过，Slurm2534为COMPLETED。
+两者完整语料token为317547，首token无前文不计分，其余每个target恰好一次；window2048/stride1024、同一原始文本和原SentencePiece及换行预处理。逐窗计分覆盖、NLL总和及PPL指数关系均已核对；精确文本/token/结果SHA见PAIRED_PPL.json与float32/<model>/ppl.json。Sigmoid的本组PPL比Softmax低约0.436%，属于这两个配对训练检查点在该协议的结果，不能推出所有模型的质量优势或p-bit硬件收益。
 
-两模型18-token原生/移植FP32短前向、因果性及padding检查均通过，Slurm2536为COMPLETED/ExitCode0:0。平均NLL绝对差：Sigmoid 4.76837158203125e-7，Softmax 6.67572021484375e-6。这里两侧使用相同的BF16量化参数后以FP32计算；不是完整PPL结果。六任务19,965题、67,106候选计分请求分词边界审计通过，Slurm2537为COMPLETED。
+GPU作业2542仍在运行六项完整准确率；两模型各六项两题试跑已经通过，不能将它们当正式准确率。六项数据固定版本、19,965题/67,106请求的分词审计、原始FP32 CPU/GPU18-token对齐均通过，详见原始JSON。权重/原分词器下载2865对象、50.17GB的来源MD5与SHA索引、完整WT2文本SHA也已校验。
 
-GPU BF16检查2538/2539未通过，在正式质量运行前自动退出。Softmax短前向NLL偏差约0.111/0.127；归一化诊断2540不是质量验收，且单独改变RMS精度未解决两模型全部差异。已保留这些负面证据，未降低既定阈值或发布错误PPL。
+BF16 GPU2538/2539在预检处失败，未执行正式PPL/准确率；2540诊断未解决全部差异。当前表仅为官方原始未量化FP32权重/计算，BF16数值一致性仍待修复，不将FP32验证继承为BF16部署通过。FP32软件执行时间不是数字/P-bit硬件PPA数据。全部历史快照、失败状态和版本索引保留。
 
-当前原始FP32转换/原生对齐为CPU作业2541、source/run-v6；它将保留官方FP32权重的全部精度。完整WT2 PPL和六项准确率尚未完成；FP32与BF16分开记录，动态状态以实时作业和应用报告为准。没有p-bit误差、采样收益或硬件PPA结论。
-
-DS-CIM表II确认六项集合；本次使用harness0.4.8的明确零样本协议，不宣称重现其未完全固定模板的LLaMA-7B数字。Apple两模型有各自配套训练权重，不在Softmax模型上运行时替换激活。
-
-
-原始未量化FP32两模型CPU对齐2541现已COMPLETED/0:0，GPU作业2542的两项FP32对齐亦通过：GPU短前向平均NLL误差Softmax 7.63e-6、Sigmoid 7.15e-7，最大logit误差不超过2.14e-4。2542继续每任务两题smoke、两模型完整WT2、完整六任务。此处记录的是运行快照，正式PPL/准确率须等待对应complete结果文件。
+六任务集合来自Zotero DS-CIM表II：BoolQ、PIQA、HellaSwag、WinoGrande、ARC-e、ARC-c。本次明确使用harness0.4.8/0-shot，不声称重现该论文未固定所有模板细节的LLaMA数字。代码/结果已推任务Draft PR67，未合并；看板因缺read:project待同步。大权重、数据及逐题原始样本留本人服务器。

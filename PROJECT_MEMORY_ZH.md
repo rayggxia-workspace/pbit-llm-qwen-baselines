@@ -636,3 +636,5 @@ Issue30开始前另查本人squeue为空；这说明旧作业当时不在队列�
 负责人amlink1219；独立目录workspace_projects/sa7。按用户指定DS-CIM表II确认BoolQ/PIQA/HellaSwag/WinoGrande/ARC-e/ARC-c，论文未固定所有harness细节，本次明确0-shot/0.4.8，不称复现其LLaMA数字。官方Apple两个step250000检查点和原SP已下载校验，服务器模型根/home/Weican_Chen/models/apple-sigmoid-attention-7b。SP32000词片，嵌入/输出32768；Gala原生AXLearn配置与Llama/Qwen不同。
 
 方法/状态与索引见experiments/apple_sigmoid_7b_eval、results/apple_sigmoid_7b_eval_20261019和work/amlink1219/65/HANDOFF.md。BF16 GPU移植预检失败，未产生正式质量结果；先以未量化原始FP32权重和FP32计算建立高精度质量参考，分开列精度。当前运行状态须查实时Issue/作业，不能由本记录推断已经完成。没有p-bit采样或硬件PPA验收结论；不改Issue50/59的Qwen任务。
+
+Issue65结果追加：原始FP32完整WT2 Softmax5.911825276082767、Sigmoid5.88607319951146，同317546计分token、2048/1024；CPU/GPU对齐及全量计分覆盖已核验。六任务仍运行于2542，PR67为Draft未合并；BF16移植失败另列，禁止称FP32软件结果为BF16或p-bit PPA。详见本任务结果与可执行交接。

@@ -40,3 +40,11 @@ Slurm2298/2299全部结束，本人队列空，11项计分/14原件SHA/31执行�
 
 
 2026-10-19接续Issue46：固定相同W8，新增experiments/qwen_multiscale_stratified_20261019，67项完整WT2+2BF16对照；扫描B1/2/3/4/6/8与K1/4/16/T，无训练/Attention变化。新13项kernel、旧12项严格IID与mean回归通过；独立审核67唯一配置及analyzer K1/K4分组和篡改拒绝通过。源码准备冻结，尚未提交Slurm，不宣称新PPL。执行前保持只读旧快照；后续提交/作业与成果另记STRATIFIED_*。
+
+
+## 多档＋分层完整WT2扫描运行中（2026-10-19）
+
+执行源db27fa3d7ed8eced13513f0cad10061a3cc59a71，Slurm2308/2309（67配置，最多4GPU），原BF16完整11.652735已复现；13新kernel/12旧multiscale/8旧range及shared测试通过。已公开冻结源码，执行快照不可改。新结果尚未收齐，不宣称分层PPL；新正式目录将为qwen/results/multiscale_stratified_20261019，旧76项不覆盖。下一步检查2309状态，收回69项计分＋3元数据，逐SHA后联合旧同源IID结果分析，更新PR47及备忘录。Projects缺read:project，PR47未合并。
+
+
+发布补充：db27fa3之后仅本地修整runner空白行、增加后处理K分组fixture和plot脚本，不改变已提交db27fa3快照。文献已保存，备忘录afbe90b已发布；当前67配置仍运行，结果待完整收回。

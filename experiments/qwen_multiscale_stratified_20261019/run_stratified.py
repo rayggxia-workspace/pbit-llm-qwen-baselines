@@ -131,7 +131,7 @@ def main():
     for key in ('model','data','project-root','output','code-commit'):p.add_argument('--'+key,required=True)
     p.add_argument('--index',type=int,default=0)
     p.add_argument('--phase',choices=['scan'],default='scan')
-    
+
     a=p.parse_args()
     if len(a.code_commit)!=40:p.error('Exact execution SHA required')
     {'prepare':prepare,'worker':worker}[a.action](a)

@@ -247,6 +247,31 @@ dynamic64仅改细K64为11.768589±0.003298，K128为11.700228±0.000201。单Po
 
 文献：DS-CIM LLaMA六任务未报告PPL；SCOPE小型字符RNN与XNOR-LSTM有真实语言PPL但非预训练LLM直接替换；SCMP公开代码采用Sobol/Owen、局部尺度/敏感INT旁路，归档未获取，仅方法线索。详细primary链接见LITERATURE_ZH。PR47已按用户授权合入TLM（merge `bef83e54b9da0081c51f393044d2156ce11a34b9`），Issue46已关闭；PR29仍待审未合并。Projects新查询缺read:project待同步。原件位于既有个人项目outputs/db27fa3d7ed8eced13513f0cad10061a3cc59a71/，Git仅汇总/索引，无权重/文本/校准原件。
 
+## 5.7 三种短流FFN＋实际筛选/有限Ising/V采样：Issue50（2026-10-19）
+
+用户要求确认§5.6三种较好FFN叠加真实Attention后的质量。新Issue50/PR52草稿（未合并），task/50-joint-ffn-attention，目录tmp/qwen-joint-issue50-20261019；原始base为PR47@5518a0a，PR47已由并行会话合并bef83e54后，PR52已改为集成分支pbit-tlm-attention-details-20261016。复用Attention成员Issue48/PR49的冻结执行源11f1d6ee，只读导入并保留来源/原字节，不接管amlink1219的独立Attention扫描或个人服务器目录。
+
+三FFN固定W8：B2T32K32、B4T32K32、B4T16K16；全24层prefill与decode均替换。每个被计分token的24层Attention实际执行max4 train校准sigmoid/Bernoulli筛块＋固定8块修补→候选准确QK→burn16/spacing4有限hard-onehot CTMC Ising→输出索引直接V gather/平均。PV采样即最后一步，不重复抽一次。筛选不是耦合Ising退火；CTMC是理想硬互斥行为模型，不是物理电路实测。多token prefill Attention保留原SDPA，FFN前缀也替换，未用干净原FFN缓存。
+
+旧完整FFN scorer每次q_len>1会绕过decode Attention补丁，故不能直接拿来测联合。本次建立cached计分器：逐目标单token、分别hook Attention和FFN，核对24层按序调用及目标数；对照匹配batch与目标位置。GPU门禁复现原BF16完整299077目标11.652735，但它只是环境参考；原FFN和B4T32下同BF16 SDPA包装器的计分logits SHA均完全相同。38上游＋10联合＋13FFN测试通过，另2完整计划测试通过。
+
+主执行d61b2861edc91e00495268d39a738edb3599f87f，Slurm2381准备、2382主34项、2412诊断12项均完成。以下**全部仅为同一4096目标后缀**（32段×128、起始context2048、batch8），不是完整WT2；每替换组3seed，PPL算术均值：
+
+| FFN | 原Attention | 筛选＋Ising128＋V采样 | 同路径Ising512 |
+|---|---:|---:|---:|
+| 原始 | 10.371557 | 11.163005 | 10.980212 |
+| B2T32 | 10.476808 | 11.232234 | 11.066401 |
+| B4T32 | 10.427377 | 11.197813 | 11.055307 |
+| B4T16 | 10.628582 | 11.402422 | 11.201607 |
+
+联合交互以每seed平均NLL计算Ljoint−Lffn−Latn+Lbase，六组均值约−0.0045～+0.00145，未见明显额外放大。主要损失来自Attention；B4T32较稳，但S512时与B2差值小，不能宣布显著优势。准确Softmax＋IID PV128诊断在原FFN下仍为11.094049，B4T32为11.166155，说明不能把误差全归Ising；尚无同协议筛选后准确PV，不能继续把剩余全部归筛选。实际QK候选22.756%，GQA的K候选并集约44.5%，不能混用或直接等于能耗节省。
+
+54项计分原件（8小pilot、34主项、12诊断）＋10准备文件共64原件保留本人服务器/home/Hongjie_Zeng/projects/pbit-qwen-joint-ffn-attention-20261019-issue50/outputs/d61b2861.../。正式报告/逐seed逐段NLL/输入版本/SHA索引为qwen/results/joint_stratified_attention_20261019/。代码experiments/qwen_joint_stratified_attention_20261019/；collect_results.py和summarize_results.py可继续收集。固定公开train校准moment.pt为85917字节，SHA fefbb90c4f38c5f7a6d51a672550bd684ffe3a1415d36dc115a8ca5e05c5db0b，不重上传。
+
+完整cached确认已提交，**尚未收齐**：新冻结源53dd0ff6a04218dc9f2b692464d5b16da284cf17，Slurm2429显存门禁成功（16×2047、32×1023前缀峰值16.23/16.31GiB），Slurm2430运行22项（新cached BF16×1、3FFN单独各3seed、原FFN及3FFN配Ising128各3seed）。batch32、window2048/stride1024、292窗口覆盖299077目标，每个目标实际走24层；固定S128不是逐query固定L/16。此前Slurm2425在实际full计划没有的32×2047-prefix pilot上OOM，未提交full worker，失败快照保留。新显存门禁覆盖实际批形状，没有修改旧执行快照。
+
+完整原件在同本人项目outputs/53dd0ff6.../；已对其45项执行源Git blob与服务器SHA核验。恢复按work/jieruiz/50/HANDOFF.md核实Slurm2430，22项齐后生成FULL_SUMMARY.json并追加结论，不重复提交。当前仅阶段结果完成，Issue50/PR52保持open/draft，PR47已合并；Projects缺read:project，看板待同步。无新PPA/TLM能效结论。
+
 ## 6 随机源、p-bit与相关性
 
 双流误差追加诊断见Issue30公开结果目录 `ERROR_DIAGNOSIS_ZH.md`。已有47项的T4096精确双流x概率层均值5.3492%、z0.8255%；T256/4096最大z裁剪约0.000964%/0.001767%，不支持大面积饱和是当前主因。在同一固定输入/尺度下，独立权重流增加非负条件方差；经SwiGLU和多层传播的主导位置仍待消融。DS-CIM使用加128偏移、128粒度FP8对齐、优化PRNG/seed及SRR，LLM为T256误差pattern注入和六任务准确率，不能等同本项目IID逐连接短测，也不能认为加SRR就会比现有精确计数更准。
@@ -439,6 +464,7 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 32 / 34、38 | closed / 已合并5b71d4e、c1555ae | 范围49输出＋真实分布/项目入口，完整随机/裁剪WT2未做 |
 | 39 / 40 | 实验完成，PR待审未合并 | 裁剪/固定PoT范围65替换；独立目录tmp/qwen-ffn-clipping-issue39-20261019 |
 | 46 / 47 | closed / 已合并bef83e54 | 固定W8多档＋分层；145输出/154原件，含67新完整配置，目录tmp/qwen-fixedw-multiscale-20261019 |
+| 50 / 52 | 34后缀主项＋12诊断完成，完整22项Slurm2430运行；PR草稿未合并 | 三种短流FFN＋实际筛选/有限Ising/V采样；见§5.7和tmp/qwen-joint-issue50-20261019 |
 | 51 / 53 | 文献报告PR53待审，未合并 | 新器件/随机LLM的PPL和任务指标；独立目录tmp/emerging-quality-issue51-20261019，备忘录补丁以Issue28最新主维护版本提出 |
 | 33 / 待核验 | open，负责人amlink1219 | Attention价值核查与实验计划；与FFN Issue32分开，不接管他人状态 |
 

@@ -54,7 +54,7 @@
 | [#53](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/53) | 纠正5%阈值解释的新文献整理，非47结果重复 | 2成果、5PDF SHA、14算术；新head增量复核 | 定向文献证据；三篇全文仍缺，不把自定5%质量预算写成领域标准。 |
 | [#54](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/54) | 3d6a194尚无10.2/51索引；保留并行5.7/50更新 | 基底/新增SHA；去增量还原原文 | 增量记忆补丁；不能替代原实验或单凭子分支回执声称进入集成。 |
 | [#56](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/56) | 任务与评分解释独立于53预算报告；只处理共享状态冲突 | 120行正文；manifest/提交/副本字节；主源交叉核对 | 文献任务/指标解释；新ASADI网络读取超时，沿用已审原报告边界；没有新任务测试。 |
-| [#57](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/57) | 新增任务入口/51状态；保留最新5.7.1，建议56后合入memory | 刷新dbf25a4；撤增量精确还原c87b；其他树保持 | 仅记忆入口/状态补丁；保留旧manifest历史签名，新head由刷新回执记录。 |
+| [#57](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/57) | 新增任务入口/51状态；保留最新5.7.1，已随PR29进入集成 | 刷新dbf25a4；撤增量精确还原c87b；其他树保持 | 仅记忆入口/状态补丁；保留旧manifest历史签名，新head由刷新回执记录。 |
 
 审核没有把历史资料直接判为重复：#24提供阅读路线，#27提供原文机制总结；#41的规则虽被后续AGENTS并集覆盖，接入快照仍有独立引用；#40保留裁剪前缀负结果，#47提供不同协议的固定W多档结果。科学成果与旧manifest按执行/发布版本保留，共享STATUS/README/AGENTS冲突采用并集及当前回执解决。
 

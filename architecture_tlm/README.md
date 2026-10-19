@@ -201,3 +201,12 @@ Follow-up: [classic GPU/ASIC comparison and recommended architecture](CLASSIC_AN
 and [digital SwiGLU epilogue characterization RTL](rtl/ffn_epilogue_20261017/README_ZH.md).
 The new epilogue is a fixed-point LUT approximation for characterization;
 it is not enabled in the existing model or validated as a BF16 replacement.
+## Screening and K traffic audit (2026-10-17)
+
+[Chinese analysis](SCREEN_K_TRAFFIC_ANALYSIS_ZH_20261017.md) separates per-query
+QK sparsity, GQA union reads, Link256 overfetch, summary traffic and old PV
+reloads. The [audit tool](audit_screen_k_traffic.py) reconstructs recorded
+synthetic routing with exact archived calibration bytes and computes shared
+uniform bounds. [Results](results/screen_k_traffic_audit_20261017/audit.json)
+are byte accounting, not new Qwen/PPL, DRAMSys, or chip measurements. Runtime
+selection and historical results are unchanged. See Issue #9.

@@ -250,3 +250,19 @@ Issue19的阶段基线PR20已合并40ea9f1，回执PR21合并3553996；其剩余
 本地交付包：`C:/Users/86134/Documents/a_P_BIT/sc_short_stream_20261018_issue22.zip`，114436bytes，SHA256 `2963729f0886ba44623babd9a9e5a47fd28bfda59687450046919639149bdbca`；release源提交`c9c78588e706d882bb80ce99e92487ad2c654046`。
 
 发布回执：2026-10-18T10:37:26.188552+00:00，PR #25、Issue22评论和精确head已核实；PUBLICATION_RECEIPT.json记录实际动作。无新权限阻塞，Projects待同步。
+
+## PR24 原始交付状态（历史时点）
+
+源head：8cd5ed17ae31dae79eb71e9c74bce0e6e84da594。以下保留该任务新增的历史状态；最新合并状态以Issue55/相应Issue和GitHub为准。
+
+## Issue23：p-bit LLM推荐阅读清单
+
+更新时间2026-10-18T18:26:00+08:00；负责人/实际登录jieruiz。Issue：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/23。
+
+- 独立checkout：C:/Users/86134/Documents/a_P_BIT/tmp/pbit-reading-list-issue23-20261018；分支task/23-pbit-reading-list；base pbit-tlm-attention-details-20261016 @3553996bf014a29dee7fdb2250a3965e8fd881a4。
+- 本地文件已完成：architecture_tlm/PBIT_LLM_RECOMMENDED_READING_ZH_20261018.md，用户master_report目录有同字节副本。17项文献/官方资料，6项优先精读，覆盖动态GEMM、原生p-bit、采样注意力及非随机/系统对照。
+- 实际验证：主要题录/原文及证据边界复核、UTF-8/LF、本地链接存在、同字节副本和SHA；MANIFEST与SOURCE_REVIEW在work/jieruiz/23。Current digitizer仅摘要/官方介绍，全文待下载，正文有标注。
+- 无新增模型/PPL/TLM/RTL/PPA实验；未改Issue19/22运行快照或其他任务实现。文档任务的模型/数据/种子字段不适用。
+- 远端发布/PR与看板状态发生后同步到本段和HANDOFF；当前不宣称已合并。下一步核对Git blob并通过任务PR交付。
+- Projects已实际复核：GraphQL返回INSUFFICIENT_SCOPES，缺read:project，看板待同步；其余文档交付照常进行。
+- 实际发布回执：文档提交bec35b9be8aa0bc73648e598484d3e0ae09a2d72已推送；PR #24已创建并附本任务：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/24，open/未合并。正文SHA256为8dcacd8d944d7b32b314c001305db0e5f2cdfb208ea5c173a3b0d8a93f8da25b，4个文档/manifest Git blob原字节核对通过。待审阅后验收，Issue23保持开放。

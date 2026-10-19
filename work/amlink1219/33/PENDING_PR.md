@@ -1,3 +1,5 @@
+> 已发布：[PR #42](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/42)，待审、未合并。当前正文见PR_BODY_CURRENT.md；以下为原待发布草稿，权限/发布状态仅指当时时点。
+
 # docs: plan Attention p-bit value validation and RNG architecture experiments
 
 Attention当前只有概率筛选的数字实现和理想Ising宏，尚未证明物理p-bit相对数字电路的收益。本变更核查主要原文、现有随机源/消费路径，制定常规数字硬算、online融合、数字IID/systematic与原生概率/类别模块的公平仿真实验计划。

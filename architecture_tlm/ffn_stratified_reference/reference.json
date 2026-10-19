@@ -1,0 +1,241 @@
+{
+  "schema": "pbit-llm-stratified-ffn-reference-v1",
+  "owner": "amlink1219",
+  "issue": 33,
+  "adoption_date": "2026-10-19",
+  "default_profile": "b4_t32",
+  "status": "behavioral reference; not a TLM timing or PPA calibration",
+  "implementation": {
+    "repository": "rayggxia-workspace/pbit-llm-qwen-baselines",
+    "class_name": "StratifiedFFN",
+    "module": "experiments.qwen_multiscale_stratified_20261019.stratified_core",
+    "source_git_commit": "5518a0a23e2bfec2b428542a9e4ce94b27c78d4a",
+    "original_execution_commit": "db27fa3d7ed8eced13513f0cad10061a3cc59a71",
+    "merged_PR": 47,
+    "merge_commit": "bef83e54b9da0081c51f393044d2156ce11a34b9",
+    "adoption_base": "ed0c7a4e8e9546ec89895135efff36aa8a00d568",
+    "files": [
+      {
+        "path": "experiments/qwen_multiscale_stratified_20261019/stratified_core.py",
+        "bytes": 15353,
+        "sha256": "03d0b605b78f30ca9698d5137d295246b53c625c66f44c9855f3a77cdcd0b4f0",
+        "lf_text_sha256": "03d0b605b78f30ca9698d5137d295246b53c625c66f44c9855f3a77cdcd0b4f0"
+      },
+      {
+        "path": "experiments/qwen_dual_iid_exact_20261018/vendor/frozen/core.py",
+        "bytes": 12879,
+        "sha256": "e175e2fdc59c5eac34729a7ddf42860a3aebbee2790bfaa881e99e729e815e9e",
+        "lf_text_sha256": "e175e2fdc59c5eac34729a7ddf42860a3aebbee2790bfaa881e99e729e815e9e"
+      },
+      {
+        "path": "experiments/qwen_dual_iid_exact_20261018/vendor/frozen/shared_counts.py",
+        "bytes": 1867,
+        "sha256": "46e503b22831e0005e9af9e25ed3bd1c798d782a42edb27e71649b9ee634d4a7",
+        "lf_text_sha256": "46e503b22831e0005e9af9e25ed3bd1c798d782a42edb27e71649b9ee634d4a7"
+      },
+      {
+        "path": "experiments/qwen_dual_range_20261018/range_core.py",
+        "bytes": 10727,
+        "sha256": "90321dcc3aef837a44aa7ec88b29ce936f99bbafc7a8d845bdd83bdbace0e827",
+        "lf_text_sha256": "90321dcc3aef837a44aa7ec88b29ce936f99bbafc7a8d845bdd83bdbace0e827"
+      }
+    ]
+  },
+  "profiles": {
+    "b4_t32": {
+      "constructor": {
+        "policy": "pot4",
+        "mode": "sampled",
+        "cycles": 32,
+        "strata": 32
+      },
+      "role": "primary",
+      "published_ffn_only_full_WT2": {
+        "ppl_mean": 11.736131,
+        "seed_population_sd": 0.000243,
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "scored_targets": 299077,
+        "relative_percent_vs_BF16": 0.7156770681258084,
+        "rerun_in_this_adoption": false
+      }
+    },
+    "b2_t32": {
+      "constructor": {
+        "policy": "pot2",
+        "mode": "sampled",
+        "cycles": 32,
+        "strata": 32
+      },
+      "role": "scale simplification control",
+      "published_ffn_only_full_WT2": {
+        "ppl_mean": 11.769199,
+        "seed_population_sd": 0.001183,
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "scored_targets": 299077,
+        "relative_percent_vs_BF16": 0.9994559394837399,
+        "rerun_in_this_adoption": false
+      }
+    },
+    "b4_t16": {
+      "constructor": {
+        "policy": "pot4",
+        "mode": "sampled",
+        "cycles": 16,
+        "strata": 16
+      },
+      "role": "shorter stream control",
+      "published_ffn_only_full_WT2": {
+        "ppl_mean": 11.900826,
+        "seed_population_sd": 0.003825,
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "scored_targets": 299077,
+        "relative_percent_vs_BF16": 2.129036243712301,
+        "rerun_in_this_adoption": false
+      }
+    },
+    "b4_t64": {
+      "constructor": {
+        "policy": "pot4",
+        "mode": "sampled",
+        "cycles": 64,
+        "strata": 64
+      },
+      "role": "lower error control",
+      "published_ffn_only_full_WT2": {
+        "ppl_mean": 11.693775,
+        "seed_population_sd": 0.001432,
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "scored_targets": 299077,
+        "relative_percent_vs_BF16": 0.35219158744248524,
+        "rerun_in_this_adoption": false
+      }
+    }
+  },
+  "contract": {
+    "model": "Qwen/Qwen2.5-0.5B Base",
+    "model_revision": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+    "layers": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "ffn_phases": [
+      "prefill",
+      "decode"
+    ],
+    "weight": "fixed symmetric INT8; historical 64x64 tile; absmax/127 scale; no stochastic weight",
+    "input_group": 64,
+    "probability_bits": 8,
+    "sign_separate": true,
+    "full_one_bypass": true,
+    "scale_bin_ratio": 4,
+    "sampler": "equal occupancy random threshold strata; exact joint shared64 count law",
+    "natural_IID": false,
+    "within_group_threshold_shared_across_bins": true,
+    "independent_domains": [
+      "token/group",
+      "threshold stratum",
+      "x versus z",
+      "network layer",
+      "FFN versus Attention selector/CTMC"
+    ],
+    "gate_up_share_x_draw": true,
+    "nonlinearity": "continuous FP32 SiLU(g)*u; z independently reencoded",
+    "reduction": "restore per-lane sign/scale before exact FP32 linear sum",
+    "output": "BF16 interface",
+    "training": false,
+    "finite_width_bittrue": false,
+    "cycles_scope": "T draws at x projection stage and T separate draws at z/down stage; not whole FFN cycles",
+    "attention_only_control": "Keep original Qwen2MLP when measuring Attention alone; pair against explicit stratified FFN in joint experiments"
+  },
+  "reference_protocol": {
+    "dataset": "WikiText-2 raw test",
+    "source_tokens": 299078,
+    "scored_targets": 299077,
+    "window": 2048,
+    "stride": 1024,
+    "ffn_only_attention": "unchanged original BF16 SDPA",
+    "original_vectorized_BF16_ppl": 11.652735047455899,
+    "token_ids_sha256": "8d41d21825bb0e103dc63337727daf4b51c631cacec5937f014b119ae209081e",
+    "test_text_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+    "before_new_PPL": "Verify exact inputs and rerun original BF16 in actual environment; full cached controls are separate"
+  },
+  "joint_reference": {
+    "PR": 52,
+    "read_head": "e3c5e957c3769b5fc6867b42a52facace647a83b",
+    "merged": false,
+    "scope": "4096 fixed suffix targets per seed; all 24 decode Attention; FFN prefill/decode",
+    "full_joint_confirm_complete": false,
+    "recorded_jobs_pending": [
+      2430,
+      2461
+    ],
+    "recorded_status_only": true,
+    "read_other_personal_server": false,
+    "matched_full_cached_BF16_ppl": 11.652118067865489,
+    "b4_t32_suffix_ppl_by_Ising_S": {
+      "32": 12.065755,
+      "64": 11.514886,
+      "128": 11.197813,
+      "256": 11.066594,
+      "512": 11.055307,
+      "1024": 11.006579
+    },
+    "complete_joint_runner": "Use pinned PR52 joint_evaluate ModelGuard/ExecutionAudit; do not bypass Issue48 original-FFN-only guard"
+  },
+  "hardware_scope": {
+    "TLM_defaults_changed": false,
+    "new_PPA": false,
+    "physical_noise_calibrated": false,
+    "required_costs": [
+      "absmax/PoT and bin select",
+      "sign/endpoint/bin metadata",
+      "stratum counter and independent random low bits",
+      "shared64 distribution",
+      "W8/tile scales and SRAM reads",
+      "aligned exact accumulation and widths",
+      "SiLU/product and z recoding",
+      "BF16 conversion",
+      "buffers and scheduling"
+    ],
+    "additional_control": "direct stochastic rounding plus deterministic low-bit matrix",
+    "acceptable_PPL_budget": "not specified by user"
+  }
+}

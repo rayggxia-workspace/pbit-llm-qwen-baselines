@@ -1,3 +1,21 @@
+# 分层FFN参考采用已上传（当前状态）
+
+已核验目标任务分支结果提交`e8eec4c8deb296db4c4ed937c5c46192a782c6f4`，[PR58](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/58)开放待审、未合并，接续Issue33。B4/T32/K32主参考及三个对照、源码SHA、13项CPU核心测试和4profile接口均已交付。此前“本地待提交”等段落保留为历史准备快照，准确回执见STRATIFIED_REFERENCE_PUBLICATION.json。
+
+本次没有新模型PPL/GPU作业、未改TLM/PPA默认；PR52完整联合仍未收齐，恢复重新核状态。看板scope不足待同步。稳定manifest不含易变进度/交接/发布回执，后续元数据提交不改变已核验的方法和配置。
+
+# 当前接续：分层FFN采用（2026-10-19）
+
+Issue33本人负责；分支task/33-stratified-ffn-reference；目录workspace_projects/fa33；base=ed0c7a4e8e9546ec89895135efff36aa8a00d568。新增architecture_tlm/ffn_stratified_reference的版本锁定配置、原StratifiedFFN工厂和方法说明，追加本用户的AGENTS规则，未改他人FFN源码、进度或运行任务。本次采用变更本地CPU验证已通过，尚待提交/推送及PR。
+
+FFN核心发布5518a0a2、原执行db27fa3d，PR47已经合并bef83e54；B4/T32/K32为主，B2/T32/K32、B4/T16/K16、B4/T64/K64保留。三seed完整FFN-only已有PPL；本次不重新声称复现。使用原实现的共享相关性与符号/尺度/端点语义，版本校验对Python代码仅允许CRLF/LF差异，历史实验原件SHA不作归一化。
+
+运行本地CPU接口：隐藏GPU后 python -B -X utf8 architecture_tlm/ffn_stratified_reference/reference.py --smoke；原核心测试 experiments/qwen_multiscale_stratified_20261019/test_stratified_core.py。不需Transformers或模型权重即可做这两项。真实PPL另需本人Slurm分配、精确模型/数据SHA和匹配BF16门禁。
+
+PR52公开head=e3c5e957c3769b5fc6867b42a52facace647a83b，后缀结果与完整pending边界见reference.json及README。记录中2430/2461由jieruiz继续，不访问其Hongjie_Zeng目录，不重交；新联合用PR52的Guard/ExecutionAudit，新case用fresh模型。不得放宽Issue48 original-FFN guard然后把绕过当完成。
+
+发布时核amlink1219、目标repo权限、实际push URLs、文件范围；本任务交付为新PR接续Issue33，不合并旧PR或修改Issue50。Projects若仍缺scope则记录待同步。之后的元数据/验证回执会在此顶端追加当前状态；以下保留旧已合并计划的交接，不能用旧状态判断今天任务。
+
 # 2026-10-19 Attention质量证据核查接续
 
 本次恢复已核最新Issue/PR/成员状态：其他成员Issue46/PR47属FFN，不接管。先读根architecture_tlm/ATTENTION_QUALITY_EVIDENCE_AUDIT_ZH_20261019.md及本目录QUALITY_AUDIT_20261019.json。此前“没有完整模型PPL”的宽泛表述应改为：历史已有24层模型级后缀PPL，但没有查到当前max4筛选→真实Ising同一路的联合/完整WT2质量验收。

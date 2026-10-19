@@ -87,6 +87,15 @@ def summarize(source, destination, remote_root):
                 raise ValueError('Scoring protocol/count mismatch: ' + name)
             if cfg['mode'] == 'baseline' and raw.get('baseline_gate_passed') is not True:
                 raise ValueError('BF16 baseline gate failed: ' + name)
+            if cfg['full'] and raw.get('token_ids_sha256') != identity['tokens']['test']['ids_sha256']:
+                raise ValueError('Full test token hash mismatch: ' + name)
+            if cfg['mode'] != 'baseline':
+                if raw.get('identity_sha256') != ready['identity_sha256']:
+                    raise ValueError('Run identity checksum mismatch: ' + name)
+                if raw.get('full_test_token_ids_sha256') != identity['tokens']['test']['ids_sha256']:
+                    raise ValueError('Run full corpus token hash mismatch: ' + name)
+                if raw.get('model_revision') != identity['model_revision']:
+                    raise ValueError('Run model revision mismatch: ' + name)
         row = dict(configuration=cfg, configuration_sha256=configuration_hash(cfg),
                    status='skipped' if skipped else 'completed',
                    skip_reason=raw.get('status') if skipped else None,
@@ -111,6 +120,11 @@ def summarize(source, destination, remote_root):
     pending = [c['name'] for c in planned if c['name'] not in by_name]
     references = {r['configuration']['full']: r for r in rows
                   if r['configuration']['mode'] == 'baseline' and r['status'] == 'completed'}
+    if False in references:
+        prefix_hash = references[False]['token_ids_sha256']
+        for row in rows:
+            if not row['configuration']['full'] and row['status'] == 'completed' and row['token_ids_sha256'] != prefix_hash:
+                raise ValueError('Mixed prefix token hashes')
     keys = sorted({(c['full'], c.get('policy', 'BF16'), c['mode'], c.get('cycles', 0))
                    for c in planned})
     groups = []
@@ -184,7 +198,7 @@ def summarize(source, destination, remote_root):
              f"预注册 {status['expected']} 项：已计分 {status['completed']}，明确跳过 {status['skipped']}，待收回/待完成 {status['pending']}。", '',
              '所有24个FFN替换，Attention保持原BF16 SDPA；固定历史64×64 INT8解码权重，不做权重概率重编码。输入每64通道共享自然IID R8，跨尺度档仍共享；g/u共用输入计数，准确连续FP32 SiLU(g)×u后独立重编码z。', '',
              'mean是无采样的确定性编码控制，**不是非线性随机网络整体输出的数学期望**。w8_only不编码激活，包含固定W8和中间FP32算术。', '']
-    for full, title in ((False, '512-token测试前缀'), (True, '完整WT2滑窗')):
+    for full, title in ((True, '完整WT2滑窗'), (False, '512-token测试前缀')):
         lines += ['## ' + title, '',
                   ('每次计分511个目标；不是完整WT2。' if not full else
                    'context=2048、stride=1024；按总NLL/总目标数取exp，每次计分299077个目标。'), '',

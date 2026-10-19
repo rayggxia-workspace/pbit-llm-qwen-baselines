@@ -436,6 +436,9 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 - 新器件另需验证噪声、漂移、故障与校准，但局部NMSE/ENOB不能代替完整模型。我们保留BF16→匹配确定性量化→有限随机/器件路径三层参考，并报告逐任务、FFN/Attention/联合与质量匹配能量/时延曲线。
 - VQT-CiM、HEIRS、DBC的可核质量表全文本轮仍缺，不引用二手精度或所谓5%阈值。报告没有新模型/PPL/RTL/TLM/PPA/服务器实验，不改变Issue46/48/50。
 
+
+补充入口：[论文与任务指标对照](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/51-paper-task-map/architecture_tlm/LLM_PAPER_TASK_METRIC_MAP_ZH_20261019.md)，含11篇论文总表、任务解释、GLUE/AFM协议与未明确口径；用户副本在pbit_llm_master_report_20261012/LLM_PAPER_TASK_METRIC_MAP_ZH_20261019.md。原报告PR53已合并856105b，原备忘录补丁PR54已合并e0abc39；任务对照PR56待审未合并。无新模型或硬件实验。
+
 ## 11 重要文件与成果位置
 
 正式仓库内相对路径以实际任务分支为准；未合并PR的文件不要去旧main找。下列本地路径均相对 `C:/Users/86134/Documents/a_P_BIT/`。
@@ -487,7 +490,7 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 39 / 40 | 实验完成，PR待审未合并 | 裁剪/固定PoT范围65替换；独立目录tmp/qwen-ffn-clipping-issue39-20261019 |
 | 46 / 47 | closed / 已合并bef83e54 | 固定W8多档＋分层；145输出/154原件，含67新完整配置，目录tmp/qwen-fixedw-multiscale-20261019 |
 | 50 / 52 | 34后缀主项＋12诊断＋15次数扫描完成；完整2430/2461运行，PR草稿未合并 | 三种FFN联合及固定B4T32的S32..1024 PPL；见§5.7/5.7.1和tmp/qwen-joint-issue50-20261019 |
-| 51 / 53 | 文献报告PR53待审，未合并 | 新器件/随机LLM的PPL和任务指标；独立目录tmp/emerging-quality-issue51-20261019，备忘录补丁以Issue28最新主维护版本提出 |
+| 51 / 53、56 | 原报告PR53已合并856105b；任务对照PR56待审未合并 | 质量报告与论文任务/指标对照；补充目录tmp/paper-task-map-issue51-20261019；原备忘录PR54已合并e0abc39 |
 | 33 / 待核验 | open，负责人amlink1219 | Attention价值核查与实验计划；与FFN Issue32分开，不接管他人状态 |
 
 Issue19此前交接记录的Slurm数组为2084，8/9等子项尚在运行或排队；这只是此前STATUS快照，不是本次查询实时队列。继续前必须查当前squeue与原manifest，不取消/重交已有作业。精确入口：`tmp/llama2-ffn-precision-issue19-20261018/work/jieruiz/19/HANDOFF.md`及该目录个人STATUS。

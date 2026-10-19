@@ -1,3 +1,11 @@
+# Issue39：截断与固定分组二次幂尺度
+
+2026-10-19；负责人jieruiz；分支task/39-ffn-clipping；base c1555ae；独立目录tmp/qwen-ffn-clipping-issue39-20261019。
+已核实远端规则、身份及分工；目前本地实现中，尚未提交/上传/提交Slurm。正式代码experiments/qwen_ffn_clipping_20261019/；交接work/jieruiz/39/HANDOFF.md。
+下一步：kernel与数值测试，冻结执行源，Slurm BF16门控及train校准，再跑裁剪/固定尺度PPL。无新PT/PPA结果；Projects权限待同步。
+
+以下为继承的历史状态，不代表本任务已完成：
+
 # Issue32：范围缩放已合并，分布审计补充
 
 - 更新时间2026-10-19；负责人jieruiz；PR31合并d589f152，PR34合并5b71d4e，目标为pbit-tlm-attention-details-20261016。原49项输出及20文件manifest在合并提交核验一致。

@@ -7,3 +7,12 @@
 当前本地编码中：experiments/qwen_ffn_clipping_20261019/，未提交/未上传/未运行。并行kernel工作树tmp/qwen-ffn-clipping-kernel-agent39，仅负责clip_core和单测；主工作树负责runner、部署、汇总。
 
 验收步骤：核对control严格重现、端点p1、分组scale恢复、PoT舍入；先提交源代码再打tar部署不可变快照；Slurm prepare跑原BF16完整基线/hash/train校准，成功后53case数组（含无采样control、3固定seed、512及预选2048诊断）。记载实际job/hash；收回所有完成输出，逐SHA核验，通过PR交付，更新memo。无新PT/TLM数据；Projects曾缺read:project，需要再核实但不阻止代码和Issue同步。
+
+
+## 实际提交回执（2026-10-19）
+
+执行源6b57b92305cab5dbee2a53c0c65cb297ac976261。原本地caf4193导出受core.autocrlf影响导致sbatch拒绝DOS换行，未创建作业；新增目录eol=lf并以core.autocrlf=false导出后提交成功，旧未运行快照保留。Slurm2167准备、2168数组0-52%4，最多4GPU，详见SUBMISSION.json。
+
+本地10项kernel通过；服务器10项新kernel、8项旧range及共享计数/方差测试通过。完整原BF16重现11.652735047455899，299077目标；512/2048前缀分别12.089225/9.328747。train-only8192token百分位已校准，数组运行中，替换PPL尚未全部收回。早期mean结果不是最终随机PPL，不预判裁剪收益。
+
+没有新的PT/PPA/TLM，源码已推送task/39-ffn-clipping；提交快照不可覆盖。下一步按check39/collect39收回，逐SHA验证，汇总并更新PR/Issue/Memo。端点变化与裁剪是共同方案，缺少dynamic100(one)独立消融，报告不得将二者完全分离归因。Projects缺权限待同步。

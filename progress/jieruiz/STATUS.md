@@ -1,3 +1,10 @@
+# Issue39实际运行状态
+
+2026-10-19；jieruiz；task/39-ffn-clipping；执行源6b57b92305cab5dbee2a53c0c65cb297ac976261，独立目录tmp/qwen-ffn-clipping-issue39-20261019，base c1555ae。源码已推送；Slurm2167已成功、2168数组运行；PPL结果未全部齐全。
+本地10/10新kernel、服务器新10+旧8及共享/方差验证通过；完整BF1611.652735复现；8192train校准完成。无新PPA。成果experiments/qwen_ffn_clipping_20261019/，回执work/jieruiz/39/SUBMISSION.json；下一步收集/核验/PR交付；Projects权限待同步。
+
+以下保留历史记录：
+
 # Issue39：截断与固定分组二次幂尺度
 
 2026-10-19；负责人jieruiz；分支task/39-ffn-clipping；base c1555ae；独立目录tmp/qwen-ffn-clipping-issue39-20261019。

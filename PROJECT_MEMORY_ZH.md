@@ -640,3 +640,5 @@ Issue30开始前另查本人squeue为空；这说明旧作业当时不在队列�
 Issue65结果追加：原始FP32完整WT2 Softmax5.911825276082767、Sigmoid5.88607319951146，同317546计分token、2048/1024；CPU/GPU对齐及全量计分覆盖已核验。六任务仍运行于2542，PR67为Draft未合并；BF16移植失败另列，禁止称FP32软件结果为BF16或p-bit PPA。详见本任务结果与可执行交接。
 
 Issue65于2026-10-20收齐：GPU2542原始终态COMPLETED/0:0，2543应用收尾无缺失；原始FP32两模型每模型完整六任务19,965题，raw acc均值Softmax63.692864%、Sigmoid64.823195%，PPL5.911825/5.886073。正式原件、模板、69项服务器索引及验证报告见results/apple_sigmoid_7b_eval_20261019。上传状态以PUBLICATION/PR67为准；BF16及p-bit/PPA未验证，不继承其结论。不重交已完成作业。
+
+Issue65完整结果已上传011d46029772bb4b4e17811582a116907318ec46，PR67已转待评审、未合并，Issue65清单已同步。看板状态PENDING；精确发布回执见work/amlink1219/65/PUBLICATION.json。

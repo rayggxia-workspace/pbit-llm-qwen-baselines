@@ -62,6 +62,12 @@ class PlanTests(unittest.TestCase):
         from experiments.attention_joint_ising.evaluate import _case
         self.assertEqual(_case({})['protocol'], 'suffix')
 
+    def test_wrapper_sdpa_mode_is_explicit_and_unknown_modes_rejected(self):
+        from experiments.attention_joint_ising.evaluate import _case
+        self.assertEqual(_case({'mode': 'digital_sdpa'})['mode'], 'digital_sdpa')
+        with self.assertRaisesRegex(ValueError, 'unknown mode'):
+            _case({'mode': 'unverified_digital_backend'})
+
 
 @unittest.skipUnless(importlib.util.find_spec('torch'), 'Torch unavailable; pure plan checks still run')
 class TinyCachedModelTests(unittest.TestCase):

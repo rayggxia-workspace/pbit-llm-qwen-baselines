@@ -14,7 +14,7 @@ from pathlib import Path
 from .scoring import (full_window_plan, ids_sha256, plan_batches, plan_metadata,
                       suffix_plan, summarize_records, target_positions)
 
-MODES = ('sdpa', 'digital_exact', 'screen_exact', 'screen_iid', 'screen_ising', 'ising_only')
+MODES = ('sdpa', 'digital_sdpa', 'digital_exact', 'screen_exact', 'screen_iid', 'screen_ising', 'ising_only')
 
 
 class ModelGuard:

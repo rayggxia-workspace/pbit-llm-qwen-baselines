@@ -67,6 +67,19 @@
 - 合并回执work/jieruiz/32/MERGE_RECEIPT_20261019.json，原MANIFEST引用旧45063d8版本；新辅助文件将单列followup manifest。
 - 下一步：发布并合入本补充PR，更新Issue32与长期备忘录；现有范围PR31/34已合并，不重复合并或重跑49项。Projects权限待同步；不改Attention成员任务。
 
+# Issue51 新器件LLM质量指标核查
+
+- 更新时间2026-10-19；实际登录/负责人jieruiz；Issue51；独立目录tmp/emerging-quality-issue51-20261019，分支task/51-emerging-quality，base TLM c1555ae。
+- 本地报告与14项原文数值复算完成：architecture_tlm/EMERGING_LLM_QUALITY_METRICS_ZH_20261019.md及EVIDENCE JSON；用户资料目录同字节副本。5%降级为自定工程预算，未宣称会议阈值；Kelle/DS-CIM/FeFET/PCM等质量指标分开。
+- 11项主表样本；缺VQT-CiM/HEIRS/DBC可核质量表的全文，已单列下载入口。不把缺数补成精确结果。
+- 验证：UTF-8/LF、2本地链接、14算术项、资料副本及SHA完成，发布时核Git blob；文献整理无新模型/PPL/TLM/RTL/PPA/Slurm，不改Issue46/48/50。
+- 主报告已原样发布a07d695，PR53待审未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/53；base并行推进bef83e54后仍mergeable/clean，已保留Issue46状态。备忘录向Issue28最新b347f6a提供独立小补丁，不覆盖原工作树/根副本。Projects缺read:project，待同步。
+- 辅助资料work/jieruiz/51；后续实际发布状态写HANDOFF/本段。
+- 备忘录补丁已发布56e417e、PR54待审未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/54；以b347f6af为base保留主维护并行更新，根阅读副本未独立改写。
+
+
+以下保留旧任务状态，不作为本任务实时作业信息。
+
 以下为原范围任务交接，日期与状态属原时点：
 
 # Issue32：Qwen双随机范围缩放

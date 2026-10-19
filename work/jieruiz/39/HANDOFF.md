@@ -25,3 +25,6 @@
 
 两批65项替换及6项BF16共71输出已齐，逐SHA和执行源复核通过。正式结果qwen/results/ffn_clipping_20261019/RESULTS_ZH.md，完整索引/SUMMARY同目录；新算法分数均为前缀，不是全WT2。服务器2167/2168与2185/2186全部实际结束情况见收集/状态回执。
 源码执行6b57b92与e0cf563不可变；post执行analysis另有后续提交，未覆盖旧快照。当前任务分支和PR40待审、未合并，Issue39保持open直到验收/合并。下一步审阅结果/方法及限制，若继续应另选独立文本/完整PPL，避免把同一512前缀探索当最终泛化分数。Projects待同步，无新PPA。
+
+
+交付回执：结果提交6642594实际发布，PR40 ready for review、未合并，Issue39保持open；Issue评论6258863708。Git HTTPS失败后API逐commit/tree SHA完全一致地正常快进；22文件Git blob通过。备忘录560f88e已推送PR29、根副本一致。全部计算输出齐且队列为空；sacct禁用、旧controller过期的状态不可查已单列，不能当失败。下一步仅审阅/后续独立实验；不重复这65配置。Projects缺read:project待同步。

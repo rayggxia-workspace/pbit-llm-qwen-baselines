@@ -1,3 +1,12 @@
+# Issue39：结果已推送，PR40待审未合并
+
+2026-10-19；负责人jieruiz；独立分支task/39-ffn-clipping，目录tmp/qwen-ffn-clipping-issue39-20261019；base c1555ae。
+结果提交6642594已实际发布，PR40已ready for review、未合并；Issue39仍open等待验收。65替换+6参考共71输出，79原件SHA/源快照复核、22发布文件Git blob校验通过；全部结果已齐，本人squeue为空。新10/旧8/共享/方差验证通过，两次完整BF1611.652735复现。
+正式成果qwen/results/ffn_clipping_20261019/，设计experiments/qwen_ffn_clipping_20261019/；交付回执work/jieruiz/39/DELIVERY_RECEIPT.json。执行源6b57b92/e0cf563不可变；全部替换分数仍为512/2048前缀，未做完整随机WT2/新PPA。长期备忘录560f88e已推送PR29，根阅读副本相同。
+阻塞/待同步：Projects缺read:project，看板未同步；没有PPL结果缺失。Slurm无sacct且旧控制器记录过期，未获得全部历史退出码，未把不可查记录称失败。下一步审阅/验收PR40；若进一步研究需独立文本或完整WT2验证温和裁剪。
+
+以下保留历史记录：
+
 # Issue39结果已完成，准备交付
 
 2026-10-19T11:09:36+08:00；负责人jieruiz；分支task/39-ffn-clipping；PR40到pbit-tlm-attention-details-20261016，独立目录tmp/qwen-ffn-clipping-issue39-20261019；base c1555ae。

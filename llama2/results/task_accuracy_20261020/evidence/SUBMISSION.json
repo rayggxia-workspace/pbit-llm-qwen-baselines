@@ -1,0 +1,51 @@
+{
+  "cpu_job": "2570",
+  "source_commit": "022db6828c0caba96ae3d620f80b27c1ae3774b9",
+  "snapshot": "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9",
+  "output": "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/outputs/022db6828c0caba96ae3d620f80b27c1ae3774b9",
+  "command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--cpus-per-task=4",
+    "--mem=12G",
+    "--time=00:30:00",
+    "--job-name=l2task73-cpu",
+    "--output=/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/logs/cpu-%j.log",
+    "--export=ALL",
+    "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/llama2_task_accuracy_20261020/job.sh"
+  ],
+  "prepare_job": "2571",
+  "prepare_command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--gres=gpu:1",
+    "--cpus-per-task=4",
+    "--mem=56G",
+    "--export=ALL",
+    "--kill-on-invalid-dep=yes",
+    "--time=02:00:00",
+    "--job-name=l2task73-gate",
+    "--dependency=afterok:2570",
+    "--output=/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/logs/gate-%j.log",
+    "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/llama2_task_accuracy_20261020/job.sh"
+  ],
+  "formal_array_job": "2572",
+  "formal_command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--gres=gpu:1",
+    "--cpus-per-task=4",
+    "--mem=56G",
+    "--export=ALL",
+    "--kill-on-invalid-dep=yes",
+    "--time=24:00:00",
+    "--job-name=l2task73-full",
+    "--dependency=afterok:2571",
+    "--array=0-25%2",
+    "--output=/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/logs/full-%A_%a.log",
+    "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/llama2_task_accuracy_20261020/job.sh"
+  ]
+}

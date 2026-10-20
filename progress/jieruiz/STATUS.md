@@ -1,8 +1,14 @@
-# Issue73：Llama2原始/概率FFN与Attention任务评测准备
+# Issue73：Llama2任务评测已通过门禁并开始正式运行
 
-2026-10-20；jieruiz；Issue73；branch task/73-llama2-task-accuracy；base18b887b集成分支。独立稀疏目录tmp/llama2-task-accuracy-issue73-20261020。两完整任务PIQA/ARC-E，各13配置；Apple已有FP32两基线原件摘要复用，明确不同模型/计算口径。
+2026-10-20；负责人jieruiz；Issue73 / PR75（draft/open、未合并）；分支task/73-llama2-task-accuracy，base18b887b集成分支。独立稀疏目录tmp/llama2-task-accuracy-issue73-20261020；冻结执行022db6828c0caba96ae3d620f80b27c1ae3774b9已推送。
 
-本地Llama32层守卫/继承相同数值核/缓存多选计分及6项CPU合同已写，AST通过；本机无Torch，待远端CPU Slurm验证。尚未提交GPU/正式评测；结果pending，无新PPL/准确率/PPA。HANDOFF为work/jieruiz/73/HANDOFF.md。Projects待权限同步。
+PIQA1838、ARC-E2376全量各13配置，共26项：BF16、FFN-only三seed、Attention-only S128三seed、联合S128/S512各三seed。固定B4/T32/K32、共享64；Attention为unscreened有限CTMC，短题不宣称K筛选收益。Apple PR67已有FP32 Softmax/Sigmoid两完整基线已按源SHA索引复用，并非新跑或Llama同权重因果对照。
+
+CPU2570的6项32层小模型合同通过；GPU2571完整WT2 BF164.979502845218782、335686目标严格重现，8题独立缓存逐候选差0且digital_sdpa一致；4个真实7B概率pilot及32层审计通过，最高29.89GiB。正式数组2572_[0-25]已经启动，首项运行，其余待Resources（最多2张5090，目前仅1空闲）。分数pending；没有新训练/PPA。
+
+成果llama2/results/task_accuracy_20261020/；源码experiments/llama2_task_accuracy_20261020/；远端/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/outputs/022db6828c0caba96ae3d620f80b27c1ae3774b9/full。SHA、执行命令、Slurm回执/READY及精确源码小归档已保留；75源核验，38个继承文件仅git archive CRLF换行差异，原始执行字节保留，未改数值。
+
+下一步先核Issue73/PR75、squeue及HANDOFF；只读收回封存full JSON和documents，核SHA/26项/32层/3seed后汇总与配对差值。不重交仍在运行的数组，不用pilot或部分seed冒充正式结论。Projects历史缺read:project待同步。
 
 以下保留此前状态（时间戳快照，最新合并以远端为准）：
 

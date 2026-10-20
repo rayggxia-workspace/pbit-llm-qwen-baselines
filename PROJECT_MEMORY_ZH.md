@@ -14,6 +14,8 @@
 
 ## 0 恢复工作先读这里
 
+> 2026-10-20 Issue73/PR75：Llama2-7B代表任务已启动。PIQA1838/ARC-E2376全量，各BF16＋FFN-only三seed＋Attention S128三seed＋联合S128/S512各三seed，共26项。冻结022db6828c0caba96ae3d620f80b27c1ae3774b9；CPU2570六项与GPU2571完整WT2 BF164.9795028452/335686目标、独立cached评分0差/SDPA等价/真实7B概率pilot通过。正式Slurm2572_[0-25]已运行，分数pending；不重交。FFN为B4/T32/K32共享64，Attention短题保留all K、仅计分token32层decode替换，前缀准确。Apple PR67既有FP32双模型完整基线仅复用索引；不是p-bit或Llama同权重因果对照。源码experiments/llama2_task_accuracy_20261020；结果llama2/results/task_accuracy_20261020；交接work/jieruiz/73/HANDOFF.md；PR75 draft/open未合并。
+
 1. 目标是利用物理随机源/p-bit降低LLM的能量、面积，同时保持可接受的质量与速度；不能为了利用随机源就假定随机计算一定胜过定点计算。
 2. 正式仓库是 `rayggxia-workspace/pbit-llm-qwen-baselines`，当前主要集成分支为 `pbit-tlm-attention-details-20261016`。`main` 和历史个人仓库都可能落后。2026-10-19 PR47按用户授权实际合并后，集成提交为 `bef83e54b9da0081c51f393044d2156ce11a34b9`；其Git树与已审核head `5518a0a23e2bfec2b428542a9e4ce94b27c78d4a` 相同。
 3. 三个模型入口是 [qwen](qwen/README.md)、[llama1](llama1/README.md)、[llama2](llama2/README.md)。Qwen3.5是另一组历史实验，不能默认已并入本分支。

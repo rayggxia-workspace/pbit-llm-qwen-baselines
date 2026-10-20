@@ -1,3 +1,13 @@
+# 2026-10-20 Issue76 四条硬件训练路线讨论稿
+
+负责人amlink1219；task/76-fourtrack-training-plan；base e4990c15；独立最小稀疏目录workspace_projects/tr76。范围为四条既定训练路线和服务器讨论稿，当前文档已完成本地内容/结构/链接/样式及独立审阅，待任务分支PR交付；没有训练作业或新PPL/PPA。
+
+正式入口architecture_tlm/training_plans/four_tracks_20261020/TRAINING_PLAN_ZH.md及同目录Word/PLAN.json；辅助资料work/amlink1219/76/。难度3→1→4→2，第3条按用户追问核Git后保留variable，固定8块仅现有评测对照。最新PR52已合并、完整WT2已完成；下方旧“PR52/71待审”等为历史时点，不作当前状态。
+
+实际验证与五项独立审阅修正在VALIDATION/REVIEW，交接见HANDOFF。下一步与服务器方确认执行资源、数据与质量/容量约束后单独建立执行任务。本稿不启动或接管现有评测任务，不自动合并。上传/PR/看板结果以本任务PUBLICATION回执为准。
+
+## 以下保留历史任务记录
+
 结果提交`ac5626fbabcaee09e5ee0c25d376be1f46335bc5`已推送；PR71开放待审、未合并；远端ref/PR head及8项稳定Git blob SHA已核验，见PUBLICATION.json。无模型训练/PPL/PPA。
 
 ## ReMix v1精读，Issue70（2026-10-19）

@@ -8,7 +8,7 @@
 - 正式成果qwen/results/task_accuracy_20261019/：完整表、三seed波动、逐seed配对变化及原件SHA索引；大的逐题原件留原授权服务器。两份报告SHA：SUMMARY be47dd60a87dfb1467add4e22c6795e02df2a80867d0085d8f1a3b70cb1e61ac；RESULTS 7fc169344d0166f938580f32fb0ce03f0f5d34465bea5a74830ccdef4d0edbde。
 - 局限：Hella不是完整10042题；短题K保留100%，前缀Attention准确，不能宣称长上下文筛选或完整prefill Attention已验证；Ising观测数不是ESS/电路拍。
 - 当前发布阶段：完整报告已推送cebba22dadb78440b210b3ec237b5e2d16c77030；GitHub API核验16份结果/evidence字节与manifest相符，PR62说明及Issue59清单/进度已更新。PR仍draft、未合并，Issue保持open，不使用旧3/39或11/39代表当前状态。
-- 下一步：完成Issue28长期记忆同步发布，然后审查/合并PR52和PR62。看板查询实测返回INSUFFICIENT_SCOPES（缺read:project），Projects待有权限者同步；仓库报告上传不受影响。实际发布回执见work/jieruiz/59/FINAL_REMOTE_RECEIPT_20261020.json。
+- 长期记忆已同步并通过PR72提交待审（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/72）；下一步审查/合并PR52、PR62及PR72。看板查询实测返回INSUFFICIENT_SCOPES（缺read:project），Projects待有权限者同步；仓库报告上传不受影响。实际发布回执见work/jieruiz/59/FINAL_REMOTE_RECEIPT_20261020.json。
 
 ---
 

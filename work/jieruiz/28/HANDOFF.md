@@ -1,3 +1,15 @@
+# Issue28：Qwen39项完整任务结果已同步长期备忘录
+
+2026-10-20；真实认证jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。复用canonical目录tmp/project-memory-issue28-20261018、分支task/28-project-memory，base6197f24a9cc03ab0dc5e2e72297457f638e37292。新增第5.8.2节、最新任务索引，引用Issue59/PR62已上传cebba22的完整39项，不启动或重交任何模型任务。
+
+- 当前阶段：文档提交72c6a7ed838eadad33d94b1dcd1293f128f3711c已推送并建立PR72（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/72），open、ready for review、未合并；PR62报告也已上传、未合并。
+- 证据：qwen/results/task_accuracy_20261019/{RESULTS_ZH.md,SUMMARY.json,ARTIFACT_INDEX.json,evidence/FINAL_VERIFICATION_20261020.json}。数值与原件SHA不重写；本轮只有文档同步。
+- canonical原有Issue68/PR69清理追加为已存在的未提交12行。本次只将第5.8.2/12节和日期变更写入索引，排除该旧任务增量；旧增量继续原样保留。canonical文件与a_P_BIT根阅读副本始终同字节；工作副本含PR69待审追加，不冒称与仅本次增量的提交blob整文件相同。
+- 验证：39项/15组数值、两份报告SHA、UTF8/LF、插入位置及根阅读副本一致；Git staged范围与只包含本次delta；无新模型、数据、GPU、训练、RTL/PT/TLM。
+- 下一步：审阅PR72及依赖的PR52/62，按实际合并回执继续同步；不重跑39项已完成评测。Projects查询实测缺read:project，看板待有权限者同步；Issue28/59仍open。发布回执见TASK59_COMPLETION_REMOTE_RECEIPT_20261020.json。
+
+以下保留历史交接：
+
 # Issue 28 交接
 
 ## 2026-10-19：Issue59/PR62记忆PR64待审，三项基线追加本地待发布

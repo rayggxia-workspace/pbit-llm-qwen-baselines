@@ -1,4 +1,4 @@
-# Issue59：39项Qwen任务评测已全部完成，完整报告准备上传
+# Issue59：39项Qwen任务评测已全部完成，完整报告已上传，PR待审
 
 更新时间：2026-10-20；负责人：jieruiz；目标：rayggxia-workspace/pbit-llm-qwen-baselines。
 
@@ -7,8 +7,8 @@
 - 2026-10-20严格复核39项及逐题SHA，重建SUMMARY/RESULTS与服务器归档逐字节一致；原执行075574ec94307202f3187845d6d7417f1e98ba48及collector0d4be877714ace3f1b360c4d74b62e563850e9bc保持不变。没有新GPU推断、训练或PPA。
 - 正式成果qwen/results/task_accuracy_20261019/：完整表、三seed波动、逐seed配对变化及原件SHA索引；大的逐题原件留原授权服务器。两份报告SHA：SUMMARY be47dd60a87dfb1467add4e22c6795e02df2a80867d0085d8f1a3b70cb1e61ac；RESULTS 7fc169344d0166f938580f32fb0ce03f0f5d34465bea5a74830ccdef4d0edbde。
 - 局限：Hella不是完整10042题；短题K保留100%，前缀Attention准确，不能宣称长上下文筛选或完整prefill Attention已验证；Ising观测数不是ESS/电路拍。
-- 当前发布阶段：本地已完成复核，完整文件待本次推送；PR62仍draft、未合并，Issue59保持open。发布后以Git远端head与工作区回执为准，不使用旧3/39或11/39状态代表最终结果。
-- 下一步：上传并验证本提交制品字节，更新PR62/Issue59和长期备忘录；依赖PR52未合入，最终审查/合并独立处理。Projects权限另核验，未成功则明确待同步。
+- 当前发布阶段：完整报告已推送cebba22dadb78440b210b3ec237b5e2d16c77030；GitHub API核验16份结果/evidence字节与manifest相符，PR62说明及Issue59清单/进度已更新。PR仍draft、未合并，Issue保持open，不使用旧3/39或11/39代表当前状态。
+- 下一步：完成Issue28长期记忆同步发布，然后审查/合并PR52和PR62。看板查询实测返回INSUFFICIENT_SCOPES（缺read:project），Projects待有权限者同步；仓库报告上传不受影响。实际发布回执见work/jieruiz/59/FINAL_REMOTE_RECEIPT_20261020.json。
 
 ---
 

@@ -165,7 +165,9 @@ def score_case(a, cfg, docs, registered, path):
         slurm_job_id=os.environ['SLURM_JOB_ID'],command=[sys.executable,*sys.argv],
         environment=dict(torch=torch.__version__,transformers=transformers.__version__,
                          lm_eval=importlib.metadata.version('lm_eval'),python=sys.version,
-                         cuda=torch.version.cuda,gpu=torch.cuda.get_device_name(),tf32=False),
+                         cuda=torch.version.cuda,gpu=torch.cuda.get_device_name(),tf32=False,
+                         allocator=os.environ.get('PYTORCH_CUDA_ALLOC_CONF'),
+                         weight_code_storage='lossless INT8; FP32 decoded weights and RNG unchanged'),
         peak_allocated_bytes=torch.cuda.max_memory_allocated())
     write(path,result)
     del model

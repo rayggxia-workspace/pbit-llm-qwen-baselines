@@ -6,6 +6,7 @@ export TOKENIZERS_PARALLELISM=false
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_DATASETS_OFFLINE=1
 export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4
 export PYTHONDONTWRITEBYTECODE=1
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export PYTHONPATH="$SNAPSHOT"
 cd "$SNAPSHOT"
 PY=/home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python

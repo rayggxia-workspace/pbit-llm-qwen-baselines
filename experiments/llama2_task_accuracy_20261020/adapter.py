@@ -12,7 +12,34 @@ from experiments.qwen_joint_stratified_attention_20261019.upstream_attention.att
     JointAttentionController as QwenController)
 
 ExecutionAudit = joint.ExecutionAudit  # Hook lengths are derived from supplied layers.
-_install_ffn = joint._install_ffn       # Unchanged B4/T32/K32 kernel.
+
+
+def pack_weight_codes(module):
+    """Lossless storage only. Forward uses untouched FP32 decoded weights.
+
+    Historical W8 codes occupy INT16 buffers for software convenience. Packing
+    each layer immediately saves one byte per FFN weight before the next layer
+    is quantized. Retaining INT16 until every layer is installed can OOM on a
+    32GB GPU with another 1.24GiB process, despite a successful idle-card pilot.
+    """
+    import torch
+    for name in ('gu_codes', 'down_codes'):
+        original = getattr(module, name)
+        packed = original.to(torch.int8)
+        if not torch.equal(packed.to(original.dtype), original):
+            raise RuntimeError('W8 storage packing would change an integer code')
+        setattr(module, name, packed)
+    return module
+
+
+def _install_ffn(model, case):
+    if case['ffn'] == 'none':
+        return
+    from experiments.qwen_multiscale_stratified_20261019.stratified_core import StratifiedFFN
+    for index, layer in enumerate(model.model.layers):
+        replacement = StratifiedFFN(layer.mlp, mode='sampled', seed=case['seed'],
+                                   layer=index, **joint.FFN_CONFIGS[case['ffn']]).eval()
+        layer.mlp = pack_weight_codes(replacement)
 
 
 def _case(case):

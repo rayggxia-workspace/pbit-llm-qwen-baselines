@@ -5,7 +5,7 @@ import unittest
 import torch
 from transformers import LlamaConfig, LlamaForCausalLM
 
-from .adapter import JointAttentionController, ModelGuard, _case
+from .adapter import JointAttentionController, ModelGuard, _case, pack_weight_codes
 from .cached_score import evaluate_tasks
 from .run import configurations
 
@@ -79,6 +79,26 @@ class Contracts(unittest.TestCase):
         m=model();guard=ModelGuard(m,'none')
         with torch.no_grad():next(m.parameters()).add_(1.)
         with self.assertRaises(RuntimeError):guard.verify()
+
+    def test_weight_code_packing_is_lossless_and_forward_identical(self):
+        from experiments.qwen_multiscale_stratified_20261019.stratified_core import StratifiedFFN
+        original=model().model.layers[0].mlp
+        reference=StratifiedFFN(original,policy='pot4',mode='sampled',cycles=32,strata=32,seed=3)
+        packed=pack_weight_codes(StratifiedFFN(original,policy='pot4',mode='sampled',cycles=32,strata=32,seed=3))
+        for name in ('gu_codes','down_codes'):
+            self.assertEqual(getattr(packed,name).dtype,torch.int8)
+            self.assertTrue(torch.equal(getattr(reference,name),getattr(packed,name).to(torch.int16)))
+        for name in ('gu_decoded','down_decoded','gu_tile_lsb','down_tile_lsb'):
+            self.assertTrue(torch.equal(getattr(reference,name),getattr(packed,name)))
+        with torch.inference_mode():
+            for length in (7,1,1):
+                x=torch.randn(2,length,64)
+                self.assertTrue(torch.equal(reference(x),packed(x)))
+        packed.gu_codes[0,0]=0
+        packed.gu_codes[0,1]=127
+        # Out-of-range INT16 must be rejected instead of wrapping silently.
+        reference.gu_codes[0,0]=128
+        with self.assertRaises(RuntimeError):pack_weight_codes(reference)
 
     def test_reject_wrong_architecture_or_shared_owner(self):
         m=model();m.config.model_type='qwen2'

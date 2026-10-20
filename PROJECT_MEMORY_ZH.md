@@ -634,6 +634,8 @@ Issue30开始前另查本人squeue为空；这说明旧作业当时不在队列�
 
 - 2026-10-19，PR47独立审核与用户授权合并：25项核测试、145计分/154原件、98次执行blob和60次发布blob检查通过；合并提交`bef83e54b9da0081c51f393044d2156ce11a34b9`，两个父提交及与审核head同树均核实，Issue46于15:46:38（北京时间）按验收完成关闭。[审核记录](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/47#pullrequestreview-5568295057)及[合并回执](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46#issuecomment-6262300688)已在线。GitHub集成403不等于仓库账号无权限；本机jieruiz已核实admin/push并成功合并。Projects仍缺read:project。没有新GPU推理或PPA，K>1仍为受控分层；PR29继续待审，不随PR47合并。
 
+> 本轮合并阅读提示（2026-10-20）：以下保留Issue68/65原始交付时点记录。PR69已实际合并`bc9f96d73726a858f9bf9eb494c14b46c24f4279`；Issue65以文末“2026-10-20收齐”和完整结果已上传段为最新结果，覆盖早先六任务运行中及Draft状态快照。PR67在本提示生成时仍待合并，BF16及p-bit/PPA仍未验收。
+
 ## 2026-10-19 本地副本清理与生命周期规则（Issue68/PR69）
 
 用户要求清理本地电脑项目文件，随后明确要求清除已结束任务的副本、以后不长期保留。接续Issue68、分支task/68-local-storage-cleanup、目录tmp/local-cleanup-issue68-20261019，PR69待审；本地已执行不等于已合并。
@@ -645,3 +647,15 @@ Issue30开始前另查本人squeue为空；这说明旧作业当时不在队列�
 根及仓库AGENTS.md已追加用户要求：恢复复用已有任务目录；实际并行才建立必要隔离worktree；只读审阅优先git show；新worktree先不检出、按需稀疏检出，避免每个helper复制大结果/事务轨迹；交付时归档独有资料并回收review/resolve/helper。本任务自身已稀疏检出maintenance/progress/work，其他成员设置不变。当前仅清理本地文件，未修改Windows pagefile或系统设置，没有新PPL/GPU/RTL/PT/TLM结果。项目文件与Windows虚拟内存文件分开处理。
 
 本段从Issue28 canonical文件追加后同步到根阅读副本及Issue68 PR文件，保持同字节；发布状态以Issue68/PR69实时记录为准。canonical工作副本中的这一追加由PR69交付，后续先核实PR状态再同步，不重复编辑成另一份内容。
+
+## Apple Sigmoid Attention 7B配对质量参考（Issue65，2026-10-19）
+
+负责人amlink1219；独立目录workspace_projects/sa7。按用户指定DS-CIM表II确认BoolQ/PIQA/HellaSwag/WinoGrande/ARC-e/ARC-c，论文未固定所有harness细节，本次明确0-shot/0.4.8，不称复现其LLaMA数字。官方Apple两个step250000检查点和原SP已下载校验，服务器模型根/home/Weican_Chen/models/apple-sigmoid-attention-7b。SP32000词片，嵌入/输出32768；Gala原生AXLearn配置与Llama/Qwen不同。
+
+方法/状态与索引见experiments/apple_sigmoid_7b_eval、results/apple_sigmoid_7b_eval_20261019和work/amlink1219/65/HANDOFF.md。BF16 GPU移植预检失败，未产生正式质量结果；先以未量化原始FP32权重和FP32计算建立高精度质量参考，分开列精度。当前运行状态须查实时Issue/作业，不能由本记录推断已经完成。没有p-bit采样或硬件PPA验收结论；不改Issue50/59的Qwen任务。
+
+Issue65结果追加：原始FP32完整WT2 Softmax5.911825276082767、Sigmoid5.88607319951146，同317546计分token、2048/1024；CPU/GPU对齐及全量计分覆盖已核验。六任务仍运行于2542，PR67为Draft未合并；BF16移植失败另列，禁止称FP32软件结果为BF16或p-bit PPA。详见本任务结果与可执行交接。
+
+Issue65于2026-10-20收齐：GPU2542原始终态COMPLETED/0:0，2543应用收尾无缺失；原始FP32两模型每模型完整六任务19,965题，raw acc均值Softmax63.692864%、Sigmoid64.823195%，PPL5.911825/5.886073。正式原件、模板、69项服务器索引及验证报告见results/apple_sigmoid_7b_eval_20261019。上传状态以PUBLICATION/PR67为准；BF16及p-bit/PPA未验证，不继承其结论。不重交已完成作业。
+
+Issue65完整结果已上传011d46029772bb4b4e17811582a116907318ec46，PR67已转待评审、未合并，Issue65清单已同步。看板状态PENDING；精确发布回执见work/amlink1219/65/PUBLICATION.json。

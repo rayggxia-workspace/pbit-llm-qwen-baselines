@@ -1,0 +1,57 @@
+{
+  "repository": "rayggxia-workspace/pbit-llm-qwen-baselines",
+  "pr": 71,
+  "issue": 70,
+  "reviewed_head": "978f0dcfbf136cc0f68102994115d7ad78f44052",
+  "reviewed_base": "6197f24a9cc03ab0dc5e2e72297457f638e37292",
+  "review_date_local": "2026-10-20",
+  "verdict": "merge_recommended",
+  "blocking_findings": [],
+  "scope": "Independent source, mathematics, evidence and documentation audit; no author checkout or remote mutation.",
+  "value": "Adds a fixed-v1 ReMix reading with ordered without-replacement routing, equal output coefficients versus selection probabilities, RLOO conditions, conditional top-k theorem, numerical/time caveats and limits on transfer to finite-chain p-attention. This is useful research evidence beyond the earlier feasibility design.",
+  "verification": {
+    "changed_files": 13,
+    "stable_git_blobs": "8/8 exact bytes, sizes and SHA-256 passed at the reviewed head",
+    "author_math_validator": "24 cases passed in an isolated two-file export; source files in the author branch were not modified",
+    "independent_rloo": "24 exact M-fold enumerations against finite differences using independently implemented recursive path probabilities and numerical log-probability scores; maximum error 1.7462004064938697e-11",
+    "independent_topk": "306 finite-grid categorical-distribution cases; 130 strict-majority subset cases and 2820 monotone-swap checks passed; this is a diagnostic, not a substitute for the general proof",
+    "fixed_pdf": "699040 bytes, 22 pages, SHA-256 4d4925ffaa1005266e86598299730f9b24c26922e3ccde3d910d47958b3bcbaa independently obtained from fixed public arXiv v1 into memory, exactly matching SOURCES.json and ZOTERO_SUMMARY.json",
+    "pdf_visual_review": "Original pages 4, 5, 6, 8, 9, 21 and 22 rendered in own scratch and visually checked; no source PDF was copied",
+    "source_claims": [
+      "Original v1 is a Lifelong Agents at ICLR 2026 workshop paper, not an assertion of main-conference acceptance.",
+      "Per-input LoRA selection uses sequential sampling without replacement; actual ordered path log-probability includes conditional denominators. Output coefficients are fixed and equal for selected adapters.",
+      "RLOO uses M independent complete selections for the same input, M >= 2, a leave-one-out baseline, and 1/(M-1) when centering by the full-sample mean. The note correctly stops advantage gradients and does not claim convergence.",
+      "The top-k result assumes a given optimal subset already has sampling probability strictly above one half; it is not a training-success or whole-network global-optimality guarantee.",
+      "The initialization arithmetic is correctly restricted to the printed Gaussian-initialization bound and Rademacher input norm 32. The note does not infer that the paper's actual event probability is false.",
+      "Table 4 yields 10.2793% extra per-step time and 21.1380% extra total time. The note distinguishes these and makes no p-bit power inference.",
+      "The 0.070B parameter figure is the average of task-specific configurations; the note distinguishes activated versus stored/trainable parameter ambiguity and identifies missing reproduction details.",
+      "M is training rollout count, k is active adapters, and correlated finite-chain inference observations S are different. The note correctly requires actual finite CTMC path probabilities rather than equilibrium Softmax probabilities."
+    ],
+    "relative_links": "Research entry's ../../work/amlink1219/70/READING_NOTE.html resolves to an existing reviewed Git blob; fixed-v1 source links resolve.",
+    "diff_check": "git diff --check passed",
+    "primary_checkout": "Existing checkout remained clean and on its original branch; only a local read-only fetch ref and own scratch were created."
+  },
+  "nonblocking_notes": [
+    "HANDOFF.md's final paragraph retains the older phrase awaiting this round's remote readback, while its newer leading paragraph and PUBLICATION.json record readback complete. The chronological top record disambiguates it; the integration delivery can summarize the final status.",
+    "PR71 does not modify AGENTS.md, so PR69's lifecycle rules have no direct AGENTS file conflict. Preserve both independent top-of-memory additions when integrating the two documentation PRs."
+  ],
+  "limits": [
+    "No actual local Zotero attachment path was available. The fixed arXiv PDF bytes independently match the attachment hash stated in the committed receipt, but the current private library item, tags, collections, note readback and no-duplicate state were not independently re-read. No Zotero mutation occurred during this review.",
+    "No author implementation, Llama training, task accuracy, PPL, GPU job, hardware timing or PPA was reproduced. The PR consistently labels its results as source reading and small-state mathematical diagnostics.",
+    "Merge authorization must still be gated on the remote head remaining equal to the exact reviewed head. Issue70 can be accepted after successful merge within its reading-and-analysis scope."
+  ],
+  "evidence": [
+    "PR71_MATH_AND_BLOBS.json",
+    "PR71_FIXED_PDF_CHECK.json",
+    "verify_pr71.py",
+    "inspect_fixed_pdf.py"
+  ],
+  "sources": [
+    "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/71",
+    "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/70",
+    "https://arxiv.org/abs/2603.10160v1",
+    "https://arxiv.org/html/2603.10160v1",
+    "https://arxiv.org/pdf/2603.10160v1"
+  ],
+  "scratch_retention": "Keep this task's small scratch for root's unified SHA archival; no helper directory has been removed."
+}

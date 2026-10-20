@@ -629,3 +629,15 @@ Issue30开始前另查本人squeue为空；这说明旧作业当时不在队列�
 - 2026-10-19，用户授权合并：PR31/34/38均已合入TLM，Issue30/32已关闭；补充8192train-token真实直方图、极值能量与裁剪口径，保留未跑裁剪PPL/未测PPA边界。
 
 - 2026-10-19，PR47独立审核与用户授权合并：25项核测试、145计分/154原件、98次执行blob和60次发布blob检查通过；合并提交`bef83e54b9da0081c51f393044d2156ce11a34b9`，两个父提交及与审核head同树均核实，Issue46于15:46:38（北京时间）按验收完成关闭。[审核记录](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/47#pullrequestreview-5568295057)及[合并回执](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/46#issuecomment-6262300688)已在线。GitHub集成403不等于仓库账号无权限；本机jieruiz已核实admin/push并成功合并。Projects仍缺read:project。没有新GPU推理或PPA，K>1仍为受控分层；PR29继续待审，不随PR47合并。
+
+## 2026-10-19 本地副本清理与生命周期规则（Issue68/PR69）
+
+用户要求清理本地电脑项目文件，随后明确要求清除已结束任务的副本、以后不长期保留。接续Issue68、分支task/68-local-storage-cleanup、目录tmp/local-cleanup-issue68-20261019，PR69待审；本地已执行不等于已合并。
+
+第一轮回收本人Issue55的17个PR刷新worktree及缓存/重复图，逻辑3.133GiB；第二轮回收42个已关闭任务/审核helper副本，逻辑7.377GiB，两轮合计10.510GiB、59个worktree。Git分支/对象库保留；42个额外恢复ref和非祖先helper的已验证增量bundle可恢复代码，440个未提交/ignored独有文件已本地压缩核SHA。第二轮恢复材料共约2.90MiB，位于project_archives/cleanup_20261019_round2；第一轮小归档仍在tmp/local_cleanup_20261019/recovery。原始模型、最优checkpoint、工艺资料、正式唯一结果和进行中任务保留；pr47-review-main因rayggxia的独有交接保留。
+
+正式清单与恢复方法：maintenance/storage_cleanup_20261019/REPORT_ZH.md、ROUND2_REPORT_ZH.md、RECOVERY_INDEX.json及ROUND2_RECOVERY_INDEX.json，完整本地日志在tmp/local_cleanup_20261019。本备忘录此前记录的某些已关闭任务工作路径已回收；先按恢复索引重建原分支/HEAD并取出独有资料，不因目录不在而重复实验。正在进行的Issue7/19/22/28/50/59和当前68没有作为已结束目录清理。
+
+根及仓库AGENTS.md已追加用户要求：恢复复用已有任务目录；实际并行才建立必要隔离worktree；只读审阅优先git show；新worktree先不检出、按需稀疏检出，避免每个helper复制大结果/事务轨迹；交付时归档独有资料并回收review/resolve/helper。本任务自身已稀疏检出maintenance/progress/work，其他成员设置不变。当前仅清理本地文件，未修改Windows pagefile或系统设置，没有新PPL/GPU/RTL/PT/TLM结果。项目文件与Windows虚拟内存文件分开处理。
+
+本段从Issue28 canonical文件追加后同步到根阅读副本及Issue68 PR文件，保持同字节；发布状态以Issue68/PR69实时记录为准。canonical工作副本中的这一追加由PR69交付，后续先核实PR状态再同步，不重复编辑成另一份内容。

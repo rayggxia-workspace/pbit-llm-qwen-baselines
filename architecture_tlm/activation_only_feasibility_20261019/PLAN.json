@@ -1,0 +1,147 @@
+{
+  "schema": "qwen-activation-only-feasibility-v1",
+  "issue": 61,
+  "owner": "amlink1219",
+  "status": "proposed_not_executed",
+  "date": "2026-10-19",
+  "model": {
+    "id": "Qwen/Qwen2.5-0.5B",
+    "revision": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+    "variant": "Base",
+    "layers": 24,
+    "ffn_width": 4864
+  },
+  "equations": {
+    "O": "Wd[u*g*sigmoid(g)]",
+    "A": "Wd[u*g*mean(Bernoulli(sigmoid(g)))]",
+    "B": "Wd[u*mean(Bernoulli(sigmoid(alpha*g+beta)))]",
+    "C": "Wd[u*mean(2*Bernoulli(sigmoid(2*(alpha*g+beta)))-1)]"
+  },
+  "history": {
+    "A": "historical design section27 proposed; no executed activation-only model/PPL found in acquired reachable history",
+    "B_C": "planned formulas, no executed activation-only model/PPL found in acquired reachable history",
+    "related_but_different": [
+      "two-projection P-DNN",
+      "v10 both-branch stochastic dualrail",
+      "two-bank multithreshold AND",
+      "triple g/sigmoid(g)/u stochastic product",
+      "current B4T32 continuous SiLU"
+    ]
+  },
+  "first_stage": {
+    "projection": "original BF16; no input sampling or amplitude encoding",
+    "value_branch": "continuous; not separately sampled",
+    "attention": "original accurate",
+    "coverage": [
+      [
+        12
+      ],
+      [
+        0,
+        12,
+        23
+      ],
+      "all24 after validation"
+    ],
+    "matched_controls": [
+      "native BF16 original",
+      "explicit manual FP32 SwiGLU no-sampling",
+      "A deterministic mean",
+      "B deterministic mean",
+      "C deterministic mean"
+    ],
+    "N": [
+      1,
+      4,
+      16,
+      64
+    ],
+    "optional_boundary_N": [
+      32,
+      128
+    ]
+  },
+  "second_stage": {
+    "projection": "existing fixed W8 B4/T32/K32 only after first-stage controls",
+    "gate_up_share_x": true,
+    "independent_z_encoding": true,
+    "baseline": "current SC with continuous SiLU, plus deterministic low-bit/stochastic-rounding baseline"
+  },
+  "sample_contract": {
+    "N": "activation samples within one FFN call, holding g/u; not N whole-model runs",
+    "readout": [
+      "sample-wise continuous z then linear accumulation",
+      "mean gate/z before one linear down; algebraically equal only for linear stage, finite precision/schedule separate"
+    ],
+    "RNG_domains": "activation independent from SC input/product draws; explicit spatial/time correlation controls"
+  },
+  "training": {
+    "tokens": [
+      4000000,
+      32000000,
+      128000000
+    ],
+    "training_seeds": [
+      0,
+      1,
+      2
+    ],
+    "inference_rng_seeds": [
+      101,
+      102,
+      103
+    ],
+    "steps": [
+      "no training",
+      "deterministic activation conversion",
+      "actual finite-N distillation"
+    ],
+    "parameter_arms": [
+      "layer alpha/beta",
+      "down-only",
+      "all FFN weights, unchanged shapes"
+    ],
+    "loss_initial": {
+      "teacher_logits_KL": 0.8,
+      "next_token_CE": 0.2,
+      "KD_temperature": 1
+    },
+    "gradient": "hard finite-sample forward, explicitly biased smooth backward; small-module exact/finite-difference control retains direct amplitude and distribution terms",
+    "same_budget_control": "digital continuing training with same teacher and tokens"
+  },
+  "data": {
+    "train_revision": null,
+    "allocation": null,
+    "status": "not selected/verified in this research task",
+    "test_used_for_tuning": false,
+    "validation": "independent train-held-out data"
+  },
+  "final_evaluation": [
+    "full WT2 2048/1024",
+    "unseen text",
+    "downstream tasks with exact protocol; no reuse of old gated PPL as A/B/C"
+  ],
+  "quality_acceptance_threshold": null,
+  "negative_external_evidence": {
+    "paper": "2509.22358v3",
+    "section": "3.2 Alternative construction",
+    "finding": "single stochastic identity-or-zero sigmoid gate had poor preliminary results; multi-sample/KD details not sufficient to exclude all A variants"
+  },
+  "hardware_boundary": [
+    "three projections retained",
+    "A retains g*u amplitude multiplication",
+    "B/C sample selection of 0/u or +/-u; mean readout multi-valued",
+    "driver gain and calibration",
+    "sample count, counters, local holding and accumulation",
+    "conversion, SRAM, RNG/distribution, all FFN and full-model costs",
+    "digital SiLU/LUT/approximation and digital sigmoid+PRNG comparator"
+  ],
+  "stop_conditions": [
+    "deterministic conversion fails validation: do not expand sampled model",
+    "only high N works and complete hardware cost worsens: stop implementation route"
+  ],
+  "submitted_jobs": [],
+  "new_PPL_results": [],
+  "new_trained_checkpoints": [],
+  "new_physical_PPA": false
+}

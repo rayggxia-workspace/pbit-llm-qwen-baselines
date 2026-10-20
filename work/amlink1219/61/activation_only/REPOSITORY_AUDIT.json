@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "audit_kind": "read_only_repository_evidence_audit",
+  "audit_date": "2026-10-19",
+  "audit_time_observed": "2026-10-19T18:13:58+08:00",
+  "timezone": "Asia/Shanghai",
+  "repository": "rayggxia-workspace/pbit-llm-qwen-baselines",
+  "integration_commit": "b2527f12924a53da7334afbe78c752c101814193",
+  "local_research_commit": "1d6a988722ee4089b372dde8411a9db22b8a9172",
+  "requested_scope": "Retain Qwen W_gate, W_up and W_down; keep the up/value branch continuous; sample only the gate activation.",
+  "operations": {
+    "repository_modified": false,
+    "git_refs_modified_by_auditor": false,
+    "training_or_inference_launched": false,
+    "new_literature_imported": false,
+    "output_written": "outputs/activation_only_feasibility_20261019/REPOSITORY_AUDIT.json"
+  },
+  "coverage": {
+    "fixed_tip_count": 21,
+    "fixed_tip_unique_python_blob_count": 437,
+    "reachable_history_python_object_count": 506,
+    "tip_method": "Resolve each named ref to a commit, enumerate .py entries using git ls-tree -r, and deduplicate by Git blob object id. Candidate implementations were filtered for activation and sampling tokens, then inspected by function and dispatch behavior.",
+    "history_method": "Enumerate git rev-list --objects --all from the fetched local repository, select objects with a .py path, deduplicate object ids, and read object bodies using git cat-file --batch. Screen for sigmoid/tanh/SiLU/act_fn together with random or sampling operations. Manually inspect matching FFN implementations, dispatch, and associated result reports.",
+    "deduplication_key": "Git object id, not file path or branch name",
+    "manual_review_boundary": "506 describes automatically read and screened historical Python objects; it does not claim that every line of every object received manual review.",
+    "refs": [
+      {"ref": "origin/main", "commit": "35db82089ea6b76f5fcf76458c37d8ee59d4c7c9", "python_files": 76},
+      {"ref": "origin/pbit-tlm-attention-details-20261016", "commit": "b2527f12924a53da7334afbe78c752c101814193", "python_files": 275},
+      {"ref": "origin/codex/and-variance-20261005", "commit": "f1eaa881ee17da8bb67d376861e0e756553f0ad1", "python_files": 89},
+      {"ref": "origin/codex/joint-feature-ablation", "commit": "9b825e859d3b02dfc01076d12b0ae07efc1f4e6e", "python_files": 24},
+      {"ref": "origin/codex/pdnn-coding-depth-results", "commit": "f5df95b782c6762364bb92736131f6a46c2e901e", "python_files": 24},
+      {"ref": "origin/codex/ten-layer-calibration", "commit": "80c605952173c06b96d9369210227de4f590f01a", "python_files": 31},
+      {"ref": "origin/pbit-attention-av-baseline", "commit": "47666997dfa01021f44e24ea192a118d2dbdf98a", "python_files": 108},
+      {"ref": "origin/pbit-attention-ffn-joint", "commit": "999359d4d8ca36019051926e5c5d1158c529af8d", "python_files": 106},
+      {"ref": "origin/pbit-attention-qk-blockscale", "commit": "2aab624068d2de84c88704bf2e03363234cf3be9", "python_files": 118},
+      {"ref": "origin/pbit-attention-qk-experiment", "commit": "2d02757da430acc20c7402073c37d6f8838a6d16", "python_files": 91},
+      {"ref": "origin/pbit-direct-router", "commit": "0ef040ef98f4806106f18d394dbb5fce4739394d", "python_files": 119},
+      {"ref": "origin/pbit-joint-fixed-ffn-attention-20261009", "commit": "03f0031b4c2952dae2775f01d6190105011ddaf1", "python_files": 134},
+      {"ref": "origin/pbit-router-metrics", "commit": "6cd34b5e5554dbd72e63a2e98d34b83cf32b3a01", "python_files": 121},
+      {"ref": "origin/qwen35-stochastic-results-20261013", "commit": "c021f5bd9d051e306c2c41630b8ef25ca5dc7e93", "python_files": 157},
+      {"ref": "origin/task/22-qwen-short-stream", "commit": "e25cb00648737177130e9573ebf58ddd1c40968c", "python_files": 252},
+      {"ref": "origin/task/30-qwen-dual-iid-public", "commit": "6102c83b143fa73a15d72b9fdf762f07824c4045", "python_files": 213},
+      {"ref": "origin/task/32-qwen-dual-range", "commit": "45063d87a58705978529921893515127b918af3f", "python_files": 219},
+      {"ref": "origin/task/39-ffn-clipping", "commit": "aa37983bfd78a8c83187ca0094b1d5b8cdff2080", "python_files": 274},
+      {"ref": "origin/task/46-fixedw-multiscale", "commit": "5518a0a23e2bfec2b428542a9e4ce94b27c78d4a", "python_files": 231},
+      {"ref": "origin/task/50-joint-ffn-attention", "commit": "e3c5e957c3769b5fc6867b42a52facace647a83b", "python_files": 251},
+      {"ref": "origin/task/59-qwen-task-accuracy", "commit": "ebc2d14a4f191a268227faf62b6085d58022bbdc", "python_files": 258}
+    ]
+  },
+  "notation": {
+    "g": "W_gate x",
+    "u": "W_up x; remains continuous in A/B/C",
+    "y": "W_down z",
+    "mean": "Finite sample mean, with no extra sampling of the amplitudes g or u in A/B/C",
+    "scope_warning": "Averages and nonlinearities must be ordered as defined; related implementations with additional stochastic amplitude encoding are not the same finite-sample model."
+  },
+  "activation_only_findings": [
+    {
+      "id": "A",
+      "definition": "z = u * g * mean(Bernoulli(sigmoid(g)))",
+      "interpretation": "Use a stochastic p-bit estimator for the sigmoid factor inside SiLU; retain all three projections and both continuous amplitudes.",
+      "proposal_found": true,
+      "implementation_or_dispatch_found": false,
+      "formal_model_ppl_found": false,
+      "status": "previously_proposed_execution_not_found_in_audited_scope",
+      "proposal_evidence": [
+        {"commit": "b2527f12924a53da7334afbe78c752c101814193", "path": "experiments/pdnn_ffn/P_DNN_FFN_DESIGN_ZH.md", "lines": [1130, 1142, 1143, 1144], "section": "27", "git_blob": "9cc88a62f322c990beede840cfbd73f8f15443e7", "meaning": "Section 27 explicitly proposed G~Bernoulli(sigmoid(a)) and a*u*G with unchanged original projections; it identifies the continuous-amplitude mixed reference and labels the section not yet trained."},
+        {"commit": "1d6a988722ee4089b372dde8411a9db22b8a9172", "path": "architecture_tlm/HARDWARE_AWARE_TRAINING_PLAN_ZH_20261019.md", "lines": [32], "meaning": "A1 proposal formula; no associated model implementation or new PPL."}
+      ],
+      "important_correction": "Do not describe A as never discussed. The historical Section 27 proposal is explicit. The later execution of the two-bank AND candidate does not establish execution of this separate continuous-u diagnostic."
+    },
+    {
+      "id": "B",
+      "definition": "z = u * mean(Bernoulli(sigmoid(alpha*g + bias)))",
+      "interpretation": "Replace SiLU by a sampled sigmoid gate; retain continuous u and all three projections. This changes the mean function relative to SwiGLU.",
+      "proposal_found": true,
+      "implementation_or_dispatch_found": false,
+      "formal_model_ppl_found": false,
+      "status": "proposal_found_execution_not_found_in_audited_scope",
+      "proposal_evidence": [{"commit": "1d6a988722ee4089b372dde8411a9db22b8a9172", "path": "architecture_tlm/HARDWARE_AWARE_TRAINING_PLAN_ZH_20261019.md", "lines": [34], "meaning": "A3 proposal, not a completed model experiment."}]
+    },
+    {
+      "id": "C",
+      "definition": "z = u * mean(spin), with E[spin | g] = tanh(alpha*g + bias), spin in {-1,+1}",
+      "interpretation": "Replace SiLU by a sampled bipolar tanh gate; retain continuous u and all three projections. This changes the mean function relative to SwiGLU.",
+      "proposal_found": true,
+      "implementation_or_dispatch_found": false,
+      "formal_model_ppl_found": false,
+      "status": "proposal_found_execution_not_found_in_audited_scope",
+      "proposal_evidence": [{"commit": "1d6a988722ee4089b372dde8411a9db22b8a9172", "path": "architecture_tlm/HARDWARE_AWARE_TRAINING_PLAN_ZH_20261019.md", "lines": [35], "meaning": "A4 proposal, not a completed model experiment."}]
+    }
+  ],
+  "related_implementations": [
+    {
+      "name": "v10 binary gated dual-rail FFN",
+      "commit": "b2527f12924a53da7334afbe78c752c101814193",
+      "source": [{"path": "experiments/pdnn_ffn/full_path_pdnn_ffn.py", "lines": [174, 201, 203, 215, 216, 217, 218, 219, 220]}],
+      "difference": "Input is sampled first; both gate and value branches are sampled. The readout uses gate*value and gate*(1-value), so it is not a continuous-u activation-only gate.",
+      "ppl_evidence": {"path": "results/gated_four_layer_9_12_15_18_20260930/RESULTS_ZH.md", "lines": [65, 66], "model": "Qwen2.5-0.5B", "replacement_layers": [9, 12, 15, 18], "protocol": "Complete WT2, context2048/stride1024, N4, three inference seeds, one training seed", "gated_joint_ppl": 13.693251, "matched_serial_joint_ppl": 13.559058},
+      "dispatch_evidence": {"path": "experiments/pdnn_ffn/full_path_pdnn_ffn.py", "lines": [223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236], "meaning": "Available full-path dispatch routes continuous_raw, multibit serial, gated_dual_rail, and serial. No A/B/C activation-only route was found."}
+    },
+    {
+      "name": "Three-projection multi-threshold AND bank",
+      "commit": "b2527f12924a53da7334afbe78c752c101814193",
+      "source": [{"path": "experiments/pdnn_ffn/multithreshold_and_ffn.py", "lines": [72, 73, 74, 75, 76, 81, 82, 83, 87, 88, 89, 101, 120, 141, 142, 147, 148, 149, 151]}],
+      "difference": "Original Qwen gate/up/down initialize the student, but both gate and value become learned sigmoid banks and both are sampled. Keeping three projections alone does not make this A/B/C.",
+      "ppl_evidence": {"path": "results/multithreshold_and_twenty_layer_20261002/RESULTS_ZH.md", "lines": [6, 8, 21, 34], "replacement_layer_count": 20, "input": "Continuous", "gate_and_value": "Four-bit banks on both branches", "joint_n4_ppl": 13.672837, "joint_n16_ppl": 12.741809, "mean_field_ppl": 12.469567, "protocol": "Complete WT2, context2048/stride1024; one training seed. These are not activation-only PPL results."}
+    },
+    {
+      "name": "Two-projection stochastic hidden FFN",
+      "commit": "b2527f12924a53da7334afbe78c752c101814193",
+      "source": [{"path": "experiments/pdnn_ffn/pdnn_ffn.py", "lines": [19, 29, 30, 48, 51, 52, 54, 61, 72, 73, 74, 75, 76]}, {"path": "experiments/pdnn_ffn/continuous_input_ffn.py", "lines": [1, 5, 14, 18]}],
+      "difference": "One stochastic hidden layer and a linear readout use two matrices; there is no preserved Qwen continuous-up branch or three-projection SwiGLU structure.",
+      "ppl_evidence": {"path": "results/continuous_raw_twenty_layer_20261001/RESULTS_ZH.md", "lines": [11, 12, 13, 14, 35], "raw_continuous_input_n4_ppl": 27.127764, "meaning": "Twenty-layer raw continuous entrance with a binary hidden layer; not four-bit entrance and not A/B/C."}
+    },
+    {
+      "name": "Historical stochastic SwiGLU triple-AND",
+      "commit": "2aab624068d2de84c88704bf2e03363234cf3be9",
+      "source": [{"path": "llama-7b/joint_ffn_pv/streaming_ffn.py", "lines": [52, 61, 97, 98, 99, 100, 101, 102, 103, 104, 105, 118, 119, 120]}, {"path": "llama-7b/joint_ffn_pv/fixed_ffn.py", "lines": [82, 83, 84, 85, 86, 87]}],
+      "difference": "Samples amplitude streams pg=abs(g)/sg and pu=abs(u)/su as well as pb=sigmoid(g). product_only still uses all three streams. Its conditional mean can represent the SwiGLU product, but its finite-sample distribution differs from A because g/u amplitudes are additionally sampled.",
+      "related_current_source": {"commit": "b2527f12924a53da7334afbe78c752c101814193", "path": "experiments/qwen_dual_iid_exact_20261018/vendor/frozen/core.py", "lines": [183, 193, 194, 195, 196, 197, 198, 203, 204], "meaning": "product_probability = pg * sigmoid(gq) * pu; not a sigmoid-only Bernoulli mask on continuous g*u."},
+      "separate_ppl_evidence": {"path": "llama-7b/joint_ffn_pv/results/RESULTS_ZH.md", "model": "LLaMA-1 7B", "meaning": "The inspected formal FFN experiment uses all32 layers, W8, 12-bit amplitude+sign, input4096/output3072, interval256, burn25%, ideal sigmoid. It cannot serve as Qwen A/B/C evidence."}
+    },
+    {
+      "name": "Current B4/T32/K32 stratified stochastic arithmetic reference",
+      "commit": "b2527f12924a53da7334afbe78c752c101814193",
+      "source": [{"path": "experiments/qwen_multiscale_stratified_20261019/stratified_core.py", "lines": [164, 173, 176, 186, 187, 247, 249, 250, 251, 252, 253, 266, 269]}],
+      "difference": "Shared stratified input counts are reduced to continuous g/u; z=F.silu(g)*u is computed in FP32, then z is independently reencoded. The nonlinear gate itself is not A/B/C p-bit sampling.",
+      "ppl_evidence": {"path": "qwen/results/multiscale_stratified_20261019/RESULTS_ZH.md", "lines": [9, 19, 36], "replacement_layer_count": 24, "attention": "Original BF16 SDPA", "profile": "B4/T32/K32", "ppl_mean": 11.736131, "ppl_inference_seed_population_sd": 0.000243, "bf16_ppl": 11.652735, "protocol": "Complete WT2, context2048/stride1024, three inference seeds, no model training"}
+    }
+  ],
+  "excluded_diagnostic_matches": [
+    {"path": "experiments/pdnn_ffn/pdnn_ffn.py", "token": "sample_average", "reason": "A stochastic activation exists, but the model has two matrices; the preserved continuous up branch required by A/B/C is absent."},
+    {"path": "experiments/pdnn_ffn/full_path_pdnn_ffn.py", "token": "gated_dual_rail", "reason": "The name contains gated, but source lines215-220 explicitly sample both gate and value and also the entrance."},
+    {"path": "experiments/pdnn_ffn/multithreshold_and_ffn.py", "token": "gate_projection / value_projection", "reason": "Three projections and teacher initialization exist, but the value branch is still a sampled bank."},
+    {"path": "experiments/qwen_dual_iid_exact_20261018/vendor/frozen/core.py", "token": "product_probability = pg * torch.sigmoid(gq) * pu", "reason": "Sigmoid appears inside a three-stream product probability, not as the sole sampled activation with continuous u."},
+    {"path": "experiments/qwen_multiscale_stratified_20261019/stratified_core.py", "token": "F.silu(g) * u", "reason": "Sampling surrounds the nonlinear operation, but SiLU itself remains continuous."},
+    {"path": "work/amlink1219/61/validate_research.py", "token": "sigmoid/tanh identity and sampling checks", "reason": "Mathematical/toy checks only; no complete Qwen activation-only wrapper, training run, or formal PPL."},
+    {"path": "experiments/pdnn_ffn/P_DNN_FFN_DESIGN_ZH.md", "token": "Section 27, G~Bernoulli(sigmoid(a)), a*u*G", "reason": "An explicit prior proposal must be acknowledged; a proposal is not proof of execution."}
+  ],
+  "conclusion": {
+    "short_zh": "只激活采样且保留连续u的A/B/C与旧双支门控、AND-bank、两矩阵及SC路线不同。A在历史第27节已明确提出；当前审计范围未找到A/B/C已执行模型、dispatch或正式PPL，不能称从未讨论，也不能借旧门控PPL宣布已验证。",
+    "negative_claim_scope": "No execution evidence found within the fetched reachable local Git history and inspected result reports; this is not a proof that no one ever ran such an experiment.",
+    "not_covered": ["Unpushed branches", "Uncommitted working files", "Unfetched or unreachable Git objects", "Private or unregistered server scripts and experiments", "Experiments whose source and results were not committed"],
+    "evidence_limit": "Ref names are a snapshot. Every cited source interpretation uses its fixed commit. PPL evidence from related models is explicitly excluded from A/B/C completion claims."
+  }
+}

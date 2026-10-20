@@ -15,6 +15,8 @@
 - 当前目标分支中的Qwen Attention入口为v3/v4历史实现，默认合成输入、固定样本512；不要混称Llama分支的比例PV/有限bank标准。
 - Qwen3.5等其他分支成果不因本次整理而自动合入。
 
+2026-10-18新增：[固定权重短流能量估算与RTL表征](energy/short_stream_20261018/REPORT_ZH.md)（Issue22）。比较4096/256/128/64拍；只有旧成本代理下的TLM敏感性和RTL功能验证，不代表Qwen短流PPL或新PT实测。
+
 ```sh
 python qwen/run.py info
 python qwen/run.py check
@@ -56,3 +58,7 @@ python qwen/run.py tlm --help
 [25项完整WT2原件与报告](results/joint_full_wt2_20261020/RESULTS_ZH.md)已逐SHA和299077目标审计核验；只缺三项用户授权取消的B4T16联合冗余项。matched cached BF16为11.652118，B4T32-only 11.732192，B4T32联合S128/256/512三seed均值12.423820/12.274153/12.207062；均非旧4096目标后缀。原FFN Attention-only仅S128三seed完整确认；S256/512无同预算控制，不报告对应误差交互。
 
 [39项代表任务准确率](results/task_accuracy_20261019/RESULTS_ZH.md)已通过PR62合入本任务分支；PIQA/ARC-E全量、Hella1000固定子集，含原BF16、FFN-only及S64/128/512各三seed。短题全部K候选保留，不能证明长上下文筛选。两类结果各自保留协议、源码与原件SHA；没有新训练、GPU重跑或PPA验收。
+
+## FFN裁剪与固定二次幂尺度（2026-10-19）
+
+见[Issue39前缀PPL与证据边界](results/ffn_clipping_20261019/RESULTS_ZH.md)。八项主策略及端点/温和裁剪补充共65项替换对照已完成，Attention保持原BF16；完整WT2仅重跑原BF16基线，不能把替换前缀分数称为完整PPL。固定范围的质量与电路开销分别记录，没有修改TLM默认。

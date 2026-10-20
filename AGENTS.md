@@ -93,6 +93,14 @@
 - 面积/能量/延迟比较必须使用明确数制、资源共享、驻留容量和数据流；把假设的资源速率下界、宏表局部成本、同工艺综合、功率分析与芯片实测分开。FP32 概率乘 V 不得按纯 BF16 MAC 免费计费；SRAM fabric 若为读写合计，DMA 写入和计算读出须各计一次。缺失项保持未完成，不用旧占位系数补成完整 PPA。
 - 比较已保存的 Attention 汇总前，核对 decode token 数、首 token/均值、摘要 cold-build/prefill-prebuilt/增量更新和完整模块边界；旧 v3 两 token 均值与 v4 单个冷 token 不能直接作为同协议加速/节能比。候选保留率、GQA 并集、物理突发字节、DMA 请求数与 SRAM 峰值分别记录，不按逐头保留率缩放访存或按较低平均功率判定省能。
 
+## Decode Attention quality execution
+
+- A decode-only Attention patch must not be evaluated by an unchanged multi-token window call and reported as candidate PPL: audit that every scored target executes every replaced layer through the single-token path. Preserve matched cached SDPA controls, exact target coverage, prefill scope, candidate-valid masks, original FFN/weights, and separate suffix/full-corpus protocols.
+
+- Integration-equivalence gates must use matching operators, dtypes and layouts. For Attention, compare the wrapper with the original BF16 SDPA core before using an explicit FP32 reference as a separate quality control; record its numerical difference instead of imposing or silently relaxing an identity threshold. All pilot comparison cases must use the same scored token set.
+
+- In sample-count sweeps, a shared seed or single-call prefix test does not establish shared sampler draws across a whole model run. State which RNG streams are independent, whether draw consumption changes with S, and the exact logits/RNG/batch conditions under which pairing holds; candidate masks may change with downstream hidden states.
+
 ## Historical Attention quality evidence
 
 - Before declaring model-level Attention PPL evidence absent, inspect the historical algorithm branches and the executable dispatch, rather than only the current TLM integration tree or a mode name. Record all-layer coverage, prefill/decode coverage, suffix versus full-corpus scoring, FFN state, and whether sampling is accurate-Softmax IID, ideal CTMC, or a finite physical/network model. A separate screening result and Ising result do not establish their joint PPL. Before claiming that an energy sampler removes an existing digital Softmax, trace the active behavioral dispatch separately from the TLM address oracle; distinguish exact-score categorical Gibbs, learned energy, and independent or coupled multi-on masks.

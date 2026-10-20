@@ -1,0 +1,100 @@
+{
+  "issue": 59,
+  "code_commit": "075574ec94307202f3187845d6d7417f1e98ba48",
+  "project": "/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59",
+  "output": "/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/outputs/075574ec94307202f3187845d6d7417f1e98ba48",
+  "jobs": [
+    {
+      "phase": "baselines",
+      "indices": "0,13,26",
+      "max_concurrency": 3,
+      "job_id": "2477",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--export=ALL",
+        "--mem=24G",
+        "--array=0,13,26%3",
+        "--job-name=tasks59-baselines",
+        "--output=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/baselines-%A_%a.log",
+        "--error=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/baselines-%A_%a.err",
+        "/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/snapshots/075574ec94307202f3187845d6d7417f1e98ba48/experiments/qwen_task_accuracy_20261019/run_tasks.sbatch"
+      ]
+    },
+    {
+      "phase": "arc_easy",
+      "indices": "14-25",
+      "max_concurrency": 2,
+      "job_id": "2478",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--export=ALL",
+        "--mem=24G",
+        "--array=14-25%2",
+        "--job-name=tasks59-arc_easy",
+        "--output=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/arc_easy-%A_%a.log",
+        "--error=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/arc_easy-%A_%a.err",
+        "--dependency=afterok:2477",
+        "/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/snapshots/075574ec94307202f3187845d6d7417f1e98ba48/experiments/qwen_task_accuracy_20261019/run_tasks.sbatch"
+      ]
+    },
+    {
+      "phase": "piqa",
+      "indices": "1-12",
+      "max_concurrency": 2,
+      "job_id": "2479",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--export=ALL",
+        "--mem=24G",
+        "--array=1-12%2",
+        "--job-name=tasks59-piqa",
+        "--output=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/piqa-%A_%a.log",
+        "--error=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/piqa-%A_%a.err",
+        "--dependency=afterok:2477",
+        "/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/snapshots/075574ec94307202f3187845d6d7417f1e98ba48/experiments/qwen_task_accuracy_20261019/run_tasks.sbatch"
+      ]
+    },
+    {
+      "phase": "hellaswag1000",
+      "indices": "27-38",
+      "max_concurrency": 2,
+      "job_id": "2480",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--export=ALL",
+        "--mem=24G",
+        "--array=27-38%2",
+        "--job-name=tasks59-hellaswag1000",
+        "--output=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/hellaswag1000-%A_%a.log",
+        "--error=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/hellaswag1000-%A_%a.err",
+        "--dependency=afterok:2477",
+        "/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/snapshots/075574ec94307202f3187845d6d7417f1e98ba48/experiments/qwen_task_accuracy_20261019/run_tasks.sbatch"
+      ]
+    }
+  ],
+  "aggregate_job": "2481",
+  "aggregate_command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--gres=gpu:0",
+    "--cpus-per-task=2",
+    "--mem=4G",
+    "--time=00:30:00",
+    "--job-name=tasks59-collect",
+    "--dependency=afterany:2477:2478:2479:2480",
+    "--output=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/collect-%j.log",
+    "--error=/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/logs/collect-%j.err",
+    "--wrap=cd /home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/analysis_snapshots/0d4be877714ace3f1b360c4d74b62e563850e9bc && /home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python -B -m unittest experiments.qwen_task_accuracy_20261019.test_collect_tasks && /home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python -B -m experiments.qwen_task_accuracy_20261019.collect_tasks --input /home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/outputs/075574ec94307202f3187845d6d7417f1e98ba48 --output /home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/analysis/075574ec94307202f3187845d6d7417f1e98ba48_0d4be877714ace3f1b360c4d74b62e563850e9bc/SUMMARY.json --report /home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/analysis/075574ec94307202f3187845d6d7417f1e98ba48_0d4be877714ace3f1b360c4d74b62e563850e9bc/RESULTS_ZH.md --execution-commit 075574ec94307202f3187845d6d7417f1e98ba48"
+  ],
+  "aggregate_output": "/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/analysis/075574ec94307202f3187845d6d7417f1e98ba48_0d4be877714ace3f1b360c4d74b62e563850e9bc",
+  "collector_commit": "0d4be877714ace3f1b360c4d74b62e563850e9bc",
+  "collector_archive_sha256": "b354ec1bd438f54f2efb9ebf7385a5482928e37725ee56c8abc1994922dab7f5",
+  "cases": 39,
+  "submitted_utc": "2026-10-19T09:13:52.649071+00:00",
+  "gate": "CPU2475 and GPU2476 complete READY; unchanged WT2 and independent BF16 cached reference passed"
+}

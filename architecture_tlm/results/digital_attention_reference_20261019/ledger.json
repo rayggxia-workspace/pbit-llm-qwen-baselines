@@ -1,0 +1,543 @@
+{
+  "config": {
+    "schema": "digital_attention_reference_v1",
+    "scope": "Qwen2.5-0.5B Base, batch1 single-token decode, all24layers QKV/RoPE/KV append/QK/onlineSoftmax/PV/Wo; RMSNorm/residual/FFN/lm_head/prefill excluded",
+    "model": {
+      "layers": 24,
+      "hidden": 896,
+      "query_heads": 14,
+      "kv_heads": 2,
+      "head_dim": 64,
+      "batch": 1
+    },
+    "contexts": [
+      512,
+      2048,
+      8192
+    ],
+    "tile_tokens": 64,
+    "precision": {
+      "input_weight_KV_output": "BF16",
+      "QK_accumulator_score": "FP32",
+      "probability_sum_PV_accumulator": "FP32",
+      "PV_multiply": "FP32_probability_times_exactly_extended_BF16_V",
+      "exp_reciprocal": "mathematical_stable_reference_not_bit_true_RTL"
+    },
+    "compute": {
+      "clock_hz": 100000000,
+      "abstract_mac_slots_per_cycle": 512,
+      "vector_ops_per_cycle": 64,
+      "exp_ops_per_cycle": 16,
+      "reciprocal_ops_per_cycle": 1,
+      "physical_head_slots_per_group": 8,
+      "status": "ASSUMPTION: shared abstract FP32-capable slots, no characterized pipeline/area/power"
+    },
+    "memory": {
+      "sram_macro_id": "E",
+      "corner": "SS",
+      "sram_clock_hz": 100000000,
+      "lanes": 16,
+      "macros_per_lane": 1,
+      "fabric_GBs": 16,
+      "stripe_bytes": 16,
+      "DDR_peak_GBs": 29.850746268656714,
+      "DRAM_service_cap_GBs": 16,
+      "weights_resident": false,
+      "projection_staging_bytes": 32768,
+      "extra_work_bytes": 8192,
+      "status": "fabric/service caps are assumptions; fabric bandwidth is aggregate read+write on one shared bus; offchip peak is source-model maximum, not measured throughput"
+    },
+    "sources": {
+      "sram_table": "architecture_tlm/results/sram_calibration_v1_20261016/exact_macro_table.csv",
+      "dram_provenance": "architecture_tlm/dramsys/provenance.json"
+    },
+    "quality": {
+      "prior_BF16_PPL": 11.652735047455899,
+      "source": "qwen/results/attention_e01_20261019/RESULTS_ZH.md",
+      "new_PPL_run": false,
+      "warning": "prior unmodified BF16 SDPA anchor; not bit-true validation of this proposed hardware"
+    }
+  },
+  "config_sha256": "876f0e3cd607e30102ce5e196a38ef52791120410b0e2d8b2ca1b14116e16879",
+  "source_commit": "a4f19659922b26db89c662f5c6d90cf1136bcf8c",
+  "evaluator_sha256": "63c5d4ca549e88cc427b8be01b368f9c85f742d9e6c47bf41d2a1f9e51930d1b",
+  "results": [
+    {
+      "context": 512,
+      "scope": "Qwen2.5-0.5B Base, batch1 single-token decode, all24layers QKV/RoPE/KV append/QK/onlineSoftmax/PV/Wo; RMSNorm/residual/FFN/lm_head/prefill excluded",
+      "model": {
+        "layers": 24,
+        "hidden": 896,
+        "query_heads": 14,
+        "kv_heads": 2,
+        "head_dim": 64,
+        "batch": 1
+      },
+      "precision": {
+        "input_weight_KV_output": "BF16",
+        "QK_accumulator_score": "FP32",
+        "probability_sum_PV_accumulator": "FP32",
+        "PV_multiply": "FP32_probability_times_exactly_extended_BF16_V",
+        "exp_reciprocal": "mathematical_stable_reference_not_bit_true_RTL"
+      },
+      "work": {
+        "QK_MAC": 11010048,
+        "PV_MAC": 11010048,
+        "core_MAC": 22020096,
+        "QKV_projection_MAC": 24772608,
+        "O_projection_MAC": 19267584,
+        "projection_MAC": 44040192,
+        "full_Attention_MAC": 66060288,
+        "core_vector_ops": {
+          "QK_scale": 172032,
+          "tile_max": 169344,
+          "shifted_logit": 172032,
+          "exp_sum": 169344,
+          "running_max": 2688,
+          "alpha_shift": 2688,
+          "denominator_rescale": 2688,
+          "denominator_merge": 2688,
+          "accumulator_rescale": 172032,
+          "accumulator_merge": 172032,
+          "final_normalize": 21504
+        },
+        "projection_RoPE_bias_vector_ops": 101376,
+        "exp_ops": 174720,
+        "reciprocal_ops": 336
+      },
+      "traffic_bytes": {
+        "KV_read": 6291456,
+        "projection_weight_read": 88080384,
+        "KV_append_write": 12288,
+        "probability_DRAM": 0,
+        "known_SRAM_streaming_read": 94371840,
+        "known_SRAM_streaming_write": 94371840
+      },
+      "allocation": {
+        "policy": "one GQA group serially, projection/Attention phase reuse",
+        "allocated_bytes": 65536,
+        "working_set": {
+          "KV_pingpong": 32768,
+          "Q_BF16": 896,
+          "O_FP32": 1792,
+          "max_and_sum_FP32": 56,
+          "score_FP32": 1792,
+          "extra": 8192
+        },
+        "extra_reservation": {
+          "QKV_retention_BF16": 2304,
+          "completed_group_output_BF16": 896,
+          "Wo_partial_FP32": 3584,
+          "remaining_control_RoPE_alignment": 1408,
+          "note": "8KiB reservation, phase peaks do not all overlap; operand schedule is not RTL validated"
+        },
+        "peak_live_bytes": 45496,
+        "macros": 16,
+        "SRAM_only_area_mm2": 0.5316195528,
+        "SRAM_CEoff_leakage_W": 0.0001240704,
+        "timing_status": "macro period-only eligibility check; no integrated wrapper/clock/STA verification",
+        "full_KV_residency_counterfactual": {
+          "bytes": 6291456,
+          "F_macros": 96,
+          "F_macro_only_area_mm2": 29.967677762399997,
+          "allocated": false,
+          "excludes": "wrapper/mux/CDC/CTS; requires independent timing/placement"
+        }
+      },
+      "timing": {
+        "resource_lower_bounds_ns": {
+          "MAC_work_at_assumed_peak": 1290240.0,
+          "EXP_work_at_assumed_peak": 109200.0,
+          "reciprocal_work_at_assumed_peak": 3360.0,
+          "vector_work_at_assumed_peak": 181320.0,
+          "DRAM_bytes_at_raw_peak": 3161868.288,
+          "DRAM_bytes_at_assumed_service_cap": 5899008.0,
+          "known_SRAM_streaming_at_port_fabric_cap": 11796480.0
+        },
+        "max_resource_lower_bound_ns": 11796480.0,
+        "serialized_compute_only_no_padding_ns": 1589280.0,
+        "serialized_compute_only_padded_ns": 1650720.0,
+        "achieved_latency_ns": null,
+        "warning": "rate/serialization assumptions only; no memory+compute schedule, pipeline or STA validation"
+      },
+      "known_SRAM_internal_subset": {
+        "read_words": 5898240,
+        "write_words": 5898240,
+        "read_J": 5.9293237247999996e-05,
+        "write_J": 8.233884057599998e-05,
+        "component_internal_J": {
+          "KV_fill": 5.4892560383999995e-06,
+          "KV_operand": 3.9528824832e-06,
+          "projection_weight_fill": 7.68495845376e-05,
+          "projection_weight_operand": 5.53403547648e-05
+        },
+        "warning": "known streaming pass subset, not complete Attention energy; no wrapper/output loads/clock/extra operands"
+      },
+      "totals": {
+        "full_energy_J": null,
+        "full_area_mm2": null,
+        "full_power_W": null,
+        "complete": false
+      },
+      "missing_PPA_coefficients": {
+        "QK_MAC": "pJ/op and mm2 for BF16 multiply / FP32 accumulate",
+        "PV_MAC": "pJ/op and mm2 for FP32 probability times BF16-extended V / FP32 accumulate",
+        "projection_MAC": "pJ/op and mm2 for BF16 multiply / FP32 accumulate",
+        "vector": "pJ/op; FP32 max/add/mul/conversion resource area",
+        "EXP": "pJ/op and mm2 for selected finite-wordlength exp",
+        "reciprocal": "pJ/op and mm2 for shared finite-wordlength reciprocal",
+        "registers": "FP32 accumulators/state/Q reuse/operand distribution energy and area",
+        "SRAM_wrapper": "mux/output loads/CDC/clock/control/extra operand accesses",
+        "DMA_DRAM": "descriptor/control/DRAM device+PHY+IO energy and area",
+        "RoPE": "coefficient generation/table access and exact finite-format behavior"
+      },
+      "quality": {
+        "prior_BF16_PPL": 11.652735047455899,
+        "source": "qwen/results/attention_e01_20261019/RESULTS_ZH.md",
+        "new_PPL_run": false,
+        "warning": "prior unmodified BF16 SDPA anchor; not bit-true validation of this proposed hardware"
+      },
+      "source": {
+        "sram_table_sha256": "3cf3b22877ca7c5f196463e2aa6782b9f69ed975229855575953637dc1698658",
+        "sram_macro": {
+          "id": "E",
+          "corner": "SS",
+          "depth": 256.0,
+          "width": 128.0,
+          "capacity_bytes": 4096.0,
+          "voltage_V": 1.08,
+          "temperature_C": 125.0,
+          "area_mm2": 0.03322622205,
+          "read_internal_pJ": 10.0527,
+          "write_internal_pJ": 13.9599,
+          "ce_off_leakage_W": 7.7544e-06,
+          "ce_on_leakage_W": 7.773516e-06,
+          "read_access_ns": 2.8767,
+          "write_access_ns": 2.831,
+          "read_cycle_ns": 3.468,
+          "write_cycle_ns": 3.4271
+        },
+        "dram_provenance_sha256": "a2e5e70a87dcde2a3ccd8b540065123bc543c17310efa7d5efafcd97217771bd"
+      },
+      "status": "analytical evaluation only; no model inference, RTL, DC/PT, GPU or silicon experiment"
+    },
+    {
+      "context": 2048,
+      "scope": "Qwen2.5-0.5B Base, batch1 single-token decode, all24layers QKV/RoPE/KV append/QK/onlineSoftmax/PV/Wo; RMSNorm/residual/FFN/lm_head/prefill excluded",
+      "model": {
+        "layers": 24,
+        "hidden": 896,
+        "query_heads": 14,
+        "kv_heads": 2,
+        "head_dim": 64,
+        "batch": 1
+      },
+      "precision": {
+        "input_weight_KV_output": "BF16",
+        "QK_accumulator_score": "FP32",
+        "probability_sum_PV_accumulator": "FP32",
+        "PV_multiply": "FP32_probability_times_exactly_extended_BF16_V",
+        "exp_reciprocal": "mathematical_stable_reference_not_bit_true_RTL"
+      },
+      "work": {
+        "QK_MAC": 44040192,
+        "PV_MAC": 44040192,
+        "core_MAC": 88080384,
+        "QKV_projection_MAC": 24772608,
+        "O_projection_MAC": 19267584,
+        "projection_MAC": 44040192,
+        "full_Attention_MAC": 132120576,
+        "core_vector_ops": {
+          "QK_scale": 688128,
+          "tile_max": 677376,
+          "shifted_logit": 688128,
+          "exp_sum": 677376,
+          "running_max": 10752,
+          "alpha_shift": 10752,
+          "denominator_rescale": 10752,
+          "denominator_merge": 10752,
+          "accumulator_rescale": 688128,
+          "accumulator_merge": 688128,
+          "final_normalize": 21504
+        },
+        "projection_RoPE_bias_vector_ops": 101376,
+        "exp_ops": 698880,
+        "reciprocal_ops": 336
+      },
+      "traffic_bytes": {
+        "KV_read": 25165824,
+        "projection_weight_read": 88080384,
+        "KV_append_write": 12288,
+        "probability_DRAM": 0,
+        "known_SRAM_streaming_read": 113246208,
+        "known_SRAM_streaming_write": 113246208
+      },
+      "allocation": {
+        "policy": "one GQA group serially, projection/Attention phase reuse",
+        "allocated_bytes": 65536,
+        "working_set": {
+          "KV_pingpong": 32768,
+          "Q_BF16": 896,
+          "O_FP32": 1792,
+          "max_and_sum_FP32": 56,
+          "score_FP32": 1792,
+          "extra": 8192
+        },
+        "extra_reservation": {
+          "QKV_retention_BF16": 2304,
+          "completed_group_output_BF16": 896,
+          "Wo_partial_FP32": 3584,
+          "remaining_control_RoPE_alignment": 1408,
+          "note": "8KiB reservation, phase peaks do not all overlap; operand schedule is not RTL validated"
+        },
+        "peak_live_bytes": 45496,
+        "macros": 16,
+        "SRAM_only_area_mm2": 0.5316195528,
+        "SRAM_CEoff_leakage_W": 0.0001240704,
+        "timing_status": "macro period-only eligibility check; no integrated wrapper/clock/STA verification",
+        "full_KV_residency_counterfactual": {
+          "bytes": 25165824,
+          "F_macros": 384,
+          "F_macro_only_area_mm2": 119.87071104959999,
+          "allocated": false,
+          "excludes": "wrapper/mux/CDC/CTS; requires independent timing/placement"
+        }
+      },
+      "timing": {
+        "resource_lower_bounds_ns": {
+          "MAC_work_at_assumed_peak": 2580480.0,
+          "EXP_work_at_assumed_peak": 436800.0,
+          "reciprocal_work_at_assumed_peak": 3360.0,
+          "vector_work_at_assumed_peak": 667680.0,
+          "DRAM_bytes_at_raw_peak": 3794159.6160000004,
+          "DRAM_bytes_at_assumed_service_cap": 7078656.0,
+          "known_SRAM_streaming_at_port_fabric_cap": 14155776.0
+        },
+        "max_resource_lower_bound_ns": 14155776.0,
+        "serialized_compute_only_no_padding_ns": 3708960.0,
+        "serialized_compute_only_padded_ns": 3954720.0,
+        "achieved_latency_ns": null,
+        "warning": "rate/serialization assumptions only; no memory+compute schedule, pipeline or STA validation"
+      },
+      "known_SRAM_internal_subset": {
+        "read_words": 7077888,
+        "write_words": 7077888,
+        "read_J": 7.115188469759999e-05,
+        "write_J": 9.880660869119999e-05,
+        "component_internal_J": {
+          "KV_fill": 2.1957024153599998e-05,
+          "KV_operand": 1.58115299328e-05,
+          "projection_weight_fill": 7.68495845376e-05,
+          "projection_weight_operand": 5.53403547648e-05
+        },
+        "warning": "known streaming pass subset, not complete Attention energy; no wrapper/output loads/clock/extra operands"
+      },
+      "totals": {
+        "full_energy_J": null,
+        "full_area_mm2": null,
+        "full_power_W": null,
+        "complete": false
+      },
+      "missing_PPA_coefficients": {
+        "QK_MAC": "pJ/op and mm2 for BF16 multiply / FP32 accumulate",
+        "PV_MAC": "pJ/op and mm2 for FP32 probability times BF16-extended V / FP32 accumulate",
+        "projection_MAC": "pJ/op and mm2 for BF16 multiply / FP32 accumulate",
+        "vector": "pJ/op; FP32 max/add/mul/conversion resource area",
+        "EXP": "pJ/op and mm2 for selected finite-wordlength exp",
+        "reciprocal": "pJ/op and mm2 for shared finite-wordlength reciprocal",
+        "registers": "FP32 accumulators/state/Q reuse/operand distribution energy and area",
+        "SRAM_wrapper": "mux/output loads/CDC/clock/control/extra operand accesses",
+        "DMA_DRAM": "descriptor/control/DRAM device+PHY+IO energy and area",
+        "RoPE": "coefficient generation/table access and exact finite-format behavior"
+      },
+      "quality": {
+        "prior_BF16_PPL": 11.652735047455899,
+        "source": "qwen/results/attention_e01_20261019/RESULTS_ZH.md",
+        "new_PPL_run": false,
+        "warning": "prior unmodified BF16 SDPA anchor; not bit-true validation of this proposed hardware"
+      },
+      "source": {
+        "sram_table_sha256": "3cf3b22877ca7c5f196463e2aa6782b9f69ed975229855575953637dc1698658",
+        "sram_macro": {
+          "id": "E",
+          "corner": "SS",
+          "depth": 256.0,
+          "width": 128.0,
+          "capacity_bytes": 4096.0,
+          "voltage_V": 1.08,
+          "temperature_C": 125.0,
+          "area_mm2": 0.03322622205,
+          "read_internal_pJ": 10.0527,
+          "write_internal_pJ": 13.9599,
+          "ce_off_leakage_W": 7.7544e-06,
+          "ce_on_leakage_W": 7.773516e-06,
+          "read_access_ns": 2.8767,
+          "write_access_ns": 2.831,
+          "read_cycle_ns": 3.468,
+          "write_cycle_ns": 3.4271
+        },
+        "dram_provenance_sha256": "a2e5e70a87dcde2a3ccd8b540065123bc543c17310efa7d5efafcd97217771bd"
+      },
+      "status": "analytical evaluation only; no model inference, RTL, DC/PT, GPU or silicon experiment"
+    },
+    {
+      "context": 8192,
+      "scope": "Qwen2.5-0.5B Base, batch1 single-token decode, all24layers QKV/RoPE/KV append/QK/onlineSoftmax/PV/Wo; RMSNorm/residual/FFN/lm_head/prefill excluded",
+      "model": {
+        "layers": 24,
+        "hidden": 896,
+        "query_heads": 14,
+        "kv_heads": 2,
+        "head_dim": 64,
+        "batch": 1
+      },
+      "precision": {
+        "input_weight_KV_output": "BF16",
+        "QK_accumulator_score": "FP32",
+        "probability_sum_PV_accumulator": "FP32",
+        "PV_multiply": "FP32_probability_times_exactly_extended_BF16_V",
+        "exp_reciprocal": "mathematical_stable_reference_not_bit_true_RTL"
+      },
+      "work": {
+        "QK_MAC": 176160768,
+        "PV_MAC": 176160768,
+        "core_MAC": 352321536,
+        "QKV_projection_MAC": 24772608,
+        "O_projection_MAC": 19267584,
+        "projection_MAC": 44040192,
+        "full_Attention_MAC": 396361728,
+        "core_vector_ops": {
+          "QK_scale": 2752512,
+          "tile_max": 2709504,
+          "shifted_logit": 2752512,
+          "exp_sum": 2709504,
+          "running_max": 43008,
+          "alpha_shift": 43008,
+          "denominator_rescale": 43008,
+          "denominator_merge": 43008,
+          "accumulator_rescale": 2752512,
+          "accumulator_merge": 2752512,
+          "final_normalize": 21504
+        },
+        "projection_RoPE_bias_vector_ops": 101376,
+        "exp_ops": 2795520,
+        "reciprocal_ops": 336
+      },
+      "traffic_bytes": {
+        "KV_read": 100663296,
+        "projection_weight_read": 88080384,
+        "KV_append_write": 12288,
+        "probability_DRAM": 0,
+        "known_SRAM_streaming_read": 188743680,
+        "known_SRAM_streaming_write": 188743680
+      },
+      "allocation": {
+        "policy": "one GQA group serially, projection/Attention phase reuse",
+        "allocated_bytes": 65536,
+        "working_set": {
+          "KV_pingpong": 32768,
+          "Q_BF16": 896,
+          "O_FP32": 1792,
+          "max_and_sum_FP32": 56,
+          "score_FP32": 1792,
+          "extra": 8192
+        },
+        "extra_reservation": {
+          "QKV_retention_BF16": 2304,
+          "completed_group_output_BF16": 896,
+          "Wo_partial_FP32": 3584,
+          "remaining_control_RoPE_alignment": 1408,
+          "note": "8KiB reservation, phase peaks do not all overlap; operand schedule is not RTL validated"
+        },
+        "peak_live_bytes": 45496,
+        "macros": 16,
+        "SRAM_only_area_mm2": 0.5316195528,
+        "SRAM_CEoff_leakage_W": 0.0001240704,
+        "timing_status": "macro period-only eligibility check; no integrated wrapper/clock/STA verification",
+        "full_KV_residency_counterfactual": {
+          "bytes": 100663296,
+          "F_macros": 1536,
+          "F_macro_only_area_mm2": 479.48284419839996,
+          "allocated": false,
+          "excludes": "wrapper/mux/CDC/CTS; requires independent timing/placement"
+        }
+      },
+      "timing": {
+        "resource_lower_bounds_ns": {
+          "MAC_work_at_assumed_peak": 7741440.0,
+          "EXP_work_at_assumed_peak": 1747200.0,
+          "reciprocal_work_at_assumed_peak": 3360.0,
+          "vector_work_at_assumed_peak": 2613120.0,
+          "DRAM_bytes_at_raw_peak": 6323324.928,
+          "DRAM_bytes_at_assumed_service_cap": 11797248.0,
+          "known_SRAM_streaming_at_port_fabric_cap": 23592960.0
+        },
+        "max_resource_lower_bound_ns": 23592960.0,
+        "serialized_compute_only_no_padding_ns": 12187680.0,
+        "serialized_compute_only_padded_ns": 13170720.0,
+        "achieved_latency_ns": null,
+        "warning": "rate/serialization assumptions only; no memory+compute schedule, pipeline or STA validation"
+      },
+      "known_SRAM_internal_subset": {
+        "read_words": 11796480,
+        "write_words": 11796480,
+        "read_J": 0.00011858647449599999,
+        "write_J": 0.00016467768115199997,
+        "component_internal_J": {
+          "KV_fill": 8.782809661439999e-05,
+          "KV_operand": 6.32461197312e-05,
+          "projection_weight_fill": 7.68495845376e-05,
+          "projection_weight_operand": 5.53403547648e-05
+        },
+        "warning": "known streaming pass subset, not complete Attention energy; no wrapper/output loads/clock/extra operands"
+      },
+      "totals": {
+        "full_energy_J": null,
+        "full_area_mm2": null,
+        "full_power_W": null,
+        "complete": false
+      },
+      "missing_PPA_coefficients": {
+        "QK_MAC": "pJ/op and mm2 for BF16 multiply / FP32 accumulate",
+        "PV_MAC": "pJ/op and mm2 for FP32 probability times BF16-extended V / FP32 accumulate",
+        "projection_MAC": "pJ/op and mm2 for BF16 multiply / FP32 accumulate",
+        "vector": "pJ/op; FP32 max/add/mul/conversion resource area",
+        "EXP": "pJ/op and mm2 for selected finite-wordlength exp",
+        "reciprocal": "pJ/op and mm2 for shared finite-wordlength reciprocal",
+        "registers": "FP32 accumulators/state/Q reuse/operand distribution energy and area",
+        "SRAM_wrapper": "mux/output loads/CDC/clock/control/extra operand accesses",
+        "DMA_DRAM": "descriptor/control/DRAM device+PHY+IO energy and area",
+        "RoPE": "coefficient generation/table access and exact finite-format behavior"
+      },
+      "quality": {
+        "prior_BF16_PPL": 11.652735047455899,
+        "source": "qwen/results/attention_e01_20261019/RESULTS_ZH.md",
+        "new_PPL_run": false,
+        "warning": "prior unmodified BF16 SDPA anchor; not bit-true validation of this proposed hardware"
+      },
+      "source": {
+        "sram_table_sha256": "3cf3b22877ca7c5f196463e2aa6782b9f69ed975229855575953637dc1698658",
+        "sram_macro": {
+          "id": "E",
+          "corner": "SS",
+          "depth": 256.0,
+          "width": 128.0,
+          "capacity_bytes": 4096.0,
+          "voltage_V": 1.08,
+          "temperature_C": 125.0,
+          "area_mm2": 0.03322622205,
+          "read_internal_pJ": 10.0527,
+          "write_internal_pJ": 13.9599,
+          "ce_off_leakage_W": 7.7544e-06,
+          "ce_on_leakage_W": 7.773516e-06,
+          "read_access_ns": 2.8767,
+          "write_access_ns": 2.831,
+          "read_cycle_ns": 3.468,
+          "write_cycle_ns": 3.4271
+        },
+        "dram_provenance_sha256": "a2e5e70a87dcde2a3ccd8b540065123bc543c17310efa7d5efafcd97217771bd"
+      },
+      "status": "analytical evaluation only; no model inference, RTL, DC/PT, GPU or silicon experiment"
+    }
+  ]
+}

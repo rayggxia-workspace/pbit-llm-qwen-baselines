@@ -1,3 +1,10 @@
+# Project memory and resuming work
+
+- Before starting or resuming any LLM task, read the repository-root `PROJECT_MEMORY_ZH.md`, especially sections 0, 1, 12 and the section for the current subsystem; then check the latest remote Issue/PR, `progress/<verified-GitHub-login>/STATUS.md` and task HANDOFF. The memo is a navigation and decision record, not a replacement for current evidence or repository rules.
+- Preserve user decisions, negative results, evaluation protocols and unresolved limitations. Update the memo when a major result, design decision, handoff, publication or merge changes the project state. Distinguish physical IID randomness, PRNG/stratified sequences, approximate numerical references, RTL/PT and macro TLM estimates.
+- Keep a same-byte reading copy at the local `a_P_BIT/PROJECT_MEMORY_ZH.md` when working in that workspace. Do not rely on chat history or claim inaccessible future conversations automatically remember the project. If the file cannot be read, report the missing project context before repeating expensive experiments.
+- This section implements the user's 2026-10-18 request for durable cross-session project memory, Issue #28. All existing reproducibility and collaboration rules below remain in force.
+
 # Experiment reproducibility
 
 - Before comparing a new coding or architecture against recorded results, verify model revision and train/test text SHA-256, then rerun the unchanged BF16 reference in the experiment environment.
@@ -93,3 +100,30 @@
 - Integration-equivalence gates must use matching operators, dtypes and layouts. For Attention, compare the wrapper with the original BF16 SDPA core before using an explicit FP32 reference as a separate quality control; record its numerical difference instead of imposing or silently relaxing an identity threshold. All pilot comparison cases must use the same scored token set.
 
 - In sample-count sweeps, a shared seed or single-call prefix test does not establish shared sampler draws across a whole model run. State which RNG streams are independent, whether draw consumption changes with S, and the exact logits/RNG/batch conditions under which pairing holds; candidate masks may change with downstream hidden states.
+
+## Historical Attention quality evidence
+
+- Before declaring model-level Attention PPL evidence absent, inspect the historical algorithm branches and the executable dispatch, rather than only the current TLM integration tree or a mode name. Record all-layer coverage, prefill/decode coverage, suffix versus full-corpus scoring, FFN state, and whether sampling is accurate-Softmax IID, ideal CTMC, or a finite physical/network model. A separate screening result and Ising result do not establish their joint PPL. Before claiming that an energy sampler removes an existing digital Softmax, trace the active behavioral dispatch separately from the TLM address oracle; distinguish exact-score categorical Gibbs, learned energy, and independent or coupled multi-on masks.
+
+## amlink1219 后续FFN仿真参考（用户2026-10-19指定）
+
+- 后续本人的FFN行为/数值仿真主参考采用PR47已合并的固定W8＋多档幅度＋随机门限分层：B4/T32/K32，显式传policy=pot4、mode=sampled、cycles=32、strata=32，不沿用原类的128/1默认。采用版本、SHA、工厂和方法边界见architecture_tlm/ffn_stratified_reference/。B2/T32/K32、B4/T16/K16、B4/T64/K64作为简化、短流、低误差对照。
+- B是幅度尺度档数、K是0..255门限区间数、T是每投影阶段总采样数；保持共享64路及跨档共享门限、gate/up共享x抽样、z独立重编码、固定W8、符号/满幅旁路和FP32 SiLU/归约，不能替成各通道独立Binomial、自然IID或双侧随机。
+- Attention-only继续保留原FFN控制；联合仿真显式声明分层FFN在prefill/decode均替换，复用准确版本的双路径Guard/计分审计。FFN的T/K与Ising的burn/spacing/S分别记录，不把分层门限直接当Ising去相关方法。
+- 本次采用是行为参考，不是已验收的RTL/PPA默认。T32包含x与z各一帧，整FFN周期由调度和其余模块决定。新增硬件实现需计入缩放/区间控制/随机分发/累加/非线性/格式转换/存储，并比较直接随机舍入＋低位确定性矩阵。旧PPL/旧TLM结果不因规则更新而重命名或继承。
+- Issue50/PR52的完整联合确认由原负责人继续；恢复先查最新Issue/PR/交接，不重复提交记录中的运行任务。完整WT2与4096目标后缀分别标注，不把单独FFN全量结论或待审PR写成联合全量已完成。
+
+## FFN candidate recommendations and existing negative results
+
+- Before labeling an FFN direction done, failed or new, match the exact forward equation, sampled branches, retained amplitude paths and executed dispatch/PPL evidence. In particular, both-branch gated/AND models do not establish an activation-only result with continuous up. Then inspect matched multi-layer PPL, high-sample and continuous-input controls, including dual-rail gated and three-projection multi-threshold AND-bank results. Do not rename these as untried alternatives; state a concrete new condition and controls before proposing a rerun. Single-layer feasibility does not override a failed multi-layer result. Historical two-projection students already used floating-point weights; W8 is a deployment constraint, not an established remedy for their quality loss.
+- Separate input bit width, hidden representation and sample count. Four-bit input results with a single-bit hidden layer do not establish four-bit-hidden or twenty-layer success. Repeating identical sigmoid p-bits reduces sampling variance without changing the mean encoding; a multi-stochastic-layer mean-field surrogate is not automatically the exact infinite-sample network or a PPL lower bound.
+
+## 本地工作副本生命周期与磁盘预算（用户2026-10-19要求）
+
+- 用户要求清除已完成任务的工作副本，今后不长期保留大量checkout。本节接续Issue68/PR69，不撤销并行任务必须隔离目录、保留原始实验证据和禁止覆盖他人改动的规则。
+- 同一任务恢复时优先复用已有分支和工作目录。顺序完成后回收该任务工作副本，再为下一项任务建立独立分支/目录；仅在实际并发时保留必要的独立worktree，不为每次只读审阅、统计或恢复重复建立全量副本。
+- 文档/审阅任务优先用git show读取对象，或使用git sparse-checkout只检出当前需要的目录；新worktree优先add --no-checkout后按需检出。不要默认在每个helper重复检出历史大事务轨迹、原始结果包、模型、数据集或复制安装环境。验证依赖的配置/fixture/原件必须显式补齐，不能因精简检出而略过必需验证。
+- 每项任务交付时检查自己的临时review/resolve/helper目录：提交与SHA留在Git；未跟踪、ignored和未提交资料先分类、逐SHA归档至项目约定存储或已有授权本地归档，再移除完成使命的副本。PR待审保留最小必要工作目录；任务合并后及时回收。长驻目录限于主checkout、长期备忘录入口和仍在进行的任务。
+- 回收前核对Issue/PR、负责人、绝对路径、Git refs、未提交/ignored文件和恢复索引；不得按日期/文件夹名批量删目录，不重置或清理其他成员、运行中任务及唯一数据。恢复索引需要说明原分支/HEAD、归档位置和SHA；不得将删除工作副本写成删除实验历史。
+- 为节省空间不得给可修改源码建立跨任务硬链接，也不删除共享Git对象库。模型和大结果使用既定共享存储，Git保留版本/配置/摘要/校验索引。
+- 本机2026-10-19已回收目录与恢复方法入口：Issue68/PR69的maintenance/storage_cleanup_20261019/REPORT_ZH.md及ROUND2_REPORT_ZH.md；第二轮未提交资料和增量bundle保留在本地project_archives/cleanup_20261019_round2/。旧备忘录中的已归档工作路径可按恢复索引重建，不重复昂贵实验。

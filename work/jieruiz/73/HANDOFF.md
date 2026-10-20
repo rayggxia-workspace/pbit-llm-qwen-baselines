@@ -1,3 +1,18 @@
+# 2026-10-20 17:40 显存修复与定时回查（最新）
+
+Issue73/PR75继续，未合并。旧022db68中2572_1/2/3初始化OOM；3份原日志保留。15个尚未运行FFN项已撤回，不取消健康任务。原GPU预检成功属于当时空闲条件，不能代表之后共用显存时的初始化安全裕量。
+
+- 原源022db6828c0caba96ae3d620f80b27c1ae3774b9及数组2572保留index0,4,5,6,13,17,18,19，输出原/full。PIQA BF16已完成，Attention seed0在跑。其余6个PD。
+- 修复源309ca9c1629c364142ffdce474d5f6138da929c1：每层INT16 W8码无损打包INT8，存储省4.03GiB；FP32恢复权重、算术和RNG不变，新的allocator仅管理存储。CPU2583七项合同通过；GPU2584排队，严格WT2/cache/32层/pilot门禁尚待执行。
+- 18项替换数组2585：index1-3,7-12,14-16,20-25；afterok2584，输出本项目/outputs/309ca9c1629c364142ffdce474d5f6138da929c1/full。不得重复运行旧3个失败或15个取消项；最终按8旧+18新构成26唯一任务。两快照请求/模板/Harness相同，见INPUT_EQUIVALENCE_REPAIR.json；最终汇总显式允许这两个执行版本，不能静默重命名。
+- 当前真实完整WT2 BF16和原始任务参考沿用原快照；新门禁会再次运行验证。新GPU还未通过，不把CPU一致性写成7B修复已验证。
+- 按实际decode工作量/吞吐，1卡剩40～55小时、较快2卡22～32小时；修复版尚未完整计时，保持情景区间。ETA原件与复算数据已保存。
+- 用户要求的heartbeat已建：llama2-7b；每24小时，本对话续查；预计首检10月21日17:35北京时间。电脑关机不影响服务器运行，但本地SSH检查必须电脑和App在线；不保证错过即时补跑。后续每日检查直到26项核验交付后停用。配置索引FOLLOWUP_SCHEDULE.json；不要另建重复automation。
+
+恢复先看本节、Issue73/PR75、最新squeue、2583/2584/2585日志。若GPU门禁失败，保持原件并按既有授权在新快照修复；不改已提交snapshot。只回收sealed完整分数，三seed未齐保持pending。新的75份源直接等于Git blob，精确小归档evidence/execution_source_309ca9c.tar.gz。
+
+以下为此前提交时点的交接，不能覆盖本节：
+
 # Issue73 远端评测已启动：可执行交接
 
 2026-10-20；jieruiz；https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/73；PR75 draft/open、未合并。目标workspace正确；本地tmp/llama2-task-accuracy-issue73-20261020，分支task/73-llama2-task-accuracy，基线18b887bd2d0cd6c06d070d8dafaf8b979742fdcf。

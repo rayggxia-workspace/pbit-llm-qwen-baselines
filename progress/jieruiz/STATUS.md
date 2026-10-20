@@ -1,3 +1,13 @@
+# Issue73 2026-10-20 17:40：显存修复已补交、GPU门禁排队、回查已设
+
+jieruiz；task/73-llama2-task-accuracy；PR75 draft/open未合并。PIQA BF16已完整完成；原2572的FFN-only三seed初始化OOM，15个同类待执行项仅本人撤回。健康8项仍在原2572（index0,4,5,6,13,17,18,19）。
+
+新冻结309ca9c1629c364142ffdce474d5f6138da929c1无损W8码INT16→INT8，保留恢复FP32和RNG，省4.03GiB；CPU2583七项通过，GPU2584排队，18项FFN相关数组2585 afterok2584已提交。不能称修复GPU验证完成。两版正式请求/模板/Harness逐字节一致，75新源Git blob一致；原OOM/取消记录和新SHA索引已保存。
+
+1卡剩约40～55h；较快2卡约22～32h，按真实decode步数和吞吐情景估计。heartbeat llama2-7b已建，每24h回查，首检预计10/21 17:35北京时间，核验完成后停用；本地关机无法SSH，不保证错过立即补跑。交接work/jieruiz/73/HANDOFF.md最上节，FOLLOWUP_SCHEDULE.json。下一步核2584结果，收齐8旧+18新配置，勿重复提交。Projects缺read:project仍待同步。
+
+以下为旧时点记录：
+
 # Issue73：Llama2任务评测已通过门禁并开始正式运行
 
 2026-10-20；负责人jieruiz；Issue73 / PR75（draft/open、未合并）；分支task/73-llama2-task-accuracy，base18b887b集成分支。独立稀疏目录tmp/llama2-task-accuracy-issue73-20261020；冻结执行022db6828c0caba96ae3d620f80b27c1ae3774b9已推送。

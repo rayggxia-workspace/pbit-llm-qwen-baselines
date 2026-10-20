@@ -1,18 +1,8 @@
-## Issue65：完整Apple配对FP32质量结果已收齐（2026-10-20）
+结果提交`ac5626fbabcaee09e5ee0c25d376be1f46335bc5`已推送；PR71开放待审、未合并；远端ref/PR head及8项稳定Git blob SHA已核验，见PUBLICATION.json。无模型训练/PPL/PPA。
 
-GPU2542已完成，CPU2543收尾验证通过。每模型六任务19,965题；raw acc均值Softmax63.692864%、Sigmoid64.823195%（+1.130331个百分点）；WT2 PPL5.911825/5.886073。16份小型JSON与69项服务器索引校验、9份核心源SHA及两模型计分协议核对通过。完整结果已推送011d46029772bb4b4e17811582a116907318ec46，PR67待评审、未合并，Issue65验收与状态已同步；看板状态PENDING。BF16、有限p-bit采样及PPA未验收；不重交作业，不改同事Issue50/59。精确证据和交接见results/apple_sigmoid_7b_eval_20261019与work/amlink1219/65。下方运行状态为历史快照。
+## ReMix v1精读，Issue70（2026-10-19）
 
-## Issue65 最新：完整原始FP32 WT2已完成，六任务运行中
-
-Softmax PPL5.911825276082767、Sigmoid5.88607319951146，同317546计分token，window2048/stride1024；完整逐窗覆盖、原文/token SHA及NLL指数关系通过。GPU2542继续六任务，尚未收齐；BF16 GPU移植另为待修复项。代码/索引已推6d3d5d5a64a7709aab5733f38269c1b331521cd2，Draft PR67待审未合并。看板缺read:project待同步。精确证据results/apple_sigmoid_7b_eval_20261019，交接work/amlink1219/65；不重交2542。
-
-## Issue65：Apple7B配对质量基线（2026-10-19，进度快照）
-
-负责人amlink1219；独立分支task/65-apple-sigmoid-7b-eval / workspace_projects/sa7。下载2517完成：2865文件/50.17GB、来源MD5和SHA；六任务19份parquet与完整WT2文本SHA已校验，2537全部19,965题/67,106请求分词边界通过。
-
-原始未量化FP32两模型的CPU2541及GPU2542数值对齐均通过，单GPU2542按smoke→两个完整WT2→完整六任务执行，输出reports/float32/<model>/；完整质量结果尚未收齐。BF16 GPU2538/2539预检失败，诊断2540未解决全差异，均单独留档；不将FP32通过写成BF16通过。
-
-正式实现experiments/apple_sigmoid_7b_eval，证据results/apple_sigmoid_7b_eval_20261019，精确交接work/amlink1219/65/HANDOFF.md。当前本地待发布，之后以PUBLICATION回执及最新Issue65/PR为准；Projects缺read:project待同步。未修改或重复同事Issue50/59任务；不重交仍运行的2542。
+用户指定v1正文和附录核查完成，Zotero原条目/PDF保持，唯一机器note25FR4EFX；24例独立数学校核通过。入口architecture_tlm/research_readings/REMIX_V1_ZH_20261019.md，工作资料work/amlink1219/70/。没有模型复现、训练/PPL/PPA；研究原任务61已关闭，本任务独立交付待审。
 
 本轮p-attention能量调研已上传`a0d08a4208fe505c81aa150abf807fd5e622a0f2`，PR63开放待审未合并；远端ref/PR head及17项稳定制品Git blob已核验，回执P_ATTENTION_PUBLICATION.json。无新模型/训练/PPL/PPA；同事Issue50/59不重交。
 
@@ -172,5 +162,3 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 辅助/交接：work/amlink1219/<Issue>/。本地工作目录及原任务提交见各PUBLICATION.json；旧STATUS可从原提交恢复。
 原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
 下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。
-
-Issue65追加：原始FP32 CPU2541及GPU2542两模型对齐已通过；2542按smoke→两模型完整WT2→六任务运行，正式质量未收齐。详见work/amlink1219/65；当前GPU不重交。

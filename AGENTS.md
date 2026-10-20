@@ -109,3 +109,13 @@
 
 - Before labeling an FFN direction done, failed or new, match the exact forward equation, sampled branches, retained amplitude paths and executed dispatch/PPL evidence. In particular, both-branch gated/AND models do not establish an activation-only result with continuous up. Then inspect matched multi-layer PPL, high-sample and continuous-input controls, including dual-rail gated and three-projection multi-threshold AND-bank results. Do not rename these as untried alternatives; state a concrete new condition and controls before proposing a rerun. Single-layer feasibility does not override a failed multi-layer result. Historical two-projection students already used floating-point weights; W8 is a deployment constraint, not an established remedy for their quality loss.
 - Separate input bit width, hidden representation and sample count. Four-bit input results with a single-bit hidden layer do not establish four-bit-hidden or twenty-layer success. Repeating identical sigmoid p-bits reduces sampling variance without changing the mean encoding; a multi-stochastic-layer mean-field surrogate is not automatically the exact infinite-sample network or a PPL lower bound.
+
+## 本地工作副本生命周期与磁盘预算（用户2026-10-19要求）
+
+- 用户要求清除已完成任务的工作副本，今后不长期保留大量checkout。本节接续Issue68/PR69，不撤销并行任务必须隔离目录、保留原始实验证据和禁止覆盖他人改动的规则。
+- 同一任务恢复时优先复用已有分支和工作目录。顺序完成后回收该任务工作副本，再为下一项任务建立独立分支/目录；仅在实际并发时保留必要的独立worktree，不为每次只读审阅、统计或恢复重复建立全量副本。
+- 文档/审阅任务优先用git show读取对象，或使用git sparse-checkout只检出当前需要的目录；新worktree优先add --no-checkout后按需检出。不要默认在每个helper重复检出历史大事务轨迹、原始结果包、模型、数据集或复制安装环境。验证依赖的配置/fixture/原件必须显式补齐，不能因精简检出而略过必需验证。
+- 每项任务交付时检查自己的临时review/resolve/helper目录：提交与SHA留在Git；未跟踪、ignored和未提交资料先分类、逐SHA归档至项目约定存储或已有授权本地归档，再移除完成使命的副本。PR待审保留最小必要工作目录；任务合并后及时回收。长驻目录限于主checkout、长期备忘录入口和仍在进行的任务。
+- 回收前核对Issue/PR、负责人、绝对路径、Git refs、未提交/ignored文件和恢复索引；不得按日期/文件夹名批量删目录，不重置或清理其他成员、运行中任务及唯一数据。恢复索引需要说明原分支/HEAD、归档位置和SHA；不得将删除工作副本写成删除实验历史。
+- 为节省空间不得给可修改源码建立跨任务硬链接，也不删除共享Git对象库。模型和大结果使用既定共享存储，Git保留版本/配置/摘要/校验索引。
+- 本机2026-10-19已回收目录与恢复方法入口：Issue68/PR69的maintenance/storage_cleanup_20261019/REPORT_ZH.md及ROUND2_REPORT_ZH.md；第二轮未提交资料和增量bundle保留在本地project_archives/cleanup_20261019_round2/。旧备忘录中的已归档工作路径可按恢复索引重建，不重复昂贵实验。

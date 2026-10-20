@@ -10,6 +10,20 @@
 
 以下保留历史交接：
 
+## 同期已合入的历史任务状态（保留原文）
+
+# Issue68：第二轮副本清理完成，生命周期规则已写入
+
+2026-10-19；jieruiz；task/68-local-storage-cleanup；PR69待审未合并；tmp/local-cleanup-issue68-20261019。本轮42个已完成任务副本逻辑7.377GiB；两轮累计10.510GiB/59个副本。独有资料和增量bundle共3,042,843.0bytes留project_archives/cleanup_20261019_round2，全部ref/zip/bundle/模型校验通过；保留进行中和其他负责人目录。当前任务已稀疏检出；根及仓库AGENTS追加回收规则。两轮交付通过原PR69追加，当前待审未合并；实际发布head以PR为准。正式报告maintenance/storage_cleanup_20261019/ROUND2_REPORT_ZH.md，work/jieruiz/68为交接。无页面文件/系统设置修改；无新模型/硬件测试。Projects read:project待同步。
+
+以下继承历史状态：
+
+# Issue68：本地清理已完成，已推送PR待审
+
+2026-10-19；jieruiz；task/68-local-storage-cleanup；base 6197f24a9cc03ab0dc5e2e72297457f638e37292；tmp/local-cleanup-issue68-20261019。用户授权本地项目清理，实际回收逻辑空间3.133GiB。正式报告maintenance/storage_cleanup_20261019，原始日志与恢复zip留本地，work/jieruiz/68保存索引/交接。17个已合并本人审核工作树的恢复分支仍在；唯一Qwen权重SHA核验通过。本地清理实际完成，已推送并创建PR#69（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/69），PR待审未合并。下一步审阅后验收；本次不自动合并或关闭Issue。Projects read:project待同步；无新GPU/PPL/TLM/EDA。
+
+以下为继承的历史状态，保留原时点：
+
 # Issue55 第二轮PR审核交付
 
 2026-10-19；jieruiz（真实admin/push核验）；review/55-pr-round2，tmp/pr-review-r2-main-20261019；base 679fd269ecaa4883bd79619d2f39d6ade2a7daca。用户要求继续审查，本轮5项：63/64已实际合并，49/52/62保留draft。原第一轮结果保留。

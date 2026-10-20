@@ -1,0 +1,6 @@
+# Apple Gala 7B evaluation
+
+- This directory belongs to Issue #65. Preserve official checkpoint bytes and use the original Apple SentencePiece tokenizer and newline preprocessing; never load these Gala checkpoints as Meta Llama.
+- Before creating an isolated environment on the server, inspect the selected Python's pip/ensurepip availability and the actual `torch` distribution path. A reused environment may expose torch through an additional `.pth`; adding that environment's first site-packages path does not recursively process its `.pth` files. Verify `2.7.1+cu128` before GPU work and do not allow a resolver to silently replace the CUDA build.
+- Source snapshots already submitted to Slurm are immutable. New fixes receive a new snapshot directory and job identity. Native AXLearn / port parity, causal and padding checks gate formal evaluation; two-question smoke scores are not benchmark results.
+- Inspect factory signatures and config keys at the pinned AXLearn revision. For inference validation, instantiate the official Decoder/attention layers directly rather than importing the trainer/data pipeline and its unrelated TF/SeqIO requirements. The original tokenizer has 32,000 pieces while embedding/logit capacity is 32,768; keep these counts distinct and retain the complete original output head.

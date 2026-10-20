@@ -1,3 +1,11 @@
+# Issue73：Llama2原始/概率FFN与Attention任务评测准备
+
+2026-10-20；jieruiz；Issue73；branch task/73-llama2-task-accuracy；base18b887b集成分支。独立稀疏目录tmp/llama2-task-accuracy-issue73-20261020。两完整任务PIQA/ARC-E，各13配置；Apple已有FP32两基线原件摘要复用，明确不同模型/计算口径。
+
+本地Llama32层守卫/继承相同数值核/缓存多选计分及6项CPU合同已写，AST通过；本机无Torch，待远端CPU Slurm验证。尚未提交GPU/正式评测；结果pending，无新PPL/准确率/PPA。HANDOFF为work/jieruiz/73/HANDOFF.md。Projects待权限同步。
+
+以下保留此前状态（时间戳快照，最新合并以远端为准）：
+
 # Issue50：25项完整WT2确认已回收核验，接续原PR52发布
 
 2026-10-20；jieruiz；用户要求重审补全结果，Issue55审阅中只读接续Issue50现有原件。原2430保留19项、2461六项全部封存completed，2430_19/20/21三项B4T16联合按用户既有授权取消；未新跑模型或改快照。新独立报告qwen/results/joint_full_wt2_20261020/，含25原始结果、完整输入/源/取消与调度证据。

@@ -1,3 +1,15 @@
+# Issue28：Qwen39项完整任务结果已同步长期备忘录
+
+2026-10-20；真实认证jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。复用canonical目录tmp/project-memory-issue28-20261018、分支task/28-project-memory，base6197f24a9cc03ab0dc5e2e72297457f638e37292。新增第5.8.2节、最新任务索引，引用Issue59/PR62已上传cebba22的完整39项，不启动或重交任何模型任务。
+
+- 当前阶段：文档本地已校验，准备任务分支上传并建立Issue28后续PR；PR62报告已上传、未合并。
+- 证据：qwen/results/task_accuracy_20261019/{RESULTS_ZH.md,SUMMARY.json,ARTIFACT_INDEX.json,evidence/FINAL_VERIFICATION_20261020.json}。数值与原件SHA不重写；本轮只有文档同步。
+- canonical原有Issue68/PR69清理追加为已存在的未提交12行。本次只将第5.8.2/12节和日期变更写入索引，排除该旧任务增量；旧增量继续原样保留。canonical文件与a_P_BIT根阅读副本始终同字节；工作副本含PR69待审追加，不冒称与仅本次增量的提交blob整文件相同。
+- 验证：39项/15组数值、两份报告SHA、UTF8/LF、插入位置及根阅读副本一致；Git staged范围与只包含本次delta；无新模型、数据、GPU、训练、RTL/PT/TLM。
+- 下一步：推送并核实新PR/Issue状态，更新发布回执。Projects权限以当前任务发布回执为准，未成功则标明待同步。
+
+以下保留历史交接：
+
 # Issue55 第二轮PR审核交付
 
 2026-10-19；jieruiz（真实admin/push核验）；review/55-pr-round2，tmp/pr-review-r2-main-20261019；base 679fd269ecaa4883bd79619d2f39d6ade2a7daca。用户要求继续审查，本轮5项：63/64已实际合并，49/52/62保留draft。原第一轮结果保留。

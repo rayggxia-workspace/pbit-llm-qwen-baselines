@@ -1,6 +1,6 @@
 # p-bit LLM 项目长期备忘录
 
-更新日期：2026-10-19。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19已实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`，实际合并回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)；Issue59记忆追加[PR64](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/64)已实际合并`679fd269ecaa4883bd79619d2f39d6ade2a7daca`；研究PR63已合并`4f2d953395a7335e0f15b0546c91cdac73c81169`。旧任务索引保留日期并由第12.1节更新。
+更新日期：2026-10-20。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19已实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`，实际合并回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)；Issue59记忆追加[PR64](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/64)已实际合并`679fd269ecaa4883bd79619d2f39d6ade2a7daca`；研究PR63已合并`4f2d953395a7335e0f15b0546c91cdac73c81169`。旧任务索引保留日期并由第12.1节更新。
 
 本文件保存项目目标、用户决策、算法分支、实验口径、架构与证据入口，用于长对话压缩、换会话或换人后的恢复。它不替代原始结果、manifest、最新 Issue/PR 和运行日志。历史讨论不等于已实现；以下明确区分已验证、情景估计和待验证。
 
@@ -346,6 +346,26 @@ Issue59/PR62当前11/39完成，28项运行或排队，worker无Traceback。第�
 
 按实际解码forward而非题数外推，当前各task最多2GPU：ARC-E单S64约18.1min，PIQA/Hella约40多min。动态预计ARC-E S64三seed18:05～18:15，PIQA/Hella首seed18:20～18:40，三任务S64三seed19:00～19:20，全部S64/128/512三seed21:00～22:00（均北京时间2026-10-19）。不是Slurm承诺；长上下文尾段和资源波动可改变时间。没有为了回答状态而改作业、并行数或快照。旧09:19的3/39条保留历史时点；后续以最新completed原件为准。
 
+### 5.8.2 39项任务全部完成并发布（2026-10-20）
+
+Issue59的39/39配置已全部封存，Slurm2481自动汇总完成；本次只读核验时本人squeue为空。原执行075574ec94307202f3187845d6d7417f1e98ba48、collector0d4be877714ace3f1b360c4d74b62e563850e9bc不变。2026-10-20严格重放39个结果及逐题记录SHA/指标，重建SUMMARY与RESULTS逐字节匹配服务器归档；本地15项collector测试也通过，没有新训练/GPU/PPA。
+
+完整报告提交cebba22dadb78440b210b3ec237b5e2d16c77030已推送至PR62的task/59-qwen-task-accuracy，base仍task/50-joint-ffn-attention，依赖PR52；报告已上传不等于PR合并。成果qwen/results/task_accuracy_20261019/，原件留/home/Hongjie_Zeng/projects/pbit-qwen-task-accuracy-20261019-issue59/outputs/075574ec94307202f3187845d6d7417f1e98ba48/，完整ARTIFACT_INDEX与FINAL_VERIFICATION_20261020索引源码/配置/数据及大小/SHA，旧11/39索引保留为历史。SUMMARY SHA256 be47dd60a87dfb1467add4e22c6795e02df2a80867d0085d8f1a3b70cb1e61ac；RESULTS SHA256 7fc169344d0166f938580f32fb0ce03f0f5d34465bea5a74830ccdef4d0edbde。
+
+以下每格acc/acc_norm（%）；随机配置为3seed均值，完整SD和逐seed配对见原SUMMARY，不将seed SD混作题集置信区间。
+
+| 方案 | PIQA全1838题 | ARC-E全2376题 | HellaSwag固定1000题 |
+|---|---:|---:|---:|
+| BF16 | 70.511/69.967 | 64.394/58.333 | 41.900/52.400 |
+| B4T32 FFN-only | 70.421/69.840 | 64.731/58.852 | 41.833/51.833 |
+| FFN＋S64 | 69.369/69.568 | 64.071/59.105 | 41.367/50.833 |
+| FFN＋S128 | 69.931/69.677 | 64.534/58.474 | 41.800/51.700 |
+| FFN＋S512 | 70.004/69.695 | 64.646/58.726 | 41.867/52.100 |
+
+FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700个百分点，S512为−0.272/+0.393/−0.300；不将小幅提高称为显著优于原模型或把小变化称为已证明等价。HellaSwag不是完整10042题。FFN在prefill/decode替换，Attention仅答案单token评分decode替换、前缀仍准确；27联合配置的selected_fraction及GQA_union_fraction全部1.0，不能以本批结果证明长上下文QK筛选质量。S为burn16/spacing4下CTMC观测数，不是ESS或电路拍数。
+
+旧3/39、11/39与动态预计完成时间保留为历史，恢复先看本节、Issue59/PR62及交接，不再重复提交已完成39项。仓库上传身份jieruiz已核实admin/push；Projects是否成功同步以最新发布回执为准。当前正式报告PR仍未合并。
+
 ## 6 随机源、p-bit与相关性
 
 双流误差追加诊断见Issue30公开结果目录 `ERROR_DIAGNOSIS_ZH.md`。已有47项的T4096精确双流x概率层均值5.3492%、z0.8255%；T256/4096最大z裁剪约0.000964%/0.001767%，不支持大面积饱和是当前主因。在同一固定输入/尺度下，独立权重流增加非负条件方差；经SwiGLU和多层传播的主导位置仍待消融。DS-CIM使用加128偏移、128粒度FP8对齐、优化PRNG/seed及SRR，LLM为T256误差pattern注入和六任务准确率，不能等同本项目IID逐连接短测，也不能认为加SRR就会比现有精确计数更准。
@@ -562,6 +582,8 @@ Issue7（实际TT/SS DC/VCS/PT）、Issue22（短流硬件/质量后续）、Iss
 2026-10-19新增Issue59/PR62代表任务准确率，见第5.8节及`tmp/qwen-task-accuracy-issue59-20261019/work/jieruiz/59/HANDOFF.md`。PR62依赖PR52、未合并；075574源的2475/2476已READY通过，正式39项于09:13:52Z提交2477/2478/2479/2480、自动汇总2481；09:19Z为三项原BF16完成、36替换项运行/排队。记忆追加PR64已推送待审、未合并；旧2474门禁诊断保留。该条是新任务时点快照，不改写下方早期状态或原实验原件。
 
 2026-10-19第二轮（Issue55，用户要求继续）：审查5项，PR63研究设计已合并`4f2d953395a7335e0f15b0546c91cdac73c81169`、PR64记忆已合并`679fd269ecaa4883bd79619d2f39d6ade2a7daca`；49/52同旧head仍draft，62新draft公开11/39且依赖未合PR52，均保留。174数学检查与30评分/collector CPU夹具检查通过，不等于训练或新0.5B/GPU验证。Issue61按研究范围关闭、28持续维护，详见`work/jieruiz/55/round2/REVIEW_ZH.md`。上方PR64“待审/待推送”与任务进度保留为旧时点，最新合并状态由本条及Issue55回执覆盖。
+
+2026-10-20：Issue59/PR62的39/39任务全部完成，完整报告已推送cebba22dadb78440b210b3ec237b5e2d16c77030，见第5.8.2节及qwen/results/task_accuracy_20261019/。逐题SHA/指标重放及15项collector测试通过；本人队列核验为空。PR62仍未合并、依赖PR52；旧3/39与11/39不是当前状态。此次Issue28仅同步备忘录，无新GPU或PPA。
 
 ### 12.2 早期远端状态快照（原文保留）
 

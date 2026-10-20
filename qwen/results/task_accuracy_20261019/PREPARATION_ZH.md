@@ -45,3 +45,14 @@
 已完成11/39、28项运行/排队，无worker traceback。首次联合结果ARC-E S64 seed0完整2376题：acc63.4680%、acc_norm58.4175%，参考64.3939%/58.3333%，仅一seed不作三seed质量结论。耗时1084.16s；FFN-only ARC-E三个seed已齐，原件按SHA与严格collector验证。
 
 按真实decode前向工作量和当前每task两个并行槽估时：ARC-E S64三seed约18:05～18:15；PIQA/Hella首个联合seed约18:20～18:40；三个任务S64各三seed约19:00～19:20；全部S64/128/512各三seed约21:00～22:00。均为2026-10-19北京时间的动态估计，不是Slurm保证。按ctx长度分组、候选最长长度决定batch步数，不能用题数百分比简单外推。未调整作业/并行数/随机源，输入与快照不变。RUNTIME/DECODE_WORK为本次原始状态快照。
+
+
+## 2026-10-20 完整结果发布核验
+
+39/39正式配置全部完成；Slurm 2481自动汇总完成，15项collector测试通过。2026-10-20再次只读重放冻结collector 0d4be877714ace3f1b360c4d74b62e563850e9bc，逐项核验39个完成JSON、39份逐题记录和准备数据的SHA及指标，重新生成的SUMMARY与RESULTS逐字节匹配服务器归档。没有重跑GPU、没有修改075574运行快照。
+
+固定FFN为B4/T32/K32：PIQA/ARC-E/HellaSwag子集的acc_norm相对本轮BF16，FFN-only为−0.127/+0.519/−0.567个百分点；联合S128为−0.290/+0.140/−0.700；S512为−0.272/+0.393/−0.300。小幅上涨不作为优于原模型或统计显著性的证据；三个seed的SD不等于题集置信区间。
+
+PIQA1838与ARC-E2376为完整split，HellaSwag为预先固定1000题子集。FFN在prefill/decode替换，Attention仅答案单token评分decode替换，前缀Attention仍准确；所有随机Attention实际selected_fraction/GQA_union_fraction均为1，因此本批不验证长上下文K筛选质量。S是保留的CTMC观测数，burn16/spacing4，不是独立样本数、物理p-bit更新拍或PPA结果。原件位置、源码/模型/数据哈希及命令沿用本文件和evidence中的冻结记录。
+
+正式结果见同目录RESULTS_ZH.md与SUMMARY.json；FINAL_VERIFICATION_20261020.json记录复核，STAGE_11_OF_39_ARTIFACT_INDEX.json保留上次索引，ARTIFACT_INDEX.json是完整封存结果索引。PR62依赖未合并PR52；任务运行完成不等于代码已合入集成分支。

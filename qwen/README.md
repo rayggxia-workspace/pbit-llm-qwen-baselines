@@ -47,6 +47,18 @@ python qwen/run.py tlm --help
 ## 多档缩放＋随机分层：完整WT2短流（2026-10-19）
 
 [联合结果与图](results/multiscale_stratified_20261019/COMPARISON_ZH.md)：固定同一W8、全24FFN、Attention原版；新增67配置＋2BF16参考均收齐。四档细分层T16/32/64为11.900826/11.736131/11.693775（各3seed），BF1611.652735；两档T32为11.769199。3～4档后无明显额外收益，缩放后粗K4/16也有效；K>1是受控随机分层，不能冒称自然IID。只给数值精度，无新PPA/整机能耗结论。
+
+## 短流FFN与实际Attention、Ising次数PPL（2026-10-19）
+
+[三种FFN联合后缀对照](results/joint_stratified_attention_20261019/RESULTS_ZH.md)与[六档Ising观测次数曲线](results/ising_sample_sweep_20261019/RESULTS_ZH.md)：全24层计分decode实际执行筛选、候选QK、有限CTMC及V采样，FFN在prefill/decode均替换。固定B4T32，S32/64/128/256/512/1024的4096目标后缀PPL均值为12.065755/11.514886/11.197813/11.066594/11.055307/11.006579；同筛选准确PV参考10.970368，原BF16后缀10.371557。均为三seed，后缀不是完整WT2。上述为2026-10-19阶段后缀记录；完整S128对照及S256/512结果现已收齐，见下方独立完整WT2报告，无新PPA。
+
+
+## 联合路径完整WT2与任务准确率（2026-10-20）
+
+[25项完整WT2原件与报告](results/joint_full_wt2_20261020/RESULTS_ZH.md)已逐SHA和299077目标审计核验；只缺三项用户授权取消的B4T16联合冗余项。matched cached BF16为11.652118，B4T32-only 11.732192，B4T32联合S128/256/512三seed均值12.423820/12.274153/12.207062；均非旧4096目标后缀。原FFN Attention-only仅S128三seed完整确认；S256/512无同预算控制，不报告对应误差交互。
+
+[39项代表任务准确率](results/task_accuracy_20261019/RESULTS_ZH.md)已通过PR62合入本任务分支；PIQA/ARC-E全量、Hella1000固定子集，含原BF16、FFN-only及S64/128/512各三seed。短题全部K候选保留，不能证明长上下文筛选。两类结果各自保留协议、源码与原件SHA；没有新训练、GPU重跑或PPA验收。
+
 ## FFN裁剪与固定二次幂尺度（2026-10-19）
 
 见[Issue39前缀PPL与证据边界](results/ffn_clipping_20261019/RESULTS_ZH.md)。八项主策略及端点/温和裁剪补充共65项替换对照已完成，Attention保持原BF16；完整WT2仅重跑原BF16基线，不能把替换前缀分数称为完整PPL。固定范围的质量与电路开销分别记录，没有修改TLM默认。

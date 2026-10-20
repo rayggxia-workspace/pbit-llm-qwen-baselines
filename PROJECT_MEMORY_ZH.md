@@ -14,6 +14,8 @@
 
 ## 0 恢复工作先读这里
 
+> 2026-10-20最新审核：本轮PR49/52/62/67/69/71/72已全部实际合并；科学集成18b887bd2d0cd6c06d070d8dafaf8b979742fdcf。旧完整WT2“仍运行/未收齐”已经过时，现有25项完整结果与39项任务准确率均已核验发布；仅3项B4T16联合是用户授权取消。恢复先看新增§5.7.2、§5.8.2及§12.0，不重跑已完成矩阵。研究实现/如实结果验收不等于质量无损或PPA验收。
+
 1. 目标是利用物理随机源/p-bit降低LLM的能量、面积，同时保持可接受的质量与速度；不能为了利用随机源就假定随机计算一定胜过定点计算。
 2. 正式仓库是 `rayggxia-workspace/pbit-llm-qwen-baselines`，当前主要集成分支为 `pbit-tlm-attention-details-20261016`。`main` 和历史个人仓库都可能落后。2026-10-19 PR47按用户授权实际合并后，集成提交为 `bef83e54b9da0081c51f393044d2156ce11a34b9`；其Git树与已审核head `5518a0a23e2bfec2b428542a9e4ce94b27c78d4a` 相同。
 3. 三个模型入口是 [qwen](qwen/README.md)、[llama1](llama1/README.md)、[llama2](llama2/README.md)。Qwen3.5是另一组历史实验，不能默认已并入本分支。
@@ -320,6 +322,16 @@ dynamic64仅改细K64为11.768589±0.003298，K128为11.700228±0.000201。单Po
 
 经后缀审阅，Slurm2461已提交6项B4T32 S256/S512各3seed完整cached确认（299077目标、2048/1024、batch32），复用53dd已验证实际显存门禁并校验数值内核未变；旧Slurm2430的S128和匹配BF16/FFN-only继续运行，不重复提交。**两组完整联合任务均未收齐**；恢复按work/jieruiz/50/HANDOFF.md核实2430/2461、按同full目标SHA合并对照，不把后缀或启动任务写成完整完成。PR52仍草稿未合并，Issue50保持open，Projects权限待同步。
 
+### 5.7.2 完整WT2确认已收齐并核验（2026-10-20，已合并）
+
+Issue50既有2430/53dd与2461/c0fd已收得25份封存完整结果；原22格仅3个B4T16联合S128 seed在pending时依用户授权取消，取消回执原字节保留。最佳B4T32 S128/256/512各3seed、FFN-only与matched cached BF16全部齐全，不再将旧“运行/未收齐”当作实时状态，也不重复提交GPU。新独立成果入口qwen/results/joint_full_wt2_20261020/，旧后缀报告原件保持历史。
+
+完整计分299078测试token、299077目标、window2048/stride1024/batch32。matched cached BF16 11.652118068；B4T32-only 11.732192±0.001821；B4T32联合S128/256/512分别12.423820±0.002870、12.274153±0.005388、12.207062±0.001103（PPL逐seed算术均值±总体SD）。相对BF16的mean-NLL几何PPL变化约+6.623%/+5.338%/+4.763%，不能混作4096目标后缀或以5%阈值宣布等价。S256/S512缺同预算原FFN完整Attention-only控制，交互NLL不可计算。
+
+原FFN Attention-only S128三seed完整12.318676±0.005035可供PR49同源代表性确认；没有原FFN S512完整原件，不泛化为六档完整曲线。49/50 model config解析JSON相同，681B LF与709B CRLF原字节不同；权重/文本/token及四个Attention核心同源，其他tokenizer元数据字节差异照实披露。准备fresh vectorized BF16 11.652735与真实B16/B32显存pilot仅作环境门禁，质量对照用本轮cached BF16。
+
+25配置SHA、两执行94个joint/30个底层公开source blob、7300段NLL和全部24层FFN/Attention调用通过；35个门禁锁定依赖不变。本轮没有新模型推理或GPU作业、无快照修改；原始JSON用-text保留字节。实时2430/2461队列空，scontrol记录过期且sacct storage disabled，因此完成依据为封存completed/严格计分审计，不伪称取得Slurm历史终态。PR52已实际合入集成3b74375b07d16a2cb3e5d5b8ae7ceb825031472c；PR49代表性确认已合入18b887bd2d0cd6c06d070d8dafaf8b979742fdcf，Issue48/50按本任务范围验收关闭。
+
 ## 5.8 代表任务准确率与Ising次数：Issue59 / PR62（2026-10-19）
 
 用户要求在PPL之外检查实际任务，不能将PPL增加直接等价为准确率明显下降。独立任务[Issue59](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/59)，目录`tmp/qwen-task-accuracy-issue59-20261019/`，分支`task/59-qwen-task-accuracy`；[PR62](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/62)截至本次记录为draft、未合并，base为`task/50-joint-ffn-attention`，依赖尚未合并的PR52，不是已进入集成的任务结果。
@@ -543,6 +555,13 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 | 远程登录材料 | 原有本机SSH配置/远程说明保持本地；备忘录不复制认证内容，恢复时使用原路径与任务handoff |
 
 ## 12 远端任务与交接索引
+
+### 12.0 2026-10-20 第三轮7项PR审核与实际合并
+
+- 用户授权继续审核补全结果及新PR。PR69 bc9f96d、PR71 b5e04f8、PR67 e96e54d、PR72 650c6b2、PR52 3b74375、PR49 18b887b已合入集成；PR62先入PR52任务分支992c693，再由PR52实际进入集成，不误报子PR最初的目标。
+- Issue50完整2430/2461现有25项已补发qwen/results/joint_full_wt2_20261020；只有3项B4T16联合授权取消。三seed B4T32 S128/256/512完整12.423820/12.274153/12.207062，对matched BF16 11.652118；S256/512无同预算原FFN full控制，交互不可计算。PR49仅S128三seed代表性完整确认，其他S仍后缀。
+- PR62的39项结果/逐题统计、PR67两模型各19965题和完整WT2、PR71 v1论文/数学、PR69恢复归档分别核验通过。Issue48/50/59/65/68/70已按各自范围关闭；Issue28继续维护。无新GPU、训练或PPA，无快照改写。Projects本轮GraphQL实测仍缺read:project，仓库admin/push及7次合并已成功，不能混为仓库权限不足。
+- 完整审核与原生head/base/merge-parent回执位于work/jieruiz/55/round3，交付归Issue55。本轮仅一个稀疏review目录，原件/脚本/独有资料按SHA归档至project_archives/pr_review_issue55_20261020后回收本轮helper；长期canonical/root副本保持同字节。canonical先前12行未提交清理增量先保留原字节与patch，且在新文档中完整保留，不reset/stash或覆盖其他成员。
 
 ### 12.1 2026-10-19 待审PR审核与实际合并回执
 

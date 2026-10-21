@@ -1,0 +1,21 @@
+{
+  "issue": 78,
+  "owner": "jieruiz",
+  "scope": "Same real QK/V sampler comparison, not model PPL, training or PPA",
+  "model": "Qwen2.5-0.5B Base BF16 original FFN and original Attention trajectory",
+  "contexts": [512, 2048, 8192],
+  "window_starts": [0, 65536],
+  "layers": [0, 12, 23],
+  "heads": [0, 6, 13],
+  "candidate_pools": ["dense", "existing max4 fixed8 screened512 when it removes keys"],
+  "seeds": [0, 1, 2],
+  "repeats_per_seed": 8,
+  "samplers": ["exact IID reference", "corrected empty-reference rejection", "parallel winner hold c=max+0/2/4", "two bits with uniform challenger", "Barker uniform challenger", "Barker XOR"],
+  "burns": [0, 32, 128],
+  "output_budget_grid": [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768],
+  "parallel_output_cap": 4096,
+  "serial_output_cap": 32768,
+  "target": "Observed attention-output MSE versus exact output, normalized by analytic one-sample IID variance; compare to IID128 and IID512 expectations, with per-seed/replicate uncertainty",
+  "report": "Per input, entropy/topmass/KV-layer/pool, observed update budgets, p-bit draws, proposals and no-hit caps. Hardware clocks are scenario parameters, not measured cycles.",
+  "source_document_sha256": "454ef7b2b6e18a2a9744f3f92c34fbb9c8362a8d54c92c881beef2d7729dd228"
+}

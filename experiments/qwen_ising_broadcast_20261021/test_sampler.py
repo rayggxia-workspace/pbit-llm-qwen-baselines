@@ -79,4 +79,31 @@ class Contracts(unittest.TestCase):
         self.assertEqual(s['invalid_phase_fraction'],0.)
         self.assertEqual(s['kappa'],'hard_infinity')
 
+    def test_one_hot_transient_empty_stationary_conditional_is_softmax(self):
+        z=np.array([0.,-.4,-2.]);states=np.vstack([np.zeros(3),np.eye(3)])
+        for offset in [0.,-4.,2.]:
+            w=np.r_[1.,np.exp(z+offset)];pi=w/w.sum();P=np.zeros((4,4))
+            for a,s in enumerate(states):
+                for j in range(3):
+                    prob=sigmoid(z[j]+offset) if s.sum()-s[j]==0 else 0.
+                    for value in [0,1]:
+                        weight=prob if value else 1-prob
+                        if not weight:continue
+                        y=s.copy();y[j]=value
+                        b=np.flatnonzero((states==y).all(1))[0];P[a,b]+=weight/3
+            self.assertLess(float(abs(pi@P-pi).max()),1e-14)
+            np.testing.assert_allclose(pi[1:]/pi[1:].sum(),np.exp(z)/np.exp(z).sum())
+
+    def test_one_hot_padding_and_empty_stall(self):
+        a,s=sample_indices(np.array([[2.,-np.inf]]),8,block=1,hard_inhibit=True,
+            encoding='one_hot',burn=0,spacing=1,max_slots=128)
+        self.assertTrue((a==0).all());self.assertGreater(s['empty_observation_slots'],0)
+        self.assertEqual(s['invalid_observation_slots'],s['empty_observation_slots'])
+
+    def test_one_hot_does_not_decode_empty_to_maximum(self):
+        a,s=sample_indices(np.array([[0.,-1.]]),8,block=1,hard_inhibit=True,
+            encoding='one_hot',logit_offset=-1000.,burn=0,spacing=1,max_slots=8,strict=False)
+        self.assertTrue((a==-1).all());self.assertTrue(s['failed'])
+        self.assertEqual(s['invalid_observation_slots'],8)
+
 if __name__=='__main__':unittest.main()

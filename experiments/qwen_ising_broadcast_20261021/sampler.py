@@ -21,7 +21,7 @@ def sigmoid(x):
 def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
                    spacing=4, seed=0, rng=None, enable=1., max_slots=256,
                    strict=True, observation='jitter', observation_rng=None,
-                   hard_inhibit=False):
+                   hard_inhibit=False, encoding='empty_reference', logit_offset=0.):
     """Return [rows,S] addresses, or fail if S legal observations are unavailable.
 
     E = kappa*C*(C-1)/2 - sum((z_i-z_ref)*s_i), s_ref=0.
@@ -32,6 +32,9 @@ def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
     A block<=0 updates every candidate slot together. enable is an independent
     per-site lazy-update probability; even enable<1 is not exact block Gibbs.
     hard_inhibit implements kappa->infinity with Boolean exclusion; no inf*0.
+    one_hot gives every category a bit: C=0 is transient and produces no address.
+    Its common logit_offset changes occupancy/mixing, not the equilibrium
+    category distribution conditional on C=1. It is not a normalization oracle.
     """
     z = np.asarray(logits, dtype=np.float64)
     if z.ndim != 2 or min(z.shape) < 1:
@@ -47,20 +50,25 @@ def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
         raise ValueError('integer burn>=0 and block required')
     if observation not in ('fixed','jitter'):
         raise ValueError('fixed or jitter observation required')
+    if encoding not in ('empty_reference','one_hot') or not math.isfinite(logit_offset):
+        raise ValueError('known encoding and finite common offset required')
+    if encoding=='empty_reference' and logit_offset!=0:
+        raise ValueError('offset would change the empty-reference target')
     rows, width = z.shape
     block = width if block <= 0 else min(block, width)
     rng = np.random.default_rng(seed) if rng is None else rng
     obs_rng = np.random.default_rng(seed+987654) if observation_rng is None else observation_rng
     ref = z.argmax(1)
-    delta = z - z[np.arange(rows), ref, None]
+    delta = z - z[np.arange(rows), ref, None] + logit_offset
     movable = valid.copy()
-    movable[np.arange(rows), ref] = False
+    if encoding=='empty_reference':movable[np.arange(rows), ref] = False
     state = np.zeros_like(z, dtype=np.int8)
     count = np.zeros(rows, dtype=np.int32)
     output = np.full((rows, samples), -1, dtype=np.int64)
     collected = np.zeros(rows, dtype=np.int32)
     slots = np.zeros(rows, dtype=np.int32)
     invalid = np.zeros(rows, dtype=np.int32)
+    empty_slots = multi_slots = 0
     flips = attempts = phases = 0
     peak_count = phase_invalid = phase_observations = phase_count_sum = 0
     next_obs = np.full(rows,burn+spacing,dtype=np.int32)
@@ -97,7 +105,9 @@ def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
         observe = running & (sweep == next_obs)
         if observe.any():
             slots[observe] += 1
-            legal = observe & (count <= 1)
+            legal = observe & ((count <= 1) if encoding=='empty_reference' else (count==1))
+            empty_slots += int((observe & (count==0)).sum())
+            multi_slots += int((observe & (count>1)).sum())
             invalid[observe & ~legal] += 1
             rr_obs=np.flatnonzero(observe)
             next_obs[rr_obs] += (obs_rng.integers(1,2*spacing,size=len(rr_obs))
@@ -112,12 +122,14 @@ def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
     pairs = mask[:, 1:] & mask[:, :-1]
     stats = dict(kind='finite_penalty_random_partition_parallel_heat_bath',
         kappa='hard_infinity' if hard_inhibit else kappa,
+        encoding=encoding, common_logit_offset=logit_offset,
         hard_inhibit=bool(hard_inhibit),block=block, update_enable_probability=enable,
         rows=rows, candidates=width, samples=samples, burn_sweeps=burn,
         spacing_sweeps=spacing, executed_sweeps=sweep,
         update_phases=phases, attempted_site_updates=attempts, state_flips=flips,
         peak_active_count=peak_count, observation_slots=int(slots.sum()),
         invalid_observation_slots=int(invalid.sum()),
+        empty_observation_slots=empty_slots,multiple_observation_slots=multi_slots,
         invalid_fraction=float(invalid.sum()/max(1, slots.sum())),
         invalid_phase_fraction=phase_invalid/max(1,phase_observations),
         mean_active_count_per_phase=phase_count_sum/max(1,phase_observations),
@@ -125,7 +137,8 @@ def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
         collected_min=int(collected.min()), collected_max=int(collected.max()),
         completed_rows=int((collected == samples).sum()),
         adjacent_repeat_fraction=float(((output[:, 1:] == output[:, :-1]) & pairs).sum()/max(1,pairs.sum())),
-        legal_readout='C=0 reference; C=1 active; C>1 stalls, no address',
+        legal_readout=('C=0 reference; C=1 active; C>1 stalls, no address' if encoding=='empty_reference'
+                       else 'C=1 active; C=0 or C>1 stalls, no address'),
         max_slots=max_slots, failed=bool((collected < samples).any()),
         time_unit='whole sweep; not CTMC time or measured hardware clock',
         iid_fallback=False, physical_PPA=None)

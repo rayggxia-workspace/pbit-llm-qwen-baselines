@@ -1,3 +1,7 @@
+## Issue78发布更新
+
+CPU2600/2601已运行，2602数组18项afterok等待；实际执行源0c0d897，31blob/81KB源码包SHA已记录。任务分支已推送，PR79草稿开放、未合并，Issue78已同步。PPL仍pending，6项远端合同通过；无GPU。
+
 # Issue78：全局广播与有限κ同步/随机分块更新
 
 2026-10-21；jieruiz；task/78-ising-broadcast；base e4990c15b40f664cea7f9db43175b68347ce588b；独立tmp/ising-broadcast-issue78-20261021。有限κ和合法地址服务行为模型已写，6项本地CPU合同测试通过。远端合成/模型PPL尚未执行；准备通过Slurm申请CPU，原FFN、S64 CTMC对照、128目标后缀初筛。无GPU任务改动，无PPA。PR未创建、未推送，Issue78 open；交接work/jieruiz/78/HANDOFF.md。Projects待授权。

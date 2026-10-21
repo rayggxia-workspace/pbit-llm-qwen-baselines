@@ -11,3 +11,11 @@
 准备按Slurm提交CPU诊断、CPU BF16/SDPA门禁和afterok的18配置PPL数组。128目标固定后缀只做初筛，所有24层scored decode替换，原FFN和多token前缀准确；不等于完整WT2。
 
 下一步：封存执行SHA与source包；提交后在本文件追加真实job ID、路径、哈希。核对JSON终态，失败保留null PPL，不用分布指标估造PPL。至少3seed记录，κ选择区分平衡泄漏与动态偏差。Projects历史缺read:project，待有权限后同步；Issue78保持open至PR验收。
+
+## 真实提交与发布（2026-10-21）
+
+执行源0c0d8978908e9232cb94b75ac301a8254f834645，31个Git blob封存为81,056字节包；SHA256 6a33d8c84c56e2b00131b8ec2fcf7a4dd8afac5b6fe10338728fca2939e12fa5。源码和未来修复不可混写。快照位于个人项目snapshots/<SHA>，结果outputs/<SHA>。
+
+CPU Slurm2600诊断、2601 BF16/SDPA门禁已RUNNING；2602_[0-17]%2依赖2601。首次远端日志6项测试通过，诊断进行中；PPL尚pending。提交原件SUBMISSION.json、EXECUTION_SOURCE.json。
+
+分支已推送正式workspace；草稿PR79已创建并关联本聊天，待结果核验，未合并。Issue78已同步。Git默认OpenSSL TLS失败，使用单命令http.sslBackend=schannel且http.proxy=推送成功，没有修改全局Git设置。

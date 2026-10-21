@@ -1,3 +1,9 @@
+# 本轮发布状态：结果已同步Issue，文件仍待网络恢复推送
+
+2026-10-21T08:35:15Z；jieruiz。OFFSET_PUBLICATION.json核实本地科学head0455d0d6b0a863f0bf3136446d9d9c5f28139b9f，远端仍d6d0f321b6c5eee7c334b7bb0f1e3d070d299304。普通Git push长时间无进度后停止，重试返回低速超时；GitHub API可用，PR79说明和Issue78评论已如实更新数字及未上传状态。没有凭据或权限变化，Projects仍待权限。
+
+144条原件/报告/源在本地已提交，CPU2628已完成且无需重交；下一步网络恢复后普通push workspace task/78-ising-broadcast，核对head及offset_diagnostic.json blob SHA6a628a537e110e6c489ad0b967fa35f7acb959a0ab2c6ad282b35cef1e57ab8c，再更新发布回执。PR仍草稿未合并；不把本地结果写成远端文件已完成。
+
 # 最新：公共偏移预设/固定/复用对照完成
 
 2026-10-21；jieruiz；Issue78/PR79，task/78-ising-broadcast，独立tmp/ising-broadcast-issue78-20261021。CPU2628源820ad7efa824b09482be52fe2df0db73bf1a70cf完成19合同、144条分布重放（含明确cap失败）；源码blob核验通过，无新PPL/GPU/PPA，默认未改。

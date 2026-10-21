@@ -1,5 +1,9 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-20 四条训练路线讨论入口
+
+用户要求将W8短流FFN、三投影tanh激活、四子块分数输入的p-bit随机筛选网、有限Ising观测适应整理为服务器讨论稿。Issue76入口architecture_tlm/training_plans/four_tracks_20261020/TRAINING_PLAN_ZH.md，含Word与PLAN。按可信训练收益难度3→1→4→2；第3条沿用原始variable输出，fixed8是当前联合PPL评测配置而非用户架构要求。稿件只有计划和文档验证，没有训练任务或新质量/PPA结果；资源、数据版本、质量与容量约束待执行前冻结。其他研究建议未写入方案。
+
 更新日期：2026-10-20。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19已实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`，实际合并回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)；Issue59记忆追加[PR64](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/64)已实际合并`679fd269ecaa4883bd79619d2f39d6ade2a7daca`；研究PR63已合并`4f2d953395a7335e0f15b0546c91cdac73c81169`。旧任务索引保留日期并由第12.1节更新。
 
 本文件保存项目目标、用户决策、算法分支、实验口径、架构与证据入口，用于长对话压缩、换会话或换人后的恢复。它不替代原始结果、manifest、最新 Issue/PR 和运行日志。历史讨论不等于已实现；以下明确区分已验证、情景估计和待验证。
@@ -17,6 +21,8 @@
 > 2026-10-20 17:40 Issue73更新：旧2572三项FFN-only初始化OOM，失败日志保留、只撤回15个尚未执行FFN项；健康8项保留。新309ca9c无损把W8码INT16存储压为INT8，FP32恢复/算术/RNG不变、省4.03GiB；CPU2583七项通过，GPU2584待资源，18项补跑2585依赖其成功（尚未完成GPU验证）。请求/模板/Harness一致，最终8旧+18新=26唯一项。PIQA原BF16正式完成；其余分数未齐。预计1卡40～55h/较快2卡22～32h。用户要求的本对话heartbeat llama2-7b已设每24h，首检预计10/21 17:35北京时间，核验完成后停用；本地关机不能SSH、即时补跑未保证。恢复先读work/jieruiz/73/HANDOFF.md最新顶部，不重交健康任务。
 
 > 2026-10-20 Issue73/PR75：Llama2-7B代表任务已启动。PIQA1838/ARC-E2376全量，各BF16＋FFN-only三seed＋Attention S128三seed＋联合S128/S512各三seed，共26项。冻结022db6828c0caba96ae3d620f80b27c1ae3774b9；CPU2570六项与GPU2571完整WT2 BF164.9795028452/335686目标、独立cached评分0差/SDPA等价/真实7B概率pilot通过。正式Slurm2572_[0-25]已运行，分数pending；不重交。FFN为B4/T32/K32共享64，Attention短题保留all K、仅计分token32层decode替换，前缀准确。Apple PR67既有FP32双模型完整基线仅复用索引；不是p-bit或Llama同权重因果对照。源码experiments/llama2_task_accuracy_20261020；结果llama2/results/task_accuracy_20261020；交接work/jieruiz/73/HANDOFF.md；PR75 draft/open未合并。
+
+> 2026-10-20最新审核：本轮PR49/52/62/67/69/71/72已全部实际合并；科学集成18b887bd2d0cd6c06d070d8dafaf8b979742fdcf。旧完整WT2“仍运行/未收齐”已经过时，现有25项完整结果与39项任务准确率均已核验发布；仅3项B4T16联合是用户授权取消。恢复先看新增§5.7.2、§5.8.2及§12.0，不重跑已完成矩阵。研究实现/如实结果验收不等于质量无损或PPA验收。
 
 1. 目标是利用物理随机源/p-bit降低LLM的能量、面积，同时保持可接受的质量与速度；不能为了利用随机源就假定随机计算一定胜过定点计算。
 2. 正式仓库是 `rayggxia-workspace/pbit-llm-qwen-baselines`，当前主要集成分支为 `pbit-tlm-attention-details-20261016`。`main` 和历史个人仓库都可能落后。2026-10-19 PR47按用户授权实际合并后，集成提交为 `bef83e54b9da0081c51f393044d2156ce11a34b9`；其Git树与已审核head `5518a0a23e2bfec2b428542a9e4ce94b27c78d4a` 相同。
@@ -324,6 +330,16 @@ dynamic64仅改细K64为11.768589±0.003298，K128为11.700228±0.000201。单Po
 
 经后缀审阅，Slurm2461已提交6项B4T32 S256/S512各3seed完整cached确认（299077目标、2048/1024、batch32），复用53dd已验证实际显存门禁并校验数值内核未变；旧Slurm2430的S128和匹配BF16/FFN-only继续运行，不重复提交。**两组完整联合任务均未收齐**；恢复按work/jieruiz/50/HANDOFF.md核实2430/2461、按同full目标SHA合并对照，不把后缀或启动任务写成完整完成。PR52仍草稿未合并，Issue50保持open，Projects权限待同步。
 
+### 5.7.2 完整WT2确认已收齐并核验（2026-10-20，已合并）
+
+Issue50既有2430/53dd与2461/c0fd已收得25份封存完整结果；原22格仅3个B4T16联合S128 seed在pending时依用户授权取消，取消回执原字节保留。最佳B4T32 S128/256/512各3seed、FFN-only与matched cached BF16全部齐全，不再将旧“运行/未收齐”当作实时状态，也不重复提交GPU。新独立成果入口qwen/results/joint_full_wt2_20261020/，旧后缀报告原件保持历史。
+
+完整计分299078测试token、299077目标、window2048/stride1024/batch32。matched cached BF16 11.652118068；B4T32-only 11.732192±0.001821；B4T32联合S128/256/512分别12.423820±0.002870、12.274153±0.005388、12.207062±0.001103（PPL逐seed算术均值±总体SD）。相对BF16的mean-NLL几何PPL变化约+6.623%/+5.338%/+4.763%，不能混作4096目标后缀或以5%阈值宣布等价。S256/S512缺同预算原FFN完整Attention-only控制，交互NLL不可计算。
+
+原FFN Attention-only S128三seed完整12.318676±0.005035可供PR49同源代表性确认；没有原FFN S512完整原件，不泛化为六档完整曲线。49/50 model config解析JSON相同，681B LF与709B CRLF原字节不同；权重/文本/token及四个Attention核心同源，其他tokenizer元数据字节差异照实披露。准备fresh vectorized BF16 11.652735与真实B16/B32显存pilot仅作环境门禁，质量对照用本轮cached BF16。
+
+25配置SHA、两执行94个joint/30个底层公开source blob、7300段NLL和全部24层FFN/Attention调用通过；35个门禁锁定依赖不变。本轮没有新模型推理或GPU作业、无快照修改；原始JSON用-text保留字节。实时2430/2461队列空，scontrol记录过期且sacct storage disabled，因此完成依据为封存completed/严格计分审计，不伪称取得Slurm历史终态。PR52已实际合入集成3b74375b07d16a2cb3e5d5b8ae7ceb825031472c；PR49代表性确认已合入18b887bd2d0cd6c06d070d8dafaf8b979742fdcf，Issue48/50按本任务范围验收关闭。
+
 ## 5.8 代表任务准确率与Ising次数：Issue59 / PR62（2026-10-19）
 
 用户要求在PPL之外检查实际任务，不能将PPL增加直接等价为准确率明显下降。独立任务[Issue59](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/59)，目录`tmp/qwen-task-accuracy-issue59-20261019/`，分支`task/59-qwen-task-accuracy`；[PR62](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/62)截至本次记录为draft、未合并，base为`task/50-joint-ffn-attention`，依赖尚未合并的PR52，不是已进入集成的任务结果。
@@ -548,6 +564,13 @@ LLaMA-1当前标准82项TLM，Llama2为116项，涵盖Link/DRAMSys和多上下�
 
 ## 12 远端任务与交接索引
 
+### 12.0 2026-10-20 第三轮7项PR审核与实际合并
+
+- 用户授权继续审核补全结果及新PR。PR69 bc9f96d、PR71 b5e04f8、PR67 e96e54d、PR72 650c6b2、PR52 3b74375、PR49 18b887b已合入集成；PR62先入PR52任务分支992c693，再由PR52实际进入集成，不误报子PR最初的目标。
+- Issue50完整2430/2461现有25项已补发qwen/results/joint_full_wt2_20261020；只有3项B4T16联合授权取消。三seed B4T32 S128/256/512完整12.423820/12.274153/12.207062，对matched BF16 11.652118；S256/512无同预算原FFN full控制，交互不可计算。PR49仅S128三seed代表性完整确认，其他S仍后缀。
+- PR62的39项结果/逐题统计、PR67两模型各19965题和完整WT2、PR71 v1论文/数学、PR69恢复归档分别核验通过。Issue48/50/59/65/68/70已按各自范围关闭；Issue28继续维护。无新GPU、训练或PPA，无快照改写。Projects本轮GraphQL实测仍缺read:project，仓库admin/push及7次合并已成功，不能混为仓库权限不足。
+- 完整审核与原生head/base/merge-parent回执位于work/jieruiz/55/round3，交付归Issue55。本轮仅一个稀疏review目录，原件/脚本/独有资料按SHA归档至project_archives/pr_review_issue55_20261020后回收本轮helper；长期canonical/root副本保持同字节。canonical先前12行未提交清理增量先保留原字节与patch，且在新文档中完整保留，不reset/stash或覆盖其他成员。
+
 ### 12.1 2026-10-19 待审PR审核与实际合并回执
 
 用户授权按最新GitHub内容审核并合并。下表为Issue55本批实际回执；后面的旧索引保留为历史快照，不能据其“待审”文字撤销已发生的合并。PR47由此前单独审核合并。
@@ -685,3 +708,27 @@ Issue65结果追加：原始FP32完整WT2 Softmax5.911825276082767、Sigmoid5.88
 Issue65于2026-10-20收齐：GPU2542原始终态COMPLETED/0:0，2543应用收尾无缺失；原始FP32两模型每模型完整六任务19,965题，raw acc均值Softmax63.692864%、Sigmoid64.823195%，PPL5.911825/5.886073。正式原件、模板、69项服务器索引及验证报告见results/apple_sigmoid_7b_eval_20261019。上传状态以PUBLICATION/PR67为准；BF16及p-bit/PPA未验证，不继承其结论。不重交已完成作业。
 
 Issue65完整结果已上传011d46029772bb4b4e17811582a116907318ec46，PR67已转待评审、未合并，Issue65清单已同步。看板状态PENDING；精确发布回执见work/amlink1219/65/PUBLICATION.json。
+
+## 2026-10-21 全局广播有限κ/伪异步验证（Issue78/PR79）
+
+用户要求实际比较全同步、随机分块与原S64理想CTMC。独立task/78-ising-broadcast，目录tmp/ising-broadcast-issue78-20261021；数值源0c0d8978908e9232cb94b75ac301a8254f834645，分析344498a。公式E=κ*C*(C-1)/2-Σdelta*s，以最大logit为空参考；κ12/16在tanh输入中须除2。原FFN、准确前缀、24层scored decode；CPU Slurm2600/2601/2608已完成诊断/原BF16门禁/真实分数重放，2602数组18配置仍运行、2609结束后自动汇总，不重交。405合成/48真实重放及9合同通过。真实42行最大位置目标29.91%，全同步87.55%、随机块16约31.71%、块4约30.63%，κ12/16几乎相同；稀疏使能降低偏差但相关更强。128目标后缀BF1620.212326、原CTMC64三seed23.159115±0.418371；全同步目前两seed82.224259/129.479031，剩13项pending。不能把这当完整WT2、ASIC周期或2K全候选PPL（模型筛后最多512，2K仅合成压力）。来源qwen/results/ising_broadcast_20261021/、work/jieruiz/78/HANDOFF.md；PR79草稿已推送未合并，Issue78 open；原Issue73作业不动，Projects待权限。
+
+
+### 2026-10-21 κ无穷硬抑制（Issue78续）
+
+用户提出直接无限抑制。当前空参考编码允许C=0/1，更新规则为其他位`C-s_i>=1`时写0，否则sigmoid(delta)；唯一活跃位不得因自身被清除。随机单点精确转移验证保持Softmax；原CTMC本已有硬排斥。反馈可用any1/multi1两标志树归约和广播，不能因此把反馈时延计零或宣称可任意同步。Slurm2623以独立源2fefbb019b1b68369e7ed04932184e464fb99fa1完成42真实行×5调度×3seed配对重放，11合同通过。全同步/块64/16/4与κ16输出地址均100%相同，块64+1/8使能最小97.32%；全同步偏差不改善。这里只是分布重放、无新硬模式PPL或RTL/PT。结果DIAGNOSTICS_ZH.md及HARD_MANIFEST.json；私有捕获SHA2b6c5d851f761fc3d9749e02c9f438db6180afa4e17915f45a3d56ac8d7cb740。原18项PPL快照/任务不变，PR79仍草稿未合并。
+
+
+### Issue78本轮最终运行/发布状态（2026-10-21）
+
+18/18 CPU128目标PPL和2609自动汇总已完成、0失败，collect.py独立重放报告/汇总逐字节通过，26原件SHA索引。CTMC S64均值23.159115，块16κ12为22.621586、块16κ16为22.891973、全同步104.556286；不能把小样本块16较低视为普遍优越或完整WT2。Slurm2623硬无穷分布重放完成，暂无新增硬模式PPL。κ无穷与完整汇总在本地task/78分支已提交；本轮Git push因连接重置暂未完成，远端仍1eb01032，必须核验后补推，不能宣称这些新文件远端已完成。Issue78/PR79仍open/draft，Projects待权限；本任务无运行作业，不重交。
+
+
+### Issue78少块数与多1冲突，2026-10-21
+
+用户决定纯单1编码若增加等待就不继续，保留原空参考，重点少块数和块内并行。2624/2625的60项重放保留：512真实16/32块全收齐、2/4/8未齐；2K平坦32才齐，未做one-hot PPL。新源e52570d40d49013f11c6f3d3d16de9b20dfc9e3d实现不同规则：q_i=sigmoid(delta_i-m ln2)，独立全并行提议；单1接受、多1拒绝、全0以r=2^-m接受参考，拒绝后调m。证明每轮接受权重Cr*[1,exp(delta)]，任意拒绝历史选择m不改目标。可全局1逻辑块，属于直接类别拒绝采样，不是全同步Ising/Gibbs；无需旧burn/spacing，但器件独立性/响应精度仍待验。
+
+Slurm2626完成19合同和18分布记录。S64三seed每地址提议均值：真实512候选2.223轮、2K平坦3.384、尖峰1.000；S2048分布TV接近同预算IID。无新PPL、有限8位概率或硬件PPA，不能用轮数当ASIC时钟。8位均匀比较器小概率/共享门限相关性是下一步限制；不能照搬FFN共享64。报告qwen/results/ising_broadcast_20261021/REJECTION_ZH.md和REJECTION_MANIFEST.json。旧编码/模型默认不变。网络恢复已补push至5e18cc5，之前“未推送”时点过时；本轮新结果发布以PR79最新head为准，仍草稿未合并。无本任务运行作业，不重交。
+
+
+Issue78发布回执（2026-10-21 08:06 UTC）：科学head9b88a8da8d67450ae646372b2278deef33557889已推送workspace，one-hot两原件与rejection原件的GitHub blob字节SHA核验通过，详见work/jieruiz/78/REJECTION_PUBLICATION.json。PR79仍草稿未合并；此前“待上传/网络阻塞”已解除。无新模型PPL或PPA结论，不重交已完成CPU作业。

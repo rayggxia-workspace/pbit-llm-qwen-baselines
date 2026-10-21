@@ -1,5 +1,9 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-20 四条训练路线讨论入口
+
+用户要求将W8短流FFN、三投影tanh激活、四子块分数输入的p-bit随机筛选网、有限Ising观测适应整理为服务器讨论稿。Issue76入口architecture_tlm/training_plans/four_tracks_20261020/TRAINING_PLAN_ZH.md，含Word与PLAN。按可信训练收益难度3→1→4→2；第3条沿用原始variable输出，fixed8是当前联合PPL评测配置而非用户架构要求。稿件只有计划和文档验证，没有训练任务或新质量/PPA结果；资源、数据版本、质量与容量约束待执行前冻结。其他研究建议未写入方案。
+
 更新日期：2026-10-20。负责人：GitHub `jieruiz`。本次整理任务：[Issue 28](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/28)，通过 [PR 29](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/29)交付，2026-10-19已实际合并`20a2565e0465846891c0a4ad0976e4395e7d3ecf`，实际合并回执见[Issue55](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/55)；Issue59记忆追加[PR64](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/64)已实际合并`679fd269ecaa4883bd79619d2f39d6ade2a7daca`；研究PR63已合并`4f2d953395a7335e0f15b0546c91cdac73c81169`。旧任务索引保留日期并由第12.1节更新。
 
 本文件保存项目目标、用户决策、算法分支、实验口径、架构与证据入口，用于长对话压缩、换会话或换人后的恢复。它不替代原始结果、manifest、最新 Issue/PR 和运行日志。历史讨论不等于已实现；以下明确区分已验证、情景估计和待验证。

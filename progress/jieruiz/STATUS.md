@@ -1,3 +1,7 @@
+# Issue78：诊断完成，S64 PPL对照部分完成
+
+2026-10-21T07:12:29.385386+00:00；jieruiz；task/78-ising-broadcast；PR79草稿待审未合并。9项CPU合同通过；Slurm2600/2601/2608完成。已发布5/18个128目标PPL：BF1620.212326，CTMC三seed均值23.159115，全同步两seed82.224259/129.479031。随机分块仍运行，2602并发6、2609后续自动汇总，无GPU。正式qwen/results/ising_broadcast_20261021，交接work/jieruiz/78/HANDOFF.md；所有完整WT2/PPA仍未做，Issue78 open，Projects待权限。
+
 ## Issue78发布更新
 
 CPU2600/2601已运行，2602数组18项afterok等待；实际执行源0c0d897，31blob/81KB源码包SHA已记录。任务分支已推送，PR79草稿开放、未合并，Issue78已同步。PPL仍pending，6项远端合同通过；无GPU。

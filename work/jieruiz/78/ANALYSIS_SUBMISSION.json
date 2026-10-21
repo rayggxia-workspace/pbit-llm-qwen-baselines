@@ -1,0 +1,38 @@
+{
+  "issue": 78,
+  "analysis_commit": "344498a6d1867cb637d6d0955a37a9c283357251",
+  "numerical_commit": "0c0d8978908e9232cb94b75ac301a8254f834645",
+  "real_diagnostic_job": "2608",
+  "collector_job": "2609",
+  "commands": [
+    [
+      "/opt/slurm/21.08.8/bin/sbatch",
+      "--parsable",
+      "--partition=gpu5090",
+      "--cpus-per-task=2",
+      "--mem=4G",
+      "--time=01:00:00",
+      "--export=ALL",
+      "--job-name=ising78-real",
+      "--dependency=afterok:2602_0",
+      "--output=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/real-%j.log",
+      "--error=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/real-%j.err",
+      "--wrap=/home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python -B -u /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/snapshots/344498a6d1867cb637d6d0955a37a9c283357251/experiments/qwen_ising_broadcast_20261021/diagnose_real.py --capture /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/0c0d8978908e9232cb94b75ac301a8254f834645/ctmc_input_logits_private.npz --output /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/0c0d8978908e9232cb94b75ac301a8254f834645/real_logits_diagnostic.json"
+    ],
+    [
+      "/opt/slurm/21.08.8/bin/sbatch",
+      "--parsable",
+      "--partition=gpu5090",
+      "--cpus-per-task=2",
+      "--mem=4G",
+      "--time=01:00:00",
+      "--export=ALL",
+      "--job-name=ising78-collect",
+      "--dependency=afterany:2600:2602:2608",
+      "--output=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/collect-%j.log",
+      "--error=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/collect-%j.err",
+      "--wrap=/home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python -B /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/snapshots/344498a6d1867cb637d6d0955a37a9c283357251/experiments/qwen_ising_broadcast_20261021/collect.py --input /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/0c0d8978908e9232cb94b75ac301a8254f834645 --output /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/0c0d8978908e9232cb94b75ac301a8254f834645/collected"
+    ]
+  ],
+  "collector_tests": "3 passed on remote CPU"
+}

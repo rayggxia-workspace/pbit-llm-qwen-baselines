@@ -700,3 +700,7 @@ Issue65结果追加：原始FP32完整WT2 Softmax5.911825276082767、Sigmoid5.88
 Issue65于2026-10-20收齐：GPU2542原始终态COMPLETED/0:0，2543应用收尾无缺失；原始FP32两模型每模型完整六任务19,965题，raw acc均值Softmax63.692864%、Sigmoid64.823195%，PPL5.911825/5.886073。正式原件、模板、69项服务器索引及验证报告见results/apple_sigmoid_7b_eval_20261019。上传状态以PUBLICATION/PR67为准；BF16及p-bit/PPA未验证，不继承其结论。不重交已完成作业。
 
 Issue65完整结果已上传011d46029772bb4b4e17811582a116907318ec46，PR67已转待评审、未合并，Issue65清单已同步。看板状态PENDING；精确发布回执见work/amlink1219/65/PUBLICATION.json。
+
+## 2026-10-21 全局广播有限κ/伪异步验证（Issue78/PR79）
+
+用户要求实际比较全同步、随机分块与原S64理想CTMC。独立task/78-ising-broadcast，目录tmp/ising-broadcast-issue78-20261021；数值源0c0d8978908e9232cb94b75ac301a8254f834645，分析344498a。公式E=κ*C*(C-1)/2-Σdelta*s，以最大logit为空参考；κ12/16在tanh输入中须除2。原FFN、准确前缀、24层scored decode；CPU Slurm2600/2601/2608已完成诊断/原BF16门禁/真实分数重放，2602数组18配置仍运行、2609结束后自动汇总，不重交。405合成/48真实重放及9合同通过。真实42行最大位置目标29.91%，全同步87.55%、随机块16约31.71%、块4约30.63%，κ12/16几乎相同；稀疏使能降低偏差但相关更强。128目标后缀BF1620.212326、原CTMC64三seed23.159115±0.418371；全同步目前两seed82.224259/129.479031，剩13项pending。不能把这当完整WT2、ASIC周期或2K全候选PPL（模型筛后最多512，2K仅合成压力）。来源qwen/results/ising_broadcast_20261021/、work/jieruiz/78/HANDOFF.md；PR79草稿已推送未合并，Issue78 open；原Issue73作业不动，Projects待权限。

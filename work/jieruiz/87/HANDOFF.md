@@ -1,3 +1,11 @@
+# Issue87 交付回执：PR88草稿已上传、未合并
+
+2026-10-22；jieruiz；task/87-parallel-sampler-tlm。科学交付head8687c1d8124af192e82ec13aa3dbe12ccaa240b7已推送workspace，PR88草稿开放未合并；两个采样器、公共接口、中文说明、结果报告及验证文件6份远端原字节SHA已读回核验，详见work/jieruiz/87/REMOTE_VERIFY.json和PUBLICATION.json。
+
+18新＋10旧检查通过，执行f6c6bd8；30三seed合成模块＋2单层decode连通完成。全宽候选一次读取、随机源后端未定；未知完整能量/面积null，不冒充PPL/PT/DRAMSys或实际源结果。下一步填源/数字模块成本或做真实模型质量与调度验证，现阶段等待PR评审；Issue87保持open，不自动合并。看板本轮未写，沿既有权限限制待同步；Issue73/78作业不改。
+
+以下为此前阶段记录，待发布描述不代表当前阻塞：
+
 # Issue87 全候选并行采样器 TLM 交接
 
 2026-10-21；负责人jieruiz；分支task/87-parallel-sampler-tlm；base为集成分支pbit-tlm-attention-details-20261016@5b26c80c28ab22383f12ab31046dd723ca985abb。独立稀疏目录tmp/parallel-sampler-issue87-20261021。目标仅rayggxia-workspace/pbit-llm-qwen-baselines。

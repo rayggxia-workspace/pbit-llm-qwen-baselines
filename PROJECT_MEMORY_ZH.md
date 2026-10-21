@@ -839,3 +839,6 @@ Issue78本轮最终发布核验完成：PR86草稿开放未合并，最终head 4
 用户明确要求候选N路足量一次读取，随机源前端先不决定。独立task/87-parallel-sampler-tlm，base5b26c80，稀疏tmp/parallel-sampler-issue87-20261021；未接管amlink1219的Issue37。新增winner_hold_tlm_v5.py/corrected_rejection_tlm_v5.py，共用parallel_sampler_v5.py后端无关源接口，并经screen_parallel_tlm_v5.py接回完整decode。每查询赢家N路、拒绝N−1路并行；公平随机辅助单独统计，不能套FFN同阈值64共享。阻塞单帧FSM计源服务/间隔、计数/均匀仲裁、空态2^-m校正、偏移重写或共享标量、单项输出回压；不是一拍完成更新。
 
 执行f6c6bd8215c2d702ab42e6a3078f64e0888cade8，18新＋10旧检查通过，30三seed合成模块和2单层decode情景完成；结果architecture_tlm/results/parallel_sampler_v5_20261021，说明architecture_tlm/PARALLEL_SAMPLERS_V5_ZH.md，交接work/jieruiz/87/HANDOFF.md。不是PR86全部真实QKV重放/完整PPL/Slurm/PT或DRAMSys实测；未知完整能量/面积null，时序为明确资源参数的情景。v4原默认保留，只加3扩展点。代码本地完成，推送/PR状态以Issue87最终回执为准；旧Issue73/78作业不改。
+
+
+Issue87发布回执（2026-10-22）：科学head8687c1d8124af192e82ec13aa3dbe12ccaa240b7已上传workspace；PR88草稿开放未合并，6份关键模块/中文说明/报告/验证文件的GitHub原始blob逐SHA-256读回一致。PUBLICATION和REMOTE_VERIFY在work/jieruiz/87/；后续仅交付状态元数据，实验执行仍f6c6bd8。上方待推送描述为历史，无用户待处理权限阻塞；看板沿既有限制未同步。Issue87保持open，源后端/真实能耗面积与新模型质量仍待后续标定，未调用新Slurm或改Issue73/78任务。原型36文件已逐SHA压缩核验至本地project_archives/parallel_sampler_issue87_20261021/prototype_before_f6c6bd8.zip（SHA1c6ae1c9367f4e67634283fc68c5d31c4ee35e0187d11f3e7a7edaf24503bb51），原型目录回收，当前仅最小稀疏任务工作树。

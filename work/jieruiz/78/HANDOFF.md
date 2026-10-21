@@ -1,3 +1,7 @@
+# 发布回执：真实QKV比较已推送PR86
+
+2026-10-21T13:41:36.925189+00:00；jieruiz；task/78-sampler-qkv-benchmark。科学head346bbb12f1181ab1b974940d79f052d0757fec80已按相同Git commit/tree/blob实际上传，草稿PR86开放未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/86 。90/90统计与报告齐全；本次仅补发布回执，科学结果不改。原始QKV/长曲线留服务器，无本任务运行作业。Issue78保持open，Projects本轮未写。最终分支head与远端字节核验见Issue78最新回执；下方待发布字样是此前阶段状态。
+
 # 最新：真实QKV采样器比较已完成，独立分支交付
 
 2026-10-21T13:37:45.944700+00:00；jieruiz；task/78-sampler-qkv-benchmark。90/90配置、三seed×八重复完成，固定行输出MSE与更新/随机服务成本，非PPL/PPA。正式入口qwen/results/sampler_qkv_20261021/DECISION_ZH.md；最新交接work/jieruiz/78/qkv_benchmark/HANDOFF.md，原件/源码/命令见同目录manifest和回执。结果待本次任务分支/PR发布核验；原PR82和其他作业不改。本任务无运行作业。以下保留此前阶段原文：

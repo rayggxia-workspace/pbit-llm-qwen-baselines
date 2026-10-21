@@ -1,0 +1,41 @@
+{
+  "issue": 78,
+  "code_commit": "0c0d8978908e9232cb94b75ac301a8254f834645",
+  "archive_sha256": "6a33d8c84c56e2b00131b8ec2fcf7a4dd8afac5b6fe10338728fca2939e12fa5",
+  "snapshot": "/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/snapshots/0c0d8978908e9232cb94b75ac301a8254f834645",
+  "jobs": {
+    "diagnose": "2600",
+    "prepare": "2601",
+    "worker": "2602"
+  },
+  "commands": [
+    [
+      "/opt/slurm/21.08.8/bin/sbatch",
+      "--parsable",
+      "--export=ALL",
+      "--output=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/diagnose-%A_%a.log",
+      "--error=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/diagnose-%A_%a.err",
+      "/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/snapshots/0c0d8978908e9232cb94b75ac301a8254f834645/experiments/qwen_ising_broadcast_20261021/run.sbatch"
+    ],
+    [
+      "/opt/slurm/21.08.8/bin/sbatch",
+      "--parsable",
+      "--export=ALL",
+      "--output=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/prepare-%A_%a.log",
+      "--error=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/prepare-%A_%a.err",
+      "/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/snapshots/0c0d8978908e9232cb94b75ac301a8254f834645/experiments/qwen_ising_broadcast_20261021/run.sbatch"
+    ],
+    [
+      "/opt/slurm/21.08.8/bin/sbatch",
+      "--parsable",
+      "--export=ALL",
+      "--output=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/worker-%A_%a.log",
+      "--error=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/worker-%A_%a.err",
+      "--dependency=afterok:2601",
+      "--array=0-17%2",
+      "/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/snapshots/0c0d8978908e9232cb94b75ac301a8254f834645/experiments/qwen_ising_broadcast_20261021/run.sbatch"
+    ]
+  ],
+  "resource": "CPU only; no GPU requested",
+  "scope": "128-target suffix actual forward; not full WT2"
+}

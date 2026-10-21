@@ -1,3 +1,57 @@
+# 发布回执：本轮已推送并核验
+
+2026-10-21T08:06:14Z；jieruiz；Issue78/PR79，task/78-ising-broadcast；科学head9b88a8da8d67450ae646372b2278deef33557889已推送正式workspace，三份新原件GitHub blob字节/SHA与服务器索引一致。PR仍draft/open、未合并；看板仍待read:project权限。回执work/jieruiz/78/REJECTION_PUBLICATION.json。无本任务运行作业，不重交；下一步是有限概率精度/模型PPL/PPA，不把理想分布轮数当硬件时钟。下方“待推送/网络失败”均为历史时点，已由本回执覆盖。
+
+# 最新：保留空参考，单块并行提议与正确冲突重采样已验证
+
+2026-10-21T08:04:07.351623+00:00；jieruiz；Issue78/PR79，task/78-ising-broadcast，base e4990c15b40f664cea7f9db43175b68347ce588b，独立tmp/ising-broadcast-issue78-20261021。
+
+用户已明确：纯单1编码若增加等待则不继续，重点解决块内并行、多1冲突和最少块数。未提交one-hot PPL，run_model默认未改。2624/2625的60项one-hot/旧编码重放保留负面证据：真实512下2/4/8块不全完成、16/32完成；2K平坦32块才完成，不能当最优块数或质量验收。
+
+新源e52570d40d49013f11c6f3d3d16de9b20dfc9e3d的2626完成：19合同、18分布重放记录全部通过；3seed S64平均每地址提议真实512为2.223、2K平坦3.384、2K尖峰1.000。S2048验证与IID噪声接近。全局1块、独立重新提议；多1拒绝，单1接受，零态以r=2^-m接受参考；公共偏移m由此前拒绝历史调节。精确枚举证明成功类别为Softmax，不是原全同步Gibbs。无新模型PPL、有限8位概率、RTL/PT/PPA验证；不能把提议轮数当时钟。源码/原件/manifest在正式实验和qwen/results/ising_broadcast_20261021/REJECTION_ZH.md。输入NPZ仍私有，源blob逐项及原件SHA4a817614...核对通过。
+
+Git网络已恢复；之前未推送的硬抑制与18项PPL、one-hot执行源5e18cc5已普通push成功（从1eb0103到5e18cc5），旧“未推送”是历史时点。本轮新结果待本次commit/push后核验，再更新Issue/PR；PR仍草稿未合并，Projects缺read:project待同步。无本任务运行作业，不重交。
+
+下一步：先测概率量化和完整模型PPL，再改默认；需要硬件仿真时拆出全局any/multi/m反馈及优先编码/驱动延迟。没有模型权重/训练改动，其他成员任务不动。
+
+以下保留历史时点：
+
+# 最新终态：18项PPL和硬无穷重放已核验，本轮推送待网络恢复
+
+2026-10-21；负责人jieruiz，Issue78/PR79。Slurm2602全部18项completed，0失败；2609自动汇总完成，独立重放collect.py与服务器SUMMARY/RESULTS逐字节一致，原件26文件SHA已索引。128目标CPU后缀初筛：BF1620.212326；CTMC S64 23.159115±0.418371；同步104.556286±23.733673；块64κ12 24.501808±0.482373；块16κ12 22.621586±0.407899；lazy64κ12 27.912856±2.032967；块16κ16 22.891973±0.917848。都是3seed，不是完整WT2、PPA或硬无穷PPL；不因块16在小样本低于CTMC就宣称普遍更优。
+
+硬无穷Slurm2623也完成，原始分数15组配对和11合同见下。数值源0c0d897、分析344498a、硬抑制2fefbb0均保持不可变。当前无本任务运行作业，无需重交。
+
+本轮κ无穷实现/原件以及18项完整汇总已在本地任务分支完成，但Git HTTPS直连/代理/TLS后端多次连接重置，最新GitHub仍为1eb01032c3f5e0390e730172f66374fc58e209b8；不可声称本轮文件已上传。GitHub API可用，Issue/PR将单独同步这个阻塞。下一步网络恢复后普通push workspace task/78-ising-broadcast，核对远端head及manifest blob字节，再更新PR79/Issue78发布状态。PR仍草稿未合并，Projects缺read:project待同步。
+
+以下保留早期时点，不作为最新状态：
+
+# 最新：κ无穷硬抑制对照已完成
+
+2026-10-21T07:28:57.253117+00:00；Issue78/PR79，jieruiz，草稿未合并。
+
+硬更新排除自身：其他位有1时强制0，否则按sigmoid(delta)采样。空状态为最大类别，随机单点精确转移保持Softmax；不能混用禁止空态的强制one-hot编码。两位any/multi广播可以替代数值κ计数，仍需RTL/PT定时验证。
+
+Slurm2623完成；独立执行2fefbb019b1b68369e7ed04932184e464fb99fa1，12KB源码包、旧私有捕获SHA及命令见HARD_SOURCE/HARD_SUBMISSION。11项本地/远端合同通过；15组配对真实重放（42行、5调度、3seed、S64），全同步及块64/16/4与κ16地址100%相同，lazy最小97.32%。硬化不修复同步冲突，未新增硬模式PPL/RTL/PPA。
+
+正式小JSON与字节SHA：qwen/results/ising_broadcast_20261021/HARD_MANIFEST.json。原数值0c0d897和18项PPL快照没有改写。2623无需重交；继续核对2602/2609终态。完整WT2/PPA仍未做，Projects缺read:project待同步。
+
+以下保留先前时点：
+
+# Issue78：诊断完成，S64 PPL对照部分完成
+
+2026-10-21T07:12:29.385386+00:00；jieruiz；task/78-ising-broadcast；PR79草稿待审未合并。9项CPU合同通过；Slurm2600/2601/2608完成。已发布5/18个128目标PPL：BF1620.212326，CTMC三seed均值23.159115，全同步两seed82.224259/129.479031。随机分块仍运行，2602并发6、2609后续自动汇总，无GPU。正式qwen/results/ising_broadcast_20261021，交接work/jieruiz/78/HANDOFF.md；所有完整WT2/PPA仍未做，Issue78 open，Projects待权限。
+
+## Issue78发布更新
+
+CPU2600/2601已运行，2602数组18项afterok等待；实际执行源0c0d897，31blob/81KB源码包SHA已记录。任务分支已推送，PR79草稿开放、未合并，Issue78已同步。PPL仍pending，6项远端合同通过；无GPU。
+
+# Issue78：全局广播与有限κ同步/随机分块更新
+
+2026-10-21；jieruiz；task/78-ising-broadcast；base e4990c15b40f664cea7f9db43175b68347ce588b；独立tmp/ising-broadcast-issue78-20261021。有限κ和合法地址服务行为模型已写，6项本地CPU合同测试通过。远端合成/模型PPL尚未执行；准备通过Slurm申请CPU，原FFN、S64 CTMC对照、128目标后缀初筛。无GPU任务改动，无PPA。PR未创建、未推送，Issue78 open；交接work/jieruiz/78/HANDOFF.md。Projects待授权。
+
+以下保留原进度时点：
+
 # Issue55第三轮：7项PR审核已完成，结果已实际合并
 
 2026-10-20；jieruiz；review/55-pr-round3；tmp/pr55-review-20261020单个稀疏目录；科学集成18b887bd2d0cd6c06d070d8dafaf8b979742fdcf。49/52/62/67/69/71/72均已合并，62先入52任务分支再由52进集成。服务器25项完整WT2已回收核验发布，39项代表任务逐题重算通过；旧“仍运行/未完成”过时，不重跑矩阵。65核心CPU、30scorer/collector与独立数学/汇总复核通过，详细数量和重叠见work/jieruiz/55/round3。

@@ -768,3 +768,8 @@ PR79的18项CPU128目标后缀PPL已核，并非完整WT2；19当前合同与旧
 此前未发布的OFFSET/score接口现由PR80交付并独立审核：144条理想分布记录含cap失败，固定/预设偏移改善部分案例但非普遍收益；同logits复用不代表下一token。QK score为FP32、诊断FP64，8位驱动码不等于R8概率；接口建议尚未实现或量化验证。Issue78继续开放；不能把本次交付当完整模型或硬件验收。
 
 PR77仅计划/文档验收，无训练已完成结论。Issue76由用户额外明确授权后已更新并关闭；未修改amlink1219个人STATUS。Issue28继续维护。备忘录canonical原有未提交增量先逐SHA归档并保留全部有序文本，HEAD保持原值，其工作文件与根阅读副本同步到本次发布文档。仅回收本轮本人稀疏review/helper，恢复索引project_archives/pr_review_issue55_20261021/RECOVERY_INDEX.json；执行状态查Issue55最终回执。
+
+
+## 2026-10-21 Issue73定时检查：18/26完成
+
+原PR75已合并3fe790e，仅为代码/提交/恢复阶段；后续task/73-results-followup、PR83草稿开放未合并。CPU2632源86ccedc完成7合同；10:11:23Z为18completed（旧8＋修复10）、2running（2585_12/16）、6pending（20～25），新ARC-E FFN seed0/1完整。逐题SHA/全量ID/候选token/32层active-dummy/源与输入绑定及已存metrics重聚合通过，尚未独立复算官方process_results、未重哈希14GB权重。PIQA S512与ARC-E FFN均2/3，不报部分组均值。待运行约7.98GPU小时，两卡保留估计剩4～6h、单卡8～11h，非排程保证。入口llama2/results/task_accuracy_20261020/PROGRESS_20261021_ZH.md及checkpoints/20261021T101123Z/；原推理和快照不动。heartbeat每日继续且提示已纠正旧PR75状态，26项收齐后需官方oracle/配对验收再停用。原生Git连接两次超时，源码通过GitHub API上传且commit/tree/blob逐SHA完全一致，报告发布以PR83/Issue73回执为准。

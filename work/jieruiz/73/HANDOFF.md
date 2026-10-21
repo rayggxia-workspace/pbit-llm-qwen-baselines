@@ -1,3 +1,17 @@
+# 2026-10-21 18:11 Llama2检查点：18/26，后续PR83
+
+jieruiz；Issue73 open；后续分支task/73-results-followup，PR83 draft/open未合并，base5b26c80c28ab22383f12ab31046dd723ca985abb；独立目录tmp/llama2-task-accuracy-issue73-20261020。原PR75已合并3fe790ecc2d4849662b60216922fd45dc4300848，只验收代码/提交/恢复阶段，旧“未合并/GPU2584 pending”不再代表当前状态。
+
+CPU Slurm2632、源86ccedc1f14432fc993b4032a9af7873bbf579c6完成exit0；7项本地/远端合同通过。18份sealed full JSON及documents SHA/全量唯一id/候选token/32层与active-dummy/输入与源身份链通过，逐题已存metrics重聚合一致；官方process_results尚未独立复算。未重哈希14GB权重，只核对已验identity manifest绑定，不冒充新模型完整质量验收。
+
+2026-10-21 10:11:23Z：completed18（旧8＋修复10）、running2（2585_12/16）、pending6（2585_20～25），无无效或缺项；本轮比08:39检查点新增ARC-E FFN-only seed0/1。PIQA联合S512仍2/3、ARC-E FFN仍2/3，不算组均值。六项待运行按实测吞吐约7.98GPU小时；保持现有两卡估计还需4～6h，若单卡约8～11h，不是排程保证。原2572健康八项和2585十八项不动，没有新GPU推理或冻结源修改。
+
+正式入口llama2/results/task_accuracy_20261020/PROGRESS_20261021_ZH.md；原件/checksum/ETA见checkpoints/20261021T101123Z/；命令work/jieruiz/73/CHECKPOINT_SUBMISSION_20261021.json。源码已用GitHub Git对象API逐SHA一致上传（原生Git两次连接超时）；后续报告发布以PR83/Issue73新回执为准，不宣称本地文件自动已远端。
+
+下一步沿用同目录/分支和最新Issue73状态，只读收集26项；收齐后加官方lm_eval0.4.8/parquet/YAML逐题oracle和同轮BF16配对统计，再验收最终结果。现有checkpoint的complete仅指封存合同齐全，不替代官方指标复算。Apple FP32两模型单列；当前Attention是原有限CTMC/all-K短题，不是8位p-bit新驱动。heartbeat llama2-7b仍ACTIVE/每日，提示已纠正PR75关闭状态，完整26项核验交付后删除。Projects缺read:project依旧待同步。
+
+以下为历史：
+
 # 2026-10-20 17:40 显存修复与定时回查（最新）
 
 Issue73/PR75继续，未合并。旧022db68中2572_1/2/3初始化OOM；3份原日志保留。15个尚未运行FFN项已撤回，不取消健康任务。原GPU预检成功属于当时空闲条件，不能代表之后共用显存时的初始化安全裕量。

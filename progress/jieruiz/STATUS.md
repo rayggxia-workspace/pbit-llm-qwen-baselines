@@ -1,3 +1,9 @@
+# Issue78：全局广播与有限κ同步/随机分块更新
+
+2026-10-21；jieruiz；task/78-ising-broadcast；base e4990c15b40f664cea7f9db43175b68347ce588b；独立tmp/ising-broadcast-issue78-20261021。有限κ和合法地址服务行为模型已写，6项本地CPU合同测试通过。远端合成/模型PPL尚未执行；准备通过Slurm申请CPU，原FFN、S64 CTMC对照、128目标后缀初筛。无GPU任务改动，无PPA。PR未创建、未推送，Issue78 open；交接work/jieruiz/78/HANDOFF.md。Projects待授权。
+
+以下保留原进度时点：
+
 # Issue55第三轮：7项PR审核已完成，结果已实际合并
 
 2026-10-20；jieruiz；review/55-pr-round3；tmp/pr55-review-20261020单个稀疏目录；科学集成18b887bd2d0cd6c06d070d8dafaf8b979742fdcf。49/52/62/67/69/71/72均已合并，62先入52任务分支再由52进集成。服务器25项完整WT2已回收核验发布，39项代表任务逐题重算通过；旧“仍运行/未完成”过时，不重跑矩阵。65核心CPU、30scorer/collector与独立数学/汇总复核通过，详细数量和重叠见work/jieruiz/55/round3。

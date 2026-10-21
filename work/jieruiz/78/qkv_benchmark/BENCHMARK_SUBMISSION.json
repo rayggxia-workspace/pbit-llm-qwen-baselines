@@ -1,0 +1,420 @@
+{
+  "source_commit": "4ec2613a634c177db536d3ae355f614886cd1d37",
+  "archive_sha256": "d71652abcf0389b026f3775dfa814346ab34f3bd8a39f9a4025ea8beb4b523e3",
+  "snapshot": "/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/snapshots/4ec2613a634c177db536d3ae355f614886cd1d37",
+  "capture_report": "/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/4251660247c564d7d1ffc0da2ff386773b5cdfb8/qkv_capture/CAPTURE.json",
+  "capture_trace_sha256": "410dcfa5fddd073f6609fd2bfe42cd2f749f1850123a15d4b7433aead4910980",
+  "pilot_job": "2641",
+  "array_job": "2642",
+  "output": "/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/4ec2613a634c177db536d3ae355f614886cd1d37/qkv_benchmark",
+  "pilot_command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--cpus-per-task=1",
+    "--mem=4G",
+    "--time=01:00:00",
+    "--export=ALL,CUDA_VISIBLE_DEVICES=,OMP_NUM_THREADS=1,MKL_NUM_THREADS=1,OPENBLAS_NUM_THREADS=1,HF_HUB_OFFLINE=1,TOKENIZERS_PARALLELISM=false",
+    "--job-name=ising78-qkv-pilot",
+    "--output=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/qkv-pilot-%j.log",
+    "--error=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/qkv-pilot-%j.err",
+    "--wrap=cd /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/snapshots/4ec2613a634c177db536d3ae355f614886cd1d37/experiments/pbit_sampler_qkv_20261021 && /home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python -B -m unittest test_samplers -v && /home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python -B -u benchmark.py --capture-report /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/4251660247c564d7d1ffc0da2ff386773b5cdfb8/qkv_capture/CAPTURE.json --commit 4ec2613a634c177db536d3ae355f614886cd1d37 --output /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/4ec2613a634c177db536d3ae355f614886cd1d37/qkv_benchmark/rows/row_0.json --row 0"
+  ],
+  "array_command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--cpus-per-task=1",
+    "--mem=4G",
+    "--time=01:00:00",
+    "--export=ALL,CUDA_VISIBLE_DEVICES=,OMP_NUM_THREADS=1,MKL_NUM_THREADS=1,OPENBLAS_NUM_THREADS=1,HF_HUB_OFFLINE=1,TOKENIZERS_PARALLELISM=false",
+    "--array=1-89%8",
+    "--dependency=afterok:2641",
+    "--job-name=ising78-qkv-replay",
+    "--output=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/qkv-replay-%A_%a.log",
+    "--error=/home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/logs/qkv-replay-%A_%a.err",
+    "--wrap=cd /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/snapshots/4ec2613a634c177db536d3ae355f614886cd1d37/experiments/pbit_sampler_qkv_20261021 && /home/Hongjie_Zeng/.conda/envs/pbit_llm/bin/python -B -u benchmark.py --capture-report /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/4251660247c564d7d1ffc0da2ff386773b5cdfb8/qkv_capture/CAPTURE.json --commit 4ec2613a634c177db536d3ae355f614886cd1d37 --output /home/Hongjie_Zeng/projects/pbit-qwen-ising-broadcast-20261021-issue78/outputs/4ec2613a634c177db536d3ae355f614886cd1d37/qkv_benchmark/rows/row_${SLURM_ARRAY_TASK_ID}.json --row ${SLURM_ARRAY_TASK_ID}"
+  ],
+  "submitted_utc": "2026-10-21T13:13:39.376337+00:00",
+  "files": [
+    {
+      "path": "experiments/attention_e01/README_ZH.md",
+      "bytes": 7537,
+      "sha256": "8b53f99298c5bae5683df644adc9fbfe825b93dae3829c8e4391708fc4d1cfc3",
+      "git_blob": "7b0f89eb5868917d6e16f6e9682883999bef3c51"
+    },
+    {
+      "path": "experiments/attention_e01/capture.py",
+      "bytes": 13678,
+      "sha256": "b0e7a5f9972e04be8154908f2352ecb9a7b9a47309da954974853c945846a35c",
+      "git_blob": "ec7c7599ac1f2ea4db2cf5bb514ffba4301501a1"
+    },
+    {
+      "path": "experiments/attention_e01/expected_identity.json",
+      "bytes": 4488,
+      "sha256": "b2efe3984903de0b89c37028613b683aecc93b3be5a9df253f57bdb8d8a44bff",
+      "git_blob": "12b3317c4da79882c71d8ff5a6fbb6a2d06f43c8"
+    },
+    {
+      "path": "experiments/attention_e01/microbench.py",
+      "bytes": 30270,
+      "sha256": "6b734799fb306e993b3d23a1d22d7bf25dffbe126454eaa097b7b0d76dc94262",
+      "git_blob": "3b2ba0520b986a50d1056adae527be1585cbe991"
+    },
+    {
+      "path": "experiments/attention_e01/microbench_config.json",
+      "bytes": 289,
+      "sha256": "277b5c89f2fabff087a0f12d843d7b7b2cd0b4f814e44b48dba0a1e657823f83",
+      "git_blob": "d5323c49068da1bdf3c5b6fe896a26efa5b6bad9"
+    },
+    {
+      "path": "experiments/attention_e01/prepare_inputs.py",
+      "bytes": 3109,
+      "sha256": "e2b9dfb5162c1153420a2a24c29f8f3ecfd8107640577c1f6697e42cd4837b50",
+      "git_blob": "5476499af1c8bd6075019c31531367e53ceb9741"
+    },
+    {
+      "path": "experiments/attention_e01/run.py",
+      "bytes": 10770,
+      "sha256": "b817ca2a2edff2f988292441d9187fb20cae454c983348e88111da1aaa1302aa",
+      "git_blob": "1d4d6db5b5b20a65c712779ec6b9b10c39ad1ef3"
+    },
+    {
+      "path": "experiments/attention_e01/run.sbatch",
+      "bytes": 1131,
+      "sha256": "30a174c3d7a8752347b45e8c8b1edc881374bf35370516c519d417a7677b5952",
+      "git_blob": "e994dc4c836cf23deb63b106ba403174dce7d9c7"
+    },
+    {
+      "path": "experiments/attention_e01/run_config.template.json",
+      "bytes": 564,
+      "sha256": "b007d790dc2c1f163e5ad387e5e86563123b5a8e6a416f22e7fd1531f3a06b07",
+      "git_blob": "ede6fe68e552613c019d22783704800b6c4a86f0"
+    },
+    {
+      "path": "experiments/attention_e01/summarize.py",
+      "bytes": 23947,
+      "sha256": "cb6a1d39101aafbb33f617b32fbf5722b7e82883e7e3a4562343d1ab6c5cd2e8",
+      "git_blob": "33880dcb8f5ab1d239abada8a92c3104df7d9616"
+    },
+    {
+      "path": "experiments/attention_e01/test_capture_contract.py",
+      "bytes": 10217,
+      "sha256": "44f5755db5a7436f02a2adcecf797b6e41e11f9a20b72776d0449b22c7a91f65",
+      "git_blob": "8b1e0596773c574d65cce61ffacbf0082fc11970"
+    },
+    {
+      "path": "experiments/attention_e01/test_driver.py",
+      "bytes": 2403,
+      "sha256": "40dc442041744066d0295d2a8d4014c475b7f06da7bc51c84ec91230fb231460",
+      "git_blob": "2257443919a085afb36c2efae1de675fdb93abd4"
+    },
+    {
+      "path": "experiments/attention_e01/test_microbench.py",
+      "bytes": 13752,
+      "sha256": "f75665ba294e3a04d6b44b3381a69fd1b0785236bae9234969ed88925f2aa16e",
+      "git_blob": "457f1758ab0424f107194c3eedc76d5ac60dd858"
+    },
+    {
+      "path": "experiments/attention_e01/test_summary.py",
+      "bytes": 10810,
+      "sha256": "569c575f2eed664664c8d09cb4085aad8721d69cf818217fcde3fec862cae37e",
+      "git_blob": "4bfd16089300dcb2bb85f43e7e44a9a3788da111"
+    },
+    {
+      "path": "experiments/attention_e01/verify_inputs.py",
+      "bytes": 12232,
+      "sha256": "83f210ef0d1af714467e6755ac168cb113fcc9e256e5dd22850dd30fd17c561c",
+      "git_blob": "2ccf3c363af6b806244239b8ee6b2e4773875376"
+    },
+    {
+      "path": "experiments/pbit_sampler_qkv_20261021/PLAN.json",
+      "bytes": 1614,
+      "sha256": "9b504b3db15d8fa8d0118914c112ddf094c3efa215e9bcd06feb66e2a7caaf08",
+      "git_blob": "531c3077fc7d2695926357bc97d611a5555f320f"
+    },
+    {
+      "path": "experiments/pbit_sampler_qkv_20261021/README_ZH.md",
+      "bytes": 4482,
+      "sha256": "4fdc32b41b8118a129c10c528fe447f97b41da88e02fbb1103f888333c4e1962",
+      "git_blob": "923b1861e29361a8e5a7da978a58f5cb74c6ca2b"
+    },
+    {
+      "path": "experiments/pbit_sampler_qkv_20261021/benchmark.py",
+      "bytes": 7071,
+      "sha256": "57f87948a1b98f06565610d72fc8a336aa80d6490799914c5cf2cd89e57aabb9",
+      "git_blob": "d85f2d4c37e9afa1b5e489b0081ffe18d05a48af"
+    },
+    {
+      "path": "experiments/pbit_sampler_qkv_20261021/capture.py",
+      "bytes": 8291,
+      "sha256": "6f177320fd4953fee14265ab57aa2260ed777e722d1ba1e26b3d1e33fe42d12c",
+      "git_blob": "b6d595be63bce942ff8b3bb09a992e476a9da4ee"
+    },
+    {
+      "path": "experiments/pbit_sampler_qkv_20261021/samplers.py",
+      "bytes": 7372,
+      "sha256": "d85d006d4692bf7c253dd271bc43bad3d3ec739f09f2c33a4099541b6d29b686",
+      "git_blob": "3d2dd002bfb04123d2abf79e158f83dddc0c6aca"
+    },
+    {
+      "path": "experiments/pbit_sampler_qkv_20261021/test_samplers.py",
+      "bytes": 3865,
+      "sha256": "8aedc37dfbf4c1ffe9c398e86c7a93958ae3d4ecfd9746c0bb6107e3cf6aedf7",
+      "git_blob": "5318d08e7a24c9deb38ad0dddf562ec7caf58c5f"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/README_ZH.md",
+      "bytes": 4083,
+      "sha256": "8cd2c405587a5a97f52af3e5f3eb87b63230ed3927f2632b0cd2210ec66795be",
+      "git_blob": "384849e004698568fae51682dcf9c4011f56e792"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/collect.py",
+      "bytes": 4747,
+      "sha256": "5481f071df0cc469c1b1cc82e319c570c58d89d544a7b80e30ca594b8170d831",
+      "git_blob": "d4f35a28f0ac0ffc5bf2711fafdb6e2acfab495e"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/diagnose.py",
+      "bytes": 3061,
+      "sha256": "2eaec609d70f13ad8e82a0a3bec1110bd811a1bf6221db0bf679d3faf2efd290",
+      "git_blob": "d8d4c1e29821d3e5037dac879b40f9ec117507a3"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/diagnose_hard.py",
+      "bytes": 1914,
+      "sha256": "95381dd79a7b649535abfa7ed78c37dbb2377699ec048dbc770fb016545d9866",
+      "git_blob": "ee063f49fffe2891f6f501896ef22d02b6f03977"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/diagnose_offsets.py",
+      "bytes": 4354,
+      "sha256": "97da874caceb5d066d257b93192b09bb51c77a9f7d06faf895cdf800c4b72688",
+      "git_blob": "d351c5f638faf257c0d67616d14e7b934214dd2f"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/diagnose_onehot.py",
+      "bytes": 2705,
+      "sha256": "f06dfcac321fba30a48751b2ccf6af58808c7bb4dc45a318063dda8cbeee05b4",
+      "git_blob": "a1da682104464fc83f3aa293f88d3ed02e5f4f86"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/diagnose_real.py",
+      "bytes": 2726,
+      "sha256": "03fa981f46a2414bb14bff97627983b6ab91d1efdee1b0184035e2451428a977",
+      "git_blob": "cef8e11f3870964d900223921da81dd9e1d7d4be"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/diagnose_rejection.py",
+      "bytes": 2650,
+      "sha256": "792d7e1aed3356824f0141dd35ffcaec658152478d76834b48749afe179be1b1",
+      "git_blob": "19317be817c933aac3abcc03b41837e4712f91a8"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/rejection_sampler.py",
+      "bytes": 4057,
+      "sha256": "a4f3dfb862d27b82f6390ba03736696453165a1edf1d16f95b2e3b9cf925ca38",
+      "git_blob": "a760e39bbef501710a4e39f0eaac8dab45dc9a69"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/run.sbatch",
+      "bytes": 1046,
+      "sha256": "bbc122da32f17098274785f57f48b45f2527dd91a2f672ee8c3695914c4af7ca",
+      "git_blob": "1e85555a9e9fa0f00a43938573b6ed05da45da8a"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/run_model.py",
+      "bytes": 9341,
+      "sha256": "6b61f802448d9bf7b99259886a101096967a22dceb9fe4d9a45faf088a893e39",
+      "git_blob": "78f5e09718d757cbda83c95d0a97116d8d033a63"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/sampler.py",
+      "bytes": 9217,
+      "sha256": "d6ebcd5c34d0d22c971120be5a7ef5118745d796d902f72441ba04b23787ac0e",
+      "git_blob": "e7c2dd64b396816c7f2d4349f33df98321c7c039"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/test_collect.py",
+      "bytes": 1714,
+      "sha256": "785a7a1db5b1fb680492f42d26f7a27791d8fb1d84b09573698d2c5fbe25bcef",
+      "git_blob": "7a6a74ec02dc4ad1aabbb4f646ae67a2f05a3a61"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/test_rejection.py",
+      "bytes": 2122,
+      "sha256": "b656d6673b79ca5e0757a85dbd31bcf8f0707a0a822cb26ff77fdf4c8156f38d",
+      "git_blob": "5ed57eac776b80e77ee5e1fac550005909557ca0"
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/test_sampler.py",
+      "bytes": 5524,
+      "sha256": "ccc8b1438d3edd2b93460e8def316449cff1c11f10fd17470189d1c38fb68221",
+      "git_blob": "df3537d5a34df54eaa312607d1947bf3cfb7c343"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/README_ZH.md",
+      "bytes": 7091,
+      "sha256": "a29daaf82cef8191d272f1706bf73f7239bae3c27d45723be2145a2dea830dac",
+      "git_blob": "473180b3e8ce6ba11a129e660a3d352244364cae"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/UPSTREAM_MANIFEST.json",
+      "bytes": 3869,
+      "sha256": "c400f7187a0b05d07e92b5f6092bd64a3d8a40a9200975a584e9f9857cfb45c8",
+      "git_blob": "df7d56a256d2c480bcb4dfaab5fa55fc83f844db"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/collect_results.py",
+      "bytes": 2097,
+      "sha256": "6d3d9af895d9a1cd07fa7f240c2d89cdaa99cb6e2c787f74609e1b6f53e6d070",
+      "git_blob": "56ac95f320b218dc0eec0b82680514f68be7061f"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/joint_evaluate.py",
+      "bytes": 16186,
+      "sha256": "4d35fe365dad8fc6631185f1bcb9927c539273bce0ca495ae499e50d726e3276",
+      "git_blob": "4fa97025d5a101de1e476098678dfc767c2875ca"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/render_sample_report.py",
+      "bytes": 8168,
+      "sha256": "da2116f9a27635079cce352af0195f8c545829bb9a7419f0ea1d88ea69987358",
+      "git_blob": "2802a4190b155cc35cc5a56dcf60212c5ebd1844"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/run.sbatch",
+      "bytes": 1020,
+      "sha256": "86488fc1bf5b5dd0659834cf83561dffa48ad0b946f569e090c24cc279eb38c1",
+      "git_blob": "7774e30ffa38b819f04a447a6f13e2538f829505"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/run_full.py",
+      "bytes": 11859,
+      "sha256": "9512435bd6a990f48c274bf2a2af8f2d3d51c3e2f7b9127d6f21f97668f1e0ed",
+      "git_blob": "facf57f2091102790eda2b3193efcd61c9a8c15c"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/run_full.sbatch",
+      "bytes": 1115,
+      "sha256": "75c30c88b7131c53b1f3b8874d30e844e9052c883ebb7811e59d5e08c220de71",
+      "git_blob": "a640b41a3e040e8db438b485329964fdb51de839"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/run_joint.py",
+      "bytes": 8657,
+      "sha256": "2cac978cd8810bb3168e7e71d72dbffe6dd7accaa36fe3213f90e91814e40615",
+      "git_blob": "e047a5b2113671ec5c88903f62f12d1441f2aee4"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/run_samples.py",
+      "bytes": 8033,
+      "sha256": "359059030e7b2e4deafa94677bf4746d6bbf0612ac3500d553f5ba72cf37af39",
+      "git_blob": "8b9d4b909b9159a9b9be197e5bd12ecfa1af212a"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/run_samples.sbatch",
+      "bytes": 1206,
+      "sha256": "8f4a14bfcd4a1317920ac107b5833c661099a0cb032f9f8091436885c9d67f39",
+      "git_blob": "454ef98f8d683c9ce7df60839a3ef22557838024"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/summarize_results.py",
+      "bytes": 5815,
+      "sha256": "d8f96b0f3bb8b3b432caf623a7efee29ac11d388cd07e96882970b634ac52140",
+      "git_blob": "195040e32068ce14d453a5b5dfdff5dce1e1e85b"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/summarize_sample_sweep.py",
+      "bytes": 6946,
+      "sha256": "f19b63d8757fcaf32aec9895a2e61112c0521e8b19408259ade26f4b37c27b99",
+      "git_blob": "55214c4d1b151997e473652dd1c1b38e9030ed09"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/test_full_plan.py",
+      "bytes": 1690,
+      "sha256": "89f8346b4b802907bb9df8f224a4b29a8e1a7f748b2a03ee23a76a88fbd31357",
+      "git_blob": "f86019081dfbbcadb5196fca99264ec07d4328e7"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/test_joint_evaluate.py",
+      "bytes": 11341,
+      "sha256": "f8e0f5121c0ccd668d3bdb07b0cdddce11e1aaa7931dd80714df7fef8d8423d8",
+      "git_blob": "30d2a08404553b6aaa5dc775981a92b19db450e8"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/test_sample_plan.py",
+      "bytes": 1361,
+      "sha256": "8f225e2bbd9ded25132f7b02b25040e8fc4092c189fb2526177d5758a4dad731",
+      "git_blob": "ba61e2ad979a55aad9ce541418e08428e9ca5cc7"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/test_upstream.py",
+      "bytes": 1085,
+      "sha256": "126b44e7ed2adbf8486a82376c991eb297a243151ef6a2439a3850cb77f43a84",
+      "git_blob": "2161617ba2afe41873ae28a6ecd9f22682151f63"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/README_ZH.md",
+      "bytes": 4801,
+      "sha256": "efb4867019c7649a868500af053b40d9c36edab502a12d337573710996ffa182",
+      "git_blob": "372b8c1c91699f486fd2dc11d46648047cae6774"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/__init__.py",
+      "bytes": 76,
+      "sha256": "8e57a2bebe0e7a63a9f6da422ef1572333d3f663a61bf3e35ecd0139bb7d62d8",
+      "git_blob": "26651349b17375f6ad328121a182cdab8468597e"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/attention.py",
+      "bytes": 19744,
+      "sha256": "425bb5fb1ae60881bc6ff4d383dfd2560a0c8fdbe0ff9b6cc2775e9e0ef4f137",
+      "git_blob": "655844a787bdc102799c834cfdde663e38e89080"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/calibration_provenance.json",
+      "bytes": 495,
+      "sha256": "f4609026a74baeaf2e75a3791f51b398a800bc16be673af5fa39a7c5883a2d1c",
+      "git_blob": "6331b86b5c3241053986a8cabc8eb014d6117595"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/ctmc.py",
+      "bytes": 8768,
+      "sha256": "0c26ac5082d603e5f4861fcb645cd634218fd8f112d80196507bbd74e17a4bc2",
+      "git_blob": "e6996d022b0a60ca3db969e7a50868ca7f79eb1f"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/evaluate.py",
+      "bytes": 16277,
+      "sha256": "e0e96c5ab6a3b47a5d9b01f83db68ec08e0ac90a9ea6fa061dd791aca6284bec",
+      "git_blob": "d06cfa9e95d779d492ce7520735bf8e7bb9f1bf1"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/scoring.py",
+      "bytes": 5048,
+      "sha256": "4daed453f8171d107f0535189913aa963cd221e490171c1ea4ca48aabdedfa3c",
+      "git_blob": "d819b2477148ac2e4fb11c140b740f76a454e5c2"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/test_attention.py",
+      "bytes": 15183,
+      "sha256": "6a3b5ab49bf06893433692946a180f956c8d72b583a4528818a7c2cae7316e48",
+      "git_blob": "af2681ec184ac9a40153df6ed81c42df7e2aec85"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/test_ctmc.py",
+      "bytes": 6894,
+      "sha256": "fb7e2cd613d170a6bc5bbb03f0a9120004e17c105a51dfff52a75aa9c2d4fa4c",
+      "git_blob": "150fe6414c6b31fba5d2b9291413c35e55e63058"
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/test_scoring.py",
+      "bytes": 5791,
+      "sha256": "ac42b97466a6de3c0fd156ff70e5202e44173d1fdfc819fbb519964cdeef503b",
+      "git_blob": "ec0003546ac403a7c84dc0ce375c714b5a54520c"
+    }
+  ],
+  "scope": "CPU Slurm sampler replay; no GPU, training, PPL or PPA"
+}

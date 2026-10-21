@@ -1,0 +1,466 @@
+{
+  "head": "a5908e555210bcc756a85a74a9c114585bea015f",
+  "base": "e4990c15b40f664cea7f9db43175b68347ce588b",
+  "manifest_files": [
+    {
+      "path": "architecture_tlm/training_plans/four_tracks_20261020/TRAINING_PLAN_ZH.md",
+      "bytes": 17043,
+      "sha256": "45924bbd7fbbd56b8f66efb98ffe8041c309fb47a8487a7cd3a2e89b3322c5f9",
+      "passed": true
+    },
+    {
+      "path": "architecture_tlm/training_plans/four_tracks_20261020/PLAN.json",
+      "bytes": 7871,
+      "sha256": "c0da4a48f9658b1f6ed93fb3f6de76aa1233972ae0b54870827d8198942e430d",
+      "passed": true
+    },
+    {
+      "path": "architecture_tlm/training_plans/four_tracks_20261020/pbit_llm_training_discussion_20261020.docx",
+      "bytes": 47006,
+      "sha256": "89568c97c3df0cc39410755ce1a4c858886e2b2e15f31125f26fbddcaa3e0e39",
+      "passed": true
+    },
+    {
+      "path": "work/amlink1219/76/REVIEW_ZH.md",
+      "bytes": 985,
+      "sha256": "7e4781e72f0a8339c6688bd7ad16808785ef3f18f0072c329e0ee7e0229b389a",
+      "passed": true
+    },
+    {
+      "path": "work/amlink1219/76/VALIDATION.json",
+      "bytes": 1365,
+      "sha256": "5290b9a9c28437d45226224d1fb3c9f0a0895fc0ef88c1cf51298d4a5f6e612d",
+      "passed": true
+    },
+    {
+      "path": "work/amlink1219/76/SOURCES.json",
+      "bytes": 1010,
+      "sha256": "f3342675e7ee4ad0f046fd842a944bb371906322f14696960a2f2fa96a06d808",
+      "passed": true
+    },
+    {
+      "path": "work/amlink1219/76/HANDOFF.md",
+      "bytes": 1367,
+      "sha256": "2d7478657c910fc698732fd387737dcd5f193610b0e676a71c3adab3b780fe8a",
+      "passed": true
+    }
+  ],
+  "word_MD_exact_text_blocks_including_table_cells": 121,
+  "body_blocks": 63,
+  "paragraphs": 59,
+  "exact_tables": 4,
+  "same_external_links": 9,
+  "docx_zip_passed": true,
+  "style_checks": [
+    {
+      "style": "Normal",
+      "chain": [
+        "Normal"
+      ],
+      "effective_color": "000000",
+      "paragraph_borders": false
+    },
+    {
+      "style": "Title",
+      "chain": [
+        "Title",
+        "Normal"
+      ],
+      "effective_color": "000000",
+      "paragraph_borders": false
+    },
+    {
+      "style": "Heading1",
+      "chain": [
+        "Heading1",
+        "Normal"
+      ],
+      "effective_color": "000000",
+      "paragraph_borders": false
+    },
+    {
+      "style": "Heading2",
+      "chain": [
+        "Heading2",
+        "Normal"
+      ],
+      "effective_color": "000000",
+      "paragraph_borders": false
+    }
+  ],
+  "docx_text_and_tables": [
+    {
+      "kind": "p",
+      "text": "pbit LLM 四条硬件训练路线讨论方案"
+    },
+    {
+      "kind": "p",
+      "text": "2026年10月20日讨论版。方案协调：amlink1219；服务器训练执行负责人待讨论确认。目标是用训练降低随机计算和采样预算，在完整模型质量约束下评估能量、面积和延迟。本方案只包含四条已确定路线，首轮继承现成 Base 权重，采用继续预训练、蒸馏和部署算术感知训练；当前没有提交新训练作业。"
+    },
+    {
+      "kind": "p",
+      "text": "1 合理性和训练难度"
+    },
+    {
+      "kind": "p",
+      "text": "按获得可信训练收益的预计难度，建议依次推进方案3、方案1、方案4、方案2。排序针对各路线的最终目标；少数层的确定性tanh试验可能早于完整有限Ising适应完成。按现有部署基础成熟度，方案1最成熟。"
+    },
+    {
+      "kind": "table",
+      "rows": [
+        [
+          "顺序",
+          "用户方案",
+          "判断",
+          "首轮训练目标"
+        ],
+        [
+          "1",
+          "3 四子块分数输入p-bit随机神经网络并输出块选择位",
+          "合理；参数少，可以冻结LLM进行监督训练；四摘要的信息量仍需验证",
+          "数量可变的真实随机选块，在匹配平均候选工作量时降低漏失和完整PPL"
+        ],
+        [
+          "2",
+          "1 短流随机计算加W8量化",
+          "合理且基础最强；量化和真实短流误差都要进入前向",
+          "训练后的B4/T16/K16接近未训练B4/T32/K32质量"
+        ],
+        [
+          "3",
+          "4 适应较少Ising观测",
+          "合理；相关采样、有限时间偏差和QK梯度使训练更复杂",
+          "在同一筛选策略下，训练后S128接近未训练S512，再研究S64"
+        ],
+        [
+          "4",
+          "2 SiLU激活改为tanh",
+          "可以研究；全层直接替换改变函数最多，不能保证少量训练恢复",
+          "先完成确定性激活转换，再验证有限p-bit输出，逐步扩层"
+        ]
+      ]
+    },
+    {
+      "kind": "p",
+      "text": "四条都不要求整模型随机初始化。全参数更新也可以是继承权重的继续训练。本轮不安排7B从头预训练。"
+    },
+    {
+      "kind": "p",
+      "text": "2 当前起点和共同协议"
+    },
+    {
+      "kind": "p",
+      "text": "2.1 已有证据与版本"
+    },
+    {
+      "kind": "p",
+      "text": "项目目标仓库为rayggxia-workspace/pbit-llm-qwen-baselines，读取的集成提交为e4990c15b40f664cea7f9db43175b68347ce588b。PR47的分层FFN和PR52的完整联合WT2均已合入。以下是未进行本方案训练的Qwen2.5-0.5B结果，不能转作Llama2-7B结果。"
+    },
+    {
+      "kind": "table",
+      "rows": [
+        [
+          "当前完整WT2对照",
+          "PPL均值"
+        ],
+        [
+          "匹配cached BF16",
+          "11.652118"
+        ],
+        [
+          "B4T32 FFN单独替换",
+          "11.732192"
+        ],
+        [
+          "B4T32加筛选与Ising S128",
+          "12.423820"
+        ],
+        [
+          "B4T32加筛选与Ising S256",
+          "12.274153"
+        ],
+        [
+          "B4T32加筛选与Ising S512",
+          "12.207062"
+        ]
+      ]
+    },
+    {
+      "kind": "p",
+      "text": "以上联合结果采用固定8块评测配置、burn16、spacing4、299077个目标、window2048/stride1024。S256/S512缺少同预算原FFN完整控制，不能从这些数值分离全部交互效应。旧4096目标后缀与本表不混用。原件见文末项目来源。"
+    },
+    {
+      "kind": "p",
+      "text": "2.2 模型和数据"
+    },
+    {
+      "kind": "p",
+      "text": "先在项目Qwen2.5-0.5B Base上通过算术、梯度和计分门禁，再将胜出路线迁移至项目Llama2-7B Base。分别冻结模型revision、tokenizer、配置及SHA；两个模型分别重跑自己的BF16基线。Llama2与Qwen的头数、GQA/MHA复用及层数不同，不直接移植PPA系数或比较绝对PPL。"
+    },
+    {
+      "kind": "p",
+      "text": "训练使用许可与版本核实后的自然文本，优先从公开FineWeb-Edu的sample-10BT选取固定分片。各控制组共用文档、顺序、tokenizer和训练token数。按文档划分训练/验证，先去重再切分，避免相邻query泄漏。WT2 test及下游test不参与训练和超参选择；主训练语料与评测集做污染核查。具体数据revision、文件清单、预处理、token SHA及服务器路径在执行前填写。"
+    },
+    {
+      "kind": "p",
+      "text": "第一轮上下文2048，胜出后验证4096及不同前缀长度。Attention训练样本要包含超过512历史token的位置，才能检验筛选；短上下文结果不能代替长上下文筛选证据。"
+    },
+    {
+      "kind": "p",
+      "text": "2.3 讨论用训练预算"
+    },
+    {
+      "kind": "table",
+      "rows": [
+        [
+          "阶段",
+          "Qwen 0.5B",
+          "Llama2 7B",
+          "扩大条件"
+        ],
+        [
+          "门禁和短程",
+          "4M token",
+          "32M token",
+          "前向覆盖、有限采样、梯度和导出重载正确；loss稳定"
+        ],
+        [
+          "方法比较",
+          "32M token",
+          "128M token",
+          "验证集优于未训练硬件和匹配数字继续训练控制"
+        ],
+        [
+          "胜出确认",
+          "128M token",
+          "512M token",
+          "在完整质量与成本曲线上有可复现改善"
+        ]
+      ]
+    },
+    {
+      "kind": "p",
+      "text": "这些是首轮讨论预算，不是收敛保证。尤其全层tanh转换可能需要更多数据；额外预算依据独立验证集趋势讨论后冻结。小筛选器另按块记录数训练，首轮100万训练记录、10万验证记录，记录来自文档隔离的数据；10万是验证记录数，不是模型训练token数。"
+    },
+    {
+      "kind": "p",
+      "text": "LLM训练起始配置建议为BF16计算、FP32优化器状态，AdamW，梯度裁剪1.0；学习率先比较1e-5与3e-5，warmup 3%，余弦下降。全局有效batch先取131072 token，通过梯度累加实现；实际microbatch由门禁确定。小筛选器学习率先比较3e-4与1e-3。所有值均是待验证起点，不承诺适用于所有模型。"
+    },
+    {
+      "kind": "p",
+      "text": "端到端首轮采用L=0.2 CE+0.8 KL(教师logits分布||学生分布)，KD温度1；CE与KL都按计分token平均，KL先对词表求和，保留CE-only控制。局部输出重建仅用于独立预适应，不默认把所有中间层损失叠加到端到端目标。4M token在上述有效batch下约31步，仅作门禁，不作为收敛试验。最终胜出项采用3个训练seed，每个checkpoint以3个独立部署随机seed评估；训练间和采样间方差分别报告。"
+    },
+    {
+      "kind": "p",
+      "text": "3 方案3 四输入p-bit随机神经网络筛选"
+    },
+    {
+      "kind": "p",
+      "text": "3.1 明确前向与数量口径"
+    },
+    {
+      "kind": "p",
+      "text": "每个64-token块有四个16-token子块的现有摘要QK分数，按时间顺序组成x=[s1,s2,s3,s4]。这里的分数尚不是校准后的置信概率。首轮只使用这四个输入，冻结归一化和输入数制；参数按层共享，避免一开始按每个头独立建网。"
+    },
+    {
+      "kind": "p",
+      "text": "主网络为4输入、8个隐藏p-bit、1个输出p-bit：h_i~Bernoulli(sigmoid(W_i x+c_i))；z~Bernoulli(sigmoid(v^T h+d))。共40个权重和9个偏置。隐藏层和输出层都实际采样，不能以连续MLP末端接一个随机位代替该主实验。4输入直接到1个p-bit作为最简控制。"
+    },
+    {
+      "kind": "p",
+      "text": "主方案直接按随机输出选块，选中数量可变；沿用现有强制首块和末两块的保护规则，其余块由网络决定，不做自动补齐或裁到8块。固定8块仅保留为已发布PPL的参考配置，不作为用户架构要求。已有variable代码直接返回随机mask；target_fraction=0.30是校准配置键，并不保证每次选择30%。"
+    },
+    {
+      "kind": "p",
+      "text": "3.2 教师标签与训练"
+    },
+    {
+      "kind": "p",
+      "text": "冻结准确Attention教师，收集每个query/head/block的四输入和教师块重要性m_b，即块内准确Attention权重之和。不能直接将m_b当选择概率，因为所有块的m_b之和为1。"
+    },
+    {
+      "kind": "p",
+      "text": "对自由块，用训练集校准的单调映射生成软选择目标：t_b=sigmoid((log(m_b+epsilon)-tau_l)/T_l)。强制块绕过网络、直接选中，不纳入小网BCE，不要求四输入网络识别未提供的位置属性。tau_l和T_l是每层标签生成参数；其目标是覆盖高重要性块，并匹配预设平均工作量，不在test选参。首轮以2048上下文的平均约8块作为与旧结果比较的锚点，之后扫平均6/4块；这些都是平均工作量目标，允许单次数量变化。每个长度桶冻结自己的目标，且目标不小于强制块数、不大于有效块数；首轮可用min(8,有效块数)作为平均锚点。"
+    },
+    {
+      "kind": "p",
+      "text": "小网先优化输出边缘概率q_theta(x)与t的BCE。8个条件独立隐藏位仅有256种状态，训练时可精确枚举q_theta(x)=sum_h P_theta(h|x) sigmoid(v^T h+d)，对该边缘概率求梯度；部署仍真实采样隐藏位和输出位。该方法适用于这里定义的前馈、条件独立行为模型，是本方案的训练实现选择，不是已验证的器件模型或LLM结果。"
+    },
+    {
+      "kind": "p",
+      "text": "定义实际选择概率q_eff：强制块为1，自由块为q_theta(x)。平均工作量正则采用L_gate=BCE_free(q,t)+lambda_B [mean_query (sum_block q_eff-B_target(query长度))]^2，并按长度桶核查。预算项约束平均值，不是单次硬上限。数据保留完整query/head的分组标识；预算loss须用组内全部有效块计算，不能从打散、缺块的记录minibatch估算总数。lambda_B只在验证集选择，并检查每个长度桶的预算漂移。小网优先独立监督训练，首轮不通过硬块选择反传更新LLM。"
+    },
+    {
+      "kind": "p",
+      "text": "3.3 控制组与验收"
+    },
+    {
+      "kind": "p",
+      "text": "比较现有可变max4概率筛选、4到1 p-bit、4到8到1随机网络，以及同结构数字sigmoid加PRNG实现；固定8块旧配置作为参考点。训练后先接同候选准确PV以隔离筛选，再联用Ising。"
+    },
+    {
+      "kind": "p",
+      "text": "验收看实际随机mask的教师质量漏失、完整PPL、下游任务，以及候选数均值/P95/峰值、GQA并集和实际KV字节；分类准确率不是主验收。输入/权重位宽和局部场映射由硬件方在导出前冻结，量化或器件校准后重新评估。"
+    },
+    {
+      "kind": "p",
+      "text": "可变选块的容量必须记录：现TLM的512候选capacity不足时会报错，不会自动截断。行为仿真保留真实数量分布，报告超限率；Ising物理容量及超限策略由服务器与硬件方讨论后冻结。不能将静默裁减或新增配额修复写成网络本身效果。"
+    },
+    {
+      "kind": "p",
+      "text": "4 方案1 W8与短流随机计算FFN"
+    },
+    {
+      "kind": "p",
+      "text": "保持gate/up/down三投影和原SiLU。主参考B4/T32/K32，训练目标B4/T16/K16；只有胜出后再研究T8。B是幅度档、T是x与z各阶段采样数、K是门限分层数。保持共享64路、跨档共享门限、gate/up共享x、z独立重编码、符号和满幅旁路；不以独立Gaussian噪声替代真实联合误差。"
+    },
+    {
+      "kind": "p",
+      "text": "浮点主权重和梯度负责优化，前向执行部署一致的W8量化、缩放及真实短流。固定W8指权重在每次推理时确定且不是随机权重；训练会产生新的W8码，旧码和SHA作为对照保留。首轮更新三个FFN投影，其他模块冻结；Attention保持原版。"
+    },
+    {
+      "kind": "p",
+      "text": "先作短程FFN输出预适应，再用CE和教师logits蒸馏做端到端继续训练。必须比较未训练T16、未训练T32、同token数字W8-QAT及真实SC感知训练；采样和数制一致后再判断训练价值。缩放只允许部署支持的档位，不加入未计价的浮点补偿。"
+    },
+    {
+      "kind": "p",
+      "text": "导出时合并适配器并重新量化，重载W8后完整评估；若保留额外BF16适配分支，要另计成本。目标是以较低T达到相近质量，T减半不能直接写成整FFN延迟或能量减半。"
+    },
+    {
+      "kind": "p",
+      "text": "5 方案4 有限Ising观测适应"
+    },
+    {
+      "kind": "p",
+      "text": "首轮保持现有候选准确QK与Ising转移规则，训练Q/K/V/O权重。先使用已发布固定8块配置隔离观测数影响，并明确它只是方案4的控制实验；主训练S128，burn16/gap4不变，S512和同候选准确PV作参考。随后迁移到方案3的可变筛选并重新核候选数量与容量，不能把固定8块结果当作可变方案的验证。"
+    },
+    {
+      "kind": "p",
+      "text": "第一阶段固定教师hidden、QK分数和候选集合，仅训练V/O，在O投影之后比较：L_local=||W_O_student concat(y_real)-W_O_teacher concat(y_exact,C)||^2，教师分支停止梯度，确保V和O都能更新。这是局部预适应。第二阶段由学生自身状态生成Q/K/V，训练Q/K/V/O，使用完整模型CE和logit蒸馏；各计分query都要走因果筛选和真实CTMC。"
+    },
+    {
+      "kind": "p",
+      "text": "训练前向为y_real=mean_t V[z_t]。Q/K首版采用平滑代理：y_proxy=softmax(scores)乘stop_gradient(V)，y=y_real+y_proxy-stop_gradient(y_proxy)。V只沿实际观测频率反传，避免重复添加理想PV梯度；Q/K使用有偏代理。即使冻结Q/K权重，早层V/O改变后层hidden也会影响采样分布，因此不能把全模型V/O训练称为精确无偏路径梯度。"
+    },
+    {
+      "kind": "p",
+      "text": "部署初态、预热、观测间隔和相关性保持在前向中。训练时可计算Softmax辅助反传，部署不需保留这条代理。若每步用两条独立轨迹稳定梯度，分别计算loss再平均，不能先合并样本变成S256前向。先固定S128训练，胜出后S64；首轮不同时缩短burn/gap。"
+    },
+    {
+      "kind": "p",
+      "text": "现有adapter为eval-only且多token路径回原SDPA，必须建立训练封装并验证每层真实调用；仅切换model.train()不够。现阶段对应行为CTMC适应；有限抑制、反馈延迟和器件概率偏移未标定时，不称为器件已验证训练。首轮验收训练后S128对未训练S128/S512的完整质量和成本曲线。"
+    },
+    {
+      "kind": "p",
+      "text": "6 方案2 SiLU到tanh的逐步转换"
+    },
+    {
+      "kind": "p",
+      "text": "保持三投影和连续up分支，定义g=W_gate x、u=W_up x，新中间值z=u乘gamma tanh(alpha g)。首轮不新增bias；alpha/gamma按层设置并受可实现范围约束。该函数改变原SiLU的幅度关系，不能视为等价替换。"
+    },
+    {
+      "kind": "p",
+      "text": "先在准确数字投影下训练确定性tanh，更新被替换层的gate/up/down及alpha/gamma，其他层和Attention冻结；每次扩大替换集合后仅更新集合内参数。采用教师输出重建初始化与端到端CE/logit KD。Qwen先试中间层12，并独立检查0/12/23；Llama2用0/16/31。根据验证敏感度逐步组合为4层、8层、全部层，不将单层通过当全层成功。SiLU继续训练控制更新相同FFN投影，使用相同token预算；学生新增alpha/gamma单列记录。"
+    },
+    {
+      "kind": "p",
+      "text": "确定性转换通过后，才把tanh实现为真实双极p-bit均值：m_bar=mean(m_n)，E[m_n|g]=tanh(alpha g)，z=u乘gamma m_bar。先N64/N16，再视结果研究N4；N是激活观测数，与FFN的T、Ising的S分别记录。先只加入激活采样，最后再与W8短流结合。"
+    },
+    {
+      "kind": "p",
+      "text": "有限采样训练使用真实前向与明确标注的平滑反向。控制包括原SiLU、确定性tanh、理想tanh训练后有限部署、有限采样训练后有限部署。记录饱和率、alpha/gamma、输出方差及完整质量；增大gamma也会放大采样波动。确定性转换不能改善时，先停止扩大替换层数，不把更多p-bit样本当作必然补救。"
+    },
+    {
+      "kind": "p",
+      "text": "7 验收与服务器交付"
+    },
+    {
+      "kind": "table",
+      "rows": [
+        [
+          "验收项",
+          "必须交付的证据"
+        ],
+        [
+          "算术和梯度",
+          "精确前向契约、离散梯度方法、固定输入校核；当前推理核与训练核的差异"
+        ],
+        [
+          "训练公平性",
+          "同数据/token/teacher资源的数字继续训练与未训练硬件控制；训练与验证曲线"
+        ],
+        [
+          "部署质量",
+          "导出重载后的完整WT2 2048/1024、未见文本、ARC-Easy/HellaSwag同协议；3训练seed及3部署seed"
+        ],
+        [
+          "真实执行覆盖",
+          "全替换层调用审计、因果mask与KV、cached首计分token、prefill/decode范围、随机源使用"
+        ],
+        [
+          "硬件工作量",
+          "T/N/S、候选分布、更新/观测次数、V读取、GQA并集、SRAM/KV字节、容量峰值和超限率"
+        ],
+        [
+          "成果复现",
+          "代码SHA、配置与模型/tokenizer/数据版本及SHA-256、命令、环境、完成step checkpoint、导出权重位置及SHA"
+        ]
+      ]
+    },
+    {
+      "kind": "p",
+      "text": "最终验收以讨论确定的质量容忍范围内，减少完整模块工作量或成本为目标；不在本稿自行设定通过的PPL百分比。数字Attention参考仍为分块在线Softmax和GQA复用，包含相同接口与存储边界。随机源、分发、局部场、计数累加、转换、控制、SRAM/KV都计入成本；H100仿真耗时单列，不能替代p-bit芯片PPA。"
+    },
+    {
+      "kind": "p",
+      "text": "执行顺序为：共同门禁；方案3与方案1独立比较；方案4；方案2逐层转换；胜出项联合。各路线没有过关时保留负结果，不用联合训练掩盖分项问题。"
+    },
+    {
+      "kind": "p",
+      "text": "讨论时需要服务器方明确：训练执行负责人；可分配H100张数/互联/调度时段；本人存储与数据路径；实际global batch和吞吐门禁；质量容忍范围；可变候选的容量与超限策略。训练语料、模型和大checkpoint留在核实的个人服务器存储；Git放配置、摘要、索引与SHA。共享服务器经调度器提交，登录节点只作轻量检查和提交。当前文档任务不代为分配资源或启动作业。"
+    },
+    {
+      "kind": "p",
+      "text": "8 来源"
+    },
+    {
+      "kind": "p",
+      "text": "1. 项目完整WT2：PR52，正式目录qwen/results/joint_full_wt2_20261020；原FFN分层参考PR47。"
+    },
+    {
+      "kind": "p",
+      "text": "2. 可变筛选与固定对照：当前行为代码，原始可变筛选。"
+    },
+    {
+      "kind": "p",
+      "text": "3. LLM-QAT ACL 2024：量化前向和logits蒸馏的依据；不覆盖本项目分层随机算术。"
+    },
+    {
+      "kind": "p",
+      "text": "4. SeerAttention v4：学习块门控的参考；主要为prefill确定性门控，非本项目四输入decode p-bit网。"
+    },
+    {
+      "kind": "p",
+      "text": "5. Bengio等 2013：随机节点梯度与STE参考；不提供本方案CTMC精确梯度或7B验证。"
+    },
+    {
+      "kind": "p",
+      "text": "6. Stochastic activations v3：确定性tanh语言模型训练参考；不等于Qwen全层转换或有限p-bit成功。"
+    },
+    {
+      "kind": "p",
+      "text": "7. FineWeb-Edu数据卡：公开自然文本入口；执行时冻结实际revision与所用分片。"
+    }
+  ],
+  "plan_four_tracks_and_order_valid": true,
+  "five_full_WT2_values": [
+    "11.652118",
+    "11.732192",
+    "12.423820",
+    "12.274153",
+    "12.207062"
+  ],
+  "summary_sha256": "de3f489ef9f6630c58bb07d7a4bbbbe45bb3744ac4cd780aaab62fe91e4e1fab",
+  "layout_preview": "not performed, respecting explicit ordinary-document scope",
+  "no_existing_checkout_files_changed": true
+}

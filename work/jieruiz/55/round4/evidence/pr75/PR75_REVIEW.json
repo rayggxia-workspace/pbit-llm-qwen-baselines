@@ -1,0 +1,101 @@
+{
+  "pr": 75,
+  "issue": 73,
+  "head": "e197145e8f8e4ab41e2be6945260ec08b7fcc926",
+  "integration_base": "e4990c15b40f664cea7f9db43175b68347ce588b",
+  "verdict": "stage_merge_recommended_with_current_checkpoint; final26-result acceptance remains pending",
+  "blocking_code_findings": [],
+  "stage_acceptance": "Issue73 explicitly accepts frozen remote submissions and honest pending state; it does not require all26 final scores for this stage PR.",
+  "numerical_review": [
+    "Llama-only32-layer ModelGuard and ordered original LlamaMLP/LlamaSdpaAttention checks preserve Qwen guards; MHA32heads, pretraining_tp1 and nativeRoPE/cache/projections enforced.",
+    "ising_only uses all validK without Qwen screening calibration; all scored tokens including shared first choice query useq_len1 through32 layers; multi-token prefix attention is originalSDPA and FFN follows case in bothphases.",
+    "Packing code is a lossless INT16-to-INT8 storage cast validated by round-trip, applied perlayer; FP32 decoded matrices/scales unchanged. No clipping/requantization/RNG draw was added; expected saving4328521728bytes.",
+    "Inherited cached scorer preserves first-target alignment, original option order after canonical label-free branch order, KV and FFN/CTMC RNG rollback, unpadded length grouping, explicit dummy exclusions and perbatch stable seeds.",
+    "Official lm_eval0.4.8 task templates/process_results and no-extra-BOS pair tokenizer reused; explicitzero-shot PIQA1838/ARC-E2376 complete splits, no chat template. Dataset/request/tokenizer/model/version identities retained.",
+    "Old022/new309 differ only adapter packing, allocator env, recordedstorage metadata and addedpacking test; cached_score is byte-identical and old/new tokenized requests, templates andHarness hashes match.",
+    "Recovery indices retain old0,4,5,6,13,17,18,19 plus new18FFN-related indices; sets are disjoint and exactly0..25. Failed/cancelled attempts are not counted as completed.",
+    "Apple Softmax/Sigmoid FP32 table is a traceable index to already merged independent pretrains; it is not a Llama same-weight causal ablation."
+  ],
+  "verification": {
+    "source_archives_members": {
+      "old": 88,
+      "new": 88
+    },
+    "old_declared75_sources": "hashes plus recordedCRLF-to-LF equivalence independently checked",
+    "new_declared75_sources": "exactGit blobs verified;76 runtime files includingjob.sh matchreviewedhead",
+    "CPU_authored_tests": 7,
+    "CPU_extra_checks": [
+      {
+        "test": "all32_packed_vs_unpacked_task_forward_and_end_RNG",
+        "mode": "sdpa",
+        "bitwise_equal": true
+      },
+      {
+        "test": "all32_packed_vs_unpacked_task_forward_and_end_RNG",
+        "mode": "ising_only",
+        "bitwise_equal": true
+      },
+      {
+        "test": "native_HF_32layer_BF16_SDPA_wrapper",
+        "documents_bitwise_equal": true
+      },
+      {
+        "test": "independent_native_HF_full_causal_forward_choice_logprob",
+        "choices": 4,
+        "max_absolute_sum_error": 4.76837158203125e-07
+      }
+    ],
+    "CPU_environment": {
+      "python": "3.8.1 (tags/v3.8.1:1b293b6, Dec 18 2019, 23:11:46) [MSC v.1916 64 bit (AMD64)]",
+      "torch": "2.4.1+cpu",
+      "transformers": "4.45.2",
+      "cuda": false
+    },
+    "GPU_existing_gates": "Both original2571 and repaired2584 READY/input/source bindings checked: BF164.979502845218782/335686,8 independentcachedreference rows maximumerror0,8 completedpilots each; no reviewerGPUrun",
+    "formal_completed_snapshot": "16/26 as of2026-10-21T08:39:24Z;8old+8new completed,2running+8pending",
+    "completed_formal_checks": "exactcase/sourcecommit/configmembership; sealedJSONhash, documentartifactactualbytes/SHA androwcount; complete1838/2376 docs, declaredchoice-targetcounts, finiteaccuracy and32-layer decode/prefill/query-accounting audit",
+    "official_metrics_not_independently_recomputed_here": true
+  },
+  "before_merge_docs": [
+    "Replace stale repairedGPU2584pending/unvalidated statements with timestamped passed gate receipt, and current16/26 checkpoint; retain oldhistory and failedOOM originals.",
+    "State phaseimplementation/submission accepted,26 finalquality results not complete; keepIssue73 and existingheartbeat active until finalsealedresults are verified and published.",
+    "Do not restart/cancel/duplicate healthyjobs or overwrite frozen022/309 snapshots; finalsummary must explicitly permit thetwoequivalentversions and26unique cells."
+  ],
+  "remote_activity": "Read-only ownHongjie_Zeng Issue73 files and squeue for2572/2584/2585; no serverfile/job mutations and nootherpersonal directories accessed",
+  "limits": [
+    "No7B model/dataset download or newfullGPUevaluation; nativeCPUuses tiny random32-layer HuggingFaceLlama.",
+    "This stage checks completed artifact hashes/audits; it does not independentlyrecompute allperdocumentofficialmetrics or accept final26case quality.",
+    "No training, physicalIsing hardware/PPA or longcontextscreening validation."
+  ],
+  "evidence": {
+    "EXPORT.json": {
+      "bytes": 7351,
+      "sha256": "d8d3dd5017579f44934563c4d272a3c587021b15fdae61f2b0b2a2f69fff1134"
+    },
+    "SOURCE_AND_PLAN_PROOF.json": {
+      "bytes": 49995,
+      "sha256": "e3c949d25cfea418b3e6eee180a8dea1b231804cac7c94d5f61d4c4248cb9566"
+    },
+    "CPU_REVIEW.json": {
+      "bytes": 4634,
+      "sha256": "8388c79fde64e21eaf46c518712f10ed4ccc4b39b2ab10f5e5fb89a60cc0cc13"
+    },
+    "CPU_AUTHORED_TESTS.log": {
+      "bytes": 927,
+      "sha256": "706374e53ca76cbd135ed2ecc7b339aad351c9a40e7c8cd2d348b9a33cd36503"
+    },
+    "REMOTE_SNAPSHOT.json": {
+      "bytes": 140386,
+      "sha256": "8e30e915bac64b2fe95da3ca97239062dba3be691c43623c551e04146665dbf2"
+    },
+    "STAGE_CHECKPOINT_20261021.json": {
+      "bytes": 69040,
+      "sha256": "db1172f9d6842b076012376d620d5caac055ea218f610d751444531097293d9b"
+    },
+    "DEPENDENCY_METADATA_INDEX.json": {
+      "bytes": 15807,
+      "sha256": "e2c8d9b4160b6fc4a516fa9caaf7a257f6920dcc00d4af016dd29a605bc8e7e4"
+    }
+  },
+  "test_dependencies_reclaimed": true
+}

@@ -776,3 +776,8 @@ PR77仅计划/文档验收，无训练已完成结论。Issue76由用户额外�
 
 
 Issue73 18/26检查点发布回执：PR83草稿开放未合并，科学head7a75c53已通过GitHub API按完全一致的Git对象SHA发布；原件SHA7f894690ee8482dbf98d019df2a272cb4ac0c6d9f138350a6975a7b22bba65b4远端字节核验通过，Issue73评论6313631692已同步。原生Git连接阻塞已由替代传输解除。回执work/jieruiz/73/PUBLICATION_CHECKPOINT_20261021.json；每日heartbeat继续至26项及官方oracle最终验收。
+
+
+## 2026-10-21 18:25 Issue73用户回查：19/26
+
+CPU2634复用已测源86ccedc通过封存/逐题SHA/32层检查，19completed、2running（2585_12/20）、5pending（21～25）。新增ARC-E FFN seed2，两任务仅FFN三seed齐：PIQA acc/acc_norm77.80196%/78.99891%，ARC-E76.27666%/74.32660%；不是最终26项或独立官方oracle验收。新检查点checkpoints/20261021T102541Z/CHECKPOINT.json SHA c3e1ac52858d6f3cb3006e1e36c032c0c20eb0bf4df93858e7dc708a42da4871；同PR83报告更新，旧18检查点保持原字节。五项待运行约6.71GPU小时，两卡含运行尾部仍预计4～6h。服务器Qwen39项status全completed，含Hella1000子集。原推理未重跑，回查继续，结果同步以Issue73新评论为准。

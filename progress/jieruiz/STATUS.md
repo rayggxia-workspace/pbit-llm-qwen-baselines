@@ -1,3 +1,11 @@
+# 2026-10-21 18:25用户回查：19/26已核验
+
+Issue73/PR83（草稿开放未合并），jieruiz，task/73-results-followup。CPU2634复用源86ccedc封存核验完成exit0：19completed、2running（2585_12/20）、5pending（21～25），无无效或缺项。比18:11新增ARC-E FFN-only seed2，故PIQA/ARC-E的仅FFN三seed均齐。PIQA acc/acc_norm77.80196%/78.99891%，ARC-E76.27666%/74.32660%；相对原BF16分别−0.05441/约0与−0.02806/−0.33670个百分点。只重聚合已存逐题metrics，官方oracle仍待26项齐全，不作为最终验收。
+
+报告PROGRESS_20261021_ZH.md已更新；新原件checkpoints/20261021T102541Z/CHECKPOINT.json，SHA c3e1ac52858d6f3cb3006e1e36c032c0c20eb0bf4df93858e7dc708a42da4871。旧18项检查点不改。五项排队约6.71GPU小时，另有两项运行尾部；保持两卡估计仍需4～6h。Qwen39/39服务器status全completed（PIQA/ARC-E/Hella1000题子集各13），未重复跑GPU、未改旧推理snapshot。
+
+本次报告待随本提交同步PR83并核验远端blob，发布以Issue73新评论为准。继续同目录/分支收齐26项，最终官方process_results/配对统计后再停每日回查。旧18/26与旧running16为历史时点。Projects待既有scope。
+
 # 发布回执：18/26检查点已在PR83核验
 
 2026-10-21；jieruiz；Issue73。科学结果提交7a75c53eb4db9dc261bdba76ba6ad86f4e61a4b6已通过GitHub Git对象API上传，blob/tree/commit SHA完全等于本地，非强制更新任务分支；PR83 draft/open未合并。检查点原件GitHub字节SHA7f894690ee8482dbf98d019df2a272cb4ac0c6d9f138350a6975a7b22bba65b4一致，Issue73评论6313631692已同步，回执PUBLICATION_CHECKPOINT_20261021.json。此前原生Git超时已通过替代传输解决，不能再写作报告未上传。26项仍未齐；原推理任务和每日回查继续。下文“发布以新回执为准”由本回执覆盖。

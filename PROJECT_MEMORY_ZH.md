@@ -734,3 +734,8 @@ Issue78发布回执（2026-10-21 08:06 UTC）：科学head9b88a8da8d67450ae64637
 
 
 Issue78偏移对照发布状态（2026-10-21 08:35 UTC）：本地科学head0455d0d6b0a863f0bf3136446d9d9c5f28139b9f，Git网络长时间无进度/低速超时，远端仍d6d0f321b6c5eee7c334b7bb0f1e3d070d299304；新OFFSET文件尚未远端完成。API已同步PR79说明及Issue78数字/限制/待上传，回执work/jieruiz/78/OFFSET_PUBLICATION.json。网络恢复普通push并核验blob再改发布状态，不重交已完成2628。
+
+
+### Issue78分数到p-bit接口审计，2026-10-21
+
+当前替换版Q/K与KV为BF16，但候选QK显式float()做bmm/缩放得FP32；新采样诊断转FP64，只是行为参考，不是已实现电压接口。建议先保留QK、只量化score/局部场，再独立研究Q/K INT8和INT32累加。Qwen d64的1/8可并入scale/移位。8位logit/DAC码不等于R8均匀概率阈值；后者会把约1/2K的小概率归零，不能沿用FFN R8共享64结论。物理响应须标定V0/Vs/尾概率与相关时间，数字路径须LUT+足够细概率比较。量化尺度要补偿温度，m ln2近似要与空态校正一致；mask须独立门控。2.22/3.38轮不含这些未标定接口成本。详见REJECTION_ZH.md新节与work/jieruiz/78/SCORE_INTERFACE_AUDIT.json。无新量化/PPL/PT/PPA；默认不改，新文档/前轮OFFSET发布以实际Git回执为准。

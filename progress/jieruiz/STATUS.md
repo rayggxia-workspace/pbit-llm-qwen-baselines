@@ -1,3 +1,11 @@
+# 最新：分数数制与p-bit输入接口审计
+
+2026-10-21；jieruiz；Issue78/PR79。只读审计确认BF16 Q/K后候选QK显式FP32，新采样诊断又转FP64；尚无真实定点/LUT/DAC接口。已将代码行号、原生p-bit驱动映射、8位logit/DAC码与R8概率阈值区别、温度/偏移校正及成本缺口补入REJECTION_ZH.md；证据work/jieruiz/78/SCORE_INTERFACE_AUDIT.json。建议先只量化score入口，再独立改Q/K INT8；位宽/范围/器件参数均待校准，无新模型/量化/PPA结果或作业。
+
+默认未改；本轮文档和前轮OFFSET待本次Git推送核验，不能把原网络阻塞当新文件已上传。PR仍草稿未合并，Projects待权限。无本任务运行作业，不重交2628。
+
+以下为历史：
+
 # 本轮发布状态：结果已同步Issue，文件仍待网络恢复推送
 
 2026-10-21T08:35:15Z；jieruiz。OFFSET_PUBLICATION.json核实本地科学head0455d0d6b0a863f0bf3136446d9d9c5f28139b9f，远端仍d6d0f321b6c5eee7c334b7bb0f1e3d070d299304。普通Git push长时间无进度后停止，重试返回低速超时；GitHub API可用，PR79说明和Issue78评论已如实更新数字及未上传状态。没有凭据或权限变化，Projects仍待权限。

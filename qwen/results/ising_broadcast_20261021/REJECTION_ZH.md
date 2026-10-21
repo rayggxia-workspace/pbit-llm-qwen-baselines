@@ -60,3 +60,44 @@ r=2^(-m)的空态接受可用m个独立50%随机bit均为0判断；不是另算s
 下一步先验证有限概率精度及真实模型PPL，再决定代替原CTMC。当前不改默认、不启动多余训练，不把平均提议次数直接除GPU时间宣称加速。
 
 源代码rejection_sampler.py、test_rejection.py、diagnose_rejection.py。原始结果rejection_diagnostic.json；字节SHA、源/输入指纹、三seed分组见REJECTION_MANIFEST.json，提交命令见work/jieruiz/78/REJECTION_SOURCE.json与REJECTION_SUBMISSION.json。私有logit数组不上传。此处是自行推导和验证的构造，未据检索结果主张原创性或已有论文对当前硬件/LLM的实证支持。
+
+
+## 2026-10-21 分数到p-bit接口审计：当前浮点不等于硬件驱动格式
+
+本节为只读代码/文献审计与设计建议，没有新增量化实验、模型PPL、RTL或PPA。审计基线ab22501（原数值采样源e52570d不变）；Issue78/PR79。默认计算不改。
+
+| 阶段 | 当前数制及位置 |
+|---|---|
+| Q/K投影、RoPE输出和KV cache | BF16模型；run_model.py:69–70、upstream_attention/attention.py:301–308 |
+| 筛选摘要、筛选分数/校准sigmoid | FP32；attention.py:156–203 |
+| 候选QK^T/sqrt(d) | 显式q.float()/keys.float()，torch.bmm再缩放，FP32；attention.py:243–244 |
+| 原CTMC数值过程 | 模型路径FP32分数差、速率、等待时间；ctmc.py:92–105 |
+| 并行/拒绝采样行为模型 | 输入分数来自上述FP32或捕获NPZ，NumPy转FP64；sampler.py:39、rejection_sampler.py:14 |
+| V读取平均/回接口 | FP32均值后回BF16；attention.py:258、266 |
+
+原BF16 SDPA内部具体累加实现不能只凭Python源码判定；上表“明确FP32”仅针对替换版候选QK。新rejection仍只用于分布诊断，尚未接入模型PPL主运行器。
+
+### 必须分开量化logit、概率和电压
+
+候选驱动a_i=z_i-z_ref-m ln2，目标P1=sigmoid(a_i)。这不是FFN中clip(|x|/S)那种线性幅度概率编码。不能把score线性压到0..255，然后直接和R8比较，称为实现了sigmoid。
+
+建议两类接口：
+
+- 数字：FP32/整数点积分数 -> 固定单位定点logit/局部场 -> sigmoid查表或近似 -> 足够细的概率阈值 -> 独立随机数比较。
+- 物理：分数 -> 固定单位定点驱动码 -> DAC/输入驱动 -> 原生p-bit的sigmoid/tanh响应。无需先数字计算sigmoid概率，但DAC、保持、校准和分发要计成本。
+
+8位均匀概率阈值步长约1/256；sigmoid(-8)约0.000335会在最近舍入下归零。8位DAC/logit码只决定256个输入等级，不代表输出概率在0..1上等距256级；若器件和映射支持对应输入，仍可产生这个小概率。不能从FFN的R8共享64验证迁移为Attention小概率/独立性的保证。
+
+若实测响应P1(V)=[1+tanh((V-V0)/Vs)]/2，则sigmoid(a)对应V=V0+(Vs/2)*a。V0、Vs、尾部可用概率、稳定/去相关时间必须实测，不猜mV。[Pervaiz等，2017](https://pmc.ncbi.nlm.nih.gov/articles/PMC5591208/)给出p-bit响应与时间尺度；[Zhang等，2025](https://pmc.ncbi.nlm.nih.gov/articles/PMC11857111/)研究器件斜率和偏置的提取/补偿。这是接口形式依据，不是本项目器件参数或能耗证据。
+
+### 分阶段建议
+
+1. 先保持当前QK，单独把分数/驱动改为固定单位定点。可从较宽16位score参考开始，分开扫描8/10/12位驱动码；数字概率阈值另扫8/12/16位，不能把两种位宽混为同一参数。这些都是待测候选，不是已确定足够的位宽。
+2. 只用独立校准数据确定每层/头的固定LSB、范围及饱和策略；不按BF16/FP32完整可表示范围设计，不另做每query动态absmax选scale。算法所需的参考最大值仍保留，可用同单位整数比较。不同块尺度必须先对齐。
+3. 保留真实单位：任意缩放logits会改变注意力温度。量化单位必须折入DAC增益/数字LUT。m ln2的量化也须与空态接受2^-m一致；若实际偏移c'而仍按2^-m校正，会给参考类别相对权重引入偏差。建议预存高精度m ln2表，测剩余误差，而非累加低精度ln2。
+4. 接口质量确认后，再单独尝试RoPE后Q/K INT8、INT32累加并直接转定点分数。当前Qwen d=64，1/sqrt(d)=1/8可并入量化scale或移位，无需通用浮点除法；实际仍有S_Q*S_K/8的尺度恢复。[SageAttention](https://arxiv.org/html/2410.02367v3)支持INT8 Q/K和32位累加的可行性，但用了平滑和量化尺度处理，不能据此说本项目直接INT8已安全。
+5. 每个分数编码/装载一次，在多次提议间复用；共同m变化可作为公共偏移分发。数字LUT在m变化时的刷新、概率阈值保持、DAC/驱动更新都要显式调度。固定m能省其中一部分配置变化，但未做实测。
+
+禁止直接将非有限mask（-inf）饱和成最小驱动：无效候选必须单独门控为0。极小概率截断/饱和也需要单独测误差；把所有很负分数夹到同一个非零概率可能积累质量偏差。
+
+当前2.22/3.38轮是理想提议次数，不包含已校准的FP32转换、LUT/DAC、保持与器件输入更新时延。已有FFN转换RTL/审计不覆盖此接口。Ising宏中的bias_bits/配置预算也不是这个转换器的独立测量值；补齐边界后替换占位，避免漏计或和宏内成本重复计费。

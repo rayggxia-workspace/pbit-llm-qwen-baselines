@@ -68,6 +68,18 @@ class Tests(unittest.TestCase):
         self.assertEqual(r['actions']['proposal_frames'],4)
         self.assertEqual(m.calls,1);self.assertEqual(m.free,r['end_ns'])
 
+    def test_feedback_modes_change_cost_not_sample_law_or_draws(self):
+        rows=[]
+        for mode in ('per_candidate','shared_scalar'):
+            m=CorrectedRejectionSampler(dict(offset_update_mode=mode),64)
+            rows.append(m.request(0,[0]*64,128,random.Random(31),(0,0,0),list(range(64))))
+        (a,x),(b,y)=rows
+        self.assertEqual(a,b)
+        for key in ('proposal_frames','biased_bit_draws','fair_bit_draws','offset_changes'):
+            self.assertEqual(x['actions'][key],y['actions'][key])
+        self.assertGreater(x['actions']['config_bits'],y['actions']['config_bits'])
+        self.assertGreater(x['elapsed_cycles'],y['elapsed_cycles'])
+
     def test_rank_cap_has_no_priority_fallback(self):
         m=WinnerHoldSampler(dict(rank_retry_cap=2),4)
         with self.assertRaises(SamplingCapError) as cm:

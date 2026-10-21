@@ -1,3 +1,13 @@
+# 最新：公共偏移预设/固定/复用对照完成
+
+2026-10-21；jieruiz；Issue78/PR79，task/78-ising-broadcast，独立tmp/ising-broadcast-issue78-20261021。CPU2628源820ad7efa824b09482be52fe2df0db73bf1a70cf完成19合同、144条分布重放（含明确cap失败）；源码blob核验通过，无新PPL/GPU/PPA，默认未改。
+
+2K平坦S64：自适应0为3.384、预设11继续调3.227、固定11为2.663轮/地址（理论2.717）。真实512预设2改善首地址3.770到2.833，S64平均2.260对2.223未改善；同logits复用后自适应2.217，完全固定2.322。固定全局0/2/11在真实行有cap失败，尖峰固定11也失败。复用是相同输入接续，不是下一token，不把已有S64设置当免费标定。
+
+可预设m，但必须保留相应r=2^-m零态校正；本次仍减z_ref，未验证以绝对常数替代参考分数。建议按层/头校准预设+必要修正，未部署、未训练。成果qwen/results/ising_broadcast_20261021/OFFSET_ZH.md和OFFSET_MANIFEST.json，提交索引work/jieruiz/78/OFFSET_*；2628不重交，无本任务运行作业。新结果待本次push核验，PR79仍草稿未合并，Projects待权限。
+
+以下保留历史时点：
+
 # 发布回执：本轮已推送并核验
 
 2026-10-21T08:06:14Z；jieruiz；Issue78/PR79，task/78-ising-broadcast；科学head9b88a8da8d67450ae646372b2278deef33557889已推送正式workspace，三份新原件GitHub blob字节/SHA与服务器索引一致。PR仍draft/open、未合并；看板仍待read:project权限。回执work/jieruiz/78/REJECTION_PUBLICATION.json。无本任务运行作业，不重交；下一步是有限概率精度/模型PPL/PPA，不把理想分布轮数当硬件时钟。下方“待推送/网络失败”均为历史时点，已由本回执覆盖。

@@ -743,3 +743,6 @@ Issue78偏移对照发布状态（2026-10-21 08:35 UTC）：本地科学head0455
 ### Issue78分数到p-bit接口审计，2026-10-21
 
 当前替换版Q/K与KV为BF16，但候选QK显式float()做bmm/缩放得FP32；新采样诊断转FP64，只是行为参考，不是已实现电压接口。建议先保留QK、只量化score/局部场，再独立研究Q/K INT8和INT32累加。Qwen d64的1/8可并入scale/移位。8位logit/DAC码不等于R8均匀概率阈值；后者会把约1/2K的小概率归零，不能沿用FFN R8共享64结论。物理响应须标定V0/Vs/尾概率与相关时间，数字路径须LUT+足够细概率比较。量化尺度要补偿温度，m ln2近似要与空态校正一致；mask须独立门控。2.22/3.38轮不含这些未标定接口成本。详见REJECTION_ZH.md新节与work/jieruiz/78/SCORE_INTERFACE_AUDIT.json。无新量化/PPL/PT/PPA；默认不改，新文档/前轮OFFSET发布以实际Git回执为准。
+
+
+Issue78后续分支变更（2026-10-21）：并行审阅已将PR79合并a7a2c5b3cbc16390e30061329adfbebc835dc8b3（head310feea，08:51:06Z），原Issue78仍open。普通push遇非快进后已停止并核对，不强推。未发布OFFSET与本次score接口审计接续task/78-score-interface，同一任务目录内合入最新集成、保留评审manifest修复与其他成员成果。5份manifest归档Git blob SHA检查通过；无新数值实验或PPA。旧PR79未合并描述过时，新PR号待真实创建回执。

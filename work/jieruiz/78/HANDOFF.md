@@ -1,3 +1,11 @@
+# 最新：PR79已合并，后续在独立分支交付
+
+2026-10-21；jieruiz；Issue78仍open。实时核验PR79已于08:51:06Z合并a7a2c5b3cbc16390e30061329adfbebc835dc8b3，原head310feea含评审后的manifest修复与PR77集成。原分支推送非快进后已停止，没有强推。
+
+接续分支task/78-score-interface，在同一任务独立目录保留未发布的OFFSET源820ad7e/144记录与本次dtype/定点接口审计，合入最新a7a2c5b并保留其他成员文件/规则。DIAGNOSTIC/HARD/REJECTION/OFFSET/ONEHOT的归档Git blob字节SHA核对通过，证据work/jieruiz/78/SCORE_INTERFACE_VERIFY.json。无源码算术、默认、模型、PPL或PPA改动。19CPU合同为此前2628已实际通过，本次仅文档/合并字节审计，不冒充新数值实验。
+
+下一步推送task/78-score-interface并创建后续PR（新PR号待实际回执），不向已合并PR79追加未发布文件。Issue78继续负责，Projects待权限；无本任务运行作业，不重交2628。下方PR79“仍草稿/未合并”及旧分支发布状态为历史。
+
 # 最新：分数数制与p-bit输入接口审计
 
 2026-10-21；jieruiz；Issue78/PR79。只读审计确认BF16 Q/K后候选QK显式FP32，新采样诊断又转FP64；尚无真实定点/LUT/DAC接口。已将代码行号、原生p-bit驱动映射、8位logit/DAC码与R8概率阈值区别、温度/偏移校正及成本缺口补入REJECTION_ZH.md；证据work/jieruiz/78/SCORE_INTERFACE_AUDIT.json。建议先只量化score入口，再独立改Q/K INT8；位宽/范围/器件参数均待校准，无新模型/量化/PPA结果或作业。

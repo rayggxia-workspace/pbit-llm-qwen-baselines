@@ -746,3 +746,6 @@ Issue78偏移对照发布状态（2026-10-21 08:35 UTC）：本地科学head0455
 
 
 Issue78后续分支变更（2026-10-21）：并行审阅已将PR79合并a7a2c5b3cbc16390e30061329adfbebc835dc8b3（head310feea，08:51:06Z），原Issue78仍open。普通push遇非快进后已停止并核对，不强推。未发布OFFSET与本次score接口审计接续task/78-score-interface，同一任务目录内合入最新集成、保留评审manifest修复与其他成员成果。5份manifest归档Git blob SHA检查通过；无新数值实验或PPA。旧PR79未合并描述过时，新PR号待真实创建回执。
+
+
+Issue78发布回执（2026-10-21 08:55 UTC）：后续分支task/78-score-interface已推送0d3dfa2fa107ea5925751cdb686cda089b414628，创建PR80（草稿未合并）；原PR79已合并a7a2c5b。旧OFFSET网络阻塞解除，原件远端blob SHA6a628a...核验通过；本次dtype/接口审计一并交付，见work/jieruiz/78/SCORE_INTERFACE_PUBLICATION.json。Issue78仍open、无新模型/量化/PPA作业，Projects待权限。

@@ -1,3 +1,7 @@
+# 发布回执：Issue78后续PR80已推送
+
+2026-10-21T08:55:47Z；jieruiz；task/78-score-interface；科学head0d3dfa2fa107ea5925751cdb686cda089b414628已推送，PR80草稿未合并。原PR79已合并a7a2c5b。OFFSET原件GitHub blob字节SHA核验通过，前轮网络待上传已解除；分数FP32/FP64审计与建议一并发布。回执work/jieruiz/78/SCORE_INTERFACE_PUBLICATION.json。Issue78保持open，Projects待权限，无本任务运行作业；量化/模型PPL/器件PPA待新验证，不重交2628。
+
 # 最新：PR79已合并，后续在独立分支交付
 
 2026-10-21；jieruiz；Issue78仍open。实时核验PR79已于08:51:06Z合并a7a2c5b3cbc16390e30061329adfbebc835dc8b3，原head310feea含评审后的manifest修复与PR77集成。原分支推送非快进后已停止，没有强推。

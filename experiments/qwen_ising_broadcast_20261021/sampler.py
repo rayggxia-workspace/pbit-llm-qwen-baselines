@@ -20,7 +20,8 @@ def sigmoid(x):
 
 def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
                    spacing=4, seed=0, rng=None, enable=1., max_slots=256,
-                   strict=True, observation='jitter', observation_rng=None):
+                   strict=True, observation='jitter', observation_rng=None,
+                   hard_inhibit=False):
     """Return [rows,S] addresses, or fail if S legal observations are unavailable.
 
     E = kappa*C*(C-1)/2 - sum((z_i-z_ref)*s_i), s_ref=0.
@@ -30,6 +31,7 @@ def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
     burn/spacing count COMPLETE sweeps, not hardware clocks or CTMC time.
     A block<=0 updates every candidate slot together. enable is an independent
     per-site lazy-update probability; even enable<1 is not exact block Gibbs.
+    hard_inhibit implements kappa->infinity with Boolean exclusion; no inf*0.
     """
     z = np.asarray(logits, dtype=np.float64)
     if z.ndim != 2 or min(z.shape) < 1:
@@ -71,7 +73,11 @@ def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
         for start in range(0, width, block):
             ix = order[start:start + block]
             old = state[:, ix]
-            prob = sigmoid(delta[:, ix] - kappa * (count[:, None] - old))
+            others = count[:, None] - old
+            if hard_inhibit:
+                prob = np.where(others == 0, sigmoid(delta[:, ix]), 0.)
+            else:
+                prob = sigmoid(delta[:, ix] - kappa * others)
             chosen = movable[:, ix] & running[:, None]
             if enable < 1:
                 chosen &= rng.random(old.shape) < enable
@@ -105,7 +111,8 @@ def sample_indices(logits, samples=64, kappa=12., block=64, burn=16,
     mask = output >= 0
     pairs = mask[:, 1:] & mask[:, :-1]
     stats = dict(kind='finite_penalty_random_partition_parallel_heat_bath',
-        kappa=kappa, block=block, update_enable_probability=enable,
+        kappa='hard_infinity' if hard_inhibit else kappa,
+        hard_inhibit=bool(hard_inhibit),block=block, update_enable_probability=enable,
         rows=rows, candidates=width, samples=samples, burn_sweeps=burn,
         spacing_sweeps=spacing, executed_sweeps=sweep,
         update_phases=phases, attempted_site_updates=attempts, state_flips=flips,

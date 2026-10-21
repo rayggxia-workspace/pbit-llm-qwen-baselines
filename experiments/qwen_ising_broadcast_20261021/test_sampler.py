@@ -56,4 +56,27 @@ class Contracts(unittest.TestCase):
                     P[a,b]+=(p if value else 1-p)/3
         self.assertLess(float(np.abs(pi@P-pi).max()),1e-14)
 
+    def test_hard_constraint_excludes_self_and_preserves_softmax(self):
+        # Empty plus one-active states, with reference probability exp(0).
+        d=np.array([-.2,-1.,-2.]);states=np.vstack([np.zeros(3),np.eye(3)])
+        pi=np.r_[1.,np.exp(d)];pi/=pi.sum();P=np.zeros((4,4))
+        for a,s in enumerate(states):
+            for j in range(3):
+                prob=sigmoid(d[j]) if s.sum()-s[j]==0 else 0.
+                for value in [0,1]:
+                    weight=prob if value else 1-prob
+                    if weight==0:continue
+                    y=s.copy();y[j]=value
+                    b=np.flatnonzero((states==y).all(1))[0]
+                    P[a,b]+=weight/3
+        self.assertLess(float(abs(pi@P-pi).max()),1e-14)
+        self.assertGreater(P[1,1],0.)  # unique active bit is not forcibly cleared
+
+    def test_hard_single_site_never_creates_multiple_active_bits(self):
+        out,s=sample_indices(np.zeros((8,16)),16,block=1,hard_inhibit=True,
+            max_slots=32,spacing=1)
+        self.assertEqual(s['peak_active_count'],1)
+        self.assertEqual(s['invalid_phase_fraction'],0.)
+        self.assertEqual(s['kappa'],'hard_infinity')
+
 if __name__=='__main__':unittest.main()

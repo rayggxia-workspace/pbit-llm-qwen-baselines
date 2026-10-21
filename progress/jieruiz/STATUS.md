@@ -1,3 +1,11 @@
+# Issue87 全宽并行采样器TLM：本地完成、发布以回执为准
+
+2026-10-21；jieruiz；task/87-parallel-sampler-tlm；base5b26c80；独立稀疏tmp/parallel-sampler-issue87-20261021。赢家保持/原校正拒绝、源后端抽象、全候选一次读取、时序/反馈/回压及未知PPA契约已实现；18新＋10旧检查通过。执行f6c6bd8215c2d702ab42e6a3078f64e0888cade8；30三seed合成模块＋2单层decode情景完成，非模型PPL或芯片结果；无新Slurm/训练/PT/DRAMSys运行。
+
+正式说明architecture_tlm/PARALLEL_SAMPLERS_V5_ZH.md；正式结果architecture_tlm/results/parallel_sampler_v5_20261021；交接work/jieruiz/87/HANDOFF.md。源技术不决定，完整能量/面积null；公共偏移与逐驱动重写是可调前端模式。推送/PR/远端SHA以本任务PUBLICATION及Issue87回执为准，未合并；看板沿既有权限限制待同步。本任务不接管Issue37、不重跑Issue73/78。
+
+以下保留此前各任务记录：
+
 # Issue55第四轮：4项成果PR已实际合并
 
 2026-10-21；负责人jieruiz；review/55-pr-round4；本轮稀疏目录tmp/pr55-review-20261021（报告合并后按恢复索引回收）。目标pbit-tlm-attention-details-20261016，科学集成e24414b8f0ba47e8df46ba64475dbbf45568e2f4。PR75/77/79/80已按单项原生门禁合并，精确head/base/merge和测试边界见work/jieruiz/55/round4/REVIEW_ZH.md、REVIEW.json、receipts。审计报告通过后续独立PR交付，报告PR不计入4项成果。

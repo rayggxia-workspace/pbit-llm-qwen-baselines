@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 import time
+import re
 
 REPO=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(REPO))
@@ -98,7 +99,16 @@ def main():
                 controller._state={i:dict(summary=None,summary_builds=0,summary_updates=0) for i in (0,12,23)}
                 with observe(model,torch,controller,{0,12,23},context,start,records) as calls:
                     captured=model.model(input_ids=window,use_cache=False,return_dict=True).last_hidden_state
-                if calls!=list(range(24)) or not torch.equal(reference,captured):raise RuntimeError('capture changes BF16 forward')
+                if calls!=list(range(24)):raise RuntimeError('capture layer coverage '+repr(calls))
+                if not torch.equal(reference,captured):
+                    repeat=model.model(input_ids=window,use_cache=False,return_dict=True).last_hidden_state
+                    diag=dict(context=context,start_token=start,threads=a.threads,
+                        captured_max_abs=float((reference.float()-captured.float()).abs().max()),
+                        captured_mismatches=int((reference!=captured).sum()),
+                        untouched_repeat_equal=bool(torch.equal(reference,repeat)),
+                        untouched_repeat_max_abs=float((reference.float()-repeat.float()).abs().max()))
+                    print(json.dumps(dict(capture_gate_failed=diag)),flush=True)
+                    raise RuntimeError('BF16 capture equality failed; no trace accepted')
                 captured_last=model.lm_head(captured[:,-1:]).float()
                 if not torch.equal(reference_last,captured_last):raise RuntimeError('last readout mismatch')
                 windows.append(dict(context=context,start_token=start,

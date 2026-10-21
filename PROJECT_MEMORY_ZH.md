@@ -773,3 +773,6 @@ PR77仅计划/文档验收，无训练已完成结论。Issue76由用户额外�
 ## 2026-10-21 Issue73定时检查：18/26完成
 
 原PR75已合并3fe790e，仅为代码/提交/恢复阶段；后续task/73-results-followup、PR83草稿开放未合并。CPU2632源86ccedc完成7合同；10:11:23Z为18completed（旧8＋修复10）、2running（2585_12/16）、6pending（20～25），新ARC-E FFN seed0/1完整。逐题SHA/全量ID/候选token/32层active-dummy/源与输入绑定及已存metrics重聚合通过，尚未独立复算官方process_results、未重哈希14GB权重。PIQA S512与ARC-E FFN均2/3，不报部分组均值。待运行约7.98GPU小时，两卡保留估计剩4～6h、单卡8～11h，非排程保证。入口llama2/results/task_accuracy_20261020/PROGRESS_20261021_ZH.md及checkpoints/20261021T101123Z/；原推理和快照不动。heartbeat每日继续且提示已纠正旧PR75状态，26项收齐后需官方oracle/配对验收再停用。原生Git连接两次超时，源码通过GitHub API上传且commit/tree/blob逐SHA完全一致，报告发布以PR83/Issue73回执为准。
+
+
+Issue73 18/26检查点发布回执：PR83草稿开放未合并，科学head7a75c53已通过GitHub API按完全一致的Git对象SHA发布；原件SHA7f894690ee8482dbf98d019df2a272cb4ac0c6d9f138350a6975a7b22bba65b4远端字节核验通过，Issue73评论6313631692已同步。原生Git连接阻塞已由替代传输解除。回执work/jieruiz/73/PUBLICATION_CHECKPOINT_20261021.json；每日heartbeat继续至26项及官方oracle最终验收。

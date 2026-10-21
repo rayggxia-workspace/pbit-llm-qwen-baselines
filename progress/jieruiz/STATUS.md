@@ -1,3 +1,7 @@
+# 发布回执：18/26检查点已在PR83核验
+
+2026-10-21；jieruiz；Issue73。科学结果提交7a75c53eb4db9dc261bdba76ba6ad86f4e61a4b6已通过GitHub Git对象API上传，blob/tree/commit SHA完全等于本地，非强制更新任务分支；PR83 draft/open未合并。检查点原件GitHub字节SHA7f894690ee8482dbf98d019df2a272cb4ac0c6d9f138350a6975a7b22bba65b4一致，Issue73评论6313631692已同步，回执PUBLICATION_CHECKPOINT_20261021.json。此前原生Git超时已通过替代传输解决，不能再写作报告未上传。26项仍未齐；原推理任务和每日回查继续。下文“发布以新回执为准”由本回执覆盖。
+
 # 2026-10-21 18:11 Llama2检查点：18/26，后续PR83
 
 jieruiz；Issue73 open；后续分支task/73-results-followup，PR83 draft/open未合并，base5b26c80c28ab22383f12ab31046dd723ca985abb；独立目录tmp/llama2-task-accuracy-issue73-20261020。原PR75已合并3fe790ecc2d4849662b60216922fd45dc4300848，只验收代码/提交/恢复阶段，旧“未合并/GPU2584 pending”不再代表当前状态。

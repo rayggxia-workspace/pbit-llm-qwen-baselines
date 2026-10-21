@@ -1,3 +1,7 @@
+# 最新：真实QKV采样器比较已完成，独立分支交付
+
+2026-10-21T13:37:45.944700+00:00；jieruiz；task/78-sampler-qkv-benchmark。90/90配置、三seed×八重复完成，固定行输出MSE与更新/随机服务成本，非PPL/PPA。正式入口qwen/results/sampler_qkv_20261021/DECISION_ZH.md；最新交接work/jieruiz/78/qkv_benchmark/HANDOFF.md，原件/源码/命令见同目录manifest和回执。结果待本次任务分支/PR发布核验；原PR82和其他作业不改。本任务无运行作业。以下保留此前阶段原文：
+
 # 发布回执：Issue78后续PR80已推送
 
 2026-10-21T08:55:47Z；jieruiz；task/78-score-interface；科学head0d3dfa2fa107ea5925751cdb686cda089b414628已推送，PR80草稿未合并。原PR79已合并a7a2c5b。OFFSET原件GitHub blob字节SHA核验通过，前轮网络待上传已解除；分数FP32/FP64审计与建议一并发布。回执work/jieruiz/78/SCORE_INTERFACE_PUBLICATION.json。Issue78保持open，Projects待权限，无本任务运行作业；量化/模型PPL/器件PPA待新验证，不重交2628。

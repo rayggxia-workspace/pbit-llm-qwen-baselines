@@ -768,3 +768,14 @@ PR79的18项CPU128目标后缀PPL已核，并非完整WT2；19当前合同与旧
 此前未发布的OFFSET/score接口现由PR80交付并独立审核：144条理想分布记录含cap失败，固定/预设偏移改善部分案例但非普遍收益；同logits复用不代表下一token。QK score为FP32、诊断FP64，8位驱动码不等于R8概率；接口建议尚未实现或量化验证。Issue78继续开放；不能把本次交付当完整模型或硬件验收。
 
 PR77仅计划/文档验收，无训练已完成结论。Issue76由用户额外明确授权后已更新并关闭；未修改amlink1219个人STATUS。Issue28继续维护。备忘录canonical原有未提交增量先逐SHA归档并保留全部有序文本，HEAD保持原值，其工作文件与根阅读副本同步到本次发布文档。仅回收本轮本人稀疏review/helper，恢复索引project_archives/pr_review_issue55_20261021/RECOVERY_INDEX.json；执行状态查Issue55最终回执。
+
+
+## 2026-10-21 Issue78真实QK/V采样器对照完成
+
+独立task/78-sampler-qkv-benchmark、tmp/sampler-qkv-issue78-20261021，base5b26c80；capture2640源4251660、benchmark2641/2642源4ec2613、派生2733源25cfd9d。54原始BF16 query/head/layer行＋36筛选派生，共90配置全部完成，三seed×八重复，原FFN/Attention轨迹，512/2K/8K各两窗口、层0/12/23、头0/6/13，真实64维V。六窗口捕获前后backbone/末读出逐位一致。原2639门禁失败不接受；2731因Windows archive LF→CRLF配置SHA停止，实际执行源/PLAN原字节已归档并验证只换行不同，2732/2733按真实SHA汇总，无模型/采样重跑。输入/原件/来源见work/jieruiz/78/qkv_benchmark，摘要SHA b95c40f5098fca632e28d420e96399189e59c6f80d8ed6da048fa8ebf9ef1261。
+
+以同候选真实V输出MSE对照解析IID128：主表预热32，winner c=max中位288、90/90（范围288–1056）；校正拒绝中位288.17、90/90（约128–406）；Barker46/90、中位16416，仅成功输入统计；两比特19/90；XOR67/90。winner cmax+2较慢，+4多不达标，真实Attention有效类别中位约7–15；均匀理论最优偏置不直接适用。赢家8位负驱动h1/8/[-31.875,0]档位基本不变，非物理/R8验证，精度更高会有约4.95e-4归一化偏差地板。
+
+从argmax初始化，winner B0/S256到IID128均值67/90，S512 89/90（MC95 83），S1024 90/90（MC95 90）；IID512目标B0/S2048均值90/90但MC95 81，S4096才90/90上界。本批MAP-V无行满足IID128，不是只测容易尖峰。更新数不等于芯片周期：P64处理N512每帧至少8服务波，S512即至少4096服务周期，另计加载/稳定/计数仲裁/反馈；全N并行也未证明II=1。两主候选能量胜负未定，Barker/纯XOR先不作长候选主线。
+
+不是完整模型PPL/准确率/PPA/能量，原始V访存去重/GQA并集未实测；筛选遗漏另计，部分保留质量很低。正式报告qwen/results/sampler_qkv_20261021/DECISION_ZH.md及SUMMARY，13本地、8服务器核心/4汇总检查通过，无本任务运行作业、无新GPU或训练/默认/TLM改变。任务分支/PR发布待本次实际回执；Issue78继续open，PR82不接管。

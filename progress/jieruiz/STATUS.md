@@ -1,3 +1,13 @@
+# Issue78：真实QKV采样器90配置完成，待发布回执
+
+2026-10-21T13:37:45.944700+00:00；负责人jieruiz；task/78-sampler-qkv-benchmark；base5b26c80，独立稀疏tmp/sampler-qkv-issue78-20261021。90/90配置、3seed×8重复，原BF16 QK/V及筛选派生，源4ec2613；最终摘要/固定预算源25cfd9d/2733。正式报告qwen/results/sampler_qkv_20261021/DECISION_ZH.md，SUMMARY SHA b95c40f5098fca632e28d420e96399189e59c6f80d8ed6da048fa8ebf9ef1261。
+
+赢家c=max与校正拒绝主表典型约288轮；单p-bit Barker仅46/90到IID128目标。赢家argmax初始化B0/S512为89/90、S1024为90/90均值达标。更新/服务波非芯片周期，无新PPL/PT/训练/GPU占用或TLM默认改动。捕获六窗口逐位一致，本地13检查、服务器8核心/4汇总通过；CRLF执行源/配置原字节封存，修复汇总绑定但不改旧结果。
+
+最新HANDOFF在work/jieruiz/78/qkv_benchmark/HANDOFF.md；原78 HANDOFF加入口，其他原文保留。科学成果本地完成，下一步明确文件提交/推送、PR草稿及远端字节核验；以PUBLICATION/Issue78回执为准。无本任务运行作业，不重跑健康任务，不接管PR82。Projects本轮未写，沿既有权限限制待同步。
+
+以下保留此前各任务状态原文：
+
 # Issue55第四轮：4项成果PR已实际合并
 
 2026-10-21；负责人jieruiz；review/55-pr-round4；本轮稀疏目录tmp/pr55-review-20261021（报告合并后按恢复索引回收）。目标pbit-tlm-attention-details-20261016，科学集成e24414b8f0ba47e8df46ba64475dbbf45568e2f4。PR75/77/79/80已按单项原生门禁合并，精确head/base/merge和测试边界见work/jieruiz/55/round4/REVIEW_ZH.md、REVIEW.json、receipts。审计报告通过后续独立PR交付，报告PR不计入4项成果。

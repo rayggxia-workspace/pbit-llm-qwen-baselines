@@ -1,5 +1,5 @@
 import unittest
-from summarize import gather,crossing,summarize_rows
+from summarize import gather,crossing,summarize_rows,fixed_budget_checks
 
 
 def records(method='winner0',omit=None):
@@ -34,6 +34,17 @@ class SummaryChecks(unittest.TestCase):
     def test_iid_does_not_use_lucky_shorter_budget(self):
         curves=[dict(burn=0,samples=s,normalized_mse=.00001,mc_normal_95_high=.00001) for s in (64,128,512)]
         self.assertEqual(crossing(curves,'iid',128)['samples'],128)
+
+    def test_fixed_budget_does_not_assume_error_is_monotonic(self):
+        rows=[]
+        for row in range(2):
+            curves={m:[dict(burn=b,samples=s,normalized_mse=(.1 if row==1 and s==512 else 2/s),
+                           mc_normal_95_high=(.1 if row==1 and s==512 else 2/s))
+                       for b in (0,32,128) for s in (128,256,512,1024,2048,4096)] for m in ('winner0','winner0_q8')}
+            rows.append(dict(row=dict(context=512,pool='dense'),curves=curves))
+        checks=fixed_budget_checks(rows)
+        c=next(x for x in checks if x['scope']=='all' and x['method']=='winner0' and x['burn']==0 and x['samples']==512)
+        self.assertEqual(c['target128_reached'],1)
 
 
 if __name__=='__main__':unittest.main()

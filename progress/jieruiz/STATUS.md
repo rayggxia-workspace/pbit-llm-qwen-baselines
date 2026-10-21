@@ -1,3 +1,15 @@
+# 最新：κ无穷硬抑制对照已完成
+
+2026-10-21T07:28:57.253117+00:00；Issue78/PR79，jieruiz，草稿未合并。
+
+硬更新排除自身：其他位有1时强制0，否则按sigmoid(delta)采样。空状态为最大类别，随机单点精确转移保持Softmax；不能混用禁止空态的强制one-hot编码。两位any/multi广播可以替代数值κ计数，仍需RTL/PT定时验证。
+
+Slurm2623完成；独立执行2fefbb019b1b68369e7ed04932184e464fb99fa1，12KB源码包、旧私有捕获SHA及命令见HARD_SOURCE/HARD_SUBMISSION。11项本地/远端合同通过；15组配对真实重放（42行、5调度、3seed、S64），全同步及块64/16/4与κ16地址100%相同，lazy最小97.32%。硬化不修复同步冲突，未新增硬模式PPL/RTL/PPA。
+
+正式小JSON与字节SHA：qwen/results/ising_broadcast_20261021/HARD_MANIFEST.json。原数值0c0d897和18项PPL快照没有改写。2623无需重交；继续核对2602/2609终态。完整WT2/PPA仍未做，Projects缺read:project待同步。
+
+以下保留先前时点：
+
 # Issue78：诊断完成，S64 PPL对照部分完成
 
 2026-10-21T07:12:29.385386+00:00；jieruiz；task/78-ising-broadcast；PR79草稿待审未合并。9项CPU合同通过；Slurm2600/2601/2608完成。已发布5/18个128目标PPL：BF1620.212326，CTMC三seed均值23.159115，全同步两seed82.224259/129.479031。随机分块仍运行，2602并发6、2609后续自动汇总，无GPU。正式qwen/results/ising_broadcast_20261021，交接work/jieruiz/78/HANDOFF.md；所有完整WT2/PPA仍未做，Issue78 open，Projects待权限。

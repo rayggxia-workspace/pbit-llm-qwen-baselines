@@ -34,6 +34,34 @@
 
 以下保留历史时点：
 
+## 同期已合入的历史任务状态（保留原文）
+
+# Issue73 2026-10-20 17:40：显存修复已补交、GPU门禁排队、回查已设
+
+jieruiz；task/73-llama2-task-accuracy；PR75 draft/open未合并。PIQA BF16已完整完成；原2572的FFN-only三seed初始化OOM，15个同类待执行项仅本人撤回。健康8项仍在原2572（index0,4,5,6,13,17,18,19）。
+
+新冻结309ca9c1629c364142ffdce474d5f6138da929c1无损W8码INT16→INT8，保留恢复FP32和RNG，省4.03GiB；CPU2583七项通过，GPU2584排队，18项FFN相关数组2585 afterok2584已提交。不能称修复GPU验证完成。两版正式请求/模板/Harness逐字节一致，75新源Git blob一致；原OOM/取消记录和新SHA索引已保存。
+
+1卡剩约40～55h；较快2卡约22～32h，按真实decode步数和吞吐情景估计。heartbeat llama2-7b已建，每24h回查，首检预计10/21 17:35北京时间，核验完成后停用；本地关机无法SSH，不保证错过立即补跑。交接work/jieruiz/73/HANDOFF.md最上节，FOLLOWUP_SCHEDULE.json。下一步核2584结果，收齐8旧+18新配置，勿重复提交。Projects缺read:project仍待同步。
+
+以下为旧时点记录：
+
+# Issue73：Llama2任务评测已通过门禁并开始正式运行
+
+2026-10-20；负责人jieruiz；Issue73 / PR75（draft/open、未合并）；分支task/73-llama2-task-accuracy，base18b887b集成分支。独立稀疏目录tmp/llama2-task-accuracy-issue73-20261020；冻结执行022db6828c0caba96ae3d620f80b27c1ae3774b9已推送。
+
+PIQA1838、ARC-E2376全量各13配置，共26项：BF16、FFN-only三seed、Attention-only S128三seed、联合S128/S512各三seed。固定B4/T32/K32、共享64；Attention为unscreened有限CTMC，短题不宣称K筛选收益。Apple PR67已有FP32 Softmax/Sigmoid两完整基线已按源SHA索引复用，并非新跑或Llama同权重因果对照。
+
+CPU2570的6项32层小模型合同通过；GPU2571完整WT2 BF164.979502845218782、335686目标严格重现，8题独立缓存逐候选差0且digital_sdpa一致；4个真实7B概率pilot及32层审计通过，最高29.89GiB。正式数组2572_[0-25]已经启动，首项运行，其余待Resources（最多2张5090，目前仅1空闲）。分数pending；没有新训练/PPA。
+
+成果llama2/results/task_accuracy_20261020/；源码experiments/llama2_task_accuracy_20261020/；远端/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/outputs/022db6828c0caba96ae3d620f80b27c1ae3774b9/full。SHA、执行命令、Slurm回执/READY及精确源码小归档已保留；75源核验，38个继承文件仅git archive CRLF换行差异，原始执行字节保留，未改数值。
+
+下一步先核Issue73/PR75、squeue及HANDOFF；只读收回封存full JSON和documents，核SHA/26项/32层/3seed后汇总与配对差值。不重交仍在运行的数组，不用pilot或部分seed冒充正式结论。Projects历史缺read:project待同步。
+
+以下保留此前状态（时间戳快照，最新合并以远端为准）：
+
+## 同期已合入的历史任务状态（保留原文）
+
 # 发布回执：本轮已推送并核验
 
 2026-10-21T08:06:14Z；jieruiz；Issue78/PR79，task/78-ising-broadcast；科学head9b88a8da8d67450ae646372b2278deef33557889已推送正式workspace，三份新原件GitHub blob字节/SHA与服务器索引一致。PR仍draft/open、未合并；看板仍待read:project权限。回执work/jieruiz/78/REJECTION_PUBLICATION.json。无本任务运行作业，不重交；下一步是有限概率精度/模型PPL/PPA，不把理想分布轮数当硬件时钟。下方“待推送/网络失败”均为历史时点，已由本回执覆盖。

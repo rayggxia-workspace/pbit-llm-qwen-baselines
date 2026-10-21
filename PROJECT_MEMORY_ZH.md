@@ -732,3 +732,24 @@ Slurm2626完成19合同和18分布记录。S64三seed每地址提议均值：真
 
 
 Issue78发布回执（2026-10-21 08:06 UTC）：科学head9b88a8da8d67450ae646372b2278deef33557889已推送workspace，one-hot两原件与rejection原件的GitHub blob字节SHA核验通过，详见work/jieruiz/78/REJECTION_PUBLICATION.json。PR79仍草稿未合并；此前“待上传/网络阻塞”已解除。无新模型PPL或PPA结论，不重交已完成CPU作业。
+
+
+### Issue78偏移预设/固定/复用（2026-10-21）
+
+用户建议一开始减近似公共值。CPU2628，源820ad7efa824b09482be52fe2df0db73bf1a70cf，19合同和144理想重放完成，保留cap失败。2K平坦S64从自适应0的3.384轮/地址，到预设11继续自适应3.227、固定11为2.663（理论期望2.717）。真实512预设2改善首地址3.770到2.833，但S64平均2.260对原2.223未提升；相同logits复用m再自适应2.217、固定2.322。固定0/2/11在部分真实行失败，尖峰固定11也失败；不推论所有固定值皆无用。复用仅重复相同logits，已有S64成本有索引，不是下一token验证。
+
+固定/预设m需保留r=2^-m的零态校正；z_ref仍逐query计算，未验证以绝对常数替代最大参考。建议按层/头校准m0+允许修正，尚未标定部署。无新模型PPL/有限8位概率/PT/PPA；不把首地址加速当整帧或整机加速。报告qwen/results/ising_broadcast_20261021/OFFSET_ZH.md/manifest，分支PR79本轮发布以最新head为准，仍草稿未合并。无本任务运行作业，不重交。
+
+
+Issue78偏移对照发布状态（2026-10-21 08:35 UTC）：本地科学head0455d0d6b0a863f0bf3136446d9d9c5f28139b9f，Git网络长时间无进度/低速超时，远端仍d6d0f321b6c5eee7c334b7bb0f1e3d070d299304；新OFFSET文件尚未远端完成。API已同步PR79说明及Issue78数字/限制/待上传，回执work/jieruiz/78/OFFSET_PUBLICATION.json。网络恢复普通push并核验blob再改发布状态，不重交已完成2628。
+
+
+### Issue78分数到p-bit接口审计，2026-10-21
+
+当前替换版Q/K与KV为BF16，但候选QK显式float()做bmm/缩放得FP32；新采样诊断转FP64，只是行为参考，不是已实现电压接口。建议先保留QK、只量化score/局部场，再独立研究Q/K INT8和INT32累加。Qwen d64的1/8可并入scale/移位。8位logit/DAC码不等于R8均匀概率阈值；后者会把约1/2K的小概率归零，不能沿用FFN R8共享64结论。物理响应须标定V0/Vs/尾概率与相关时间，数字路径须LUT+足够细概率比较。量化尺度要补偿温度，m ln2近似要与空态校正一致；mask须独立门控。2.22/3.38轮不含这些未标定接口成本。详见REJECTION_ZH.md新节与work/jieruiz/78/SCORE_INTERFACE_AUDIT.json。无新量化/PPL/PT/PPA；默认不改，新文档/前轮OFFSET发布以实际Git回执为准。
+
+
+Issue78后续分支变更（2026-10-21）：并行审阅已将PR79合并a7a2c5b3cbc16390e30061329adfbebc835dc8b3（head310feea，08:51:06Z），原Issue78仍open。普通push遇非快进后已停止并核对，不强推。未发布OFFSET与本次score接口审计接续task/78-score-interface，同一任务目录内合入最新集成、保留评审manifest修复与其他成员成果。5份manifest归档Git blob SHA检查通过；无新数值实验或PPA。旧PR79未合并描述过时，新PR号待真实创建回执。
+
+
+Issue78发布回执（2026-10-21 08:55 UTC）：后续分支task/78-score-interface已推送0d3dfa2fa107ea5925751cdb686cda089b414628，创建PR80（草稿未合并）；原PR79已合并a7a2c5b。旧OFFSET网络阻塞解除，原件远端blob SHA6a628a...核验通过；本次dtype/接口审计一并交付，见work/jieruiz/78/SCORE_INTERFACE_PUBLICATION.json。Issue78仍open、无新模型/量化/PPA作业，Projects待权限。

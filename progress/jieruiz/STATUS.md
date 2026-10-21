@@ -1,3 +1,41 @@
+# 发布回执：Issue78后续PR80已推送
+
+2026-10-21T08:55:47Z；jieruiz；task/78-score-interface；科学head0d3dfa2fa107ea5925751cdb686cda089b414628已推送，PR80草稿未合并。原PR79已合并a7a2c5b。OFFSET原件GitHub blob字节SHA核验通过，前轮网络待上传已解除；分数FP32/FP64审计与建议一并发布。回执work/jieruiz/78/SCORE_INTERFACE_PUBLICATION.json。Issue78保持open，Projects待权限，无本任务运行作业；量化/模型PPL/器件PPA待新验证，不重交2628。
+
+# 最新：PR79已合并，后续在独立分支交付
+
+2026-10-21；jieruiz；Issue78仍open。实时核验PR79已于08:51:06Z合并a7a2c5b3cbc16390e30061329adfbebc835dc8b3，原head310feea含评审后的manifest修复与PR77集成。原分支推送非快进后已停止，没有强推。
+
+接续分支task/78-score-interface，在同一任务独立目录保留未发布的OFFSET源820ad7e/144记录与本次dtype/定点接口审计，合入最新a7a2c5b并保留其他成员文件/规则。DIAGNOSTIC/HARD/REJECTION/OFFSET/ONEHOT的归档Git blob字节SHA核对通过，证据work/jieruiz/78/SCORE_INTERFACE_VERIFY.json。无源码算术、默认、模型、PPL或PPA改动。19CPU合同为此前2628已实际通过，本次仅文档/合并字节审计，不冒充新数值实验。
+
+下一步推送task/78-score-interface并创建后续PR（新PR号待实际回执），不向已合并PR79追加未发布文件。Issue78继续负责，Projects待权限；无本任务运行作业，不重交2628。下方PR79“仍草稿/未合并”及旧分支发布状态为历史。
+
+# 最新：分数数制与p-bit输入接口审计
+
+2026-10-21；jieruiz；Issue78/PR79。只读审计确认BF16 Q/K后候选QK显式FP32，新采样诊断又转FP64；尚无真实定点/LUT/DAC接口。已将代码行号、原生p-bit驱动映射、8位logit/DAC码与R8概率阈值区别、温度/偏移校正及成本缺口补入REJECTION_ZH.md；证据work/jieruiz/78/SCORE_INTERFACE_AUDIT.json。建议先只量化score入口，再独立改Q/K INT8；位宽/范围/器件参数均待校准，无新模型/量化/PPA结果或作业。
+
+默认未改；本轮文档和前轮OFFSET待本次Git推送核验，不能把原网络阻塞当新文件已上传。PR仍草稿未合并，Projects待权限。无本任务运行作业，不重交2628。
+
+以下为历史：
+
+# 本轮发布状态：结果已同步Issue，文件仍待网络恢复推送
+
+2026-10-21T08:35:15Z；jieruiz。OFFSET_PUBLICATION.json核实本地科学head0455d0d6b0a863f0bf3136446d9d9c5f28139b9f，远端仍d6d0f321b6c5eee7c334b7bb0f1e3d070d299304。普通Git push长时间无进度后停止，重试返回低速超时；GitHub API可用，PR79说明和Issue78评论已如实更新数字及未上传状态。没有凭据或权限变化，Projects仍待权限。
+
+144条原件/报告/源在本地已提交，CPU2628已完成且无需重交；下一步网络恢复后普通push workspace task/78-ising-broadcast，核对head及offset_diagnostic.json blob SHA6a628a537e110e6c489ad0b967fa35f7acb959a0ab2c6ad282b35cef1e57ab8c，再更新发布回执。PR仍草稿未合并；不把本地结果写成远端文件已完成。
+
+# 最新：公共偏移预设/固定/复用对照完成
+
+2026-10-21；jieruiz；Issue78/PR79，task/78-ising-broadcast，独立tmp/ising-broadcast-issue78-20261021。CPU2628源820ad7efa824b09482be52fe2df0db73bf1a70cf完成19合同、144条分布重放（含明确cap失败）；源码blob核验通过，无新PPL/GPU/PPA，默认未改。
+
+2K平坦S64：自适应0为3.384、预设11继续调3.227、固定11为2.663轮/地址（理论2.717）。真实512预设2改善首地址3.770到2.833，S64平均2.260对2.223未改善；同logits复用后自适应2.217，完全固定2.322。固定全局0/2/11在真实行有cap失败，尖峰固定11也失败。复用是相同输入接续，不是下一token，不把已有S64设置当免费标定。
+
+可预设m，但必须保留相应r=2^-m零态校正；本次仍减z_ref，未验证以绝对常数替代参考分数。建议按层/头校准预设+必要修正，未部署、未训练。成果qwen/results/ising_broadcast_20261021/OFFSET_ZH.md和OFFSET_MANIFEST.json，提交索引work/jieruiz/78/OFFSET_*；2628不重交，无本任务运行作业。新结果待本次push核验，PR79仍草稿未合并，Projects待权限。
+
+以下保留历史时点：
+
+## 同期已合入的历史任务状态（保留原文）
+
 # Issue73 2026-10-20 17:40：显存修复已补交、GPU门禁排队、回查已设
 
 jieruiz；task/73-llama2-task-accuracy；PR75 draft/open未合并。PIQA BF16已完整完成；原2572的FFN-only三seed初始化OOM，15个同类待执行项仅本人撤回。健康8项仍在原2572（index0,4,5,6,13,17,18,19）。

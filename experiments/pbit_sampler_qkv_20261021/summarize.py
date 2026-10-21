@@ -87,6 +87,26 @@ def summarize_rows(rows,require_sampling=False):
     return summary
 
 
+def fixed_budget_checks(rows):
+    """Quality at an actual fixed configuration, without threshold monotonicity assumptions."""
+    checks=[]
+    scopes=[('all',rows)]
+    scopes += [(str(c)+'/'+pool,[r for r in rows if r['row']['context']==c and r['row']['pool']==pool])
+               for c,pool in sorted({(r['row']['context'],r['row']['pool']) for r in rows})]
+    for scope,data in scopes:
+        for method in ('winner0','winner0_q8'):
+            for burn in (0,32,128):
+                for samples in (128,256,512,1024,2048,4096):
+                    curves=[next(c for c in r['curves'][method] if c['burn']==burn and c['samples']==samples) for r in data]
+                    checks.append(dict(scope=scope,method=method,burn=burn,samples=samples,updates=burn+samples,rows=len(data),
+                        normalized_mse_mean=avg([c['normalized_mse'] for c in curves]),
+                        target128_reached=sum(c['normalized_mse']<=1/128 for c in curves),
+                        target128_mc95_reached=sum(c['mc_normal_95_high']<=1/128 for c in curves),
+                        target512_reached=sum(c['normalized_mse']<=1/512 for c in curves),
+                        target512_mc95_reached=sum(c['mc_normal_95_high']<=1/512 for c in curves)))
+    return checks
+
+
 def main():
     p=argparse.ArgumentParser();p.add_argument('--rows',required=True);p.add_argument('--capture-report',required=True)
     p.add_argument('--execution-commit',required=True);p.add_argument('--plan-sha256',required=True);p.add_argument('--output',required=True)
@@ -134,6 +154,14 @@ def main():
         execution_commit=a.execution_commit,plan_sha256=a.plan_sha256,capture_report_sha256=capture_sha,
         capture_trace_sha256=capture['trace']['sha256'],summary_generated_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         primary_burn=32,targets=[128,512],groups=aggregate,groups_map_insufficient=summarize_rows(data,require_sampling=True),offset_transfer=choices,
+        fixed_budget_checks=fixed_budget_checks(data),
+        burn_thresholds=[dict(method=method,target=t,burn=b,rows=len(data),
+            reached=sum(c is not None for c in hits),
+            median_observed_updates=quantile([c['logical_updates_mean'] for c in hits if c is not None],.5),
+            maximum_observed_updates=max([c['logical_updates_mean'] for c in hits if c is not None],default=None))
+            for method in ('winner0','winner0_q8','winner2','winner4','two_bits','barker','barker_q8','xor')
+            for b in (0,32,128) for t in (128,512)
+            for hits in [[crossing(r['curves'][method],method,t,burn=b) for r in data]]],
         profiles=[dict(index=r['index'],**r['row'],candidates=r['candidates'],**{k:v for k,v in r['profile'].items() if k!='reference_output'},screening_omission_bias=r['screening_omission_bias']) for r in data],
         per_input_thresholds=[dict(index=r['index'],**r['row'],candidates=r['candidates'],thresholds={m:{str(t):crossing(cs,m,t) for t in (128,512)} for m,cs in r['curves'].items()}) for r in data],
         raw_artifact_index=files,

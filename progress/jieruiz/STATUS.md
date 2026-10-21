@@ -1,3 +1,15 @@
+# Issue84：SANTA++精读报告已上传，PR85待审
+
+更新时间2026-10-21T12:10:56.373304+00:00；负责人jieruiz。Issue84，task/84-santapp-novelty；PR85草稿开放未合并；base pbit-tlm-attention-details-20261016@5b26c80c28ab22383f12ab31046dd723ca985abb。工作目录tmp/santapp-novelty-issue84-20261021，科学head ad92485c9f98cc50fdb706f620c96d681fb339e9已推送。
+
+正式报告architecture_tlm/research_readings/SANTAPP_V1_NOVELTY_ZH_20261021.md，SHA96f123e75e48212956fc50f740956310b06d61d5e95766b625f7976548834f05。结论：筛选/随机选组/GQA并集已重合；具体p-bit类别采样器、短流FFN和存储协同仍有研究空间，但缺长上下文/匹配PPA证据。当前max4筛选未做选择校正。
+
+实际验证：PDF32页身份与SHA、正文和附录方法核查、4页渲染检查、8个项目源blob/字节SHA、10项预算/算术/编码核查；无模型/GPU/训练/RTL/PT/TLM运行。源版本/证据见work/jieruiz/84/SOURCE_MANIFEST.json与VALIDATION.json。原PDF/权重/工艺/私有capture不上传。
+
+本轮科学文件已由GitHub API按相同commit/tree/blob上传；交接及备忘录随收尾提交同PR，最终远端以Issue84评论为准。Issue保持open待评审，无运行任务，不改默认数值核。Projects本轮未写入，沿既有权限限制留待同步。下一步评审PR85；不要重复昂贵实验或接管其他任务。
+
+以下保留此前各任务状态原文：
+
 # Issue55第四轮：4项成果PR已实际合并
 
 2026-10-21；负责人jieruiz；review/55-pr-round4；本轮稀疏目录tmp/pr55-review-20261021（报告合并后按恢复索引回收）。目标pbit-tlm-attention-details-20261016，科学集成e24414b8f0ba47e8df46ba64475dbbf45568e2f4。PR75/77/79/80已按单项原生门禁合并，精确head/base/merge和测试边界见work/jieruiz/55/round4/REVIEW_ZH.md、REVIEW.json、receipts。审计报告通过后续独立PR交付，报告PR不计入4项成果。

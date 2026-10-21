@@ -768,3 +768,12 @@ PR79的18项CPU128目标后缀PPL已核，并非完整WT2；19当前合同与旧
 此前未发布的OFFSET/score接口现由PR80交付并独立审核：144条理想分布记录含cap失败，固定/预设偏移改善部分案例但非普遍收益；同logits复用不代表下一token。QK score为FP32、诊断FP64，8位驱动码不等于R8概率；接口建议尚未实现或量化验证。Issue78继续开放；不能把本次交付当完整模型或硬件验收。
 
 PR77仅计划/文档验收，无训练已完成结论。Issue76由用户额外明确授权后已更新并关闭；未修改amlink1219个人STATUS。Issue28继续维护。备忘录canonical原有未提交增量先逐SHA归档并保留全部有序文本，HEAD保持原值，其工作文件与根阅读副本同步到本次发布文档。仅回收本轮本人稀疏review/helper，恢复索引project_archives/pr_review_issue55_20261021/RECOVERY_INDEX.json；执行状态查Issue55最终回执。
+
+
+## 2026-10-21 SANTA++ v1精读与创新性对照（Issue84 / PR85）
+
+负责人jieruiz；task/84-santapp-novelty；独立稀疏目录tmp/santapp-novelty-issue84-20261021，base5b26c80。报告architecture_tlm/research_readings/SANTAPP_V1_NOVELTY_ZH_20261021.md已推送科学head ad92485c9f98cc50fdb706f620c96d681fb339e9，PR85草稿开放未合并，Issue84保留。用户PDF2609.35629v1为SANTA++，32页，SHA d9d9008174be713ba498dd96710e07552072eb4a9daf7063431a8c5c622375bf；官方demo commit9d1fdff7df65e54febc4112e99346ead0353e57c。已读正文/附录A–F方法与边界、图表渲染抽查；没有新推理/训练/PT/TLM。
+
+本文用真实key代表、Gumbel不放回top-K选team、条件纳入概率校正及GQA并集，已覆盖前置筛选/稀疏Attention宽泛想法。我们的max4是四个均值，不同于四个真实key；当前筛选没有逆选择概率校正，候选内采样准确不等于全cache准确。其S128=32teams，不等于我们的128观测；LongBench16.68%逻辑KV/99.07%分数保留，不能转成整机能量；1.69倍仅32K单层GPU算子、无prefill/packing，demo还另存packedKV。MLA共享并集使逻辑访问仍86.18%，确认共享头会吃掉收益，但不构成我们的独创。
+
+候选创新收窄到具体p-bit采样电路/并行调度、短流FFN及存储协同；不能因本文没做FFN就称整个领域新颖。新拒绝采样无全模型PPL/PPA，T32分层不能冒充自然IID；需对照DS-CIM/ReMix/直接随机舍入低位MAC、同模型长上下文与同质量J/token/延迟/面积。报告与来源manifest/算术核查见work/jieruiz/84。未接管Issue37/78或评测作业，无新增运行任务；下一步评审PR85，后续算法实验需原任务单独安排。

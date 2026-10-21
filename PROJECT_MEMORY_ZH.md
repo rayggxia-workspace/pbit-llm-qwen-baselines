@@ -18,6 +18,10 @@
 
 ## 0 恢复工作先读这里
 
+> 2026-10-20 17:40 Issue73更新：旧2572三项FFN-only初始化OOM，失败日志保留、只撤回15个尚未执行FFN项；健康8项保留。新309ca9c无损把W8码INT16存储压为INT8，FP32恢复/算术/RNG不变、省4.03GiB；CPU2583七项通过，GPU2584待资源，18项补跑2585依赖其成功（尚未完成GPU验证）。请求/模板/Harness一致，最终8旧+18新=26唯一项。PIQA原BF16正式完成；其余分数未齐。预计1卡40～55h/较快2卡22～32h。用户要求的本对话heartbeat llama2-7b已设每24h，首检预计10/21 17:35北京时间，核验完成后停用；本地关机不能SSH、即时补跑未保证。恢复先读work/jieruiz/73/HANDOFF.md最新顶部，不重交健康任务。
+
+> 2026-10-20 Issue73/PR75：Llama2-7B代表任务已启动。PIQA1838/ARC-E2376全量，各BF16＋FFN-only三seed＋Attention S128三seed＋联合S128/S512各三seed，共26项。冻结022db6828c0caba96ae3d620f80b27c1ae3774b9；CPU2570六项与GPU2571完整WT2 BF164.9795028452/335686目标、独立cached评分0差/SDPA等价/真实7B概率pilot通过。正式Slurm2572_[0-25]已运行，分数pending；不重交。FFN为B4/T32/K32共享64，Attention短题保留all K、仅计分token32层decode替换，前缀准确。Apple PR67既有FP32双模型完整基线仅复用索引；不是p-bit或Llama同权重因果对照。源码experiments/llama2_task_accuracy_20261020；结果llama2/results/task_accuracy_20261020；交接work/jieruiz/73/HANDOFF.md；PR75 draft/open未合并。
+
 > 2026-10-20最新审核：本轮PR49/52/62/67/69/71/72已全部实际合并；科学集成18b887bd2d0cd6c06d070d8dafaf8b979742fdcf。旧完整WT2“仍运行/未收齐”已经过时，现有25项完整结果与39项任务准确率均已核验发布；仅3项B4T16联合是用户授权取消。恢复先看新增§5.7.2、§5.8.2及§12.0，不重跑已完成矩阵。研究实现/如实结果验收不等于质量无损或PPA验收。
 
 1. 目标是利用物理随机源/p-bit降低LLM的能量、面积，同时保持可接受的质量与速度；不能为了利用随机源就假定随机计算一定胜过定点计算。

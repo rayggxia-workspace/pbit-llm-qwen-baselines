@@ -1,0 +1,26 @@
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:08<00:08,  8.90s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:12<00:00,  5.50s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:12<00:00,  6.01s/it]
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/llama2_task_accuracy_20261020/run.py", line 304, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/llama2_task_accuracy_20261020/run.py", line 301, in main
+    globals()[a.action](a)
+  File "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/llama2_task_accuracy_20261020/run.py", line 289, in worker
+    score_case(a,cfg,read_docs(out,name),registered,out/'full'/f'{name}_{cfg["name"]}.json')
+  File "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/llama2_task_accuracy_20261020/run.py", line 147, in score_case
+    result = evaluate_tasks(model, docs, cfg, None, progress=progress)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/llama2_task_accuracy_20261020/cached_score.py", line 224, in evaluate_tasks
+    _install_ffn(model, case)
+  File "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/qwen_joint_stratified_attention_20261019/joint_evaluate.py", line 127, in _install_ffn
+    layer.mlp = StratifiedFFN(layer.mlp, mode='sampled', seed=case['seed'],
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/qwen_multiscale_stratified_20261019/stratified_core.py", line 208, in __init__
+    codes, decoded, lsb = quantize_int8(weight, GROUP)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/Hongjie_Zeng/projects/pbit-llama2-task-accuracy-20261020-issue73/snapshots/022db6828c0caba96ae3d620f80b27c1ae3774b9/experiments/qwen_dual_iid_exact_20261018/vendor/frozen/core.py", line 32, in quantize_int8
+    codes = (tiles / scales[:, :, None, None]).round().clamp(-127, 127).to(torch.int16)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 344.00 MiB. GPU 0 has a total capacity of 31.37 GiB of which 345.56 MiB is free. Process 4073852 has 1.24 GiB memory in use. Including non-PyTorch memory, this process has 29.77 GiB memory in use. Of the allocated memory 28.51 GiB is allocated by PyTorch, and 689.55 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

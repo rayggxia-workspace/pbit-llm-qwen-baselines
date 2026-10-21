@@ -1,3 +1,7 @@
+# 发布回执：本轮已推送并核验
+
+2026-10-21T08:06:14Z；jieruiz；Issue78/PR79，task/78-ising-broadcast；科学head9b88a8da8d67450ae646372b2278deef33557889已推送正式workspace，三份新原件GitHub blob字节/SHA与服务器索引一致。PR仍draft/open、未合并；看板仍待read:project权限。回执work/jieruiz/78/REJECTION_PUBLICATION.json。无本任务运行作业，不重交；下一步是有限概率精度/模型PPL/PPA，不把理想分布轮数当硬件时钟。下方“待推送/网络失败”均为历史时点，已由本回执覆盖。
+
 # 最新：保留空参考，单块并行提议与正确冲突重采样已验证
 
 2026-10-21T08:04:07.351623+00:00；jieruiz；Issue78/PR79，task/78-ising-broadcast，base e4990c15b40f664cea7f9db43175b68347ce588b，独立tmp/ising-broadcast-issue78-20261021。

@@ -721,3 +721,6 @@ Issue65完整结果已上传011d46029772bb4b4e17811582a116907318ec46，PR67已�
 用户决定纯单1编码若增加等待就不继续，保留原空参考，重点少块数和块内并行。2624/2625的60项重放保留：512真实16/32块全收齐、2/4/8未齐；2K平坦32才齐，未做one-hot PPL。新源e52570d40d49013f11c6f3d3d16de9b20dfc9e3d实现不同规则：q_i=sigmoid(delta_i-m ln2)，独立全并行提议；单1接受、多1拒绝、全0以r=2^-m接受参考，拒绝后调m。证明每轮接受权重Cr*[1,exp(delta)]，任意拒绝历史选择m不改目标。可全局1逻辑块，属于直接类别拒绝采样，不是全同步Ising/Gibbs；无需旧burn/spacing，但器件独立性/响应精度仍待验。
 
 Slurm2626完成19合同和18分布记录。S64三seed每地址提议均值：真实512候选2.223轮、2K平坦3.384、尖峰1.000；S2048分布TV接近同预算IID。无新PPL、有限8位概率或硬件PPA，不能用轮数当ASIC时钟。8位均匀比较器小概率/共享门限相关性是下一步限制；不能照搬FFN共享64。报告qwen/results/ising_broadcast_20261021/REJECTION_ZH.md和REJECTION_MANIFEST.json。旧编码/模型默认不变。网络恢复已补push至5e18cc5，之前“未推送”时点过时；本轮新结果发布以PR79最新head为准，仍草稿未合并。无本任务运行作业，不重交。
+
+
+Issue78发布回执（2026-10-21 08:06 UTC）：科学head9b88a8da8d67450ae646372b2278deef33557889已推送workspace，one-hot两原件与rejection原件的GitHub blob字节SHA核验通过，详见work/jieruiz/78/REJECTION_PUBLICATION.json。PR79仍草稿未合并；此前“待上传/网络阻塞”已解除。无新模型PPL或PPA结论，不重交已完成CPU作业。

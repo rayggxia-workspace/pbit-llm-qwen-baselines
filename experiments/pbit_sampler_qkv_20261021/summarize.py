@@ -50,6 +50,7 @@ def crossing(curves,method,target,burn=32,upper=False):
     if method in ('iid','rejection'):
         # Their ideal independence gives analytic MSE = variance/S. Do not turn
         # finite-MC luck into a claimed 64-sample equivalent of IID128.
+        if upper:return None  # A known analytic reference is not an empirical MC95 certificate.
         return next((dict(c,criterion='analytic_independent_reference') for c in curves if c['burn']==0 and c['samples']==target),None)
     if method=='legacy_ctmc':burn=0
     eligible=[c for c in curves if c['burn']==burn and c['mc_normal_95_high' if upper else 'normalized_mse']<=1/target]
@@ -75,7 +76,7 @@ def summarize_rows(rows,require_sampling=False):
                 clocks=[c['logical_updates_mean'] for c in okay if c['logical_updates_mean'] is not None]
                 draws=[c['pbit_draws_mean'] for c in okay if c['pbit_draws_mean'] is not None]
                 summary.append(dict(context=context,pool=pool,target_iid_samples=target,method=method,
-                    rows=len(selected),excluded_map_already_sufficient=len(data)-len(selected),mean_gate_reached=len(okay),mc95_gate_reached=sum(c is not None for c in upper),
+                    rows=len(selected),excluded_map_already_sufficient=len(data)-len(selected),mean_gate_reached=len(okay),mc95_gate_reached=None if method in ('iid','rejection') else sum(c is not None for c in upper),
                     median_observed_updates=quantile(clocks,.5),p90_observed_updates=quantile(clocks,.9),
                     median_pbit_draws=quantile(draws,.5),
                     # P=64 is a service-wave lower bound; control, rank, score
@@ -180,7 +181,8 @@ def main():
         '|上下文/候选池|目标IID次数|方法|均值达标行/总行（MC95）|达标行更新中位数|P90|p-bit服务中位数|',
         '|---|---:|---|---:|---:|---:|---:|']
     for g in aggregate:
-        text.append(f"|{g['context']}/{g['pool']}|{g['target_iid_samples']}|{g['method']}|{g['mean_gate_reached']}/{g['rows']}（{g['mc95_gate_reached']}）|{fmt(g['median_observed_updates'])}|{fmt(g['p90_observed_updates'])}|{fmt(g['median_pbit_draws'])}|")
+        certificate='解析参照，不适用MC95' if g['mc95_gate_reached'] is None else str(g['mc95_gate_reached'])
+        text.append(f"|{g['context']}/{g['pool']}|{g['target_iid_samples']}|{g['method']}|{g['mean_gate_reached']}/{g['rows']}（{certificate}）|{fmt(g['median_observed_updates'])}|{fmt(g['p90_observed_updates'])}|{fmt(g['median_pbit_draws'])}|")
     text+=['','## 解读边界','',
            '- 直接校正拒绝法在理想响应下提供独立样本，表内其目标128/512固定为相应接受数，成本取实际重试；没有利用MC偶然小误差宣称更少样本。',
            '- 赢家保持/T32或CTMC的输出数、链更新数、提议数和有效样本量彼此不同；旧CTMC只保留质量参考，过程时间不能换算到时钟。',

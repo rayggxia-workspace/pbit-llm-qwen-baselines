@@ -31,3 +31,6 @@
 科学结果本地完成，任务分支/PR发布以PUBLICATION与Issue78最后回执为准；不把未推送状态写成远端完成。Issue78仍open，PR82不接管。本任务无运行作业，其他Llama作业未改；Projects本轮未写入，沿既有scope限制待同步。
 
 后续优先对照winner-hold与校正拒绝法RTL/PT，再少量全模型S512/S1024与预热配置验证；不要仅凭MSE首交叉设置在线停止。若需要新的模型评测，继续按Slurm/immutable snapshot并在相应任务记录。待审保持本最小工作目录，合并后按生命周期回收。
+
+
+发布视图补注：原服务器SUMMARY SHA b95c40...已完整归档，公开SUMMARY视图SHA0b6aa1f2a5f2b44d28ef4eb1351a533f415beb37da3138887182991d8ebca38c，仅将IID/拒绝法MC95字段标不适用及添加派生来源；所有科学数值不变。原始制品见server_summary_originals，转换代码publication_view.py。最终本地14检查通过；服务器仍8核心/4汇总，新增2汇总守卫仅本地。本轮发布状态以最终Issue78回执为准。

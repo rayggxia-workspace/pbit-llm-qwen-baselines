@@ -34,6 +34,15 @@ class SummaryChecks(unittest.TestCase):
     def test_iid_does_not_use_lucky_shorter_budget(self):
         curves=[dict(burn=0,samples=s,normalized_mse=.00001,mc_normal_95_high=.00001) for s in (64,128,512)]
         self.assertEqual(crossing(curves,'iid',128)['samples'],128)
+        self.assertIsNone(crossing(curves,'iid',128,upper=True))
+
+    def test_analytic_reference_has_no_empirical_mc95_certificate(self):
+        raw=records(method='iid')
+        for result in raw:
+            for c in result['curves']:c['burn']=0
+        curves=gather(raw)
+        groups=summarize_rows([dict(row=dict(context=512,pool='dense'),candidates=512,curves=curves)])
+        self.assertTrue(all(g['mc95_gate_reached'] is None for g in groups))
 
     def test_fixed_budget_does_not_assume_error_is_monotonic(self):
         rows=[]

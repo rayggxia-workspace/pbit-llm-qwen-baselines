@@ -753,3 +753,8 @@ Issue78后续分支变更（2026-10-21）：并行审阅已将PR79合并a7a2c5b3
 
 
 Issue78发布回执（2026-10-21 08:55 UTC）：后续分支task/78-score-interface已推送0d3dfa2fa107ea5925751cdb686cda089b414628，创建PR80（草稿未合并）；原PR79已合并a7a2c5b。旧OFFSET网络阻塞解除，原件远端blob SHA6a628a...核验通过；本次dtype/接口审计一并交付，见work/jieruiz/78/SCORE_INTERFACE_PUBLICATION.json。Issue78仍open、无新模型/量化/PPA作业，Projects待权限。
+
+
+## 2026-10-21 Issue78 sigmoid驱动8位接口诊断
+
+用户明确仅指sigmoid括号内a=(z−zref)−m ln2，而非Q/K INT8或R8概率阈值。PR79已合并a7a2c5b、PR80后续已合并e24414b；本次task/78-field-int8接续。CPU2630源757fb90完成25合同，24层2688行保存分数＋42行S64三seed真实驱动局部解析。a中位−8.70，5/95%−26.15/−4.70，负尾约−98。负幅度8位h1/8/范围−31.875~0，理想访问状态平均条件TV1.262%；signed8 h1/16范围−8~7.9375因饱和平均6.947%、最大51.475%。h1/16负幅度本批0.631%，但m14压力截断严重，不能直接外推；10位h1/16对照0.630%。均不是量化自适应完整轨迹/PPL或PPA；默认未改，原始capture私有。SOT SoftMax论文披露电流映射与平移/伸缩校准，未披露局部场INT8质量；其INT8/4图指输出概率。报告qwen/results/ising_broadcast_20261021/FIELD_INT8_ZH.md，manifest和work/jieruiz/78/FIELD_*含SHA、命令与新PR待发布状态。无运行作业、不重交2630，下一步独立校准＋模型PPL。

@@ -1,3 +1,15 @@
+# 最新：sigmoid输入8位驱动分析完成，后续分支待发布
+
+2026-10-21；jieruiz；Issue78；task/78-field-int8；独立目录tmp/ising-broadcast-issue78-20261021；base e24414b8f0ba47e8df46ba64475dbbf45568e2f4。PR80已经实际合并e24414b，原head0d73671；本次新成果后续PR号待创建，不向已关闭PR追加。
+
+CPU Slurm2630源757fb90完成，25项本地/远端合同通过。保存输入24层2688行的范围统计＋42行/三seed/S64理想轨迹的局部条件分布分析；不是新PPL、训练、RTL或PPA。完整sigmoid驱动a中位约−8.70，5/95%约−26.15/−4.70，极小约−97.86。负幅度8位h1/8局部TV均值1.262%；h1/16本批0.631%，但强制m14负尾钳位明显，因此优先h1/8、负范围−31.875～0，10位h1/16作对照。都是解析局部偏差，不是模型质量承诺。
+
+正式报告qwen/results/ising_broadcast_20261021/FIELD_INT8_ZH.md；原始JSON、manifest与work/jieruiz/78/FIELD_SOURCE/SUBMISSION/VERIFY.json含输入/源/配置/结果SHA。私有logits不上传，旧快照不变，模型默认不改，无本任务运行作业。SOT文章核查到局部场电流映射/偏移斜率校准，但未披露局部场INT8/PPL；论文INT8/4对照指输出概率。
+
+下一步在独立校准样本确定a/m范围，接模型PPL验证负幅度8位和10位，不重交2630。发布前核对远端，普通push新分支、创建PR并核验原件Git blob SHA；Projects沿用缺read:project待同步。当前科学成果本地已完成，尚待本次推送核验。
+
+以下是旧时点：
+
 # 发布回执：Issue78后续PR80已推送
 
 2026-10-21T08:55:47Z；jieruiz；task/78-score-interface；科学head0d3dfa2fa107ea5925751cdb686cda089b414628已推送，PR80草稿未合并。原PR79已合并a7a2c5b。OFFSET原件GitHub blob字节SHA核验通过，前轮网络待上传已解除；分数FP32/FP64审计与建议一并发布。回执work/jieruiz/78/SCORE_INTERFACE_PUBLICATION.json。Issue78保持open，Projects待权限，无本任务运行作业；量化/模型PPL/器件PPA待新验证，不重交2628。

@@ -1,5 +1,11 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-22 Ising评估更新（Issue37，amlink1219）
+
+入口：[并行采样实现与结果评估补充](architecture_tlm/attention_comparison/ISING_UPDATE_20261022_ZH.md)。核查基线5b26c80c；PR79/80已合并，PR82驱动量化、PR86真实QKV、PR88全宽TLM仍开放未合并，分别按固定head读取。旧互斥Ising不能按旧状态独立同步提交；新赢家保持/校正拒绝改了规则，允许全候选独立并行提议。赢家仍是相关链；拒绝在理想响应与空态校正下直接采类别。
+
+广播PPL仅128后缀目标（BF16 20.212326、全同步κ12约104.556）；最新赢家/拒绝仅90配置真实QKV局部V误差，无新模型PPL。v5展开源/归约/仲裁/反馈/回压；每帧全宽、帧与查询有顺序依赖，示例周期未物理标定，完整能量/面积null。旧100ns/样本表仅历史条件结果，不能与新链按同S拼接。详细来源、数值与范围见报告；本次46项来源/已保存摘要检查，无模型/Slurm/PT重跑。不接管jieruiz的Issue78/87，保留其默认和原件。
+
 ## 2026-10-20 四条训练路线讨论入口
 
 用户要求将W8短流FFN、三投影tanh激活、四子块分数输入的p-bit随机筛选网、有限Ising观测适应整理为服务器讨论稿。Issue76入口architecture_tlm/training_plans/four_tracks_20261020/TRAINING_PLAN_ZH.md，含Word与PLAN。按可信训练收益难度3→1→4→2；第3条沿用原始variable输出，fixed8是当前联合PPL评测配置而非用户架构要求。稿件只有计划和文档验证，没有训练任务或新质量/PPA结果；资源、数据版本、质量与容量约束待执行前冻结。其他研究建议未写入方案。
@@ -17,6 +23,8 @@
 用户指定v1正文和附录核查完成，Zotero原条目/PDF保持，唯一机器note25FR4EFX；24例独立数学校核通过。入口architecture_tlm/research_readings/REMIX_V1_ZH_20261019.md，工作资料work/amlink1219/70/。没有模型复现、训练/PPL/PPA；研究原任务61已关闭，本任务独立交付待审。
 
 ## 0 恢复工作先读这里
+
+> 2026-10-22第五轮收尾追加：PR89评估补充已直接合并作者原head，现共82/83/85/86/88/89六项成果已合并；下方五项记录为追加前快照。Issue37/78仍开放。完整回执work/jieruiz/55/round5/。
 
 > 2026-10-22第五轮最新验收：PR82/83/85/86/88均已实际合并。Issue73的26项推理与官方逐题oracle已全部核验（54782配置内题、109564指标），不是旧19/26/pending；回查已由用户要求删除，不重建。新采样器仍无整模型PPL/物理PPA；PR88补齐可选tlm-parallel入口和4项24层合成组合验证，旧tlm默认保留。详见文末第五轮回执及work/jieruiz/55/round5/。
 
@@ -876,3 +884,5 @@ Issue73 publication receipt (2026-10-22): completed26 status/report and automati
 本人元数据冲突保留双方有序历史，其他成员STATUS和原科学blob不覆盖。继续研究归Issue78/37；有限任务73/84/87验收状态以Issue原生最终回执为准。仅本轮本人稀疏review/helper目录在报告合并后逐SHA归档回收，恢复project_archives/pr_review_issue55_20261022/RECOVERY_INDEX.json。canonical原未提交资料先备份、HEAD不reset，根阅读副本同字节同步。
 
 2026-10-22原生验收回执：Issue73（最终26项官方逐题）、84（文献）、87（可用TLM）已按各自有限范围实际关闭；Issue78/37继续开放。旧待审与pending文字仅为历史。
+
+第五轮追加PR89：19固定源、8组TLM中位数/单位/null及3组固定预算覆盖核验通过，旧数字全上下文D0与原评估保留，局部误差/合成时序没有冒充新PPL/PPA。自动审批曾拒绝向其他成员分支推送刷新；未执行该推送，已改为原head69b1accc的无冲突原生合并9bd908b5，无作者分支改写或STATUS/HANDOFF手工改动。作者自己的新状态按原blob继承，Issue37不关闭。

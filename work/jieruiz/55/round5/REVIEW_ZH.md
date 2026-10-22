@@ -1,6 +1,6 @@
 # 第五轮PR审核与实际合并（2026-10-22）
 
-本轮按用户授权审阅82/83/85/86/88，并重点审查“局部模块进入仓库”与“完整组合已验证”的区别。5项均按各自可独立验收范围通过，报告PR另计。实际账号jieruiz，正式分支pbit-tlm-attention-details-20261016。
+本轮按用户授权审阅82/83/85/86/88，并重点审查“局部模块进入仓库”与“完整组合已验证”的区别。收尾新增89评估补充一并核验，共6项均按各自可独立验收范围通过，报告PR另计。实际账号jieruiz，正式分支pbit-tlm-attention-details-20261016。
 
 |PR|审核head|实际merge|范围|
 |---|---|---|---|
@@ -9,8 +9,9 @@
 |[#85](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/85)|`39ec614be3f8bc78a8cb31d236d8a722ea828578`|`a56ff23e96b779d13ec0f2b2e34ba398872a9122`|SANTA++ v1文献核查|
 |[#86](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/86)|`a3c59f2a691c645fc04626c0374d85f5dc8676e8`|`7dec2ef7edde3042edabca7852d9559f77cd614c`|真实QKV局部采样器对照|
 |[#88](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/88)|`59e846f0ec0e5898863c508a2e0de62762eebc7c`|`8d4ce51be7ecace716bc83688dc4768eb2574d38`|可选全宽采样TLM与组合接入|
+|[#89](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/89)|`69b1accc93da4f51189680cdf89b8024904d8565`|`9bd908b5d06a4dd72af67655a4c4a30a2c72e1c0`|原评估中的新并行路线与证据边界补充|
 
-科学集成`8d4ce51be7ecace716bc83688dc4768eb2574d38`。回读每项merge两父必须为[base,head]、tree等审阅head，且全部为最终祖先；无force/bypass。原生status/check列表为空，无失败/changes_requested/未解决线程，不宣称CI执行。所有原PR非协作元数据blob（含work下封存档案）逐项精确保留，见evidence/FINAL_SCIENTIFIC_BLOB_PROOF.json。
+科学集成`9bd908b5d06a4dd72af67655a4c4a30a2c72e1c0`。回读每项merge两父必须为[base,head]、tree等审阅head，且全部为最终祖先；无force/bypass。原生status/check列表为空，无失败/changes_requested/未解决线程，不宣称CI执行。所有原PR非协作元数据blob（含work下封存档案）逐项精确保留，见evidence/FINAL_SCIENTIFIC_BLOB_PROOF.json。
 
 ## 模块究竟怎么接入
 
@@ -38,6 +39,12 @@ FFN-only的PIQA/ARC-E acc均值相对BF16约−0.0544/−0.0281百分点；联�
 
 CPU分组25/7/14/18/10含历史复用与重跑，不相加宣称全为新检查。没有GPU/Slurm提交/取消、冻结快照改写、训练、新整模型PPL或PT/物理器件实验。仓库merge权限实际成功；可选code-review服务沿前轮不可用记录，本轮采用原生API门禁，Projects沿历史read:project限制待同步、未重测。
 
-73最终结果、84文献、87可用TLM已按其有限范围实际验收关闭；继续研究78/37保持开放。Issue73回查已由用户删除，不因旧交接而恢复。本人metadata冲突保留双方有序历史，amlink1219 STATUS逐字节保留。canonical原有未提交增量先逐SHA/patch归档，HEAD不reset，root/正式工作文件/报告blob一致。
+73最终结果、84文献、87可用TLM已按其有限范围实际验收关闭；继续研究78/37保持开放。Issue73回查已由用户删除，不因旧交接而恢复。前5项本人metadata冲突保留双方有序历史且amlink1219 STATUS保持base原字节；追加89继承作者自己提交的STATUS/HANDOFF原blob，审阅者未手工编辑。canonical原有未提交增量先逐SHA/patch归档，HEAD不reset，root/正式工作文件/报告blob一致。
 
 仅一个稀疏review WT，其他验证用Git对象和最小依赖；不上传私有QKV/NPZ、PDF、模型/数据或凭据。报告合并后先逐SHA归档再回收本轮本人目录；实际完成状态看Issue55最终回执和project_archives/pr_review_issue55_20261022/RECOVERY_INDEX.json/CLEANUP_RECEIPT.json，不提前宣称已回收。
+
+## 收尾追加PR89
+
+19份固定来源SHA/blob、8组TLM中位数/单位/null与3组固定预算覆盖核验通过；赢家详细平衡和拒绝校正表述正确，拒绝按实际提议收费、Barker未达标输入及旧全上下文数字D0保留。旧评估只新增入口，全文历史为完整后缀。源表中的待审标签是固定head读取时点，本轮相关成果已合并，未重写冻结来源清单。没有新增模型/采样器运行。Issue37继续开放。
+
+自动审批拒绝过向其他成员PR89分支推送刷新，理由是审核/合并授权不含替其分支发布；该推送没有执行。验证原head与当前base无冲突、自动tree等已核1211760d后，采用已授权的原head原生合并，作者分支/文档/状态没有被审阅者改写。没有绕过拒绝、没有待用户批准的阻塞。精确回执与安全路径见evidence/PR89_SAFE_MERGE_PLAN.json和receipts。

@@ -1,3 +1,17 @@
+# 2026-10-22 评估补充交接
+
+负责人amlink1219；Issue37；task/37-ising-update-20261022；base集成5b26c80c28ab22383f12ab31046dd723ca985abb；独立最小稀疏工作目录workspace_projects/iu37。正式报告architecture_tlm/attention_comparison/ISING_UPDATE_20261022_ZH.md，原README新增索引；项目记忆和本人STATUS已补充，原科学结果及他人文件不改。
+
+已做：固定已合并PR79/80、待审PR82/86/88 head；核查新算法、128目标后缀PPL、90配置真实QKV、驱动量化、v5单模块/单层连通与旧数字表边界。19个来源逐SHA核验，固定预算与TLM中位数/单位/null成本等46项离线检查通过，见ISING_UPDATE_VALIDATION_20261022.json；来源见ISING_UPDATE_SOURCES_20261022.json。报告已作行为与TLM独立审阅。没有新模型、GPU/Slurm、训练、PT或上游采样器测试运行；当前没有本任务远端作业。
+
+另通过21项文档链接/历史保留/边界与Git检查，见ISING_UPDATE_DOC_CHECKS_20261022.json；7项稳定文件SHA见ISING_UPDATE_DELIVERY_20261022.json。2026-10-22实际只读GraphQL返回INSUFFICIENT_SCOPES，缺read:project，看板待同步；不影响仓库分支/PR。
+
+发布已完成：结果提交18bd5f299cba76ff0c33dbf0d02d8133eac165d7已推送，[PR89](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/89)开放待审、未合并；ref/PR head和7项稳定文件的GitHub原字节SHA读回一致。最新PR82/86/88 head与报告固定版本相同且仍未合并。回执见ISING_UPDATE_PUBLICATION_20261022.json；本次发布仅含评估补充、来源验证和本人状态/交接/项目记忆，不包含PR82/86/88源码。最终完整模型PPL与物理PPA继续待原负责人/后续任务；不能因本报告而关闭37/78/87。
+
+恢复：先读最新Issue37、78、87与PR82/86/88/89，复核远端集成和head是否变化，再读本报告、来源及验证；需要验证旧数据时只读冻结提交，不重放Slurm提交。不把旧README/HANDOFF中的权限时点当当前状态。当前继续PR89评审，无需重建PR或重推已确认结果；不要自动合并。
+
+以下全部为历史时点记录，按其原日期理解：
+
 # 本轮补传状态（2026-10-19）
 
 分支已推送，[PR #45](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/45)待审、未合并；Issue保持open。amlink1219当前Admin/push权限已核实。看板GraphQL仍缺read:project，待同步。最新个人汇总见progress/amlink1219/STATUS.md；PUBLICATION.json记录原交付提交，DELIVERY_MANIFEST.json记录补传后文件SHA。

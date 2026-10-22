@@ -1,3 +1,13 @@
+# Issue107：TLM周期/存储审计与非随机数字RTL
+
+2026-10-22；jieruiz；task/107-tlm-cycle-digital-rtl；base eb317e4f6fb1b0d8844887401f3275f128ef8a83。目录tmp/tlm-digital-issue107-20261022。代码/报告/源码便携包本地完成，上传及PR以本任务PUBLICATION/REMOTE_VERIFY为准，未合并。
+
+52封存条件情景全量周期CSV/JSON、Qwen2K/8K与Llama1/2汇总和阶段明细，报告明确MAC/向量/非线性/SC驻留/随机源/CDC/Link等时序假设，真实访存与局部状态边界。源码23e8d65fbd84cf548ab82a6c9cfe423d37e59ae4，66功能组、12870逐位输出、63活动模式预检通过，29源文件与Git原字节相同；功能latency不是STA。Verilog23类配置含21KIND及SRAM/DMA外围，另有数组。FP32非线性和融合恢复为候选，不自动替换TLM或继承PPL；没有新模型/GPU/Slurm/PT/STA/DRAMSys。
+
+入口architecture_tlm/digital_ppa_v1/README_ZH.md、CYCLES_MEMORY_AND_RTL_ZH.md、PPA_TASK_ZH.md。113124B源码包在本机digital_ppa_v1_20261022.zip，SHA d8004f0fdf586dc020e99c3d6e6ed3b29050a652a55af037220af898c03aafb2。大波形/编译临时件本地逐SHA归档后回收，见RAW_ARCHIVE。下一步用户55nm库运行STA/DC/PT、按实际实例/latency/II回填新TLM情景；当前完全物理能量/面积仍未知。Projects沿既有read:project不足待同步，本轮未重测看板。
+
+PR105（Issue104）检查台仍ready/open，headfa4ef7b，未被本任务合并；PR103随机接口仍独立，Issue95/7不接管。以下保留历史：
+
 # Issue55第六轮最终补审PR99 ready
 
 2026-10-22；jieruiz；review/55-pr-round6。93/94/97/100已进入集成5dbd9e39，PR99新heada7a48297转ready后49检查/52情景清单与两项完整Qwen24层重放通过，原head随本次补充PR交付。旧草稿记录保留为fba时点。最新报告work/jieruiz/55/round6/pr99_ready/；实际远端合并与本轮目录回收以Issue55最终回执为准。无新模型/GPU/Slurm/PPL/PT，TLM条件结果不继承质量或PPA。

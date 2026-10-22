@@ -45,3 +45,8 @@ SRAM校准补充：已有宏直接查库值；其他尺寸是带验证误差的�
 ## 2026-10-22 Unified complete-decode TLM v6
 
 [Issue96 implementation, operator contracts and limits](unified_v6/README_ZH.md). Fixed W8 / B4 / T32 / K32, current parallel sampler options and same-resource digital controls share a bounded resource/memory model. Local RNG interface has no random-stream SRAM. This is an optional new entry; it does not rewrite historical defaults, results or claim full physical PPA.
+
+
+## 2026-10-22 周期/访存假设审计与非随机数字RTL（Issue107）
+
+[完整周期/存储报告](digital_ppa_v1/CYCLES_MEMORY_AND_RTL_ZH.md)、[RTL模块索引](digital_ppa_v1/README_ZH.md)、[55nm PPA任务](digital_ppa_v1/PPA_TASK_ZH.md)。只读52冻结情景列出核等效周期，区分库/宏约束、时序代理和未展开接口；含64值B4编码、恢复、连续算术、累加、非线性候选、控制和存储外围。66功能组/12870输出及63活动预检通过，源码23e8d65，29输入blob逐字节相同。没有新TLM数值、模型PPL、DC/PT/STA、真实DRAMSys；新RTL尚未回填原TLM。随机源/随机矩阵阵列不在本包，PR105可视化仍独立待审。

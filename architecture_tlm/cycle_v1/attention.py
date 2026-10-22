@@ -218,7 +218,14 @@ class _Source:
         return value
 
 
-def build_attention(kernel,fixture,config=None,prefix='attention'):
+def build_attention(kernel,fixture,config=None,prefix='attention',*,
+                    address_layout=None,shared_k=None,value_sink=None):
+    """Build one query; optional group hooks retain its sampler/state semantics.
+
+    The GQA owner supplies disjoint query addresses and real shared K reads,
+    records every QK consumer, and may coordinate the V union after sampling.
+    Default execution remains the original standalone query contract.
+    """
     c=config or AttentionConfig()
     c.validate()
     q,keys,values,candidates=validate_fixture(fixture,c)
@@ -233,9 +240,14 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
     pack=lambda row:struct.pack('<'+'f'*len(row),*row)
     unpack=lambda data:list(struct.unpack('<'+'f'*(len(data)//4),data))
     qbase,kbase,vbase,hbase=0x70000000,0x71000000,0x72000000,0x73000000
+    output_base=0x74000000
+    if address_layout is not None:
+        qbase,kbase,vbase,hbase,output_base=(address_layout[name]
+            for name in ('q','k','v','histogram','output'))
     kernel.load_memory('sram',qbase,pack(q))
-    for index,row in enumerate(keys): kernel.load_memory('dram',kbase+index*d*4,pack(row))
-    for index,row in enumerate(values): kernel.load_memory('dram',vbase+index*dv*4,pack(row))
+    if shared_k is None:
+        for index,row in enumerate(keys): kernel.load_memory('dram',kbase+index*d*4,pack(row))
+        for index,row in enumerate(values): kernel.load_memory('dram',vbase+index*dv*4,pack(row))
     kernel.load_memory('sram',hbase,bytes(n*4))
     state=dict(output=None,logits=[None]*n,probabilities=None,local_indices=[],physical_indices=[],
                histogram={},frames=[],proposals=0,rejected_empty=0,rejected_multi=0,
@@ -293,6 +305,25 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
     def finish_values(dependency,weights):
         if final_started[0]: return
         final_started[0]=True
+        def finish_accumulation(last,acc):
+            def finished(k,op):
+                state['output']=list(acc)
+                state['retained_samples']=len(state['local_indices'])
+                state['unique_V']=len(weights)
+                state['output_address']=output_base
+                state['output_bytes']=dv*4
+                def stored(k2,op2):
+                    state['complete_ps']=k2.now_ps
+                    state['native_random']=native.report() if native else None
+                add('output.write','sram',deps=(op.id,),
+                    memory=MemoryRequest(output_base,dv*4,write=True,data=pack(acc)),
+                    outputs={free_scores:score_bytes},on_complete=stored,actions={'output_write_bytes':dv*4})
+            add('complete','control',deps=(last,),on_complete=finished)
+        if value_sink is not None:
+            physical_weights={candidates[i]:weights[i] for i in weights}
+            state['V_addresses']=[vbase+i*dv*4 for i in sorted(physical_weights)]
+            value_sink(state,dependency,physical_weights,finish_accumulation)
+            return
         acc=[0.0]*dv
         last=dependency
         prefetch_window=c.kv_capacity_bytes//(dv*4)
@@ -317,19 +348,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                 latency_cycles=3+math.ceil(dv/c.mac_lanes)-1,on_complete=accumulate,
                 outputs={free_kv:dv*4},actions={'V_weighted_mac':dv})
             retired.append(last)
-        def finished(k,op):
-            state['output']=list(acc)
-            state['retained_samples']=len(state['local_indices'])
-            state['unique_V']=len(weights)
-            state['output_address']=0x74000000
-            state['output_bytes']=dv*4
-            def stored(k2,op2):
-                state['complete_ps']=k2.now_ps
-                state['native_random']=native.report() if native else None
-            add('output.write','sram',deps=(op.id,),
-                memory=MemoryRequest(state['output_address'],dv*4,write=True,data=pack(acc)),
-                outputs={free_scores:score_bytes},on_complete=stored,actions={'output_write_bytes':dv*4})
-        add('complete','control',deps=(last,),on_complete=finished)
+        finish_accumulation(last,acc)
 
     def maybe_finish(dependency):
         if sampler_done[0] and consumed[0]==c.samples:
@@ -567,16 +586,22 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
     for local,physical in enumerate(candidates):
         address=kbase+physical*d*4
         state['K_addresses'].append(address)
-        read=add(f'K.{physical}.read','dram',memory=MemoryRequest(address,d*4),
-            inputs={free_kv:d*4},actions={'K_read_bytes':d*4},metadata={'physical_token':physical})
+        if shared_k is not None:
+            read,cache_ready=shared_k.read(physical)
+            read_dependencies=(qread,read,cache_ready)
+        else:
+            read=add(f'K.{physical}.read','dram',memory=MemoryRequest(address,d*4),
+                inputs={free_kv:d*4},actions={'K_read_bytes':d*4},metadata={'physical_token':physical})
+            read_dependencies=(qread,read)
         def dot(k,op,read=read,local=local,physical=physical):
             actual_q=unpack(k.memory_reads[qread])
             row=unpack(k.memory_reads[read])
             if actual_q!=q or row!=keys[physical]: raise AssertionError('Q/K address payload mismatch')
             state['logits'][local]=fp32(math.fsum(a*b for a,b in zip(actual_q,row))/math.sqrt(d))
-        qk_done.append(add(f'QK.{local}','qk',deps=(qread,read),
+        qk_done.append(add(f'QK.{local}','qk',deps=read_dependencies,
             latency_cycles=3+math.ceil(d/c.mac_lanes)-1,on_complete=dot,
-            outputs={free_kv:d*4},actions={'QK_mac':d}))
+            outputs={} if shared_k is not None else {free_kv:d*4},actions={'QK_mac':d}))
+        if shared_k is not None: shared_k.consume(physical,qk_done[-1])
     def prepared(k,op):
         if c.mode=='exact':
             finish_values(op.id,{i:p for i,p in enumerate(state['probabilities'])})

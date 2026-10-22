@@ -1,3 +1,7 @@
+# 第六轮最终补审：PR99已ready并核验通过
+
+源heada7a48297；49检查/52情景清单/两项24层重放通过，随本次补充集成PR交付。最新[pr99_ready/REVIEW_ZH.md](round6/pr99_ready/REVIEW_ZH.md)。PR101的draft分流是旧fba时点，最终状态以Issue55回执为准。
+
 # 第六轮追加99/100
 
 100文档通过并随本PR保留原head；99草稿保留，最终报告待齐。实际4项远端接入与本轮清理以Issue55最终回执为准。

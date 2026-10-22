@@ -1,12 +1,23 @@
+# Issue55第六轮最终补审PR99 ready
+
+2026-10-22；jieruiz；review/55-pr-round6。93/94/97/100已进入集成5dbd9e39，PR99新heada7a48297转ready后49检查/52情景清单与两项完整Qwen24层重放通过，原head随本次补充PR交付。旧草稿记录保留为fba时点。最新报告work/jieruiz/55/round6/pr99_ready/；实际远端合并与本轮目录回收以Issue55最终回执为准。无新模型/GPU/Slurm/PPL/PT，TLM条件结果不继承质量或PPA。
+
 # Issue55第六轮收尾：4通过、1草稿保留
+# Issue96 unified TLM: 52 scenarios complete, PR99 awaiting review
 
 追加100协议33检查/关键一手口径核对通过，99仍draft保留；93/97已原生合并，94/100作者原head随本人集成PR交付，无作者分支更新。详见work/jieruiz/55/round6/和Issue55最终回执。
+2026-10-22; jieruiz; task/96-unified-tlm; base83e15289, executionfba22b192ab914046e50cc405f6dd473bf30d154. Independent sparse checkout tmp/unified-tlm-issue96-20261022. Implementation, all52 scenarios, reports and validation are published at9621e1db35491e530d35b86e0ef884572b1df0a6; PR99 is ready/open, awaiting review, not merged. Five critical remote Git blobs read back and byte-verified; PUBLICATION.json and REMOTE_VERIFY.json record that snapshot. Full implementation/design/results: architecture_tlm/unified_v6/README_ZH.md and RESULTS_ZH.md.
 
 # Issue55第六轮审核交付
+21 new mechanism +18 existing v5 +10 existing v4 checks pass; navigation anchors/dry-run pass. 48 Qwen2K/8K three-seed cases and4 full Llama1/2 single-seed cases complete;62 archived artifacts/22 source blobs/764 model contracts verified. New upstream97 default sampler overlay49 checks pass, no backend switch. No new PPL/GPU/Slurm/PT/DRAMSys run. Unknown complete energy/area/PPL staynull. Local source interface has0 random-stream SRAM/FIFO/extra probability copies. RNG backend remains Issue95;37/78 untouched. Projects real query missingread:project, pending.
 
 2026-10-22，jieruiz，review/55-pr-round6；基线83e1528、当前远端27bf9c48。93/97已原生合并，94的45检查/90模型/134包/15逐文档/成本重放通过，原head424b4206经本人双亲合并集成；待本报告PR发布。97的47CPU、8100沿及FFN250沿/120帧通过。没有新服务器/GPU/模型PPL/PPA。成果work/jieruiz/55/round6，实际远端/清理结果以Issue55最终回执为准；只有一个本轮稀疏工作树，原负责人状态只继承原提交blob。
+Next: PR99 review and module cost/timing characterization; do not merge automatically or close Issue96 before acceptance. Implementation checklist and delivery links are updated in Issue96; Projects remains pending permission. Handoff work/jieruiz/96/HANDOFF.md; original failures preserved in FAILED_PREFLIGHT and compatibility V1/V2, fixes/tests recorded. No running jobs remain. Earlier in-progress/draft statements below are historical snapshots.
 
 以下保留历史：
+# Issue96 unified TLM in progress
+
+2026-10-22; jieruiz; task/96-unified-tlm; base83e15289; independent sparse directory tmp/unified-tlm-issue96-20261022. Main code/Chinese design done; 20 mechanism checks pass, Qwen24 exploratory smoke done. Frozen runs, result manifest and workspace PR pending. No new PPL/PT or source-backend implementation. Handoff work/jieruiz/96/HANDOFF.md.
 
 # Issue55第五轮最终：6项成果已合并
 

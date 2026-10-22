@@ -71,3 +71,8 @@ python qwen/run.py tlm-parallel --attention --context 512 --samples 16 --output 
 ```
 
 此入口接入赢家保持/校正拒绝的事务模型，默认数字FFN。显式`--variant fixed_sc_exact`沿用历史随机FFN参数，未重标定最新B4/T32/K32；原`tlm`保留历史v3。审阅补充四个24层组合情景见`architecture_tlm/results/parallel_sampler_v5_20261021/REVIEW_FULL24_20261022.json`。它验证连通，不是新采样器整模型PPL、器件或完整PPA验收；未知能量/面积仍为null。
+
+
+## Unified TLM v6 (Issue96)
+
+[Complete decode model and boundaries](../architecture_tlm/unified_v6/README_ZH.md). Optional `python qwen/run.py tlm-unified --context 2048 --output /absolute/new_directory`; legacy commands are unchanged. Local RNG is an interface with zero random-stream SRAM; physical PPA and new combined PPL remain unverified.

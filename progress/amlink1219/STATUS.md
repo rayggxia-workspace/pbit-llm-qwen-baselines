@@ -1,3 +1,13 @@
+# 2026-10-22 Issue37：Ising最新实现与结果补充
+
+负责人amlink1219；目标rayggxia-workspace/pbit-llm-qwen-baselines；基线5b26c80c28ab22383f12ab31046dd723ca985abb；分支task/37-ising-update-20261022；最小稀疏目录workspace_projects/iu37。结果提交18bd5f299cba76ff0c33dbf0d02d8133eac165d7已推送，[PR89](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/89)开放待审、未合并。
+
+入口architecture_tlm/attention_comparison/ISING_UPDATE_20261022_ZH.md，原README已加最新索引。固定PR79/80/82/86/88来源，补入后缀PPL、真实QKV、驱动量化、v5时序与旧数字参考关系；旧原件/默认不改，不接管Issue78/87。19来源SHA、90配置完成、固定预算覆盖、8组TLM中位数/单位及null PPA共46项离线检查通过；行为与TLM由独立代理审阅。本次无新模型/Slurm/PT，也未重跑上游采样器测试。
+
+交接/来源/验证见work/amlink1219/37/*20261022*与HANDOFF；另21项文档/历史保留检查通过，远端ref/PR head及7项稳定文件SHA已回读核验，PR82/86/88当前head/未合并状态也已复核。发布回执ISING_UPDATE_PUBLICATION_20261022.json。实时GraphQL缺read:project，看板待同步。下一步审阅PR89；最终同质量完整Attention PPA仍未验收，不自动关闭Issue37或合并。
+
+下方保留历史时点：
+
 # 2026-10-20 Issue76 四条硬件训练路线讨论稿
 
 负责人amlink1219；task/76-fourtrack-training-plan；base e4990c15；独立最小稀疏目录workspace_projects/tr76。范围为四条既定训练路线和服务器讨论稿，当前文档已完成内容/结构/链接/样式及独立审阅，已推送PR#77待审未合并；没有训练作业或新PPL/PPA。

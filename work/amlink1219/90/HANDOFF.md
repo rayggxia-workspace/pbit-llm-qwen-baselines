@@ -23,3 +23,5 @@
 先读Issue90、当前远端规则/双方STATUS和本PUBLICATION，再按需要使用已完成环境，不能根据旧失败记录重复安装。发布前核验GCM实际身份amlink1219/id75301230、repo1420564659权限、所有解析push URL、最新base及明确文件清单；稳定输入/结果须核Git blob SHA。STATUS只更新本人，其他成员成果与任务不接管。
 
 本次交付验证见VALIDATION.json和validate_delivery.py；发布回执PUBLICATION.json区分结果提交/元数据提交与PR状态。Projects按实际GraphQL能力同步，权限不足明确待同步；Issue保持open至审阅验收。后续模型质量研究另开或接续对应Issue，环境完成不表示相关研究已完成。
+
+已推送结果提交`2b0fb4c6a85759bc4ee4adbbd9d0540847a0041f`，PR#93（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/93）开放待审、未合并；远端ref、PR head、60项文件范围和55个稳定blob SHA已核验。Projects：pending_permission。

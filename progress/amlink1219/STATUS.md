@@ -192,3 +192,5 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 辅助/交接：work/amlink1219/<Issue>/。本地工作目录及原任务提交见各PUBLICATION.json；旧STATUS可从原提交恢复。
 原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
 下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。
+
+已推送结果提交`2b0fb4c6a85759bc4ee4adbbd9d0540847a0041f`，PR#93（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/93）开放待审、未合并；远端ref、PR head、60项文件范围和55个稳定blob SHA已核验。Projects：pending_permission。

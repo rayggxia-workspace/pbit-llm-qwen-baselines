@@ -71,6 +71,12 @@ def vectors(kind: int, seed: int) -> list[tuple[int, int, int, int]]:
                 for bit in bits:
                     counts[(bn * 2 + sg) * 8 + bit] = 2048
                 top, scale = 0, 0x3F800000
+            elif index == 18:
+                # Literal FP32 conversion then multiplication gives 0x00000003.
+                # A host-float expression rounded only at the end gives 0x2.
+                counts = [0] * 64
+                counts[0] = 3
+                top, scale = -145, 0x3FC00000
             output = 0
             for bn in range(4):
                 integer_bin = sum(

@@ -31,7 +31,7 @@
 - 正式分支：`task/116-cycle-execution`；基线 `46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d`，PR base为`pbit-tlm-attention-details-20261016`。
 - 暂停前已推送提交：`3347bd8a0a46ad2533298d680d8a6800ad9fa8d4`。基础科学发布`ddd2e340`、真实GQA固定生产源`f94c9db`/独审源`9f1122e`、候选source`d944081a`分别保留，不能用后续文档提交替换实验来源。
 - [PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)已推送、开放待审、未合并；本轮没有任何自动合并。收尾提交及远端逐对象/原始blob核验以`PUBLICATION.json`为准，通知链接见`PAUSE_NOTIFICATION.json`。
-- PR119/120/122/125亦为待审，当前核验快照见`FINAL_WORKSPACE_STATE.json`；PR125已公开完整FFN接合、base改为本任务分支，不能把它的公开代码或取消作业视作完整形状验收。
+- PR119/120/122/125亦为待审，最终核验快照见`PAUSE_GITHUB_STATE.json`；其中PR125的最终head为`09dc2f90`，base为本任务分支。候选兼容验证仍只绑定此前公开的`d944081a`，不自动继承新提交；不能把公开代码或取消作业视作完整形状验收。
 - 主目录没有未提交的生产代码修改。此前四组未跟踪诊断目录仍保留，其现有153项跨工作树诊断/初步回执已封存上传，未删除或重置。2K新脚本与暂停回执另已封存；原工作树仍保留草稿和合成输入。
 - `cycle23-audit`有13项RTL文档/日志换行差异，`cycle23-ops`有1项旧REVIEW换行差异；逐字节比较确认全部仅CRLF/LF差异，未回写主树、未清理。各工作树的HEAD、分支、逐文件大小/SHA/未提交清单见`PAUSE_WORKTREE_INVENTORY.json`。重复源码提取目录、第三方构建包及私有fixture留在本地/个人服务器。
 

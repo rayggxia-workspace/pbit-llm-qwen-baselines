@@ -10,7 +10,7 @@
 
 ### 仅在用户明确恢复后进行
 
-1. 先核最新Issue116、PR126、PR125及成员STATUS。PR125最新核验来源是d944081a（base本任务分支）；其全形状作业已取消，先与该工作线核是否已有后续结果，不能重复提交。
+1. 先核最新Issue116、PR126、PR125及成员STATUS。PR125最终head见PAUSE_GITHUB_STATE（09dc2f90，base本任务分支），候选兼容验证只绑定d944081a；其全形状作业已取消，先与该工作线核是否已有后续结果，不能重复提交。
 2. 阅读本目录PAUSE_REPORT、PLAN_COVERAGE与cycle_v1的AGENTS/FULL_MODEL_TODO。优先确定完整FFN/真实单层接合边界，再考虑规模；没有完整层/质量和物理表征前不作架构排名。
 3. 若继续采用ActiveMemory候选，固定公开版本和本地Kernel SHA，重核其私有接口与完整trace/状态等价；默认Kernel目前未替换。2K草稿只有只读审核和建图记录，需先重建可复现运行器、有限资源与足够时间预算，不能直接续接已终止进程。
 4. 真正的在线DRAM/互连、统一格式schema、在线摘要筛选与资源因果报告按原方案覆盖表另行验收；实际STA/PPA继续依赖jieruiz的既有分工，缺失物理数字保持null。

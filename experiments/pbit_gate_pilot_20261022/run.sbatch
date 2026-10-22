@@ -22,6 +22,11 @@ elif [ "$GATE_STAGE" = cpu_tests ]; then
   "$GATE_PYTHON" -P -u -m unittest discover -s experiments/pbit_gate_pilot_20261022 -p 'test_*.py' -v
 elif [ "$GATE_STAGE" = gpu_pilot ]; then
   "$GATE_PYTHON" -P -u -m experiments.pbit_gate_pilot_20261022.run --config "$GATE_CONFIG" --output "$GATE_OUTPUT"
+elif [ "$GATE_STAGE" = cpu_selection ]; then
+  export CUDA_VISIBLE_DEVICES=""
+  "$GATE_PYTHON" -P -u -m experiments.pbit_gate_pilot_20261022.selection_preflight --config "$GATE_CONFIG" --output "$GATE_OUTPUT"
+elif [ "$GATE_STAGE" = gpu_optimize ]; then
+  "$GATE_PYTHON" -P -u -m experiments.pbit_gate_pilot_20261022.optimize_driver --config "$GATE_CONFIG" --output "$GATE_OUTPUT"
 else
   exit 2
 fi

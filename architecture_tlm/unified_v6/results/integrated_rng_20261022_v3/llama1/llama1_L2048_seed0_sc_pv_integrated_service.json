@@ -1,0 +1,3588 @@
+{
+  "schema_version": 6,
+  "model": {
+    "architectures": [
+      "LlamaForCausalLM"
+    ],
+    "model_type": "llama",
+    "hidden_size": 4096,
+    "intermediate_size": 11008,
+    "num_hidden_layers": 32,
+    "num_attention_heads": 32,
+    "num_key_value_heads": 32,
+    "vocab_size": 32000,
+    "max_position_embeddings": 2048,
+    "tie_word_embeddings": false,
+    "attention_bias": false,
+    "hidden_act": "silu",
+    "rms_norm_eps": 1e-06,
+    "rope_theta": 10000.0,
+    "torch_dtype": "bfloat16"
+  },
+  "config": {
+    "core_hz": 100000000,
+    "context_tokens": 2048,
+    "decode_tokens": 1,
+    "seed": 0,
+    "macs_per_cycle": 512,
+    "mac_startup_cycles": 2,
+    "vector_lanes": 64,
+    "nonlinear_lanes": 16,
+    "weight_chunk_bytes": 65536,
+    "double_buffer": true,
+    "trace_event_limit": 12,
+    "row_receipt_limit": 4,
+    "ffn": {
+      "mode": "sc",
+      "bins": 4,
+      "samples": 32,
+      "strata": 32,
+      "engines": 8,
+      "startup_cycles": 1,
+      "sample_II_cycles": 1,
+      "drain_cycles": 1
+    },
+    "attention": {
+      "mode": "pv",
+      "tile_tokens": 128,
+      "samples": null,
+      "sample_ratio": 0.0625,
+      "minimum_samples": 1,
+      "winner_update_multiplier": 8,
+      "candidate_blocks": 8,
+      "selection": "fixed_budget",
+      "selector_bias": -1.5,
+      "selector_temperature": 1.0,
+      "synthetic_logit_std": 1.5,
+      "trace_file": null,
+      "selector_calibration": null,
+      "serial_burn": 16,
+      "serial_spacing": 4,
+      "serial_cycles_per_attempt": 6
+    },
+    "random": {
+      "backend": "integrated_service",
+      "clock_hz": 100000000,
+      "reseed_cycles": 100000000,
+      "seed_word_interval_cycles": 100,
+      "seed_startup_cycles": 10,
+      "sigmoid_step": 0.125,
+      "lut_lanes": 16,
+      "config_lanes": 64,
+      "cpu_fast": true,
+      "startup_cycles": 1,
+      "frame_cycles": 1,
+      "restore_cycles": 1
+    },
+    "sampler_v5": {
+      "drive_bits": 32,
+      "drive_step": null,
+      "max_proposals_per_sample": 128,
+      "offset_update_mode": "per_candidate",
+      "source_command_cycles": 1,
+      "source_settle_cycles": 2,
+      "source_capture_cycles": 1,
+      "source_min_interval_cycles": 1,
+      "tree_levels_per_cycle": 2,
+      "burn_updates": 0,
+      "record_events": false,
+      "energy_pJ": {},
+      "idle_W": null,
+      "area": {}
+    },
+    "sram": {
+      "capacity_bytes": 8388608,
+      "banks": 16,
+      "word_bytes": 16,
+      "macro_depth": 4096,
+      "corner": "SS",
+      "clock_hz": 80000000,
+      "fabric_GBs": 16.0,
+      "cdc_ns": 20.0,
+      "calibration": "llama7b/runtime/results/sram_calibration_v1_20261016/calibration.json"
+    },
+    "dram": {
+      "backend": "link",
+      "bandwidth_GBs": 16.0,
+      "latency_ns": 80.0,
+      "burst_bytes": 64,
+      "max_pending": 32
+    },
+    "prices_pJ": {
+      "bf16_mac": 2.0,
+      "fp32_mac": null,
+      "vector_op": 1.0,
+      "nonlinear_op": 10.0,
+      "dram_read": 64.0,
+      "dram_write": 64.0,
+      "dram_background_ns": 50.0,
+      "FP32_to_BF16": null,
+      "weight_scale_op": null,
+      "SC_encode_op": null,
+      "SC_restore_op": null,
+      "digital_idle_ns": null,
+      "sc_idle_ns": null,
+      "control_interconnect_ns": null,
+      "rng_seed": null,
+      "rng_frame": null,
+      "rng_restore": null,
+      "rng_uniform_bit": null,
+      "rng_biased_response": null,
+      "selector_compare": null,
+      "budget_compare_exchange": null,
+      "candidate_compact": null,
+      "V_selection_add": 0.0
+    },
+    "cost_policy": {
+      "full_physical_PPA": "unknown",
+      "measured_anchor": "55nm SS SRAM macro internal energy/area/timing table",
+      "conditional_prices": "legacy digital 2pJ BF16 MAC,1pJ vector,10pJ nonlinear; DRAM64pJ/B,50mW background",
+      "null_prices": "uncharacterized components, NOT zero energy",
+      "V_selection_add": "activity alias only: energy already in vector_op; do not price twice",
+      "SC_restore": "counts signed bit-plane reconstruction/bin alignment/W scale application; no duplicate conversion fee",
+      "SRAM": "internal energy only; do not overlap with a whole-memory measured price"
+    },
+    "model_record": {
+      "model": "llama1",
+      "source_commit": "83e15289434af50fc09c35e699d8b39965389d98",
+      "source_path": "architecture_tlm/llama7b/configs/model.json",
+      "source_sha256": "51bbb58a4640b74c538ecd881478b1a1bc5da654b2b82f0db647addf1f5eaf7e",
+      "shape": {
+        "architectures": [
+          "LlamaForCausalLM"
+        ],
+        "model_type": "llama",
+        "hidden_size": 4096,
+        "intermediate_size": 11008,
+        "num_hidden_layers": 32,
+        "num_attention_heads": 32,
+        "num_key_value_heads": 32,
+        "vocab_size": 32000,
+        "max_position_embeddings": 2048,
+        "tie_word_embeddings": false,
+        "attention_bias": false,
+        "hidden_act": "silu",
+        "rms_norm_eps": 1e-06,
+        "rope_theta": 10000.0,
+        "torch_dtype": "bfloat16"
+      }
+    }
+  },
+  "scope": "batch1 full decoder decode + embedding/final norm/lm_head/greedy selection; prior context already exists; no prefill/TTFT",
+  "implementation": "bounded tile/resource event TLM; NOT full-chip cycle-accurate simulation",
+  "metrics": {
+    "TPOT_ms": 2626.22827,
+    "token_ms": [
+      2626.22827
+    ],
+    "tokens_per_second": 0.3807742119842461,
+    "elapsed_ns": 2626228270.0,
+    "priced_subtotal_mJ_per_token": 803.947096901382,
+    "full_physical_energy_J": null,
+    "full_physical_area_mm2": null,
+    "quality_reference_ppl": null
+  },
+  "energy_J": {
+    "DRAM_dynamic": 0.6056665087983341,
+    "SRAM_internal": 0.044922232067260655,
+    "digital": 0.0051598708060047035,
+    "attention_PV": 0.0,
+    "RNG_endpoint_calibrated": 0.0016901703171433332,
+    "DRAM_background": 0.1313114135,
+    "SRAM_leakage": 0.015196901412639284
+  },
+  "unpriced_actions": {
+    "FP32_to_BF16": 655360,
+    "SC_encode_op": 3375744,
+    "SC_weight_bit_gate": 2216203124736,
+    "SC_bin_route": 138512695296,
+    "SC_counter_update": 138512695296,
+    "SC_reduction_bit_work": 16621523435520,
+    "SC_resident_weight_feed_cycle": 33816576,
+    "SC_restore_op": 4869586944,
+    "rng_FFN_shared64_compare": 270532608,
+    "rng_stratum_counter_update": 4227072,
+    "rng_seed_bus_beat": 21,
+    "digital_idle_ns": 2626228270.0,
+    "sc_idle_ns": 2626228270.0,
+    "control_interconnect_ns": 2626228270.0
+  },
+  "actions": {
+    "dram_read": 9463014912,
+    "sram_write": 609562390,
+    "sram_read": 609485078,
+    "vector_op": 41373388,
+    "nonlinear_op": 2451521,
+    "bf16_mac": 2546991104,
+    "FP32_to_BF16": 655360,
+    "dram_write": 524288,
+    "V_selection_add": 16777216,
+    "SC_encode_op": 3375744,
+    "SC_weight_bit_gate": 2216203124736,
+    "SC_bin_route": 138512695296,
+    "SC_counter_update": 138512695296,
+    "SC_reduction_bit_work": 16621523435520,
+    "SC_resident_weight_feed_cycle": 33816576,
+    "SC_restore_op": 4869586944,
+    "rng_calibrated_endpoint_energy_pJ": 1690170317.1433332,
+    "rng_FFN_shared64_compare": 270532608,
+    "rng_stratum_counter_update": 4227072,
+    "rng_sigmoid_lut_lookup": 0,
+    "rng_threshold_config_bit": 0,
+    "rng_seed_bus_beat": 21,
+    "dram_background_ns": 2626228270.0,
+    "digital_idle_ns": 2626228270.0,
+    "sc_idle_ns": 2626228270.0,
+    "control_interconnect_ns": 2626228270.0
+  },
+  "phase_ns": {
+    "embedding": 832.0,
+    "attention_norm": 137152.0,
+    "QKV_projection": 732405017.9904009,
+    "RoPE_bias_KV_append": 223350.0095990561,
+    "attention_core": 145701801.0,
+    "O_projection": 244161655.49040106,
+    "residual_and_ffn_norm": 226719.50959893316,
+    "FFN_gate_up": 951397988.5,
+    "FFN_SwiGLU": 595904.0,
+    "FFN_down": 491469056.0,
+    "ffn_output_conversion": 71664.0,
+    "ffn_residual": 89600.0,
+    "final_norm": 3218.5,
+    "lm_head_and_argmax": 59601300.0,
+    "other_explicit_memory": 143011.0
+  },
+  "phases": [
+    {
+      "name": "embedding",
+      "token": 0,
+      "layer": null,
+      "start_ns": 0.0,
+      "end_ns": 832.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 3571.0,
+      "end_ns": 7857.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 7857.0,
+      "end_ns": 22895513.8122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 22895513.8122,
+      "end_ns": 22902493.5
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 22905239.0,
+      "end_ns": 27457632.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 27457632.0,
+      "end_ns": 35087676.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 35087676.3122,
+      "end_ns": 35094757.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 35094757.0,
+      "end_ns": 64825950.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 64825950.0,
+      "end_ns": 64844572.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 64844572.0,
+      "end_ns": 80202980.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 80202980.0,
+      "end_ns": 80205219.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 80205219.5,
+      "end_ns": 80208019.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 80209683.5,
+      "end_ns": 80213969.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 80213969.5,
+      "end_ns": 103101626.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 103101626.3122,
+      "end_ns": 103108606.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 103111351.5,
+      "end_ns": 107664557.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 107664557.0,
+      "end_ns": 115294613.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 115294613.8122,
+      "end_ns": 115301707.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 115301707.0,
+      "end_ns": 145032900.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 145032900.0,
+      "end_ns": 145051522.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 145051522.0,
+      "end_ns": 160409930.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 160409930.0,
+      "end_ns": 160412169.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 160412169.5,
+      "end_ns": 160414969.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 160416633.5,
+      "end_ns": 160420919.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 160420919.5,
+      "end_ns": 183308576.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 183308576.3122,
+      "end_ns": 183315556.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 183318301.5,
+      "end_ns": 187871882.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 187871882.0,
+      "end_ns": 195501926.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 195501926.3122,
+      "end_ns": 195509007.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 195509007.0,
+      "end_ns": 225240200.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 225240200.0,
+      "end_ns": 225258822.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 225258822.0,
+      "end_ns": 240617230.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 240617230.0,
+      "end_ns": 240619469.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 240619469.5,
+      "end_ns": 240622269.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 240623933.5,
+      "end_ns": 240628219.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 240628219.5,
+      "end_ns": 263515876.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 263515876.3122,
+      "end_ns": 263522856.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 263525601.5,
+      "end_ns": 268078944.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 268078944.5,
+      "end_ns": 275709001.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 275709001.3122,
+      "end_ns": 275716094.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 275716094.5,
+      "end_ns": 305447250.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 305447250.0,
+      "end_ns": 305465872.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 305465872.0,
+      "end_ns": 320824280.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 320824280.0,
+      "end_ns": 320826519.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 320826519.5,
+      "end_ns": 320829319.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 320830983.5,
+      "end_ns": 320835269.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 320835269.5,
+      "end_ns": 343722926.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 343722926.3122,
+      "end_ns": 343729906.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 343732651.5,
+      "end_ns": 348286282.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 348286282.0,
+      "end_ns": 355916326.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 355916326.3122,
+      "end_ns": 355923407.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 355923407.0,
+      "end_ns": 385654600.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 385654600.0,
+      "end_ns": 385673222.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 385673222.0,
+      "end_ns": 401031630.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 401031630.0,
+      "end_ns": 401033869.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 401033869.5,
+      "end_ns": 401036669.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 401038333.5,
+      "end_ns": 401042619.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 401042619.5,
+      "end_ns": 423930276.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 423930276.3122,
+      "end_ns": 423937256.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 423940001.5,
+      "end_ns": 428492069.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 428492069.5,
+      "end_ns": 436122126.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 436122126.3122,
+      "end_ns": 436129207.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 436129207.0,
+      "end_ns": 465860400.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 465860400.0,
+      "end_ns": 465879022.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 465879022.0,
+      "end_ns": 481237430.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 481237430.0,
+      "end_ns": 481239669.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 481239669.5,
+      "end_ns": 481242469.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 481244133.5,
+      "end_ns": 481248419.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 481248419.5,
+      "end_ns": 504136076.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 504136076.3122,
+      "end_ns": 504143056.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 504145801.5,
+      "end_ns": 508699307.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 508699307.0,
+      "end_ns": 516329363.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 516329363.8122,
+      "end_ns": 516336457.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 516336457.0,
+      "end_ns": 546067650.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 546067650.0,
+      "end_ns": 546086272.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 546086272.0,
+      "end_ns": 561444680.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 561444680.0,
+      "end_ns": 561446919.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 561446919.5,
+      "end_ns": 561449719.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 561451383.5,
+      "end_ns": 561455669.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 561455669.5,
+      "end_ns": 584343326.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 584343326.3122,
+      "end_ns": 584350306.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 584353051.5,
+      "end_ns": 588907007.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 588907007.0,
+      "end_ns": 596537063.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 596537063.8122,
+      "end_ns": 596544157.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 596544157.0,
+      "end_ns": 626275350.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 626275350.0,
+      "end_ns": 626293972.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 626293972.0,
+      "end_ns": 641652380.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 641652380.0,
+      "end_ns": 641654619.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 641654619.5,
+      "end_ns": 641657419.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 641659083.5,
+      "end_ns": 641663369.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 641663369.5,
+      "end_ns": 664551026.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 664551026.3122,
+      "end_ns": 664558006.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 664560751.5,
+      "end_ns": 669115432.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 669115432.0,
+      "end_ns": 676745476.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 676745476.3122,
+      "end_ns": 676752557.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 676752557.0,
+      "end_ns": 706483750.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 706483750.0,
+      "end_ns": 706502372.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 706502372.0,
+      "end_ns": 721860780.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 721860780.0,
+      "end_ns": 721863019.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 721863019.5,
+      "end_ns": 721865819.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 721867483.5,
+      "end_ns": 721871769.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 721871769.5,
+      "end_ns": 744759426.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 744759426.3122,
+      "end_ns": 744766406.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 744769151.5,
+      "end_ns": 749322119.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 749322119.5,
+      "end_ns": 756952176.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 756952176.3122,
+      "end_ns": 756959257.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 756959257.0,
+      "end_ns": 786690450.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 786690450.0,
+      "end_ns": 786709072.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 786709072.0,
+      "end_ns": 802067480.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 802067480.0,
+      "end_ns": 802069719.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 802069719.5,
+      "end_ns": 802072519.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 802074183.5,
+      "end_ns": 802078469.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 802078469.5,
+      "end_ns": 824966126.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 824966126.3122,
+      "end_ns": 824973106.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 824975851.5,
+      "end_ns": 829525982.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 829525982.0,
+      "end_ns": 837156026.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 837156026.3122,
+      "end_ns": 837163107.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 837163107.0,
+      "end_ns": 866894300.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 866894300.0,
+      "end_ns": 866912922.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 866912922.0,
+      "end_ns": 882271330.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 882271330.0,
+      "end_ns": 882273569.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 882273569.5,
+      "end_ns": 882276369.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 882278033.5,
+      "end_ns": 882282319.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 882282319.5,
+      "end_ns": 905169976.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 905169976.3122,
+      "end_ns": 905176956.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 905179701.5,
+      "end_ns": 909733644.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 909733644.5,
+      "end_ns": 917363701.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 917363701.3122,
+      "end_ns": 917370794.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 917370794.5,
+      "end_ns": 947101950.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 947101950.0,
+      "end_ns": 947120572.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 947120572.0,
+      "end_ns": 962478980.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 962478980.0,
+      "end_ns": 962481219.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 962481219.5,
+      "end_ns": 962484019.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 962485683.5,
+      "end_ns": 962489969.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 962489969.5,
+      "end_ns": 985377626.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 985377626.3122,
+      "end_ns": 985384606.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 985387351.5,
+      "end_ns": 989939482.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 989939482.0,
+      "end_ns": 997569526.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 997569526.3122,
+      "end_ns": 997576607.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 997576607.0,
+      "end_ns": 1027307800.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 1027307800.0,
+      "end_ns": 1027326422.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 1027326422.0,
+      "end_ns": 1042684830.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 1042684830.0,
+      "end_ns": 1042687069.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 1042687069.5,
+      "end_ns": 1042689869.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1042691533.5,
+      "end_ns": 1042695819.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1042695819.5,
+      "end_ns": 1065583476.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1065583476.3122,
+      "end_ns": 1065590456.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1065593201.5,
+      "end_ns": 1070144569.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1070144569.5,
+      "end_ns": 1077774626.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1077774626.3122,
+      "end_ns": 1077781707.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1077781707.0,
+      "end_ns": 1107512900.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1107512900.0,
+      "end_ns": 1107531522.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1107531522.0,
+      "end_ns": 1122889930.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1122889930.0,
+      "end_ns": 1122892169.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 1122892169.5,
+      "end_ns": 1122894969.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1122896633.5,
+      "end_ns": 1122900919.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1122900919.5,
+      "end_ns": 1145788576.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1145788576.3122,
+      "end_ns": 1145795556.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1145798301.5,
+      "end_ns": 1150352394.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1150352394.5,
+      "end_ns": 1157982451.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1157982451.3122,
+      "end_ns": 1157989544.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1157989544.5,
+      "end_ns": 1187720700.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1187720700.0,
+      "end_ns": 1187739322.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1187739322.0,
+      "end_ns": 1203097730.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1203097730.0,
+      "end_ns": 1203099969.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 1203099969.5,
+      "end_ns": 1203102769.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1203104433.5,
+      "end_ns": 1203108719.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1203108719.5,
+      "end_ns": 1225996376.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1225996376.3122,
+      "end_ns": 1226003356.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1226006101.5,
+      "end_ns": 1230559907.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1230559907.0,
+      "end_ns": 1238189963.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1238189963.8122,
+      "end_ns": 1238197057.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1238197057.0,
+      "end_ns": 1267928250.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1267928250.0,
+      "end_ns": 1267946872.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1267946872.0,
+      "end_ns": 1283305280.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1283305280.0,
+      "end_ns": 1283307519.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 1283307519.5,
+      "end_ns": 1283310319.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1283311983.5,
+      "end_ns": 1283316269.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1283316269.5,
+      "end_ns": 1306203926.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1306203926.3122,
+      "end_ns": 1306210906.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1306213651.5,
+      "end_ns": 1310768707.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1310768707.0,
+      "end_ns": 1318398763.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1318398763.8122,
+      "end_ns": 1318405857.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1318405857.0,
+      "end_ns": 1348137050.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1348137050.0,
+      "end_ns": 1348155672.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1348155672.0,
+      "end_ns": 1363514080.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1363514080.0,
+      "end_ns": 1363516319.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 1363516319.5,
+      "end_ns": 1363519119.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1363520783.5,
+      "end_ns": 1363525069.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1363525069.5,
+      "end_ns": 1386412726.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1386412726.3122,
+      "end_ns": 1386419706.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1386422451.5,
+      "end_ns": 1390977732.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1390977732.0,
+      "end_ns": 1398607776.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1398607776.3122,
+      "end_ns": 1398614857.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1398614857.0,
+      "end_ns": 1428346050.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1428346050.0,
+      "end_ns": 1428364672.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1428364672.0,
+      "end_ns": 1443723080.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1443723080.0,
+      "end_ns": 1443725319.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 1443725319.5,
+      "end_ns": 1443728119.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1443729783.5,
+      "end_ns": 1443734069.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1443734069.5,
+      "end_ns": 1466621726.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1466621726.3122,
+      "end_ns": 1466628706.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1466631451.5,
+      "end_ns": 1471184444.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1471184444.5,
+      "end_ns": 1478814501.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1478814501.3122,
+      "end_ns": 1478821594.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1478821594.5,
+      "end_ns": 1508552750.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1508552750.0,
+      "end_ns": 1508571372.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1508571372.0,
+      "end_ns": 1523929780.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1523929780.0,
+      "end_ns": 1523932019.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 1523932019.5,
+      "end_ns": 1523934819.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1523936483.5,
+      "end_ns": 1523940769.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1523940769.5,
+      "end_ns": 1546828426.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1546828426.3122,
+      "end_ns": 1546835406.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1546838151.5,
+      "end_ns": 1551390969.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1551390969.5,
+      "end_ns": 1559021026.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1559021026.3122,
+      "end_ns": 1559028107.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1559028107.0,
+      "end_ns": 1588759300.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1588759300.0,
+      "end_ns": 1588777922.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1588777922.0,
+      "end_ns": 1604136330.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1604136330.0,
+      "end_ns": 1604138569.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 1604138569.5,
+      "end_ns": 1604141369.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1604143033.5,
+      "end_ns": 1604147319.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1604147319.5,
+      "end_ns": 1627034976.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1627034976.3122,
+      "end_ns": 1627041956.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1627044701.5,
+      "end_ns": 1631597832.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1631597832.0,
+      "end_ns": 1639227876.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1639227876.3122,
+      "end_ns": 1639234957.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1639234957.0,
+      "end_ns": 1668966150.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1668966150.0,
+      "end_ns": 1668984772.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1668984772.0,
+      "end_ns": 1684343180.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1684343180.0,
+      "end_ns": 1684345419.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 1684345419.5,
+      "end_ns": 1684348219.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1684349883.5,
+      "end_ns": 1684354169.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1684354169.5,
+      "end_ns": 1707241826.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1707241826.3122,
+      "end_ns": 1707248806.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1707251551.5,
+      "end_ns": 1711806869.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1711806869.5,
+      "end_ns": 1719436926.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1719436926.3122,
+      "end_ns": 1719444007.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1719444007.0,
+      "end_ns": 1749175200.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1749175200.0,
+      "end_ns": 1749193822.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1749193822.0,
+      "end_ns": 1764552230.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1764552230.0,
+      "end_ns": 1764554469.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 1764554469.5,
+      "end_ns": 1764557269.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1764558933.5,
+      "end_ns": 1764563219.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1764563219.5,
+      "end_ns": 1787450876.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1787450876.3122,
+      "end_ns": 1787457856.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1787460601.5,
+      "end_ns": 1792009332.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1792009332.0,
+      "end_ns": 1799639376.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1799639376.3122,
+      "end_ns": 1799646457.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1799646457.0,
+      "end_ns": 1829377650.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1829377650.0,
+      "end_ns": 1829396272.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1829396272.0,
+      "end_ns": 1844754680.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1844754680.0,
+      "end_ns": 1844756919.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 1844756919.5,
+      "end_ns": 1844759719.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1844761383.5,
+      "end_ns": 1844765669.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1844765669.5,
+      "end_ns": 1867653326.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1867653326.3122,
+      "end_ns": 1867660306.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1867663051.5,
+      "end_ns": 1872216907.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1872216907.0,
+      "end_ns": 1879846963.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1879846963.8122,
+      "end_ns": 1879854057.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1879854057.0,
+      "end_ns": 1909585250.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1909585250.0,
+      "end_ns": 1909603872.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1909603872.0,
+      "end_ns": 1924962280.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1924962280.0,
+      "end_ns": 1924964519.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 1924964519.5,
+      "end_ns": 1924967319.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 1924968983.5,
+      "end_ns": 1924973269.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 1924973269.5,
+      "end_ns": 1947860926.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 1947860926.3122,
+      "end_ns": 1947867906.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 1947870651.5,
+      "end_ns": 1952423982.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 1952423982.0,
+      "end_ns": 1960054026.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 1960054026.3122,
+      "end_ns": 1960061107.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 1960061107.0,
+      "end_ns": 1989792300.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 1989792300.0,
+      "end_ns": 1989810922.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 1989810922.0,
+      "end_ns": 2005169330.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 2005169330.0,
+      "end_ns": 2005171569.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 2005171569.5,
+      "end_ns": 2005174369.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2005176033.5,
+      "end_ns": 2005180319.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2005180319.5,
+      "end_ns": 2028067976.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2028067976.3122,
+      "end_ns": 2028074956.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2028077701.5,
+      "end_ns": 2032632432.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2032632432.0,
+      "end_ns": 2040262476.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2040262476.3122,
+      "end_ns": 2040269557.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2040269557.0,
+      "end_ns": 2070000750.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2070000750.0,
+      "end_ns": 2070019372.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2070019372.0,
+      "end_ns": 2085377780.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2085377780.0,
+      "end_ns": 2085380019.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 2085380019.5,
+      "end_ns": 2085382819.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2085384483.5,
+      "end_ns": 2085388769.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2085388769.5,
+      "end_ns": 2108276426.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2108276426.3122,
+      "end_ns": 2108283406.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2108286151.5,
+      "end_ns": 2112840019.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2112840019.5,
+      "end_ns": 2120470076.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2120470076.3122,
+      "end_ns": 2120477157.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2120477157.0,
+      "end_ns": 2150208350.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2150208350.0,
+      "end_ns": 2150226972.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2150226972.0,
+      "end_ns": 2165585380.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2165585380.0,
+      "end_ns": 2165587619.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 2165587619.5,
+      "end_ns": 2165590419.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2165592083.5,
+      "end_ns": 2165596369.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2165596369.5,
+      "end_ns": 2188484026.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2188484026.3122,
+      "end_ns": 2188491006.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2188493751.5,
+      "end_ns": 2193046969.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2193046969.5,
+      "end_ns": 2200677026.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2200677026.3122,
+      "end_ns": 2200684107.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2200684107.0,
+      "end_ns": 2230415300.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2230415300.0,
+      "end_ns": 2230433922.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2230433922.0,
+      "end_ns": 2245792330.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2245792330.0,
+      "end_ns": 2245794569.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 2245794569.5,
+      "end_ns": 2245797369.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2245799033.5,
+      "end_ns": 2245803319.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2245803319.5,
+      "end_ns": 2268690976.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2268690976.3122,
+      "end_ns": 2268697956.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2268700701.5,
+      "end_ns": 2273252219.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2273252219.5,
+      "end_ns": 2280882276.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2280882276.3122,
+      "end_ns": 2280889357.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2280889357.0,
+      "end_ns": 2310620550.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2310620550.0,
+      "end_ns": 2310639172.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2310639172.0,
+      "end_ns": 2325997580.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2325997580.0,
+      "end_ns": 2325999819.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 2325999819.5,
+      "end_ns": 2326002619.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2326004283.5,
+      "end_ns": 2326008569.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2326008569.5,
+      "end_ns": 2348896226.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2348896226.3122,
+      "end_ns": 2348903206.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2348905951.5,
+      "end_ns": 2353460094.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2353460094.5,
+      "end_ns": 2361090151.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2361090151.3122,
+      "end_ns": 2361097244.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2361097244.5,
+      "end_ns": 2390828400.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2390828400.0,
+      "end_ns": 2390847022.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2390847022.0,
+      "end_ns": 2406205430.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2406205430.0,
+      "end_ns": 2406207669.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 2406207669.5,
+      "end_ns": 2406210469.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2406212133.5,
+      "end_ns": 2406216419.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2406216419.5,
+      "end_ns": 2429104076.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2429104076.3122,
+      "end_ns": 2429111056.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2429113801.5,
+      "end_ns": 2433664782.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2433664782.0,
+      "end_ns": 2441294826.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2441294826.3122,
+      "end_ns": 2441301907.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2441301907.0,
+      "end_ns": 2471033100.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2471033100.0,
+      "end_ns": 2471051722.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2471051722.0,
+      "end_ns": 2486410130.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2486410130.0,
+      "end_ns": 2486412369.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 2486412369.5,
+      "end_ns": 2486415169.5
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2486416833.5,
+      "end_ns": 2486421119.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2486421119.5,
+      "end_ns": 2509308776.3122
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2509308776.3122,
+      "end_ns": 2509315756.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2509318501.5,
+      "end_ns": 2513872532.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2513872532.0,
+      "end_ns": 2521502576.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2521502576.3122,
+      "end_ns": 2521509657.0
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2521509657.0,
+      "end_ns": 2551240850.0
+    },
+    {
+      "name": "FFN_SwiGLU",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2551240850.0,
+      "end_ns": 2551259472.0
+    },
+    {
+      "name": "FFN_down",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2551259472.0,
+      "end_ns": 2566617880.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2566617880.0,
+      "end_ns": 2566620119.5
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 2566620119.5,
+      "end_ns": 2566622919.5
+    },
+    {
+      "name": "final_norm",
+      "token": 0,
+      "layer": null,
+      "start_ns": 2566623751.5,
+      "end_ns": 2566626970.0
+    },
+    {
+      "name": "lm_head_and_argmax",
+      "token": 0,
+      "layer": null,
+      "start_ns": 2566626970.0,
+      "end_ns": 2626228270.0
+    }
+  ],
+  "resource_busy_ns": {
+    "dram_dma": 971416160.0,
+    "sram_bank:0": 1241008583.0800338,
+    "sram_bank:1": 1241008583.0800338,
+    "sram_bank:10": 1233189360.678368,
+    "sram_bank:11": 1233189360.678368,
+    "sram_bank:12": 1233189360.678368,
+    "sram_bank:13": 1233189360.678368,
+    "sram_bank:14": 1233189360.678368,
+    "sram_bank:15": 1233189360.678368,
+    "sram_bank:2": 1233400816.678368,
+    "sram_bank:3": 1233400816.678368,
+    "sram_bank:4": 1233400816.678368,
+    "sram_bank:5": 1233400816.678368,
+    "sram_bank:6": 1233400816.678368,
+    "sram_bank:7": 1233400816.678368,
+    "sram_bank:8": 1233189360.678368,
+    "sram_bank:9": 1233189360.678368,
+    "sram_fabric": 1242655502.554499,
+    "vector": 770131530.0,
+    "mac": 51464320.0,
+    "rng_control": 1406720.0,
+    "sc:0": 44912640.0,
+    "sc:1": 44912640.0,
+    "sc:2": 44912640.0,
+    "sc:3": 44912640.0,
+    "sc:4": 44912640.0,
+    "sc:5": 44912640.0,
+    "sc:6": 44912640.0,
+    "sc:7": 44912640.0
+  },
+  "wait_ns": {
+    "dram_embedding": 0.0,
+    "sram_embedding": 5.5,
+    "sram_initial_residual": 5.5,
+    "dram_norm_weights": 0.0,
+    "sram_RMSNorm_input": 304.0,
+    "RMSNorm": 127.0,
+    "sram_RMSNorm_output": 385.0,
+    "sram_matrix_activation": 357.0,
+    "dram_weights": 0.0,
+    "sram_weight_fill": 383258729.0,
+    "sram_weight_consume": 1550496.0,
+    "matrix_qkv": 200448.0,
+    "matrix_FP32_to_BF16": 0.0,
+    "sram_matrix_result": 594480.0,
+    "sram_RoPE_bias_input": 358.0095990560949,
+    "RoPE_bias": 210.5,
+    "sram_RoPE_bias_output": 317.5,
+    "sram_KV_append_operand": 560.0,
+    "dram_KV_append": 0.0,
+    "dram_K_selected": 0.0,
+    "sram_KV_fill": 122495.0,
+    "sram_KV_operand": 114688.0,
+    "attention_QK": 106168.0,
+    "attention_score_scale": 0.0,
+    "sram_compact_logits": 49480.0,
+    "sram_score_input": 10752.0,
+    "accurate_softmax": 3899.5,
+    "sram_probabilities": 4272.5,
+    "CDF_prefix": 6639.5,
+    "rng_PV_real_uniform32": 0.0,
+    "systematic_CDF_counts": 0.0,
+    "sram_CDF_scan": 7532.5,
+    "sample_histogram_remap": 2789.5,
+    "sram_V_worklist": 4645.0,
+    "sram_GQA_worklist_merge": 6843.5,
+    "GQA_sorted_union": 4993.5,
+    "dram_V_sparse_union": 0.0,
+    "sram_V_fill": 22300.0,
+    "sram_V_broadcast": 23185.0,
+    "V_repeated_add": 18605.0,
+    "sample_average": 0.0,
+    "sram_attention_output": 132.5,
+    "matrix_o": 69376.0,
+    "sram_residual_operand": 534.0095989331603,
+    "sram_BF16_residual_input": 352.0,
+    "BF16_residual": 312.0,
+    "sram_BF16_residual_output": 417.5,
+    "sram_residual_commit": 352.0,
+    "sram_sc_activation": 41514.5,
+    "dynamic_PoT_encode": 36970.18555212021,
+    "sram_encoded_group": 725.0,
+    "dram_weight_scales": 0.0,
+    "sram_weight_scales": 2864871.6245021448,
+    "rng_ffn_save": 22127.934224531054,
+    "SC_gu": 0.0,
+    "SC_bin_restore": 0.0,
+    "sram_SC_partial": 926393.0,
+    "rng_ffn_restore": 687817.0338959619,
+    "rng_ffn_release": 61639.0,
+    "sram_SwiGLU_FP32_input": 0.0,
+    "SwiGLU_FP32": 192.0,
+    "sram_SwiGLU_FP32_output": 0.0,
+    "SC_down": 0.0,
+    "sram_FP32_to_BF16_input": 240.0,
+    "FP32_to_BF16": 272.0,
+    "sram_FP32_to_BF16_output": 240.0,
+    "final_RMSNorm": 8.5,
+    "matrix_lm_head": 16000.0,
+    "sram_stream_argmax_input": 44751.19972229004,
+    "stream_argmax": 21648.799896240234
+  },
+  "events": [
+    {
+      "id": 1,
+      "stage": "dram_embedding",
+      "ready_ns": 0.0,
+      "start_ns": 0.0,
+      "end_ns": 208.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 2,
+      "stage": "dram_embedding",
+      "ready_ns": 208.0,
+      "start_ns": 208.0,
+      "end_ns": 416.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 3,
+      "stage": "dram_embedding",
+      "ready_ns": 416.0,
+      "start_ns": 416.0,
+      "end_ns": 624.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 4,
+      "stage": "dram_embedding",
+      "ready_ns": 624.0,
+      "start_ns": 624.0,
+      "end_ns": 832.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 5,
+      "stage": "sram_embedding",
+      "ready_ns": 832.0,
+      "start_ns": 837.5,
+      "end_ns": 1369.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 8192,
+      "physical_bytes": 8192,
+      "bank_words": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": 6,
+      "stage": "sram_initial_residual",
+      "ready_ns": 1369.5,
+      "start_ns": 1375.0,
+      "end_ns": 1907.0,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 8192,
+      "physical_bytes": 8192,
+      "bank_words": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "id": 7,
+      "stage": "dram_norm_weights",
+      "ready_ns": 1907.0,
+      "start_ns": 1907.0,
+      "end_ns": 2115.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 8,
+      "stage": "dram_norm_weights",
+      "ready_ns": 2115.0,
+      "start_ns": 2115.0,
+      "end_ns": 2323.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 9,
+      "stage": "dram_norm_weights",
+      "ready_ns": 2323.0,
+      "start_ns": 2323.0,
+      "end_ns": 2531.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 10,
+      "stage": "dram_norm_weights",
+      "ready_ns": 2531.0,
+      "start_ns": 2531.0,
+      "end_ns": 2739.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 11,
+      "stage": "dram_norm_weights",
+      "ready_ns": 2739.0,
+      "start_ns": 2739.0,
+      "end_ns": 2947.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 12,
+      "stage": "dram_norm_weights",
+      "ready_ns": 2947.0,
+      "start_ns": 2947.0,
+      "end_ns": 3155.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    }
+  ],
+  "event_count": 6425886,
+  "trace_truncated": true,
+  "random_interface": {
+    "backend": "integrated_issue95_q256_same_clock",
+    "clock_ns": 10.0,
+    "clock_hz": 100000000.0,
+    "random_stream_SRAM_bytes": 0,
+    "extra_probability_copy_bytes": 0,
+    "extra_random_FIFO_bytes": 0,
+    "actual_backend_executed": true,
+    "source_counts": {
+      "fair_calls": 1024,
+      "fair_bits_delivered": 32768,
+      "unused_fair_native_bits": 131072,
+      "pv_systematic_offsets": 1024,
+      "ffn_saves": 7552,
+      "ffn_streams": 132096,
+      "ffn_samples_consumed": 4227072,
+      "ffn_threshold_bits_used": 12681216,
+      "ffn_shared64_comparisons": 270532608,
+      "stratum_counter_updates": 4227072,
+      "ffn_restores": 124544,
+      "ffn_releases": 7552
+    },
+    "max_parallel_lanes": {
+      "fair": 32
+    },
+    "frame_output_sha256": "b6cb045b49a0e475a72682c9d8b9accbe9adb1dce849e674f63b0b0b9452e692",
+    "network": {
+      "clock_ns": 10.0,
+      "cycles": 262622827,
+      "elapsed_ns": 2626228270.0,
+      "ports": {
+        "ffn": {
+          "kind": "lfsr32",
+          "profile": {
+            "state_bits": 32,
+            "lanes": 1,
+            "steps": 16,
+            "warmup": 0,
+            "correlation": "single_word_lfsr; temporal dependence"
+          },
+          "cycles": 262622827,
+          "counts": {
+            "clock_edges": 262622827,
+            "seed_wait_cycles": 616,
+            "output_stall_cycles": 0,
+            "request_stall_cycles": 0,
+            "reseed_deferred_cycles": 43031,
+            "seed_loads": 3,
+            "seed_state_bits_loaded": 96,
+            "checkpoint_bits_written": 241664,
+            "commands": 139648,
+            "frames_generated": 4227072,
+            "prng_updates": 4227072,
+            "recurrence_steps": 67633152,
+            "random_word_bits_generated": 33816576,
+            "threshold_comparisons": 4227072,
+            "output_register_bits_written": 38043648,
+            "shared_mapping_evaluations": 0,
+            "responses_consumed": 4227072,
+            "restore_bits_loaded": 3985408
+          },
+          "energy_J": null,
+          "area_mm2": null,
+          "status": "operation counts only; calibrate with delivered RTL"
+        },
+        "fair": {
+          "kind": "bivium",
+          "profile": {
+            "state_bits": 177,
+            "lanes": 20,
+            "steps": 160,
+            "warmup": 5,
+            "correlation": "nonlinear deterministic stream; NOT certified IID"
+          },
+          "cycles": 262622827,
+          "counts": {
+            "clock_edges": 262622827,
+            "seed_wait_cycles": 1516,
+            "output_stall_cycles": 0,
+            "request_stall_cycles": 0,
+            "reseed_deferred_cycles": 0,
+            "seed_loads": 3,
+            "seed_state_bits_loaded": 531,
+            "warmup_updates": 15,
+            "recurrence_steps": 166240,
+            "warmup_bits_discarded": 2400,
+            "frames_generated": 1024,
+            "prng_updates": 1024,
+            "random_word_bits_generated": 163840,
+            "threshold_comparisons": 20480,
+            "output_register_bits_written": 184320,
+            "shared_mapping_evaluations": 0,
+            "responses_consumed": 1024
+          },
+          "energy_J": null,
+          "area_mm2": null,
+          "status": "operation counts only; calibrate with delivered RTL"
+        }
+      },
+      "seed_transport": {
+        "ffn": {
+          "bus_beats": 3,
+          "bus_bits": 96,
+          "padding_bits_discarded": 0,
+          "packets_delivered": 3
+        },
+        "fair": {
+          "bus_beats": 18,
+          "bus_bits": 576,
+          "padding_bits_discarded": 45,
+          "packets_delivered": 3
+        }
+      },
+      "seed_events": [
+        {
+          "cycle": 511,
+          "port": "fair",
+          "epoch": 1,
+          "seed_hex": "0x12f346baa9455e3e70682c2094cac629f6fbed82c07cd",
+          "rejected": false,
+          "provenance": "explicit deterministic TLM seed fixture; not physical entropy"
+        },
+        {
+          "cycle": 611,
+          "port": "ffn",
+          "epoch": 1,
+          "seed_hex": "0x42485e3a",
+          "rejected": false,
+          "provenance": "explicit deterministic TLM seed fixture; not physical entropy"
+        },
+        {
+          "cycle": 100001013,
+          "port": "fair",
+          "epoch": 2,
+          "seed_hex": "0x10639eb1167b367a9c3787c65c1e582e2e662f728b4fa",
+          "rejected": false,
+          "provenance": "explicit deterministic TLM seed fixture; not physical entropy"
+        },
+        {
+          "cycle": 100035811,
+          "port": "ffn",
+          "epoch": 2,
+          "seed_hex": "0xd4713d60",
+          "rejected": false,
+          "provenance": "explicit deterministic TLM seed fixture; not physical entropy"
+        },
+        {
+          "cycle": 200001515,
+          "port": "fair",
+          "epoch": 3,
+          "seed_hex": "0x1df789558867f5ba91faf7a024204f7c1bd874da5e709",
+          "rejected": false,
+          "provenance": "explicit deterministic TLM seed fixture; not physical entropy"
+        },
+        {
+          "cycle": 200043644,
+          "port": "ffn",
+          "epoch": 3,
+          "seed_hex": "0xe87a1613",
+          "rejected": false,
+          "provenance": "explicit deterministic TLM seed fixture; not physical entropy"
+        }
+      ],
+      "seed_source": "explicit deterministic TLM seed fixture; not physical entropy",
+      "seed_word_transcript": [
+        {
+          "cycle": 10,
+          "word": 3626764237
+        },
+        {
+          "cycle": 110,
+          "word": 1654615998
+        },
+        {
+          "cycle": 210,
+          "word": 3255389356
+        },
+        {
+          "cycle": 310,
+          "word": 3823568514
+        },
+        {
+          "cycle": 410,
+          "word": 1806341205
+        },
+        {
+          "cycle": 510,
+          "word": 173879092
+        },
+        {
+          "cycle": 610,
+          "word": 1112038970
+        },
+        {
+          "cycle": 100000512,
+          "word": 4146640122
+        },
+        {
+          "cycle": 100000612,
+          "word": 2195908194
+        },
+        {
+          "cycle": 100000712,
+          "word": 2087043557
+        },
+        {
+          "cycle": 100000812,
+          "word": 1739178872
+        },
+        {
+          "cycle": 100000912,
+          "word": 3943786419
+        },
+        {
+          "cycle": 100001012,
+          "word": 3366389305
+        },
+        {
+          "cycle": 100035810,
+          "word": 3564191072
+        },
+        {
+          "cycle": 200001014,
+          "word": 1302718217
+        },
+        {
+          "cycle": 200001114,
+          "word": 4156669319
+        },
+        {
+          "cycle": 200001214,
+          "word": 2046968324
+        },
+        {
+          "cycle": 200001314,
+          "word": 1537810351
+        },
+        {
+          "cycle": 200001414,
+          "word": 2505606783
+        },
+        {
+          "cycle": 200001514,
+          "word": 3829653368
+        },
+        {
+          "cycle": 200043643,
+          "word": 3900315155
+        }
+      ],
+      "energy_J": null,
+      "area_mm2": null
+    },
+    "simulated_idle_edges_jumped": 258121920,
+    "calibrated_endpoint_two_state_energy_J": 0.0016901703171433332,
+    "calibrated_endpoint_area_mm2": 0.022485959999999514,
+    "endpoint_costs": [
+      {
+        "port": "ffn",
+        "kind": "lfsr32",
+        "active_cycles": 4227072,
+        "idle_cycles": 258395755,
+        "conditional_energy_J": 0.0003136694760793333,
+        "area_mm2": 0.003154320000000011
+      },
+      {
+        "port": "fair",
+        "kind": "bivium",
+        "active_cycles": 1039,
+        "idle_cycles": 262621788,
+        "conditional_energy_J": 0.001376500841064,
+        "area_mm2": 0.0193316399999995
+      }
+    ],
+    "ppa_provenance": {
+      "job": "38322118",
+      "node_nm": 55,
+      "corner": "SS",
+      "voltage_V": 1.08,
+      "temperature_C": 125,
+      "clock_MHz": 100,
+      "status": "CALCULATED_PROVISIONAL",
+      "source_pr": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/111",
+      "source_directory": "digital_circuit_simulation_registry/records",
+      "warnings": [
+        "PWR-981/vector mapping and library table extrapolation",
+        "zero-delay gate/PT; no CTS/SPEF/SDF",
+        "stream/idle two-state interpolation; seed-event incremental work not calibrated",
+        "FFN uses LFSR endpoint only; shared64 frontend remains separately unpriced"
+      ]
+    },
+    "full_random_energy_J": null,
+    "full_random_area_mm2": null,
+    "limitations": [
+      "native Issue95 ports persist across all layers/queries; original protocol unchanged",
+      "8-bit q/256 sigmoid table alters numerical response; no inherited model PPL",
+      "endpoint stream/idle interpolation is conditional, not new PT or per-action calibration",
+      "FFN64 frontend/stratum logic, LUT/threshold programming, global seed arbiter/material and wires unpriced",
+      "fixture seed material is reproducible simulation input, not certified physical entropy",
+      "FFN timing consumes actual source words but matrix/activation tensors are still macro TLM, not inference"
+    ]
+  },
+  "SRAM": {
+    "traffic": {
+      "write_logical_bytes": 9752994096,
+      "write_physical_bytes": 9752998240,
+      "write_words": 609562390,
+      "read_logical_bytes": 9751757104,
+      "read_physical_bytes": 9751761248,
+      "read_words": 609485078
+    },
+    "calibrated_macro": {
+      "area_mm2": 0.312163310025,
+      "read_internal_pJ": 23.0831,
+      "write_internal_pJ": 50.6157,
+      "ce_off_leakage_W": 4.520772e-05,
+      "ce_on_leakage_W": 4.5226079999999996e-05,
+      "read_access_ns": 9.5878,
+      "write_access_ns": 6.3122,
+      "read_cycle_ns": 10.9192,
+      "write_cycle_ns": 11.0613,
+      "source": "exact_vendor_library",
+      "id": "F",
+      "corner": "SS",
+      "energy_boundary": "macro internal dynamic; Q load/clock tree/wrapper excluded",
+      "Q_hold": "not newly verified",
+      "slew_ns": 0.1,
+      "Q_load_pF": 0.02,
+      "requested_clock_hz": 80000000,
+      "period_only_eligible": true,
+      "minimum_cycle_ns": 11.0613,
+      "clock_note": "period screening only; no interface STA guarantee"
+    },
+    "banks": 16,
+    "macros": 128,
+    "configured_bytes": 8388608,
+    "physical_bytes": 8388608,
+    "area_mm2": 39.9569036832,
+    "leakage_J": 0.015196901412639284,
+    "scheduling": "blocking descriptor per addressed banks + shared fabric",
+    "exclusions": [
+      "wrapper/mux/CTS",
+      "verified CDC implementation",
+      "optimized bank interleaving"
+    ],
+    "layout": {
+      "weight_ping": {
+        "address": 0,
+        "bytes": 65536
+      },
+      "weight_pong": {
+        "address": 65536,
+        "bytes": 65536
+      },
+      "normalized_activation_and_attention_output": {
+        "address": 131072,
+        "bytes": 65536
+      },
+      "matrix_output_and_wide_partials": {
+        "address": 196608,
+        "bytes": 88064
+      },
+      "SwiGLU_z_FP32": {
+        "address": 284672,
+        "bytes": 65536
+      },
+      "live_BF16_residual": {
+        "address": 350208,
+        "bytes": 8192
+      },
+      "one_shared_encoded_input_group": {
+        "address": 358400,
+        "bytes": 128
+      },
+      "one_KV_group_summary": {
+        "address": 358528,
+        "bytes": 66048
+      },
+      "one_KV_group_logits": {
+        "address": 424576,
+        "bytes": 8196
+      },
+      "candidate_maps": {
+        "address": 432832,
+        "bytes": 16
+      },
+      "one_head_histogram": {
+        "address": 432896,
+        "bytes": 8196
+      },
+      "sampler_output_indices_word_stride": {
+        "address": 441152,
+        "bytes": 16
+      },
+      "GQA_sorted_V_worklists": {
+        "address": 441216,
+        "bytes": 1032
+      },
+      "K_V_tile": {
+        "address": 442304,
+        "bytes": 65536
+      }
+    },
+    "reserved_peak_bytes": 507840
+  },
+  "DRAM": {
+    "backend": "link_estimate_NOT_DRAMSys",
+    "traffic": {
+      "embedding_logical_bytes": 8192,
+      "embedding_physical_bytes": 8192,
+      "embedding_bursts": 128,
+      "norm_weights_logical_bytes": 532480,
+      "norm_weights_physical_bytes": 532480,
+      "norm_weights_bursts": 8320,
+      "weights_logical_bytes": 8885633024,
+      "weights_physical_bytes": 8885633024,
+      "weights_bursts": 138838016,
+      "KV_append_logical_bytes": 524288,
+      "KV_append_physical_bytes": 524288,
+      "KV_append_bursts": 8192,
+      "K_selected_logical_bytes": 536870912,
+      "K_selected_physical_bytes": 536870912,
+      "K_selected_bursts": 8388608,
+      "V_sparse_union_logical_bytes": 31516160,
+      "V_sparse_union_physical_bytes": 31516160,
+      "V_sparse_union_bursts": 492440,
+      "weight_scales_logical_bytes": 4227072,
+      "weight_scales_physical_bytes": 8454144,
+      "weight_scales_bursts": 132096
+    },
+    "max_pending": 32,
+    "queue_policy": "bounded windows; DMA barriers",
+    "energy_status": "configured pJ/byte + background; not a new DRAMPower run"
+  },
+  "attention_activity": {
+    "possible_QK_positions": 2097152,
+    "possible_K_group_positions": 2097152,
+    "possible_V_group_positions": 2097152,
+    "QK_logical_positions": 2097152,
+    "K_unique_group_positions": 2097152,
+    "V_unique_group_positions": 123110,
+    "V_sample_events": 131072
+  },
+  "row_receipts": [
+    {
+      "token": 0,
+      "layer": 0,
+      "head": 0,
+      "candidates": 2048,
+      "outputs": 128,
+      "unique_V": 121,
+      "sampled_address_sha256": "ec2e63c19624a86d4fbe7045a31664d7ceda5c2b0c1a1f20f3233cce7c9dec3c"
+    },
+    {
+      "token": 0,
+      "layer": 0,
+      "head": 1,
+      "candidates": 2048,
+      "outputs": 128,
+      "unique_V": 120,
+      "sampled_address_sha256": "693f91d48adcd7a567be848ec18f2cbd5f42228a86ebadf3b67451c2ac317378"
+    },
+    {
+      "token": 0,
+      "layer": 0,
+      "head": 2,
+      "candidates": 2048,
+      "outputs": 128,
+      "unique_V": 122,
+      "sampled_address_sha256": "a50fa8f19c35d79d94f1d7b336edeb4b67a258caea161c0e6362b1cd1eecd9e2"
+    },
+    {
+      "token": 0,
+      "layer": 0,
+      "head": 3,
+      "candidates": 2048,
+      "outputs": 128,
+      "unique_V": 106,
+      "sampled_address_sha256": "712ea9ca5006d068ebba57faa9a52261a6f60efe0732dab37a9c7a0051db6377"
+    }
+  ],
+  "FFN_activity": {
+    "BF16_to_probability8_values": 131072,
+    "input_bin_select_values": 483328,
+    "group_absmax_calls": 7552,
+    "SC_popcount_tree_nodes": 8726299803648,
+    "SC_64x64_tiles": 1056768,
+    "SC_product_trials": 138512695296,
+    "SC_counter_peak_bits": 393216,
+    "weight_scale_multiplies": 270532608,
+    "restored_FP32_partials": 67633152,
+    "FP32_to_probability8_values": 352256
+  },
+  "input_provenance": {
+    "kind": "SYNTHETIC_GAUSSIAN_LOGITS",
+    "model_ppl_validated": false,
+    "warning": "routing/memory scenario only; NOT measured Qwen attention or PPL"
+  },
+  "sampler_local_state": {},
+  "calibration_sha256": "3f3f3b2bfbc16a0b97fbf14766c6f94b6a45cd3001702089a728b805c98b09a6",
+  "limitations": [
+    "regular arithmetic timing is configured, not calibrated whole-core timing",
+    "SC B4/short-stream counter/scale-restoration power and area not characterized",
+    "stationary weight tile interface is an unverified macro contract, not free DFF replacement",
+    "FFN input-group-major full gu/SwiGLU/down barriers; not claimed optimal channel pipeline",
+    "one KV group at a time; no head/group parallelism inferred from array size",
+    "actual finite Issue95 backend with q/256 response; complete random PPA still incomplete",
+    "parallel sampling sink owns SRAM fabric for complete FSM; conservative blocking mapping",
+    "SRAM blocking descriptors and DRAM bounded windows, no arbitrary multi-DMA reorder",
+    "warm K summaries live in DRAM; context prefill/build cost excluded, steady updates included",
+    "all published timing/traffic cases synthetic unless complete user logit trace supplied",
+    "no new PPL, GPU performance, RTL/PT or silicon measurements"
+  ],
+  "execution_commit": "31aa4fa31fbfb7d74629b54811936ac30a41c250",
+  "config_sha256": "47c6d2c764fe1612bbae64ea2308ebf173e59e301d43be2b7bdf4eb20ea61353"
+}

@@ -19,6 +19,7 @@ DEFAULT = dict(
     decision_cycles=1, commit_cycles=1, fair_capture_cycles=1,
     offset_feedback_cycles=1, offset_update_mode='per_candidate',
     burn_updates=0, winner_shift=0., rank_retry_cap=1024,
+    external_source_programming=False,
     max_proposals_per_sample=64, max_shift=24, record_events=False,
     # These are NOT zero-cost defaults. Unknown terms produce null totals.
     energy_pJ={}, idle_W=None, area={},
@@ -79,6 +80,10 @@ class Session:
         self.t = self.start
         self.output_cycles = math.ceil(output_ns / self.period)
         self.actions = Counter()
+        # Compact observability is independent of optional per-frame traces.
+        # These counters describe the existing FSM; they do not reserve time.
+        self.stage_cycles = Counter()
+        self.stage_calls = Counter()
         self.events = []
         self.outputs = []
         self.output_times = []
@@ -101,6 +106,8 @@ class Session:
             raise ValueError('nonnegative integer stage cycles')
         start = self.t
         self.t += cycles
+        self.stage_cycles[name] += cycles
+        self.stage_calls[name] += 1
         if action:
             self.actions[action] += count
         if self.c['record_events']:
@@ -108,6 +115,12 @@ class Session:
                                     resource='sampler_fsm', **detail))
 
     def program(self, bits, name):
+        if self.c['external_source_programming']:
+            # The actual source frontend owns Q/256 conversion and threshold
+            # writes. Do not charge a second fictitious drive programming bus.
+            self.actions['delegated_drive_bits'] += bits
+            self.stage(name+'_delegated',0)
+            return
         self.stage(name, self.c['config_setup_cycles'] +
                    math.ceil(bits / self.c['config_bits_per_cycle']), 'config_bits', bits)
 
@@ -118,6 +131,8 @@ class Session:
         return -min(round(max(0., -x) / step), self.c['drive_max_code']) * step
 
     def draw(self, source, drives):
+        if self.c['external_source_programming'] and not hasattr(source,'draw_at'):
+            raise ValueError('external source programming requires a timed backend')
         if self.t < self.source_free:
             self.stage('source_interval_wait', self.source_free - self.t)
         started = self.t
@@ -211,6 +226,7 @@ class Session:
             peak_fair_parallel_lanes=self.peak_fair, provisioned_fair_lanes=m.fair_capacity,
             source_backend=m.provenance.get('source_backend','UNDECIDED'), numerical_source=copy.deepcopy(m.provenance),
             actions=dict(self.actions), frames=self.frames, events=self.events,
+            stage_cycles=dict(self.stage_cycles), stage_calls=dict(self.stage_calls),
             retained_internal_output_indices=1, energy_J=known,
             known_dynamic_energy_J=known, physical_dynamic_energy_J=None if missing else known,
             energy_breakdown_J=detail, uncharacterized_energy_actions=missing,
@@ -244,7 +260,7 @@ class ParallelSampler:
         self.cfg.update(copy.deepcopy(cfg or {}))
         c = self.cfg
         for k, v in c.items():
-            if k in ('energy_pJ', 'area', 'drive_step', 'idle_W', 'record_events', 'offset_update_mode'):
+            if k in ('energy_pJ', 'area', 'drive_step', 'idle_W', 'record_events', 'offset_update_mode','external_source_programming'):
                 continue
             if type(v) not in (int, float) or not math.isfinite(v) or v < 0:
                 raise ValueError(k)
@@ -258,6 +274,8 @@ class ParallelSampler:
                 raise ValueError(k)
         if type(c['record_events']) is not bool:
             raise ValueError('record_events')
+        if type(c['external_source_programming']) is not bool:
+            raise ValueError('external_source_programming')
         if c['offset_update_mode'] not in ('per_candidate', 'shared_scalar'):
             raise ValueError('offset update mode')
         if c['drive_step'] is not None:

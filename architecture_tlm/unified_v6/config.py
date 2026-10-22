@@ -22,7 +22,10 @@ def load(model='qwen'):
             selection='fixed_budget', selector_bias=-1.5, selector_temperature=1.,
             synthetic_logit_std=1.5, trace_file=None, selector_calibration=None,
             serial_burn=16, serial_spacing=4, serial_cycles_per_attempt=6),
-        random=dict(startup_cycles=1, frame_cycles=1, restore_cycles=1),
+        random=dict(backend='integrated_service',clock_hz=100000000,
+            reseed_cycles=100000000,seed_word_interval_cycles=100,seed_startup_cycles=10,
+            sigmoid_step=.125,lut_lanes=16,config_lanes=64,cpu_fast=True,
+            startup_cycles=1, frame_cycles=1, restore_cycles=1),
         sampler_v5=dict(drive_bits=32, drive_step=None, max_proposals_per_sample=128,
             offset_update_mode='per_candidate', source_command_cycles=1,
             source_settle_cycles=2, source_capture_cycles=1,
@@ -61,6 +64,8 @@ def tiny():
         num_key_value_heads=1, num_hidden_layers=1, vocab_size=128,
         tie_word_embeddings=True, attention_bias=False, max_position_embeddings=2048)
     cfg.update(context_tokens=129, trace_event_limit=20000, weight_chunk_bytes=32768)
+    # Frozen legacy mechanism fixture. Integrated-source checks opt in explicitly.
+    cfg['random']['backend']='local_prng_interface'
     cfg['attention'].update(candidate_blocks=3, samples=8, winner_update_multiplier=2)
     cfg['ffn'].update(engines=2)
     return cfg, shape

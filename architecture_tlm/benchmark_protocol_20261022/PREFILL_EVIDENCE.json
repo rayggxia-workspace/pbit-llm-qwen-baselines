@@ -1,0 +1,367 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-22",
+  "repository": "rayggxia-workspace/pbit-llm-qwen-baselines",
+  "issue": 98,
+  "owner": "amlink1219",
+  "base_branch": "pbit-tlm-attention-details-20261016",
+  "base_commit": "eb317e4f6fb1b0d8844887401f3275f128ef8a83",
+  "scope": "Literature and accounting report; proposed execution split; no new model, TLM, RTL or physical PPA experiment",
+  "new_experiment": {
+    "model_revision": null,
+    "dataset_revision": null,
+    "seed": null,
+    "precision": null,
+    "reason": "Documentation-only delivery; literature conditions are not local experiment metadata"
+  },
+  "original_matrix": {
+    "path": "architecture_tlm/benchmark_protocol_20261022/PAPERS.json",
+    "git_blob": "d8ff776c17cd13fe8f27db069b5d2c6a1c8278be",
+    "sha256": "103bc63156bb20bb600de72dd2aa1b306e86b0929bcb002573431691b0da690e"
+  },
+  "papers": [
+    {
+      "id": "opal",
+      "name": "OPAL v3",
+      "source_url": "https://arxiv.org/html/2409.05902v3#S5.SS2",
+      "source_version": "arXiv v3; header contains placeholders; venue independently verified",
+      "prefill_handling_and_locator": "§5.2、Fig.8 主要核算生成单个 token 的能量、面积和延迟",
+      "evidence_boundary": "可以参考量化/算子硬件；未给出足够的完整请求 prefill 核算",
+      "original_physical_method": "RTL except SRAM; Design Compiler synthesis; CACTI on-chip memory including leakage",
+      "original_performance_scope": "generation token energy and accelerator/core hardware"
+    },
+    {
+      "id": "monde",
+      "name": "MoNDE",
+      "source_url": "https://jaewoong.org/pubs/dac24-monde.pdf",
+      "source_version": "author PDF, 6 pages, retrieved 2026-10-22",
+      "prefill_handling_and_locator": "§4 区分 MoE encoder 与 autoregressive decoder 的 GPU/NDP 卸载",
+      "evidence_boundary": "encoder/decoder 不是 decoder-only 模型的 prefill/decode，不能直接套用其两组吞吐",
+      "original_physical_method": "NDP Design Compiler; commercial memory compiler for on-chip buffers; expert cycle model + Ramulator + measured profiling",
+      "original_performance_scope": "CPU/GPU/NDP hybrid MoE inference"
+    },
+    {
+      "id": "unicaim",
+      "name": "UniCAIM v1",
+      "source_url": "https://arxiv.org/html/2504.07479v1#S3.SS1",
+      "source_version": "arXiv v1",
+      "prefill_handling_and_locator": "§III-A：prefill 基于累计 Attention 分数做一次静态裁剪；decode 做逐步静态/动态裁剪。§III-B 硬件重点针对 decode",
+      "evidence_boundary": "有明确前缀缓存准备策略；电路级 Attention 指标不自动覆盖完整模型和请求",
+      "original_physical_method": "HSPICE, 45nm BSIM + Preisach FeFET, wire parasitics, 10-bit SAR ADC, 64 parallel sensing ADCs",
+      "original_performance_scope": "Attention circuit area/energy/delay/AEDP and separate pruning quality"
+    },
+    {
+      "id": "mba",
+      "name": "MBA",
+      "source_url": "https://doi.org/10.1145/3770743.3803981",
+      "source_version": "user-provided 7-page camera-ready PDF",
+      "prefill_handling_and_locator": "本库 PDF §6–7、Fig.7/8：计算图考虑两个阶段，分析 prefill TTFT、buffer eviction 与 decode",
+      "evidence_boundary": "可参考两阶段缓冲/权重调度；峰值、完整推理和缓冲消融指标仍需分开",
+      "original_physical_method": "PE costs from NB-SMT45nm scaled with DeepScaleTool to7nm; modified FinCACTI eDRAM; SFU/NoC cited component models",
+      "original_performance_scope": "behavior-level graph simulation, whole-model latency/energy plus buffer ablations"
+    },
+    {
+      "id": "kelle",
+      "name": "Kelle",
+      "source_url": "https://saiqianzhang.com/gallery/Kelle_Camera_Ready.pdf",
+      "source_version": "author camera-ready PDF; arXiv2510.16040v1 used only as parallel text aid",
+      "prefill_handling_and_locator": "§2.1、§7.1、§8.3.5、Fig.16：prefilling 和 decoding 均管理 KV；按阶段分解能量并扫描输入/输出长度",
+      "evidence_boundary": "长输入短输出下 prefill 可主导总能量，不能一律把 decode 能效排名扩展到整请求",
+      "original_physical_method": "SystemVerilog DC45nm Nangate logic; Destiny65nm/105C SRAM/eDRAM; CACTI7 LPDDR4",
+      "original_performance_scope": "End-to-end edge accelerator inference and matched-area architecture ablations"
+    },
+    {
+      "id": "attacc",
+      "name": "AttAcc",
+      "source_url": "https://scale.snu.ac.kr/papers/2024-04-Conference-ASPLOS-AttAcc.pdf",
+      "source_version": "author ASPLOS2024 PDF",
+      "prefill_handling_and_locator": "§2.2 称 prefill 为 Sum；§5.2 将 Sum 全部算子放在 xPU，并将生成 KV 拷入 AttAcc；Gen 的 Attention 放到 PIM",
+      "evidence_boundary": "明确的数字 prefill＋专用 decode 分工。文中后续分析重点为 Gen，具体图的 end-to-end 是否含 Sum 仍须按计时边界判断",
+      "original_physical_method": "Modified Ramulator; ASAP7 DC arithmetic; modified FinCACTI; DRAM die area scaling",
+      "original_performance_scope": "GPU+PIM system generation throughput/latency/energy"
+    },
+    {
+      "id": "neupims",
+      "name": "NeuPIMs v3",
+      "source_url": "https://arxiv.org/html/2403.00579v3#S4",
+      "source_version": "arXiv v3",
+      "prefill_handling_and_locator": "§2.1、§4：summarization 交给独立 NPU，NeuPIMs 的 NPU＋PIM 处理 generation",
+      "evidence_boundary": "支持异构分工；不能只核算 PIM 就把独立 NPU 的成本视为零",
+      "original_physical_method": "ONNXim extension + PIM DRAMsim3; CACTI7 row-buffer area22nm",
+      "original_performance_scope": "Batched serving compute/memory timing; cited power table concerns memory"
+    },
+    {
+      "id": "cent",
+      "name": "CENT v3",
+      "source_url": "https://arxiv.org/html/2502.07578v3#S7",
+      "source_version": "arXiv v3",
+      "prefill_handling_and_locator": "§6、§7.1–7.3：不用 GPU，两个阶段均由自身系统执行；主要配置 512 输入＋3584 输出，计入整机比较",
+      "evidence_boundary": "作者报告 GPU 在 prefill 的能效更高、CENT 在 decode 更高；总体收益依赖工作负载配比",
+      "original_physical_method": "Modified Ramulator2 and activity-based component system model",
+      "original_performance_scope": "CXL PIM system versus A100 GPU, latency/throughput/power/token-per-J"
+    },
+    {
+      "id": "anda",
+      "name": "Anda v1",
+      "source_url": "https://arxiv.org/pdf/2411.15982v1",
+      "source_version": "arXiv v1",
+      "prefill_handling_and_locator": "§VI-A 的系统比较主要针对可替换的 FP–INT GEMM；batch=1",
+      "evidence_boundary": "不是两个阶段的完整 LLM 请求账本；不能仅由其 GEMM 加速复原 TTFT",
+      "original_physical_method": "16nm Genus, synthesized-netlist VCD power, cycle-accurate simulator verified with functional simulations",
+      "original_performance_scope": "PE and accelerator FP-INT GEMM efficiency; not unrestricted full-LLM E2E"
+    },
+    {
+      "id": "llmcompass",
+      "name": "LLMCompass v1",
+      "source_url": "https://arxiv.org/html/2312.03134v1#S5.SS1",
+      "source_version": "preprint v1 figures; final venue verified by official code repository",
+      "prefill_handling_and_locator": "§II-B 定义两个阶段，§III-C 分别验证，§V-A 将完整延迟定义为 prefill＋生成",
+      "evidence_boundary": "适合参考阶段拆分和输入/输出长度扫描；其性能/面积框架不自动补齐我们的能量数据",
+      "original_physical_method": "Tile-level model with local compute/communication simulation and area cost models",
+      "original_performance_scope": "Latency, area-based cost and mapping"
+    },
+    {
+      "id": "splitwise",
+      "name": "Splitwise",
+      "source_url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2023/12/Splitwise_ISCA24.pdf",
+      "source_version": "author ISCA2024 PDF",
+      "prefill_handling_and_locator": "§IV-C、§VI-A、Fig.11/14/15：prompt 与 token 阶段在不同机器执行；显式核算 KV 传输，用逐层异步传输重叠 prefill",
+      "evidence_boundary": "外部数字 prefill 可行，但传输、两侧设备和调度成本必须计入",
+      "original_physical_method": "Measured A100/H100 profiles + discrete-event simulator + KV-transfer benchmark",
+      "original_performance_scope": "TTFT/TBT/E2E p50/p90/p99 SLO, request throughput, cluster resources"
+    },
+    {
+      "id": "dscim",
+      "name": "DS-CIM v1",
+      "source_url": "https://arxiv.org/html/2601.06724v1",
+      "source_version": "arXiv v1",
+      "prefill_handling_and_locator": "§V 为随机 CIM 宏的硬件评估及模型质量验证",
+      "evidence_boundary": "没有足够明确的完整请求 prefill/decode 分项账本；不能把宏 TOPS/W 直接当请求能效",
+      "original_physical_method": "Custom SNG/OR cells characterized;40nm DC + Innovus + Virtuoso post-layout",
+      "original_performance_scope": "Macro peak TOPS/W and TOPS/mm2; separate model quality"
+    },
+    {
+      "id": "artemis",
+      "name": "ARTEMIS",
+      "source_url": "https://arxiv.org/pdf/2407.12638",
+      "source_version": "author arXiv PDF; accessed2026-10-22",
+      "prefill_handling_and_locator": "实验覆盖多类 Transformer 的映射、执行与质量，未找到明确的自回归请求两阶段核算协议",
+      "evidence_boundary": "有 SC/模拟累加参考价值；不能据其模型执行加速推定我们 TTFT 或 decode 性能",
+      "original_physical_method": "Python mapping simulator; LTSPICE tile latency; Genus digital periphery; CACTI-3D",
+      "original_performance_scope": "In-DRAM mapping performance/energy and circuit overhead"
+    },
+    {
+      "id": "scarlet",
+      "name": "SCARLET",
+      "source_url": "https://www.bu.edu/peaclab/files/2026/03/SCARLET_CameraReady.pdf",
+      "source_version": "author camera-ready PDF",
+      "prefill_handling_and_locator": "§IV-D、Fig.7 分别评估 prefill 与 generation 的平均 decoder 层延迟",
+      "evidence_boundary": "两阶段均考虑；该图是层级结果，不能直接称为完整请求总时间",
+      "original_physical_method": "Photonic/device/peripheral component models; HardFloat digital units; GF22FDX SRAM scaled to7nm",
+      "original_performance_scope": "Photonic crossbar/module and accelerator estimates; phase latency"
+    },
+    {
+      "id": "hsa",
+      "name": "HSA v1",
+      "source_url": "https://arxiv.org/html/2507.09010v1",
+      "source_version": "arXiv v1",
+      "prefill_handling_and_locator": "§IV-A 混合阵列支持 MMM/MVM；§V、Fig.8 分析两个阶段能量/延迟",
+      "evidence_boundary": "可参考阶段数据流切换；token 指标包含输入和输出，硬件主模型为 RetNet1.3B，不能混接另一个 Llama 质量点",
+      "original_physical_method": "TSMC28nm HLS/DC/Innovus; VCS+PrimeTime post-layout",
+      "original_performance_scope": "RetNet end-to-end prefill/decode; token-related summary metrics count input+output"
+    },
+    {
+      "id": "santa",
+      "name": "SANTA / S²ANTA v2",
+      "source_url": "https://arxiv.org/html/2605.01910v2#S3.SS5",
+      "source_version": "arXiv v2; venue official PMLR",
+      "prefill_handling_and_locator": "§3.5、Table3 保持 dense prefill，仅在 decode 替换；明确列出两阶段时间。部分其他质量实验同时替换两阶段",
+      "evidence_boundary": "性能实验与质量实验范围要逐组绑定，不能认为全文共用同一 prefill 策略",
+      "original_physical_method": "Measured GPU software kernels/generation loop",
+      "original_performance_scope": "Attention kernel and full decode measured separately; no ASIC PPA"
+    }
+  ],
+  "additional_library_papers": [
+    {
+      "id": "santapp",
+      "item_key": "F6DJ2FX7",
+      "source_url": "https://arxiv.org/html/2609.35629v1",
+      "source_version": "arXiv v1",
+      "locator": "PDF pages 1-4, 8; sections 2.2, 4 and appendices D/E",
+      "finding": "Dense prefill followed by one-time team preparation; Table 5 excludes prefill, construction, packing and allocation; 1.69x is operator speedup"
+    },
+    {
+      "id": "pdswap",
+      "item_key": "569GPQSN",
+      "source_url": "https://doi.org/10.1145/3770743.3804245",
+      "source_version": "DAC 2026 supplied camera-ready PDF",
+      "locator": "PDF pages 1,5-6; Figure 5 and section 4.2",
+      "finding": "Shared static linear units, phase-specific attention region, runtime reconfiguration with overlap; TTFT and decoding throughput evaluated"
+    },
+    {
+      "id": "tokenpicker",
+      "item_key": "EHFQ826N",
+      "source_url": "https://doi.org/10.1145/3649329.3655953",
+      "source_version": "DAC 2024 camera-ready PDF",
+      "locator": "PDF pages 2 and 4",
+      "finding": "Prompt K/V loaded on chip for reuse; generation streams chunks and performs probability estimation"
+    }
+  ],
+  "local_library_attachments": [
+    {
+      "item_key": "F6DJ2FX7",
+      "attachment_key": "W7DTMLYE",
+      "link_mode": 1,
+      "filename": "Lee 等 - 2026 - SANTA++ Sampling Attention through Representative Keys.pdf",
+      "bytes": 848411,
+      "sha256": "d9d9008174be713ba498dd96710e07552072eb4a9daf7063431a8c5c622375bf",
+      "redistributed": false
+    },
+    {
+      "item_key": "569GPQSN",
+      "attachment_key": "K55PG3FH",
+      "link_mode": 0,
+      "filename": "1942_Camera_Ready_Paper.pdf",
+      "bytes": 1496609,
+      "sha256": "b7847700b1ee5848b35f33f0eda13c6296c47705a720de7f8d35a4e662bb3e6c",
+      "redistributed": false
+    },
+    {
+      "item_key": "EHFQ826N",
+      "attachment_key": "3NLCLDDF",
+      "link_mode": 0,
+      "filename": "1279_Camera_Ready_Paper.pdf",
+      "bytes": 1148502,
+      "sha256": "78083f364eb308aabc52c50eaed03e89e081ced441cc350bab3922071c0e8369",
+      "redistributed": false
+    },
+    {
+      "item_key": "NPCE3YEN",
+      "attachment_key": "TV5WFK5H",
+      "link_mode": 0,
+      "filename": "2605.01910v1.pdf",
+      "bytes": 3319794,
+      "sha256": "66286dba5e223dbd75848e67432d48b4b35c10bb5722c67ee2039b4002fb4b86",
+      "redistributed": false
+    },
+    {
+      "item_key": "U54PLGZE",
+      "attachment_key": "UCGH6PXK",
+      "link_mode": 0,
+      "filename": "509_Camera_Ready_Paper.pdf",
+      "bytes": 1094658,
+      "sha256": "23d1f57ce46566027c75f98c9ea332d904c2547c659cf8903142115c145fdd73",
+      "redistributed": false
+    },
+    {
+      "item_key": "ST6ZHKM9",
+      "attachment_key": "MBPKUXU8",
+      "link_mode": 0,
+      "filename": "1460_Camera_Ready_Paper.pdf",
+      "bytes": 1162375,
+      "sha256": "ecda95c6cccfdf0cf51a53ded7f7d4cec97f51ead51a0056966f9f8a73177994",
+      "redistributed": false
+    },
+    {
+      "item_key": "43926QFV",
+      "attachment_key": "8LKKVBJ7",
+      "link_mode": 0,
+      "filename": "1260_Camera_Ready_Paper.pdf",
+      "bytes": 727561,
+      "sha256": "cfb7439dca5b75e14ccec327e35a3c116667537ad9f6007bc37ba5f46c384744",
+      "redistributed": false
+    },
+    {
+      "item_key": "MC8PWCS4",
+      "attachment_key": "53TYJ8B5",
+      "link_mode": 0,
+      "filename": "unicaim.pdf",
+      "bytes": 3027152,
+      "sha256": "83f55a70421f4e7b40b30bc862d81ed582b500d798afe3d4c8f73ff00b03eae1",
+      "redistributed": false
+    },
+    {
+      "item_key": "8HDPJYKM",
+      "attachment_key": "XALWTH86",
+      "link_mode": 0,
+      "filename": "artemis.pdf",
+      "bytes": 1195958,
+      "sha256": "7f76bdf74d64cf865a570c945d17bca49fb5bcfc33e46fa6577fade3d083f5f4",
+      "redistributed": false
+    },
+    {
+      "item_key": "NQ8CM3TZ",
+      "attachment_key": "RC92PCQQ",
+      "link_mode": 0,
+      "filename": "Shao_2026_DATE_DS-CIM_author_arxiv_v1.pdf",
+      "bytes": 2943845,
+      "sha256": "5b34b0272636c8ae194305444218581ffe9ba8f4911cd61a63969f13ff36d183",
+      "redistributed": false
+    }
+  ],
+  "version_caveats": [
+    "Local SANTA attachment is v1; numeric Table 3 comes from online v2, not from this attachment.",
+    "OPAL/MoNDE conference attachments and online author versions are distinguished; phase claims cite the stated version.",
+    "Not explicitly disclosed means not established in inspected text; it does not prove absence."
+  ],
+  "repository_sources": {
+    "AGENTS.md": {
+      "git_blob": "e3be21761532648a6fb71ba180a0dd11444acbea",
+      "sha256": "cd9ff486c686c26922fc59eeba7bea8109b203c7e8213a0f38f316830ca48238"
+    },
+    "PROJECT_MEMORY_ZH.md": {
+      "git_blob": "5e8064cfe8944de9ebc5d5cf1981477a4505e7c6",
+      "sha256": "85c77d094a8e91f162cb615242961d764b297e01bcd72f4b4d2f5815a12c1c8e"
+    },
+    "architecture_tlm/benchmark_protocol_20261022/README_ZH.md": {
+      "git_blob": "f537740ee3ffb5c038fbf43b911675a8403c7c1c",
+      "sha256": "d31789f7cad74e50548be4003c6b1b3ad864e96a83c6c753522aa59477f16cd2"
+    },
+    "architecture_tlm/unified_v6/README_ZH.md": {
+      "git_blob": "92d0cab9a174c8819c7a9c5e45f340e6d209a10f",
+      "sha256": "218ee595e4531302b2330d1c879b92e3359b32c83d3d76e6bc35ae38dfc991eb"
+    },
+    "architecture_tlm/unified_v6/RESULTS_ZH.md": {
+      "git_blob": "38502afe96f30b317f30369db7c69d8042348991",
+      "sha256": "ae39d9601be72cd3631555fe70851268e27ad33bdec6d1775a7d7dcd7039d51b"
+    }
+  },
+  "santa_v2_table3": {
+    "source_url": "https://arxiv.org/html/2605.01910v2#S3.SS5",
+    "model": "Llama-3.1-8B-Instruct",
+    "device": "RTX 6000 Ada",
+    "precision": "bf16",
+    "prompt_tokens_approx": 30000,
+    "batch": 6,
+    "new_tokens_per_request": 2048,
+    "batches_averaged": 9,
+    "baseline_prefill_s": 56.69,
+    "baseline_decode_s": 101.22,
+    "candidate_prefill_s": 56.61,
+    "candidate_decode_s": 80.97,
+    "decode_speedup": 1.2500926268988515,
+    "prefill_plus_decode_speedup": 1.1477685710132288,
+    "baseline_ms_per_batch_normalized_output": 8.2373046875
+  },
+  "project_recommendation": {
+    "approved_default_change": false,
+    "prefill_attention": "dense digital tiled/online softmax with GQA reuse",
+    "decode_attention": "explicitly selected screening and finite sampler variant",
+    "ffn": "joint candidate explicitly replaces both stages; attention-only control retains original FFN",
+    "new_quality_budget_approved": false,
+    "prefill_latency_s": null,
+    "prefill_energy_J": null,
+    "complete_physical_area_mm2": null
+  },
+  "publication_dependencies": {
+    "pr106": "open and unmerged at inspection; this supplement does not require it",
+    "parallel_issues_read_only": [
+      78,
+      95,
+      96,
+      107
+    ],
+    "projects": "Live GraphQL read failed INSUFFICIENT_SCOPES requiring read:project; no board update claimed"
+  },
+  "zotero_policy": "Reused existing items/attachments read-only. No new Zotero writes or publisher-PDF redistribution in this side-conversation upload."
+}

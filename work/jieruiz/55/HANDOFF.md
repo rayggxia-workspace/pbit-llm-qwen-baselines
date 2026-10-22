@@ -1,3 +1,7 @@
+# 第七轮入口
+
+8项原head审核与集成，详见[round7/REVIEW_ZH.md](round7/REVIEW_ZH.md)。实际合并/清理查Issue55最终回执。
+
 # 第六轮最终补审：PR99已ready并核验通过
 
 源heada7a48297；49检查/52情景清单/两项24层重放通过，随本次补充集成PR交付。最新[pr99_ready/REVIEW_ZH.md](round6/pr99_ready/REVIEW_ZH.md)。PR101的draft分流是旧fba时点，最终状态以Issue55回执为准。

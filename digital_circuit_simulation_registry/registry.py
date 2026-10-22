@@ -125,11 +125,11 @@ def render():
     (HERE/'01_结果地址索引.md').write_text('\n'.join(detail)+'\n',encoding='utf-8',newline='\n')
     fieldnames=['id','family','name','evidence_level','status','cases','functional','synthesis','sta','power','postlayout']
     with (HERE/'runs.csv').open('w',encoding='utf-8',newline='') as f:
-        w=csv.DictWriter(f,fieldnames=fieldnames);w.writeheader()
+        w=csv.DictWriter(f,fieldnames=fieldnames,lineterminator='\n');w.writeheader()
         for r in rr:w.writerow({**{k:r[k] for k in fieldnames[:5]},'cases':len(r['cases']),**r['stages']})
     with (HERE/'artifact_locations.csv').open('w',encoding='utf-8',newline='') as f:
         fields=['record_id','role','path','member','bytes','sha256','member_sha256','present_at_registration']
-        w=csv.DictWriter(f,fieldnames=fields);w.writeheader()
+        w=csv.DictWriter(f,fieldnames=fields,lineterminator='\n');w.writeheader()
         for r in rr:
             for a in r['artifacts']:w.writerow(dict(record_id=r['id'],**{k:a.get(k,'') for k in fields[1:]}))
 

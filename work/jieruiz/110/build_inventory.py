@@ -256,7 +256,7 @@ def main():
             linked_records=';'.join(related),review_state='indexed_batch_see_record' if related else 'discovered_not_audited',
             note='只读归档字节SHA已核；未由发现文件自动推断仿真通过'))
     with (OUT/'archive_inventory.csv').open('w',encoding='utf-8',newline='') as f:
-        w=csv.DictWriter(f,fieldnames=list(inventory[0]));w.writeheader();w.writerows(inventory)
+        w=csv.DictWriter(f,fieldnames=list(inventory[0]),lineterminator='\n');w.writeheader();w.writerows(inventory)
     for r in RECORDS:dump(OUT/'records'/(r['id']+'.json'),r)
     dump(OUT/'catalog.json',dict(schema_version=1,as_of='2026-10-22',issue=110,
         scope='LLM数字计算、随机服务、SRAM库/状态；另交叉索引共享p-bit芯片，不接管独立项目',

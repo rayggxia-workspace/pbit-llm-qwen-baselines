@@ -1,3 +1,13 @@
+# 2026-10-22：26/26任务推理完成，定时回查已删除
+
+Issue73/PR83（草稿开放未合并）；jieruiz；task/73-results-followup。北京时间12:43只读检查：26份完整JSON均completed，逐题文件SHA/大小/路径及声明32层守卫通过，当前Slurm队列空。按用户最新条件指令已删除llama2-7b回查，工具回执deleted、本地配置已不存在；不因官方oracle待做而重新创建定时。
+
+最新报告llama2/results/task_accuracy_20261020/PROGRESS_20261022_ZH.md；原始状态checkpoints/20261022T044323Z/STATUS.json，停止回执work/jieruiz/73/AUTOMATION_STOP_20261022.json。此次只检查/汇总已有结果，未重跑推理或改冻结快照；没有新的完整32层独立复核或官方process_results复算，最终验收仍待这些步骤。不要把summary聚合当官方oracle已完成，不关闭Issue或合并PR。
+
+下一步：同Issue73/PR83继续官方oracle、逐题源/输入/层覆盖完整复核及配对统计，已有26项不再推理。状态/报告推送以本次PUBLICATION_STOP_20261022.json为准；看板沿既有权限限制待同步。
+
+以下为旧检查点与历史回查状态，不代表仍有推理任务运行：
+
 # 2026-10-21 18:25用户回查：19/26已核验
 
 Issue73/PR83（草稿开放未合并），jieruiz，task/73-results-followup。CPU2634复用源86ccedc封存核验完成exit0：19completed、2running（2585_12/20）、5pending（21～25），无无效或缺项。比18:11新增ARC-E FFN-only seed2，故PIQA/ARC-E的仅FFN三seed均齐。PIQA acc/acc_norm77.80196%/78.99891%，ARC-E76.27666%/74.32660%；相对原BF16分别−0.05441/约0与−0.02806/−0.33670个百分点。只重聚合已存逐题metrics，官方oracle仍待26项齐全，不作为最终验收。

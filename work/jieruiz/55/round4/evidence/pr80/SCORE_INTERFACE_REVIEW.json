@@ -1,0 +1,117 @@
+{
+  "pr": 80,
+  "reviewed_head": "3e140bfbaa4c0e0fc9c06bdeee8b753d5d99c6e0",
+  "base": "a7a2c5b3cbc16390e30061329adfbebc835dc8b3",
+  "verdict": "score_interface_audit_accurate; no_blocking_findings",
+  "blocking_findings": [],
+  "scope": "Independent dtype/score-interface/formula/source-preservation review;144OFFSET replay and manifest handled by parallel evidence reviewer",
+  "conclusions": [
+    "ModelQ/K,RoPE andcache areBF16; candidateQK explicitlyfloat32, FP32Vmean thenBF16return. NumPyparallel/rejection diagnostics convert already-rounded inputlogits tofloat64; this is notFP64modelQK.",
+    "UniformR8 probability thresholds and8bitDAC/logit codes are different. Nearest8bitprobability coding zeros sigma(-8) and1/2000, while a calibratednative sigmoid input could represent those tails;8bitdrive resolution alone doesnotguarantee deviceprobabilityaccuracy.",
+    "P1=(1+tanh((V-V0)/Vs))/2 maps sigma(a) toV0+Vs*a/2. Literature is an interface-model/calibration basis, not projectdevice voltage, latency, independence orenergy evidence.",
+    "Score scaling changes temperature unless fixedLSB is restored byLUT/DAC gain. Referenceargmax still needed by currentalgorithm; staticlayer/headcalibration and scorebitwidths remain proposals.",
+    "Independent Bernoulli proposals giveP(single_i)=P(empty)*exp(delta_i-c); referenceaccept r requiresr=exp(-c). Forc=m ln2, r=2^-m; usingapproximatec withunchangedr biases relativeweights byexp(m ln2-c).",
+    "Invalid/padded candidates must be independently gatedoff; clamping-infinity tofinite negativelevel introducesfalse mass. Existing modelcandidate padding remainsnegativeinfinity and sampledaddresses are validated.",
+    "d64 scaling1/sqrt(d)=1/8 is exact; INT8dotINT32 is arithmetically safe, whileQ/Kscales, cross-blockalignment, smoothing andquality requireindependentvalidation. SageAttention supportsfeasibility, notsafe directdrop-in for thisproject.",
+    "Noexisting runtime/default/scientific result blob changed. Onlynewdiagnose_offsets helper, OFFSETpublication data and appendedREJECTION interface guidance areadded; no newquantization/modelPPL/PPA executed here."
+  ],
+  "sources": [
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/attention.py",
+      "sha256": "425bb5fb1ae60881bc6ff4d383dfd2560a0c8fdbe0ff9b6cc2775e9e0ef4f137",
+      "bytes": 19744,
+      "unchanged_from_base": true
+    },
+    {
+      "path": "experiments/qwen_joint_stratified_attention_20261019/upstream_attention/ctmc.py",
+      "sha256": "0c26ac5082d603e5f4861fcb645cd634218fd8f112d80196507bbd74e17a4bc2",
+      "bytes": 8768,
+      "unchanged_from_base": true
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/run_model.py",
+      "sha256": "6b61f802448d9bf7b99259886a101096967a22dceb9fe4d9a45faf088a893e39",
+      "bytes": 9341,
+      "unchanged_from_base": true
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/sampler.py",
+      "sha256": "d6ebcd5c34d0d22c971120be5a7ef5118745d796d902f72441ba04b23787ac0e",
+      "bytes": 9217,
+      "unchanged_from_base": true
+    },
+    {
+      "path": "experiments/qwen_ising_broadcast_20261021/rejection_sampler.py",
+      "sha256": "a4f3dfb862d27b82f6390ba03736696453165a1edf1d16f95b2e3b9cf925ca38",
+      "bytes": 4057,
+      "unchanged_from_base": true
+    },
+    {
+      "path": "qwen/results/ising_broadcast_20261021/REJECTION_ZH.md",
+      "sha256": "fa6d62941243f367988a83fafdf4cd128702b6dda17f635a05b08ba89bd0e3c3",
+      "bytes": 11500,
+      "unchanged_from_base": false
+    }
+  ],
+  "light_CPU_checks": {
+    "dtype_probe": {
+      "score_dtype": "torch.float32",
+      "negative_infinity_padding": 66,
+      "interface_dtype": "torch.bfloat16"
+    },
+    "diagnostic_dtypes": [
+      {
+        "module": "sampler",
+        "sigmoid_input_dtypes": [
+          "float64"
+        ]
+      },
+      {
+        "module": "rejection_sampler",
+        "sigmoid_input_dtypes": [
+          "float64"
+        ]
+      }
+    ],
+    "exact_correction_enumerations": 15,
+    "maximum_exact_correction_error": 2.220446049250313e-16,
+    "approximate_offset_bias_factor": 0.9048374180359595,
+    "consistent_correction_restores_target": true,
+    "voltage_mapping_maximum_error": 1.1102230246251565e-16,
+    "sigma_minus8": 0.0003353501304664781,
+    "nearest_R8_probability": 0.0,
+    "nearest_R8_flat2000": 0.0,
+    "dot_INT8_d64_worst_abs_sum": 1048576,
+    "INT32_safe": true
+  },
+  "preservation": {
+    "existing_noncollaboration_blobs_checked": 3252,
+    "all_exact": true,
+    "protected_set_sha256": "c1d3b6b361a847748420f3919c94cf657b839d3b306b79b672486eab3de03b84",
+    "changed_existing_scientific_blob": "qwen/results/ising_broadcast_20261021/REJECTION_ZH.md",
+    "existing_report_complete_prefix_preserved": true,
+    "changed_experiment_paths": [
+      "experiments/qwen_ising_broadcast_20261021/diagnose_offsets.py"
+    ],
+    "default_run_model_blob": "100644 blob 78f5e09718d757cbda83c95d0a97116d8d033a63",
+    "overwrites": []
+  },
+  "primary_sources": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5591208/",
+      "support": "Pervaiz2017 Eq1 tanh-controlled pbit and sampling/retention-time discussion; emulation, not projectnative-devicecharacterization"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11857111/",
+      "support": "Zhang2025 Eq2 slope/offsetvariation andEq6-8 compensation; supportscalibrationrequirement"
+    },
+    {
+      "url": "https://arxiv.org/html/2410.02367v3",
+      "support": "SageAttentionv3 INT8Q/K, Ksmoothing andmma(u8.u8.s32); PVretainsFP16andnotall-attentionINT8"
+    }
+  ],
+  "limitations": [
+    "No new hardwareconverter/devicecalibration, finiteprobabilityprecisionPPL orRTL/PPA validation.",
+    "LightCPU probes confirmdeclaredarithmeticinterfaces and exactformula examples; they do not validatephysicaltailprobabilities, independentpbits orASIC timing."
+  ]
+}

@@ -18,6 +18,8 @@
 
 ## 0 恢复工作先读这里
 
+> 2026-10-21最新审核：PR75/77/79/80均已合并，Issue76已按用户明确授权关闭；Issue73仍收集26项最终结果、Issue78继续有限精度/模型/硬件验证。详见文末“第四轮PR审核与合并回执”及work/jieruiz/55/round4/。旧draft、GPU修复pending和未上传描述是历史快照。
+
 > 2026-10-20 17:40 Issue73更新：旧2572三项FFN-only初始化OOM，失败日志保留、只撤回15个尚未执行FFN项；健康8项保留。新309ca9c无损把W8码INT16存储压为INT8，FP32恢复/算术/RNG不变、省4.03GiB；CPU2583七项通过，GPU2584待资源，18项补跑2585依赖其成功（尚未完成GPU验证）。请求/模板/Harness一致，最终8旧+18新=26唯一项。PIQA原BF16正式完成；其余分数未齐。预计1卡40～55h/较快2卡22～32h。用户要求的本对话heartbeat llama2-7b已设每24h，首检预计10/21 17:35北京时间，核验完成后停用；本地关机不能SSH、即时补跑未保证。恢复先读work/jieruiz/73/HANDOFF.md最新顶部，不重交健康任务。
 
 > 2026-10-20 Issue73/PR75：Llama2-7B代表任务已启动。PIQA1838/ARC-E2376全量，各BF16＋FFN-only三seed＋Attention S128三seed＋联合S128/S512各三seed，共26项。冻结022db6828c0caba96ae3d620f80b27c1ae3774b9；CPU2570六项与GPU2571完整WT2 BF164.9795028452/335686目标、独立cached评分0差/SDPA等价/真实7B概率pilot通过。正式Slurm2572_[0-25]已运行，分数pending；不重交。FFN为B4/T32/K32共享64，Attention短题保留all K、仅计分token32层decode替换，前缀准确。Apple PR67既有FP32双模型完整基线仅复用索引；不是p-bit或Llama同权重因果对照。源码experiments/llama2_task_accuracy_20261020；结果llama2/results/task_accuracy_20261020；交接work/jieruiz/73/HANDOFF.md；PR75 draft/open未合并。
@@ -758,3 +760,14 @@ Issue78发布回执（2026-10-21 08:55 UTC）：后续分支task/78-score-interf
 ## 2026-10-21 Issue78 sigmoid驱动8位接口诊断
 
 用户明确仅指sigmoid括号内a=(z−zref)−m ln2，而非Q/K INT8或R8概率阈值。PR79已合并a7a2c5b、PR80后续已合并e24414b；本次task/78-field-int8接续。CPU2630源757fb90完成25合同，24层2688行保存分数＋42行S64三seed真实驱动局部解析。a中位−8.70，5/95%−26.15/−4.70，负尾约−98。负幅度8位h1/8/范围−31.875~0，理想访问状态平均条件TV1.262%；signed8 h1/16范围−8~7.9375因饱和平均6.947%、最大51.475%。h1/16负幅度本批0.631%，但m14压力截断严重，不能直接外推；10位h1/16对照0.630%。均不是量化自适应完整轨迹/PPL或PPA；默认未改，原始capture私有。SOT SoftMax论文披露电流映射与平移/伸缩校准，未披露局部场INT8质量；其INT8/4图指输出概率。报告qwen/results/ising_broadcast_20261021/FIELD_INT8_ZH.md，manifest和work/jieruiz/78/FIELD_*含SHA、命令与新PR待发布状态。无运行作业、不重交2630，下一步独立校准＋模型PPL。
+## 2026-10-21 第四轮PR审核与合并回执（Issue55）
+
+PR77四条训练讨论稿、PR79广播/正确拒绝采样、PR75 Llama2任务阶段、追加PR80偏移与score接口均已实际合并。精确head/base/merge及独立证据见work/jieruiz/55/round4/REVIEW_ZH.md和receipts。旧时点的draft/未上传/未合并描述保留为历史，本节覆盖本轮发布状态。新报告本身通过后续PR交付，不计入4项成果。
+
+PR75检查点2026-10-21 08:39:24Z：16/26完成（8旧+8修复），2运行、8排队；GPU2584已READY且8个真实7B pilot通过，旧“GPU修复未验证”过时。7原CPU测试+4独立tiny32层检查通过，打包前后前向及RNG逐位一致。仅按Issue73冻结实现/提交阶段验收，26项最终质量仍待收齐，未逐题独立重算所有官方指标。Issue73/既有回查继续，未来结果用同Issue新PR，不重交健康数组、不改快照。
+
+PR79的18项CPU128目标后缀PPL已核，并非完整WT2；19当前合同与旧11重叠不相加。硬抑制/any-multi不修复同步偏差。正确拒绝采样依赖独立提议和零态校正，提议轮数不是物理时钟；尚无该采样器新模型PPL/有限位概率/RTL/PPA。发现并修复DIAGNOSTIC_MANIFEST中DIAGNOSTICS_ZH.md的派生SHA/大小，科学原件不改。
+
+此前未发布的OFFSET/score接口现由PR80交付并独立审核：144条理想分布记录含cap失败，固定/预设偏移改善部分案例但非普遍收益；同logits复用不代表下一token。QK score为FP32、诊断FP64，8位驱动码不等于R8概率；接口建议尚未实现或量化验证。Issue78继续开放；不能把本次交付当完整模型或硬件验收。
+
+PR77仅计划/文档验收，无训练已完成结论。Issue76由用户额外明确授权后已更新并关闭；未修改amlink1219个人STATUS。Issue28继续维护。备忘录canonical原有未提交增量先逐SHA归档并保留全部有序文本，HEAD保持原值，其工作文件与根阅读副本同步到本次发布文档。仅回收本轮本人稀疏review/helper，恢复索引project_archives/pr_review_issue55_20261021/RECOVERY_INDEX.json；执行状态查Issue55最终回执。

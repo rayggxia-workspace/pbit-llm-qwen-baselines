@@ -1,0 +1,63 @@
+{
+  "pr": 77,
+  "issue": 76,
+  "repository": "rayggxia-workspace/pbit-llm-qwen-baselines",
+  "reviewed_head": "a5908e555210bcc756a85a74a9c114585bea015f",
+  "document_base": "e4990c15b40f664cea7f9db43175b68347ce588b",
+  "review_date": "2026-10-21",
+  "verdict": "merge_recommended",
+  "blocking_findings": [],
+  "scope": "Four requested hardware-aware training discussion tracks; source/content/mathematical review, not execution or training-quality acceptance.",
+  "verification": {
+    "manifest": "7/7 exact Git-blob bytes, sizes and SHA-256 passed, including Word, Markdown and PLAN.json",
+    "Word_Markdown": "All121 text blocks, including59 paragraphs and62 table cells, match in order and content across63 body blocks and4 tables;9 external hyperlink targets match exactly; ZIP integrity passed",
+    "Word_structure": "Used Normal/Title/Heading1/Heading2 style inheritance resolves to black; paragraph borders absent in body and used style chains",
+    "Word_preview": "Not performed, following the explicit ordinary-discussion-document scope recorded in Issue76 and VALIDATION. No visual-layout claim is added by this review.",
+    "five_full_WT2_values": ["11.652118", "11.732192", "12.423820", "12.274153", "12.207062"],
+    "full_WT2_source": "The five six-decimal numbers exactly reproduce the immutable full SUMMARY Git blob at e4990c15; its SHA-256 matches SOURCES.json de3f489ef9f6630c58bb07d7a4bbbbe45bb3744ac4cd780aaab62fe91e4e1fab",
+    "selector_marginal": "Independent exact256-state marginalization and analytic-gradient versus finite-difference BCE checks passed4 cases/196 parameter directions; maximum error6.02354225526236e-11",
+    "finite_Ising_proxy": "Independent CPU PyTorch autograd probe confirms actual sampled-V forward, V gradients only at sampled frequencies, score gradients from the detached-V Softmax proxy and O gradients from actual output; this does not claim an exact CTMC distribution gradient",
+    "additional_math": "Short-prefix mandatory-block deduplication/budget bounds and bipolar mean=tanh identity passed;4M/131072 is30.5176 effective steps, consistent with about31 gate steps",
+    "diff_check": "git diff --check passed",
+    "existing_checkout": "Primary checkout remains clean on pbit-attention-qk-blockscale; formal workspace URL verified. No existing tracked source, other-member STATUS, server state or remote object was modified."
+  },
+  "scientific_conclusions": [
+    "Track3 correctly distinguishes four raw summary QK scores from probabilities. The4-8-1 conditional-independent feedforward model has40 weights+9 biases and samples both hidden and output bits. Exact marginal training is valid for this proposed behavior model; device transfer is explicitly unvalidated.",
+    "The primary selector output is variable. Mandatory first/last-two blocks bypass the network and BCE, count as probability1 in expected work, and are deduplicated at short prefixes. The grouped average budget is not a hard quota. Complete query/head groups are required; drift, P95, peaks and overflow are explicitly measured.",
+    "Existing source supports both variable and fixed modes. The512-slot TLM raises on variable overflow. Fixed8 is correctly used as a historical quality reference and Track4 isolation control, not imposed as the user's architecture. An independent mean8 example has38.35% probability of exceeding8 blocks, illustrating why the documented capacity policy is necessary.",
+    "Track1 keeps three FFN projections, fixed deterministic W8 at inference, shared64/stratified thresholds, shared gate/up input draws and independent z recoding. It clearly permits newly trained W8 codes while retaining old-code controls and requires deployment-faithful forward/export validation rather than treating quantization-only QAT as proven stochastic-compute training.",
+    "Track4 keeps the actual finite CTMC trajectory in forward and separates biased QK proxy gradients from actual V/O derivatives. Its local V/O loss is measured after O, while whole-network training is explicitly not called an unbiased exact path gradient. It correctly requires a new causal training wrapper because the current evaluator is eval-only and its multi-token path uses SDPA.",
+    "Track2 retains three projections and a continuous up branch, uses deterministic tanh conversion before finite bipolar samples, constrains alpha/gamma and expands layers only after validation. It makes no equivalence claim for replacing SiLU and does not conflate activation sampleN with FFN T or Ising S.",
+    "Dataset revisions, server resources, executor, capacity strategy and quality tolerance remain pre-execution freeze items; all training budgets and the3-1-4-2 ordering are explicitly proposals. No new result, checkpoint, GPU allocation, hardware measurement or fifth research direction is presented as completed."
+  ],
+  "primary_source_checks": [
+    {
+      "url": "https://aclanthology.org/2024.findings-acl.26/",
+      "result": "LLM-QAT supports quantization-aware forward and distribution-preserving distillation as a methodological reference; the plan does not extend it to validation of its stochastic arithmetic."
+    },
+    {
+      "url": "https://arxiv.org/html/2410.13276v4#S3.SS2",
+      "result": "SeerAttention learns block sparsity with lightweight self-distillation and focuses on long-context prefill; the plan explicitly distinguishes its stochastic four-input decode selector."
+    },
+    {
+      "url": "https://arxiv.org/abs/1308.3432",
+      "result": "Bengio et al. discuss stochastic binary gradient estimators and heuristic STE; the plan correctly avoids claiming exact finite CTMC gradients."
+    },
+    {
+      "url": "https://arxiv.org/html/2509.22358v3#A6",
+      "result": "AppendixF contains deterministic TANH LM1.5B baselines and activation-transition experiments. The plan uses only this limited precedent and explicitly excludes evidence for Qwen all-layer conversion or finite p-bit success."
+    },
+    {
+      "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu",
+      "result": "The official data card includes sample-10BT. The plan requires licensing/version/split/token-hash freezing and contamination checks before use. No dataset was downloaded in review."
+    }
+  ],
+  "evidence_files": ["PR77_CONTENT_CHECK.json", "PR77_MATH_CHECK.json", "verify_pr77.py", "check_math.py"],
+  "limits": [
+    "No training implementation or real-model training, WT2 evaluation, GPU job, device calibration, RTL or PPA was run. The code probes validate equations only.",
+    "The archived discussion-document package was checked; the author's separate user-copy path and private Zotero current state were not independently re-read.",
+    "The explicit quantization/stream-surrogate implementation, hardware precision/field mapping and execution manifests must be frozen and tested in a future execution Issue. This is not a blocker for the current discussion-plan delivery.",
+    "Root must still gate the exact remote head/base and any metadata refresh. Preserve current integration amlink1219 STATUS bytes and both memory additions during integration; this reviewer performed no metadata edits."
+  ],
+  "post_merge_scope": "Issue76 can be accepted after the actual merge within its documentation scope; no training execution is authorized by this plan itself."
+}

@@ -1,3 +1,5 @@
+**用户已明确暂停本轮目标，状态paused，不自动恢复；PR开放待审，未合并。** [暂停总结及A–G验收](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/116-cycle-execution/work/amlink1219/116/PAUSE_REPORT_ZH.md)。2K候选仅建图后中止，无通过结论；本任务进程已停、服务器队列为空。完整矩阵、首轮失败、153项已有诊断及暂停回执已归档，私有模型输入保持个人存储边界。
+
 现有v6整机宏时序不能回答逐拍端口占用、有限缓冲回压和实际数据就绪。本PR新增独立`architecture_tlm/cycle_v1`周期执行后端，交付FFN tile、Attention query、共享KV的GQA分组、缩小版单层闭环和可运行v6算子配置桥；保留旧v6、random_service及历史结果。Refs #116。
 
 - 整数ps多时钟、old-state提交规则、有限资源/完成端、真实字节内存、bank/窗口/RAW-WAR-WAW、在线native随机服务；cycle/event完整可观察轨迹相等。FFN保持W8与B4/T32/K32主参考，显式分档编码、平面计数、有限恢复和跨tile累加。Attention保留动态赢家/拒绝、实际V地址及样本multiplicity。
@@ -6,6 +8,6 @@
 - 9协议RTL场景/252握手逐ps对应；ONNXim固定版本2官方+4自定义场景；缩小单层7成功+2容量拒绝；v6桥5例；PR122固定8007d98兼容复验12场景/1536恢复；8组有限资源敏感性。它们的证据范围分开记录。
 - [实施报告 ](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/116-cycle-execution/architecture_tlm/cycle_v1/IMPLEMENTATION_ZH.md)、[独立审查 ](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/116-cycle-execution/architecture_tlm/cycle_v1/audit/REVIEW_ZH.md)、[恢复交接 ](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/116-cycle-execution/work/amlink1219/116/HANDOFF.md)。完整原件和私有fixture保留个人存储；Git包含代码、必要报告、选定trace及SHA索引。
 
-原方案A–G尚未全部完成：真实全维整层、多token/2K/8K、完整Qwen/Llama与PPL、共享全模型状态/随机网络、在线DRAM命令后端和物理PPA仍待验收。context64 GQA分组不等于完整GQA层。32KiB权重信用只代表逻辑驻留额度，宽阵列供数未有物理闭合证据；延迟/II为声明的模型条件。新旧v6边界不同，speedup保持null。完整FFN接合和调度扩展在#123/PR#125继续，本PR提供正式可固定的后端依赖，不重复其完整fixture/STA交接工作。2K约93分钟为小probe风险外推，不是实跑结果。
+原方案A–G尚未全部完成：真实全维整层、多token/2K/8K、完整Qwen/Llama与PPL、共享全模型状态/随机网络、在线DRAM命令后端和物理PPA仍待验收。context64 GQA分组不等于完整GQA层。32KiB权重信用只代表逻辑驻留额度，宽阵列供数未有物理闭合证据；延迟/II为声明的模型条件。新旧v6边界不同，speedup保持null。完整FFN接合由#123/PR125另行记录；暂停时其2783作业已CANCELLED/0:15，不计成功。本任务另审公开d944081a优化候选：47个GQA图四方等价、64/128/256规模通过；未替换默认核，2K只建图后按用户暂停中止。小probe外推不作为2K实跑结果。
 
 集成注意：PR119/120/122/125均有并行记录，中央台账应合并独立record后重新生成catalog/总表，不能覆盖其他记录。本PR已有cycle-116-protocol-rtl及cycle-116-conditional-model；GQA另列独立record，原矩阵记录不改写。Projects缺read:project的限制已记录；不自动合并或关闭Issue。

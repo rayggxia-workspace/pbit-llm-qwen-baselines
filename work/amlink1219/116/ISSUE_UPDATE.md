@@ -1,4 +1,6 @@
-Owner: amlink1219. User authorized a three-hour implementation window starting 2026-10-22 17:15 UTC, with correctness prioritized and an independent reviewer.
+**PAUSED BY USER at 2026-10-22 19:42 UTC. Goal remains paused, not complete; no automatic continuation, new implementation or experiments. Closeout and publication only.**
+
+Owner: amlink1219. The original three-hour implementation window started 2026-10-22 17:15 UTC, with correctness prioritized and an independent reviewer. The user ended it early.
 
 Implement the local TLM cycle-deepening design on baseline 46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d. This is a new execution-backend scope, dependent on #95/#96/#104/#107/#110/#112; it does not take ownership of their existing RTL, source models, frozen results or member status files.
 
@@ -29,6 +31,8 @@ These checkboxes do **not** complete the original A-G roadmap. The following rem
 - [ ] Online DRAM command backend with independently checked asynchronous write/read/return semantics.
 - [ ] Global physical storage/RNG distribution and characterized same-boundary PPA.
 
-The bounded 64/128 event-only software scaling probe showed superlinear overhead. Its approximately 93-minute 2K extrapolation is a risk estimate, not a 2K run. Full FFN integration and scheduler scaling continue separately in #123/PR125; actual STA/PPA is assigned to jieruiz there. No unpublished peer implementation was copied or jobs taken over.
+The original 64/128 event-only probe showed superlinear overhead; its approximately 93-minute 2K extrapolation is not a measurement. A separately verified public PR125 scheduler candidate passed 47 GQA four-way scenarios and bounded 64/128/256 probes. The subsequent local synthetic 2K attempt completed graph building only, then was stopped at the user's pause request. It has no execution/numeric/trace pass or success registry record. Default Kernel remains unchanged.
 
-All Issue116 jobs are terminal; the latest other running job belongs to Issue123. The 5090 server was available, so no 4090 fallback was used. Automatic approval rejected raw GQA activation download; validation instead ran on the server and only allowlisted configuration/count/error/timing/hash receipts were exported. Projects sync remains pending because the verified token lacks read:project; no permission changes attempted.
+All three subagents stopped. Local 2K worker290792/monitor251584/launcher274768 are absent. All Issue116 server jobs are terminal; the pause-time queue is empty. Parallel Issue123 job2783 is CANCELLED/0:15, not a full-FFN success; Issue116 did not cancel it. The 5090 server was available, so no4090 fallback was used. Automatic approval rejected raw GQA activation download; validation instead ran on the server and only allowlisted receipts were exported. Projects sync remains pending because the verified token lacks read:project; no permission changes attempted.
+
+[Chinese pause report / A-G / inventory / jobs](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/116-cycle-execution/work/amlink1219/116/PAUSE_REPORT_ZH.md) and HANDOFF/STATUS are authoritative. Existing full matrices, first failures, source snapshots,153 local diagnostic artifacts and pause evidence are archived on this branch; private weights/real GQA payload remain on personal storage with hashes. Resume only after an explicit new user instruction.

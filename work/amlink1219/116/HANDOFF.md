@@ -1,5 +1,40 @@
 # Issue116 交接
 
+## 当前权威状态：paused
+
+用户在2026-10-22 19:42 UTC提前暂停本轮目标；已通过目标工具设置`paused`，**不是complete，不自动恢复**。此后只完成状态核验、既有制品归档、GitHub上传和交接。完整A–G状态、验证证据、已知问题、工作树/进程/作业清单见[暂停总结](PAUSE_REPORT_ZH.md)。
+
+正式工作入口仍为下述cycle23，分支`task/116-cycle-execution`、[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审/未合并。暂停前已推送`3347bd8a0a46ad2533298d680d8a6800ad9fa8d4`；收尾提交、远端对象与原始blob核验以`PUBLICATION.json`为准。当前主树没有未提交生产改动；原未跟踪诊断仍保留，现有公开结果已另封存上传。各工作树精确清单见`PAUSE_WORKTREE_INVENTORY.json`，不能reset/clean。
+
+本次2K仅建图后按用户指令中止：worker290792、monitor251584、launcher274768均已停止；无2K完成/数值/轨迹结论、无2K成功台账记录。原运行器及暂停回执在`active_gqa_2k_paused/`，其档案副本不能直接执行。三名子代理均停止。服务器暂停快照队列为空；并行Issue123作业2783为CANCELLED/0:15，本任务未取消它，不自动重交。
+
+### 仅在用户明确恢复后进行
+
+1. 先核最新Issue116、PR126、PR125及成员STATUS。PR125最新核验来源是d944081a（base本任务分支）；其全形状作业已取消，先与该工作线核是否已有后续结果，不能重复提交。
+2. 阅读本目录PAUSE_REPORT、PLAN_COVERAGE与cycle_v1的AGENTS/FULL_MODEL_TODO。优先确定完整FFN/真实单层接合边界，再考虑规模；没有完整层/质量和物理表征前不作架构排名。
+3. 若继续采用ActiveMemory候选，固定公开版本和本地Kernel SHA，重核其私有接口与完整trace/状态等价；默认Kernel目前未替换。2K草稿只有只读审核和建图记录，需先重建可复现运行器、有限资源与足够时间预算，不能直接续接已终止进程。
+4. 真正的在线DRAM/互连、统一格式schema、在线摘要筛选与资源因果报告按原方案覆盖表另行验收；实际STA/PPA继续依赖jieruiz的既有分工，缺失物理数字保持null。
+
+恢复时的必要检查命令如下，**本轮暂停收尾没有执行这些新验证或作业**：
+
+```powershell
+Set-Location -LiteralPath 'E:/BaiduSyncdisk/p-bit/DAC_2026_Draft_Proceedings/DAC_2026_Draft_Proceedings/workspace_projects/cycle23'
+git status --short
+git remote get-url --all --push origin
+git log -5 --oneline
+# 用户明确恢复后才刷新远端；保留当前dirty/未跟踪证据。
+git -c credential.username=amlink1219 fetch origin
+# 只在需要复验源码变更时，指定全新的输出目录：
+python -X utf8 -m architecture_tlm.cycle_v1.validate_release --output work/amlink1219/116/resumed-validation-NEW
+python -X utf8 -m architecture_tlm.cycle_v1.audit.run_audit --output work/amlink1219/116/resumed-audit-NEW
+```
+
+远程入口为原5090 SSH通道，个人根`/home/Weican_Chen/projects/tlm-cycle-issue116-20261023`。恢复前重新核身份/个人路径/Slurm队列；CPU作业隐藏GPU，禁止登录节点计算。已有终态/成果先读取，**本交接没有提供自动sbatch或自动恢复命令**。
+
+## 以下保留暂停前的技术基线和历史说明
+
+下文的运行中描述属于其记录时点，当前终态以本页顶部和PAUSE_REPORT为准。
+
 负责人 amlink1219；唯一目标 `rayggxia-workspace/pbit-llm-qwen-baselines`，任务分支 `task/116-cycle-execution`，base `pbit-tlm-attention-details-20261016@46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d`。本机专用目录 `E:/BaiduSyncdisk/p-bit/DAC_2026_Draft_Proceedings/DAC_2026_Draft_Proceedings/workspace_projects/cycle23`；不要切换、清理或重置其他任务工作树。
 
 科学入口 `architecture_tlm/cycle_v1/IMPLEMENTATION_ZH.md`，运行说明同目录README，独立检查 `audit/REVIEW_ZH.md`。已完成有限周期原型、68真实片段+8synthetic用例、真实context64共享KV的7query GQA分组、缩小单层、native随机协议、协议RTL、ONNXim试验、v6桥、PR122兼容复验和条件敏感性；不把这些称为原A–G全完成。最终81实现/71独立/43旧回归通过。未做完整Qwen/Llama、真实全维整层、多token/2K/8K、在线DRAM命令后端、全局容量/随机网络及物理PPA闭合；具体门禁在 `FULL_MODEL_TODO_ZH.md`。

@@ -30,7 +30,7 @@ def save(path, data):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['create', 'verify', 'update-metadata'])
+    parser.add_argument('action', choices=['create', 'verify', 'update-metadata', 'notify-pause'])
     parser.add_argument('--no-save', action='store_true', help='Read-only final verification of a metadata commit')
     args = parser.parse_args()
     cred = subprocess.run(['git', 'credential', 'fill'],
@@ -77,10 +77,42 @@ def main():
         print(json.dumps({'pr_number':pr['number'], 'url':pr['html_url'], 'head':head}))
         return
 
+    if args.action == 'notify-pause':
+        recipient = api('/users/jieruiz')
+        assert recipient['id'] == 169070146 and recipient['login'] == 'jieruiz'
+        permission = api(repo_path+'/collaborators/jieruiz/permission')
+        assert permission['permission'] in ('read', 'write', 'admin', 'maintain', 'triage')
+        body = (HERE/'PAUSE_COMMENT.md').read_text(encoding='utf-8')
+        marker = '<!-- issue116-user-pause-20261022T194211Z -->'
+        intent_path = HERE/'PAUSE_NOTIFICATION_INTENT.json'
+        if not intent_path.exists():
+            save(intent_path, {'session_id':str(uuid.uuid4()), 'created_utc':datetime.now(timezone.utc).isoformat(),
+                'repo':REPO, 'issue':116, 'recipient':'jieruiz', 'head':head,
+                'body_sha256':hashlib.sha256(body.encode()).hexdigest()})
+        prior = []
+        page = 1
+        while True:
+            batch = api(repo_path+'/issues/116/comments?per_page=100&page='+str(page))
+            prior += [comment for comment in batch if marker in comment['body']]
+            if len(batch) < 100:
+                break
+            page += 1
+        assert len(prior) <= 1
+        comment = prior[0] if prior else api(repo_path+'/issues/116/comments', {'body':body}, 'POST')
+        save(HERE/'PAUSE_NOTIFICATION.json', {'comment_id':comment['id'], 'url':comment['html_url'],
+            'recipient':'jieruiz', 'goal_status':'paused', 'head':head, 'readback_verified':False})
+        checked = api(repo_path+'/issues/comments/'+str(comment['id']))
+        assert checked['body'] == body and checked['user']['login'] == 'amlink1219'
+        save(HERE/'PAUSE_NOTIFICATION.json', {'comment_id':comment['id'], 'url':comment['html_url'],
+            'recipient':'jieruiz', 'goal_status':'paused', 'head':head, 'readback_verified':True,
+            'verified_utc':datetime.now(timezone.utc).isoformat()})
+        print(json.dumps({'url':comment['html_url'], 'recipient':'jieruiz', 'goal_status':'paused'}))
+        return
+
     if args.action == 'update-metadata':
         assert len(existing) == 1 and existing[0]['number'] == 126
         assert existing[0]['state'] == 'open' and existing[0]['merged_at'] is None
-        title = '周期TLM后端：有限FFN、共享KV GQA与独立周期审查'
+        title = '周期TLM后端（暂停交接）：FFN、共享KV GQA与独立验证'
         pr_body = (HERE/'PR_BODY.md').read_text(encoding='utf-8')
         issue_body = (HERE/'ISSUE_UPDATE.md').read_text(encoding='utf-8')
         save(HERE/'METADATA_UPDATE_INTENT.json', {
@@ -142,7 +174,9 @@ def main():
     old = json.loads((HERE/'PUBLICATION.json').read_text(encoding='utf-8'))
     old.update(status='published_verified_open_unmerged', verified_utc=datetime.now(timezone.utc).isoformat(),
         verified_head=head, verified_changed_git_objects=len(changes), raw_blob_checks=checks,
-        legacy_changed_paths=[], push_urls=push_urls)
+        legacy_changed_paths=[], push_urls=push_urls,
+        goal_status='paused', automatic_resume=False,
+        pause_report='work/amlink1219/116/PAUSE_REPORT_ZH.md')
     if not args.no_save:
         save(HERE/'PUBLICATION.json', old)
     print(json.dumps({'pr':pr['number'], 'head':head, 'git_objects_verified':len(changes),

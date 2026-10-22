@@ -1,4 +1,14 @@
-# Issue116 周期级TLM执行后端（2026-10-23）
+# Issue116 已暂停（用户明确要求，2026-10-23）
+
+目标状态`paused`，不标complete、不自动恢复；只做收尾上传和交接。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审/未合并，暂停前已推送3347bd8，最终收尾提交与远端核验见`work/amlink1219/116/PUBLICATION.json`。权威入口：[暂停总结](../../work/amlink1219/116/PAUSE_REPORT_ZH.md)、[HANDOFF](../../work/amlink1219/116/HANDOFF.md)；A–G仅A完成本轮冻结，B/C/D/E/G部分完成，完整新后端F未开始。
+
+既有68真实裁剪+8合成、真实context64 GQA及81实现/71独审/43旧回归保持原结论；公开ActiveMemory候选的兼容和64/128/256探针另列，不改默认Kernel。2K候选仅建图后按用户指令中止，PID290792/251584/274768已停，无2K成功记录。三名子代理已停止；暂停时本人服务器队列为空，并行2783为CANCELLED/0:15，本任务未取消它。
+
+正式结果、完整v5矩阵、v4失败、源快照、153项既有本地诊断和暂停回执均归档于本分支；私有模型/GQA原始输入留本人服务器并登记SHA。主树无未提交生产代码；其他工作树保留诊断草稿及14项仅换行差异，详见PAUSE_WORKTREE_INVENTORY，不清理/重置。Projects仍缺read:project；GitHub交接按用户要求通知仓库成员`@jieruiz`。只有用户明确恢复后才执行HANDOFF中的后续检查。
+
+---
+
+# Issue116 暂停前验收快照（历史时点）
 
 负责人amlink1219，task/116-cycle-execution，独立workspace_projects/cycle23。FFN/query有限周期核、共享KV的GQA分组、native随机协议、缩小单层、v6桥与交互trace已完成；最终81实现测试、71独立测试、43旧回归通过。Slurm2776 real68+smoke8全通过，矩阵独立核302制品/34trace/98,340操作与4,597真实read hashes。新增真实context64、7query/1KVhead：Slurm2782的5个S32 CLI与6个S16独审配置双模式通过，独审42个case/head共2,688值逐bit相等。协议RTL9case252握手、ONNXim2官方+4场景、PR122固定版本12case兼容复验通过。有限预取死锁、免费union、无界operand响应已修并保留证据；无完整新后端Qwen/Llama/PPL/STA/PPA结论。
 

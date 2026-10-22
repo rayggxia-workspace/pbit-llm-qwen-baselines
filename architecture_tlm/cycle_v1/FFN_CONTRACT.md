@@ -12,9 +12,9 @@
 
 每个采样步由实际位平面门控更新整数计数。恢复按档完成 `FP32(count × activation_scale)`，再对 `× weight_scale / T` 表达式舍入为 FP32；按档顺序和跨输入 tile 顺序分别进行 FP32 加法。所有 gate/up 输入 tile 完成后才执行 `FP32(FP32(g × FP32(sigmoid(g))) × u)`，继而独立编码 z、计算 down。默认先把 down 转 BF16，与 FP32 residual 相加后再次转 BF16。此处 sigmoid、第二级缩放表达式是功能数学模型；不能据此声称具体 FP32 RTL 除法器或 SiLU 电路已实现。
 
-**本数值顺序不等于 `digital_ppa_v1/rtl/nr_bin_restore.sv` 的 FUSED=0 位精确契约。** 当前 cycle_v1 使用 `FP32(FP32(integer*scale)*weight_scale/T)`；该 RTL 先做 `FP32(integer*scale/T)`，再乘 weight_scale 并舍入。可复现反例为 integer=3、scale=2^-145、T=32、weight_scale=1.5：本模型得到 FP32 bits `0x00000002`，RTL 的分步数学得到 `0x00000003`。normal-range 真实 fixture 与本模型 oracle 逐 bit 一致，只证明当前契约内部一致；不能覆盖次正规边界或声称与该 RTL 全域等价。正在运行的矩阵继续沿用固定契约，不静默更改舍入顺序。
+**本数值顺序不等于 `digital_ppa_v1/rtl/nr_bin_restore.sv` 的 FUSED=0 位精确契约。** 当前 cycle_v1 使用 `FP32(FP32(integer*scale)*weight_scale/T)`；该 RTL 先做 `FP32(integer*scale/T)`，再乘 weight_scale 并舍入。可复现反例为 integer=3、scale=2^-145、T=32、weight_scale=1.5：本模型得到 FP32 bits `0x00000002`，RTL 的分步数学得到 `0x00000003`。normal-range 真实 fixture 与本模型 oracle 逐 bit 一致，只证明当前契约内部一致；不能覆盖次正规边界或声称与该 RTL 全域等价。已完成的v5矩阵沿用默认host_order固定契约，未静默更改舍入顺序。
 
-`FFNConfig.restore_rounding="host_order"` 为上述默认顺序。显式 `"rtl_fused0_order"` 改为先 `FP32(integer*scale/T)`、再 `FP32(*weight_scale)`，并保留有序档累加；该 profile 要求 T 为 2 的幂。两者均记录 provenance，`reference_ffn_tiled` 使用对应独立分支。此 profile **只匹配恢复顺序**：编码器 lower-bin minimum-normal clamp、功能 SiLU、异常/溢出处理、全 FFN 与具体 RTL 的等价性均不在该名称的保证范围内。已有 v3 主矩阵不被替换，新的 profile 配对必须另列结果。所有恢复中间值必须在支持的有限 FP32 域内。
+`FFNConfig.restore_rounding="host_order"` 为上述默认顺序。显式 `"rtl_fused0_order"` 改为先 `FP32(integer*scale/T)`、再 `FP32(*weight_scale)`，并保留有序档累加；该 profile 要求 T 为 2 的幂。两者均记录 provenance，`reference_ffn_tiled` 使用对应独立分支。此 profile **只匹配恢复顺序**：编码器 lower-bin minimum-normal clamp、功能 SiLU、异常/溢出处理、全 FFN 与具体 RTL 的等价性均不在该名称的保证范围内。已有 v5 主矩阵不被替换，新的 profile 配对必须另列结果。所有恢复中间值必须在支持的有限 FP32 域内。
 
 ## 资源、延迟与动作
 
@@ -49,6 +49,8 @@
 counter banks 逐阶段原地覆盖为 signed positional terms，再覆盖为归约整数。可用 bit 容量不足时，超出的位增长计入 restore scratch。输出转换持有原 down/residual reservation，直到实际输出写完成；源码中为审计保留的历史数组、thresholds、receipts 与 trace 不作为额外硬件副本收费。
 
 W8 与 scale 来自实际 DRAM read；fill 和本地 read 按真实地址执行并逐字节校验，解析出的数据供计算使用。输入、跨 tile partial 与 residual 真实回读；partial、z、最终 BF16/FP32 输出写出实际 bytes。损坏输入/权重会被校验捕获，partial 回读数据直接参与下一阶段算术。
+
+32KiB `freeweights` 是**从 DMA 接受、持续保留至 restore 后的 `weight_release` 完成的单份逻辑权重所有权额度**。每 tile 的本地读按有限 line/bank/port 收费；之后 T 次采样假设阵列侧整份 W8 静态驻留和并行连线，不再每拍通过该 SRAM 端口读取。Python 的 `resident_weights` 是数值视图，不能凭对象复制判定物理存储翻倍，也不能据此宣称已经同时实现了32KiB SRAM staging与32KiB阵列保持。若选两套独立物理存储，后续必须分别加入容量、装载端口和生存期；若选同一存储参与计算，须以RTL证明驻留供数与布线。当前不把这一未闭合物理接口当作已验证的宽SRAM读口或完整面积。
 
 这里封闭的是本地容量与端口/依赖约束；**全局 backing SRAM/DRAM 地址空间没有总容量分配器**，不能把上述表称为完整 SoC SRAM 容量。`RunResult.buffer_peak` 是 token 高水位；这些容量采用 free-credit buffer，因此其初值就是 capacity，不能把该字段直接称为实际已用峰值。实际已用峰值须从同拍输入/输出 credit 更新重放计算。
 

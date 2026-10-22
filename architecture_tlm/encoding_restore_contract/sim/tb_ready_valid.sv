@@ -1,0 +1,147 @@
+`timescale 1ns/1ps
+`ifndef KIND
+ `define KIND 0
+`endif
+`ifndef DEPTH
+ `define DEPTH 3
+`endif
+module tb_ready_valid;
+ localparam integer KIND=`KIND,DEPTH=`DEPTH,FRAC=(KIND==0?7:23);
+ localparam integer CW=(DEPTH<2?1:$clog2(DEPTH+1));
+ localparam integer VISIBLE_LATENCY=(KIND==2?1:2);
+ reg clk=0;always #5 clk=~clk;
+ reg rst_n=0,in_valid=0,out_ready=0;
+ wire in_ready,out_valid;reg [2047:0] data_in=0;
+ reg [15:0] exp_in=0;reg [31:0] scale_in=0,in_tag=0;
+ wire [31:0] out_tag;wire [784:0] data_out;
+ wire [CW-1:0] reserved_count,queued_count;
+ generate if(KIND==2)begin:restore
+  er_bin_restore_rv #(.DEPTH(DEPTH)) dut(clk,rst_n,in_valid,in_ready,
+   data_in[767:0],exp_in,scale_in,in_tag,out_valid,out_ready,
+   data_out[31:0],out_tag,reserved_count,queued_count);
+  assign data_out[784:32]=0;
+ end else begin:encode
+  er_pot_encoder_rv #(.FRAC(FRAC),.DEPTH(DEPTH)) dut(clk,rst_n,in_valid,in_ready,
+   data_in[64*(FRAC+9)-1:0],in_tag,out_valid,out_ready,
+   data_out[511:0],data_out[639:512],data_out[703:640],data_out[767:704],
+   data_out[783:768],data_out[784],out_tag,reserved_count,queued_count);
+ end endgenerate
+ reg [2047:0] vectors[0:255];reg [15:0] exponents[0:255];
+ reg [31:0] scales[0:255];reg [784:0] golden[0:255];
+ reg [784:0] expected[0:4095];reg [31:0] expected_tags[0:4095];
+ integer accepted_at[0:4095];reg seen[0:4095];
+ integer vector_count=0,fd,scan;reg [2047:0] filename;
+ integer cycle=0,stage=-1,head=0,tail=0,tx_sequence=0;
+ integer accepted_total=0,received_total=0,flushed_total=0;
+ integer blocked_inputs=0,stalled_outputs=0,max_reserved=0,max_queued=0;
+ integer visible_min=99999,visible_max=0,transfer_min=99999,transfer_max=0;
+ integer previous_accept=-1,previous_stage=-1,ii_min=99999,ii_max=0;
+ integer age,ii,steps,i,seed=7;reg [31:0] rng;
+ reg held=0;reg [784:0] held_data;reg [31:0] held_tag;
+ // Pre-edge samples define transfers. Post-edge samples define visibility.
+ // Both are reported to prevent a one-edge ambiguity in cycle integration.
+ always @(posedge clk)begin
+  cycle=cycle+1;
+  if(!rst_n)begin
+   flushed_total=flushed_total+(tail-head);head=0;tail=0;held=0;
+   previous_accept=-1;previous_stage=-1;
+  end else begin
+   if(tail-head!=reserved_count)$fatal(1,"reservation/scoreboard mismatch");
+   if(reserved_count>DEPTH||queued_count>reserved_count)$fatal(1,"unbounded queue");
+   if(held&&(!out_valid||data_out!==held_data||out_tag!==held_tag))
+    $fatal(1,"output changed under backpressure");
+   held=out_valid&&!out_ready;held_data=data_out;held_tag=out_tag;
+   if(in_valid&&!in_ready)blocked_inputs=blocked_inputs+1;
+   if(out_valid&&!out_ready)stalled_outputs=stalled_outputs+1;
+   if(in_valid&&in_ready)begin
+    expected[tail]=golden[tx_sequence%vector_count];
+    expected_tags[tail]=tx_sequence;accepted_at[tail]=cycle;seen[tail]=0;
+    tail=tail+1;tx_sequence=tx_sequence+1;accepted_total=accepted_total+1;
+    if(stage==0||stage==3)begin
+     if(previous_stage==stage)begin
+      ii=cycle-previous_accept;if(ii<ii_min)ii_min=ii;if(ii>ii_max)ii_max=ii;
+     end
+     previous_accept=cycle;previous_stage=stage;
+    end
+   end
+   if(out_valid&&out_ready)begin
+    if(head>=tail)$fatal(1,"output without accepted transaction");
+    if(data_out!==expected[head]||out_tag!==expected_tags[head])begin
+     $display("FAIL_DATA kind=%0d tag=%0d expected_tag=%0d actual=%h expected=%h",
+      KIND,out_tag,expected_tags[head],data_out,expected[head]);
+     $fatal(1,"arithmetic/order mismatch");
+    end
+    age=cycle-accepted_at[head];if(age<transfer_min)transfer_min=age;
+    if(age>transfer_max)transfer_max=age;
+    head=head+1;received_total=received_total+1;
+   end
+  end
+  #1;
+  if(rst_n)begin
+   if(tail-head!=reserved_count)$fatal(1,"post-edge reservation mismatch");
+   if(reserved_count>max_reserved)max_reserved=reserved_count;
+   if(queued_count>max_queued)max_queued=queued_count;
+   if(out_valid)begin
+    if(head>=tail||data_out!==expected[head]||out_tag!==expected_tags[head])
+     $fatal(1,"visible head differs from arithmetic/order oracle");
+    if(!seen[head])begin
+     age=cycle-accepted_at[head];if(age<visible_min)visible_min=age;
+     if(age>visible_max)visible_max=age;seen[head]=1;
+    end
+   end
+  end
+ end
+ task automatic drive(input integer mode,input integer count);
+  integer n;
+  begin
+   for(n=0;n<count;n=n+1)begin
+    @(negedge clk);stage=mode;
+    rng=rng*32'd1664525+32'd1013904223;
+    in_valid=(mode==4)?0:((mode==2)?rng%100<67:1);
+    rng=rng*32'd1664525+32'd1013904223;
+    out_ready=(mode==1)?0:((mode==2)?rng%100<53:1);
+    data_in=vectors[tx_sequence%vector_count];
+    exp_in=exponents[tx_sequence%vector_count];
+    scale_in=scales[tx_sequence%vector_count];in_tag=tx_sequence;
+   end
+  end
+ endtask
+ initial begin
+  if(!$value$plusargs("VECTORS=%s",filename))$fatal(1,"missing vectors");
+  if($value$plusargs("SEED=%d",seed))begin end
+  rng=seed;fd=$fopen(filename,"r");if(!fd)$fatal(1,"cannot read vectors");
+  while(!$feof(fd))begin
+   scan=$fscanf(fd,"%h %h %h %h\n",vectors[vector_count],exponents[vector_count],
+    scales[vector_count],golden[vector_count]);
+   if(scan==4)vector_count=vector_count+1;
+   else if(!$feof(fd))$fatal(1,"malformed vector");
+  end
+  $fclose(fd);if(vector_count<32)$fatal(1,"insufficient vectors");
+  repeat(2)@(negedge clk);rst_n=1;
+  drive(0,96); // Continuous ready/valid measures unthrottled II.
+  drive(1,20); // Fill every reserved slot and stall a stable head.
+  @(negedge clk);
+  if(reserved_count!=DEPTH||!out_valid)$fatal(1,"queue did not saturate");
+  rst_n=0;in_valid=0;out_ready=0; // Flush accepted work while backpressured.
+  repeat(2)@(negedge clk);rst_n=1;
+  drive(2,240); // Independent bubbles and output stalls.
+  drive(3,96); // Recover full throughput after stalls and reset.
+  drive(4,DEPTH+8); // Drain.
+  @(negedge clk);
+  if(head!=tail||reserved_count||out_valid)$fatal(1,"drain did not finish");
+  if(accepted_total!=received_total+flushed_total)$fatal(1,"lost or duplicate operation");
+  if(flushed_total!=DEPTH||blocked_inputs==0||stalled_outputs==0)
+   $fatal(1,"missing backpressure/reset coverage");
+  if(visible_min!=VISIBLE_LATENCY||transfer_min!=VISIBLE_LATENCY+1)
+   $fatal(1,"unexpected no-stall latency");
+  if(DEPTH>=VISIBLE_LATENCY+1&&(ii_min!=1||ii_max!=1))
+   $fatal(1,"full-rate capacity has an avoidable II bubble");
+  if(DEPTH==1&&(ii_min!=VISIBLE_LATENCY+1||ii_max!=VISIBLE_LATENCY+1))
+   $fatal(1,"single-slot II differs from reservation lifetime");
+  $display("PASS kind=%0d depth=%0d seed=%0d accepted=%0d received=%0d flushed=%0d blocked=%0d stalled=%0d max_reserved=%0d max_queued=%0d visible_min=%0d visible_max=%0d transfer_min=%0d transfer_max=%0d ii_min=%0d ii_max=%0d",
+   KIND,DEPTH,seed,accepted_total,received_total,flushed_total,blocked_inputs,stalled_outputs,
+   max_reserved,max_queued,visible_min,visible_max,transfer_min,transfer_max,ii_min,ii_max);
+  $finish;
+ end
+ initial begin #200000;$fatal(1,"timeout");end
+endmodule

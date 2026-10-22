@@ -40,3 +40,8 @@ python architecture_tlm/audit_screen_ising_v4.py architecture_tlm/results/screen
 补充：[数制转换与累加 RTL](../format_conversion_rtl_20261016/README_ZH.txt)，包含已有功能验证记录，尚无工艺库 DC/PT 面积功耗结果。
 
 SRAM校准补充：已有宏直接查库值；其他尺寸是带验证误差的探索估计。写能量尚有较大误差。未自动修改现有整机配置或重写历史Attention结果。工艺库本体不在发布包中。
+
+
+## 2026-10-22 Unified complete-decode TLM v6
+
+[Issue96 implementation, operator contracts and limits](unified_v6/README_ZH.md). Fixed W8 / B4 / T32 / K32, current parallel sampler options and same-resource digital controls share a bounded resource/memory model. Local RNG interface has no random-stream SRAM. This is an optional new entry; it does not rewrite historical defaults, results or claim full physical PPA.

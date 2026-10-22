@@ -25,3 +25,8 @@ python llama1/run.py tlm --help
 `--dry-run`只列出命令；不加载模型、不仿真。动作后参数原样传入，路径以调用者当前目录为准；脚本本身按绝对位置定位。任意工作目录均可用该run.py的绝对路径。GPU评测/捕获继续使用原Slurm脚本，不在登录节点直接运行。新输出应显式传`--output`，不要覆盖历史结果。
 
 历史实现和已签SHA成果保留原路径、原字节，运行入口直接调用原脚本；没有复制一套可分叉的模型实现。共享SRAM、DRAM、随机源与通用算子继续共用，未因本次整理改变采样协议或质量结论。[返回项目首页](../README.md)。
+
+
+## Unified TLM v6 (Issue96)
+
+[Complete decode model and boundaries](../architecture_tlm/unified_v6/README_ZH.md). Optional `python llama1/run.py tlm-unified --context 2048 --output /absolute/new_directory`; legacy commands are unchanged. Local RNG is an interface with zero random-stream SRAM; physical PPA and new combined PPL remain unverified.

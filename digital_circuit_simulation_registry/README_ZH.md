@@ -6,6 +6,8 @@
 
 Issue116新增 `cycle-116-protocol-rtl`（9组有限流水/FIFO/跨域握手对照、252个事件逐ps相等，仅RTL功能）和 `cycle-116-conditional-model`（68真实片段、8smoke、8条件敏感性案例，仅明示假设下的周期模型）；没有综合/STA/PPA。与PR119、PR120、PR122、PR125的并行登记互不替代，集成时应合并各自独立record后重建总览，避免用任一分支的catalog覆盖其他新增记录。
 
+Issue116的GQA增量单独登记为 [`cycle-116-gqa-conditional-model`](records/cycle-116-gqa-conditional-model.json)：真实Qwen第12层、context64、7查询头共享1个KV头，5个S32配置案例；6个S16独审配置及42个配置/查询头对照仅列为验证证据，不增加案例计数。原有84例条件模型记录保持不变。周期来自明示参数的模型，面积/功率/能量均未知，不是完整模型或实测硬件结果。
+
 | 先找哪一类 | 当前证据 |
 |---|---|
 | 随机矩阵、OR、缓存、CSA | 3个完整历史批次、72组配置/活动结果；保留负结果和旧失败批 |

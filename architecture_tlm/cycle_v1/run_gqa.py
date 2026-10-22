@@ -53,7 +53,7 @@ def public_report(summary):
 
 
 def run_gqa_case(fixture,attention_configs,group_config,output,*,fixture_sha256=None,
-                 memory_latency=4,memory_window=4,memory_banks=4,write_public_report=False):
+                 memory_latency=4,memory_window=4,memory_banks=4,write_public_report=False,compare_modes=True):
     output=Path(output)
     output.mkdir(parents=True,exist_ok=False)
     source=source_provenance()
@@ -66,7 +66,7 @@ def run_gqa_case(fixture,attention_configs,group_config,output,*,fixture_sha256=
     json_write(output/'START.json',start)
     try:
         runs=[]
-        for mode in ('cycle','event'):
+        for mode in (('cycle','event') if compare_modes else ('event',)):
             before=time.perf_counter()
             k,state=make_gqa(fixture,configs,gc,memory_latency=memory_latency,
                              memory_window=memory_window,memory_banks=memory_banks)
@@ -82,7 +82,7 @@ def run_gqa_case(fixture,attention_configs,group_config,output,*,fixture_sha256=
                     raise AssertionError('GQA result finished before a query write')
             runs.append((k,state,result,wall))
         k,state,result,wall=runs[-1]
-        if runs[0][2].equivalence_payload()!=result.equivalence_payload() or runs[0][1]!=state:
+        if compare_modes and (runs[0][2].equivalence_payload()!=result.equivalence_payload() or runs[0][1]!=state):
             raise AssertionError('GQA cycle/event full payload or head state mismatch')
         d,dv=len(data[0][1]),len(data[0][3][0])
         if result.actions['K_read_bytes']!=len(state['K_union'])*d*4 or result.actions['V_read_bytes']!=len(state['V_union'])*dv*4:
@@ -121,7 +121,8 @@ def run_gqa_case(fixture,attention_configs,group_config,output,*,fixture_sha256=
             finish_ps=result.finish_ps,latency_ns=result.finish_ps/1000,
             operations=len(result.accepted_ps),actions=result.actions,storage=specs['buffers'],
             resource_peak=result.resource_peak,resource_stats=result.resource_stats,
-            mode_equivalence=dict(checked=True,equal=True,fields='full trace, accept/complete, actual returned bytes, actions, final buffers/resources, all per-head state'),
+            mode_equivalence=dict(checked=compare_modes,equal=True if compare_modes else None,
+                fields='full trace, accept/complete, actual returned bytes, actions, final buffers/resources, all per-head state'),
             execution_modes={r.mode:dict(visited_edges=r.steps,wall_seconds=t) for _,_,r,t in runs},
             equivalence_payload_sha256=digest(canonical(payload)),timing_details=details,
             model_boundary=state['provenance'],
@@ -165,6 +166,7 @@ def main():
     parser.add_argument('--metadata-capacity',type=int,default=65536)
     parser.add_argument('--union-scan-lanes',type=int,default=16)
     parser.add_argument('--public-report',action='store_true',help='also write allowlisted metrics/hashes; keep raw output and trace in execution directory')
+    parser.add_argument('--event-only',action='store_true',help='explicitly skip cycle/event comparison; receipt records checked=false')
     parser.add_argument('--memory-window',type=int,default=4)
     parser.add_argument('--memory-banks',type=int,default=4)
     parser.add_argument('--memory-latency',type=int,default=4)
@@ -180,7 +182,7 @@ def main():
     summary=run_gqa_case(fixture,configs,gc,args.output,
         fixture_sha256=digest(args.fixture.read_bytes()) if args.fixture else None,
         memory_latency=args.memory_latency,memory_window=args.memory_window,memory_banks=args.memory_banks,
-        write_public_report=args.public_report)
+        write_public_report=args.public_report,compare_modes=not args.event_only)
     print(json.dumps({key:summary[key] for key in ('status','query_heads','KV_heads','latency_ns','operations','mode_equivalence')}))
 
 

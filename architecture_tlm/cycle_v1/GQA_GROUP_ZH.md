@@ -19,6 +19,8 @@ python -m architecture_tlm.cycle_v1.run_gqa --fixture /private/gqa.json --mode w
 
 私有激活留在服务器时加 `--public-report`，只取回 `public_report.json`。该文件采用字段白名单，仅保留配置、计数、误差、容量峰值、时序和散列；原始 fixture、logits、输出数组、概率、样本索引/直方图、native report、完整 summary/trace/HTML 都保留在执行目录。`--operand-slots`、`--metadata-capacity`、`--union-scan-lanes` 分别控制有限操作数响应、group metadata 字节与运行时扫描吞吐。
 
+大形状若明确使用 `--event-only`，仅执行跳事件路径，回执必须为 `mode_equivalence.checked=false`、`equal=null`。小形状的双模式验证不自动证明该大形状已经比较；数值、字节、信用和生命周期门仍执行。
+
 `make_gqa(fixture, attention_configs=None, group_config=None, *, prefix="gqa", memory_latency=4, memory_window=4, memory_banks=4, memory_latency_by_address=None)` 返回 `(kernel,state)`；`state["queries"]` 保留独立 head 结果。`build_gqa` 可将分组加到调用者持有的 Kernel，调用者须先配置 `default_resources`/`default_buffers`。初始数据只允许在执行前装载；该 API 不假装已解决动态 append。`address_layout` 返回实际对齐地址及区间，支持显式配置 bank/返回延迟反例。碰到已有初始化内存或内存操作的重叠地址，构建会拒绝。
 
 运行目录必须全新。入口保存 START、配置、fixture/source SHA、每 head 输出/直方图/采样轨迹、物理 union/读地址/字节数、有限信用峰值与资源统计、完整 gzip trace、交互 HTML 和成果 manifest。不写出原 fixture 张量。两次执行比较逐拍/跳事件的完整 payload 和全部 head 状态；数学比较按各 head 实际保留样本重建 weighted-V，采用注明的 FP32 累加容差，不将其当作 PPL。
@@ -42,4 +44,4 @@ python -m architecture_tlm.cycle_v1.run_gqa --fixture /private/gqa.json --mode w
 
 group metadata 独立预留：两份最多 K-union 行数的目录，每项为 token ID 4B、refcount 4B、head mask `ceil(H/8)`B、压缩临时空间4B，加每 head 16B ready/cursor 状态。query 候选表/分数/直方图已计入 query 自身预算。metadata 从 group initialize 接受到所有 head 输出真实写回、全部行释放后的 group release 才归还；超过 `metadata_capacity_bytes` 拒绝。Python字典和证据轨迹不额外提供硬件容量，也没有无界操作数返回队列。
 
-只读现有 `attention.py` 的默认行为通过可选 hook 保留；group 才启用地址/共享K/共享V接合。原核心、v6 和已有矩阵结果均未改动。
+现有 `attention.py` 的默认行为通过可选 hook 保留；group 才启用地址/共享K/共享V接合。原核心、v6 和已有矩阵结果均未改动。

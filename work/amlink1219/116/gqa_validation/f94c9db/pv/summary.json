@@ -1,0 +1,2937 @@
+{
+  "KV_heads": 1,
+  "actions": {
+    "K_read_bytes": 384,
+    "QK_mac": 512,
+    "Q_read_bytes": 448,
+    "V_read_bytes": 288,
+    "V_weighted_mac": 336,
+    "cdf_prefix_serial_add": 32,
+    "cdf_sample_indices": 28,
+    "cdf_serial_scan_slots": 60,
+    "exp_values": 32,
+    "gqa_V_union_entries": 6,
+    "gqa_histogram_scan_entries": 32,
+    "gqa_metadata_release_bytes": 268,
+    "gqa_metadata_reserve_bytes": 268,
+    "gqa_ready_heads": 7,
+    "gqa_union_bitmap_tests": 6,
+    "histogram_read": 28,
+    "histogram_write": 28,
+    "memory.dram.read_beats": 15,
+    "memory.dram.read_bytes": 672,
+    "memory.dram.read_requests": 12,
+    "memory.sram.read_beats": 35,
+    "memory.sram.read_bytes": 560,
+    "memory.sram.read_requests": 35,
+    "memory.sram.write_beats": 35,
+    "memory.sram.write_bytes": 448,
+    "memory.sram.write_requests": 35,
+    "native_response_copy": 7,
+    "native_rng_request": 7,
+    "output_write_bytes": 336,
+    "sample_output": 28,
+    "score_max_compare": 25,
+    "score_subtract": 32,
+    "shared_K_release": 6,
+    "shared_K_rows": 6,
+    "shared_V_release": 6,
+    "shared_V_rows": 6,
+    "shared_cache_read_bytes": 3392,
+    "softmax_normalize_multiply": 32,
+    "softmax_reciprocal": 7,
+    "softmax_sum_add": 25,
+    "softmax_values": 32
+  },
+  "energy": {
+    "accounting": "semantic bytes and memory.* bytes overlap; never add as separate energy",
+    "status": "unknown"
+  },
+  "equivalence_payload_sha256": "77550bb9bb0763d647917ca6847b7c93a175dc807eae86142a137a0d1a07df99",
+  "execution_modes": {
+    "cycle": {
+      "visited_edges": 1665,
+      "wall_seconds": 0.30405629996676
+    },
+    "event": {
+      "visited_edges": 915,
+      "wall_seconds": 0.17633159994147718
+    }
+  },
+  "finish_ps": 10400000,
+  "fixture_provenance": {
+    "KV_heads": 1,
+    "kind": "deterministic_synthetic_GQA",
+    "version": 1
+  },
+  "fixture_sha256": "82e99056ca8d63616031a02d4d33c84fda3afafb40ec97ebef5db09e10fd1ef7",
+  "group_config": {
+    "base_address": 2147483648,
+    "cache_bytes_per_cycle": 64,
+    "k_slots": 1,
+    "metadata_capacity_bytes": 65536,
+    "operand_slots": 1,
+    "query_state_capacity_bytes": 1048576,
+    "union_scan_lanes": 16,
+    "v_slots": 1
+  },
+  "latency_ns": 10400.0,
+  "mode_equivalence": {
+    "checked": true,
+    "equal": true,
+    "fields": "full trace, accept/complete, actual returned bytes, actions, final buffers/resources, all per-head state"
+  },
+  "model_boundary": {
+    "V_schedule": "all query weight/histogram writes finish, then explicit union barrier and ordered bounded prefetch",
+    "accumulation_order": "each query visits its physical V token IDs in ascending order; each product and add round to FP32",
+    "cache": "finite K/V rows held through every MAC consumer; timed shared read port plus finite operand slots held until MAC completion",
+    "fixture": {
+      "KV_heads": 1,
+      "kind": "deterministic_synthetic_GQA",
+      "version": 1
+    },
+    "omitted": "QKV projection, RoPE, screening, Wo, dynamic KV append, full decoder, PPA/STA",
+    "physical_memory_reads": "one DRAM read per physical token in each K or V union",
+    "scope": "one KV head and explicit query head group; preprojected Q/K/V",
+    "source": "one independent native-network state/seed bus per native sampled query; shared submit/delivery resources; no IID or shared-global-source claim",
+    "source_instances": [
+      {
+        "backend": "native",
+        "logical_source_lanes": 64,
+        "native_network": true,
+        "query": 0,
+        "reseed_cycles": 100000000,
+        "seed": 0,
+        "seed_startup": 10,
+        "seed_word_interval": 100
+      },
+      {
+        "backend": "native",
+        "logical_source_lanes": 64,
+        "native_network": true,
+        "query": 1,
+        "reseed_cycles": 100000000,
+        "seed": 1,
+        "seed_startup": 10,
+        "seed_word_interval": 100
+      },
+      {
+        "backend": "native",
+        "logical_source_lanes": 64,
+        "native_network": true,
+        "query": 2,
+        "reseed_cycles": 100000000,
+        "seed": 2,
+        "seed_startup": 10,
+        "seed_word_interval": 100
+      },
+      {
+        "backend": "native",
+        "logical_source_lanes": 64,
+        "native_network": true,
+        "query": 3,
+        "reseed_cycles": 100000000,
+        "seed": 3,
+        "seed_startup": 10,
+        "seed_word_interval": 100
+      },
+      {
+        "backend": "native",
+        "logical_source_lanes": 64,
+        "native_network": true,
+        "query": 4,
+        "reseed_cycles": 100000000,
+        "seed": 4,
+        "seed_startup": 10,
+        "seed_word_interval": 100
+      },
+      {
+        "backend": "native",
+        "logical_source_lanes": 64,
+        "native_network": true,
+        "query": 5,
+        "reseed_cycles": 100000000,
+        "seed": 5,
+        "seed_startup": 10,
+        "seed_word_interval": 100
+      },
+      {
+        "backend": "native",
+        "logical_source_lanes": 64,
+        "native_network": true,
+        "query": 6,
+        "reseed_cycles": 100000000,
+        "seed": 6,
+        "seed_startup": 10,
+        "seed_word_interval": 100
+      }
+    ],
+    "union": "precompiled bounded K candidate directory; runtime V histogram scan and sorted-directory compaction use finite lanes and reserved metadata"
+  },
+  "numeric_scope": "per-query exact weighted-V or retained-sample trajectory; no PPL or full-model accuracy",
+  "operations": 352,
+  "operator": "gqa_group",
+  "physical_status": "configured uncharacterized cache/compute/clock contract; not STA, PPA or optimal streaming schedule",
+  "queries": [
+    {
+      "complete_ps": 10237500,
+      "head": 0,
+      "histogram": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "11": 1
+      },
+      "local_indices": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "local_state_bytes": {
+        "candidate_map": 20,
+        "cdf_prefix": 40,
+        "drive_values": 0,
+        "fsm_scalar_state": 64,
+        "histogram": 20,
+        "logits": 20,
+        "output_accumulator": 48,
+        "output_fifo": 4,
+        "proposal_mask_and_valid": 0,
+        "pv_index_buffer": 16,
+        "q": 64,
+        "q256_thresholds": 0,
+        "softmax_probabilities": 40
+      },
+      "logits": [
+        0.018455378711223602,
+        0.059016332030296326,
+        0.06023494899272919,
+        0.010832819156348705,
+        0.05680174380540848
+      ],
+      "native_random": {
+        "adapter": "cycle_v1 native clock process; Issue95 Endpoint/RandomNetwork via EventNetwork/FastEndpoint",
+        "area_mm2": null,
+        "clock_ns": 10,
+        "cycles": 1024,
+        "elapsed_ns": 10240,
+        "energy_J": null,
+        "independent_IID": false,
+        "jumped_idle_edges": 791,
+        "physical_entropy": false,
+        "physical_timing_characterized": false,
+        "ports": {
+          "fair": {
+            "area_mm2": null,
+            "counts": {
+              "clock_edges": 1024,
+              "frames_generated": 1,
+              "output_register_bits_written": 180,
+              "output_stall_cycles": 0,
+              "prng_updates": 1,
+              "random_word_bits_generated": 160,
+              "recurrence_steps": 960,
+              "request_stall_cycles": 0,
+              "reseed_deferred_cycles": 0,
+              "responses_consumed": 1,
+              "seed_loads": 1,
+              "seed_state_bits_loaded": 177,
+              "seed_wait_cycles": 512,
+              "shared_mapping_evaluations": 0,
+              "threshold_comparisons": 20,
+              "warmup_bits_discarded": 800,
+              "warmup_updates": 5
+            },
+            "cycles": 1024,
+            "energy_J": null,
+            "kind": "bivium",
+            "profile": {
+              "correlation": "nonlinear deterministic stream; NOT certified IID",
+              "lanes": 20,
+              "state_bits": 177,
+              "steps": 160,
+              "warmup": 5
+            },
+            "status": "operation counts only; calibrate with delivered RTL"
+          }
+        },
+        "receipts": [
+          {
+            "epochs": {
+              "fair": 1
+            },
+            "kind": "frame",
+            "label": "pv.offset.0",
+            "native_complete_ps": 5180000,
+            "submit_ps": 2890000,
+            "valid_ps": 5170000,
+            "wait_edges": 229
+          }
+        ],
+        "response_bridge": "explicit rng_submit/rng_delivery resources; one-cycle registered stages with no same-edge forwarding",
+        "response_hold_cycles": 0,
+        "seed_events": [
+          {
+            "cycle": 511,
+            "epoch": 1,
+            "port": "fair",
+            "provenance": "explicit deterministic seed-bus fixture; not physical entropy",
+            "rejected": false,
+            "seed_hex": "0x12f346baa9455e3e70682c2094cac629f6fbed82c07cd"
+          }
+        ],
+        "seed_source": "explicit deterministic seed-bus fixture; not physical entropy",
+        "seed_transport": {
+          "fair": {
+            "bus_beats": 6,
+            "bus_bits": 192,
+            "packets_delivered": 1,
+            "padding_bits_discarded": 15
+          }
+        },
+        "seed_word_transcript": [
+          {
+            "cycle": 10,
+            "word": 3626764237
+          },
+          {
+            "cycle": 110,
+            "word": 1654615998
+          },
+          {
+            "cycle": 210,
+            "word": 3255389356
+          },
+          {
+            "cycle": 310,
+            "word": 3823568514
+          },
+          {
+            "cycle": 410,
+            "word": 1806341205
+          },
+          {
+            "cycle": 510,
+            "word": 173879092
+          }
+        ],
+        "transaction_queue_capacity": 1
+      },
+      "numeric_validation": {
+        "absolute_tolerance": 4.76837158203125e-06,
+        "max_absolute_error": 7.450580596923828e-09,
+        "oracle": "double fsum weighted V, compared at documented FP32 reduction tolerance",
+        "quality_scope": "one query output error; not PPL or model accuracy",
+        "sampled_vs_exact_rmse": 0.026577696943262317
+      },
+      "output": [
+        0.07122603058815002,
+        0.08985337615013123,
+        0.09631949663162231,
+        0.08974921703338623,
+        0.07103180885314941,
+        0.042700570076704025,
+        0.008590023964643478,
+        -0.026683149859309196,
+        -0.05834488570690155,
+        -0.08210990577936172,
+        -0.09476174414157867,
+        -0.0945880264043808
+      ],
+      "output_address": 2147485120,
+      "output_bytes": 48,
+      "output_sha256": "8b559ce719da01e1a066bc69518a78afd34ba8a0031b86a561bf48fb9dc196fa",
+      "physical_indices": [
+        2,
+        1,
+        11,
+        3
+      ],
+      "physical_weights": {
+        "1": 0.25,
+        "2": 0.25,
+        "3": 0.25,
+        "11": 0.25
+      },
+      "proposals": 0,
+      "sampler_frames": [],
+      "source_frames": 0,
+      "source_waves": 0
+    },
+    {
+      "complete_ps": 9887500,
+      "head": 1,
+      "histogram": {
+        "2": 1,
+        "3": 1,
+        "8": 1,
+        "10": 1
+      },
+      "local_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "local_state_bytes": {
+        "candidate_map": 16,
+        "cdf_prefix": 32,
+        "drive_values": 0,
+        "fsm_scalar_state": 64,
+        "histogram": 16,
+        "logits": 16,
+        "output_accumulator": 48,
+        "output_fifo": 4,
+        "proposal_mask_and_valid": 0,
+        "pv_index_buffer": 16,
+        "q": 64,
+        "q256_thresholds": 0,
+        "softmax_probabilities": 32
+      },
+      "logits": [
+        0.06038368120789528,
+        0.06115450710058212,
+        0.04209326207637787,
+        0.029262585565447807
+      ],
+      "native_random": {
+        "adapter": "cycle_v1 native clock process; Issue95 Endpoint/RandomNetwork via EventNetwork/FastEndpoint",
+        "area_mm2": null,
+        "clock_ns": 10,
+        "cycles": 989,
+        "elapsed_ns": 9890,
+        "energy_J": null,
+        "independent_IID": false,
+        "jumped_idle_edges": 698,
+        "physical_entropy": false,
+        "physical_timing_characterized": false,
+        "ports": {
+          "fair": {
+            "area_mm2": null,
+            "counts": {
+              "clock_edges": 989,
+              "frames_generated": 1,
+              "output_register_bits_written": 180,
+              "output_stall_cycles": 0,
+              "prng_updates": 1,
+              "random_word_bits_generated": 160,
+              "recurrence_steps": 960,
+              "request_stall_cycles": 0,
+              "reseed_deferred_cycles": 0,
+              "responses_consumed": 1,
+              "seed_loads": 1,
+              "seed_state_bits_loaded": 177,
+              "seed_wait_cycles": 512,
+              "shared_mapping_evaluations": 0,
+              "threshold_comparisons": 20,
+              "warmup_bits_discarded": 800,
+              "warmup_updates": 5
+            },
+            "cycles": 989,
+            "energy_J": null,
+            "kind": "bivium",
+            "profile": {
+              "correlation": "nonlinear deterministic stream; NOT certified IID",
+              "lanes": 20,
+              "state_bits": 177,
+              "steps": 160,
+              "warmup": 5
+            },
+            "status": "operation counts only; calibrate with delivered RTL"
+          }
+        },
+        "receipts": [
+          {
+            "epochs": {
+              "fair": 1
+            },
+            "kind": "frame",
+            "label": "pv.offset.0",
+            "native_complete_ps": 5180000,
+            "submit_ps": 2310000,
+            "valid_ps": 5170000,
+            "wait_edges": 287
+          }
+        ],
+        "response_bridge": "explicit rng_submit/rng_delivery resources; one-cycle registered stages with no same-edge forwarding",
+        "response_hold_cycles": 0,
+        "seed_events": [
+          {
+            "cycle": 511,
+            "epoch": 1,
+            "port": "fair",
+            "provenance": "explicit deterministic seed-bus fixture; not physical entropy",
+            "rejected": false,
+            "seed_hex": "0x1c4d1c386bbc4cd613e30d8f16adf91b7584a2265b1f5"
+          }
+        ],
+        "seed_source": "explicit deterministic seed-bus fixture; not physical entropy",
+        "seed_transport": {
+          "fair": {
+            "bus_beats": 6,
+            "bus_bits": 192,
+            "packets_delivered": 1,
+            "padding_bits_discarded": 15
+          }
+        },
+        "seed_word_transcript": [
+          {
+            "cycle": 10,
+            "word": 577090037
+          },
+          {
+            "cycle": 110,
+            "word": 2444712010
+          },
+          {
+            "cycle": 210,
+            "word": 3639700191
+          },
+          {
+            "cycle": 310,
+            "word": 3445702192
+          },
+          {
+            "cycle": 410,
+            "word": 3280387012
+          },
+          {
+            "cycle": 510,
+            "word": 271041745
+          }
+        ],
+        "transaction_queue_capacity": 1
+      },
+      "numeric_validation": {
+        "absolute_tolerance": 3.814697265625e-06,
+        "max_absolute_error": 7.450580596923828e-09,
+        "oracle": "double fsum weighted V, compared at documented FP32 reduction tolerance",
+        "quality_scope": "one query output error; not PPL or model accuracy",
+        "sampled_vs_exact_rmse": 0.0011332095046711363
+      },
+      "output": [
+        0.10613042861223221,
+        0.10029207170009613,
+        0.08087965846061707,
+        0.050520554184913635,
+        0.013323735445737839,
+        -0.025676392018795013,
+        -0.06120133399963379,
+        -0.08844296634197235,
+        -0.10371425747871399,
+        -0.10494831204414368,
+        -0.09197810292243958,
+        -0.0665590837597847
+      ],
+      "output_address": 2147485312,
+      "output_bytes": 48,
+      "output_sha256": "4a60bd4336cca91105a0e5aebb4f5756686878aebe8c354497fc9dffa738e102",
+      "physical_indices": [
+        3,
+        2,
+        8,
+        10
+      ],
+      "physical_weights": {
+        "2": 0.25,
+        "3": 0.25,
+        "8": 0.25,
+        "10": 0.25
+      },
+      "proposals": 0,
+      "sampler_frames": [],
+      "source_frames": 0,
+      "source_waves": 0
+    },
+    {
+      "complete_ps": 10300000,
+      "head": 2,
+      "histogram": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "11": 1
+      },
+      "local_indices": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "local_state_bytes": {
+        "candidate_map": 20,
+        "cdf_prefix": 40,
+        "drive_values": 0,
+        "fsm_scalar_state": 64,
+        "histogram": 20,
+        "logits": 20,
+        "output_accumulator": 48,
+        "output_fifo": 4,
+        "proposal_mask_and_valid": 0,
+        "pv_index_buffer": 16,
+        "q": 64,
+        "q256_thresholds": 0,
+        "softmax_probabilities": 40
+      },
+      "logits": [
+        0.03878404572606087,
+        0.06060566380620003,
+        0.05887605994939804,
+        0.03229793161153793,
+        0.0613124743103981
+      ],
+      "native_random": {
+        "adapter": "cycle_v1 native clock process; Issue95 Endpoint/RandomNetwork via EventNetwork/FastEndpoint",
+        "area_mm2": null,
+        "clock_ns": 10,
+        "cycles": 1031,
+        "elapsed_ns": 10310,
+        "energy_J": null,
+        "independent_IID": false,
+        "jumped_idle_edges": 800,
+        "physical_entropy": false,
+        "physical_timing_characterized": false,
+        "ports": {
+          "fair": {
+            "area_mm2": null,
+            "counts": {
+              "clock_edges": 1031,
+              "frames_generated": 1,
+              "output_register_bits_written": 180,
+              "output_stall_cycles": 0,
+              "prng_updates": 1,
+              "random_word_bits_generated": 160,
+              "recurrence_steps": 960,
+              "request_stall_cycles": 0,
+              "reseed_deferred_cycles": 0,
+              "responses_consumed": 1,
+              "seed_loads": 1,
+              "seed_state_bits_loaded": 177,
+              "seed_wait_cycles": 512,
+              "shared_mapping_evaluations": 0,
+              "threshold_comparisons": 20,
+              "warmup_bits_discarded": 800,
+              "warmup_updates": 5
+            },
+            "cycles": 1031,
+            "energy_J": null,
+            "kind": "bivium",
+            "profile": {
+              "correlation": "nonlinear deterministic stream; NOT certified IID",
+              "lanes": 20,
+              "state_bits": 177,
+              "steps": 160,
+              "warmup": 5
+            },
+            "status": "operation counts only; calibrate with delivered RTL"
+          }
+        },
+        "receipts": [
+          {
+            "epochs": {
+              "fair": 1
+            },
+            "kind": "frame",
+            "label": "pv.offset.0",
+            "native_complete_ps": 5180000,
+            "submit_ps": 2910000,
+            "valid_ps": 5170000,
+            "wait_edges": 227
+          }
+        ],
+        "response_bridge": "explicit rng_submit/rng_delivery resources; one-cycle registered stages with no same-edge forwarding",
+        "response_hold_cycles": 0,
+        "seed_events": [
+          {
+            "cycle": 511,
+            "epoch": 1,
+            "port": "fair",
+            "provenance": "explicit deterministic seed-bus fixture; not physical entropy",
+            "rejected": false,
+            "seed_hex": "0x19d30e7a269fd95bafc8f2a4d27bdcf4bb99f4bea973"
+          }
+        ],
+        "seed_source": "explicit deterministic seed-bus fixture; not physical entropy",
+        "seed_transport": {
+          "fair": {
+            "bus_beats": 6,
+            "bus_bits": 192,
+            "packets_delivered": 1,
+            "padding_bits_discarded": 15
+          }
+        },
+        "seed_word_transcript": [
+          {
+            "cycle": 10,
+            "word": 4106135923
+          },
+          {
+            "cycle": 110,
+            "word": 3707026329
+          },
+          {
+            "cycle": 210,
+            "word": 4070888059
+          },
+          {
+            "cycle": 310,
+            "word": 3646664648
+          },
+          {
+            "cycle": 410,
+            "word": 242886303
+          },
+          {
+            "cycle": 510,
+            "word": 393353683
+          }
+        ],
+        "transaction_queue_capacity": 1
+      },
+      "numeric_validation": {
+        "absolute_tolerance": 4.76837158203125e-06,
+        "max_absolute_error": 7.450580596923828e-09,
+        "oracle": "double fsum weighted V, compared at documented FP32 reduction tolerance",
+        "quality_scope": "one query output error; not PPL or model accuracy",
+        "sampled_vs_exact_rmse": 0.02752898289908804
+      },
+      "output": [
+        0.07122603058815002,
+        0.08985337615013123,
+        0.09631949663162231,
+        0.08974921703338623,
+        0.07103180885314941,
+        0.042700570076704025,
+        0.008590023964643478,
+        -0.026683149859309196,
+        -0.05834488570690155,
+        -0.08210990577936172,
+        -0.09476174414157867,
+        -0.0945880264043808
+      ],
+      "output_address": 2147485504,
+      "output_bytes": 48,
+      "output_sha256": "8b559ce719da01e1a066bc69518a78afd34ba8a0031b86a561bf48fb9dc196fa",
+      "physical_indices": [
+        2,
+        1,
+        11,
+        3
+      ],
+      "physical_weights": {
+        "1": 0.25,
+        "2": 0.25,
+        "3": 0.25,
+        "11": 0.25
+      },
+      "proposals": 0,
+      "sampler_frames": [],
+      "source_frames": 0,
+      "source_waves": 0
+    },
+    {
+      "complete_ps": 9950000,
+      "head": 3,
+      "histogram": {
+        "2": 1,
+        "3": 1,
+        "8": 1,
+        "10": 1
+      },
+      "local_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "local_state_bytes": {
+        "candidate_map": 16,
+        "cdf_prefix": 32,
+        "drive_values": 0,
+        "fsm_scalar_state": 64,
+        "histogram": 16,
+        "logits": 16,
+        "output_accumulator": 48,
+        "output_fifo": 4,
+        "proposal_mask_and_valid": 0,
+        "pv_index_buffer": 16,
+        "q": 64,
+        "q256_thresholds": 0,
+        "softmax_probabilities": 32
+      },
+      "logits": [
+        0.0595473051071167,
+        0.05739391967654228,
+        0.055111825466156006,
+        0.04660141095519066
+      ],
+      "native_random": {
+        "adapter": "cycle_v1 native clock process; Issue95 Endpoint/RandomNetwork via EventNetwork/FastEndpoint",
+        "area_mm2": null,
+        "clock_ns": 10,
+        "cycles": 996,
+        "elapsed_ns": 9960,
+        "energy_J": null,
+        "independent_IID": false,
+        "jumped_idle_edges": 720,
+        "physical_entropy": false,
+        "physical_timing_characterized": false,
+        "ports": {
+          "fair": {
+            "area_mm2": null,
+            "counts": {
+              "clock_edges": 996,
+              "frames_generated": 1,
+              "output_register_bits_written": 180,
+              "output_stall_cycles": 0,
+              "prng_updates": 1,
+              "random_word_bits_generated": 160,
+              "recurrence_steps": 960,
+              "request_stall_cycles": 0,
+              "reseed_deferred_cycles": 0,
+              "responses_consumed": 1,
+              "seed_loads": 1,
+              "seed_state_bits_loaded": 177,
+              "seed_wait_cycles": 512,
+              "shared_mapping_evaluations": 0,
+              "threshold_comparisons": 20,
+              "warmup_bits_discarded": 800,
+              "warmup_updates": 5
+            },
+            "cycles": 996,
+            "energy_J": null,
+            "kind": "bivium",
+            "profile": {
+              "correlation": "nonlinear deterministic stream; NOT certified IID",
+              "lanes": 20,
+              "state_bits": 177,
+              "steps": 160,
+              "warmup": 5
+            },
+            "status": "operation counts only; calibrate with delivered RTL"
+          }
+        },
+        "receipts": [
+          {
+            "epochs": {
+              "fair": 1
+            },
+            "kind": "frame",
+            "label": "pv.offset.0",
+            "native_complete_ps": 5180000,
+            "submit_ps": 2460000,
+            "valid_ps": 5170000,
+            "wait_edges": 272
+          }
+        ],
+        "response_bridge": "explicit rng_submit/rng_delivery resources; one-cycle registered stages with no same-edge forwarding",
+        "response_hold_cycles": 0,
+        "seed_events": [
+          {
+            "cycle": 511,
+            "epoch": 1,
+            "port": "fair",
+            "provenance": "explicit deterministic seed-bus fixture; not physical entropy",
+            "rejected": false,
+            "seed_hex": "0x15bf55eb561a4216363698b529b4a97b750923ceb3ffd"
+          }
+        ],
+        "seed_source": "explicit deterministic seed-bus fixture; not physical entropy",
+        "seed_transport": {
+          "fair": {
+            "bus_beats": 6,
+            "bus_bits": 192,
+            "packets_delivered": 1,
+            "padding_bits_discarded": 15
+          }
+        },
+        "seed_word_transcript": [
+          {
+            "cycle": 10,
+            "word": 1022050301
+          },
+          {
+            "cycle": 110,
+            "word": 2545373330
+          },
+          {
+            "cycle": 210,
+            "word": 2337446730
+          },
+          {
+            "cycle": 310,
+            "word": 560161641
+          },
+          {
+            "cycle": 410,
+            "word": 1588945316
+          },
+          {
+            "cycle": 510,
+            "word": 3933953013
+          }
+        ],
+        "transaction_queue_capacity": 1
+      },
+      "numeric_validation": {
+        "absolute_tolerance": 3.814697265625e-06,
+        "max_absolute_error": 7.450580596923828e-09,
+        "oracle": "double fsum weighted V, compared at documented FP32 reduction tolerance",
+        "quality_scope": "one query output error; not PPL or model accuracy",
+        "sampled_vs_exact_rmse": 0.000371545800858046
+      },
+      "output": [
+        0.10613042861223221,
+        0.10029207170009613,
+        0.08087965846061707,
+        0.050520554184913635,
+        0.013323735445737839,
+        -0.025676392018795013,
+        -0.06120133399963379,
+        -0.08844296634197235,
+        -0.10371425747871399,
+        -0.10494831204414368,
+        -0.09197810292243958,
+        -0.0665590837597847
+      ],
+      "output_address": 2147485696,
+      "output_bytes": 48,
+      "output_sha256": "4a60bd4336cca91105a0e5aebb4f5756686878aebe8c354497fc9dffa738e102",
+      "physical_indices": [
+        3,
+        2,
+        8,
+        10
+      ],
+      "physical_weights": {
+        "2": 0.25,
+        "3": 0.25,
+        "8": 0.25,
+        "10": 0.25
+      },
+      "proposals": 0,
+      "sampler_frames": [],
+      "source_frames": 0,
+      "source_waves": 0
+    },
+    {
+      "complete_ps": 10012500,
+      "head": 4,
+      "histogram": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "10": 1
+      },
+      "local_indices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "local_state_bytes": {
+        "candidate_map": 20,
+        "cdf_prefix": 40,
+        "drive_values": 0,
+        "fsm_scalar_state": 64,
+        "histogram": 20,
+        "logits": 20,
+        "output_accumulator": 48,
+        "output_fifo": 4,
+        "proposal_mask_and_valid": 0,
+        "pv_index_buffer": 16,
+        "q": 64,
+        "q256_thresholds": 0,
+        "softmax_probabilities": 40
+      },
+      "logits": [
+        0.05237119272351265,
+        0.05166039243340492,
+        0.04728320986032486,
+        0.048148948699235916,
+        0.055165741592645645
+      ],
+      "native_random": {
+        "adapter": "cycle_v1 native clock process; Issue95 Endpoint/RandomNetwork via EventNetwork/FastEndpoint",
+        "area_mm2": null,
+        "clock_ns": 10,
+        "cycles": 1002,
+        "elapsed_ns": 10020,
+        "energy_J": null,
+        "independent_IID": false,
+        "jumped_idle_edges": 784,
+        "physical_entropy": false,
+        "physical_timing_characterized": false,
+        "ports": {
+          "fair": {
+            "area_mm2": null,
+            "counts": {
+              "clock_edges": 1002,
+              "frames_generated": 1,
+              "output_register_bits_written": 180,
+              "output_stall_cycles": 0,
+              "prng_updates": 1,
+              "random_word_bits_generated": 160,
+              "recurrence_steps": 960,
+              "request_stall_cycles": 0,
+              "reseed_deferred_cycles": 0,
+              "responses_consumed": 1,
+              "seed_loads": 1,
+              "seed_state_bits_loaded": 177,
+              "seed_wait_cycles": 512,
+              "shared_mapping_evaluations": 0,
+              "threshold_comparisons": 20,
+              "warmup_bits_discarded": 800,
+              "warmup_updates": 5
+            },
+            "cycles": 1002,
+            "energy_J": null,
+            "kind": "bivium",
+            "profile": {
+              "correlation": "nonlinear deterministic stream; NOT certified IID",
+              "lanes": 20,
+              "state_bits": 177,
+              "steps": 160,
+              "warmup": 5
+            },
+            "status": "operation counts only; calibrate with delivered RTL"
+          }
+        },
+        "receipts": [
+          {
+            "epochs": {
+              "fair": 1
+            },
+            "kind": "frame",
+            "label": "pv.offset.0",
+            "native_complete_ps": 5180000,
+            "submit_ps": 3040000,
+            "valid_ps": 5170000,
+            "wait_edges": 214
+          }
+        ],
+        "response_bridge": "explicit rng_submit/rng_delivery resources; one-cycle registered stages with no same-edge forwarding",
+        "response_hold_cycles": 0,
+        "seed_events": [
+          {
+            "cycle": 511,
+            "epoch": 1,
+            "port": "fair",
+            "provenance": "explicit deterministic seed-bus fixture; not physical entropy",
+            "rejected": false,
+            "seed_hex": "0x1c643656412a9b8a1abcd1a6916c74da4f9fc3c6da5d7"
+          }
+        ],
+        "seed_source": "explicit deterministic seed-bus fixture; not physical entropy",
+        "seed_transport": {
+          "fair": {
+            "bus_beats": 6,
+            "bus_bits": 192,
+            "packets_delivered": 1,
+            "padding_bits_discarded": 15
+          }
+        },
+        "seed_word_transcript": [
+          {
+            "cycle": 10,
+            "word": 1013818839
+          },
+          {
+            "cycle": 110,
+            "word": 1302657532
+          },
+          {
+            "cycle": 210,
+            "word": 443094727
+          },
+          {
+            "cycle": 310,
+            "word": 3097603021
+          },
+          {
+            "cycle": 410,
+            "word": 1701057193
+          },
+          {
+            "cycle": 510,
+            "word": 2056767043
+          }
+        ],
+        "transaction_queue_capacity": 1
+      },
+      "numeric_validation": {
+        "absolute_tolerance": 4.76837158203125e-06,
+        "max_absolute_error": 7.450580596923828e-09,
+        "oracle": "double fsum weighted V, compared at documented FP32 reduction tolerance",
+        "quality_scope": "one query output error; not PPL or model accuracy",
+        "sampled_vs_exact_rmse": 0.033362976742585274
+      },
+      "output": [
+        0.0821327194571495,
+        0.10127056390047073,
+        0.10670191049575806,
+        0.09769165515899658,
+        0.07545929402112961,
+        0.04301386699080467,
+        0.004746723920106888,
+        -0.03416287153959274,
+        -0.06844867765903473,
+        -0.09347028285264969,
+        -0.10584112256765366,
+        -0.10388686507940292
+      ],
+      "output_address": 2147485888,
+      "output_bytes": 48,
+      "output_sha256": "938a65ab097b6232df85c29361c5ec79ae1e196e097ecf056968928f9fbcae3b",
+      "physical_indices": [
+        10,
+        2,
+        1,
+        3
+      ],
+      "physical_weights": {
+        "1": 0.25,
+        "2": 0.25,
+        "3": 0.25,
+        "10": 0.25
+      },
+      "proposals": 0,
+      "sampler_frames": [],
+      "source_frames": 0,
+      "source_waves": 0
+    },
+    {
+      "complete_ps": 10075000,
+      "head": 5,
+      "histogram": {
+        "2": 1,
+        "3": 1,
+        "8": 1,
+        "10": 1
+      },
+      "local_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "local_state_bytes": {
+        "candidate_map": 16,
+        "cdf_prefix": 32,
+        "drive_values": 0,
+        "fsm_scalar_state": 64,
+        "histogram": 16,
+        "logits": 16,
+        "output_accumulator": 48,
+        "output_fifo": 4,
+        "proposal_mask_and_valid": 0,
+        "pv_index_buffer": 16,
+        "q": 64,
+        "q256_thresholds": 0,
+        "softmax_probabilities": 32
+      },
+      "logits": [
+        0.04836029186844826,
+        0.04365700110793114,
+        0.05855073779821396,
+        0.05583987757563591
+      ],
+      "native_random": {
+        "adapter": "cycle_v1 native clock process; Issue95 Endpoint/RandomNetwork via EventNetwork/FastEndpoint",
+        "area_mm2": null,
+        "clock_ns": 10,
+        "cycles": 1008,
+        "elapsed_ns": 10080,
+        "energy_J": null,
+        "independent_IID": false,
+        "jumped_idle_edges": 747,
+        "physical_entropy": false,
+        "physical_timing_characterized": false,
+        "ports": {
+          "fair": {
+            "area_mm2": null,
+            "counts": {
+              "clock_edges": 1008,
+              "frames_generated": 1,
+              "output_register_bits_written": 180,
+              "output_stall_cycles": 0,
+              "prng_updates": 1,
+              "random_word_bits_generated": 160,
+              "recurrence_steps": 960,
+              "request_stall_cycles": 0,
+              "reseed_deferred_cycles": 0,
+              "responses_consumed": 1,
+              "seed_loads": 1,
+              "seed_state_bits_loaded": 177,
+              "seed_wait_cycles": 512,
+              "shared_mapping_evaluations": 0,
+              "threshold_comparisons": 20,
+              "warmup_bits_discarded": 800,
+              "warmup_updates": 5
+            },
+            "cycles": 1008,
+            "energy_J": null,
+            "kind": "bivium",
+            "profile": {
+              "correlation": "nonlinear deterministic stream; NOT certified IID",
+              "lanes": 20,
+              "state_bits": 177,
+              "steps": 160,
+              "warmup": 5
+            },
+            "status": "operation counts only; calibrate with delivered RTL"
+          }
+        },
+        "receipts": [
+          {
+            "epochs": {
+              "fair": 1
+            },
+            "kind": "frame",
+            "label": "pv.offset.0",
+            "native_complete_ps": 5180000,
+            "submit_ps": 2610000,
+            "valid_ps": 5170000,
+            "wait_edges": 257
+          }
+        ],
+        "response_bridge": "explicit rng_submit/rng_delivery resources; one-cycle registered stages with no same-edge forwarding",
+        "response_hold_cycles": 0,
+        "seed_events": [
+          {
+            "cycle": 511,
+            "epoch": 1,
+            "port": "fair",
+            "provenance": "explicit deterministic seed-bus fixture; not physical entropy",
+            "rejected": false,
+            "seed_hex": "0x11fdecb91ce375bc8fbbcbde5c0994164d8399f767c45"
+          }
+        ],
+        "seed_source": "explicit deterministic seed-bus fixture; not physical entropy",
+        "seed_transport": {
+          "fair": {
+            "bus_beats": 6,
+            "bus_bits": 192,
+            "packets_delivered": 1,
+            "padding_bits_discarded": 15
+          }
+        },
+        "seed_word_transcript": [
+          {
+            "cycle": 10,
+            "word": 2675342405
+          },
+          {
+            "cycle": 110,
+            "word": 1097127993
+          },
+          {
+            "cycle": 210,
+            "word": 3185950873
+          },
+          {
+            "cycle": 310,
+            "word": 1539898300
+          },
+          {
+            "cycle": 410,
+            "word": 3415330359
+          },
+          {
+            "cycle": 510,
+            "word": 2965446622
+          }
+        ],
+        "transaction_queue_capacity": 1
+      },
+      "numeric_validation": {
+        "absolute_tolerance": 3.814697265625e-06,
+        "max_absolute_error": 7.450580596923828e-09,
+        "oracle": "double fsum weighted V, compared at documented FP32 reduction tolerance",
+        "quality_scope": "one query output error; not PPL or model accuracy",
+        "sampled_vs_exact_rmse": 0.00046308087998660105
+      },
+      "output": [
+        0.10613042861223221,
+        0.10029207170009613,
+        0.08087965846061707,
+        0.050520554184913635,
+        0.013323735445737839,
+        -0.025676392018795013,
+        -0.06120133399963379,
+        -0.08844296634197235,
+        -0.10371425747871399,
+        -0.10494831204414368,
+        -0.09197810292243958,
+        -0.0665590837597847
+      ],
+      "output_address": 2147486080,
+      "output_bytes": 48,
+      "output_sha256": "4a60bd4336cca91105a0e5aebb4f5756686878aebe8c354497fc9dffa738e102",
+      "physical_indices": [
+        3,
+        2,
+        8,
+        10
+      ],
+      "physical_weights": {
+        "2": 0.25,
+        "3": 0.25,
+        "8": 0.25,
+        "10": 0.25
+      },
+      "proposals": 0,
+      "sampler_frames": [],
+      "source_frames": 0,
+      "source_waves": 0
+    },
+    {
+      "complete_ps": 10362500,
+      "head": 6,
+      "histogram": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "11": 1
+      },
+      "local_indices": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "local_state_bytes": {
+        "candidate_map": 20,
+        "cdf_prefix": 40,
+        "drive_values": 0,
+        "fsm_scalar_state": 64,
+        "histogram": 20,
+        "logits": 20,
+        "output_accumulator": 48,
+        "output_fifo": 4,
+        "proposal_mask_and_valid": 0,
+        "pv_index_buffer": 16,
+        "q": 64,
+        "q256_thresholds": 0,
+        "softmax_probabilities": 40
+      },
+      "logits": [
+        0.05685506388545036,
+        0.03373539820313454,
+        0.027471492066979408,
+        0.05563060939311981,
+        0.039429981261491776
+      ],
+      "native_random": {
+        "adapter": "cycle_v1 native clock process; Issue95 Endpoint/RandomNetwork via EventNetwork/FastEndpoint",
+        "area_mm2": null,
+        "clock_ns": 10,
+        "cycles": 1037,
+        "elapsed_ns": 10370,
+        "energy_J": null,
+        "independent_IID": false,
+        "jumped_idle_edges": 821,
+        "physical_entropy": false,
+        "physical_timing_characterized": false,
+        "ports": {
+          "fair": {
+            "area_mm2": null,
+            "counts": {
+              "clock_edges": 1037,
+              "frames_generated": 1,
+              "output_register_bits_written": 180,
+              "output_stall_cycles": 0,
+              "prng_updates": 1,
+              "random_word_bits_generated": 160,
+              "recurrence_steps": 960,
+              "request_stall_cycles": 0,
+              "reseed_deferred_cycles": 0,
+              "responses_consumed": 1,
+              "seed_loads": 1,
+              "seed_state_bits_loaded": 177,
+              "seed_wait_cycles": 512,
+              "shared_mapping_evaluations": 0,
+              "threshold_comparisons": 20,
+              "warmup_bits_discarded": 800,
+              "warmup_updates": 5
+            },
+            "cycles": 1037,
+            "energy_J": null,
+            "kind": "bivium",
+            "profile": {
+              "correlation": "nonlinear deterministic stream; NOT certified IID",
+              "lanes": 20,
+              "state_bits": 177,
+              "steps": 160,
+              "warmup": 5
+            },
+            "status": "operation counts only; calibrate with delivered RTL"
+          }
+        },
+        "receipts": [
+          {
+            "epochs": {
+              "fair": 1
+            },
+            "kind": "frame",
+            "label": "pv.offset.0",
+            "native_complete_ps": 5180000,
+            "submit_ps": 3060000,
+            "valid_ps": 5170000,
+            "wait_edges": 212
+          }
+        ],
+        "response_bridge": "explicit rng_submit/rng_delivery resources; one-cycle registered stages with no same-edge forwarding",
+        "response_hold_cycles": 0,
+        "seed_events": [
+          {
+            "cycle": 511,
+            "epoch": 1,
+            "port": "fair",
+            "provenance": "explicit deterministic seed-bus fixture; not physical entropy",
+            "rejected": false,
+            "seed_hex": "0xa4737c2b3abe14a03569d26b949692e5dfe8cb1855fe"
+          }
+        ],
+        "seed_source": "explicit deterministic seed-bus fixture; not physical entropy",
+        "seed_transport": {
+          "fair": {
+            "bus_beats": 6,
+            "bus_bits": 192,
+            "packets_delivered": 1,
+            "padding_bits_discarded": 15
+          }
+        },
+        "seed_word_transcript": [
+          {
+            "cycle": 10,
+            "word": 3407369726
+          },
+          {
+            "cycle": 110,
+            "word": 2464538600
+          },
+          {
+            "cycle": 210,
+            "word": 3530265750
+          },
+          {
+            "cycle": 310,
+            "word": 346043753
+          },
+          {
+            "cycle": 410,
+            "word": 2083207870
+          },
+          {
+            "cycle": 510,
+            "word": 3273696371
+          }
+        ],
+        "transaction_queue_capacity": 1
+      },
+      "numeric_validation": {
+        "absolute_tolerance": 4.76837158203125e-06,
+        "max_absolute_error": 7.450580596923828e-09,
+        "oracle": "double fsum weighted V, compared at documented FP32 reduction tolerance",
+        "quality_scope": "one query output error; not PPL or model accuracy",
+        "sampled_vs_exact_rmse": 0.029874484044147838
+      },
+      "output": [
+        0.07122603058815002,
+        0.08985337615013123,
+        0.09631949663162231,
+        0.08974921703338623,
+        0.07103180885314941,
+        0.042700570076704025,
+        0.008590023964643478,
+        -0.026683149859309196,
+        -0.05834488570690155,
+        -0.08210990577936172,
+        -0.09476174414157867,
+        -0.0945880264043808
+      ],
+      "output_address": 2147486272,
+      "output_bytes": 48,
+      "output_sha256": "8b559ce719da01e1a066bc69518a78afd34ba8a0031b86a561bf48fb9dc196fa",
+      "physical_indices": [
+        2,
+        1,
+        11,
+        3
+      ],
+      "physical_weights": {
+        "1": 0.25,
+        "2": 0.25,
+        "3": 0.25,
+        "11": 0.25
+      },
+      "proposals": 0,
+      "sampler_frames": [],
+      "source_frames": 0,
+      "source_waves": 0
+    }
+  ],
+  "query_configs": [
+    {
+      "burn_updates": 0,
+      "capacity": 512,
+      "cdc_cycles": 3,
+      "drive_latency": 3,
+      "drive_step": 0.125,
+      "exp_lanes": 16,
+      "exp_latency": 8,
+      "histogram_delay_cycles": 0,
+      "kv_capacity_bytes": 4096,
+      "lut_latency": 2,
+      "mac_lanes": 64,
+      "max_proposals_per_sample": 64,
+      "max_shift": 24,
+      "mode": "pv",
+      "native_hold_cycles": 0,
+      "output_capacity": 1,
+      "random_backend": "native",
+      "rank_retry_cap": 1024,
+      "reciprocal_latency": 12,
+      "reseed_cycles": 100000000,
+      "response": "q256",
+      "samples": 4,
+      "score_capacity_bytes": 32768,
+      "seed": 0,
+      "seed_startup": 10,
+      "seed_word_interval": 100,
+      "source_ii": 1,
+      "source_lanes": 64,
+      "source_latency": 2,
+      "vector_lanes": 64,
+      "winner_shift": 0.0
+    },
+    {
+      "burn_updates": 0,
+      "capacity": 512,
+      "cdc_cycles": 3,
+      "drive_latency": 3,
+      "drive_step": 0.125,
+      "exp_lanes": 16,
+      "exp_latency": 8,
+      "histogram_delay_cycles": 0,
+      "kv_capacity_bytes": 4096,
+      "lut_latency": 2,
+      "mac_lanes": 64,
+      "max_proposals_per_sample": 64,
+      "max_shift": 24,
+      "mode": "pv",
+      "native_hold_cycles": 0,
+      "output_capacity": 1,
+      "random_backend": "native",
+      "rank_retry_cap": 1024,
+      "reciprocal_latency": 12,
+      "reseed_cycles": 100000000,
+      "response": "q256",
+      "samples": 4,
+      "score_capacity_bytes": 32768,
+      "seed": 1,
+      "seed_startup": 10,
+      "seed_word_interval": 100,
+      "source_ii": 1,
+      "source_lanes": 64,
+      "source_latency": 2,
+      "vector_lanes": 64,
+      "winner_shift": 0.0
+    },
+    {
+      "burn_updates": 0,
+      "capacity": 512,
+      "cdc_cycles": 3,
+      "drive_latency": 3,
+      "drive_step": 0.125,
+      "exp_lanes": 16,
+      "exp_latency": 8,
+      "histogram_delay_cycles": 0,
+      "kv_capacity_bytes": 4096,
+      "lut_latency": 2,
+      "mac_lanes": 64,
+      "max_proposals_per_sample": 64,
+      "max_shift": 24,
+      "mode": "pv",
+      "native_hold_cycles": 0,
+      "output_capacity": 1,
+      "random_backend": "native",
+      "rank_retry_cap": 1024,
+      "reciprocal_latency": 12,
+      "reseed_cycles": 100000000,
+      "response": "q256",
+      "samples": 4,
+      "score_capacity_bytes": 32768,
+      "seed": 2,
+      "seed_startup": 10,
+      "seed_word_interval": 100,
+      "source_ii": 1,
+      "source_lanes": 64,
+      "source_latency": 2,
+      "vector_lanes": 64,
+      "winner_shift": 0.0
+    },
+    {
+      "burn_updates": 0,
+      "capacity": 512,
+      "cdc_cycles": 3,
+      "drive_latency": 3,
+      "drive_step": 0.125,
+      "exp_lanes": 16,
+      "exp_latency": 8,
+      "histogram_delay_cycles": 0,
+      "kv_capacity_bytes": 4096,
+      "lut_latency": 2,
+      "mac_lanes": 64,
+      "max_proposals_per_sample": 64,
+      "max_shift": 24,
+      "mode": "pv",
+      "native_hold_cycles": 0,
+      "output_capacity": 1,
+      "random_backend": "native",
+      "rank_retry_cap": 1024,
+      "reciprocal_latency": 12,
+      "reseed_cycles": 100000000,
+      "response": "q256",
+      "samples": 4,
+      "score_capacity_bytes": 32768,
+      "seed": 3,
+      "seed_startup": 10,
+      "seed_word_interval": 100,
+      "source_ii": 1,
+      "source_lanes": 64,
+      "source_latency": 2,
+      "vector_lanes": 64,
+      "winner_shift": 0.0
+    },
+    {
+      "burn_updates": 0,
+      "capacity": 512,
+      "cdc_cycles": 3,
+      "drive_latency": 3,
+      "drive_step": 0.125,
+      "exp_lanes": 16,
+      "exp_latency": 8,
+      "histogram_delay_cycles": 0,
+      "kv_capacity_bytes": 4096,
+      "lut_latency": 2,
+      "mac_lanes": 64,
+      "max_proposals_per_sample": 64,
+      "max_shift": 24,
+      "mode": "pv",
+      "native_hold_cycles": 0,
+      "output_capacity": 1,
+      "random_backend": "native",
+      "rank_retry_cap": 1024,
+      "reciprocal_latency": 12,
+      "reseed_cycles": 100000000,
+      "response": "q256",
+      "samples": 4,
+      "score_capacity_bytes": 32768,
+      "seed": 4,
+      "seed_startup": 10,
+      "seed_word_interval": 100,
+      "source_ii": 1,
+      "source_lanes": 64,
+      "source_latency": 2,
+      "vector_lanes": 64,
+      "winner_shift": 0.0
+    },
+    {
+      "burn_updates": 0,
+      "capacity": 512,
+      "cdc_cycles": 3,
+      "drive_latency": 3,
+      "drive_step": 0.125,
+      "exp_lanes": 16,
+      "exp_latency": 8,
+      "histogram_delay_cycles": 0,
+      "kv_capacity_bytes": 4096,
+      "lut_latency": 2,
+      "mac_lanes": 64,
+      "max_proposals_per_sample": 64,
+      "max_shift": 24,
+      "mode": "pv",
+      "native_hold_cycles": 0,
+      "output_capacity": 1,
+      "random_backend": "native",
+      "rank_retry_cap": 1024,
+      "reciprocal_latency": 12,
+      "reseed_cycles": 100000000,
+      "response": "q256",
+      "samples": 4,
+      "score_capacity_bytes": 32768,
+      "seed": 5,
+      "seed_startup": 10,
+      "seed_word_interval": 100,
+      "source_ii": 1,
+      "source_lanes": 64,
+      "source_latency": 2,
+      "vector_lanes": 64,
+      "winner_shift": 0.0
+    },
+    {
+      "burn_updates": 0,
+      "capacity": 512,
+      "cdc_cycles": 3,
+      "drive_latency": 3,
+      "drive_step": 0.125,
+      "exp_lanes": 16,
+      "exp_latency": 8,
+      "histogram_delay_cycles": 0,
+      "kv_capacity_bytes": 4096,
+      "lut_latency": 2,
+      "mac_lanes": 64,
+      "max_proposals_per_sample": 64,
+      "max_shift": 24,
+      "mode": "pv",
+      "native_hold_cycles": 0,
+      "output_capacity": 1,
+      "random_backend": "native",
+      "rank_retry_cap": 1024,
+      "reciprocal_latency": 12,
+      "reseed_cycles": 100000000,
+      "response": "q256",
+      "samples": 4,
+      "score_capacity_bytes": 32768,
+      "seed": 6,
+      "seed_startup": 10,
+      "seed_word_interval": 100,
+      "source_ii": 1,
+      "source_lanes": 64,
+      "source_latency": 2,
+      "vector_lanes": 64,
+      "winner_shift": 0.0
+    }
+  ],
+  "query_heads": 7,
+  "resource_peak": {
+    "attention_exp": 2,
+    "control": 1,
+    "dram": 1,
+    "gqa.cache": 1,
+    "gqa.union": 1,
+    "qk": 1,
+    "rng": 0,
+    "rng_delivery": 1,
+    "rng_submit": 1,
+    "sampler": 1,
+    "sram": 1,
+    "v_accumulate": 1,
+    "vector": 4
+  },
+  "resource_stats": {
+    "attention_exp": {
+      "accepted": 7,
+      "completed": 7,
+      "execution_ps": 560000,
+      "held_ps": 560000,
+      "output_blocked_ps": 0
+    },
+    "control": {
+      "accepted": 57,
+      "completed": 57,
+      "execution_ps": 570000,
+      "held_ps": 570000,
+      "output_blocked_ps": 0
+    },
+    "dram": {
+      "accepted": 12,
+      "completed": 12,
+      "execution_ps": 600000,
+      "held_ps": 600000,
+      "output_blocked_ps": 0
+    },
+    "gqa.cache": {
+      "accepted": 60,
+      "completed": 60,
+      "execution_ps": 600000,
+      "held_ps": 600000,
+      "output_blocked_ps": 0
+    },
+    "gqa.union": {
+      "accepted": 2,
+      "completed": 2,
+      "execution_ps": 30000,
+      "held_ps": 30000,
+      "output_blocked_ps": 0
+    },
+    "qk": {
+      "accepted": 32,
+      "completed": 32,
+      "execution_ps": 960000,
+      "held_ps": 960000,
+      "output_blocked_ps": 0
+    },
+    "rng": {
+      "accepted": 0,
+      "completed": 0,
+      "execution_ps": 0,
+      "held_ps": 0,
+      "output_blocked_ps": 0
+    },
+    "rng_delivery": {
+      "accepted": 7,
+      "completed": 7,
+      "execution_ps": 70000,
+      "held_ps": 70000,
+      "output_blocked_ps": 0
+    },
+    "rng_submit": {
+      "accepted": 7,
+      "completed": 7,
+      "execution_ps": 70000,
+      "held_ps": 70000,
+      "output_blocked_ps": 0
+    },
+    "sampler": {
+      "accepted": 28,
+      "completed": 28,
+      "execution_ps": 280000,
+      "held_ps": 2080000,
+      "output_blocked_ps": 1800000
+    },
+    "sram": {
+      "accepted": 70,
+      "completed": 70,
+      "execution_ps": 1750000,
+      "held_ps": 1750000,
+      "output_blocked_ps": 0
+    },
+    "v_accumulate": {
+      "accepted": 28,
+      "completed": 28,
+      "execution_ps": 840000,
+      "held_ps": 840000,
+      "output_blocked_ps": 0
+    },
+    "vector": {
+      "accepted": 42,
+      "completed": 42,
+      "execution_ps": 2330000,
+      "held_ps": 2870000,
+      "output_blocked_ps": 540000
+    }
+  },
+  "schema": "cycle_v1.gqa.execution.1",
+  "shared": {
+    "K_addresses": [
+      2147483712,
+      2147483776,
+      2147483840,
+      2147484160,
+      2147484288,
+      2147484352
+    ],
+    "K_capacity_bytes": 64,
+    "K_consumers": {
+      "1": [
+        "gqa.q0.QK.2",
+        "gqa.q2.QK.2",
+        "gqa.q4.QK.2",
+        "gqa.q6.QK.2"
+      ],
+      "2": [
+        "gqa.q0.QK.1",
+        "gqa.q1.QK.1",
+        "gqa.q2.QK.1",
+        "gqa.q3.QK.1",
+        "gqa.q4.QK.1",
+        "gqa.q5.QK.1",
+        "gqa.q6.QK.1"
+      ],
+      "3": [
+        "gqa.q0.QK.4",
+        "gqa.q1.QK.0",
+        "gqa.q2.QK.4",
+        "gqa.q3.QK.0",
+        "gqa.q4.QK.4",
+        "gqa.q5.QK.0",
+        "gqa.q6.QK.4"
+      ],
+      "8": [
+        "gqa.q1.QK.2",
+        "gqa.q3.QK.2",
+        "gqa.q5.QK.2"
+      ],
+      "10": [
+        "gqa.q0.QK.0",
+        "gqa.q1.QK.3",
+        "gqa.q2.QK.0",
+        "gqa.q3.QK.3",
+        "gqa.q4.QK.0",
+        "gqa.q5.QK.3",
+        "gqa.q6.QK.0"
+      ],
+      "11": [
+        "gqa.q0.QK.3",
+        "gqa.q2.QK.3",
+        "gqa.q4.QK.3",
+        "gqa.q6.QK.3"
+      ]
+    },
+    "K_read_ids": {
+      "1": "gqa.K.1.read",
+      "2": "gqa.K.2.read",
+      "3": "gqa.K.3.read",
+      "8": "gqa.K.8.read",
+      "10": "gqa.K.10.read",
+      "11": "gqa.K.11.read"
+    },
+    "K_release_ids": {
+      "1": "gqa.K.1.release",
+      "2": "gqa.K.2.release",
+      "3": "gqa.K.3.release",
+      "8": "gqa.K.8.release",
+      "10": "gqa.K.10.release",
+      "11": "gqa.K.11.release"
+    },
+    "K_union": [
+      1,
+      2,
+      3,
+      8,
+      10,
+      11
+    ],
+    "V_addresses": [
+      2147484464,
+      2147484512,
+      2147484560,
+      2147484800,
+      2147484896,
+      2147484944
+    ],
+    "V_barrier_id": "gqa.V.union_barrier",
+    "V_capacity_bytes": 48,
+    "V_consumers": {
+      "1": [
+        "gqa.q0.V.1.accumulate",
+        "gqa.q2.V.1.accumulate",
+        "gqa.q4.V.1.accumulate",
+        "gqa.q6.V.1.accumulate"
+      ],
+      "2": [
+        "gqa.q0.V.2.accumulate",
+        "gqa.q1.V.2.accumulate",
+        "gqa.q2.V.2.accumulate",
+        "gqa.q3.V.2.accumulate",
+        "gqa.q4.V.2.accumulate",
+        "gqa.q5.V.2.accumulate",
+        "gqa.q6.V.2.accumulate"
+      ],
+      "3": [
+        "gqa.q0.V.3.accumulate",
+        "gqa.q1.V.3.accumulate",
+        "gqa.q2.V.3.accumulate",
+        "gqa.q3.V.3.accumulate",
+        "gqa.q4.V.3.accumulate",
+        "gqa.q5.V.3.accumulate",
+        "gqa.q6.V.3.accumulate"
+      ],
+      "8": [
+        "gqa.q1.V.8.accumulate",
+        "gqa.q3.V.8.accumulate",
+        "gqa.q5.V.8.accumulate"
+      ],
+      "10": [
+        "gqa.q1.V.10.accumulate",
+        "gqa.q3.V.10.accumulate",
+        "gqa.q4.V.10.accumulate",
+        "gqa.q5.V.10.accumulate"
+      ],
+      "11": [
+        "gqa.q0.V.11.accumulate",
+        "gqa.q2.V.11.accumulate",
+        "gqa.q6.V.11.accumulate"
+      ]
+    },
+    "V_read_ids": {
+      "1": "gqa.V.1.read",
+      "2": "gqa.V.2.read",
+      "3": "gqa.V.3.read",
+      "8": "gqa.V.8.read",
+      "10": "gqa.V.10.read",
+      "11": "gqa.V.11.read"
+    },
+    "V_release_ids": {
+      "1": "gqa.V.1.release",
+      "2": "gqa.V.2.release",
+      "3": "gqa.V.3.release",
+      "8": "gqa.V.8.release",
+      "10": "gqa.V.10.release",
+      "11": "gqa.V.11.release"
+    },
+    "V_union": [
+      1,
+      2,
+      3,
+      8,
+      10,
+      11
+    ],
+    "V_union_ready_id": "gqa.V.union_compact",
+    "address_regions": [
+      {
+        "address": 2147483648,
+        "name": "K",
+        "port": "dram",
+        "size_bytes": 768
+      },
+      {
+        "address": 2147484416,
+        "name": "V",
+        "port": "dram",
+        "size_bytes": 576
+      },
+      {
+        "address": 2147484992,
+        "name": "q0.Q",
+        "port": "sram",
+        "size_bytes": 64
+      },
+      {
+        "address": 2147485056,
+        "name": "q0.histogram",
+        "port": "sram",
+        "size_bytes": 20
+      },
+      {
+        "address": 2147485120,
+        "name": "q0.output",
+        "port": "sram",
+        "size_bytes": 48
+      },
+      {
+        "address": 2147485184,
+        "name": "q1.Q",
+        "port": "sram",
+        "size_bytes": 64
+      },
+      {
+        "address": 2147485248,
+        "name": "q1.histogram",
+        "port": "sram",
+        "size_bytes": 16
+      },
+      {
+        "address": 2147485312,
+        "name": "q1.output",
+        "port": "sram",
+        "size_bytes": 48
+      },
+      {
+        "address": 2147485376,
+        "name": "q2.Q",
+        "port": "sram",
+        "size_bytes": 64
+      },
+      {
+        "address": 2147485440,
+        "name": "q2.histogram",
+        "port": "sram",
+        "size_bytes": 20
+      },
+      {
+        "address": 2147485504,
+        "name": "q2.output",
+        "port": "sram",
+        "size_bytes": 48
+      },
+      {
+        "address": 2147485568,
+        "name": "q3.Q",
+        "port": "sram",
+        "size_bytes": 64
+      },
+      {
+        "address": 2147485632,
+        "name": "q3.histogram",
+        "port": "sram",
+        "size_bytes": 16
+      },
+      {
+        "address": 2147485696,
+        "name": "q3.output",
+        "port": "sram",
+        "size_bytes": 48
+      },
+      {
+        "address": 2147485760,
+        "name": "q4.Q",
+        "port": "sram",
+        "size_bytes": 64
+      },
+      {
+        "address": 2147485824,
+        "name": "q4.histogram",
+        "port": "sram",
+        "size_bytes": 20
+      },
+      {
+        "address": 2147485888,
+        "name": "q4.output",
+        "port": "sram",
+        "size_bytes": 48
+      },
+      {
+        "address": 2147485952,
+        "name": "q5.Q",
+        "port": "sram",
+        "size_bytes": 64
+      },
+      {
+        "address": 2147486016,
+        "name": "q5.histogram",
+        "port": "sram",
+        "size_bytes": 16
+      },
+      {
+        "address": 2147486080,
+        "name": "q5.output",
+        "port": "sram",
+        "size_bytes": 48
+      },
+      {
+        "address": 2147486144,
+        "name": "q6.Q",
+        "port": "sram",
+        "size_bytes": 64
+      },
+      {
+        "address": 2147486208,
+        "name": "q6.histogram",
+        "port": "sram",
+        "size_bytes": 20
+      },
+      {
+        "address": 2147486272,
+        "name": "q6.output",
+        "port": "sram",
+        "size_bytes": 48
+      }
+    ],
+    "metadata_bytes": {
+      "K_directory": 78,
+      "V_directory": 78,
+      "head_ready_and_cursors": 112
+    },
+    "operand_capacity_bytes": 64,
+    "query_state_capacity_bytes": 229376
+  },
+  "source": {
+    "commit": "f94c9db566b45a1c2f8db0fa8749366dde7f7450",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.3",
+    "source_sha256": {
+      "__init__.py": "e606b575e46e7b56d844f3d6fb77087c481cbff95b717d4e37865f4e098aee30",
+      "architecture_tlm/random_service/__init__.py": "5e2a51a64840c2c6bc1061a0daeb4ef94befef38394c74da665c0e2a023d9a5c",
+      "architecture_tlm/random_service/backends.py": "7003510bb575222a4ab32381ad7e4ac440c82f616e56ae4330a08bb9dfa0e70b",
+      "architecture_tlm/random_service/model.py": "d32b82e79eec9fdd579835671edf757f34ae68dbf14039075a728ffbd0c7e4f2",
+      "architecture_tlm/random_service/service.py": "924a6b9a2e007f093cf42d3a8bb13f30f6f85db933af1e88d16e344033068571",
+      "architecture_tlm/random_service/shared64_mapping.json": "4ddd07914a976496edf50e4528caaf3251a363b26e4a1dfa2101a7bec2992c39",
+      "architecture_tlm/unified_v6/rng_integrated.py": "22deac9e9a74e6647385500bf05a5297b6ee801ae2752b731ab94cd5b43a7931",
+      "attention.py": "db4d34e94684007ff79551d5ae30b181f8c89e25f6a505b91c9c659ef51920e2",
+      "capture_qwen.py": "c62d4410bc3fa2078ebf7db1ca47d3adf1b8cc9fda937f2982543e12ac853e26",
+      "contracts.py": "935b0ea4dda435274bebf3531a233866ccd6ebd863d237683da7f0eaf26fb320",
+      "ffn.py": "45b5cf4b242ce0e60ff5438e5a8419245bfbe6ec5324288ed56a54c9bebe9036",
+      "ffn_sensitivity.py": "2daf853313014d378da677d029311d9a9cc462bd9dfc067262f6ce1661deefee",
+      "gqa.py": "e3b56a3af6bb98624de224e75b90b782e93a22e57fa7930392905d27edde3b9f",
+      "kernel.py": "b0c8b8e4a79ee28b217f1691dc8629080b7b4288c6e4b7060fb63a22880defd6",
+      "layer.py": "31c70be0a8096996ea9ca57f09521b2bd3f549e6f38c861fa6b44c9ac20f2d05",
+      "layer_flow.py": "dc873fece87f5deeabc63a390bd0344a495f17591235f790e1f798401f3d794b",
+      "matrix.py": "0ea22538a32af5bdfcca5eb9ed34b8ec1ffce0d99579bbb150274d3ca14e07e5",
+      "memory.py": "fd1afbd91aad5ddcfdd4d8cc54d4b4af36dd3369f5f67981f92c1241c721cb00",
+      "package_snapshot.py": "6b0b09e80cde25a13da67a80e7644718b7058ce5b9f304c1d2610023bfc3a55d",
+      "publish_results.py": "967fdaed219e2482242f1e8dc498dbac10a9ad744a302ca552b61f812ba0bded",
+      "reporting.py": "c33391637b823a80dc9919f918ad71ecb7115b3d65af59abb6df6f24778dcd1a",
+      "rng_protocol.py": "f15ff7ff05b7d6d09f4954c53ff9c559cf5d9c3894e92a31a52a0245e481060e",
+      "run.py": "1c2aee4622fc3672600cc4e71efcf1628f2684838b6557025cf892833a68500c",
+      "run_gqa.py": "02339cbfdd2db6d86d7d56c1461413c68f431c326ed55eac0a94e065dd4c2701",
+      "run_layer.py": "40804624db960eed5000e10a45facc82c5e8708672ec5310d6631527aaa68a79",
+      "test_attention.py": "b7ecf345f3312ed8592d4a0ca2b50ff76a7edbe79e52fe538ece20e4a7cd545f",
+      "test_ffn.py": "c42872af3b55af841a5291f26b652df0dd695937aeeea273be66b3af5a794aaa",
+      "test_gqa.py": "21384aa7435a4436d2b94b313d72ce1a8f501d9c5e89b8324ea4597fa3a71d2a",
+      "test_kernel.py": "5c769794547193e78d547c6dbf86726892c4b2e05302d83e0c081e2b83b6c37b",
+      "test_memory.py": "3cb489a8f7a491dd4c43d929f78fd5f0a4c0e599c1b393a63c721c223adefaa2",
+      "test_rng_protocol.py": "8c53127fdd60de8ee3451d6af60d48b5030ca743ff04bd7a55a08adfee7de0dd",
+      "test_v6_adapter.py": "36ba4e49dd002a4de629bc89b1fc4cac7f539f593025e9b5888c9f538b57ae81",
+      "v6_adapter.py": "e4e930b7cded2f709ec67c4f111fcfb388445883f7a92d11c7d7a80bf0c54e4e",
+      "validate_release.py": "5f1cca36128a629eb515b826ec7398d32093b45593e14f33e5ba1fb9e9eac0a6"
+    },
+    "working_tree_status": ""
+  },
+  "status": "passed",
+  "storage": {
+    "gqa.K.free": {
+      "capacity": 64,
+      "final": 64,
+      "initial": 64,
+      "maximum_tokens_or_credits": 64,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.K.free",
+      "peak_reserved_units": 64,
+      "unit": "byte credit"
+    },
+    "gqa.V.free": {
+      "capacity": 48,
+      "final": 48,
+      "initial": 48,
+      "maximum_tokens_or_credits": 48,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.V.free",
+      "peak_reserved_units": 48,
+      "unit": "byte credit"
+    },
+    "gqa.metadata.free": {
+      "capacity": 65536,
+      "final": 65536,
+      "initial": 65536,
+      "maximum_tokens_or_credits": 65536,
+      "minimum_tokens_or_credits": 65268,
+      "name": "gqa.metadata.free",
+      "peak_reserved_units": 268,
+      "unit": "byte credit"
+    },
+    "gqa.operand.free": {
+      "capacity": 64,
+      "final": 64,
+      "initial": 64,
+      "maximum_tokens_or_credits": 64,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.operand.free",
+      "peak_reserved_units": 64,
+      "unit": "byte credit"
+    },
+    "gqa.q0.rng_slot": {
+      "capacity": 1,
+      "final": 1,
+      "initial": 1,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q0.rng_slot",
+      "peak_reserved_units": 1,
+      "unit": "native transaction credit"
+    },
+    "gqa.q0.samples": {
+      "capacity": 1,
+      "final": 0,
+      "initial": 0,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q0.samples",
+      "unit": "index"
+    },
+    "gqa.q0.scores": {
+      "capacity": 32768,
+      "final": 32768,
+      "initial": 32768,
+      "maximum_tokens_or_credits": 32768,
+      "minimum_tokens_or_credits": 32432,
+      "name": "gqa.q0.scores",
+      "peak_reserved_units": 336,
+      "unit": "byte credit"
+    },
+    "gqa.q1.rng_slot": {
+      "capacity": 1,
+      "final": 1,
+      "initial": 1,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q1.rng_slot",
+      "peak_reserved_units": 1,
+      "unit": "native transaction credit"
+    },
+    "gqa.q1.samples": {
+      "capacity": 1,
+      "final": 0,
+      "initial": 0,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q1.samples",
+      "unit": "index"
+    },
+    "gqa.q1.scores": {
+      "capacity": 32768,
+      "final": 32768,
+      "initial": 32768,
+      "maximum_tokens_or_credits": 32768,
+      "minimum_tokens_or_credits": 32460,
+      "name": "gqa.q1.scores",
+      "peak_reserved_units": 308,
+      "unit": "byte credit"
+    },
+    "gqa.q2.rng_slot": {
+      "capacity": 1,
+      "final": 1,
+      "initial": 1,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q2.rng_slot",
+      "peak_reserved_units": 1,
+      "unit": "native transaction credit"
+    },
+    "gqa.q2.samples": {
+      "capacity": 1,
+      "final": 0,
+      "initial": 0,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q2.samples",
+      "unit": "index"
+    },
+    "gqa.q2.scores": {
+      "capacity": 32768,
+      "final": 32768,
+      "initial": 32768,
+      "maximum_tokens_or_credits": 32768,
+      "minimum_tokens_or_credits": 32432,
+      "name": "gqa.q2.scores",
+      "peak_reserved_units": 336,
+      "unit": "byte credit"
+    },
+    "gqa.q3.rng_slot": {
+      "capacity": 1,
+      "final": 1,
+      "initial": 1,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q3.rng_slot",
+      "peak_reserved_units": 1,
+      "unit": "native transaction credit"
+    },
+    "gqa.q3.samples": {
+      "capacity": 1,
+      "final": 0,
+      "initial": 0,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q3.samples",
+      "unit": "index"
+    },
+    "gqa.q3.scores": {
+      "capacity": 32768,
+      "final": 32768,
+      "initial": 32768,
+      "maximum_tokens_or_credits": 32768,
+      "minimum_tokens_or_credits": 32460,
+      "name": "gqa.q3.scores",
+      "peak_reserved_units": 308,
+      "unit": "byte credit"
+    },
+    "gqa.q4.rng_slot": {
+      "capacity": 1,
+      "final": 1,
+      "initial": 1,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q4.rng_slot",
+      "peak_reserved_units": 1,
+      "unit": "native transaction credit"
+    },
+    "gqa.q4.samples": {
+      "capacity": 1,
+      "final": 0,
+      "initial": 0,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q4.samples",
+      "unit": "index"
+    },
+    "gqa.q4.scores": {
+      "capacity": 32768,
+      "final": 32768,
+      "initial": 32768,
+      "maximum_tokens_or_credits": 32768,
+      "minimum_tokens_or_credits": 32432,
+      "name": "gqa.q4.scores",
+      "peak_reserved_units": 336,
+      "unit": "byte credit"
+    },
+    "gqa.q5.rng_slot": {
+      "capacity": 1,
+      "final": 1,
+      "initial": 1,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q5.rng_slot",
+      "peak_reserved_units": 1,
+      "unit": "native transaction credit"
+    },
+    "gqa.q5.samples": {
+      "capacity": 1,
+      "final": 0,
+      "initial": 0,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q5.samples",
+      "unit": "index"
+    },
+    "gqa.q5.scores": {
+      "capacity": 32768,
+      "final": 32768,
+      "initial": 32768,
+      "maximum_tokens_or_credits": 32768,
+      "minimum_tokens_or_credits": 32460,
+      "name": "gqa.q5.scores",
+      "peak_reserved_units": 308,
+      "unit": "byte credit"
+    },
+    "gqa.q6.rng_slot": {
+      "capacity": 1,
+      "final": 1,
+      "initial": 1,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q6.rng_slot",
+      "peak_reserved_units": 1,
+      "unit": "native transaction credit"
+    },
+    "gqa.q6.samples": {
+      "capacity": 1,
+      "final": 0,
+      "initial": 0,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "gqa.q6.samples",
+      "unit": "index"
+    },
+    "gqa.q6.scores": {
+      "capacity": 32768,
+      "final": 32768,
+      "initial": 32768,
+      "maximum_tokens_or_credits": 32768,
+      "minimum_tokens_or_credits": 32432,
+      "name": "gqa.q6.scores",
+      "peak_reserved_units": 336,
+      "unit": "byte credit"
+    }
+  },
+  "timing_details": {
+    "backtrace_note": "latest completed explicit predecessor only; resource/credit hazards may dominate; not a complete critical-path proof",
+    "latest_dependency_backtrace": [
+      {
+        "accepted_ps": 0,
+        "completed_ps": 10000,
+        "operation": "gqa.initialize",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 37500,
+        "completed_ps": 87500,
+        "operation": "gqa.K.1.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 290000,
+        "completed_ps": 300000,
+        "operation": "gqa.K.1.cache.3",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 310000,
+        "completed_ps": 340000,
+        "operation": "gqa.q6.QK.2",
+        "resource": "qk"
+      },
+      {
+        "accepted_ps": 350000,
+        "completed_ps": 360000,
+        "operation": "gqa.K.1.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 387500,
+        "completed_ps": 437500,
+        "operation": "gqa.K.2.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 820000,
+        "completed_ps": 830000,
+        "operation": "gqa.K.2.cache.6",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 840000,
+        "completed_ps": 870000,
+        "operation": "gqa.q6.QK.1",
+        "resource": "qk"
+      },
+      {
+        "accepted_ps": 880000,
+        "completed_ps": 890000,
+        "operation": "gqa.K.2.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 925000,
+        "completed_ps": 975000,
+        "operation": "gqa.K.3.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 1360000,
+        "completed_ps": 1370000,
+        "operation": "gqa.K.3.cache.6",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 1380000,
+        "completed_ps": 1410000,
+        "operation": "gqa.q6.QK.4",
+        "resource": "qk"
+      },
+      {
+        "accepted_ps": 1420000,
+        "completed_ps": 1430000,
+        "operation": "gqa.K.3.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 1462500,
+        "completed_ps": 1512500,
+        "operation": "gqa.K.8.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 1660000,
+        "completed_ps": 1670000,
+        "operation": "gqa.K.8.cache.2",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 1680000,
+        "completed_ps": 1710000,
+        "operation": "gqa.q5.QK.2",
+        "resource": "qk"
+      },
+      {
+        "accepted_ps": 1720000,
+        "completed_ps": 1730000,
+        "operation": "gqa.K.8.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 1762500,
+        "completed_ps": 1812500,
+        "operation": "gqa.K.10.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 2200000,
+        "completed_ps": 2210000,
+        "operation": "gqa.K.10.cache.6",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 2220000,
+        "completed_ps": 2250000,
+        "operation": "gqa.q6.QK.0",
+        "resource": "qk"
+      },
+      {
+        "accepted_ps": 2260000,
+        "completed_ps": 2270000,
+        "operation": "gqa.K.10.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 2300000,
+        "completed_ps": 2350000,
+        "operation": "gqa.K.11.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 2560000,
+        "completed_ps": 2570000,
+        "operation": "gqa.K.11.cache.3",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 2580000,
+        "completed_ps": 2610000,
+        "operation": "gqa.q6.QK.3",
+        "resource": "qk"
+      },
+      {
+        "accepted_ps": 2620000,
+        "completed_ps": 2650000,
+        "operation": "gqa.q6.score.max_reduce",
+        "resource": "vector"
+      },
+      {
+        "accepted_ps": 2660000,
+        "completed_ps": 2740000,
+        "operation": "gqa.q6.score.subtract_exp",
+        "resource": "attention_exp"
+      },
+      {
+        "accepted_ps": 2750000,
+        "completed_ps": 2840000,
+        "operation": "gqa.q6.score.sum_reduce",
+        "resource": "vector"
+      },
+      {
+        "accepted_ps": 2850000,
+        "completed_ps": 2970000,
+        "operation": "gqa.q6.score.reciprocal",
+        "resource": "vector"
+      },
+      {
+        "accepted_ps": 2980000,
+        "completed_ps": 3010000,
+        "operation": "gqa.q6.score.normalize",
+        "resource": "vector"
+      },
+      {
+        "accepted_ps": 3020000,
+        "completed_ps": 3030000,
+        "operation": "gqa.q6.score_prepare",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 3050000,
+        "completed_ps": 3060000,
+        "operation": "gqa.q6.pv.offset.0.submit",
+        "resource": "rng_submit"
+      },
+      {
+        "accepted_ps": 5310000,
+        "completed_ps": 5320000,
+        "operation": "gqa.q6.pv.offset.0.done",
+        "resource": "rng_delivery"
+      },
+      {
+        "accepted_ps": 5350000,
+        "completed_ps": 5440000,
+        "operation": "gqa.q6.pv.cdf_scan",
+        "resource": "vector"
+      },
+      {
+        "accepted_ps": 7320000,
+        "completed_ps": 7330000,
+        "operation": "gqa.q6.emit.0",
+        "resource": "sampler"
+      },
+      {
+        "accepted_ps": 7437500,
+        "completed_ps": 7462500,
+        "operation": "gqa.q6.histogram.1.read",
+        "resource": "sram"
+      },
+      {
+        "accepted_ps": 7512500,
+        "completed_ps": 7537500,
+        "operation": "gqa.q6.histogram.1.write",
+        "resource": "sram"
+      },
+      {
+        "accepted_ps": 7550000,
+        "completed_ps": 7575000,
+        "operation": "gqa.q6.histogram.2.read",
+        "resource": "sram"
+      },
+      {
+        "accepted_ps": 7612500,
+        "completed_ps": 7637500,
+        "operation": "gqa.q6.histogram.2.write",
+        "resource": "sram"
+      },
+      {
+        "accepted_ps": 7650000,
+        "completed_ps": 7675000,
+        "operation": "gqa.q6.histogram.3.read",
+        "resource": "sram"
+      },
+      {
+        "accepted_ps": 7712500,
+        "completed_ps": 7737500,
+        "operation": "gqa.q6.histogram.3.write",
+        "resource": "sram"
+      },
+      {
+        "accepted_ps": 7750000,
+        "completed_ps": 7775000,
+        "operation": "gqa.q6.histogram.4.read",
+        "resource": "sram"
+      },
+      {
+        "accepted_ps": 7812500,
+        "completed_ps": 7837500,
+        "operation": "gqa.q6.histogram.4.write",
+        "resource": "sram"
+      },
+      {
+        "accepted_ps": 7860000,
+        "completed_ps": 7870000,
+        "operation": "gqa.V.union_barrier",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 7880000,
+        "completed_ps": 7900000,
+        "operation": "gqa.V.union_scan",
+        "resource": "gqa.union"
+      },
+      {
+        "accepted_ps": 7910000,
+        "completed_ps": 7920000,
+        "operation": "gqa.V.union_compact",
+        "resource": "gqa.union"
+      },
+      {
+        "accepted_ps": 7950000,
+        "completed_ps": 8000000,
+        "operation": "gqa.V.1.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 8210000,
+        "completed_ps": 8220000,
+        "operation": "gqa.V.1.cache.q6",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 8230000,
+        "completed_ps": 8260000,
+        "operation": "gqa.q6.V.1.accumulate",
+        "resource": "v_accumulate"
+      },
+      {
+        "accepted_ps": 8270000,
+        "completed_ps": 8280000,
+        "operation": "gqa.V.1.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 8312500,
+        "completed_ps": 8362500,
+        "operation": "gqa.V.2.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 8750000,
+        "completed_ps": 8760000,
+        "operation": "gqa.V.2.cache.q6",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 8770000,
+        "completed_ps": 8800000,
+        "operation": "gqa.q6.V.2.accumulate",
+        "resource": "v_accumulate"
+      },
+      {
+        "accepted_ps": 8810000,
+        "completed_ps": 8820000,
+        "operation": "gqa.V.2.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 8850000,
+        "completed_ps": 8900000,
+        "operation": "gqa.V.3.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 9290000,
+        "completed_ps": 9300000,
+        "operation": "gqa.V.3.cache.q6",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 9310000,
+        "completed_ps": 9340000,
+        "operation": "gqa.q6.V.3.accumulate",
+        "resource": "v_accumulate"
+      },
+      {
+        "accepted_ps": 9350000,
+        "completed_ps": 9360000,
+        "operation": "gqa.V.3.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 9387500,
+        "completed_ps": 9437500,
+        "operation": "gqa.V.8.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 9580000,
+        "completed_ps": 9590000,
+        "operation": "gqa.V.8.cache.q5",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 9600000,
+        "completed_ps": 9630000,
+        "operation": "gqa.q5.V.8.accumulate",
+        "resource": "v_accumulate"
+      },
+      {
+        "accepted_ps": 9640000,
+        "completed_ps": 9650000,
+        "operation": "gqa.V.8.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 9687500,
+        "completed_ps": 9737500,
+        "operation": "gqa.V.10.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 9940000,
+        "completed_ps": 9950000,
+        "operation": "gqa.V.10.cache.q5",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 9960000,
+        "completed_ps": 9990000,
+        "operation": "gqa.q5.V.10.accumulate",
+        "resource": "v_accumulate"
+      },
+      {
+        "accepted_ps": 10000000,
+        "completed_ps": 10010000,
+        "operation": "gqa.V.10.release",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 10037500,
+        "completed_ps": 10087500,
+        "operation": "gqa.V.11.read",
+        "resource": "dram"
+      },
+      {
+        "accepted_ps": 10230000,
+        "completed_ps": 10240000,
+        "operation": "gqa.V.11.cache.q6",
+        "resource": "gqa.cache"
+      },
+      {
+        "accepted_ps": 10250000,
+        "completed_ps": 10280000,
+        "operation": "gqa.q6.V.11.accumulate",
+        "resource": "v_accumulate"
+      },
+      {
+        "accepted_ps": 10300000,
+        "completed_ps": 10310000,
+        "operation": "gqa.q6.complete",
+        "resource": "control"
+      },
+      {
+        "accepted_ps": 10337500,
+        "completed_ps": 10362500,
+        "operation": "gqa.q6.output.write",
+        "resource": "sram"
+      },
+      {
+        "accepted_ps": 10390000,
+        "completed_ps": 10400000,
+        "operation": "gqa.release",
+        "resource": "control"
+      }
+    ],
+    "memory_requests": {
+      "dram": {
+        "effective_GB_per_s": 0.06461538461538462,
+        "line_beats": 15,
+        "read_bytes": 672,
+        "requests": 12
+      },
+      "sram": {
+        "effective_GB_per_s": 0.09692307692307692,
+        "line_beats": 70,
+        "read_bytes": 560,
+        "requests": 70,
+        "write_bytes": 448
+      }
+    },
+    "resource_inflight_union": {
+      "attention_exp": {
+        "at_least_one_inflight_fraction": 0.041346153846153845,
+        "at_least_one_inflight_ps": 430000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "control": {
+        "at_least_one_inflight_fraction": 0.05480769230769231,
+        "at_least_one_inflight_ps": 570000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "dram": {
+        "at_least_one_inflight_fraction": 0.057692307692307696,
+        "at_least_one_inflight_ps": 600000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "gqa.cache": {
+        "at_least_one_inflight_fraction": 0.057692307692307696,
+        "at_least_one_inflight_ps": 600000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "gqa.union": {
+        "at_least_one_inflight_fraction": 0.0028846153846153848,
+        "at_least_one_inflight_ps": 30000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "qk": {
+        "at_least_one_inflight_fraction": 0.09230769230769231,
+        "at_least_one_inflight_ps": 960000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "rng_delivery": {
+        "at_least_one_inflight_fraction": 0.006730769230769231,
+        "at_least_one_inflight_ps": 70000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "rng_submit": {
+        "at_least_one_inflight_fraction": 0.006730769230769231,
+        "at_least_one_inflight_ps": 70000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "sampler": {
+        "at_least_one_inflight_fraction": 0.2,
+        "at_least_one_inflight_ps": 2080000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "sram": {
+        "at_least_one_inflight_fraction": 0.16826923076923078,
+        "at_least_one_inflight_ps": 1750000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "v_accumulate": {
+        "at_least_one_inflight_fraction": 0.08076923076923077,
+        "at_least_one_inflight_ps": 840000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "vector": {
+        "at_least_one_inflight_fraction": 0.11826923076923077,
+        "at_least_one_inflight_ps": 1230000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      }
+    },
+    "stall_note": "sum of per-operation intervals, may overlap; not an additive wall-clock decomposition",
+    "stall_operation_ps": {
+      "completion_order": 410000,
+      "completion_port": 130000,
+      "dependency": 298200000,
+      "input_empty": 8280000,
+      "memory_window_full": 1312500,
+      "not_visible_yet": 2450000,
+      "output_full": 1800000,
+      "resource_capacity": 6890000,
+      "resource_ii": 30000
+    }
+  },
+  "trace_artifact": {
+    "path": "trace.json.gz",
+    "sha256": "4dfc2eb1551f9f7e3112cb44811d6b24a667927119a8cce415c91d042f86608a",
+    "uncompressed_sha256": "25ad4c91676c6b0c5a0a9f7a2272a2a4e155165749862b5fe355a8a11491d1be"
+  }
+}

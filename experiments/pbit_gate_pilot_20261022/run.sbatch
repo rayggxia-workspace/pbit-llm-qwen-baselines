@@ -27,6 +27,8 @@ elif [ "$GATE_STAGE" = cpu_selection ]; then
   "$GATE_PYTHON" -P -u -m experiments.pbit_gate_pilot_20261022.selection_preflight --config "$GATE_CONFIG" --output "$GATE_OUTPUT"
 elif [ "$GATE_STAGE" = gpu_optimize ]; then
   "$GATE_PYTHON" -P -u -m experiments.pbit_gate_pilot_20261022.optimize_driver --config "$GATE_CONFIG" --output "$GATE_OUTPUT"
+elif [ "$GATE_STAGE" = gpu_refine ]; then
+  "$GATE_PYTHON" -P -u -m experiments.pbit_gate_pilot_20261022.refine_driver --config "$GATE_CONFIG" --output "$GATE_OUTPUT"
 else
   exit 2
 fi

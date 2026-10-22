@@ -23,6 +23,8 @@ python -m architecture_tlm.cycle_v1.v6_adapter --operator ffn \
 
 输出目录必须不存在。默认新模拟器同时运行 cycle 与 event，并逐项比较接受/完成时间、完整 stall trace、内存读取、动作、状态和数值轨迹。`--event-only` 会明确取消该次交叉检查；不会暗示已经完成。失败后保存 `FAILED.json`，已有旧算子结果保留用于诊断。
 
+服务器执行快照使用 `python -m architecture_tlm.cycle_v1.package_snapshot --archive /new/snapshot.tar.gz --manifest /new/manifest.json --check-directory /new/extracted`。打包器包含 v6 桥的 13 个历史模块及默认 SRAM 校准 JSON，并逐文件核对解包后的 SHA-256；随后以 Python `-I`、清除 `PYTHONPATH` 执行小 FFN 和完整 64→64→64 的 v6 桥 smoke，确认加载的项目模块全部来自解包目录。快照不包含模型权重、输入 fixture 或历史结果集；自定义校准路径与实际 fixture 仍需在执行配置中另行明确提供。
+
 ## 映射与拒绝条件
 
 - FFN：映射 B/T/K、engine 数、vector lanes、seed 和原生 seed-bus 参数。fixture 必须完整匹配 `hidden_size`、`intermediate_size`、完整 down 输出和 residual；拒绝把裁剪行称作完整 FFN。旧 SC 仅支持本桥的 startup/II/drain=1/1/1 基线，不将 II 擅自赋给 latency。

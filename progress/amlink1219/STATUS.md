@@ -1,3 +1,13 @@
+# 2026-10-22 Issue90：两台4090隔离LLM环境已验证
+
+负责人amlink1219；分支task/90-4090-llm-environments；PR base pbit-tlm-attention-details-20261016，初始base8d4ce51be7ecace716bc83688dc4768eb2574d38；独立最小稀疏目录workspace_projects/env90。两台Python3.12.3/Torch2.6.0+cu118/Transformers4.45.2/lm_eval0.4.8已安装：A CPU9041/GPU9042、B CPU14101/GPU14104均COMPLETED/0:0，每台19CPU/6GPU。94包freeze完全同字节SHA636ea0599fc983e7c003c3a8881aefa2f05d8167f2877dcab8992dfc3f145ae5，wrapper和预载库SHA相同；27参数/3buffer逐位相同，logits误差0.0。任务作业均结束。
+
+正式入口maintenance/llm_env_4090_20261022/README_ZH.md与exact freeze；原执行输入/阶段manifest在scripts/llm_env_4090_20261022；13私有原件SHA、脱敏报告、执行历史、验证和交接在work/amlink1219/90。原失败保留，70wheel仅LLM层恢复包，已验证receiver闭包及固定Torch底座元数据前后相同。根AGENTS新增1条严格保存重载/nonpersistent buffer精度规则，全局和memory未改。
+
+仅synthetic环境验证，未下载真实模型/语料、训练或产生完整PPL/准确率/PPA；Torch与5090不同，不宣称跨硬件等价。正式入口bin/llm-python，Slurm/个人路径/跨服务器单GPU/备用告知规则保留。上传和PR的实际状态见work/amlink1219/90/PUBLICATION.json，不自动合并或关闭Issue。
+
+## 以下保留远端最新既有进度，历史时点以实时Issue/PR为准
+
 # 2026-10-22 Issue37：Ising最新实现与结果补充
 
 负责人amlink1219；目标rayggxia-workspace/pbit-llm-qwen-baselines；基线5b26c80c28ab22383f12ab31046dd723ca985abb；分支task/37-ising-update-20261022；最小稀疏目录workspace_projects/iu37。结果提交18bd5f299cba76ff0c33dbf0d02d8133eac165d7已推送，[PR89](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/89)开放待审、未合并。
@@ -182,3 +192,5 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 辅助/交接：work/amlink1219/<Issue>/。本地工作目录及原任务提交见各PUBLICATION.json；旧STATUS可从原提交恢复。
 原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
 下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。
+
+已推送结果提交`2b0fb4c6a85759bc4ee4adbbd9d0540847a0041f`，PR#93（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/93）开放待审、未合并；远端ref、PR head、60项文件范围和55个稳定blob SHA已核验。Projects：pending_permission。

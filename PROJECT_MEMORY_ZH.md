@@ -886,3 +886,11 @@ Issue73 publication receipt (2026-10-22): completed26 status/report and automati
 2026-10-22原生验收回执：Issue73（最终26项官方逐题）、84（文献）、87（可用TLM）已按各自有限范围实际关闭；Issue78/37继续开放。旧待审与pending文字仅为历史。
 
 第五轮追加PR89：19固定源、8组TLM中位数/单位/null及3组固定预算覆盖核验通过，旧数字全上下文D0与原评估保留，局部误差/合成时序没有冒充新PPL/PPA。自动审批曾拒绝向其他成员分支推送刷新；未执行该推送，已改为原head69b1accc的无冲突原生合并9bd908b5，无作者分支改写或STATUS/HANDOFF手工改动。作者自己的新状态按原blob继承，Issue37不关闭。
+
+<!-- llm-env-issue90 -->
+## 2026-10-22 Issue90：两台4090备用LLM环境
+
+个人隔离Python3.12.3/Torch2.6.0+cu118/Transformers4.45.2/lm_eval0.4.8已安装并验证。A CPU9041/GPU9042、B CPU14101/GPU14104均COMPLETED/0:0，每台19CPU检查及6GPU synthetic smoke通过，27参数/3非持久RoPE buffer逐位相同、重载logits差0.0。94包freeze两台原字节相同SHA636ea0599fc983e7c003c3a8881aefa2f05d8167f2877dcab8992dfc3f145ae5；正式入口为个人环境bin/llm-python进程wrapper，旧glibc兼容层不改系统或共享环境。
+
+正式入口[环境报告](maintenance/llm_env_4090_20261022/README_ZH.md)，原执行源scripts/llm_env_4090_20261022，私有原件hash/脱敏视图及交接work/amlink1219/90。原失败与恢复各阶段保留，70wheel恢复包仅LLM扩展层，不含Torch底座。服务器地址/连接配置/凭据不发布。Torch版本不同于5090的2.7.1cu128，未下载真实权重/语料、未训练或产生真实PPL/准确率/PPA，后续真实实验需匹配数字基线。5090优先、备用当次告知、个人目录/Slurm/跨服务器单GPU规则继续适用。上传与PR状态见该任务PUBLICATION.json，Issue保持open等待审阅，不自动合并。
+<!-- /llm-env-issue90 -->

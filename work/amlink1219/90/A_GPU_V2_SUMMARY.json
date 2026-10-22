@@ -1,0 +1,312 @@
+{
+  "status": "passed synthetic environment validation; no real-model quality benchmark",
+  "server": "fallback-1",
+  "source": {
+    "kind": "exact server report bytes independently hash-verified after collection",
+    "original_files": [
+      {
+        "source_relative": "gpu_smoke_v2-9042.json",
+        "bytes": 9045,
+        "sha256": "e4bf80d912d4fb7091176b6561872fe1f895492e5817d1984859c9da7712bcb6"
+      }
+    ],
+    "private_collection_manifest_sha256": "6d6ad2fa6f3f5c7bea4b4b3a6abdec158eee5c54f3d0103859406324488bd170"
+  },
+  "transformation": [
+    "parse exact verified JSON reports",
+    "replace personal deployment-home prefix in keys and values with ${PERSONAL_HOME}",
+    "replace scheduler hostnames with fallback aliases",
+    "omit process virtual-address mapping strings while retaining threadpool/library metadata",
+    "serialize this derived public view as UTF-8/LF JSON"
+  ],
+  "reports": {
+    "gpu_smoke_v2-9042.json": {
+      "smoke_version": 2,
+      "purpose": "synthetic offline environment smoke; no downloaded model, training or quality benchmark",
+      "status": "passed",
+      "started_unix": 1792648925.5847592,
+      "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+      "executable": "${PERSONAL_HOME}/envs/llm-qwen-py312-cu118/bin/python",
+      "prefix": "${PERSONAL_HOME}/envs/llm-qwen-py312-cu118",
+      "platform": "Linux-3.10.0-1160.el7.x86_64-x86_64-with-glibc2.17",
+      "slurm_job_id": "9042",
+      "slurm_job_nodelist": "fallback-1",
+      "cuda_visible_devices": "0",
+      "checks": [
+        {
+          "name": "single-GPU allocation gate",
+          "status": "passed",
+          "details": {
+            "torch": "2.6.0+cu118",
+            "transformers": "4.45.2",
+            "cuda_build": "11.8",
+            "gpu_name": "NVIDIA GeForce RTX 4090",
+            "gpu_total_bytes": 25393692672,
+            "gpu_capability": [
+              8,
+              9
+            ],
+            "qwen_source_sha256": "c0f712cc217640b9dd3d168ed000a5dc92079fc850385e5604a150c134d70fec"
+          }
+        },
+        {
+          "name": "BF16 causal SDPA",
+          "status": "passed",
+          "details": {
+            "shape": [
+              1,
+              2,
+              16,
+              64
+            ],
+            "relative_rmse": 0.0017545506125316024,
+            "max_abs_error": 0.005356907844543457
+          }
+        },
+        {
+          "name": "tiny Qwen forward, generation and local serialization",
+          "status": "passed",
+          "details": {
+            "layers": 2,
+            "hidden_size": 128,
+            "intermediate_size": 256,
+            "parameters": 328832,
+            "input_tokens": 16,
+            "new_tokens": 4,
+            "loss": 4.895686149597168,
+            "logits_shape": [
+              1,
+              16,
+              128
+            ],
+            "attention_module": "Qwen2SdpaAttention",
+            "saved_safetensors_sha256": "8dac8377cd64900d09758325e52a923e07ff61b68e196e5e8eb0763429a1b97e",
+            "state_roundtrip": {
+              "parameters": 27,
+              "buffers": 3,
+              "rope_buffers": {
+                "model.layers.0.self_attn.rotary_emb.inv_freq": {
+                  "dtype": "torch.float32",
+                  "shape": [
+                    32
+                  ],
+                  "device": "cuda:0"
+                },
+                "model.layers.1.self_attn.rotary_emb.inv_freq": {
+                  "dtype": "torch.float32",
+                  "shape": [
+                    32
+                  ],
+                  "device": "cuda:0"
+                },
+                "model.rotary_emb.inv_freq": {
+                  "dtype": "torch.float32",
+                  "shape": [
+                    32
+                  ],
+                  "device": "cuda:0"
+                }
+              },
+              "comparison": "bitwise uint8 equality with matching shape, dtype and device"
+            },
+            "roundtrip_logits_max_abs_error": 0.0,
+            "roundtrip_logits_tolerance": {
+              "rtol": 0.001,
+              "atol": 0.001
+            },
+            "tokenizer_scope": "synthetic local WordLevel; not the real Qwen vocabulary"
+          }
+        },
+        {
+          "name": "current fixed-W8 stratified FFN source integrity",
+          "status": "passed",
+          "details": {
+            "source_commit": "9b43ba070a5b30a666c6a23519a09b57798438fa",
+            "files": [
+              {
+                "path": "experiments/qwen_multiscale_stratified_20261019/stratified_core.py",
+                "bytes": 15353,
+                "sha256": "03d0b605b78f30ca9698d5137d295246b53c625c66f44c9855f3a77cdcd0b4f0"
+              },
+              {
+                "path": "experiments/qwen_dual_iid_exact_20261018/vendor/frozen/core.py",
+                "bytes": 12879,
+                "sha256": "e175e2fdc59c5eac34729a7ddf42860a3aebbee2790bfaa881e99e729e815e9e"
+              },
+              {
+                "path": "experiments/qwen_dual_iid_exact_20261018/vendor/frozen/shared_counts.py",
+                "bytes": 1867,
+                "sha256": "46e503b22831e0005e9af9e25ed3bd1c798d782a42edb27e71649b9ee634d4a7"
+              },
+              {
+                "path": "experiments/qwen_dual_range_20261018/range_core.py",
+                "bytes": 10727,
+                "sha256": "90321dcc3aef837a44aa7ec88b29ce936f99bbafc7a8d845bdd83bdbace0e827"
+              },
+              {
+                "path": "LICENSE",
+                "bytes": 11418,
+                "sha256": "77fd4710def9ec3c0f6225800e0235f15a425abd4a8b03559127fcd782612049"
+              }
+            ],
+            "runtime_module": "${PERSONAL_HOME}/projects/llm-env-bootstrap-20261022/smoke_source/experiments/qwen_multiscale_stratified_20261019/stratified_core.py"
+          }
+        },
+        {
+          "name": "B4/T32/K32 single-batch FFN",
+          "status": "passed",
+          "details": {
+            "shape": [
+              1,
+              8,
+              128
+            ],
+            "dtype": "torch.bfloat16",
+            "output_rms": 0.00853276252746582,
+            "diagnostics": {
+              "calls": 1,
+              "layer": 0,
+              "policy": "pot4",
+              "mode": "sampled",
+              "cycles": 32,
+              "probability_bits": 8,
+              "sampler": "random equal-range stratification",
+              "strata": 32,
+              "samples_per_stratum": 1,
+              "stratum_width": 8,
+              "sharing": 64,
+              "scale_bin_count": 4,
+              "scale_bin_exponent_step": 2,
+              "weight_encoding": "fixed symmetric INT8, historical 64x64 tile",
+              "weight_stochastic": false,
+              "weight_probability_reencoded": false,
+              "gu_weight_reencode_nmse": 0.0,
+              "down_weight_reencode_nmse": 0.0,
+              "backend": "exact joint shared-R8 counts; FP32 linear reduction",
+              "activation_encoding_applied": true,
+              "p1_bypass": true,
+              "nonlinear": "continuous FP32 SiLU(g)*u, independently reencoded z",
+              "finite_width_bittrue": false,
+              "x_values": 1024,
+              "x_zero_fraction": 0.0,
+              "x_mean_probability": 0.5349540710449219,
+              "x_encoding_nmse": 7.20617825320578e-06,
+              "x_clip_fraction": 0.0,
+              "x_mean_scale": 1.76702880859375,
+              "x_p1_fraction": 0.0048828125,
+              "x_bin_counts": [
+                314,
+                514,
+                145,
+                51
+              ],
+              "x_bin_occupancy": [
+                0.306640625,
+                0.501953125,
+                0.1416015625,
+                0.0498046875
+              ],
+              "z_values": 2048,
+              "z_zero_fraction": 0.00146484375,
+              "z_mean_probability": 0.5057582855224609,
+              "z_encoding_nmse": 6.861380161752893e-06,
+              "z_clip_fraction": 0.0,
+              "z_mean_scale": 0.0354461669921875,
+              "z_p1_fraction": 0.0,
+              "z_bin_counts": [
+                293,
+                748,
+                596,
+                411
+              ],
+              "z_bin_occupancy": [
+                0.14306640625,
+                0.365234375,
+                0.291015625,
+                0.20068359375
+              ]
+            }
+          }
+        },
+        {
+          "name": "B4/T32/K4 single-batch FFN",
+          "status": "passed",
+          "details": {
+            "shape": [
+              1,
+              8,
+              128
+            ],
+            "dtype": "torch.bfloat16",
+            "output_rms": 0.007816120982170105,
+            "diagnostics": {
+              "calls": 1,
+              "layer": 0,
+              "policy": "pot4",
+              "mode": "sampled",
+              "cycles": 32,
+              "probability_bits": 8,
+              "sampler": "random equal-range stratification",
+              "strata": 4,
+              "samples_per_stratum": 8,
+              "stratum_width": 64,
+              "sharing": 64,
+              "scale_bin_count": 4,
+              "scale_bin_exponent_step": 2,
+              "weight_encoding": "fixed symmetric INT8, historical 64x64 tile",
+              "weight_stochastic": false,
+              "weight_probability_reencoded": false,
+              "gu_weight_reencode_nmse": 0.0,
+              "down_weight_reencode_nmse": 0.0,
+              "backend": "exact joint shared-R8 counts; FP32 linear reduction",
+              "activation_encoding_applied": true,
+              "p1_bypass": true,
+              "nonlinear": "continuous FP32 SiLU(g)*u, independently reencoded z",
+              "finite_width_bittrue": false,
+              "x_values": 1024,
+              "x_zero_fraction": 0.0,
+              "x_mean_probability": 0.5315704345703125,
+              "x_encoding_nmse": 8.562718289396668e-06,
+              "x_clip_fraction": 0.0,
+              "x_mean_scale": 1.7264404296875,
+              "x_p1_fraction": 0.0029296875,
+              "x_bin_counts": [
+                337,
+                464,
+                169,
+                54
+              ],
+              "x_bin_occupancy": [
+                0.3291015625,
+                0.453125,
+                0.1650390625,
+                0.052734375
+              ],
+              "z_values": 2048,
+              "z_zero_fraction": 0.0,
+              "z_mean_probability": 0.5189704895019531,
+              "z_encoding_nmse": 5.666594108514503e-06,
+              "z_clip_fraction": 0.0,
+              "z_mean_scale": 0.03179788589477539,
+              "z_p1_fraction": 0.0,
+              "z_bin_counts": [
+                284,
+                753,
+                602,
+                409
+              ],
+              "z_bin_occupancy": [
+                0.138671875,
+                0.36767578125,
+                0.2939453125,
+                0.19970703125
+              ]
+            }
+          }
+        }
+      ],
+      "peak_allocated_bytes": 10976256,
+      "finished_unix": 1792648931.3603
+    }
+  }
+}

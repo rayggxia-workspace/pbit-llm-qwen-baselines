@@ -1,0 +1,1 @@
+2026-10-22 Issue95增加离线架构可视化：architecture_tlm/random_service/architecture-view.html；用户副本远端上传/rng_architecture_20261022.html。依据PR97原模型生成12场景372沿，另注明PR103薄前端与38322118后续PPA边界；全整机默认未全面换源。没有修改RTL/模型/换种策略。核对共享种子中层与共享PRNG簇区别、GF64与单字64比较器区别、时钟拍换种与有效更新换种区别。恢复见work/rayggxia/95/VISUALIZATION_HANDOFF.md。

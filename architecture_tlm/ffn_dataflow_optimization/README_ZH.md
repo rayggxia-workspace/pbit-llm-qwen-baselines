@@ -41,7 +41,7 @@
 
 ## 复现与交接
 
-依赖源固定在 `dependencies.py`，13份精确Git原字节已核，详见 `work/amlink1219/124/DEPENDENCIES.json`。PR120/122均为待审依赖。本轮使用的Issue116提交 `6a56940900cf7e104f1c6c10ca8698c739e1da52` 初次冻结时未公开，GitHub提交接口HTTP422；在它公开前，新机器不能仅凭GitHub重建依赖。已有本机缓存及Git对象可复现；不将此限制隐去或改用未审核的最新代码。
+依赖源固定在 `dependencies.py`，13份精确Git原字节已核，详见 `work/amlink1219/124/DEPENDENCIES.json`。PR120/122均为待审依赖。本轮使用的Issue116提交 `6a56940900cf7e104f1c6c10ca8698c739e1da52` 初次冻结时未发布，GitHub提交接口HTTP422；最终核对时PR126已发布该提交。现已从GitHub全新缓存重建13份冻结依赖，原字节SHA全部一致，原20项测试通过；见 `work/amlink1219/124/PUBLIC_DEPENDENCY_REBUILD.json`。48项仿真没有重跑，执行版本也没有漂移到PR126的新head。所有源码和输入现均可获取；这不是新机器上的48项复跑声明。
 
 ```sh
 python -m architecture_tlm.ffn_dataflow_optimization.dependencies --repository . --output /owned/new/dependency_cache

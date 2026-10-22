@@ -7,9 +7,9 @@
 
 入口 architecture_tlm/ffn_dataflow_optimization/PROTOCOL_ZH.md。先冻结输入、源与8配置，再对每配置执行三seed和SC/W8；源改变另开输出目录。全部为本机CPU，无GPU/Slurm任务，不含完整FFN/PPL/物理PPA。
 
-依赖见 DEPENDENCIES.json 和 DEPENDENCY_VERIFICATION.json：13份精确Git源原字节已核。缓存位于本机项目根 outputs/asic_recovery_dataflow_20261023/dependencies。冻结的 Issue116 提交 6a569409 尚不能从GitHub解析（实测HTTP422，见 DEPENDENCY_REMOTE_STATUS.json）；在该提交公开前，新机器不能仅凭GitHub重建本轮依赖。该限制不影响已归档结果核验，不能把此任务称为已独立可复现的完整集成。
+依赖见 DEPENDENCIES.json 和 DEPENDENCY_VERIFICATION.json：13份精确Git源原字节已核。缓存位于本机项目根 outputs/asic_recovery_dataflow_20261023/dependencies。冻结时 Issue116 提交6a569409曾不能从GitHub解析（HTTP422，见DEPENDENCY_REMOTE_STATUS.json）；最终PR126已发布该提交并完成13份源的GitHub重建校验，详见本文末尾更新。历史快照不代表当前阻塞。
 
-进度和最终发布回执将在结果归档后追加。不得重放运行覆盖既有目录，不修改 cycle23 工作副本。
+最终成果与发布回执已在下方及PUBLICATION.json追加。不得重放运行覆盖既有目录，不修改 cycle23 工作副本。
 
 ## 本轮结果与后续入口
 
@@ -25,4 +25,12 @@ SC基线221.3625µs，read128_only206.35µs，pipeline2为205.75µs；后者同�
 python -m architecture_tlm.ffn_dataflow_optimization.verify_results --dependencies /owned/dependency_cache --fixtures architecture_tlm/ffn_dataflow_optimization/results/fixtures --runs architecture_tlm/ffn_dataflow_optimization/results/shard0 architecture_tlm/ffn_dataflow_optimization/results/shard1 architecture_tlm/ffn_dataflow_optimization/results/shard2 architecture_tlm/ffn_dataflow_optimization/results/shard3 --expected-grid main48 --output /owned/new/validation.json
 ```
 
-本分支台账36条564行不含其他未合并分支的新增记录；合并时须取并集再render，不能以总表覆盖PR119/120/122/125。Projects实时缺read:project；当前机器无C:/Users/86134/Documents/a_P_BIT/digital_circuit_simulation_registry镜像路径，未创建异账号目录。实际GitHub上传回执稍后保存PUBLICATION.json，PR草稿待依赖发布，不自动合并。
+本分支台账36条564行不含其他未合并分支的新增记录；合并时须取并集再render，不能以总表覆盖PR119/120/122/125。Projects实时缺read:project；当前机器无C:/Users/86134/Documents/a_P_BIT/digital_circuit_simulation_registry镜像路径，未创建异账号目录。初次发布回执见PUBLICATION.json；最初的草稿依赖已于末尾更新解除，不自动合并。
+
+## 最终依赖与发布更新
+
+成果提交c50977299f55abf3fef5470709dc209169efbb3b已推送PR127。165项远端Git对象与7份关键原始字节核验通过，Issue124验收已同步；后续提交仅更新发布/依赖说明，不改48项原始结果。
+
+最终只读核对发现PR126已发布Issue116源，6a569409已可从GitHub解析（HTTP200）；此前HTTP422为冻结时历史，阻塞现已解除。PUBLIC_DEPENDENCY_REBUILD.json记录从GitHub空缓存重新获取全部13份固定源码，原字节与初次缓存完全相同，原20项测试通过。没有变更执行版本或复跑48例。全部复现源与输入现在可获取，PR127转为正常评审，不自动合并。Projects仍缺read:project；本机异账号阅读镜像不存在，待同步。
+
+原始依赖缓存保留在outputs/asic_recovery_dataflow_20261023/dependencies，公开重建核验缓存位于同级public_dependency_rebuild；两者共13份小源码，无模型/大数据。最小待审工作目录保留；其他任务未修改。

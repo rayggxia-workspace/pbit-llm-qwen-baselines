@@ -1,3 +1,9 @@
+# Issue98 频率与时序补充（2026-10-22，amlink1219）
+
+接续原负责人rayggxia的Issue98，PR100已核实合并。本人仅补充16项工作频率/时序域及原文依据，分支task/98-ppa-frequency-amlink1219，base集成eb317e4f。正式入口architecture_tlm/benchmark_protocol_20261022/README_ZH.md第2.1节，机器证据FREQUENCY_EVIDENCE.json。原报告其余内容逐字节保留，原PAPERS.json/.csv和协议不改；AttAcc计算频率仍待原始表格复核。文档与SHA/链接核验通过，无新模型/训练/GPU/Slurm/TLM/EDA或器件PPA。科学报告1198a544f11174f7976980ea1f9d8750d8805c7c已通过[PR106](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/106)上传待审、未合并；7项远端原始文件SHA已回读一致，Issue98评论6339719096已同步。实际回执work/amlink1219/98/frequency/PUBLICATION.json；后续提交仅补发布元数据。Projects实时查询缺read:project，看板待同步。原负责人及其他成员STATUS/HANDOFF不改，不自动合并或关闭Issue。
+
+---
+
 # Issue92 计算成本补充（2026-10-22，当前）
 
 负责人amlink1219，接续Issue92/task/92-pbit-gate-pilot/PR94。新增部署运算账本qwen/results/pbit_gate_cost_20261022/README_ZH.md、COST.json及compute_cost.py。每自由块32连续乘法/40加法/8bit门控/9概率事件、两阶段；原三位置混合F21，层0/12/23候选QK省378/−165/379 MAC，小网第一层新增672乘法，不能称整体节能。含公共特征/动态归一化、GQA并集与固定S的PV边界。9模型形状、2304隐藏态门控等价、6项均值回算及独立只读审阅通过；没有新训练/Slurm/完整PPL/RTL/PPA，原质量结果保持。发布随PR94，待审未合并；上传核验以work/amlink1219/92/compute_cost/PUBLICATION.json实际回执为准。Projects沿同日已验证read:project不足待同步，不自动合并/关闭Issue。

@@ -108,7 +108,7 @@ def p0(output):
 
 
 def search_summary(inputs, output):
-    rows, signatures, grids, manifests = [], {}, {}, {}
+    rows, signatures, grids, manifests, ledgers = [], {}, {}, {}, {}
     for source in inputs:
         for manifest in sorted(source.rglob('RUN_MANIFEST.json')):
             content=read(manifest)
@@ -129,7 +129,10 @@ def search_summary(inputs, output):
                 signatures[key]=meta['routing_sha256']
                 row=compact(path,r);row['candidate_definition']=meta['candidate'];row['source_wall_seconds']=r['source_wall_seconds']
                 rows.append(row)
-                if cfg['seed']==0:grids.setdefault((meta['method'],cfg['context_tokens']),set()).add(meta['candidate']['id'])
+                if cfg['seed']==0:
+                    grids.setdefault((meta['method'],cfg['context_tokens']),set()).add(meta['candidate']['id'])
+                    r['_source_path']=path.relative_to(ROOT).as_posix()
+                    ledgers[meta['case_id']]=resource_ledger(cfg,r['model'],r)
     if not rows:raise ValueError('no completed search cases')
     if any(v!=next(iter(grids.values())) for v in grids.values()):
         raise ValueError('candidate grid differs across method/context')
@@ -161,6 +164,12 @@ def search_summary(inputs, output):
             'Latency comparisons are conditional synthetic TLM, not model accuracy or STA.',
             'Macro area is a partial storage cost, not total ASIC area.',
             'Every method uses the same coarse hardware/mapping candidates; this is not global optimization.']))
+    write(output/'CANDIDATE_LEDGERS.json',dict(seed0_cases=len(ledgers),ledgers=ledgers,
+        full_area_anchor_A0=None,equal_area_ranking=None))
+    write(output/'ANALYSIS_EXECUTION.json',dict(commit=subprocess.check_output(
+        ['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),
+        sources={p.relative_to(ROOT).as_posix():record(p) for p in Path(__file__).parent.glob('*.py')},
+        source_manifests=manifests,scope='postprocessing only; simulation execution remains bound in each shard'))
     print(json.dumps(dict(cases=len(rows),fastest=best),ensure_ascii=False))
 
 

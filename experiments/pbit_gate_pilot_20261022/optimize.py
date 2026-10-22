@@ -149,6 +149,11 @@ def load_model(payload, device="cpu"):
 
 
 def predict_payload(payload, data, device="cpu"):
+    if payload["kind"] == "max4_train_threshold":
+        score = max4_logits(data["x"], data["valid"], data["forced"])
+        q = np.where(score > payload["threshold"], 1.0,
+                     np.where(score == payload["threshold"], payload["tie_probability"], 0.0))
+        return np.where(data["forced"], 1.0, q) * data["valid"]
     if payload["kind"] == "max4_standardized_sigmoid":
         score = max4_logits(data["x"], data["valid"], data["forced"]) / payload["temperature"]
         return probability_from_scores(score, data["valid"], data["forced"], payload["bias"])
@@ -160,6 +165,8 @@ def predict_payload(payload, data, device="cpu"):
 
 
 def sample_payload(payload, data, seed, draws, device="cpu"):
+    if payload["kind"] == "max4_train_threshold":
+        return np.random.default_rng(seed).random((draws, len(data["split"]), 32)) < predict_payload(payload, data)
     if payload["kind"] == "max4_standardized_sigmoid":
         return np.random.default_rng(seed).random((draws, len(data["split"]), 32)) < predict_payload(payload, data)
     model = load_model(payload, device)

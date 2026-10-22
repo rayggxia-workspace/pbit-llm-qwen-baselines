@@ -1,12 +1,12 @@
 # Issue96：真实随机服务已接入整机（2026-10-22）
 
-负责人jieruiz；沿用task/96-unified-tlm、PR103，独立目录tmp/unified-tlm-issue96-20261022；base已合入eb317e4f。代码31aa4fa已实际上传，新增结果/报告目前本地完成，最终交付HEAD与远端原字节核验以Issue96及integrated/PUBLICATION.json回执为准；不自动合并或关闭Issue。
+负责人jieruiz；沿用task/96-unified-tlm、PR103，独立目录tmp/unified-tlm-issue96-20261022；base已合入eb317e4f。代码、40项结果与报告已实际推送，科学交付f3cf9b98f38a3cb47c40cb86669a2f180e637d0d，9个关键远端blob原字节核验通过；PR103已更新、待审未合并，Issue96不关闭。完整回执integrated/PUBLICATION.json，后续metadata提交不改变执行或结果。
 
 FullDecode默认integrated_service，计算/SC/源/种子总线/采样器统一100MHz；SRAM已校准80MHz保留。FFN流式SAVE/RESTORE/RELEASE、Attention真实有限端点输出/种子/预热/回压，原Issue95模型/RTL未改。40/40完整模型情景、93机制/回归和1421归档/模型契约核对通过；12项为S8采样器诊断，不冒充全预算质量。原52项未改，104宽扫描0完成/0失败主动取消并留痕。
 
 正式报告architecture_tlm/unified_v6/RNG_INTEGRATION_RESULTS_ZH.md，执行31aa4fa31fbfb7d74629b54811936ac30a41c250；新40项/results/integrated_rng_20261022_v3及manifest。Qwen2K SC/screenPV seed0为198.00316ms，旧接口197.93816ms；仅合成条件TLM，q/256新响应无继承PPL。100MHz原生端点PPA来自任务38322118/中央记录PR111，额外前端/全局种子等仍未知，完整随机/整机能量面积null。无新PPL/训练/GPU/Slurm/RTL/PT/实际DRAMSys。
 
-下一步发布同PR103的报告与核验回执，再等评审；质量和尚未知PPA后续另补。Projects沿read:project权限不足待同步，架构检查台旧52快照不自动刷新。HANDOFF和integrated/验证目录可恢复；无本任务运行作业。以下旧“仅小接口/未接入”是此前快照。
+下一步等待同PR103评审；质量和尚未知PPA后续另补。Projects沿read:project权限不足待同步，架构检查台旧52快照不自动刷新。HANDOFF和integrated/验证目录可恢复；无本任务运行作业。以下旧“仅小接口/未接入”是此前快照。
 
 # Issue96 RNG接口核实补充：小接口连通，整机默认保持
 

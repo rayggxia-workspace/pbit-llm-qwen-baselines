@@ -1,6 +1,6 @@
 # Issue96最新交接：真实源整机接入完成（2026-10-22）
 
-负责人jieruiz，task/96-unified-tlm，PR103仍开放不自动合并；原PR99已经合并。继续使用本独立checkout，不另建全量副本。最新代码31aa4fa已推送；本轮40结果、报告及校验本地完成，最终发布/远端HEAD以integrated/PUBLICATION.json和Issue96最新回执为准。
+负责人jieruiz，task/96-unified-tlm，PR103仍开放不自动合并；原PR99已经合并。继续使用本独立checkout，不另建全量副本。代码、40结果/报告与验证已实际推送科学head f3cf9b98f38a3cb47c40cb86669a2f180e637d0d；9个关键远端blob原字节核验通过。PR103说明及Issue96进度已更新，待审未合并；integrated/PUBLICATION.json与REMOTE_VERIFY_SCIENCE.json为回执。后续metadata提交不改变执行源和结果。
 
 - 执行冻结31aa4fa31fbfb7d74629b54811936ac30a41c250；40/40完成0失败，93机制/回归、1421归档与模型契约核对通过。run_targeted.py是40项精确计划；源/配置/数据(合成)/校准版本和SHA在results/integrated_rng_20261022_v3/EXECUTION、PLAN、逐case及ARTIFACT_MANIFEST；AUDIT在work/jieruiz/96/integrated。
 - integrated_service为默认，core/RNG/sampler/seed100MHz；SRAM80MHz单独约束。FFN本地LFSR32流式共享64/T32K32，源与SC重叠不算双份；SAVE锁epoch/RESTORE/RELEASE及换种延后。Attention真实Bivium池+独立fair源，q/256、有限端点/种子包/预热/输出等待累计一次。原random_service源码/RTL未改。完整设计与结果RNG_INTEGRATION_ZH.md、RNG_INTEGRATION_RESULTS_ZH.md。
@@ -12,7 +12,7 @@
 - 发布工具integrated/publish_exact.py保持双亲merge原SHA，限定本人路径，force=False，上传前重新核实jieruiz/workspace和原branchhead。原publish.py为旧线性helper，不支持本轮merge。外部发布原件放root/project_archives/rng_integration_issue96_20261022/。不要上传凭据/工艺本体，不改他人STATUS。
 - 无新GPU/Slurm/模型PPL/RTL/DC/PT/STA/实际DRAMSys，未改变任何其他远端任务或定时。Projects沿read:project不足，最终Issue/STATUS仍需如实同步。旧架构检查台冻结52项，不假装跟本版自动刷新。
 
-下一步：将本地成果提交同PR103，远端逐blob读取核对；更新Issue96/本人STATUS/长期备忘录并保留最小待审工作目录。review前不自动关闭Issue或合并PR。以下为历史交接，旧未接入结论只适用于旧源。
+下一步：等PR103评审，保留此最小待审工作目录；科学成果、远端核验、Issue进度及本人STATUS/长期备忘录均已同步，最终metadata仅追加发布回执。review前不自动关闭Issue或合并PR。以下为历史交接，旧未接入结论只适用于旧源。
 
 # Issue96: complete implementation and52 verified TLM scenarios
 

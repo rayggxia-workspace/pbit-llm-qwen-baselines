@@ -6,7 +6,7 @@
 
 执行31aa4fa31fbfb7d74629b54811936ac30a41c250；40/40完整模型情景、93机制回归、1421归档/模型契约核对通过。12项S8、赢家倍率1是整机连通诊断，非默认S128/8倍质量；其余2K/8K、三seed筛选PV、Llama1/2完整32层。原52结果不改；104宽扫描0完成/0失败主动取消并留CANCELLED，不混计。Qwen2K SC/screenPV seed0旧197.93816→新198.00316ms；BF16准确对照时延/存储/阶段一致。新q/256 sigmoid改变分布，无继承模型PPL；全部为合成事务，非真实推理/芯片时间。
 
-正式入口architecture_tlm/unified_v6/RNG_INTEGRATION_ZH.md和RNG_INTEGRATION_RESULTS_ZH.md，原件results/integrated_rng_20261022_v3及work/jieruiz/96/integrated；代码31aa已上传，结果/报告目前本地完成，最终远端状态以Issue96与PUBLICATION回执为准。100MHz native端点PPA取38322118/中央记录PR111，有条件active/idle插值；前端/全局seed/长线和SC等未知，完整能量/面积null。512MAC/64向量/16非线性吞吐仍假设，默认Link非本次实际DRAMSys。无新PPL/GPU/Slurm/RTL/PT。旧界面52项快照不自动刷新；Projects read:project不足待同步，PR103不自动合并。当前无本人本任务运行作业。
+正式入口architecture_tlm/unified_v6/RNG_INTEGRATION_ZH.md和RNG_INTEGRATION_RESULTS_ZH.md，原件results/integrated_rng_20261022_v3及work/jieruiz/96/integrated；代码/40项原件/报告已推送科学交付f3cf9b98f38a3cb47c40cb86669a2f180e637d0d，9个关键远端blob核验通过；PR103及Issue96已同步，待审未合并，publication回执在integrated/PUBLICATION.json。100MHz native端点PPA取38322118/中央记录PR111，有条件active/idle插值；前端/全局seed/长线和SC等未知，完整能量/面积null。512MAC/64向量/16非线性吞吐仍假设，默认Link非本次实际DRAMSys。无新PPL/GPU/Slurm/RTL/PT。旧界面52项快照不自动刷新；Projects read:project不足待同步，PR103不自动合并。当前无本人本任务运行作业。
 
 ## 2026-10-22 Issue92：小网部署计算成本
 

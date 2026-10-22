@@ -1,3 +1,17 @@
+# 发布回执：真实QKV比较已推送PR86
+
+2026-10-21T13:41:36.925189+00:00；jieruiz；task/78-sampler-qkv-benchmark。科学head346bbb12f1181ab1b974940d79f052d0757fec80已按相同Git commit/tree/blob实际上传，草稿PR86开放未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/86 。90/90统计与报告齐全；本次仅补发布回执，科学结果不改。原始QKV/长曲线留服务器，无本任务运行作业。Issue78保持open，Projects本轮未写。最终分支head与远端字节核验见Issue78最新回执；下方待发布字样是此前阶段状态。
+
+# Issue78：真实QKV采样器90配置完成，待发布回执
+
+2026-10-21T13:37:45.944700+00:00；负责人jieruiz；task/78-sampler-qkv-benchmark；base5b26c80，独立稀疏tmp/sampler-qkv-issue78-20261021。90/90配置、3seed×8重复，原BF16 QK/V及筛选派生，源4ec2613；最终摘要/固定预算源25cfd9d/2733。正式报告qwen/results/sampler_qkv_20261021/DECISION_ZH.md，SUMMARY SHA b95c40f5098fca632e28d420e96399189e59c6f80d8ed6da048fa8ebf9ef1261。
+
+赢家c=max与校正拒绝主表典型约288轮；单p-bit Barker仅46/90到IID128目标。赢家argmax初始化B0/S512为89/90、S1024为90/90均值达标。更新/服务波非芯片周期，无新PPL/PT/训练/GPU占用或TLM默认改动。捕获六窗口逐位一致，本地13检查、服务器8核心/4汇总通过；CRLF执行源/配置原字节封存，修复汇总绑定但不改旧结果。
+
+最新HANDOFF在work/jieruiz/78/qkv_benchmark/HANDOFF.md；原78 HANDOFF加入口，其他原文保留。科学成果本地完成，下一步明确文件提交/推送、PR草稿及远端字节核验；以PUBLICATION/Issue78回执为准。无本任务运行作业，不重跑健康任务，不接管PR82。Projects本轮未写，沿既有权限限制待同步。
+
+以下保留此前各任务状态原文：
+
 # Issue84：SANTA++精读报告已上传，PR85待审
 
 更新时间2026-10-21T12:10:56.373304+00:00；负责人jieruiz。Issue84，task/84-santapp-novelty；PR85草稿开放未合并；base pbit-tlm-attention-details-20261016@5b26c80c28ab22383f12ab31046dd723ca985abb。工作目录tmp/santapp-novelty-issue84-20261021，科学head ad92485c9f98cc50fdb706f620c96d681fb339e9已推送。
@@ -728,3 +742,6 @@ GitHub实际操作账号jieruiz；用户明确授权合并。PR47于15:44:54（�
 2026-10-19§5.7.1：Ising次数15新项已完成，B4T32 S32..1024后缀12.065755/11.514886/11.197813/11.066594/11.055307/11.006579，准确PV10.970368；sourcec0fd，21新原件/49源blob，Slurm2440/2441完成。完整S128的2430与新S256/512的2461仍运行，不称完整完成。保留刚合入的Issue51质量预算补充；根副本同字节，PR52草稿/Issue50open，Projects待同步。
 
 2026-10-19 17:51：Issue59/PR62首个联合ARC-E S64单seed已完成，11/39；memo5.8.1追加经验证原件入口与动态ETA，其他28项继续运行/排队。root副本与canonical保持同字节；该状态补充待同PR64推送，未宣称三seed完成。
+
+
+发布视图补注：原服务器SUMMARY SHA b95c40...已完整归档，公开SUMMARY视图SHA0b6aa1f2a5f2b44d28ef4eb1351a533f415beb37da3138887182991d8ebca38c，仅将IID/拒绝法MC95字段标不适用及添加派生来源；所有科学数值不变。原始制品见server_summary_originals，转换代码publication_view.py。最终本地14检查通过；服务器仍8核心/4汇总，新增2汇总守卫仅本地。本轮发布状态以最终Issue78回执为准。

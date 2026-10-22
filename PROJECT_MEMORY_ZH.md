@@ -1018,4 +1018,4 @@ jieruiz，task/107-tlm-cycle-digital-rtl，独立tmp/tlm-digital-issue107-202610
 
 已纳入37962470/37981139/38015538随机矩阵、SS SRAM/DFF主模块与S0–S5、14组SS/TT宏库提取、CACTI估计单列、38100634 TT/SS Q10 SwiGLU、38322118四随机服务核心×三频率252窗口，以及转换/短流/Issue107功能证据与失败历史。共享p-bit后端独立交叉索引，较新38165794/38215256/38263376归档待完整审核，不能用旧报告断言其未完成。120.8uW旧预算缺直接绑定原件，未冒列为本次确认PPA。
 
-157个可访问独立文件原字节SHA与26个tar成员SHA核对通过，8项登记守卫测试通过，无原件缺失；未重新运行RTL/DC/PT/STA/GPU/PPL，不重放全部VCD。所有已算PPA仍保留前/后布局、时序/X/库表告警等限制；新数字v1没有PPA。未搬移/删除/复制大原始结果。AGENTS新增每次仿真登记规则；新结果同任务PR更新台账/总览，清理目录前更新归档恢复地址。当前本地完成，推送/PR状态以work/jieruiz/110/PUBLICATION.json实际回执为准；不自动合并。Projects缺read:project待同步。
+157个可访问独立文件原字节SHA与26个tar成员SHA核对通过，8项登记守卫测试通过，无原件缺失；未重新运行RTL/DC/PT/STA/GPU/PPL，不重放全部VCD。所有已算PPA仍保留前/后布局、时序/X/库表告警等限制；新数字v1没有PPA。未搬移/删除/复制大原始结果。AGENTS新增每次仿真登记规则；新结果同任务PR更新台账/总览，清理目录前更新归档恢复地址。已实际推送科学payload a31e010d，PR111 ready/open待审、未合并，9关键远端blob原字节核验一致；Issue110同步，Projects实际查询缺read:project待同步。回执work/jieruiz/110/PUBLICATION.json；不自动合并。

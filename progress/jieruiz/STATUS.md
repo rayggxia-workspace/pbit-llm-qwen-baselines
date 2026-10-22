@@ -1,5 +1,7 @@
 # Issue110 数字电路仿真统一台账
 
+2026-10-22实际交付：PR111 ready/open，待审、未合并；科学payload a31e010d08e4afe3292316d476d99b1509d10603 已推送，9关键远端blob字节一致，47元数据Git/本机/固定入口一致。Issue110已同步，Projects GraphQL实际INSUFFICIENT_SCOPES/read:project，待同步。没有新电路或模型实验。后续回执提交只更改状态/索引，不改原件。
+
 2026-10-22；jieruiz；task/110-circuit-simulation-registry；基线eb317e4f，PR base pbit-tlm-attention-details-20261016。独立稀疏tmp/circuit-registry-issue110-20261022。本地完成35批次/模块记录、516配置行、117数字原始归档索引；入口digital_circuit_simulation_registry/README_ZH.md，原件地址/源绑定/PVT/范围/限制和实际阶段分开。8守卫测试、157独立文件SHA和26tar成员SHA通过，无新仿真、无大原件移动/复制。根同名目录为同字节阅读镜像；AGENTS/长期记忆新增每次仿真登记规则。推送/PR实际回执见work/jieruiz/110/PUBLICATION.json，未合并前不标任务完成。Projects缺read:project待同步；HANDOFF保留后续登记命令，不重跑已有健康任务。
 
 以下保留此前任务状态原文：

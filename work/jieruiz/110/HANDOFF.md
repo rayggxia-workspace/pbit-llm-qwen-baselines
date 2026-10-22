@@ -1,5 +1,7 @@
 # Issue110：数字电路仿真统一台账
 
+2026-10-22实际交付：PR111 ready/open，待审、未合并；科学payload a31e010d08e4afe3292316d476d99b1509d10603 已推送，9关键远端blob字节一致，47元数据Git/本机/固定入口一致。Issue110已同步，Projects GraphQL实际INSUFFICIENT_SCOPES/read:project，待同步。没有新电路或模型实验。后续回执提交只更改状态/索引，不改原件。
+
 2026-10-22；负责人jieruiz。已通过GitHub /user核实登录身份；正式目标rayggxia-workspace/pbit-llm-qwen-baselines。基线eb317e4f6fb1b0d8844887401f3275f128ef8a83，PR base pbit-tlm-attention-details-20261016；分支task/110-circuit-simulation-registry，独立稀疏目录C:/Users/86134/Documents/a_P_BIT/tmp/circuit-registry-issue110-20261022。未修改Issue95/107/7执行源码或他人STATUS。
 
 本地已完成35模块/批次记录、516配置行、117原始数字归档发现索引；所有原件不搬移/删除，大波形/网表/库不复制。入口digital_circuit_simulation_registry/README_ZH.md；records是登记主数据，00/01及CSV由registry.py render生成。本机根同名目录是同字节阅读镜像，正式编辑在任务仓库中；合并后从集成维护。

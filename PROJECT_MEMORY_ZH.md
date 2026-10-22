@@ -394,6 +394,12 @@ FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700�
 
 ## 6 随机源、p-bit与相关性
 
+2026-10-22用户要求同时细调现有比较参考Vref到50%并探索共享高速比较器，已准备`远端上传/p50_shared_speed_v1/`（20文件约193KB）。两独立作业：旧两款10nA仅细校准Vref；新1.2V/10MOS非限流输出比较器扫描100nA/1uA/10uA后，做4源/1比较器/1个8T列锁存的真实TG共享探针，槽0.2/0.5/1us、Cbus0/1/5fF。新cal1201/1303/1409每点20ms，冻结后新val1601/1709/1801，shared2203/2309/2411不混用；不外推、不用验证数据重调。21本地测试、Python3.6/Bash语法、27PDK哈希和110份预览网表通过，未远端执行或认定50%/100ns达标；100ns未达时仍诊断最快物理有效候选并标记未达。旧快照不改，初步使用仍需按相关性选择低速采样。入口`analog_pbit_20261016/p50_shared_speed_v1/README_ZH.txt`及delivery索引。
+
+2026-10-22零外加C结果38237164已下载复核（更新下段历史待下载状态）：归档SHA `d57893e605adc7b1463094a6ab717afcccab76915230e35fd619400f10a29760`，728成员哈希、98案例完成、14源码/98网表/27PDK及原始87噪声＋2阶跃＋6DC＋3OP/AC/noise复算通过。裸源固定0.6V判决P1=49.99..50.39%，rho(0.5us)=.00183...00256；T32@0.5us方差1.040..1.066倍IID，T128仍1.191..1.270，不认证2M独立bit/s。两旧10nA连续比较器新seed P1=44.38..48.70%，rho(1us)=.493...541，±10mV过驱动到轨1.3..2.1us；冻结参考后50%目标未达到，不能认定完整通道统计验收。真实S形曲线已测，三seed离散不是器件/PVT范围。保留0C裸源，下一步真实列共享快速比较器与MUX负载联合验证；现有阵列模型50ns仍为行为假设，不能只改延迟冒充连续滤波动态。详细入口`analog_pbit_20261016/review_38237164/结果审阅_20261022.txt`与`review_summary.json`；原包不改、不重跑、没有改旧提交快照。
+
+2026-10-21独立CMOS模拟电路工作：用户确定先建立选bank/选行、按列共享比较器的随机源阵列功能模型。入口`analog_pbit_20261016/row_shared_array_v1/README_ZH.txt`，直接上传副本`远端上传/row_shared_array_v1/`；默认2bank×3行×8列、48裸核心共用8个采样/保持比较器，一个8bit端口，无每源DAC/比较器/自旋保持、不强制FIFO。请求捕获地址与公共Vref，输出有效后保持到消费；核心持续演化，公共Vref不代表每列任意概率。Python功能模型和Spectre/Verilog-A生成器已写，封装现有无Ccore两MOS；28项本地检查、Python3.6 AST/Bash语法、27项PDK哈希及网表生成通过，Spectre/AHDL远端实编译未做，zero_cap作业38237164结果仍待本地核查。时序/OU/总线负载为演示假设，不能替代真实速率、熵或PPA；下方120.80µW/450MHz/16bit仍为另一路历史宏预算。源包/证据保留在独立模拟目录，未作为LLM仓库代码发布。
+
 双流误差追加诊断见Issue30公开结果目录 `ERROR_DIAGNOSIS_ZH.md`。已有47项的T4096精确双流x概率层均值5.3492%、z0.8255%；T256/4096最大z裁剪约0.000964%/0.001767%，不支持大面积饱和是当前主因。在同一固定输入/尺度下，独立权重流增加非负条件方差；经SwiGLU和多层传播的主导位置仍待消融。DS-CIM使用加128偏移、128粒度FP8对齐、优化PRNG/seed及SRR，LLM为T256误差pattern注入和六任务准确率，不能等同本项目IID逐连接短测，也不能认为加SRR就会比现有精确计数更准。
 
 三种服务必须分别命名：
@@ -757,6 +763,9 @@ Issue78后续分支变更（2026-10-21）：并行审阅已将PR79合并a7a2c5b3
 Issue78发布回执（2026-10-21 08:55 UTC）：后续分支task/78-score-interface已推送0d3dfa2fa107ea5925751cdb686cda089b414628，创建PR80（草稿未合并）；原PR79已合并a7a2c5b。旧OFFSET网络阻塞解除，原件远端blob SHA6a628a...核验通过；本次dtype/接口审计一并交付，见work/jieruiz/78/SCORE_INTERFACE_PUBLICATION.json。Issue78仍open、无新模型/量化/PPA作业，Projects待权限。
 
 
+## 2026-10-21 Issue78 sigmoid驱动8位接口诊断
+
+用户明确仅指sigmoid括号内a=(z−zref)−m ln2，而非Q/K INT8或R8概率阈值。PR79已合并a7a2c5b、PR80后续已合并e24414b；本次task/78-field-int8接续。CPU2630源757fb90完成25合同，24层2688行保存分数＋42行S64三seed真实驱动局部解析。a中位−8.70，5/95%−26.15/−4.70，负尾约−98。负幅度8位h1/8/范围−31.875~0，理想访问状态平均条件TV1.262%；signed8 h1/16范围−8~7.9375因饱和平均6.947%、最大51.475%。h1/16负幅度本批0.631%，但m14压力截断严重，不能直接外推；10位h1/16对照0.630%。均不是量化自适应完整轨迹/PPL或PPA；默认未改，原始capture私有。SOT SoftMax论文披露电流映射与平移/伸缩校准，未披露局部场INT8质量；其INT8/4图指输出概率。报告qwen/results/ising_broadcast_20261021/FIELD_INT8_ZH.md，manifest和work/jieruiz/78/FIELD_*含SHA、命令与新PR待发布状态。无运行作业、不重交2630，下一步独立校准＋模型PPL。
 ## 2026-10-21 第四轮PR审核与合并回执（Issue55）
 
 PR77四条训练讨论稿、PR79广播/正确拒绝采样、PR75 Llama2任务阶段、追加PR80偏移与score接口均已实际合并。精确head/base/merge及独立证据见work/jieruiz/55/round4/REVIEW_ZH.md和receipts。旧时点的draft/未上传/未合并描述保留为历史，本节覆盖本轮发布状态。新报告本身通过后续PR交付，不计入4项成果。
@@ -770,6 +779,27 @@ PR79的18项CPU128目标后缀PPL已核，并非完整WT2；19当前合同与旧
 PR77仅计划/文档验收，无训练已完成结论。Issue76由用户额外明确授权后已更新并关闭；未修改amlink1219个人STATUS。Issue28继续维护。备忘录canonical原有未提交增量先逐SHA归档并保留全部有序文本，HEAD保持原值，其工作文件与根阅读副本同步到本次发布文档。仅回收本轮本人稀疏review/helper，恢复索引project_archives/pr_review_issue55_20261021/RECOVERY_INDEX.json；执行状态查Issue55最终回执。
 
 
+## 2026-10-21 Issue78 sigmoid驱动8位接口诊断
+
+用户明确仅指sigmoid括号内a=(z−zref)−m ln2，而非Q/K INT8或R8概率阈值。PR79已合并a7a2c5b、PR80后续已合并e24414b；本次task/78-field-int8接续。CPU2630源757fb90完成25合同，24层2688行保存分数＋42行S64三seed真实驱动局部解析。a中位−8.70，5/95%−26.15/−4.70，负尾约−98。负幅度8位h1/8/范围−31.875~0，理想访问状态平均条件TV1.262%；signed8 h1/16范围−8~7.9375因饱和平均6.947%、最大51.475%。h1/16负幅度本批0.631%，但m14压力截断严重，不能直接外推；10位h1/16对照0.630%。均不是量化自适应完整轨迹/PPL或PPA；默认未改，原始capture私有。SOT SoftMax论文披露电流映射与平移/伸缩校准，未披露局部场INT8质量；其INT8/4图指输出概率。报告qwen/results/ising_broadcast_20261021/FIELD_INT8_ZH.md，manifest和work/jieruiz/78/FIELD_*含SHA、命令与新PR待发布状态。无运行作业、不重交2630，下一步独立校准＋模型PPL。
+
+
+Issue78输入驱动分析发布回执（2026-10-21 09:16Z）：task/78-field-int8科学head08f32b2已推送，草稿PR82开放未合并；GitHub原始统计JSON与manifest字节SHA核验通过。旧PR80已合并e24414b。无运行作业，不重交2630；模型量化PPL/PPA仍未做，Projects待既有权限。FIELD_PUBLICATION.json含Issue评论和回执。
+
+
+## 2026-10-21 Issue73定时检查：18/26完成
+
+原PR75已合并3fe790e，仅为代码/提交/恢复阶段；后续task/73-results-followup、PR83草稿开放未合并。CPU2632源86ccedc完成7合同；10:11:23Z为18completed（旧8＋修复10）、2running（2585_12/16）、6pending（20～25），新ARC-E FFN seed0/1完整。逐题SHA/全量ID/候选token/32层active-dummy/源与输入绑定及已存metrics重聚合通过，尚未独立复算官方process_results、未重哈希14GB权重。PIQA S512与ARC-E FFN均2/3，不报部分组均值。待运行约7.98GPU小时，两卡保留估计剩4～6h、单卡8～11h，非排程保证。入口llama2/results/task_accuracy_20261020/PROGRESS_20261021_ZH.md及checkpoints/20261021T101123Z/；原推理和快照不动。heartbeat每日继续且提示已纠正旧PR75状态，26项收齐后需官方oracle/配对验收再停用。原生Git连接两次超时，源码通过GitHub API上传且commit/tree/blob逐SHA完全一致，报告发布以PR83/Issue73回执为准。
+
+
+Issue73 18/26检查点发布回执：PR83草稿开放未合并，科学head7a75c53已通过GitHub API按完全一致的Git对象SHA发布；原件SHA7f894690ee8482dbf98d019df2a272cb4ac0c6d9f138350a6975a7b22bba65b4远端字节核验通过，Issue73评论6313631692已同步。原生Git连接阻塞已由替代传输解除。回执work/jieruiz/73/PUBLICATION_CHECKPOINT_20261021.json；每日heartbeat继续至26项及官方oracle最终验收。
+
+
+## 2026-10-21 18:25 Issue73用户回查：19/26
+
+CPU2634复用已测源86ccedc通过封存/逐题SHA/32层检查，19completed、2running（2585_12/20）、5pending（21～25）。新增ARC-E FFN seed2，两任务仅FFN三seed齐：PIQA acc/acc_norm77.80196%/78.99891%，ARC-E76.27666%/74.32660%；不是最终26项或独立官方oracle验收。新检查点checkpoints/20261021T102541Z/CHECKPOINT.json SHA c3e1ac52858d6f3cb3006e1e36c032c0c20eb0bf4df93858e7dc708a42da4871；同PR83报告更新，旧18检查点保持原字节。五项待运行约6.71GPU小时，两卡含运行尾部仍预计4～6h。服务器Qwen39项status全completed，含Hella1000子集。原推理未重跑，回查继续，结果同步以Issue73新评论为准。
+
+
 ## 2026-10-21 SANTA++ v1精读与创新性对照（Issue84 / PR85）
 
 负责人jieruiz；task/84-santapp-novelty；独立稀疏目录tmp/santapp-novelty-issue84-20261021，base5b26c80。报告architecture_tlm/research_readings/SANTAPP_V1_NOVELTY_ZH_20261021.md已推送科学head ad92485c9f98cc50fdb706f620c96d681fb339e9，PR85草稿开放未合并，Issue84保留。用户PDF2609.35629v1为SANTA++，32页，SHA d9d9008174be713ba498dd96710e07552072eb4a9daf7063431a8c5c622375bf；官方demo commit9d1fdff7df65e54febc4112e99346ead0353e57c。已读正文/附录A–F方法与边界、图表渲染抽查；没有新推理/训练/PT/TLM。
@@ -777,3 +807,55 @@ PR77仅计划/文档验收，无训练已完成结论。Issue76由用户额外�
 本文用真实key代表、Gumbel不放回top-K选team、条件纳入概率校正及GQA并集，已覆盖前置筛选/稀疏Attention宽泛想法。我们的max4是四个均值，不同于四个真实key；当前筛选没有逆选择概率校正，候选内采样准确不等于全cache准确。其S128=32teams，不等于我们的128观测；LongBench16.68%逻辑KV/99.07%分数保留，不能转成整机能量；1.69倍仅32K单层GPU算子、无prefill/packing，demo还另存packedKV。MLA共享并集使逻辑访问仍86.18%，确认共享头会吃掉收益，但不构成我们的独创。
 
 候选创新收窄到具体p-bit采样电路/并行调度、短流FFN及存储协同；不能因本文没做FFN就称整个领域新颖。新拒绝采样无全模型PPL/PPA，T32分层不能冒充自然IID；需对照DS-CIM/ReMix/直接随机舍入低位MAC、同模型长上下文与同质量J/token/延迟/面积。报告与来源manifest/算术核查见work/jieruiz/84。未接管Issue37/78或评测作业，无新增运行任务；下一步评审PR85，后续算法实验需原任务单独安排。
+
+
+## 2026-10-21 赢家保持Softmax本地设计复核
+
+用户提供pbit_llm_master_report_20261012/PBIT_WINNER_HOLD_SOFTMAX_ZH_20261021.html（SHA454ef7b2b6e18a2a9744f3f92c34fbb9c8362a8d54c92c881beef2d7729dd228）。已读全文/嵌入算法，独立核对详细平衡并重放内嵌纯数学脚本；源码SHA649f1d44...、输出SHA cfc8b490...与文档完全一致。12固定偏置、18成对、4XOR循环、4均匀独立核及合成IACT检查通过。GitHub核验本人jieruiz、Issue78仍open、PR82仍draft；此为只读跟进，不接管数值实现，没有新分支/远端发布/模型/PPL/Slurm/PT/TLM。原HTML未改。
+
+并行赢家保持允许多hot，旧赢家自己的bit为1则保持，否则活跃地址均匀仲裁，全零也保持；平稳目标为odds(p_i)，理想sigmoid对应Softmax。需保持样本权重、各路/跨帧新鲜独立与准确均匀仲裁；不能套FFN共享64同随机数。它把单地址约束转入数字索引，不再依赖稠密互斥Ising网络。单p-bit分数差是已有Barker接受，XOR是受限对称提议；均匀512下132/384/896只属平稳渐近算法对照。
+
+新增合成解析反例：512类z=[12,12,0,...]，双峰质量99.8436%，f在两峰为+1/-1。全局均匀挑战者Barker IACT1019.801，目标渐近ESS128需130535更新；并行赢家保持c12 IACT2.996875，需384更新。N4/6/8全枚举特征函数残差<=1.50e-15。不是模型V/PPL或物理周期；并行每轮512随机位+仲裁，更新比不等于能耗比。故优先保留并行吞吐候选，Barker作为低面积候选，XOR先作控制对照，真实logits/V决定选型。局部8位负驱动结果不能直接继承Barker差分驱动；可用符号和补概率映射但需单独验证量化。证据tmp/winner_hold_review_20261021/REVIEW_MANIFEST.json及two_peak_analysis.py/json，仅本地数学诊断。
+
+
+## 2026-10-21 Issue78真实QK/V采样器对照完成
+
+独立task/78-sampler-qkv-benchmark、tmp/sampler-qkv-issue78-20261021，base5b26c80；capture2640源4251660、benchmark2641/2642源4ec2613、派生2733源25cfd9d。54原始BF16 query/head/layer行＋36筛选派生，共90配置全部完成，三seed×八重复，原FFN/Attention轨迹，512/2K/8K各两窗口、层0/12/23、头0/6/13，真实64维V。六窗口捕获前后backbone/末读出逐位一致。原2639门禁失败不接受；2731因Windows archive LF→CRLF配置SHA停止，实际执行源/PLAN原字节已归档并验证只换行不同，2732/2733按真实SHA汇总，无模型/采样重跑。输入/原件/来源见work/jieruiz/78/qkv_benchmark，摘要SHA b95c40f5098fca632e28d420e96399189e59c6f80d8ed6da048fa8ebf9ef1261。
+
+以同候选真实V输出MSE对照解析IID128：主表预热32，winner c=max中位288、90/90（范围288–1056）；校正拒绝中位288.17、90/90（约128–406）；Barker46/90、中位16416，仅成功输入统计；两比特19/90；XOR67/90。winner cmax+2较慢，+4多不达标，真实Attention有效类别中位约7–15；均匀理论最优偏置不直接适用。赢家8位负驱动h1/8/[-31.875,0]档位基本不变，非物理/R8验证，精度更高会有约4.95e-4归一化偏差地板。
+
+从argmax初始化，winner B0/S256到IID128均值67/90，S512 89/90（MC95 83），S1024 90/90（MC95 90）；IID512目标B0/S2048均值90/90但MC95 81，S4096才90/90上界。本批MAP-V无行满足IID128，不是只测容易尖峰。更新数不等于芯片周期：P64处理N512每帧至少8服务波，S512即至少4096服务周期，另计加载/稳定/计数仲裁/反馈；全N并行也未证明II=1。两主候选能量胜负未定，Barker/纯XOR先不作长候选主线。
+
+不是完整模型PPL/准确率/PPA/能量，原始V访存去重/GQA并集未实测；筛选遗漏另计，部分保留质量很低。正式报告qwen/results/sampler_qkv_20261021/DECISION_ZH.md及SUMMARY，13本地、8服务器核心/4汇总检查通过，无本任务运行作业、无新GPU或训练/默认/TLM改变。任务分支/PR发布待本次实际回执；Issue78继续open，PR82不接管。
+
+
+Issue78真实QKV比较发布回执：科学head346bbb12f1181ab1b974940d79f052d0757fec80已推送，草稿PR86开放未合并，task/78-sampler-qkv-benchmark。90/90配置的结果、来源、原执行字节和报告均发布；摘要SHA b95c40f5098fca632e28d420e96399189e59c6f80d8ed6da048fa8ebf9ef1261。当前无本任务作业，Issue78继续，后续硬件/PPL未代做；待最终Issue回执确认新metadata head及远端字节。
+
+
+Issue78比较口径补注：直接校正拒绝法的IID128/512误差匹配是理想独立性下的解析期望，90/90表示服务完成与期望律，不表示24次MC经验均值都过线；赢家/Barker等达标为MC网格观察。正式DECISION已明确，不能把二者的覆盖率当同一种统计证据，或据此宣称精确能效胜负。
+
+
+Issue78发布视图口径修正：原服务器SUMMARY SHA b95c40f5098fca632e28d420e96399189e59c6f80d8ed6da048fa8ebf9ef1261仍完整归档；公开SUMMARY视图SHA0b6aa1f2a5f2b44d28ef4eb1351a533f415beb37da3138887182991d8ebca38c。仅将IID/拒绝法40项MC95字段改为不适用/null，并增加父制品/转换源码SHA；所有误差/预算/输入/配置/原件SHA不变。publication_view.py断言恢复注释后与父摘要完全相同。14本地检查通过，服务器仍8核心/4汇总，新2汇总守卫仅本地；不虚报为新服务器评测。PR86继续草稿未合并，本轮视图以最终推送/Issue回执为准。
+
+
+Issue78本轮最终发布核验完成：PR86草稿开放未合并，最终head 4f8a1b4f12876ece8f73f6c304509747eff011b6；DECISION/SUMMARY发布视图/RESULT_MANIFEST三文件均经GitHub原字节SHA读回核验，公开摘要SHA0b6aa1f2a5f2b44d28ef4eb1351a533f415beb37da3138887182991d8ebca38c。Issue回执 https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/78#issuecomment-6319266942 。上方待推送/待回读描述为历史，自动审批超时后一次重试已成功，无用户待处理权限阻塞；本任务无运行作业，后续PPL/PPA与Issue78仍开放。
+
+
+## 2026-10-21 全候选并行赢家保持/校正拒绝TLM（Issue87）
+
+用户明确要求候选N路足量一次读取，随机源前端先不决定。独立task/87-parallel-sampler-tlm，base5b26c80，稀疏tmp/parallel-sampler-issue87-20261021；未接管amlink1219的Issue37。新增winner_hold_tlm_v5.py/corrected_rejection_tlm_v5.py，共用parallel_sampler_v5.py后端无关源接口，并经screen_parallel_tlm_v5.py接回完整decode。每查询赢家N路、拒绝N−1路并行；公平随机辅助单独统计，不能套FFN同阈值64共享。阻塞单帧FSM计源服务/间隔、计数/均匀仲裁、空态2^-m校正、偏移重写或共享标量、单项输出回压；不是一拍完成更新。
+
+执行f6c6bd8215c2d702ab42e6a3078f64e0888cade8，18新＋10旧检查通过，30三seed合成模块和2单层decode情景完成；结果architecture_tlm/results/parallel_sampler_v5_20261021，说明architecture_tlm/PARALLEL_SAMPLERS_V5_ZH.md，交接work/jieruiz/87/HANDOFF.md。不是PR86全部真实QKV重放/完整PPL/Slurm/PT或DRAMSys实测；未知完整能量/面积null，时序为明确资源参数的情景。v4原默认保留，只加3扩展点。代码本地完成，推送/PR状态以Issue87最终回执为准；旧Issue73/78作业不改。
+
+
+Issue87发布回执（2026-10-22）：科学head8687c1d8124af192e82ec13aa3dbe12ccaa240b7已上传workspace；PR88草稿开放未合并，6份关键模块/中文说明/报告/验证文件的GitHub原始blob逐SHA-256读回一致。PUBLICATION和REMOTE_VERIFY在work/jieruiz/87/；后续仅交付状态元数据，实验执行仍f6c6bd8。上方待推送描述为历史，无用户待处理权限阻塞；看板沿既有限制未同步。Issue87保持open，源后端/真实能耗面积与新模型质量仍待后续标定，未调用新Slurm或改Issue73/78任务。原型36文件已逐SHA压缩核验至本地project_archives/parallel_sampler_issue87_20261021/prototype_before_f6c6bd8.zip（SHA1c6ae1c9367f4e67634283fc68c5d31c4ee35e0187d11f3e7a7edaf24503bb51），原型目录回收，当前仅最小稀疏任务工作树。
+
+
+## 2026-10-22 Issue73：26项推理完成，按用户要求删除定时
+
+北京时间12:43（04:43:23 UTC）SSH只读检查：Llama2任务26/26 completed，PIQA1838/ARC-E2376各13项，逐题文件SHA/字节数/路径及声明32层计分守卫通过，当前Hongjie_Zeng的Slurm队列空；旧2572健康8＋修复2585十八项均按原计划保留，没有重跑或取消。原件llama2/results/task_accuracy_20261020/checkpoints/20261022T044323Z/STATUS.json，汇总PROGRESS_20261022_ZH.md。此次只重聚合已存summary指标，官方逐题process_results与最终完整层/输入源合同复核仍待做，不将推理完成等同最终科学验收。
+
+用户本轮明确任务跑完即结束定时；automation_update(delete,id=llama2-7b)返回deleted，本地配置确认已不存在，回执work/jieruiz/73/AUTOMATION_STOP_20261022.json。尽管最终oracle待做，不得因为旧交接提示而自动重建此定时。Issue73/PR83继续open/draft未合并，后续同任务完成验收与同步；报告发布以PUBLICATION_STOP_20261022回执为准。其他暂停的p-bit抢救回查没有改动。
+
+
+Issue73 publication receipt (2026-10-22): completed26 status/report and automation-deletion receipt pushed to PR83, scientific head 6acac58eac394b940907a5e4265db39fd043a761; three GitHub blobs read back SHA-identical. Issue comment: https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/73#issuecomment-6332960590. PR83 remains draft/unmerged; oracle pending, daily follow-up deleted at user request. PUBLICATION_STOP_20261022.json records exact evidence.

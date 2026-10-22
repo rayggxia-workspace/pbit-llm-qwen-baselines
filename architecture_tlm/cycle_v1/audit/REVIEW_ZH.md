@@ -54,6 +54,14 @@
 
 这确认了真实 native Operation / Tile / Core 指令路径、有效性依赖、外部窗口和请求 ID 控制。探针内存返回不携带数值，因此不验证随机门限、矩阵/FFN 数学；它也未执行原生 DRAM 命令后端、完整 ONNX graph 自定义节点、全模型，或与 cycle_v1 做逐周期等价比较。ONNXim 允许同沿返回后再受理，在 bounded trace 的 cycle 12 可以直接看到；不能把这组总周期与严格 old-state 的 cycle_v1 直接相减解释为速度差异。
 
+## 独立 RTL 协议回执复核
+
+审查了 `2d3ad89` / `9dcc6ac` 的四个 SV 文件、比较器和逐例 stdout。SV 使用倒计数、环形指针和两级 toggle 同步寄存器独立计算握手，testbench 读取实际 pre-edge ready/valid，未从 Python 预期事件驱动 SV ready 或输出。流水测试覆盖固定参数组合下的有限 in-flight、有限 FIFO、输出 II 和回压；mailbox 测试覆盖四种 100/80 MHz 相位关系，payload 为 token ID。
+
+`verify_rtl_evidence.py` 在审查工作树重新解析原始 stdout、重新运行当前 kernel 期望，核对 **9 例 / 252 个握手**；原始 archive 及其 **93 个制品**和 **8 个执行源文件**散列均一致。回执为 `results/rtl_offline_review.json`。这是对 Slurm 2764 / Icarus 12.0 原始执行证据的独立离线复核，没有声称本机重新执行 RTL。
+
+双同步触发器加按旧状态读取的同步消费者确实对应第三目的沿可见；反向信用也保持三个源沿的使用约束。该结果只验证数字协议，不覆盖真实 SC 位流、算术流水、内存乱序 controller RTL、亚稳态/MTBF、综合、STA 或电路功耗。协议 RTL 与源代码 checker 的相等不能扩大为整算子硬件验证。
+
 ## 重现
 
 ```powershell

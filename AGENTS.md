@@ -131,3 +131,10 @@
 - 本机2026-10-19已回收目录与恢复方法入口：Issue68/PR69的maintenance/storage_cleanup_20261019/REPORT_ZH.md及ROUND2_REPORT_ZH.md；第二轮未提交资料和增量bundle保留在本地project_archives/cleanup_20261019_round2/。旧备忘录中的已归档工作路径可按恢复索引重建，不重复昂贵实验。
 
 - When training a replacement QK selector, preserve the reference selector’s valid/forced masks, free-block normalization, standard-deviation floor and temperature before matching budgets. Fit only on training data, report actual holdout budget/capacity drift, and do not call lower omission at a larger budget a matched-cost gain. If a temperature optimum is at a sweep boundary, extend the control or include a TRAIN-fitted scalar threshold before attributing the gain to a learned selector.
+
+## 数字电路仿真统一台账（用户2026-10-22要求，Issue110）
+
+- 所有LLM相关数字模块及共用随机源新增仿真，必须在同一任务PR内新增或补全 `digital_circuit_simulation_registry/records/` 的run记录，并运行registry.py的check/render，更新总览。维护入口是该目录README_ZH.md；本机固定阅读副本为 `C:/Users/86134/Documents/a_P_BIT/digital_circuit_simulation_registry/`。不再另建互不相通的功耗台账。
+- 登记准确执行源码/manifest与配置SHA、原始结果路径或归档成员、原字节SHA-256、工艺/PVT/频率/位宽/激励/seed/窗口、模块边界和未计成本；功能、综合、STA、PT、后布局分别写实际状态。待跑、失败、仅功能、库提取、TLM估计不能写成已测PPA；功耗算出但时序违例/告警须保留。
+- 台账只存小型索引/必要数值，不复制大波形/网表/工艺库；同一实验多副本或重汇总不算新实验。新run保留旧失败/负结果。清理结果所在临时目录前，先把台账补为可恢复归档路径/成员和SHA。没有本机或共享存储权限时明确待补，不宣称远端可访问。
+- 工作区正式版本为仓库同名目录；本机根目录仅同字节阅读镜像。更改后同步镜像、本人STATUS/HANDOFF与长期备忘录；未合并维护分支先引用最新PR，避免并发覆盖。

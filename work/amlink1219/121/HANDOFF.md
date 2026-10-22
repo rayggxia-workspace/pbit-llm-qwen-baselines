@@ -13,3 +13,9 @@
 未完成：116正式发布commit回归与默认FFN接合；多编码组流水；真实模型输入活动与完整质量；T16/T64恢复RTL场景；STA/DC/PT/面积/每完整操作能量。PPA保持null，不能替换旧费用后宣称总能效收益。
 
 下一步：核对Issue116及最新PR后，用README命令在其冻结公开commit复跑；把恢复动作按每输出映射，分开cross-k加法和窄化；不接管其他成员kernel/memory/Attention。Projects权限缺read:project，见PROJECTS_CHECK.json，仓库/PR上传权限不受影响。
+
+## 实际发布
+
+发布回执（Issue121）：科学提交`3e8cb017e71a96aa628b1772810b7fdf12884245`已上传[PR122](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/122)，87项远端Git对象一致，开放待审、未合并。Issue116已回传接合结果；后续元数据提交不改变验证源码。
+
+具体回执PUBLICATION.json、DELIVERY.json。

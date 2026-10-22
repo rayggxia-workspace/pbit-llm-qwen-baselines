@@ -1,10 +1,10 @@
-# Issue123 完整FFN接合与STA/PPA协作（2026-10-23）
+# Issue123 已按用户要求停止（2026-10-23）
 
-任务分支task/123-full-ffn-ppa，依赖PR122@8007d98及已发布PR126@160f46e（均待审）。116基础后端已交付，复用其最新restore_rounding，不接管或重复其kernel/memory/Attention/crop工作。
+task/123-full-ffn-ppa / PR125待审。正式PR126@160f46e＋PR122@8007d98接合已上传d944081；28项冻结包测试、120次独立随机payload复核及45RTL场景通过。完整fixture已捕获。
 
-新结果：CPU2777捕获真实896→4864→896完整FFN单token fixture，模型派生数据仅留个人服务器。CPU2778通过45RTL场景、11667输出、180reset flush，T16/T32/T64全覆盖；18源SHA已核。已接合正式PR126后端，冻结包28项测试通过；完整T32运行CPU2783进行中。
+CPU2783于03:41按用户要求取消，CANCELLED/0:15、24:20，无全尺寸成功summary/trace/数值结论；本任务无运行作业。主机候选源码、已有34测试回执和小烟测已归档，未接入发布runner，未新提交全尺寸作业。
 
-按用户本轮明确安排，STA/PPA交给jieruiz明日执行。具体可执行交接在architecture_tlm/encoding_restore_contract/ppa/HANDOFF_JIERUI_ZH.md；实际DC/PT/功耗尚未运行，不能报面积/能量。发布与@回执见work/amlink1219/123/，不自动合并。
+已做/未做/恢复步骤及中间文件索引见work/amlink1219/123/STOP_REPORT_ZH.md。STA/PPA交接文件已上传并@jieruiz，待其实际EDA；PPA/PPL未知。保留必要复现快照，未删除唯一数据；无自动继续。Projects待read:project，不自动合并/关闭。
 
 ---
 

@@ -54,8 +54,8 @@ python -B -m architecture_tlm.cycle_v1.run_contract_ffn --fixture FULL.json --pr
   work/amlink1219/123/reviews/REVIEW.json，旧注入目录不冒充最终版本执行。
 - 全尺寸T32期望90次完整组编码、204288次逐输出恢复及同数跨k加法、3192个权重tile。
   这是验收期望，实际通过状态以服务器结果summary/manifest和任务交接为准。
-- 正式后端完整运行为 CPU-only Slurm2783；执行包及配置索引在
-  `work/amlink1219/123/ffn_2783/`。前两次2779/2780为主动中断，均不能算成功。
+- 正式后端完整运行 CPU-only Slurm2783 已按用户要求取消（CANCELLED/0:15）；执行包及配置索引在
+  `work/amlink1219/123/ffn_2783/`。2779/2780也为主动中断，三次均不能算完整验证成功。
 - 主机调度 helper 的55步、17350事件前缀与旧版本全状态相等，3.868→1.226秒。
   此外独立随机测试120次完整payload一致；不由前缀推算全程或硬件加速。
 
@@ -64,3 +64,5 @@ oracle/账目验收。Git只放必要小摘要、索引和SHA；原件留个人�
 单token单层差异不是模型PPL；条件周期不是STA；未知PPA保持null。
 
 上传/作业状态入口：[任务交接](../../work/amlink1219/123/HANDOFF.md)。
+
+当前已停止，无自动继续。详见[停止总结](../../work/amlink1219/123/STOP_REPORT_ZH.md)。更快调度候选及小型证据仅归档于[candidates/pending_20261023](candidates/pending_20261023/README_ZH.md)，未取代发布runner。

@@ -1,6 +1,6 @@
 ## 2026-10-23 Issue123 完整FFN与STA/PPA交接
 
-Issue116已通过PR126发布正式后端，本任务PR125固定160f46e与PR122@8007d98接合完整gate/up→SiLU/product→z重编码→down→BF16/残差，legacy默认保留。新接口按FP32 x/z、共享64组、逐输出B4恢复、独立跨k加法和有限信用执行。独立提取执行包28项测试通过，原核全payload等价。完整896→4864→896真实fixture已捕获（CPU2777），CPU2783全尺寸T32正在运行，尚无完整形状通过结论；早期2779/2780中断证据保留。
+Issue116已通过PR126发布正式后端，本任务PR125固定160f46e与PR122@8007d98接合完整gate/up→SiLU/product→z重编码→down→BF16/残差，legacy默认保留。新接口按FP32 x/z、共享64组、逐输出B4恢复、独立跨k加法和有限信用执行。独立提取执行包28项测试通过，原核全payload等价。完整896→4864→896真实fixture已捕获（CPU2777），CPU2783全尺寸T32于03:41按用户要求取消（24:20、CANCELLED/0:15），无完整形状通过结论；2779/2780中断证据保留。候选调度源码/已有小烟测仅归档，不接入默认，不自动继续；停止总结为work/amlink1219/123/STOP_REPORT_ZH.md。
 
 CPU2778已通过45RTL场景/11667输出/180reset flush，覆盖T16/32/64、BF16/FP32、depth1/3/5及3seed。按用户安排已上传 `architecture_tlm/encoding_restore_contract/ppa/HANDOFF_JIERUI_ZH.md` 并在Issue123 @jieruiz，由其执行实际STA/PPA；当前EDA未运行、物理指标null。没有新PPL。源、作业、报告、发布状态在 `work/amlink1219/123/HANDOFF.md`；PR均待审未合并。Issue124短投影优化继续由原任务维护，未重复。
 

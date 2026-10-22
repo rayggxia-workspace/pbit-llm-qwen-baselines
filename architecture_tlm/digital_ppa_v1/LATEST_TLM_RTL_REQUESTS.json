@@ -1,0 +1,566 @@
+{
+  "schema_version": 1,
+  "status": "SIMULATION_REQUIREMENTS_NOT_RESULTS",
+  "issue": 107,
+  "TLM_ref": "b05fb36d8104eb07b33a9af13c747ca2722728cf",
+  "RTL_ref": "23e8d65fbd84cf548ab82a6c9cfe423d37e59ae4",
+  "registry_ref": "2b7935f4bbb16c37cb1f59c5a2a394ae005e2b8b",
+  "clock_policy": "core/source/sampler100MHz; SRAM80MHz; prove crossing",
+  "tasks": [
+    {
+      "id": "R01",
+      "priority": "P0",
+      "module": "SC 64x64 B4/T32 exact arithmetic tile",
+      "readiness": "NEW_INTEGRATED_RTL_REQUIRED",
+      "existing": [
+        "sc_short_stream_20261018/rtl/sc_ss_exact.sv"
+      ],
+      "tops": [
+        "proposed_sc_tile64_b4_counts",
+        "proposed_sc_tile64_b4_binsum"
+      ],
+      "parameters": {
+        "inputs": 64,
+        "outputs": 64,
+        "weight_bits": 8,
+        "bins": 4,
+        "samples": 32,
+        "strata": 32,
+        "engines": [
+          1,
+          2,
+          8
+        ],
+        "plane_counter_bits": 12,
+        "per_bin_signed_acc_bits": 20
+      },
+      "boundary": "External sampled bits/sign/bin and dynamic W8 ports; excludes PRNG, shared64 comparators, SRAM and FP32 restoration; includes all count/accumulator state and drain/read mux.",
+      "return_units": [
+        "pJ per complete tile frame",
+        "pJ per accepted sample",
+        "idle W",
+        "area um2",
+        "latency/II/drain cycles"
+      ],
+      "TLM": [
+        "SC_weight_bit_gate",
+        "SC_bin_route",
+        "SC_counter_update",
+        "SC_reduction_bit_work",
+        "SC_counter_peak_bits"
+      ],
+      "warning": "Second architecture is an unimplemented exact integer alternative; cannot infer9.6x total energy from state bits.",
+      "top_status": {
+        "proposed_sc_tile64_b4_counts": "PROPOSED_NOT_IMPLEMENTED",
+        "proposed_sc_tile64_b4_binsum": "PROPOSED_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "id": "R02",
+      "priority": "P0",
+      "module": "Stationary SRAM weight readout/retention and tile feed",
+      "readiness": "MACRO_INTERFACE_AND_INTEGRATION_REQUIRED",
+      "existing": [
+        "C:/Users/86134/Documents/a_P_BIT/sc_weight_storage_or4_20261014/rtl/sc_ws_sram_parallel.sv",
+        "architecture_tlm/digital_ppa_v1/rtl/nr_memory_control.sv"
+      ],
+      "tops": [
+        "proposed_sc_weight_stationary_wrapper"
+      ],
+      "parameters": {
+        "tile_weight_bytes": 4096,
+        "max_active_weight_bytes": 32768,
+        "sram_banks": 16,
+        "bank_word_bits": 128,
+        "sram_hz": 80000000,
+        "core_hz": 100000000
+      },
+      "boundary": "Macro internal energy remains calibrated separately; include read enables, real output hold/retention, mux, buffers, CDC and any local state; no free32KiB hold assumption.",
+      "return_units": [
+        "pJ per tile load",
+        "hold W",
+        "physical output bits",
+        "local retention bits",
+        "macro+periphery area separated",
+        "load/hold/compute overlap"
+      ],
+      "TLM": [
+        "SC_resident_weight_feed_cycle",
+        "weight_ping_pong",
+        "weight_consume",
+        "stationary_weight_bytes"
+      ],
+      "warning": "16x128bit macro outputs do not expose32KiB simultaneously. Reading full32KiB per sample at100MHz would require3276.8GB/s.",
+      "top_status": {
+        "proposed_sc_weight_stationary_wrapper": "PROPOSED_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "id": "R03",
+      "priority": "P0",
+      "module": "Dynamic B4 PoT encoder, x BF16 and z FP32",
+      "readiness": "EXISTING_FUNCTIONAL_RTL_NEEDS_DC_STA_PT",
+      "existing": [
+        "architecture_tlm/digital_ppa_v1/rtl/nr_pot_encoder.sv",
+        "architecture_tlm/digital_ppa_v1/rtl/nr_digital_probe.sv"
+      ],
+      "tops": [
+        "nr_digital_probe KIND4",
+        "nr_digital_probe KIND5"
+      ],
+      "parameters": {
+        "values_per_group": 64,
+        "bins": 4,
+        "probability_bits": 8,
+        "true_one_flag": true,
+        "sign": true,
+        "bin_bits": 2
+      },
+      "boundary": "One group includes absmax/top exponent/bin selection/quantization and boundary registers; no PRNG or repeated probability copy.",
+      "return_units": [
+        "pJ per64-value group",
+        "groups per cycle",
+        "latency cycles",
+        "idle W",
+        "area um2"
+      ],
+      "TLM": [
+        "dynamic_PoT_encode",
+        "SC_encode_op",
+        "BF16_to_probability8_values",
+        "FP32_to_probability8_values"
+      ],
+      "warning": "Do not multiply per-group energy by the447 abstract operations or64 values again.",
+      "top_status": {
+        "nr_digital_probe KIND4": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND5": "EXISTING_REUSE_OR_CHARACTERIZE"
+      }
+    },
+    {
+      "id": "R04",
+      "priority": "P0",
+      "module": "Per-bin scale recovery, cross-input-block FP32 accumulation, output BF16",
+      "readiness": "EXISTING_FUNCTIONAL_RTL_NEEDS_DC_STA_PT",
+      "existing": [
+        "architecture_tlm/digital_ppa_v1/rtl/nr_bin_restore.sv",
+        "architecture_tlm/digital_ppa_v1/rtl/nr_digital_probe.sv"
+      ],
+      "tops": [
+        "nr_digital_probe KIND6",
+        "nr_digital_probe KIND0",
+        "nr_digital_probe KIND21",
+        "nr_digital_probe KIND22 optional"
+      ],
+      "parameters": {
+        "bins": 4,
+        "weight_bits": 8,
+        "input_sign_groups": 2,
+        "counts_bits": 12,
+        "restore_input_bits": 768,
+        "partial_frames": [
+          14,
+          76,
+          64,
+          172
+        ]
+      },
+      "boundary": "KIND6 one output per64-input block,4bin scale multiplies and ordered FP32 sums; KIND0 cross-block addition; KIND21 final narrowing. No count-state duplication.",
+      "return_units": [
+        "pJ per restored output-block",
+        "pJ per FP32 add",
+        "pJ per conversion",
+        "latency/II",
+        "area um2"
+      ],
+      "TLM": [
+        "SC_restore_op",
+        "SC_bin_restore",
+        "SC_partial",
+        "FP32_to_BF16",
+        "weight_scale_multiplies"
+      ],
+      "warning": "KIND22 changes cross-bin float rounding and needs separate quality validation; literal KIND6 whole price replaces72 abstract ops once.",
+      "top_status": {
+        "nr_digital_probe KIND6": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND0": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND21": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND22 optional": "EXISTING_REUSE_OR_CHARACTERIZE"
+      }
+    },
+    {
+      "id": "R05",
+      "priority": "P0",
+      "module": "Ordinary BF16/FP32 arithmetic throughput and arrays",
+      "readiness": "EXISTING_SCALARS_PARTIAL_ARRAYS_MIXED_W8_INTEGRATION_REQUIRED",
+      "existing": [
+        "architecture_tlm/digital_ppa_v1/rtl/nr_array_probes.sv",
+        "architecture_tlm/digital_ppa_v1/rtl/nr_digital_probe.sv"
+      ],
+      "tops": [
+        "nr_digital_probe KIND0",
+        "nr_digital_probe KIND1",
+        "nr_digital_probe KIND2",
+        "nr_digital_probe KIND3",
+        "nr_fp32_array",
+        "nr_bf16_mac_array"
+      ],
+      "parameters": {
+        "lanes": [
+          1,
+          16,
+          64,
+          512
+        ],
+        "core_hz": 100000000
+      },
+      "boundary": "Arithmetic+real lane control/accumulation; report power/area separately from memory. W8xcontinuousFP32 and FP32 PV are not covered by a BF16 MAC scalar.",
+      "return_units": [
+        "pJ per accepted MAC/add/mul",
+        "actual MAC/cycle",
+        "latency/II",
+        "area/idle by instantiated array"
+      ],
+      "TLM": [
+        "macs_per_cycle",
+        "vector_lanes",
+        "bf16_mac",
+        "fp32_mac",
+        "lm_head_and_argmax"
+      ],
+      "warning": "Use actual stalls/reuse/feed; do not claim a512lane compute microbenchmark proves sustained512MAC/cycle or price FP32 PV as BF16.",
+      "top_status": {
+        "nr_digital_probe KIND0": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND1": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND2": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND3": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_fp32_array": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_bf16_mac_array": "EXISTING_REUSE_OR_CHARACTERIZE"
+      }
+    },
+    {
+      "id": "R06",
+      "priority": "P0",
+      "module": "FFN shared comparison/stratum logic and attention drive-to-q frontend",
+      "readiness": "PARTIAL_COMPARISON_PPA_EXISTS_NEW_FRONTEND_RTL_REQUIRED",
+      "existing": [
+        "architecture_tlm/random_service/service.py",
+        "architecture_tlm/unified_v6/rng_integrated.py"
+      ],
+      "tops": [
+        "proposed_ffn_shared64_stratum_frontend",
+        "proposed_attention_drive_q256_frontend"
+      ],
+      "parameters": {
+        "ffn_shared": 64,
+        "strata": 32,
+        "jitter_bits": 3,
+        "random_word_bits": 8,
+        "drive_step": 0.125,
+        "drive_code_min": -255,
+        "drive_code_max": 255,
+        "threshold_min": 0,
+        "threshold_max": 256,
+        "LUT_lanes": 16,
+        "config_lanes": 64,
+        "candidate_capacities": [
+          224,
+          512,
+          896
+        ]
+      },
+      "boundary": "Exclude native LFSR/Bivium endpoint PPA already charged. Include FFN stratum/64comparisons/high fanout; attention FP32-to-code, LUT and requiredq storage/programming, not a duplicate q bank.",
+      "return_units": [
+        "pJ per64comparison frame",
+        "pJ per threshold programmed",
+        "pJ per LUT lookup",
+        "idle W",
+        "config bits",
+        "latency/II/area"
+      ],
+      "TLM": [
+        "rng_FFN_shared64_compare",
+        "rng_stratum_counter_update",
+        "rng_sigmoid_lut_lookup",
+        "rng_threshold_config_bit",
+        "lut_lanes",
+        "config_lanes"
+      ],
+      "warning": "R8 is not the signed drive code. Current drive covers511 signed codes requiring9bits; threshold256 needs9bits/full-one flag. Native FFN macro price cannot be added to its included LFSR again.",
+      "top_status": {
+        "proposed_ffn_shared64_stratum_frontend": "PROPOSED_NOT_IMPLEMENTED",
+        "proposed_attention_drive_q256_frontend": "PROPOSED_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "id": "R07",
+      "priority": "P0",
+      "module": "Full deterministic winner/rejection samplers and source/feedback/output handshake",
+      "readiness": "PARTIAL_REDUCTION_RTL_FULL_FSM_REQUIRED",
+      "existing": [
+        "architecture_tlm/digital_ppa_v1/rtl/nr_attention_control.sv",
+        "architecture_tlm/winner_hold_tlm_v5.py",
+        "architecture_tlm/corrected_rejection_tlm_v5.py"
+      ],
+      "tops": [
+        "nr_singleton_tree",
+        "proposed_winner_hold_control",
+        "proposed_corrected_rejection_control"
+      ],
+      "parameters": {
+        "candidates": [
+          128,
+          512
+        ],
+        "rejection_nonref_max": 511,
+        "winner_popcount_bits": 10,
+        "winner_index_bits": 9,
+        "max_shift": 24,
+        "shift_bits": 5,
+        "tree_levels_per_stage": 2,
+        "source_clock_hz": 100000000
+      },
+      "boundary": "External biased/fair bits with ready/valid; no PRNG duplicate. Includes exact winner counts/uniform rank retry, reference correction, offset re-encoding, address mapping and sink backpressure.",
+      "return_units": [
+        "pJ per proposal by outcome",
+        "pJ per output",
+        "accepted/rejected/update counts",
+        "latency/II/tree/feedback/output wait cycles",
+        "state bits/area/idle"
+      ],
+      "TLM": [
+        "sampler_*",
+        "tree_levels_per_cycle",
+        "decision_cycles",
+        "offset_feedback_cycles",
+        "output_transfer"
+      ],
+      "warning": "Clipped0/1/multiple KIND17 is sufficient only for rejection classification; winner uniform-rank needs full counts. Pipeline stages do not remove feedback dependence between proposals.",
+      "top_status": {
+        "nr_singleton_tree": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "proposed_winner_hold_control": "PROPOSED_NOT_IMPLEMENTED",
+        "proposed_corrected_rejection_control": "PROPOSED_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "id": "R08",
+      "priority": "P1",
+      "module": "Screening/budget/compaction, sparse V worklists and PV accumulation",
+      "readiness": "EXISTING_PRIMITIVES_FULL_DATAPATH_REQUIRED",
+      "existing": [
+        "architecture_tlm/digital_ppa_v1/rtl/nr_attention_control.sv",
+        "architecture_tlm/digital_ppa_v1/rtl/nr_vector_math.sv"
+      ],
+      "tops": [
+        "nr_digital_probe KIND14",
+        "nr_digital_probe KIND15",
+        "nr_digital_probe KIND16",
+        "nr_digital_probe KIND8",
+        "proposed_sparse_worklist_gather"
+      ],
+      "parameters": {
+        "context": [
+          2048,
+          8192
+        ],
+        "block_tokens": 64,
+        "Qwen_Q_heads_per_KV": 7,
+        "Llama_Q_heads_per_KV": 1,
+        "candidate_blocks": 8,
+        "PV_samples": [
+          128,
+          512
+        ],
+        "head_dims": [
+          64,
+          128
+        ]
+      },
+      "boundary": "Independent external sample bits/offset; include summary stats/max4/norm, exact fixed8 repair, CDF, duplicate multiplicity/histogram, GQA union and BF16V/FP32 accumulation. SRAM data/macros priced separately.",
+      "return_units": [
+        "pJ per block score",
+        "per64mask",
+        "per probability interval",
+        "per histogram RMW",
+        "per unique V address",
+        "per V accepted",
+        "actual bank stalls"
+      ],
+      "TLM": [
+        "budget_compare_exchange",
+        "candidate_compact",
+        "systematic_CDF_counts",
+        "sample_histogram_remap",
+        "GQA_sorted_union",
+        "V_repeated_add",
+        "sample_average"
+      ],
+      "warning": "KIND16 uses Q0.32 CDF, unlike Python double probabilities, requiring accuracy check. Count duplicate V multiplicity rather than discard repeated samples. Current selector max4 is not trained pbit gate. FP32-to-Q0.32 dynamic conversion is not included in KIND16 and must be characterized if adopted.",
+      "top_status": {
+        "nr_digital_probe KIND14": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND15": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND16": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND8": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "proposed_sparse_worklist_gather": "PROPOSED_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "id": "R09",
+      "priority": "P0",
+      "module": "Actual SRAM router, CDC, gather DMA and service bandwidth",
+      "readiness": "SMALL_FUNCTIONAL_RTL_REAL_PARAMETERS_AND_CDC_REQUIRED",
+      "existing": [
+        "architecture_tlm/digital_ppa_v1/rtl/nr_memory_control.sv"
+      ],
+      "tops": [
+        "nr_sram_router",
+        "nr_dma_window",
+        "proposed_100to80MHz_CDC",
+        "proposed_sparse_DMA_issue"
+      ],
+      "parameters": {
+        "requesters": 16,
+        "banks": 16,
+        "data_bits": 128,
+        "row_bits": 12,
+        "window": 32,
+        "burst_bytes": 64,
+        "core_hz": 100000000,
+        "sram_hz": 80000000,
+        "link_GBs": 16
+      },
+      "boundary": "Controller/mux/queue/CDC/buffers only; SRAM macro and DRAM die/PHY energy separate. Actual user macro timing atSS. Current singleclock small test not physical100/80MHz crossing.",
+      "return_units": [
+        "sustained GB/s by workload",
+        "cycles per descriptor",
+        "queue/bank stalls",
+        "pJ per request/response",
+        "CDC area/latency",
+        "router/DMA/clock idle"
+      ],
+      "TLM": [
+        "fabric_GBs",
+        "cdc_ns",
+        "DRAM bandwidth_GBs",
+        "max_pending",
+        "sram_fabric",
+        "dram_dma"
+      ],
+      "warning": "One64B command/cycle100MHz<=6.4GB/s; default16GB/s needs documented parallelism/clock/descriptor execution. No silent timing exceptions.",
+      "top_status": {
+        "nr_sram_router": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_dma_window": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "proposed_100to80MHz_CDC": "PROPOSED_NOT_IMPLEMENTED",
+        "proposed_sparse_DMA_issue": "PROPOSED_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "id": "R10",
+      "priority": "P1",
+      "module": "FP32 SwiGLU, RMS/RoPE, accurate online Softmax normalization",
+      "readiness": "EXISTING_CANDIDATE_RTL_NEEDS_PPA_AND_NUMERICAL_QUALIFICATION",
+      "existing": [
+        "architecture_tlm/digital_ppa_v1/rtl/nr_vector_math.sv",
+        "architecture_tlm/digital_ppa_v1/rtl/nr_unary_lut.sv"
+      ],
+      "tops": [
+        "nr_digital_probe KIND7",
+        "nr_digital_probe KIND9",
+        "nr_digital_probe KIND10",
+        "nr_digital_probe KIND11",
+        "nr_digital_probe KIND12",
+        "nr_digital_probe KIND13",
+        "nr_digital_probe KIND20",
+        "proposed_online_softmax_datapath"
+      ],
+      "parameters": {
+        "nonlinear_lanes": [
+          1,
+          16
+        ],
+        "vector_lanes": [
+          1,
+          64
+        ],
+        "formats": [
+          "BF16",
+          "FP32"
+        ]
+      },
+      "boundary": "Include normalization sums/max/exp/division/re-scaling registers and data rereads. Old Q10 PPA remains a distinct algorithm; ROM nonlinearities are approximations.",
+      "return_units": [
+        "pJ per pair/value/row by function",
+        "latency/II",
+        "LUT/logic/register area",
+        "idle"
+      ],
+      "TLM": [
+        "nonlinear_lanes",
+        "nonlinear_op",
+        "accurate_softmax",
+        "RMSNorm",
+        "RoPE_bias",
+        "FFN_SwiGLU"
+      ],
+      "warning": "No scalar exp probe alone validates online softmax; near1functionality in zero-delay simulation is not100MHz STA.",
+      "top_status": {
+        "nr_digital_probe KIND7": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND9": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND10": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND11": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND12": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND13": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "nr_digital_probe KIND20": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "proposed_online_softmax_datapath": "PROPOSED_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "id": "R11",
+      "priority": "P1",
+      "module": "Global seed arbiter and top-level state/clock/interconnect accounting",
+      "readiness": "OWNERSHIP_SHARED_WITH_ISSUE95_INTEGRATION_REQUIRED",
+      "existing": [
+        "architecture_tlm/random_service/model.py",
+        "architecture_tlm/random_service/rtl"
+      ],
+      "tops": [
+        "rng_endpoint (existing, reuse only)",
+        "proposed_seed_packet_arbiter",
+        "proposed_tile_clock_enable_wrapper"
+      ],
+      "parameters": {
+        "seed_bus_bits": 32,
+        "seed_beat_interval_cycles": 100,
+        "seed_startup_cycles": 10,
+        "reseed_cycles": 100000000,
+        "Bivium_seed_bits": 177,
+        "Bivium_seed_beats": 6,
+        "ports_Qwen_2k_screenPV": 14,
+        "ports_Qwen_8k_screenPV": 47
+      },
+      "boundary": "Native seed ingress/PRNG registers already in endpoint PPA. Only extra global arbitration/distribution/clock trees and tile state gating. Qualified entropy source is external interface, not a new free PRNG.",
+      "return_units": [
+        "idle/active/wait clock W",
+        "pJ per delivered seed packet",
+        "area/buffer/fanout",
+        "clock-gating coverage"
+      ],
+      "TLM": [
+        "rng_seed_bus_beat",
+        "digital_idle_ns",
+        "sc_idle_ns",
+        "control_interconnect_ns"
+      ],
+      "warning": "Do not add whole-window idle power to active energy if that active number already includes baseline/leakage; coordinate Issue95 without modifying its snapshots.",
+      "top_status": {
+        "rng_endpoint (existing, reuse only)": "EXISTING_REUSE_OR_CHARACTERIZE",
+        "proposed_seed_packet_arbiter": "PROPOSED_NOT_IMPLEMENTED",
+        "proposed_tile_clock_enable_wrapper": "PROPOSED_NOT_IMPLEMENTED"
+      }
+    }
+  ],
+  "notes": [
+    "No new RTL/STA/PT/model run in this analysis",
+    "Proposed top names are requirements, not existing runnable RTL",
+    "Use the existing Issue107 RTL package for EXISTING tops; never rerun native RNG/macro healthy results just to fill a table"
+  ]
+}

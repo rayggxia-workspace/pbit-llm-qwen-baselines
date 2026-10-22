@@ -1,5 +1,21 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-22 Issue107：真实RNG接入后的Verilog仿真需求
+
+jieruiz沿用task/107/PR109，未新开复制。对照最新PR103 b05fb36d和中央台账PR111，正式文件architecture_tlm/digital_ppa_v1/LATEST_TLM_RTL_GAPS_ZH.md及同目录机器任务表/回传模板。分已有PPA、现成RTL待工艺、新整合RTL三类，共11组：SC64×64四档T32/计数与权重驻留；BF16/FP32动态分档、恢复/累加/窄化；普通阵列/lm_head；共享比较与q/256前端、完整赢家/拒绝FSM；筛选/CDF/稀疏V；实际SRAM/CDC/DMA；普通非线性；顶层状态/互连。
+
+重要边界：当前逐位/符号/档计数映射为6KiB/tile、8tile48KiB；每档signed20整数和对照可为640B/tile，理论状态差9.6倍不是功耗面积结论，尚无新RTL。单波次32KiB权重需明确SRAM可见输出/保持，不能认为SRAM里有就是免费驻留；单64B命令/拍100MHz只有6.4GB/s，不证明16GB/s。完整赢家需要0..512真计数/均匀选秩，KIND17的0/1/多树不能替代。源字R8，实际drive−255..255是9bit signed，q256需满幅表示；LUT/阈值保持未由原native端点PPA覆盖。
+
+本次仅需求分析/来源位宽校核：32源Git SHA、路径和288组档内整数等价通过，无新RTL/工艺仿真/TLM/模型PPL。旧源23e8d65f及66组功能证据保持；拟新增顶层未冒充可执行包。成果当前本地完成，实际发布以Issue107/PR109/latest_gap回执为准，Projects待read:project，不自动合并。
+
+## 2026-10-22 Issue96：真实随机架构已接入完整TLM
+
+负责人jieruiz，沿用task/96-unified-tlm/PR103（原PR99已合并）。FullDecode默认integrated_service，core/SC/RNG/sampler/seed100MHz，SRAM按SS宏80MHz保留。原Issue95模型/RTL未改；FFN LFSR32/R8共享64、B4/T32/K32、流式消费与SAVE/RESTORE/RELEASE，Attention有限Bivium池+fair源真实输出进入筛选/PV/赢家/拒绝。源跨层/查询保留epoch与计时，种子总线/预热/到期换种/锁定延后/回压计入一次；无随机流SRAM/额外FIFO/第二概率副本，native状态/阈值保持不是免费。
+
+执行31aa4fa31fbfb7d74629b54811936ac30a41c250；40/40完整模型情景、93机制回归、1421归档/模型契约核对通过。12项S8、赢家倍率1是整机连通诊断，非默认S128/8倍质量；其余2K/8K、三seed筛选PV、Llama1/2完整32层。原52结果不改；104宽扫描0完成/0失败主动取消并留CANCELLED，不混计。Qwen2K SC/screenPV seed0旧197.93816→新198.00316ms；BF16准确对照时延/存储/阶段一致。新q/256 sigmoid改变分布，无继承模型PPL；全部为合成事务，非真实推理/芯片时间。
+
+正式入口architecture_tlm/unified_v6/RNG_INTEGRATION_ZH.md和RNG_INTEGRATION_RESULTS_ZH.md，原件results/integrated_rng_20261022_v3及work/jieruiz/96/integrated；代码/40项原件/报告已推送科学交付f3cf9b98f38a3cb47c40cb86669a2f180e637d0d，9个关键远端blob核验通过；PR103及Issue96已同步，待审未合并，publication回执在integrated/PUBLICATION.json。100MHz native端点PPA取38322118/中央记录PR111，有条件active/idle插值；前端/全局seed/长线和SC等未知，完整能量/面积null。512MAC/64向量/16非线性吞吐仍假设，默认Link非本次实际DRAMSys。无新PPL/GPU/Slurm/RTL/PT。旧界面52项快照不自动刷新；Projects read:project不足待同步，PR103不自动合并。当前无本人本任务运行作业。
+
 ## 2026-10-22 Issue92：小网部署计算成本
 
 负责人amlink1219，接续Issue92/task/92-pbit-gate-pilot/PR94。新增部署运算账本qwen/results/pbit_gate_cost_20261022/README_ZH.md、COST.json及compute_cost.py。每自由块32连续乘法/40加法/8bit门控/9概率事件、两阶段；原三位置混合F21，层0/12/23候选QK省378/−165/379 MAC，小网第一层新增672乘法，不能称整体节能。含公共特征/动态归一化、GQA并集与固定S的PV边界。9模型形状、2304隐藏态门控等价、6项均值回算及独立只读审阅通过；没有新训练/Slurm/完整PPL/RTL/PPA，原质量结果保持。发布随PR94，待审未合并；上传核验以work/amlink1219/92/compute_cost/PUBLICATION.json实际回执为准。Projects沿同日已验证read:project不足待同步，不自动合并/关闭Issue。
@@ -43,6 +59,8 @@
 用户指定v1正文和附录核查完成，Zotero原条目/PDF保持，唯一机器note25FR4EFX；24例独立数学校核通过。入口architecture_tlm/research_readings/REMIX_V1_ZH_20261019.md，工作资料work/amlink1219/70/。没有模型复现、训练/PPL/PPA；研究原任务61已关闭，本任务独立交付待审。
 
 ## 0 恢复工作先读这里
+
+> 数字电路仿真统一台账：digital_circuit_simulation_registry/README_ZH.md。新增仿真必须登记原件路径/SHA和实际阶段；35记录/117归档初版见文末Issue110。
 
 > Issue107周期/访存假设和非随机数字RTL入口：architecture_tlm/digital_ppa_v1/README_ZH.md；周期是条件模型，功能RTL延迟不等于STA达标。详见文末Issue107。
 
@@ -1008,3 +1026,12 @@ jieruiz，task/107-tlm-cycle-digital-rtl，独立tmp/tlm-digital-issue107-202610
 
 113124B本机源码包digital_ppa_v1_20261022.zip，SHA d8004f0fdf586dc020e99c3d6e6ed3b29050a652a55af037220af898c03aafb2；Git保留正式源码、验证和索引。原始波形/编译/失败逐SHA本地归档回收，仅保留待审主目录。没有新GPU/PPL/Slurm/DC/PT/STA/真实DRAMSys，完整能量/面积仍null。科学成果7b12fea03bd2596cc206f3f0c32571196688e665已推送，PR109（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/109）ready/open待审、未合并；9关键blob原字节已核，最终任务分支head以Issue107和本地FINAL_REMOTE_VERIFY为准，不自动合并/关闭。用户下一步55nm工艺表征先查STA，再按实例/latency/II和正确计费单位更新新TLM。PR105/103保持独立，Projects本轮实际查询见work/jieruiz/107/PROJECTS_CHECK。
 <!-- /issue107-digital-ppa -->
+
+
+## 2026-10-22 数字电路仿真统一台账（Issue110）
+
+用户要求集中记录已有数字电路PPA并每次新增登记。正式入口digital_circuit_simulation_registry/README_ZH.md，本机同名固定目录为同字节阅读副本；任务task/110-circuit-simulation-registry，独立稀疏tmp/circuit-registry-issue110-20261022。35条批次/模块记录、516行配置/seed/窗口；117个数字原始归档逐SHA发现索引，不把发现未审等同成功。精确结果地址见01_结果地址索引.md及artifact_locations.csv；records保留源绑定/PVT/频率/边界/限制和各阶段状态。
+
+已纳入37962470/37981139/38015538随机矩阵、SS SRAM/DFF主模块与S0–S5、14组SS/TT宏库提取、CACTI估计单列、38100634 TT/SS Q10 SwiGLU、38322118四随机服务核心×三频率252窗口，以及转换/短流/Issue107功能证据与失败历史。共享p-bit后端独立交叉索引，较新38165794/38215256/38263376归档待完整审核，不能用旧报告断言其未完成。120.8uW旧预算缺直接绑定原件，未冒列为本次确认PPA。
+
+157个可访问独立文件原字节SHA与26个tar成员SHA核对通过，8项登记守卫测试通过，无原件缺失；未重新运行RTL/DC/PT/STA/GPU/PPL，不重放全部VCD。所有已算PPA仍保留前/后布局、时序/X/库表告警等限制；新数字v1没有PPA。未搬移/删除/复制大原始结果。AGENTS新增每次仿真登记规则；新结果同任务PR更新台账/总览，清理目录前更新归档恢复地址。已实际推送科学payload a31e010d，PR111 ready/open待审、未合并，9关键远端blob原字节核验一致；Issue110同步，Projects实际查询缺read:project待同步。回执work/jieruiz/110/PUBLICATION.json；不自动合并。

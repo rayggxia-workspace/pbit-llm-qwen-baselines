@@ -1,3 +1,13 @@
+# Issue107最新补充：仿真需求分析（2026-10-22）
+
+接续用户“最新TLM还需哪些Verilog具体仿真”，jieruiz沿用本task/107分支、PR109、tmp/tlm-digital-issue107-20261022。没有新建全量工作树；原RTL/功能证据/结果包不改。当前新成果本地完成，发布状态以latest_gap/PUBLICATION和Issue107回执为准。
+
+正式文件LATEST_TLM_RTL_GAPS_ZH.md、LATEST_TLM_RTL_REQUESTS.json、PPA_RETURN_TEMPLATE.json在architecture_tlm/digital_ppa_v1。11组任务标出P0/P1、具体接口参数/位宽/并行度/活动、边界/计费单位与TLM替换字段；可直接跑的现成probe和仍缺整合RTL分开。特别指出SC计数状态48KiB/8tile、32KiB权重驻留契约、DMA6.4GB/s与16GB/s假设的缺口、完整赢家计数/选秩不同于现有0/1/多树、9bit驱动码与R8不同。
+
+只读对象PR103 b05fb36d8104eb07b33a9af13c747ca2722728cf、PR111 2b7935f4bbb16c37cb1f59c5a2a394ae005e2b8b、原RTL23e8d65fbd84cf548ab82a6c9cfe423d37e59ae4；源/SHA/派生数在latest_gap/SOURCE_INDEX。check_plan.py验证32源、引用路径/位宽/带宽、288组精确档内加权和等价；VALIDATION_FINAL含9626内部断言，绝大多数为逐平面上界，不作为电路测试数。不重跑原功能或用户EDA。提议的新顶层不是已交付RTL；后续按各任务新增整合/功能后再送工艺，原nativeRNG/SRAM宏匹配结果复用。
+
+无GPU/Slurm/模型PPL/训练/RTL/DC/PT/STA/新TLM执行；台账只读，没有把需求记成新仿真run。新结果用户做完后按中央台账追加记录。Project看板沿read:project不足，PR109不自动合并/Issue107不关闭。当前没有本任务运行作业，下一步提交/推送同PR109，远端字节核验，随后等评审和实际工艺表征。以下保留原完整RTL交接。
+
 # Issue107 交接
 
 2026-10-22，jieruiz，task/107-tlm-cycle-digital-rtl，基线eb317e4f6fb1b0d8844887401f3275f128ef8a83。独立目录C:/Users/86134/Documents/a_P_BIT/tmp/tlm-digital-issue107-20261022；目标rayggxia-workspace/pbit-llm-qwen-baselines，PR base=pbit-tlm-attention-details-20261016。

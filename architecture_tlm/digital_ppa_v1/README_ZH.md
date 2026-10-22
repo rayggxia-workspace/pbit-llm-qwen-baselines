@@ -1,5 +1,7 @@
 # 完整TLM周期、访存审计与非随机数字RTL
 
+2026-10-22后续：[最新真实RNG整机版仍缺的Verilog／工艺仿真清单](LATEST_TLM_RTL_GAPS_ZH.md)。按已完成PPA、现成RTL待工艺、需新增整合RTL区分11组，含明确参数/计费边界、SRAM驻留/DMA带宽和精确计数结构对照；[机器任务表](LATEST_TLM_RTL_REQUESTS.json)、[结果回传模板](PPA_RETURN_TEMPLATE.json)。本补充只做需求与来源核验，未新跑或新增电路仿真。
+
 Issue107，jieruiz，2026-10-22。**当前TLM给出条件时序，不是已通过RTL/STA确认的芯片周期。** 未标定的延迟、吞吐、局部状态和数据供给会同时影响时间、功耗和面积。
 
 - [周期与访存完整报告](CYCLES_MEMORY_AND_RTL_ZH.md)：整机/阶段周期、已建模存储和未闭合假设。

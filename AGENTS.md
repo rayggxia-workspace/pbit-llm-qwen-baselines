@@ -127,3 +127,5 @@
 - 回收前核对Issue/PR、负责人、绝对路径、Git refs、未提交/ignored文件和恢复索引；不得按日期/文件夹名批量删目录，不重置或清理其他成员、运行中任务及唯一数据。恢复索引需要说明原分支/HEAD、归档位置和SHA；不得将删除工作副本写成删除实验历史。
 - 为节省空间不得给可修改源码建立跨任务硬链接，也不删除共享Git对象库。模型和大结果使用既定共享存储，Git保留版本/配置/摘要/校验索引。
 - 本机2026-10-19已回收目录与恢复方法入口：Issue68/PR69的maintenance/storage_cleanup_20261019/REPORT_ZH.md及ROUND2_REPORT_ZH.md；第二轮未提交资料和增量bundle保留在本地project_archives/cleanup_20261019_round2/。旧备忘录中的已归档工作路径可按恢复索引重建，不重复昂贵实验。
+
+- When training a replacement QK selector, preserve the reference selector’s valid/forced masks, free-block normalization, standard-deviation floor and temperature before matching budgets. Fit only on training data, report actual holdout budget/capacity drift, and do not call lower omission at a larger budget a matched-cost gain.

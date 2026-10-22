@@ -18,7 +18,7 @@ def main():
         raise FileExistsError("Choose a new audit output directory")
     here = Path(__file__).resolve().parent
     root = here.parents[2]
-    modules = ["architecture_tlm.cycle_v1.audit.test_"+name+"_adversarial" for name in ("core", "ffn", "attention", "native", "layer")]
+    modules = ["architecture_tlm.cycle_v1.audit.test_"+name+"_adversarial" for name in ("core", "ffn", "attention", "native", "layer", "gqa")]
     suite = unittest.defaultTestLoader.loadTestsFromNames(modules)
     log = io.StringIO()
     result = unittest.TextTestRunner(stream=log, verbosity=2).run(suite)

@@ -39,8 +39,12 @@ def main():
     old_path=ROOT/'architecture_tlm/unified_v6/results/qwen_20261022_v2/qwen/qwen_L2048_seed0_sc_screen_rejection.json'
     old=json.loads(old_path.read_text(encoding='utf-8'));old.pop('execution_commit');old.pop('config_sha256')
     legacy={k:v for k,v in r.items() if k not in ('stage_busy_ns','sampler_audit')}
-    if old!=legacy:raise AssertionError('observation changed legacy full-model fields')
     path=out/'qwen_L2048_seed0_sc_screen_rejection_observed.json';write(path,r)
+    if old!=legacy:
+        changed=[k for k in set(old)|set(legacy) if old.get(k)!=legacy.get(k)]
+        write(out/'LEGACY_DIFFERENCES.json',dict(changed_fields=changed,
+            before={k:old.get(k) for k in changed},after={k:legacy.get(k) for k in changed}))
+        raise AssertionError('legacy fields differ, preserved for diagnosis: '+repr(changed))
     compact={k:r[k] for k in ['config','model','metrics','input_provenance','sampler_audit','stage_busy_ns']}
     compact['config']={'attention':{'mode':'screen_rejection'}}
     runs.insert(0,dict(label='Qwen完整24层2K／seed0／拒绝，旧字段逐项相同',path=path.relative_to(ROOT).as_posix(),sha256=hashlib.sha256(path.read_bytes()).hexdigest(),result=compact))

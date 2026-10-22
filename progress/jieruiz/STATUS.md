@@ -1,3 +1,11 @@
+# Issue96 RNG接口核实补充：小接口连通，整机默认保持
+
+2026-10-22；jieruiz；沿用task/96-unified-tlm / PR99，独立目录不变。读取最新GitHub集成5dbd9e39，随机源整个Git树/采样器与本地一致。新增rng_frontend.py：K32分层阈值拼接＋64共享、保留exact-one；uniform32按实际原生宽度计帧。赢家/拒绝接TimedSamplerSource，各三seed连通，512路真实26端点和种子总线检查通过；后端/RTL/其他成员STATUS未修改。
+
+冻结36d5e1085e82a982c9e689a467b3b2042ca36f4d，11新＋21整机＋19源目录测试通过，共51，0失败/跳过；无新PPL/PT/GPU/DRAMSys。报告architecture_tlm/unified_v6/RNG_COMPATIBILITY_ZH.md，原件work/jieruiz/96/RNG_INTERFACE_VALIDATION.json。代码/报告/51项回执随PR99发布；最终head及远端字节核验见Issue96回执。PR仍待审未合并。
+
+结论：能拼，仍需全模型流式消费/统一时钟和累计账本适配、筛选896路容量选择，以及新q/256 sigmoid数值验证。当前未把随机源后端接入FullDecode默认，未改旧52情景；不能混称已完成整机源调度。下一步按报告边界做可选backend，未知PPA不填零；看板read:project待同步。
+
 # Issue96 unified TLM: 52 scenarios complete, PR99 awaiting review
 
 2026-10-22; jieruiz; task/96-unified-tlm; base83e15289, executionfba22b192ab914046e50cc405f6dd473bf30d154. Independent sparse checkout tmp/unified-tlm-issue96-20261022. Implementation, all52 scenarios, reports and validation are published at9621e1db35491e530d35b86e0ef884572b1df0a6; PR99 is ready/open, awaiting review, not merged. Five critical remote Git blobs read back and byte-verified; PUBLICATION.json and REMOTE_VERIFY.json record that snapshot. Full implementation/design/results: architecture_tlm/unified_v6/README_ZH.md and RESULTS_ZH.md.

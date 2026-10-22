@@ -1,0 +1,95 @@
+{
+  "boundary": {
+    "cycle_only_contracts": [
+      "explicit latency versus II, old-state commit and output backpressure",
+      "three destination-edge CDC visibility, finite byte credits and address-ordered RAW/WAR/WAW",
+      "configured memory banks/windows/latencies from the cycle runner, independently reported",
+      "configured finite encoder/restore/nonlinear pipelines and one-cycle native response bridge"
+    ],
+    "mapped_fields": [
+      "seed",
+      "core_hz=100MHz",
+      "sram.clock_hz=80MHz",
+      "vector_lanes",
+      "random.backend",
+      "random.clock_hz",
+      "random.seed_word_interval_cycles",
+      "random.seed_startup_cycles",
+      "random.reseed_cycles",
+      "ffn.samples",
+      "ffn.strata",
+      "ffn.bins",
+      "ffn.engines",
+      "shape.hidden_size",
+      "shape.intermediate_size"
+    ],
+    "no_direct_equivalence": [
+      "elapsed time and action vocabulary use different granularity/resources",
+      "legacy input activations are assumed SRAM-resident; cycle FFN performs its explicit initial reads",
+      "legacy KV is BF16 and exact attention is fused/online; cycle query stores FP32 and explicit scores",
+      "bridge legacy sampler logits round each FP32 product/add; cycle QK uses double products/fsum then FP32, so logits can differ",
+      "same seed does not imply the same stream trajectory: endpoint count/request timing differs",
+      "legacy FFN is a workload/timing model with no fixture-weight numerical output",
+      "neither result is whole-model TPOT, PPL, STA, total physical energy or a speedup measurement"
+    ],
+    "scope": "one complete shaped FFN: gate/up, SwiGLU, down, output conversion and residual",
+    "v6_only_contracts": [
+      "blocking SRAM bank+shared-fabric descriptors, calibrated macro costs, additive cdc_ns",
+      "Link 64B burst windows draining in batches; bandwidth_GBs and max_pending are NOT cycle descriptor parameters",
+      "weight ping-pong chunk scheduling, macro startup/drain/restore arithmetic scheduling",
+      "priced_subtotal and unpriced action ledger; no cycle_v1 price set is inferred"
+    ]
+  },
+  "cycle": {
+    "cycle_event_equivalence": {
+      "checked": true,
+      "equal": true,
+      "fields": "all acceptance/completion times, full trace, actual read bytes, actions, buffer/resource state; functional outputs and trajectories"
+    },
+    "elapsed_ns": 11962.5,
+    "summary": "cycle/summary.json"
+  },
+  "legacy": {
+    "elapsed_ns": 6890.5,
+    "summary": "v6_summary.json"
+  },
+  "operator": "ffn",
+  "reason_no_speedup": "independent timing, storage and source scheduling contracts",
+  "schema": "v6_adapter.comparison.1",
+  "source": {
+    "commit": null,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.3",
+    "source_sha256": {
+      "__init__.py": "e606b575e46e7b56d844f3d6fb77087c481cbff95b717d4e37865f4e098aee30",
+      "architecture_tlm/random_service/__init__.py": "5e2a51a64840c2c6bc1061a0daeb4ef94befef38394c74da665c0e2a023d9a5c",
+      "architecture_tlm/random_service/backends.py": "7003510bb575222a4ab32381ad7e4ac440c82f616e56ae4330a08bb9dfa0e70b",
+      "architecture_tlm/random_service/model.py": "d32b82e79eec9fdd579835671edf757f34ae68dbf14039075a728ffbd0c7e4f2",
+      "architecture_tlm/random_service/service.py": "924a6b9a2e007f093cf42d3a8bb13f30f6f85db933af1e88d16e344033068571",
+      "architecture_tlm/random_service/shared64_mapping.json": "4ddd07914a976496edf50e4528caaf3251a363b26e4a1dfa2101a7bec2992c39",
+      "architecture_tlm/unified_v6/rng_integrated.py": "22deac9e9a74e6647385500bf05a5297b6ee801ae2752b731ab94cd5b43a7931",
+      "attention.py": "eed1bbfd41403a20ae84649a74454a35991db6ae15c0162dca13da6980956634",
+      "contracts.py": "935b0ea4dda435274bebf3531a233866ccd6ebd863d237683da7f0eaf26fb320",
+      "ffn.py": "45b5cf4b242ce0e60ff5438e5a8419245bfbe6ec5324288ed56a54c9bebe9036",
+      "kernel.py": "b0c8b8e4a79ee28b217f1691dc8629080b7b4288c6e4b7060fb63a22880defd6",
+      "layer.py": "31c70be0a8096996ea9ca57f09521b2bd3f549e6f38c861fa6b44c9ac20f2d05",
+      "layer_flow.py": "dc873fece87f5deeabc63a390bd0344a495f17591235f790e1f798401f3d794b",
+      "matrix.py": "0ea22538a32af5bdfcca5eb9ed34b8ec1ffce0d99579bbb150274d3ca14e07e5",
+      "memory.py": "fd1afbd91aad5ddcfdd4d8cc54d4b4af36dd3369f5f67981f92c1241c721cb00",
+      "package_snapshot.py": "6b0b09e80cde25a13da67a80e7644718b7058ce5b9f304c1d2610023bfc3a55d",
+      "reporting.py": "c33391637b823a80dc9919f918ad71ecb7115b3d65af59abb6df6f24778dcd1a",
+      "rng_protocol.py": "f15ff7ff05b7d6d09f4954c53ff9c559cf5d9c3894e92a31a52a0245e481060e",
+      "run.py": "1c2aee4622fc3672600cc4e71efcf1628f2684838b6557025cf892833a68500c",
+      "test_attention.py": "b7ecf345f3312ed8592d4a0ca2b50ff76a7edbe79e52fe538ece20e4a7cd545f",
+      "test_ffn.py": "c42872af3b55af841a5291f26b652df0dd695937aeeea273be66b3af5a794aaa",
+      "test_kernel.py": "5c769794547193e78d547c6dbf86726892c4b2e05302d83e0c081e2b83b6c37b",
+      "test_memory.py": "3cb489a8f7a491dd4c43d929f78fd5f0a4c0e599c1b393a63c721c223adefaa2",
+      "test_rng_protocol.py": "8c53127fdd60de8ee3451d6af60d48b5030ca743ff04bd7a55a08adfee7de0dd",
+      "test_v6_adapter.py": "36ba4e49dd002a4de629bc89b1fc4cac7f539f593025e9b5888c9f538b57ae81",
+      "v6_adapter.py": "e4e930b7cded2f709ec67c4f111fcfb388445883f7a92d11c7d7a80bf0c54e4e"
+    },
+    "working_tree_status": null
+  },
+  "speedup": null,
+  "status": "passed"
+}

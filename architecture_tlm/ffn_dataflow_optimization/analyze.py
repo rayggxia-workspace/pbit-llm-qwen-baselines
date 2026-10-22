@@ -12,7 +12,7 @@ def main():
  for folder in a.runs:
   for receipt in sorted(folder.glob('*.receipt.json')):
    r=read(receipt);v=json.loads(gzip.decompress((folder/r['file']).read_bytes()));c=v['case'];s=v['storage'];native=v['native_result']
-   state=(s['weight_hold_bytes']+s['counter_allocated_bytes']+s['staging_allocated_bytes']+s['output_slots']*s['output_slot_bytes']+s['pending_partial_write_bytes'])
+   state=(s['weight_hold_bytes']+s['counter_allocated_bytes']+s['staging_allocated_bytes']+s['output_slots']*s['output_slot_bytes']+s['pending_partial_write_bytes']+s['w8_accumulator_allocated_bytes']+s['feed_response_bytes']+(s['sample_hold_bits']+7)//8)
    rows.append(dict(candidate=c['candidate'],method=c['method'],seed=c['seed'],latency_us=native['finish_ps']/1e6,
     local_budget_bytes=state,weight_hold_bytes=s['weight_hold_bytes'],counter_allocated_bytes=s['counter_allocated_bytes'],
     staging_bytes=s['staging_allocated_bytes'],output_slots=s['output_slots'],sram_reserved_bytes=s['sram_layout']['reserved_bytes'],
@@ -34,7 +34,7 @@ def main():
  result=dict(cases=len(rows),paired_cases=len(rows)//2,table=table,numeric_diagnostics=quality,seed0_details=details,
   area_mm2=None,energy_J=None,quality_ppl=None,
   scope='conditional four-group eight-tile projection; same configurable storage/bandwidth, not same total physical area',
-  local_budget_scope='weight hold + allocated counters + staging + output slots + pending writes only; excludes datapath/pipeline/control/RNG bits, not total storage or area',
+  local_budget_scope='weight hold + allocated counters + staging + output slots + pending writes + W8 accumulator + feed responses + sample hold; excludes datapath/pipeline/control/RNG bits, not total storage or area',
   seed_scope='three operand/sample seeds; fixed-rate schedule may have identical latency; this is not measured timing variability',
   analysis_source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
  write(a.output/'SUMMARY.json',result)

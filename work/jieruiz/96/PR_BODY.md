@@ -13,5 +13,3 @@ FFN短流、Attention采样器和较细存储调度此前位于不同入口，�
 Refs #96 #95 #87 #37。不接管他人随机源或Attention质量任务，不自动合并。
 
 Projects已实际查询，当前凭据缺read:project，待同步；仓库分支/PR和Issue状态照常交付。无运行中任务，无新定时。
-
-补充随机源接口可用性核实：对照最新集成5dbd9e39，新增分层共享输入/PV薄前端与11项连接检查；同原整机21项和源目录19项合计51通过。两采样器各三seed实际调用Issue95源，512路由26个Bivium端点供给。详见architecture_tlm/unified_v6/RNG_COMPATIBILITY_ZH.md。这里是小接口连通，FullDecode默认尚未启用新后端；流式时钟/容量/账本、q/256数值与PPA仍明确待接，原52项不变。未改对方源模型/RTL/STATUS。

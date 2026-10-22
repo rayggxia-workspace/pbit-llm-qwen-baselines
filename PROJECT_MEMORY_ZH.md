@@ -44,6 +44,8 @@
 
 ## 0 恢复工作先读这里
 
+> Issue96 RNG interface follow-up: PR103 (open, unmerged) carries the new compatibility frontends/checks. Original PR99 merged0575a633 at a7a4829 during this work, excluding36d5e108/ac971e1. Check Issue96 latest receipt; do not confuse the merged52-case baseline with this interface proof.
+
 > Issue96随机源接合核实（2026-10-22）：对照集成5dbd9e39的Issue95/PR97，FFN分层共享前端、PV打包及赢家/拒绝小接口已实际连通，执行36d5e108共11新＋21整机＋19源目录检查通过。报告unified_v6/RNG_COMPATIBILITY_ZH.md。整机FullDecode默认仍未启用新后端，旧52项不改；正式拼合需处理供给消费重叠、跨查询源时钟、筛选896路宽度、账本去重及q/256数值验证。上传回执见Issue96/PR99，不将小接口连通冒称整机已换源。
 
 > Issue96最新交付回执（2026-10-22）：PR99的完整实现、52项条件decode结果与报告已全部推送，科学交付head9621e1db，远端五个关键blob原字节已核验；PR已转为ready/open，待审、未合并。下方本日早先审核记录中的“99仍draft/结果待补”是此前快照。冻结执行fba22b1未改，Issue96保持open，Projects缺read:project待同步。

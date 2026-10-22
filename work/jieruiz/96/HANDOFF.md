@@ -2,9 +2,9 @@
 
 ## 2026-10-22 随机源接口可用性补充
 
-用户问新版随机架构TLM接口能否接合。继续本Issue/分支，不改Issue95后端或其负责人文件。实核最新集成5dbd9e39，random_service树及parallel_sampler_v5与本地对象相同。新前端和11项检查在architecture_tlm/unified_v6/rng_frontend.py、test_rng_interface.py，完整中文结论RNG_COMPATIBILITY_ZH.md。执行36d5e1085e82a982c9e689a467b3b2042ca36f4d：11新＋21整机＋19本目录随机源检查通过，共51，三seed两采样器连通，26个Bivium一帧供512路。来源RNG_INTERFACE_SOURCE.json，结果RNG_INTERFACE_VALIDATION.json及三个RNG_*.log。
+用户问新版随机架构TLM接口能否接合。继续本Issue/分支，不改Issue95后端或其负责人文件。原PR99在核实时以a7a4829合并0575a633（2026-10-22T09:38:49Z），不含本次后续36d5e108/ac971e1；因此新开补充PR103，待审未合并，不将它写成随99合并。实核最新集成5dbd9e39，random_service树及parallel_sampler_v5与本地对象相同。新前端和11项检查在architecture_tlm/unified_v6/rng_frontend.py、test_rng_interface.py，完整中文结论RNG_COMPATIBILITY_ZH.md。执行36d5e1085e82a982c9e689a467b3b2042ca36f4d：11新＋21整机＋19本目录随机源检查通过，共51，三seed两采样器连通，26个Bivium一帧供512路。来源RNG_INTERFACE_SOURCE.json，结果RNG_INTERFACE_VALIDATION.json及三个RNG_*.log。
 
-这只是薄前端/接口连通，不是FullDecode已启用有限速率源。正式拼合要做：跨查询保留源时钟/epoch，FFN供给消费重叠及SAVE/RESTORE/RELEASE，PV实际打包周期，筛选宽度/端点实例分配，替代旧源成本别双计；q/256 sigmoid不能继承理想源PPL。默认和52冻结结果保持。无新GPU/Slurm/PPL/PT/DRAMSys。上传后看Issue96及RNG_INTERFACE_PUBLICATION本地归档回执，PR99待审未合并。
+这只是薄前端/接口连通，不是FullDecode已启用有限速率源。正式拼合要做：跨查询保留源时钟/epoch，FFN供给消费重叠及SAVE/RESTORE/RELEASE，PV实际打包周期，筛选宽度/端点实例分配，替代旧源成本别双计；q/256 sigmoid不能继承理想源PPL。默认和52冻结结果保持。无新GPU/Slurm/PPL/PT/DRAMSys。最终上传看Issue96及RNG_INTERFACE_PUBLICATION本地归档回执；PR103待审未合并，99已合并。RNG_PR_BODY为新PR说明，旧PR_BODY保留99历史版本。
 
 可重现命令：python -m unittest architecture_tlm.unified_v6.test_rng_interface -v。完整核验运行器work/jieruiz/96/check_rng_interface.py要求执行源已提交且结果文件不存在；重放时选择新OUT目录或仅跑unittest，不覆盖原验证JSON。其时间是16候选小模块配置周期，不是全模型/物理周期认证。
 

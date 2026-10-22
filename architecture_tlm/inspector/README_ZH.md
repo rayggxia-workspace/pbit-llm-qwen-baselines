@@ -1,5 +1,7 @@
 # 架构检查台：先看执行事实，再审硬件假设
 
+> 第七轮集成说明：本检查台固定展示 eb317e4f 的52项旧结果及当时源码，不是当前默认后端的实时报告。PR103已启用integrated_service；新40项见[随机服务整机结果](../unified_v6/RNG_INTEGRATION_RESULTS_ZH.md)。本轮已联合验证观测hooks与真实后端兼容，旧JSON/源链接保持冻结。
+
 Issue104，负责人jieruiz，集成基线`eb317e4f6fb1b0d8844887401f3275f128ef8a83`。
 
 直接用浏览器打开 [model-inspector.html](model-inspector.html)。这是自包含离线页面，不需要下载库、上传数据或启动服务器。也可在本目录执行 `python -m http.server 8840 --bind 127.0.0.1` 后访问本机页面。页面的源码链接指向准确Git版本；结果的封存提交与产生结果的执行提交分别记录。

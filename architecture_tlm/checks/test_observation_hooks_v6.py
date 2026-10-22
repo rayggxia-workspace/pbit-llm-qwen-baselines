@@ -1,8 +1,9 @@
 """Issue104: observer-only cycle/attempt accounting, without new algorithms.
 
-The five complete-result digests were produced before editing, at integration
-eb317e4f6fb1b0d8844887401f3275f128ef8a83, using config.tiny() and Python3.12.
-They cover every legacy output field, including timing, actions and prices.
+The pre-observer digests were independently captured from PR103 commit
+b05fb36d8104eb07b33a9af13c747ca2722728cf, before merging these hooks.
+They cover every pre-observer output field, including configuration, timing,
+actions and prices. Historical eb317e4f archives remain bound in inspector tests.
 """
 import hashlib
 import json
@@ -16,13 +17,9 @@ from corrected_rejection_tlm_v5 import CorrectedRejectionSampler
 from parallel_sampler_v5 import SamplingCapError
 
 
-BASELINE_DIGESTS = {
-    'exact': '3be3244ec3cef7a22a403f69474f90bdd7abae0843055610163c9a76441f572e',
-    'screen_pv': '534bfc5dc14c5758c7fe44202d08ad303aca2c7d917d79ce4214a9bfe02a1368',
-    'screen_winner': '5e1dd1f6c150e5fced31c35f288abb376f4c5e0913b50079586fda123b963b69',
-    'screen_rejection': '3be6bd7dbe1775d7c8fb6b8744a1bffa0f467ef300c41f54a4e37e5275f0d522',
-    'screen_serial_ising': '02f8695ffea312ebb23f6c974da4faa6148d6059a539e0f31f6fc0f8a116f8e7',
-}
+BASELINE_DIGESTS = {'exact': '16c4fdbb7329191f3746d57952287ffb65917f4fa10a13c7e6a7d32d13e8f0f0', 'screen_pv': '9f67c7a14a27860fc26c37cdbfa39416d4f7d18197a8fd839016daa781fe74e6', 'screen_winner': 'd281d328bfdd358321bcef66bb23654b5aaf78764bb26ddf7d15457493c19f8c', 'screen_rejection': 'e031c0e3ec15142ddbb7c4f50918dfa89d5e28b2347ffc292f8462440b680140', 'screen_serial_ising': '2b66b89eff92f53953b0b8b5d386e44f999cf7ff4467396451d9bebe528a35f5'}
+
+INTEGRATED_DIGESTS = {'exact': 'aae0dc698f10335aeb6f7a7291b604c3b4ed811dbc23bdc8ecc6639eb975ee93', 'pv': 'e4ceb38f1ed5fb7c47d1d8fecac04de596d9cfdcaa5fb9000b6512a28c55c8ed', 'screen_exact': '6bcff10486a6f466c6e26e0a8becdf0a8845977a3328769979080bd0b50e6239', 'screen_pv': 'a5b85381c7fe4a0b56707f60925219dd6cd77b8eacaf88edcd3ec9e9a1dc2b2b', 'screen_winner': '074acef83647722df57d0192afb5f34426e6a3a3515eb260234063b8ddc97fc1', 'screen_rejection': '9dd0ff60844dff2777735c792b80acc8dba670674235a8abbad48e4d875b9f45'}
 
 
 class AlwaysActive:
@@ -75,6 +72,21 @@ class ObserverContracts(unittest.TestCase):
             with self.subTest(mode=mode):
                 c, m = tiny(); c['attention']['mode'] = mode
                 r = FullDecode(c, m).run()
+                r.pop('stage_busy_ns'); r.pop('sampler_audit')
+                raw = json.dumps(r, sort_keys=True, separators=(',', ':'),
+                                 allow_nan=False).encode()
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), expected)
+
+    def test_integrated_outputs_equal_frozen_pre_observer_backend(self):
+        for mode, expected in INTEGRATED_DIGESTS.items():
+            with self.subTest(mode=mode):
+                c, m = tiny()
+                c['random'].update(backend='integrated_service',
+                                   seed_word_interval_cycles=2, seed_startup_cycles=3)
+                c['attention']['mode'] = mode
+                r = FullDecode(c, m).run()
+                for a in r['sampler_audit']:
+                    self.assertEqual(sum(a['stage_cycles'].values()), a['elapsed_cycles'])
                 r.pop('stage_busy_ns'); r.pop('sampler_audit')
                 raw = json.dumps(r, sort_keys=True, separators=(',', ':'),
                                  allow_nan=False).encode()

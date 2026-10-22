@@ -14,6 +14,7 @@ import struct
 from .contracts import Buffer, Clock, Operation, Resource
 from .kernel import Kernel
 from .memory import MemoryPort, MemoryRequest
+from . import rng_protocol
 
 
 def fp32(value):
@@ -59,6 +60,11 @@ class FFNConfig:
     rng_latency: int = 1
     vector_lanes: int = 16
     cdc_cycles: int = 3
+    random_backend: str = 'native'
+    seed_word_interval: int = 100
+    seed_startup: int = 10
+    reseed_cycles: int = 100000000
+    native_hold_cycles: int = 0
 
     @property
     def counter_width(self):
@@ -70,6 +76,8 @@ class FFNConfig:
             raise ValueError('reference requires 64-lane groups and B2/B4')
         if self.counter_layout not in ('bitplane','signed_bin'):
             raise ValueError('counter_layout must be bitplane or signed_bin')
+        if self.random_backend not in ('native','behavioral','replay'):
+            raise ValueError('random_backend must be native, behavioral or replay')
         if (type(self.samples) is not int or type(self.strata) is not int or
                 self.samples < 1 or self.strata < 1 or
                 256 % self.strata or self.samples % self.strata):
@@ -85,6 +93,10 @@ class FFNConfig:
                      'sc_latency', 'rng_latency', 'vector_lanes'):
             if type(getattr(self, name)) is not int or getattr(self, name) < 1:
                 raise ValueError(name + ' must be positive integer')
+        if type(self.seed_word_interval) is not int or self.seed_word_interval<1:
+            raise ValueError('seed word interval must be positive')
+        if any(type(v) is not int or v<0 for v in (self.seed_startup,self.reseed_cycles,self.native_hold_cycles)):
+            raise ValueError('nonnegative native RNG timing fields required')
         if type(self.cdc_cycles) is not int or self.cdc_cycles<1:
             raise ValueError('positive destination-edge CDC visibility count required')
 
@@ -121,6 +133,10 @@ def threshold_words(config, phase, group, fixture=None):
     if replay is not None:
         words = list(replay[group])
     else:
+        if config.random_backend=='native':
+            raise ValueError('native arithmetic oracle requires observed threshold replay; use replay_fixture')
+        if config.random_backend=='replay':
+            raise ValueError('explicit frozen replay missing requested phase')
         rng = random.Random(config.seed * 1000003 + group * 97 +
                             (700001 if phase == 'x' else 700002))
         width = 256 // config.strata
@@ -187,7 +203,7 @@ def default_resources(config=None):
             Resource('nonlinear', clock, c.nonlinear_latency, capacity=2),
             Resource('vector', clock, 2, capacity=2),
             Resource('rng', clock, c.rng_latency, capacity=2)]+[
-            Resource('sc:'+str(i),clock,c.sc_latency,capacity=1) for i in range(c.engines)]
+            Resource('sc:'+str(i),clock,c.sc_latency,capacity=1) for i in range(c.engines)]+rng_protocol.resources()
 
 
 def default_buffers(config=None, prefix='ffn'):
@@ -197,7 +213,7 @@ def default_buffers(config=None, prefix='ffn'):
             Buffer(prefix+'.scales',c.weight_scale_capacity_bytes,initial=c.weight_scale_capacity_bytes),
             Buffer(prefix+'.counters', c.counter_capacity_bytes, initial=c.counter_capacity_bytes),
             Buffer(prefix+'.encoded', c.encoded_capacity_bytes, initial=c.encoded_capacity_bytes),
-            Buffer(prefix+'.partials', c.partial_capacity_bytes, initial=c.partial_capacity_bytes)]
+            Buffer(prefix+'.partials', c.partial_capacity_bytes, initial=c.partial_capacity_bytes)]+rng_protocol.buffers(prefix)
 
 
 def make_kernel(config=None, memory_latency=4):
@@ -237,17 +253,22 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                      down=wd['rows']*4,residual=wd['rows']*4),
                  provenance=dict(scope='one explicitly shaped FFN chain',
                     numeric='exact integer sample accumulation; FP32 tile restore/reduction; BF16 optional output',
-                    random_source='frozen_replay' if fixture.get('thresholds') else 'Python Random local behavioral PRNG',
+                    random_source='Issue95 native LFSR32 protocol' if c.random_backend=='native' else 'frozen_replay' if c.random_backend=='replay' else 'Python Random local behavioral PRNG',
                     RNG_is_physical=False, timing='configured, uncharacterized',
                     weight_layout='offline tile-major packed signed W8; FP32 scale read/stored separately',
                     counter_layout=c.counter_layout,
-                    counter_mapping='B bins x 2 sign rails x 8 magnitude planes x output rows' if c.counter_layout=='bitplane' else 'B signed integer sums per output row; alternate mapping with no inherited PPA',
+                    counter_mapping='B bins x 2 input-sign rails x original W8 two-complement bit planes (bit7=-128) x output rows' if c.counter_layout=='bitplane' else 'B signed integer sums per output row; alternate mapping with no inherited PPA',
                     tensor_storage='FP32 input/z/partial/residual; fixed W8 plus FP32 scale; BF16 output when configured',
                     storage_boundary='finite local weights/counters/encoded/partial state; backing SRAM/DRAM address space has no total-capacity allocator',
                     trace_storage='retained threshold histories and receipts are simulator evidence, not hardware buffers',
                     cdc=f'producer completion to destination acceptance: {c.cdc_cycles} destination edges; 3 models two synchronizers plus old-state consumer',
                     fixture=fixture.get('provenance', {})))
     ids = state['operation_ids']
+    if c.random_backend=='native' and fixture.get('thresholds'):
+        raise ValueError('native execution must not silently substitute frozen thresholds')
+    native=(rng_protocol.NativeRandomService(kernel,prefix,{'ffn':'lfsr32'},c.seed,
+        c.seed_word_interval,c.seed_startup,c.reseed_cycles,c.native_hold_cycles,ids)
+        if c.random_backend=='native' else None)
     free_weights, free_counts,free_scales = prefix+'.weights', prefix+'.counters',prefix+'.scales'
     free_encoded, free_partials = prefix+'.encoded', prefix+'.partials'
     slots = [None]*c.weight_slots
@@ -299,11 +320,17 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                 if actual != block:
                     raise AssertionError('activation data changed between producer and encoder')
                 state['encoded'][key] = encode_group(actual, c.bins)
-                state['thresholds'][key] = threshold_words(c, name, key[1], fixture)
+                state['thresholds'][key] = ([None]*c.samples if native else threshold_words(c, name, key[1], fixture))
             encoded = add(f'{name}.g{gi}.encode', 'encode', deps=(read,),
                           actions={'activation_encode_values':len(block)}, on_complete=encoded_cb)
             group_done = []
             group_tiles=[(mn,rr) for mn in projections for rr in range(0,matrices[mn]['rows'],64)]
+            largest_rows=min(64,max(matrices[mn]['rows'] for mn in projections))
+            largest_count_bytes=math.ceil(largest_rows*c.bins*(16 if c.counter_layout=='bitplane' else 1)*c.counter_width/8)
+            wave_capacity=min(c.weight_slots,c.engines,c.weight_scale_capacity_bytes//4,
+                              c.counter_capacity_bytes//largest_count_bytes)
+            if wave_capacity<1:
+                raise ValueError('no complete tile fits configured wave state capacity')
             local_tile_index=0
             for matrix_name in projections:
                 matrix = matrices[matrix_name]
@@ -313,10 +340,12 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                     tile_serial[0] += 1
                     slot = ti % c.weight_slots
                     label = f'{matrix_name}.r{r//64}.k{gi}'
-                    wave=local_tile_index//c.weight_slots
-                    first_in_wave=local_tile_index%c.weight_slots==0
-                    wave_tiles=group_tiles[wave*c.weight_slots:(wave+1)*c.weight_slots]
+                    wave=local_tile_index//wave_capacity
+                    first_in_wave=local_tile_index%wave_capacity==0
+                    wave_tiles=group_tiles[wave*wave_capacity:(wave+1)*wave_capacity]
                     wave_labels=[f'{mn}.r{rr//64}.k{gi}' for mn,rr in wave_tiles]
+                    prior_wave=group_tiles[(wave-1)*wave_capacity:wave*wave_capacity] if wave else []
+                    wave_fence=tuple(prefix+f'.{mn}.r{rr//64}.k{gi}.sample{c.samples-1}' for mn,rr in prior_wave)
                     local_tile_index+=1
                     tile_key = matrix_name, r//64, gi
                     counter_factor=16 if c.counter_layout=='bitplane' else 1
@@ -341,7 +370,7 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                     def scale_loaded(k,op,expected=scale_payload):
                         if k.memory_reads[op.id]!=expected:
                             raise AssertionError('DMA weight scale bytes disagree with input')
-                    scale_load=add(label+'.scale_read','dram',deps=tuple(dep),
+                    scale_load=add(label+'.scale_read','dram',deps=tuple(dep)+wave_fence,
                         memory=MemoryRequest(address+4096,4),inputs={free_scales:4},on_complete=scale_loaded,
                         actions={'weight_scale_read_bytes':4})
                     scale_fill=add(label+'.scale_fill','sram',deps=(scale_load,),
@@ -364,17 +393,29 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                         state.setdefault('resident_weights',{})[tile_key]=(
                             [list(struct.unpack('<'+'b'*nc,actual[row*nc:(row+1)*nc])) for row in range(nr)],
                             unpack(k.memory_reads[scale_read])[0])
-                    previous = add(label+'.count_init','control',deps=(readw,scale_read),
+                    previous = add(label+'.count_init','control',deps=(readw,scale_read)+wave_fence,
                         inputs={free_counts:count_bytes},on_complete=init_count,
                         actions={'counter_initialize_bits':nr*c.bins*counter_factor*c.counter_width})
                     for step in range(c.samples):
                         rng_suffix=f'{name}.g{gi}.wave{wave}.rng{step}'
-                        rng=prefix+'.'+rng_suffix
+                        rng=prefix+'.'+rng_suffix+('.done' if native else '')
                         if first_in_wave:
                             rng_deps=tuple(prefix+'.'+wl+('.count_init' if step==0 else f'.sample{step-1}') for wl in wave_labels)
-                            add(rng_suffix,'rng',deps=rng_deps,
-                                actions={'random_word8':1,'shared64_broadcast_tiles':len(wave_tiles)},
-                                metadata={'phase':name,'group':gi,'step':step,'wave':wave,'replay_same_group':wave>0})
+                            if native:
+                                if step==0:
+                                    prepared=native.command(f'{name}.g{gi}.wave{wave}.prepare','ffn',1 if wave==0 else 2,rng_deps)
+                                    rng_deps=(prepared,)
+                                def received(response,done,key=key,step=step,wave=wave):
+                                    width=256//c.strata
+                                    threshold=(step//(c.samples//c.strata))*width+(response['words']['ffn'][0]&(width-1))
+                                    if wave==0: state['thresholds'][key][step]=threshold
+                                    elif state['thresholds'][key][step]!=threshold:
+                                        raise AssertionError('native SAVE/RESTORE changed shared group trajectory')
+                                rng=native.frame(rng_suffix,{'ffn':[128]},rng_deps,received)
+                            else:
+                                add(rng_suffix,'rng',deps=rng_deps,
+                                    actions={'behavioral_word8':1,'shared64_broadcast_tiles':len(wave_tiles)},
+                                    metadata={'phase':name,'group':gi,'step':step,'wave':wave,'replay_same_group':wave>0})
                         def sample_cb(k, op, key=key, tile_key=tile_key, matrix=matrix,
                                       r=r, start=start, nr=nr, step=step):
                             enc = state['encoded'][key]
@@ -386,9 +427,9 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                                     if item['full_one'] or word < item['q']:
                                         code=codes[row][col]
                                         if c.counter_layout=='bitplane':
-                                            rail=0 if item['sign']*code>=0 else 1
+                                            rail=0 if item['sign']>=0 else 1
                                             for bit in range(8):
-                                                acc[row][item['bin']][rail][bit]+=(abs(code)>>bit)&1
+                                                acc[row][item['bin']][rail][bit]+=((code&255)>>bit)&1
                                         else: acc[row][item['bin']]+=item['sign']*code
                                 if c.counter_layout=='bitplane':
                                     if any(not 0<=v<1<<c.counter_width for b in acc[row] for rail in b for v in rail):
@@ -413,12 +454,14 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                         scale_by_bin={item['bin']:item['scale'] for item in enc}
                         raw_counts=state['counters'].pop(tile_key)
                         if c.counter_layout=='bitplane':
-                            counts=[[sum((planes[0][bit]-planes[1][bit])*(1<<bit) for bit in range(8))
+                            counts=[[sum((planes[0][bit]-planes[1][bit])*(-128 if bit==7 else 1<<bit) for bit in range(8))
                                      for planes in row] for row in raw_counts]
                             counter_peak=max(v for row in raw_counts for b in row for rail in b for v in rail)
+                            nonzero_slots=sum(v!=0 for row in raw_counts for b in row for rail in b for v in rail)
                         else:
                             counts=raw_counts
                             counter_peak=max(abs(v) for row in counts for v in row)
+                            nonzero_slots=sum(v!=0 for row in counts for v in row)
                         _,weight_scale=state['resident_weights'].pop(tile_key)
                         old=unpack(k.memory_reads[readp]) if readp else [0.0]*nr
                         for row in range(nr):
@@ -433,6 +476,7 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                                                  data=pack(values[matrix_name][r:r+nr])),
                             actions={'partial_write_bytes':nr*4})
                         state['tile_receipts'].append(dict(tile=label,counter_peak=counter_peak,
+                                                          nonzero_counter_slots=nonzero_slots,
                                                           integer_equivalent_peak=max(abs(v) for row in counts for v in row),
                                                           counter_layout=c.counter_layout,
                                                           restored_rows=nr,complete_ps=k.now_ps))
@@ -448,7 +492,8 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                     build_group(gi+1,op.id)
                 else:
                     add(name+'.complete','control',deps=(op.id,))
-            add(f'{name}.g{gi}.release','control',deps=tuple(group_done),outputs={free_encoded:encoded_bytes},
+            release_deps=(native.command(f'{name}.g{gi}.native_release','ffn',3,group_done),) if native else tuple(group_done)
+            add(f'{name}.g{gi}.release','control',deps=release_deps,outputs={free_encoded:encoded_bytes},
                 on_complete=group_done_cb)
         build_group(0,dependency)
         return phase_complete_id
@@ -472,7 +517,9 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                 payload=b''.join(payload[i+2:i+4] for i in range(0,len(payload),4))
             state['output_address']=0x53000000
             state['output_bytes']=len(payload)
-            def stored(k3,op3): state['complete_ps']=k3.now_ps
+            def stored(k3,op3):
+                state['complete_ps']=k3.now_ps
+                state['native_random']=native.report() if native else None
             add('output.write','sram',deps=(op2.id,),
                 memory=MemoryRequest(state['output_address'],len(payload),write=True,data=payload),
                 outputs={free_partials:partial_bytes},on_complete=stored,actions={'output_write_bytes':len(payload)})
@@ -483,6 +530,14 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
         on_complete=nonlinear_cb,actions={'silu_values':wg['rows'],'gated_multiply':wg['rows']},
         metadata={'all_input_tiles_reduced':True})
     return state
+
+
+def replay_fixture(fixture,state):
+    """Freeze the actually consumed native trajectory for arithmetic oracles."""
+    thresholds={phase:[list(state['thresholds'][phase,group])
+                       for group in sorted(g for p,g in state['thresholds'] if p==phase)]
+                for phase in ('x','z')}
+    return {**fixture,'thresholds':thresholds}
 
 
 def reference_ffn(fixture, config=None):

@@ -13,6 +13,8 @@ def fixture():
 
 
 def execute(data,c,mode='event',latency=4):
+    if data.get('random_replay'):
+        c=dataclasses.replace(c,random_backend='replay')
     kernel=make_kernel(c,memory_latency=latency)
     state=build_attention(kernel,data,c)
     result=kernel.run(mode)

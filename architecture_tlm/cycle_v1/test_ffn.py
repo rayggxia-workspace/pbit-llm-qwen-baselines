@@ -4,7 +4,7 @@ import random
 import struct
 import unittest
 
-from .ffn import FFNConfig, build_ffn, encode_group, make_kernel, matrix_spec, reference_ffn, reference_ffn_tiled
+from .ffn import FFNConfig, build_ffn, encode_group, make_kernel, matrix_spec, reference_ffn, reference_ffn_tiled, replay_fixture
 
 
 def fixture(d=65,f=3,o=2):
@@ -46,8 +46,9 @@ class FFNTests(unittest.TestCase):
                 b,br,_=execute(data,c,'event')
                 self.assertEqual(ar.equivalence_payload(),br.equivalence_payload())
                 self.assertEqual(a['output'],b['output'])
-                reference=reference_ffn(data,c)
-                tiled=reference_ffn_tiled(data,c)
+                observed=replay_fixture(data,a)
+                reference=reference_ffn(observed,c)
+                tiled=reference_ffn_tiled(observed,c)
                 for field in ('gate','up','z','projected','output'):
                     self.assertClose(a[field],reference[field])
                     self.assertEqual(a[field],tiled[field])
@@ -109,7 +110,7 @@ class FFNTests(unittest.TestCase):
         with self.assertRaises(ValueError): execute(data,FFNConfig(partial_capacity_bytes=1))
         with self.assertRaises(ValueError): execute(data,FFNConfig(weight_slot_bytes=8))
         data['thresholds']={'x':[[0]*32,[0]*32]}
-        with self.assertRaisesRegex(ValueError,'stratified'): execute(data)
+        with self.assertRaisesRegex(ValueError,'stratified'): execute(data,FFNConfig(random_backend='replay'))
 
     def test_output_bytes_match_interface(self):
         for narrow in (False,True):
@@ -130,6 +131,23 @@ class FFNTests(unittest.TestCase):
         signed,_,_=execute(data,dataclasses.replace(c,counter_layout='signed_bin'))
         for field in ('gate','up','z','projected','output'):
             self.assertEqual(bitplanes[field],signed[field])
+
+    def test_original_signed_weight_planes_and_native_multiwave_replay(self):
+        simple=dict(x=[1.],wg={'codes':[[-1]],'scales':[[1.]]},
+            wu={'codes':[[1]],'scales':[[1.]]},wd={'codes':[[1]],'scales':[[1.]]})
+        state,_,_=execute(simple)
+        gate=next(x for x in state['tile_receipts'] if x['tile']=='wg.r0.k0')
+        self.assertEqual(gate['nonzero_counter_slots'],8)
+        self.assertEqual(state['gate'],[-1.])
+        data=fixture(d=3,f=257,o=2)
+        c=FFNConfig(seed_word_interval=1,seed_startup=0)
+        state,_,_=execute(data,c)
+        oracle=reference_ffn_tiled(replay_fixture(data,state),c)
+        self.assertEqual(state['output'],oracle['output'])
+        source=state['native_random']['ports']['ffn']['counts']
+        self.assertEqual(source['restore_bits_loaded'],32)
+        self.assertEqual(source['checkpoint_bits_written'],6*32)
+        self.assertEqual(source['frames_generated'],7*32)
 
 
 if __name__=='__main__': unittest.main()

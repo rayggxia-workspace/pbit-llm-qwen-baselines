@@ -15,6 +15,7 @@ from .contracts import Buffer, Clock, Operation, Resource
 from .kernel import Kernel
 from .memory import MemoryPort, MemoryRequest
 from .ffn import fp32, sigmoid
+from . import rng_protocol
 
 
 @dataclass(frozen=True)
@@ -39,17 +40,30 @@ class AttentionConfig:
     response: str = 'q256'
     drive_step: float = 0.125
     cdc_cycles: int = 3
+    random_backend: str = 'native'
+    seed_word_interval: int = 100
+    seed_startup: int = 10
+    reseed_cycles: int = 100000000
+    native_hold_cycles: int = 0
 
     def validate(self):
         if self.mode not in ('exact','pv','winner','rejection'):
             raise ValueError('unknown Attention mode')
         if self.response not in ('q256','ideal_sigmoid'):
             raise ValueError('unknown source response')
+        if self.random_backend not in ('native','behavioral','replay'):
+            raise ValueError('unknown random backend')
+        if self.random_backend=='native' and self.response!='q256' and self.mode in ('winner','rejection'):
+            raise ValueError('native comparator response is q256, not ideal sigmoid')
         for name in ('samples','capacity','source_lanes','output_capacity','kv_capacity_bytes',
                      'score_capacity_bytes','mac_lanes','source_latency','source_ii',
                      'max_proposals_per_sample','rank_retry_cap','cdc_cycles'):
             if type(getattr(self,name)) is not int or getattr(self,name)<1:
                 raise ValueError(name+' must be positive integer')
+        if type(self.seed_word_interval) is not int or self.seed_word_interval<1:
+            raise ValueError('positive seed-word interval required')
+        if any(type(v) is not int or v<0 for v in (self.seed_startup,self.reseed_cycles,self.native_hold_cycles)):
+            raise ValueError('nonnegative native source timing required')
         for name in ('histogram_delay_cycles','max_shift','burn_updates'):
             if type(getattr(self,name)) is not int or getattr(self,name)<0:
                 raise ValueError(name+' must be nonnegative integer')
@@ -73,14 +87,14 @@ def default_resources(config=None):
             Resource('vector',clock,3,capacity=4),
             Resource('sampler',clock,1,capacity=1),
             Resource('rng',clock,c.source_latency,ii_cycles=c.source_ii,capacity=2),
-            Resource('v_accumulate',clock,3,capacity=1)]
+            Resource('v_accumulate',clock,3,capacity=1)]+rng_protocol.resources()
 
 
 def default_buffers(config=None,prefix='attention'):
     c=config or AttentionConfig()
     return [Buffer(prefix+'.kv',c.kv_capacity_bytes,initial=c.kv_capacity_bytes,unit='byte credit'),
             Buffer(prefix+'.scores',c.score_capacity_bytes,initial=c.score_capacity_bytes,unit='byte credit'),
-            Buffer(prefix+'.samples',c.output_capacity,unit='index')]
+            Buffer(prefix+'.samples',c.output_capacity,unit='index')]+rng_protocol.buffers(prefix)
 
 
 def make_kernel(config=None,memory_latency=4):
@@ -197,6 +211,10 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
     c=config or AttentionConfig()
     c.validate()
     q,keys,values,candidates=validate_fixture(fixture,c)
+    if fixture.get('random_replay') and c.random_backend!='replay':
+        raise ValueError('frozen source requires explicit random_backend=replay')
+    if c.random_backend=='replay' and not fixture.get('random_replay'):
+        raise ValueError('replay backend requires frozen source fixture')
     n,d,dv=len(candidates),len(q),len(values[0])
     storage=local_state_bytes(n,d,dv,c)
     score_bytes=sum(storage.values())
@@ -216,16 +234,16 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                provenance=dict(scope='one query from preprojected RoPE Q/K and explicit candidate IDs',
                   tensor_format='FP32 Q/K/V storage; not BF16 traffic',
                   arithmetic='QK double-precision products/fsum rounded to FP32; functional double-precision Softmax; per-term FP32 V accumulation; not a bit-true hardware datapath',
-                  random_source='frozen replay' if fixture.get('random_replay') else 'Python Random behavioral local PRNG',
+                  random_source='Issue95 native Bivium protocol' if c.random_backend=='native' and c.mode!='exact' else 'unused exact digital path' if c.mode=='exact' else 'frozen replay' if c.random_backend=='replay' else 'Python Random behavioral local PRNG',
                   response=c.response,drive_step=c.drive_step,
-                  independent_samples=(True if c.mode=='rejection' and c.response=='ideal_sigmoid' and not fixture.get('random_replay') else False),
+                  independent_samples=(True if c.mode=='rejection' and c.response=='ideal_sigmoid' and c.random_backend=='behavioral' else False),
                   independence_boundary='ideal rejection independence assumes independent ideal response; q256 adaptive-state samples and frozen replays have no IID guarantee',
                   pv_sampling='one-offset systematic sampling; outputs are not independent' if c.mode=='pv' else None,
                   timing='configured, uncharacterized',candidate_overflow='error',
                   omitted='QKV projections, RoPE, screening, GQA union, Wo, full decoder',
                   storage_boundary='finite query-local state and KV response credits; backing DRAM/SRAM address space has no total-capacity allocator',
                   trace_storage='frames and retained index histories are simulator evidence, not additional hardware queues',
-                  source_state='Python PRNG state is backend-owned and uncharacterized; source staging/masks are in local_state_bytes',
+                  source_state='native or behavioral source state is backend-owned and separately reported; source staging/masks are in local_state_bytes',
                   cdc=f'producer completion to destination acceptance: {c.cdc_cycles} destination edges; 3 models two synchronizers plus old-state consumer',
                   fixture=fixture.get('provenance',{})))
     if c.mode=='pv': state['provenance']['independent_samples']=False
@@ -239,6 +257,12 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
     sampler_done=[False]
     final_started=[False]
     serial=[0]
+    biased_names=[f'biased_{i}' for i in range(math.ceil(min(c.source_lanes,n if c.mode=='winner' else max(0,n-1))/20))]
+    kinds={name:'bivium' for name in biased_names} if c.mode in ('winner','rejection') else {}
+    kinds['fair']='bivium'
+    native=(rng_protocol.NativeRandomService(kernel,prefix,kinds,c.seed,c.seed_word_interval,c.seed_startup,
+        c.reseed_cycles,c.native_hold_cycles,state['operation_ids']) if c.random_backend=='native' and c.mode!='exact' else None)
+    state['native_biased_lanes']=len(biased_names)*20 if native else 0
 
     def add(suffix,resource,**kwargs):
         ident=prefix+'.'+suffix
@@ -277,7 +301,9 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
             state['unique_V']=len(weights)
             state['output_address']=0x74000000
             state['output_bytes']=dv*4
-            def stored(k2,op2): state['complete_ps']=k2.now_ps
+            def stored(k2,op2):
+                state['complete_ps']=k2.now_ps
+                state['native_random']=native.report() if native else None
             add('output.write','sram',deps=(op.id,),
                 memory=MemoryRequest(state['output_address'],dv*4,write=True,data=pack(acc)),
                 outputs={free_scores:score_bytes},on_complete=stored,actions={'output_write_bytes':dv*4})
@@ -338,6 +364,14 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
         if width==0:
             callback(0,dependency)
             return
+        if native:
+            if width>160: raise ValueError('native fair Bivium word width exceeded')
+            def response(data,done):
+                state['fair_draws']+=1
+                value=sum(w<<(8*i) for i,w in enumerate(data['words']['fair']))&((1<<width)-1)
+                callback(value,done)
+            native.frame(unique(label),{'fair':[128]*20},(dependency,),response)
+            return
         def got(k,op):
             state['fair_draws']+=1
             callback(source.fair(width),op.id)
@@ -358,10 +392,20 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
             def returned(k,op,start=start,count=count):
                 if source_bits[0] is None: source_bits[0]=source.frame(drives)
                 bits[start:start+count]=source_bits[0][start:start+count]
-            previous=add(f'frame.{frame}.wave.{start//c.source_lanes}','rng',deps=(previous,),
-                on_complete=returned,actions={'biased_random_lanes':count,
-                   'random_bits':count*(8 if c.response=='q256' else 53)},
-                metadata={'frame':frame,'lane_start':start,'lanes':count,'source_lanes':c.source_lanes})
+            label=f'frame.{frame}.wave.{start//c.source_lanes}'
+            if native:
+                q=[round(p*256) for p in source.probabilities(drives[start:start+count])]
+                padded=q+[0]*(len(biased_names)*20-len(q))
+                requests={name:padded[i*20:(i+1)*20] for i,name in enumerate(biased_names)}
+                def received(data,done,start=start,count=count):
+                    delivered=[bit for name in biased_names for bit in data['bits'][name]]
+                    bits[start:start+count]=delivered[:count]
+                previous=native.frame(label,requests,(previous,),received)
+            else:
+                previous=add(label,'rng',deps=(previous,),
+                    on_complete=returned,actions={'biased_random_lanes':count,
+                       'random_bits':count*(8 if c.response=='q256' else 53)},
+                    metadata={'frame':frame,'lane_start':start,'lanes':count,'source_lanes':c.source_lanes})
             state['source_waves']+=1
         def reduced(k,op):
             if any(b is None for b in bits): raise AssertionError('incomplete source response')
@@ -376,8 +420,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
         ref=max(range(n),key=logits.__getitem__)
         if c.mode=='pv':
             state['probabilities']=softmax(logits)
-            def offset(k,op):
-                uniform=source.uniform()
+            def offset_value(uniform,dependency):
                 out=[]
                 cumulative=state['probabilities'][0]
                 local=0
@@ -390,8 +433,11 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                 def next_index(index,dep):
                     if index==len(out): mark_done(dep)
                     else: emit(out[index],dep,lambda done:next_index(index+1,done))
-                next_index(0,op.id)
-            add('pv.offset','rng',deps=(dependency,),on_complete=offset,actions={'uniform_random_bits':32,'cdf_intervals':n})
+                next_index(0,dependency)
+            if native: fair(32,dependency,lambda value,done:offset_value(value/2**32,done),'pv.offset')
+            else:
+                add('pv.offset','rng',deps=(dependency,),on_complete=lambda k,op:offset_value(source.uniform(),op.id),
+                    actions={'uniform_random_bits':32,'cdf_intervals':n})
             return
         if c.mode=='winner':
             winner=[ref]

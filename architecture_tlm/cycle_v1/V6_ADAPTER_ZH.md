@@ -38,6 +38,8 @@ python -m architecture_tlm.cycle_v1.v6_adapter --operator ffn \
 
 旧 v6 的 blocking SRAM/fabric、批量排空 burst 窗口、additive CDC、宏恢复调度与条件价格，**不会**静默转换成新 MemoryPort 的 descriptor window、bank 端口或三个目的时钟沿握手。旧 exact query 是 BF16 KV 的 fused online 路径，新 query 明确保存 FP32 与分数；旧 FFN假定入口已在SRAM，新链有显式入口读取。这里并列展示独立耗时，不据此比较加速/能效，`speedup=null`。
 
+桥给旧 sampler 构造的 logits 使用每乘/每加 FP32 舍入；cycle query 使用 double 乘积/`fsum` 后转 FP32。因此即使输入Q/K和seed相同，也不承诺两个分数或抽样轨迹相同。旧侧保存该score fixture散列与算术说明；它不是旧v6原生数值数据通路，也不作为新周期算子的数值oracle。
+
 ## 实际 smoke
 
 五例都完成新 cycle/event 全 payload 一致性与数值检查，六项映射/拒绝测试通过：

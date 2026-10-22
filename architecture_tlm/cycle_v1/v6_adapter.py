@@ -124,6 +124,7 @@ def map_config(operator, cfg, shape, fixture):
         'no_direct_equivalence': ['elapsed time and action vocabulary use different granularity/resources',
             'legacy input activations are assumed SRAM-resident; cycle FFN performs its explicit initial reads',
             'legacy KV is BF16 and exact attention is fused/online; cycle query stores FP32 and explicit scores',
+            'bridge legacy sampler logits round each FP32 product/add; cycle QK uses double products/fsum then FP32, so logits can differ',
             'same seed does not imply the same stream trajectory: endpoint count/request timing differs',
             'legacy FFN is a workload/timing model with no fixture-weight numerical output',
             'neither result is whole-model TPOT, PPL, STA, total physical energy or a speedup measurement']}
@@ -170,6 +171,10 @@ def _legacy_operator(operator, cfg, shape, fixture):
         'FFN_activity': dict(model.metadata), 'sampler_audit': model.sampler_audit,
         'priced_subtotal_J': sum(model.e.energy.values()), 'unpriced_actions': dict(model.e.missing),
         'numeric_output': None, 'scope': 'native v6 operator methods only; no full decoder run',
+        'query_score_fixture': None if operator == 'ffn' else {
+            'sha256': digest(canonical(logits)),
+            'arithmetic': 'bridge-computed per-product/per-add FP32, not a native v6 arithmetic datapath',
+            'not_bit_equal_to_cycle_qk': 'cycle uses double products/fsum then FP32'},
         'not_comparable_as': ['whole decoder TPOT', 'numerical oracle', 'same-resource speedup', 'total physical energy']}
 
 

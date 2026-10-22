@@ -10,7 +10,8 @@ from sampler import sigmoid
 
 
 def rejection_indices(logits,samples=64,seed=0,rng=None,max_trials_per_sample=64,
-                      adaptive=True,initial_shift=0,max_shift=24,strict=True):
+                      adaptive=True,initial_shift=0,max_shift=24,strict=True,
+                      proposal_observer=None):
     z=np.asarray(logits,dtype=np.float64)
     if z.ndim!=2 or not min(z.shape) or np.isnan(z).any() or np.isposinf(z).any():
         raise ValueError('nonempty 2D finite logits/-inf padding required')
@@ -35,7 +36,12 @@ def rejection_indices(logits,samples=64,seed=0,rng=None,max_trials_per_sample=64
         m=shift[rr];r=np.exp2(-m.astype(float))
         # ALL candidate p-bits propose independently, without old within-block
         # mutual inhibition; only accepted zero/one states are committed.
-        q=sigmoid(d[rr]-m[:,None]*np.log(2.))
+        drive=d[rr]-m[:,None]*np.log(2.)
+        # Diagnostic observer must not mutate arrays or draw from this RNG.
+        # Default arithmetic and RNG consumption are unchanged.
+        if proposal_observer is not None:
+            proposal_observer(drive,valid[rr],m,rr)
+        q=sigmoid(drive)
         bits=(rng.random(q.shape)<q)&valid[rr]
         count=bits.sum(1);trials[rr]+=1;site_draws+=int(valid[rr].sum())
         single=count==1;empty=count==0

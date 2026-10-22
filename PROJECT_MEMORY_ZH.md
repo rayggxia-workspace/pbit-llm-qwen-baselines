@@ -1,5 +1,9 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-22 Issue92：小网部署计算成本
+
+负责人amlink1219，接续Issue92/task/92-pbit-gate-pilot/PR94。新增部署运算账本qwen/results/pbit_gate_cost_20261022/README_ZH.md、COST.json及compute_cost.py。每自由块32连续乘法/40加法/8bit门控/9概率事件、两阶段；原三位置混合F21，层0/12/23候选QK省378/−165/379 MAC，小网第一层新增672乘法，不能称整体节能。含公共特征/动态归一化、GQA并集与固定S的PV边界。9模型形状、2304隐藏态门控等价、6项均值回算及独立只读审阅通过；没有新训练/Slurm/完整PPL/RTL/PPA，原质量结果保持。发布随PR94，待审未合并；上传核验以work/amlink1219/92/compute_cost/PUBLICATION.json实际回执为准。Projects沿同日已验证read:project不足待同步，不自动合并/关闭Issue。
+
 ## 2026-10-22 Issue92第二轮：直接目标与冻结盲评
 
 用户要求持续优化小网：max4 warmup后直接最小化期望遗漏mass，准确TRAIN平均8块及隐式梯度；加入query-relative输入、温度扩展与TRAIN全局硬阈值。新192/48/48篇排除旧48篇，54原候选＋9长pbit＋27max4控制，CPU45项、先冻结90配置再一次blind全部通过；GPU2744/2746/2748/2751完成，无在运行作业。

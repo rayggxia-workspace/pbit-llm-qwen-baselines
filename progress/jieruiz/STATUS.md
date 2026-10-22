@@ -1,3 +1,7 @@
+# Issue96 unified TLM in progress
+
+2026-10-22; jieruiz; task/96-unified-tlm; base83e15289; independent sparse directory tmp/unified-tlm-issue96-20261022. Main code/Chinese design done; 20 mechanism checks pass, Qwen24 exploratory smoke done. Frozen runs, result manifest and workspace PR pending. No new PPL/PT or source-backend implementation. Handoff work/jieruiz/96/HANDOFF.md.
+
 # Issue55第五轮最终：6项成果已合并
 
 2026-10-22；jieruiz；初始82/83/85/86/88，收尾89一并审阅通过，最终科学集成9bd908b5d06a4dd72af67655a4c4a30a2c72e1c0。89直接合并作者原head，未改写他人分支；作者STATUS/HANDOFF更新按原blob继承。Issue73/84/87已关闭，78/37继续；83官方26项验收已完成、新全组合质量/PPA仍未验收。报告work/jieruiz/55/round5/，memory SHA256 9ef4fc794fd2fbd51993849972346b90153b36e971cd8731e78a10919880f049。报告交付/本轮目录回收实际结果查Issue55最终回执。

@@ -230,8 +230,9 @@ class FullDecode:
             loaded, slot = self.weight(prefetch, name, first*row_bytes, n*row_bytes)
             if info['width'] == 1:
                 # Same offline W8 scale metadata as SC, no online weight conversion.
-                count = n*ceildiv(inp,64)*4
-                loaded = self.dram.tensor(loaded, name, info['bytes']+first*ceildiv(inp,64)*4, count, kind='weight_scales')
+                scale_first = (first//64)*ceildiv(inp,64)*4
+                count = (ceildiv(first+n,64)-first//64)*ceildiv(inp,64)*4
+                loaded = self.dram.tensor(loaded, name, info['bytes']+scale_first, count, kind='weight_scales')
                 loaded = self.mem.transfer(loaded, self.slots[slot], count, True, 'weight_scales')
                 loaded = self.mem.transfer(loaded, self.slots[slot], count, False, 'weight_scales')
             start = max(current, loaded, self.s.free['mac'])

@@ -78,6 +78,12 @@ class FullGraph(unittest.TestCase):
         self.assertEqual(r['actions']['fp32_mac'],H*L*d)
         self.assertAlmostEqual(sum(r['phase_ns'].values()),r['metrics']['elapsed_ns'])
 
+    def test_W8_scale_metadata_layout_with_partial_output_tiles(self):
+        c,m=self.case('w8','exact');c['weight_chunk_bytes']=2048
+        r=FullDecode(c,m).run()
+        self.assertGreater(r['DRAM']['traffic']['weight_scales_physical_bytes'],0)
+        self.assertEqual(r['actions']['weight_scale_op'],2*m['intermediate_size']+m['hidden_size'])
+
     def test_all_modes_have_all_decoder_phases(self):
         for mode in MODES:
             with self.subTest(mode=mode):

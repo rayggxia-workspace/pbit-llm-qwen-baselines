@@ -62,6 +62,12 @@
 
 双同步触发器加按旧状态读取的同步消费者确实对应第三目的沿可见；反向信用也保持三个源沿的使用约束。该结果只验证数字协议，不覆盖真实 SC 位流、算术流水、内存乱序 controller RTL、亚稳态/MTBF、综合、STA 或电路功耗。协议 RTL 与源代码 checker 的相等不能扩大为整算子硬件验证。
 
+## Reduced layer 运行器与制品复核
+
+只读检查 `run_layer.py` 和 `results/reduced_layer_20261023` 的 7 个成功场景、2 个容量拒绝场景。运行器明确将内部复用 primitive 的计算称为功能回归，独立闭式/标量证明另见上述测试。exact / PV / winner / rejection 各自比较完整 cycle/event payload；单 bank/window、慢内存、刚好 768B layer state 的 exact 输出 hash 与默认相等。767B working state 和 9 候选容量分别因预期的工作存储/10 候选越界拒绝。
+
+`verify_layer_artifacts.py` 重新解压全部 7 份原始 trace，核对唯一操作 ID、全部接受/完成集合与时间、实际 memory 字节/请求数、逐拍汇总后的额度范围/归还/已用峰值、BF16 输出 hash 和压缩 trace hash。全数通过，回执为 `results/reduced_layer_artifact_review.json`。当前 exact 为 728 操作 / 24,850 ns，单 bank/window 为 28,110 ns，慢内存为 27,510 ns；这些只反映已配置的缩小合成架构，不是完整模型性能或硬件预测精度。
+
 ## 重现
 
 ```powershell

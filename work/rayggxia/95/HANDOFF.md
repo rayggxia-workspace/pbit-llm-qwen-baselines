@@ -10,7 +10,11 @@
 
 OS种子demo和三固定seed统计诊断都保留原始输出；不宣称物理熵、完整PPL或PPA。待用户自行做DC/PT等工艺仿真，POWER_SIM_ZH.md与模板说明边界。DESIGN_QUESTIONS_ZH.md是本轮疑点/决策清单。
 
-发布状态以PUBLICATION.json及远端PR为准；本文件创建时本地实现完成，尚未推送。任务未合并前不关闭Issue。Projects未验证权限，待同步，不宣称已更新。后续确认本分支新head与源码hash，再续同一任务，不重复创建副本。
+发布状态：已通过实际账号rayggxia的GitHub连接器上传，源提交970260e21ebcf98822b9cf47b643fb8360a31e2f，PR97开放待审、未合并；Issue95保持开放。源码树d8f80cc2b04927c083db54a88159df9b2b19347b与本地逐文件字节核验一致。Projects未验证权限，待同步，不宣称已更新。后续确认本分支新head与源码hash，再续同一任务，不重复创建副本。最终元数据head见远端分支，验证源以该科学提交和VALIDATION中的SHA为准。
 
-大波形/编译产物只保留本地和交付包，不入Git。交付前按SHA归档旧验证目录；本PR待审保留最小源码工作树。没有GPU/Slurm/模型推理/许可EDA操作。
+便携包在C:/Users/86134/Documents/a_P_BIT/远端上传/rng_service_v1_20261022.zip，SHA256 7b067edb8dfd452242830ac6f01c068d6200e76ae0d9a0711f2ab4a9097c8f45；含64文件，包内19检查/fixture示例通过。除上述压力对照外，power_stream三种后端6000沿也通过；最终总计14100沿核心对照，FFN250沿/120帧（两次运行）。新模块与旧默认总计47检查通过，0跳过。
+
+大波形/编译产物不入Git。4个原始验证目录已逐成员SHA归档project_archives/rng_service_issue95_20261022/verification_raw.zip，SHA684e69f452933b05abaeafab8963f26367c313015940b49208facee2cc6d3524；RAW_ARCHIVE.json有恢复索引，清理以CLEANUP.json为准。已归档原验证JSON保持原CRLF字节，局部.gitattributes -text，其他源码为UTF-8/LF。没有GPU/Slurm/模型推理/许可EDA操作。
+
+本机Git直连两次失败（连接重置/443超时）；GitHub连接器发布和树SHA验证已成功，不是发布阻塞。原生fetch若仍失败，保留本地暂存源码而不reset、不丢弃改动；PUBLICATION.json区分本地HEAD和远端提交。恢复时先读取该文件并fetch，不要误判为未交付或重复建任务。所有用户交付包和远端源码可直接使用。
 

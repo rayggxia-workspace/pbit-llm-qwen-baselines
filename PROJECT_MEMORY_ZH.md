@@ -1,5 +1,25 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-22 Issue92：小网部署计算成本
+
+负责人amlink1219，接续Issue92/task/92-pbit-gate-pilot/PR94。新增部署运算账本qwen/results/pbit_gate_cost_20261022/README_ZH.md、COST.json及compute_cost.py。每自由块32连续乘法/40加法/8bit门控/9概率事件、两阶段；原三位置混合F21，层0/12/23候选QK省378/−165/379 MAC，小网第一层新增672乘法，不能称整体节能。含公共特征/动态归一化、GQA并集与固定S的PV边界。9模型形状、2304隐藏态门控等价、6项均值回算及独立只读审阅通过；没有新训练/Slurm/完整PPL/RTL/PPA，原质量结果保持。发布随PR94，待审未合并；上传核验以work/amlink1219/92/compute_cost/PUBLICATION.json实际回执为准。Projects沿同日已验证read:project不足待同步，不自动合并/关闭Issue。
+
+## 2026-10-22 Issue92第二轮：直接目标与冻结盲评
+
+用户要求持续优化小网：max4 warmup后直接最小化期望遗漏mass，准确TRAIN平均8块及隐式梯度；加入query-relative输入、温度扩展与TRAIN全局硬阈值。新192/48/48篇排除旧48篇，54原候选＋9长pbit＋27max4控制，CPU45项、先冻结90配置再一次blind全部通过；GPU2744/2746/2748/2751完成，无在运行作业。
+
+盲集pbit三seed平均遗漏1.978%/2.021%/24.845%，原T1 4.253%/3.550%/31.365%，验证选强max4 2.069%/2.163%/24.723%。层0候选和局部质量均改善，层12多0.5%候选换质量，层23遗漏略差/候选少/PV好，不称全面胜出或隐藏随机性独有优势。确定性网仅300epoch，pbit6000；未做完整学生PPL/W8/物理PPA，约33–39% mask超512容量。blind已看，后续不得复用它调参仍称独立测试。
+
+结果qwen/results/pbit_gate_optimization_20261022、代码experiments/pbit_gate_pilot_20261022、交接work/amlink1219/92；执行cfa19622/cfad3902/6241ab7f/f66b65ac，CPU包装727ed629，135文件SHA回传通过。完整32MB冻结/NPZ/长日志留本人服务器。原负结果和旧回执保留；第二轮科学成果64848a345c7926881f0c4b1ff543954fcc851eea已通过PR94上传待审、未合并，263项远端Git对象/8项关键SHA256已核，Issue92已同步；实际回执work/amlink1219/92/optimization_v2/PUBLICATION.json。看板因read:project不足待同步，不改正式Attention默认。
+
+
+## 2026-10-22 Issue92：小型p-bit筛选网络首轮训练
+
+用户要求先在现有服务器做简单训练；冻结Qwen2.5-0.5B，4→8→1每层49参数（8个条件独立隐藏p-bit），256态精确边缘训练，评估真隐藏/输出bit采样。32/8/8个WikiText训练文章隔离，0/12/23层、3head、3位置、3训练seed，1296完整组。Slurm2740 CPU16项通过、2741单5090训练完成，总45.90秒，训练评估30.05秒。执行53c24f28，正式代码experiments/pbit_gate_pilot_20261022、结果qwen/results/pbit_gate_pilot_20261022、交接work/amlink1219/92。
+
+这是明确的局部负结果：训练BCE下降，但49参数网holdout遗漏6.173%/4.493%/37.082%，max4为4.552%/3.319%/32.298%，网络预算8.021/8.016/8.061块略高仍差。每层8篇留出文章配对均未改善；候选PV误差亦更差。不能称方法极限或隐藏随机性优势；当前代理BCE未证明与实际质量目标对齐。可变mask约35%–40%超过512token，不能默认现有512宏容纳。无学生完整PPL、Ising/FFN联合或PPA。后续调参须新留出协议，避免复用已看holdout。小网训练已完成且代码/报告已通过PR94上传待审、未合并，Issue92已同步；payload074172c9的82项Git对象及8项关键SHA256回读一致。看板因read:project不足待同步；不改正式默认。
+
+
 ## 2026-10-22 Ising评估更新（Issue37，amlink1219）
 
 入口：[并行采样实现与结果评估补充](architecture_tlm/attention_comparison/ISING_UPDATE_20261022_ZH.md)。核查基线5b26c80c；PR79/80已合并，PR82驱动量化、PR86真实QKV、PR88全宽TLM仍开放未合并，分别按固定head读取。旧互斥Ising不能按旧状态独立同步提交；新赢家保持/校正拒绝改了规则，允许全候选独立并行提议。赢家仍是相关链；拒绝在理想响应与空态校正下直接采类别。

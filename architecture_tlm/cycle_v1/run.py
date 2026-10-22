@@ -201,8 +201,9 @@ def run_case(operator, fixture_bundle, config, output, *, fixture_sha256=None,
                                      'uncompressed_sha256': digest(blob), 'bytes': len(compressed)}
     json_write(output/'contracts.json', specs)
     json_write(output/'summary.json', summary)
-    write_inspector(output/'timeline.html',{'operator':operator,'finish_ps':result.finish_ps,
-                    'config':asdict(config),'model_boundary':state['provenance']},timeline_rows)
+    if write_trace:
+        write_inspector(output/'timeline.html',{'operator':operator,'finish_ps':result.finish_ps,
+                        'config':asdict(config),'model_boundary':state['provenance']},timeline_rows)
     lines = [f'# {operator} cycle execution', '',
              f'Latency: **{summary["latency_ns"]:,.2f} ns** under declared timing assumptions.',
              f'Operations: {summary["operations"]}; cycle/event equivalence checked: {compare_modes}.',

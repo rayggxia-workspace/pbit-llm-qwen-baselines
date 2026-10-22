@@ -50,5 +50,7 @@ SRAM校准补充：已有宏直接查库值；其他尺寸是带验证误差的�
 
 
 ## 2026-10-22 可点击架构检查台（Issue104）
+## 2026-10-22 周期/访存假设审计与非随机数字RTL（Issue107）
 
 [离线交互页面](inspector/model-inspector.html)、[检查顺序与复现](inspector/README_ZH.md)、[全面检查与未闭合项](inspector/CHECK_REPORT_ZH.md)。覆盖统一v6的52个封存情景，21模块、次数/周期、完整phase、存储格式与SHA证据；新增逐query采样FSM聚合保持全部旧序列化字段不变。76项CPU检查、686模型不变量与16组观测检查通过，不是物理硬件/PPL验收；权重供给、计数存储和随机源整机接入仍待落实。
+[完整周期/存储报告](digital_ppa_v1/CYCLES_MEMORY_AND_RTL_ZH.md)、[RTL模块索引](digital_ppa_v1/README_ZH.md)、[55nm PPA任务](digital_ppa_v1/PPA_TASK_ZH.md)。只读52冻结情景列出核等效周期，区分库/宏约束、时序代理和未展开接口；含64值B4编码、恢复、连续算术、累加、非线性候选、控制和存储外围。66功能组/12870输出及63活动预检通过，源码23e8d65，29输入blob逐字节相同。没有新TLM数值、模型PPL、DC/PT/STA、真实DRAMSys；新RTL尚未回填原TLM。随机源/随机矩阵阵列不在本包，PR105可视化仍独立待审。

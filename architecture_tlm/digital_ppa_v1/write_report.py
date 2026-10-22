@@ -1,0 +1,133 @@
+"""Readable summaries from the exact frozen JSON accounting, no new timing run."""
+import csv
+import json
+from pathlib import Path
+
+HERE=Path(__file__).resolve().parent
+ROOT=HERE.parents[1]
+LABELS={('bf16','exact'):'BF16准确路径（同一TLM硬件）',('w8','exact'):'W8数字FFN＋准确Attention',
+        ('sc','exact'):'B4/T32/K32随机FFN＋准确Attention',('sc','pv'):'随机FFN＋准确Softmax/PV采样',
+        ('sc','screen_exact'):'随机FFN＋筛选后准确Attention',('sc','screen_pv'):'随机FFN＋筛选/PV采样',
+        ('sc','screen_rejection'):'随机FFN＋筛选/校正拒绝',('sc','screen_winner'):'随机FFN＋筛选/赢家保持'}
+
+
+def main():
+    rows=list(csv.DictReader((HERE/'results/cycles_52.csv').open(encoding='utf-8')))
+    def row(model,context,ffn,att):return next(r for r in rows if r['model']==model and int(r['context'])==context and r['seed']=='0' and r['ffn']==ffn and r['attention']==att)
+    text='''# 完整TLM周期、时序假设、真实访存边界与待测RTL
+
+2026-10-22；Issue107；jieruiz。审查对象：集成eb317e4f的统一v6，以及PR105封存的旁路观察。**它能仿真给定硬件合同下的时间，但时间本身仍有待落实的假设。功耗/面积缺项并不意味着时间已经等同实际电路。**
+
+## 1 端到端周期数
+
+batch1，完整24层Qwen2.5-0.5B，一个decode token；已有上下文及K摘要，未包含prefill/TTFT。核100MHz（10ns/周期）、SRAM80MHz（12.5ns/周期），1MiB配置SRAM，16bank×128bit，外存Link16GB/s/80ns/64B突发/32请求窗口。以下是seed0的**核等效周期**，即总纳秒数÷10；不是DRAM命令时钟，也不是GPU测得的周期。seed均值/范围及全部52项分别保存在JSON/CSV，不混用均值和seed0。
+
+| 完整路径 | 2K核等效周期 | 2K ms/token | 8K核等效周期 | 8K ms/token |
+|---|---:|---:|---:|---:|
+'''
+    for (ffn,att),label in LABELS.items():
+        a,b=row('qwen',2048,ffn,att),row('qwen',8192,ffn,att)
+        text+=f"| {label} | {float(a['equivalent_core_cycles']):,.0f} | {float(a['TPOT_ms']):.5f} | {float(b['equivalent_core_cycles']):,.0f} | {float(b['TPOT_ms']):.5f} |\n"
+    text+='''
+PV预算按上下文1/16：2K为128、8K为512。赢家保留预算再乘8（1024/4096），且输出相关；不是同预算或同有效独立样本数。筛选固定8个64token块；GQA共享KV头合并候选K和实际选中V后读取。表内没有旧串行Ising整机新跑，不能把诊断宏的周期移入本表。
+
+Llama1/2形状相同，封存的合成2K/seed0结果相同；各32层、8MiB配置SRAM，并非二者权重/任务质量相同：
+
+| 模型 | BF16准确周期 / ms | 随机FFN＋PV周期 / ms |
+|---|---:|---:|
+'''
+    for m in ('llama1','llama2'):
+        a,b=row(m,2048,'bf16','exact'),row(m,2048,'sc','pv')
+        text+=f"| {m} | {float(a['equivalent_core_cycles']):,.0f} / {float(a['TPOT_ms']):.5f} | {float(b['equivalent_core_cycles']):,.0f} / {float(b['TPOT_ms']):.5f} |\n"
+    text+='''
+## 2 周期花在什么地方
+
+下表为Qwen2K/seed0，单位百万核等效周期。按phase起止时间统计，包含该阶段内搬运、等待和计算；以下阶段互不重叠。资源busy和wait另有意义，**不能再次加到总时间，也不能把8个并行SC引擎的busy相加当墙钟**。
+
+| 阶段 | BF16准确 | 随机FFN＋筛选/PV | 随机FFN＋筛选/拒绝 |
+|---|---:|---:|---:|
+'''
+    chosen=[row('qwen',2048,*key) for key in [('bf16','exact'),('sc','screen_pv'),('sc','screen_rejection')]]
+    raw=[json.loads((ROOT/r['source']).read_text(encoding='utf-8')) for r in chosen]
+    groups=[('词嵌入',('embedding',)),('QKV/RoPE/O投影',('QKV_projection','RoPE_bias_KV_append','O_projection')),
+            ('Attention主体',('attention_core',)),('FFN gate/up',('FFN_gate_up',)),('连续SwiGLU',('FFN_SwiGLU',)),
+            ('FFN down',('FFN_down',)),('FFN输出转换',('ffn_output_conversion',)),
+            ('Norm及两次残差',('attention_norm','residual_and_ffn_norm','ffn_residual','final_norm')),
+            ('lm_head及选词',('lm_head_and_argmax',)),('其他显式访存',('other_explicit_memory',))]
+    for label,names in groups:
+        values=[sum(v['phase_ns'].get(n,0) for n in names)/1e7 for v in raw]
+        text+='| '+label+' | '+' | '.join(f'{v:.6f}' for v in values)+' |\n'
+    assert all(abs(sum(sum(v['phase_ns'].get(n,0) for n in names) for _,names in groups)-v['metrics']['elapsed_ns'])<.001 for v in raw)
+    text+='''
+每一层的phase原始起止及52配置全量阶段明细均可复算。合成logits只用于决定候选/采样地址，TLM没有对所有权重/激活做真实模型数值前向，因此动态访存分布不是全语料真实QKV的测量。
+
+### 采样、阵列拍和整机周期必须分开
+
+- 新拒绝观察覆盖24层×14头=336query。第23层第0头的128输出有387提议、259拒绝、25983服务周期，其中驱动重写16835、源读取1548；不是128周期。原件及SHA见CYCLE_AUDIT.json观察部分。
+- 串行诊断N512/S128/burn16/spacing4：`attempts=511×(16+4×128)=269808`，按当前6周期/attempt，核心尝试1618848周期；配置和输出另计。6周期仍是参数，不是RTL实测。S64时为833952周期。
+- Qwen全部FFN共有76608个64×64 tile、10032个输出波。最多8引擎、4档并行，一波`1+32+1=34`拍，原始SC波服务341088周期=3.41088ms；源启动、搬运、编码与恢复另计。
+- 旧SC恢复代理是每部分输出`4×(8×2+2)=72`个op，按64lane/周期需5515776周期=55.15776ms。这只是工作量代理，未确定是哪种实际恢复电路。本包KIND6每个完整恢复输出不能再按72个完整恢复器收费。
+
+## 3 时序中哪些仍是设定或未闭合项
+
+| 部分 | 当前TLM怎样算 | 还需要落实什么 |
+|---|---|---|
+| 全核工作点 | 100MHz，MAC512/周期＋启动2拍，向量64lane，非线性16lane | 相应算术、流水、供数与布线是否满足10ns；未跑完整算子STA |
+| RMSNorm/RoPE/连续SwiGLU | 按向量/非线性op数量除lane数 | 归约、exp/rsqrt/倒数、乘法的真实latency/II；是否保留输入或再读一遍 |
+| 分档编码 | 64值组按447op、64lane即7拍代理 | absmax比较树、PoT判档、RNE、true-one与各级寄存的实际流水 |
+| SC阵列 | 8个64×64、B4同时计数、T32、II1 | 随机阵列不在本任务RTL内；不能由T32直接证明II1或足够驻留带宽 |
+| 驻留权重 | 每波读最多32KiB W8一次后连续供给32拍 | 普通SRAM读出后的保持/CIM接口尚未选定；不是零成本并行读；scale串行复用slot也依赖读后驻留 |
+| 跨64输入块部分和 | 显式SRAM读/写，恢复op包内处理 | 跨k FP32加法未单独列stage/action，是否包含在72op合同须明确；不能靠一个面积单价补救时序边界 |
+| 计数/局部数据 | SC计数峰值393216bit（48KiB）仅metadata；Q/累加状态局部使用 | 寄存器/宏实现、读带宽、时钟和面积尚未完整落地；不是无存储 |
+| V累加与输出 | 重复加、平均按op数；按BF16宽度提交 | FP32累加→BF16在Attention出口尚隐含；显式转换、向量累计状态与保持成本 |
+| 并行Ising控制 | v5分源命令、归约、反馈、重写和输出周期 | 2拍settle、每拍2层树、逐候选配置速率仍是合同；非同步真实电路或DAC实测 |
+| 随机源 | 足量本地接口；启动/新帧/重放参数化 | 有限吞吐、真实种子/预热/供给重叠和回压仍待独立后端，PR103小接口不等于整机启用 |
+| SRAM | bank/字宽/端口/公共fabric、库/校准access及12.5ns周期 | wrapper/mux、跨时钟20ns代理、真实仲裁/队列及同周期读写能力；不是逐bank时钟模型 |
+| DRAM | Link16GB/s、80ns、32个64B请求后排空 | 无row-hit/miss、ACT/PRE/refresh/低功耗或真实控制器排队；该批未调用DRAMSys/DRAMPower |
+| 整体调度 | gu→SwiGLU→down屏障，逐KV组/逐head；采样器阻塞全SRAM fabric | 这是明确但保守的调度，不是最优流水；源/恢复/矩阵重叠要有数据依赖和队列证明 |
+
+所以：有些时序项已经明确展开到“请求先后/资源预订”，但单价和耗时仍由参数决定；另一些内部数据通路还未展开。**算法采样次数、模型FSM服务拍、RTL仿真边沿数、STA可达周期、实际芯片墙钟是不同证据。**
+
+## 4 有没有考虑真实读写存储
+
+已考虑访存事务，具体包括：
+
+1. SRAM静态区域/容量/越界检查，权重ping/pong各64KiB；x、z、残差、宽部分和、候选、频数、地址分开。不是把全部FFN权重同时放在片上。
+2. SRAM每次传输按16B字向外对齐，按word地址模16落bank，计算bank字数、读写access/周期、公共16GB/s fabric限制和20ns跨域代理；读、写、部分和RMW都会收费。一个descriptor阻塞相关bank及fabric，尚无优化仲裁。
+3. DRAM地址按张量分区及64B突发对齐、同批去重。K按GQA候选并集、V按实际采样并集读；保留重复样本的加法次数。没有用“读取完整KV后再说省流量”的做法。
+4. 权重分块从DRAM→SRAM写→SRAM读，双缓冲slot在消费者完成后才释放。KV追加、摘要读/更新、归一化权重也有明确外存活动。
+5. Ising输出有每地址SRAM写和回压；频数用显式串行读改写、扫描和worklist，不把重复采样计数免费去重。
+
+但没有模拟真实SRAM bitcell、字线、感放、内部总线每条线或存储内容；计时只依赖地址/大小/资源。对于部分向量Q、归约和累计器，仍假定局部保留，没有完整寄存器文件/供数实现。RMS再次使用x、编码门限送比较器、部分和真正加法及格式转换应在实际数据流中进一步确定。宏内部已有校准不能替代这些外围。
+
+Link的16GB/s是数据段参数，不是有效持续吞吐：每32×64B窗口要额外80ns，连续流约`2048/(80+128)=9.846GB/s`。这些限制已经影响当前表内时间，但不能替代真实DRAM控制器。需要判断DRAM行/刷新/低功耗影响时，必须用代表性trace接真实DRAMSys；原历史DRAMSys结果不能当成本52项新跑。
+
+代表配置的实际物理字节（MiB，按2^20）：
+
+| Qwen配置 | SRAM读 | SRAM写 | K读 | V读 |
+|---|---:|---:|---:|---:|
+'''
+    for context in (2048,8192):
+        for ffn,att in [('bf16','exact'),('sc','screen_pv'),('sc','screen_rejection')]:
+            r=row('qwen',context,ffn,att)
+            text+=f"| {context} / {ffn}/{att} | "+' | '.join(f"{int(r[k])/2**20:.3f}" for k in ('sram_read_bytes','sram_write_bytes','K_read_bytes','V_read_bytes'))+' |\n'
+    text+='''
+K/V是相应读取流量，不包含初始prefill写入；2K当前token的KV追加另计。原件DRAM.traffic还列全部权重/scale/summary/写入，SRAM.traffic列物理字与逻辑字节。表中没有把这些字节直接换算成GPU能耗。
+
+## 5 本次提供哪些非随机电路，怎样用于系统
+
+代码、KIND和优先级见[README](README_ZH.md)及[PPA任务](PPA_TASK_ZH.md)。覆盖动态分档编码、逐档/融合恢复、常规浮点算术/残差、连续SwiGLU候选、V累计、RMS/Softmax所需基本非线性、RoPE、格式转换、比较交换/压缩/CDF、候选结果数字归约、SRAM路由与DMA控制；没有PRNG、物理p-bit、随机矩阵阵列或假装SRAM的DFF权重阵列。
+
+这是可以交给综合/功能仿真的确定性模块库，不是已完成的全芯片网表。FP32非线性是有明确范围的分段线性候选，KIND22是融合恢复候选，二者要另核质量，未自动替换本表TLM。普通FP32加/乘/转换的位规则、编码边界及控制已有逐位/事务测试；软件测试与用户55nm DC/PT、后布局PPA分开报告。
+
+现有Q10 SwiGLU TT/SS单lane面积0.00866412/0.00946620mm²，active full分布5.565/4.486pJ/结果，来自旧38100634布局前报告；central分布不同，时钟/线电容边界另见原报告。它是Q10，不是本包FP32，也不是整个FFN。上述数值只作为已有证据入口，**不能将其直接回填FP32非线性或把缺项总能量算为已知**。
+
+下一步回填顺序：先用STA确定latency/II/实例数，替换相应时序合同；再按确切调用单位计动作能量和状态功率；补齐宏/外围/时钟/局部保持；保持同PVT和同质量，重新跑新目录TLM。所有被替换旧代理项删除后再求和，避免按每恢复器价格乘72个代理op的严重重复计费。完整能量/面积仍null，直到计费边界覆盖完整。
+
+本次统计没有新模型PPL/GPU/Slurm/DRAMSys/工艺DC/PT。原52项数据原字节保留；新RTL功能、活动和打包的准确版本/结果见results/RTL_VALIDATION.json及work/jieruiz/107交接。PR105仍独立待审，未被本任务合并。
+'''
+    (HERE/'CYCLES_MEMORY_AND_RTL_ZH.md').write_text(text,encoding='utf-8',newline='\n')
+    print('Report generated from52 frozen cases; phase groups sum to each wall time')
+
+
+if __name__=='__main__':main()

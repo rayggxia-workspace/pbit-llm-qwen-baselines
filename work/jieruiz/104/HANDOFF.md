@@ -13,7 +13,7 @@
 
 ## 状态与限制
 
-本地已完成；实际上传/PR状态以PUBLICATION.json、REMOTE_VERIFY.json和Issue104最新回执为准。不自动合并/关闭。无本任务远端作业或新定时；本机预览服务8840仅回环，离线HTML无需服务器。Projects沿既有read:project不足待同步；仓库admin/push可用。
+科学成果1909c542a1c454a9e219a5482c9b493fa678b340已推送；PR105 ready/open待审、未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/105 。8关键远端blob原字节核验通过，PUBLICATION.json/REMOTE_VERIFY.json为该科学提交回执；ARTIFACTS按artifact_commit核验。后续本提交只补回执。最终任务分支head及元资料核验见Issue104最新回执，本地最终索引位于project_archives/architecture_inspector_issue104_20261022/FINAL_REMOTE_VERIFY.json。不自动合并/关闭。无本任务远端作业或新定时；本机预览服务8840仅回环，离线HTML无需服务器。Projects沿既有read:project不足待同步；仓库admin/push可用。
 
 SC驻留权重32KiB/波保持供给、局部48KiB计数状态、部分格式转换及随机源整机接入仍未闭合，全部列在页面。Link不是新DRAMSys；总能量/面积/PPL仍未知。不能把检查通过当作硬件或质量验收。
 

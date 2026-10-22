@@ -1,10 +1,10 @@
 # Issue104：架构可视化与全面检查
 
-2026-10-22；负责人jieruiz；Issue104；task/104-architecture-inspector；base eb317e4f6fb1b0d8844887401f3275f128ef8a83。独立工作目录 tmp/architecture-inspector-issue104-20261022。交付阶段：本地代码、页面、报告和验证已完成，待本次任务分支推送/PR回执，不自动合并。
+2026-10-22；负责人jieruiz；Issue104；task/104-architecture-inspector；base eb317e4f6fb1b0d8844887401f3275f128ef8a83。独立工作目录 tmp/architecture-inspector-issue104-20261022。交付阶段：科学成果1909c542a1c454a9e219a5482c9b493fa678b340已推送，PR105 ready/open待审、未合并；8关键远端blob原字节核验通过。后续本提交只补回执，不改模型/观测/页面。
 
 成果 architecture_tlm/inspector/README_ZH.md、model-inspector.html、CHECK_REPORT_ZH.md。76项CPU功能/接口检查通过；52旧封存情景686模型不变量、4新观测16组检查通过；新Qwen24层336query与旧序列化字段严格相同。浏览器五页、模型/模式/上下文/seed/层控制及截图已核，Node语法通过。观察执行124d37d2；没有新PPL/GPU/Slurm/PT/DRAMSys/物理PPA。完整能量/面积仍null。
 
-首要未闭合：32KiB/波驻留权重并行供给、48KiB局部计数状态、源后端整机连接和格式转换；PR103仍open，仅薄接口。Projects沿实际read:project不足待同步，不影响repo admin/push。主任务保留最小工作树；自己的已完成hooks helper与两轮比较器诊断已逐SHA归档回收，恢复索引在work/jieruiz/104。下一步：发布同任务PR并核远端blob，再按检查台逐项落实硬件合同；HANDOFF及PUBLICATION/REMOTE_VERIFY为实际状态入口。
+首要未闭合：32KiB/波驻留权重并行供给、48KiB局部计数状态、源后端整机连接和格式转换；PR103仍open，仅薄接口。Projects沿实际read:project不足待同步，不影响repo admin/push。主任务保留最小工作树；自己的已完成hooks helper与两轮比较器诊断已逐SHA归档回收，恢复索引在work/jieruiz/104。下一步：等待PR105评审，按检查台逐项落实硬件合同；HANDOFF及PUBLICATION/REMOTE_VERIFY为实际状态入口。
 
 以下保留此前历史：
 

@@ -979,5 +979,5 @@ jieruiz，task/104-architecture-inspector，独立tmp/architecture-inspector-iss
 
 新增旁路stage/query账本，不改时序、动作或数值；观测执行124d37d2，Qwen24层336query与旧序列化字段严格相同，另三tiny共6query。76CPU检查、686模型内部不变量及16组观测检查通过，浏览器与Node语法已核。128输出的示例实际387提议/25983服务周期，其中16835为驱动重写；S、sweep、attempt、lane工作与FSM周期必须分别报告。
 
-权重32KiB/波驻留并行供给、48KiB局部计数状态、新源后端整机接入与部分格式转换尚未闭合；PR103仅小接口，完整decode默认LocalRandomService。Link非新DRAMSys，总物理能量/面积/PPL仍null。没有新GPU/Slurm/PPL/PT。新页面和观测本地已完成，上传/PR状态以work/jieruiz/104/PUBLICATION.json、REMOTE_VERIFY.json与Issue104为准，不自动合并或关闭。辅助hooks目录与失败v1/v2逐SHA本地归档后回收；待审主目录最小保留。Projects仍沿read:project不足待同步。
+权重32KiB/波驻留并行供给、48KiB局部计数状态、新源后端整机接入与部分格式转换尚未闭合；PR103仅小接口，完整decode默认LocalRandomService。Link非新DRAMSys，总物理能量/面积/PPL仍null。没有新GPU/Slurm/PPL/PT。科学成果1909c542a1c454a9e219a5482c9b493fa678b340已推送，PR105（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/105）ready/open待审、未合并，8关键blob原字节已核验；PUBLICATION/REMOTE_VERIFY封存该科学head，最终任务分支head见Issue104回执。不自动合并或关闭。辅助hooks目录与失败v1/v2逐SHA本地归档后回收；待审主目录最小保留。Projects仍沿read:project不足待同步。
 <!-- /issue104-inspector -->

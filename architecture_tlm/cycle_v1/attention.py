@@ -253,6 +253,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                   independence_boundary='ideal rejection independence assumes independent ideal response; q256 adaptive-state samples and frozen replays have no IID guarantee',
                   pv_sampling='one-offset systematic sampling; outputs are not independent' if c.mode=='pv' else None,
                   timing='configured, uncharacterized',candidate_overflow='error',
+                  V_prefetch='bounded ordered lookahead: at most floor(KV_credit_bytes/V_row_bytes) rows ahead of consumption; replies may reorder within this window',
                   omitted='QKV projections, RoPE, screening, GQA union, Wo, full decoder',
                   storage_boundary='finite query-local state and KV response credits; backing DRAM/SRAM address space has no total-capacity allocator',
                   trace_storage='frames and retained index histories are simulator evidence, not additional hardware queues',
@@ -294,11 +295,18 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
         final_started[0]=True
         acc=[0.0]*dv
         last=dependency
-        for local in sorted(weights,key=lambda i:candidates[i]):
+        prefetch_window=c.kv_capacity_bytes//(dv*4)
+        retired=[]
+        for order,local in enumerate(sorted(weights,key=lambda i:candidates[i])):
             physical=candidates[local]
             address=vbase+physical*dv*4
             state['V_addresses'].append(address)
-            read=add(f'V.{physical}.read','dram',deps=(dependency,),
+            # A later response must never occupy the last credit needed by an
+            # earlier ordered accumulator. Restrict eligibility, not just the
+            # total bytes, so sparse numeric IDs cannot deadlock under the
+            # kernel's stable lexicographic arbitration.
+            read_deps=(dependency,) if order<prefetch_window else (retired[order-prefetch_window],)
+            read=add(f'V.{physical}.read','dram',deps=read_deps,
                 memory=MemoryRequest(address,dv*4),inputs={free_kv:dv*4},
                 actions={'V_read_bytes':dv*4},metadata={'physical_token':physical,'multiplicity':state['histogram'].get(physical)})
             def accumulate(k,op,read=read,weight=weights[local],physical=physical):
@@ -308,6 +316,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
             last=add(f'V.{physical}.accumulate','v_accumulate',deps=(read,last),
                 latency_cycles=3+math.ceil(dv/c.mac_lanes)-1,on_complete=accumulate,
                 outputs={free_kv:dv*4},actions={'V_weighted_mac':dv})
+            retired.append(last)
         def finished(k,op):
             state['output']=list(acc)
             state['retained_samples']=len(state['local_indices'])

@@ -9,6 +9,7 @@ def timeline_summary(kernel,result):
     stalls=Counter()
     open_stalls={}
     requests=defaultdict(Counter)
+    waits=defaultdict(list)
     rows=[]
     for event in result.trace:
         key=event.get('op'),event.get('phase')
@@ -16,10 +17,12 @@ def timeline_summary(kernel,result):
             if key in open_stalls:
                 start,reason=open_stalls[key]
                 stalls[reason.split(':')[0]]+=event['time_ps']-start
+                waits[key[0]].append({'phase':key[1],'start_ps':start,'end_ps':event['time_ps'],'reason':reason})
             open_stalls[key]=(event['time_ps'],event['reason'])
         elif event['kind']=='stall_end' and key in open_stalls:
             start,reason=open_stalls.pop(key)
             stalls[reason.split(':')[0]]+=event['time_ps']-start
+            waits[key[0]].append({'phase':key[1],'start_ps':start,'end_ps':event['time_ps'],'reason':reason})
         elif event['kind']=='accept' and 'address' in event:
             counter=requests[event['resource']]
             counter['write_bytes' if event['write'] else 'read_bytes']+=event['size_bytes']
@@ -34,6 +37,11 @@ def timeline_summary(kernel,result):
         row={'id':ident,'resource':op.resource,'start_ps':start,'end_ps':end,
              'dependencies':list(op.deps),'inputs':dict(op.inputs),'outputs':dict(op.outputs),
              'actions':dict(op.actions),'metadata':dict(op.metadata)}
+        row['wait_intervals']=waits.get(ident,[])
+        resource=kernel.resources.get(op.resource) or kernel.memory_ports[op.resource]
+        row['clock']={'name':resource.clock.name,'period_ps':resource.clock.period_ps,'phase_ps':resource.clock.phase_ps}
+        row['latency_cycles']=op.latency_cycles if op.latency_cycles is not None else resource.latency_cycles
+        row['ii_cycles']=op.ii_cycles if op.ii_cycles is not None else resource.ii_cycles
         if op.memory:
             row['memory']={'address':op.memory.address,'bytes':op.memory.size_bytes,'write':op.memory.write}
         rows.append(row)
@@ -51,7 +59,16 @@ def timeline_summary(kernel,result):
                       'meaning':'union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization'}
     for stats in requests.values():
         stats['effective_GB_per_s']=(stats['read_bytes']+stats['write_bytes'])*1000/result.finish_ps if result.finish_ps else 0
+    chain=[]
+    ident=max(result.completion_ps,key=result.completion_ps.get,default=None)
+    while ident is not None:
+        op=kernel.operations[ident]
+        chain.append({'operation':ident,'resource':op.resource,'accepted_ps':result.accepted_ps[ident],
+                      'completed_ps':result.completion_ps[ident]})
+        ident=max(op.deps,key=result.completion_ps.get,default=None)
     return {'resource_inflight_union':active,'memory_requests':dict(requests),
+            'latest_dependency_backtrace':list(reversed(chain)),
+            'backtrace_note':'latest completed explicit predecessor only; resource/credit hazards may dominate; not a complete critical-path proof',
             'stall_operation_ps':dict(stalls),
             'stall_note':'sum of per-operation intervals, may overlap; not an additive wall-clock decomposition'},rows
 

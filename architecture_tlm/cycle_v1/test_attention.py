@@ -22,6 +22,21 @@ def execute(data,c,mode='event',latency=4):
 
 
 class AttentionTests(unittest.TestCase):
+    def test_sparse_V_ids_cannot_fill_credits_ahead_of_ordered_consumer(self):
+        data=dict(q=[0.,0.],k=[[0.,0.] for _ in range(12)],
+                  v=[[float(i),float(-i)] for i in range(12)],candidate_ids=[10,2,1,11,3])
+        for slots in (1,2):
+            c=AttentionConfig(mode='exact',kv_capacity_bytes=slots*8)
+            a,ar,ak=execute(data,c,'cycle')
+            b,br,_=execute(data,c,'event')
+            self.assertEqual(ar.equivalence_payload(),br.equivalence_payload())
+            self.assertClose(a['output'],reference_attention(data,None,c)['output'])
+            self.assertEqual(ar.buffer_final['attention.kv'],slots*8)
+            ids=sorted(data['candidate_ids'])
+            for i in range(slots,len(ids)):
+                self.assertGreater(ar.accepted_ps[f'attention.V.{ids[i]}.read'],
+                                   ar.completion_ps[f'attention.V.{ids[i-slots]}.accumulate'])
+
     def test_exact_softmax_finite_exp_lanes_change_time_not_values(self):
         data=fixture()
         fast,fr,_=execute(data,AttentionConfig(mode='exact',exp_lanes=16))

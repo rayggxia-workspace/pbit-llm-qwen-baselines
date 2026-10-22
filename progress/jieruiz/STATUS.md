@@ -1,3 +1,11 @@
+# Issue96 unified TLM: 52 scenarios complete, PR99 awaiting review
+
+2026-10-22; jieruiz; task/96-unified-tlm; base83e15289, executionfba22b192ab914046e50cc405f6dd473bf30d154. Independent sparse checkout tmp/unified-tlm-issue96-20261022. Code already published in PR99, draft/open; final result/report upload receipt follows. Full implementation/design/results: architecture_tlm/unified_v6/README_ZH.md and RESULTS_ZH.md.
+
+21 new mechanism +18 existing v5 +10 existing v4 checks pass; navigation anchors/dry-run pass. 48 Qwen2K/8K three-seed cases and4 full Llama1/2 single-seed cases complete;62 archived artifacts/22 source blobs/764 model contracts verified. New upstream97 default sampler overlay49 checks pass, no backend switch. No new PPL/GPU/Slurm/PT/DRAMSys run. Unknown complete energy/area/PPL staynull. Local source interface has0 random-stream SRAM/FIFO/extra probability copies. RNG backend remains Issue95;37/78 untouched. Projects real query missingread:project, pending.
+
+Next: final report/SHA publication, PR review; do not merge automatically. Handoff work/jieruiz/96/HANDOFF.md; original failures preserved in FAILED_PREFLIGHT and compatibility V1/V2, fixes/tests recorded. No running jobs remain.
+
 # Issue96 unified TLM in progress
 
 2026-10-22; jieruiz; task/96-unified-tlm; base83e15289; independent sparse directory tmp/unified-tlm-issue96-20261022. Main code/Chinese design done; 20 mechanism checks pass, Qwen24 exploratory smoke done. Frozen runs, result manifest and workspace PR pending. No new PPL/PT or source-backend implementation. Handoff work/jieruiz/96/HANDOFF.md.

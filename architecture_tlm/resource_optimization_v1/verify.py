@@ -64,8 +64,11 @@ def verify(inputs, expected):
     coarse={(c['id'],method,context,0) for c in generate_candidates() for method in METHODS for context in (2048,8192)}
     confirmation={(c,method,context,seed) for c in ('baseline_1m','mapped_1m','balanced_2m','wide_4m')
                   for method in METHODS for context in (2048,8192) for seed in (1,2)}
-    assert expected in (128,192)
-    assert set(cases)==(coarse if expected==128 else coarse|confirmation), 'predeclared case grid differs'
+    extension={('vector_128',method,context,seed) for method in METHODS for context in (2048,8192) for seed in (1,2)}
+    assert expected in (128,192,208)
+    wanted_grid=coarse if expected==128 else coarse|confirmation
+    if expected==208:wanted_grid|=extension
+    assert set(cases)==wanted_grid, 'predeclared/recorded follow-up case grid differs'
     assert len(sources)==1,'numerical/scheduler source files differ between phases'
     capacity_checks=0
     for (candidate,method,context,seed),r in cases.items():

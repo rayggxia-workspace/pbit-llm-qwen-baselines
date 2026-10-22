@@ -13,13 +13,14 @@ def main():
     means={(x['candidate'],x['method'],x['context']):x for x in aggregates}
     cases={(x['candidate'],x['method'],x['context'],x['seed']):x for x in rows}
     methods=['bf16_exact','w8_exact','sc_exact','sc_screen_pv'];labels=['BF16准确','W8数字准确','SC准确','SC筛选/PV']
-    representative=['baseline_1m','mapped_1m','balanced_2m','wide_4m']
+    representative=['baseline_1m','mapped_1m','vector_128','balanced_2m','wide_4m']
     lines=['# ASIC资源优化首轮结果（Issue117）','',
-        '**128项共同候选粗筛＋64项预声明代表点补充，共192项新完整decode TLM执行。** 四个代表点每种方法/上下文均有seed0/1/2；另外12候选只做seed0粗筛。全部是合成路由事务估计，不是GPU速度、模型质量或物理芯片测试。','',
-        '主要结果：当前映射下只扩2/4/8MiB容量没有时延收益；同1MiB重新分块只有小幅收益。带宽/在途窗口、bank/fabric及向量资源联合增加显著降低条件时间，但W8数字对照也受益，SC仍未显示相对同配置W8的优势。完整面积/能量/A0仍null，暂不建立完整同面积Pareto排名。','',
+        '**128项共同候选粗筛＋64项预声明代表点补充＋16项vector128跟进，共208项新完整decode TLM执行。** 五个代表点每种方法/上下文均有seed0/1/2；另外11候选只做seed0粗筛。全部是合成路由事务估计，不是GPU速度、模型质量或物理芯片测试。','',
+        '主要结果：当前映射下只扩2/4/8MiB容量没有时延收益；同1MiB重新分块只有小幅收益。向量恢复资源加倍后，SC筛选/PV在8K出现相对同配置W8的条件时延收益，2K没有。继续扩带宽/算术时数字W8也显著受益，不能宣布SC普遍更优。完整面积/能量/A0仍null，暂不建立完整同面积Pareto排名。','',
         '## 当前项目与执行版本','',
         '- 开始时实时核验集成`46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d`。PR103/105/106/108/109/111/113/114均已合并，不能沿用原计划中的“待合并”状态。Issue116独立推进周期级执行后端，本任务不修改其实现。',
-        '- 粗筛执行`44dbbbdbc2720963b2b24bf03cdf7582a2d97075`；补充执行`315862412e15695c3fa21e6c573d9e5f3547e70d`，差别仅P0文档/结果。八份执行清单的数值/调度源SHA集合相同；运行时源码、配置和各case原字节均绑定。',
+        '- 发布期间新增[PR120](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/120)（Issue118），提供独立FFN供数合同和逐档整数状态模型，尚未合并，也未纳入本轮执行；不可把本轮旧v6的局部状态缺项表理解为该并行任务没有工作。后续优先对接其已提供接口，与Issue116协作验证。',
+        '- 粗筛执行`44dbbbdbc2720963b2b24bf03cdf7582a2d97075`；首批补充执行`315862412e15695c3fa21e6c573d9e5f3547e70d`；vector128跟进执行`b1b4d18`。十份执行清单的数值/调度源SHA集合相同；提交差异仅P0文档/结果或后处理工具。运行时源码、配置和各case原字节均绑定。',
         '- Qwen2.5-0.5B，24层、batch1、2K/8K、单decode token；固定W8/B4/T32/K32，PV预算L/16，真实有限随机服务。100MHz核心/源，80MHz SRAM；只改变白名单中的资源和分块字段。',
         '- 所有52旧＋40已集成随机服务原件保持不变；145payload SHA审计通过。没有新模型/分词器/语料推理、PPL、GPU/Slurm、RTL/EDA/STA或真实DRAMSys运行。','',
         '## 三seed代表点（ms/token，均值±样本标准差）','']
@@ -39,13 +40,13 @@ def main():
     for context in [2048,8192]:
         for method,label in zip(methods,labels):
             b=means[('baseline_1m',method,context)]['TPOT_mean_ms']
-            values=[100*(1-means[(c,method,context)]['TPOT_mean_ms']/b) for c in representative[1:]]
+            values=[100*(1-means[(c,method,context)]['TPOT_mean_ms']/b) for c in ['mapped_1m','balanced_2m','wide_4m']]
             lines.append(f'| {context} / {label} | '+' | '.join(f'{x:.3f}%' for x in values)+' |')
     lines+=['','1. **容量only 24组配对全部无收益。** 2/4/8MiB保持旧分配时，四方法×两上下文的时间、物理流量、Arena布局及全部候选/采样地址摘要与1MiB相同；只有宏数量、面积和泄漏增加。它不证明新KV缓存/驻留策略也无收益。',
         '2. **1MiB还有可用映射空间。** mapped_1m在8K筛选PV下Arena峰值979,136B，低于1,048,576B；没有新增跨token权重驻留，SC波次不随普通权重chunk扩大而自动变化。',
-        '3. **vector128确认恢复瓶颈。** B4/T32计数恢复353,009,664个代理op，64/128lane服务分别55.15776/27.57888ms。它是共享向量资源敏感性，不是专用恢复RTL或吞吐已通过STA；实际整机改善小于直接从墙钟扣除27.57888ms。',
+        '3. **vector128确认共享向量资源的敏感性。** B4/T32计数恢复353,009,664个代理op，64/128lane服务分别55.15776/27.57888ms。恢复服务减少27.57888ms，整机还受其他向量阶段和调度影响，不能只按恢复服务从墙钟相减。这不是专用恢复RTL或已通过STA的吞吐。',
         '4. **DRAM候选联合改变带宽和在途窗口。** 16/32/64GB/s与窗口32/64/128对应原Link满窗口持续率9.846/19.692/39.385GB/s。收益不能归因于带宽单项，更不证明控制器/PHY已实现。',
-        '5. **数字对照必须共同优化。** 下面列出同配置SC筛选/PV相对W8数字的时间比；大于1表示SC较慢。','',
+        '5. **数字对照必须共同优化。** vector128在8K的正向结果触发了另外两seed的明确跟进，未更改算法或预算；它不是盲测质量结果。下面列出同配置SC筛选/PV相对W8数字的时间比；大于1表示SC较慢。','',
         '| 配置 | 2K SC筛选/PV ÷ W8 | 8K SC筛选/PV ÷ W8 |','|---|---:|---:|']
     for c in representative:
         ratio=[means[(c,'sc_screen_pv',ctx)]['TPOT_mean_ms']/means[(c,'w8_exact',ctx)]['TPOT_mean_ms'] for ctx in [2048,8192]]
@@ -74,7 +75,7 @@ def main():
         '面积账本闭合后才建立数字A0及同总面积前沿；用少数代表点做SRAM外围/恢复RTL STA-PPA和真实DRAM trace校准。prefill/TTFT、batch4/8、Llama规模外推、新算法PPL均未在本轮实现，不能从本表直接外推。','',
         '## 验证与制品','',
         '- 71项单元/机制测试通过（28新增＋43原v6）；128配置容量/组织检查包含于机制测试，不包装成128个电路测试。',
-        '- 192case完整键集合、配置/执行源/receipt散列、336query覆盖、相位时长、资源与容量守恒、24容量对照及7个新基线锚点由verify.py独立核验。',
+        '- 208case完整键集合、配置/执行源/receipt散列、336query覆盖、相位时长、资源与容量守恒、24容量对照及7个新基线锚点由verify.py独立核验。',
         '- 每份EXECUTION.json记录Python/系统/命令、执行提交、源文件SHA；RUN_MANIFEST.json冻结候选和种子，case及receipt保存原结果字节。原件未覆盖，失败/中断不能按complete计数。',
         '- [机器汇总](results/analysis_20261023/SUMMARY.json)、[独立验收](results/analysis_20261023/VALIDATION.json)、[P0账本](results/p0_20261023/RESOURCE_LEDGER.json)；任务辅助证据与独立审阅见work/amlink1219/117。',
         '- 结果与代码先通过workspace任务分支/PR119交付，待审、未自动合并。Projects缺read:project，Issue/PR/STATUS已同步时不等于看板已同步。','']

@@ -80,6 +80,10 @@ class Session:
         self.t = self.start
         self.output_cycles = math.ceil(output_ns / self.period)
         self.actions = Counter()
+        # Compact observability is independent of optional per-frame traces.
+        # These counters describe the existing FSM; they do not reserve time.
+        self.stage_cycles = Counter()
+        self.stage_calls = Counter()
         self.events = []
         self.outputs = []
         self.output_times = []
@@ -102,6 +106,8 @@ class Session:
             raise ValueError('nonnegative integer stage cycles')
         start = self.t
         self.t += cycles
+        self.stage_cycles[name] += cycles
+        self.stage_calls[name] += 1
         if action:
             self.actions[action] += count
         if self.c['record_events']:
@@ -220,6 +226,7 @@ class Session:
             peak_fair_parallel_lanes=self.peak_fair, provisioned_fair_lanes=m.fair_capacity,
             source_backend=m.provenance.get('source_backend','UNDECIDED'), numerical_source=copy.deepcopy(m.provenance),
             actions=dict(self.actions), frames=self.frames, events=self.events,
+            stage_cycles=dict(self.stage_cycles), stage_calls=dict(self.stage_calls),
             retained_internal_output_indices=1, energy_J=known,
             known_dynamic_energy_J=known, physical_dynamic_energy_J=None if missing else known,
             energy_breakdown_J=detail, uncharacterized_energy_actions=missing,

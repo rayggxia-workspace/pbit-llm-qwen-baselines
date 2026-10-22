@@ -47,3 +47,8 @@ SRAM校准补充：已有宏直接查库值；其他尺寸是带验证误差的�
 ## 2026-10-22 Unified complete-decode TLM v6
 
 [Issue96 implementation, operator contracts and limits](unified_v6/README_ZH.md). Fixed W8 / B4 / T32 / K32, current parallel sampler options and same-resource digital controls share a bounded resource/memory model. Local RNG interface has no random-stream SRAM. This is an optional new entry; it does not rewrite historical defaults, results or claim full physical PPA.
+
+
+## 2026-10-22 可点击架构检查台（Issue104）
+
+[离线交互页面](inspector/model-inspector.html)、[检查顺序与复现](inspector/README_ZH.md)、[全面检查与未闭合项](inspector/CHECK_REPORT_ZH.md)。覆盖统一v6的52个封存情景，21模块、次数/周期、完整phase、存储格式与SHA证据；新增逐query采样FSM聚合保持全部旧序列化字段不变。76项CPU检查、686模型不变量与16组观测检查通过，不是物理硬件/PPL验收；权重供给、计数存储和随机源整机接入仍待落实。

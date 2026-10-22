@@ -1,10 +1,14 @@
 # Issue96：真实随机服务已接入整机（2026-10-22）
+# Issue104：架构可视化与全面检查
 
 负责人jieruiz；沿用task/96-unified-tlm、PR103，独立目录tmp/unified-tlm-issue96-20261022；base已合入eb317e4f。代码、40项结果与报告已实际推送，科学交付f3cf9b98f38a3cb47c40cb86669a2f180e637d0d，9个关键远端blob原字节核验通过；PR103已更新、待审未合并，Issue96不关闭。完整回执integrated/PUBLICATION.json，后续metadata提交不改变执行或结果。
+2026-10-22；负责人jieruiz；Issue104；task/104-architecture-inspector；base eb317e4f6fb1b0d8844887401f3275f128ef8a83。独立工作目录 tmp/architecture-inspector-issue104-20261022。交付阶段：科学成果1909c542a1c454a9e219a5482c9b493fa678b340已推送，PR105 ready/open待审、未合并；8关键远端blob原字节核验通过。后续本提交只补回执，不改模型/观测/页面。
 
 FullDecode默认integrated_service，计算/SC/源/种子总线/采样器统一100MHz；SRAM已校准80MHz保留。FFN流式SAVE/RESTORE/RELEASE、Attention真实有限端点输出/种子/预热/回压，原Issue95模型/RTL未改。40/40完整模型情景、93机制/回归和1421归档/模型契约核对通过；12项为S8采样器诊断，不冒充全预算质量。原52项未改，104宽扫描0完成/0失败主动取消并留痕。
+成果 architecture_tlm/inspector/README_ZH.md、model-inspector.html、CHECK_REPORT_ZH.md。76项CPU功能/接口检查通过；52旧封存情景686模型不变量、4新观测16组检查通过；新Qwen24层336query与旧序列化字段严格相同。浏览器五页、模型/模式/上下文/seed/层控制及截图已核，Node语法通过。观察执行124d37d2；没有新PPL/GPU/Slurm/PT/DRAMSys/物理PPA。完整能量/面积仍null。
 
 正式报告architecture_tlm/unified_v6/RNG_INTEGRATION_RESULTS_ZH.md，执行31aa4fa31fbfb7d74629b54811936ac30a41c250；新40项/results/integrated_rng_20261022_v3及manifest。Qwen2K SC/screenPV seed0为198.00316ms，旧接口197.93816ms；仅合成条件TLM，q/256新响应无继承PPL。100MHz原生端点PPA来自任务38322118/中央记录PR111，额外前端/全局种子等仍未知，完整随机/整机能量面积null。无新PPL/训练/GPU/Slurm/RTL/PT/实际DRAMSys。
+首要未闭合：32KiB/波驻留权重并行供给、48KiB局部计数状态、源后端整机连接和格式转换；PR103仍open，仅薄接口。Projects沿实际read:project不足待同步，不影响repo admin/push。主任务保留最小工作树；自己的已完成hooks helper与两轮比较器诊断已逐SHA归档回收，恢复索引在work/jieruiz/104。下一步：等待PR105评审，按检查台逐项落实硬件合同；HANDOFF及PUBLICATION/REMOTE_VERIFY为实际状态入口。
 
 下一步等待同PR103评审；质量和尚未知PPA后续另补。Projects沿read:project权限不足待同步，架构检查台旧52快照不自动刷新。HANDOFF和integrated/验证目录可恢复；无本任务运行作业。以下旧“仅小接口/未接入”是此前快照。
 
@@ -15,6 +19,7 @@ FullDecode默认integrated_service，计算/SC/源/种子总线/采样器统一1
 冻结36d5e1085e82a982c9e689a467b3b2042ca36f4d，11新＋21整机＋19源目录测试通过，共51，0失败/跳过；无新PPL/PT/GPU/DRAMSys。报告architecture_tlm/unified_v6/RNG_COMPATIBILITY_ZH.md，原件work/jieruiz/96/RNG_INTERFACE_VALIDATION.json。代码/报告/51项回执由PR103交付；最终head及远端字节核验见Issue96回执。PR103待审未合并；下方原99待审文字为历史快照。
 
 结论：能拼，仍需全模型流式消费/统一时钟和累计账本适配、筛选896路容量选择，以及新q/256 sigmoid数值验证。当前未把随机源后端接入FullDecode默认，未改旧52情景；不能混称已完成整机源调度。下一步按报告边界做可选backend，未知PPA不填零；看板read:project待同步。
+以下保留此前历史：
 
 # Issue55第六轮最终补审PR99 ready
 

@@ -40,10 +40,13 @@ def main():
     old=json.loads(old_path.read_text(encoding='utf-8'));old.pop('execution_commit');old.pop('config_sha256')
     legacy={k:v for k,v in r.items() if k not in ('stage_busy_ns','sampler_audit')}
     path=out/'qwen_L2048_seed0_sc_screen_rejection_observed.json';write(path,r)
-    if old!=legacy:
-        changed=[k for k in set(old)|set(legacy) if old.get(k)!=legacy.get(k)]
+    # Compare the actual JSON wire fields: Scheduler resources are tuples in
+    # memory and arrays after reading JSON, which is not an execution change.
+    normalized=json.loads(json.dumps(legacy,allow_nan=False))
+    if old!=normalized:
+        changed=[k for k in set(old)|set(normalized) if old.get(k)!=normalized.get(k)]
         write(out/'LEGACY_DIFFERENCES.json',dict(changed_fields=changed,
-            before={k:old.get(k) for k in changed},after={k:legacy.get(k) for k in changed}))
+            before={k:old.get(k) for k in changed},after={k:normalized.get(k) for k in changed}))
         raise AssertionError('legacy fields differ, preserved for diagnosis: '+repr(changed))
     compact={k:r[k] for k in ['config','model','metrics','input_provenance','sampler_audit','stage_busy_ns']}
     compact['config']={'attention':{'mode':'screen_rejection'}}

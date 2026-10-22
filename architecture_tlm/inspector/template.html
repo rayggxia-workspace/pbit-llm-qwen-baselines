@@ -30,7 +30,19 @@ const ms=v=>num(v/1e6,3)+' ms';const kib=v=>num(v/1024,2)+' KiB';
 const modeNames={exact:'准确 Attention',pv:'准确 Softmax＋PV采样',screen_exact:'筛选后准确',screen_pv:'筛选＋PV采样',screen_rejection:'筛选＋校正拒绝',screen_winner:'筛选＋赢家保持'};
 let current=null,selectedNode='gu',activeTab='flow';
 function option(el,items,value){el.innerHTML=items.map(([v,t])=>`<option value="${esc(v)}">${esc(t)}</option>`).join('');if(items.some(i=>String(i[0])===String(value)))el.value=value;}
-function rebuild(level){const model=$('model').value;const all=DATA.cases.filter(c=>c.model===model);if(level<=0)option($('context'),[...new Set(all.map(c=>c.context))].sort((a,b)=>a-b).map(v=>[v,v/1024+'K']),$('context').value);const ctx=all.filter(c=>c.context===+$('context').value);if(level<=1){const keys=[...new Set(ctx.map(c=>c.ffn+'|'+c.attention))];option($('mode'),keys.map(v=>[v,({bf16:'BF16 FFN',w8:'W8数字 FFN',sc:'B4/T32/K32 FFN'}[v.split('|')[0]])+' · '+modeNames[v.split('|')[1]]),$('mode').value||'sc|screen_rejection');}const subset=ctx.filter(c=>c.ffn+'|'+c.attention===$('mode').value);option($('seed'),subset.map(c=>[c.seed,c.seed]),$('seed').value);current=subset.find(c=>c.seed===+$('seed').value)||subset[0];render();}
+function rebuild(level){
+ const model=$('model').value, all=DATA.cases.filter(c=>c.model===model);
+ if(level<=0)option($('context'),[...new Set(all.map(c=>c.context))].sort((a,b)=>a-b).map(v=>[v,v/1024+'K']),$('context').value);
+ const ctx=all.filter(c=>c.context===+$('context').value);
+ if(level<=1){
+  const keys=[...new Set(ctx.map(c=>c.ffn+'|'+c.attention))];
+  const names={bf16:'BF16 FFN',w8:'W8数字 FFN',sc:'B4/T32/K32 FFN'};
+  option($('mode'),keys.map(v=>{const [f,a]=v.split('|');return [v,names[f]+' · '+modeNames[a]];}),$('mode').value||'sc|screen_rejection');
+ }
+ const subset=ctx.filter(c=>c.ffn+'|'+c.attention===$('mode').value);
+ option($('seed'),subset.map(c=>[c.seed,c.seed]),$('seed').value);
+ current=subset.find(c=>c.seed===+$('seed').value)||subset[0];render();
+}
 function stat(label,value,note=''){return `<div class="stat"><span>${esc(label)}</span><strong>${esc(value)}</strong><span>${esc(note)}</span></div>`;}
 function isInactive(n){if(['encode_x','restore_gu','encode_z'].includes(n.id)&&current.ffn!=='sc')return true;if(n.id==='selector'&&!current.attention.startsWith('screen'))return true;return false;}
 function nodeButton(n){const inactive=isInactive(n);return `<button class="node ${inactive?'inactive':''} ${n.id==='gu'&&current.ffn==='sc'?'high-risk':''}" data-node="${n.id}" aria-pressed="${n.id===selectedNode}"><b>${esc(n.title)}</b><small>${inactive?'此分支未启用':n.lane==='support'?'共享资源／独立合同':'点击检查接口与假设'}</small></button>`;}

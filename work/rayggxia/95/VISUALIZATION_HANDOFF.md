@@ -25,3 +25,7 @@ PPA证据：远端上传/rng_service_v1_20261022/architecture_tlm/random_service
 本机使用bundled Python / Node、Playwright及无头Edge运行 `node work/rayggxia/95/check_architecture_view.cjs`；脚本内Playwright路径为本机依赖路径。12时序场景、11模块、计算器/错误输入/核对导出检查通过；1440/768/390宽度无横向溢出，无JS错误，亮暗模式截图已检视。回执VISUAL_CHECK.json。截图与测试导出在visual_check/，不是用户确认，不发布。
 
 验收待用户阅读架构图和PR评审；不关闭Issue。Projects看板权限/同步未核实。维护备忘录入口拟追加见MEMORY_VISUALIZATION_APPEND_ZH.md，避免覆盖其他任务正在维护的唯一备忘录。
+
+## 发布回执
+
+PR113：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/113，开放待审，未合并；内容提交bc8561813c110b62829287661c1303c65a2d14b0。远端HTML已读回核对一致，Issue95已同步评论；本地用户文件SHA见ARCHITECTURE_VIEW.json。

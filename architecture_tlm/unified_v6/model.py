@@ -148,6 +148,7 @@ class FullDecode:
             options['clock_ns'] = self.period
             self.samplers[name] = cls(options, max(1, candidates))
         self.phases, self.attn_rows = [], []
+        self.sampler_audit = []
         self.attn_stats = Counter()
         self.frame = 0
         self.metadata = Counter()
@@ -431,8 +432,21 @@ class FullDecode:
             out, details = ising_random_scan(row['logits'], samples, a['serial_burn'], a['serial_spacing'], rng)
             attempts = details['attempts']
             t = self.rng.request('serial_ising', t, attempts, 32, 1, 'serial_heatbath', (token,layer,row['head']))
+            before_busy = self.s.by_stage['serial_ising']
             t = self.s.reserve('serial_ising', t, attempts*a['serial_cycles_per_attempt']*self.period,
                                ('sampler',), self.period, attempts=attempts)
+            # Read the reservation actually made above, not a second timing model.
+            service_ns = self.s.by_stage['serial_ising']-before_busy
+            self.sampler_audit.append(dict(token=token, layer=layer, head=row['head'],
+                sampler='serial_random_scan', audit_scope='attempt-service macro; output transfer is separate',
+                start_ns=t-service_ns, end_ns=t, elapsed_cycles=service_ns/self.period,
+                clock_ns=self.period, valid_candidates=n, base_sample_budget=samples,
+                requested_samples=samples, outputs=len(out), attempts=attempts,
+                flips=details['flips'], proposal_frames=None, algorithm_updates=None,
+                rejected_multi=None, rejected_empty=None,
+                source_lane_work=dict(uniform_words=attempts, uniform_word_bits=32),
+                stage_cycles=dict(serial_ising=service_ns/self.period),
+                stage_calls=dict(serial_ising=1)))
             self.e.action('serial_ising_attempt', attempts, 'sampler')
             self.attn_stats['serial_attempts'] += attempts
             t = self.mem.transfer(t,self.indices_base,len(out)*16,True,'serial_sample_indices')
@@ -448,6 +462,23 @@ class FullDecode:
         output_ns = self.mem.period+self.mem.spec['write_access_ns']+self.c['sram']['cdc_ns']
         out, receipt = module.request(ready, row['logits'], retained, rng,
             (token,layer,row['head']), row['ids'], output_ns_per_index=output_ns)
+        activity = receipt['actions']
+        # Keep every serviced head, even when detailed events/addresses are
+        # disabled or truncated. Values are copied from the original receipt.
+        self.sampler_audit.append(dict(token=token, layer=layer, head=row['head'],
+            sampler=receipt['sampler'], audit_scope='configured blocking sampler FSM including output transfer',
+            start_ns=receipt['start_ns'], configured_ns=receipt['configured_ns'],
+            first_sample_ns=receipt['first_sample_ns'], end_ns=receipt['end_ns'],
+            elapsed_cycles=receipt['elapsed_cycles'], clock_ns=receipt['clock_ns'],
+            valid_candidates=receipt['valid_candidates'], base_sample_budget=samples,
+            requested_samples=receipt['requested_samples'], outputs=receipt['samples'],
+            proposal_frames=activity.get('proposal_frames',0),
+            algorithm_updates=activity.get('algorithm_updates'),
+            rejected_multi=activity.get('rejected_multi',0),
+            rejected_empty=activity.get('rejected_empty',0),
+            source_lane_work={key:activity.get(key,0) for key in
+                ('biased_bit_draws','fair_bit_draws','source_slot_cycles','timed_source_service_cycles')},
+            stage_cycles=dict(receipt['stage_cycles']), stage_calls=dict(receipt['stage_calls'])))
         start, end = receipt['start_ns'], receipt['end_ns']
         t = self.s.reserve('parallel_'+name, start, end-start, resources, self.period,
             frames=receipt['actions'].get('proposal_frames',0), outputs=len(out))
@@ -598,6 +629,7 @@ class FullDecode:
             energy_J=dict(self.e.energy),unpriced_actions=dict(self.e.missing),actions=dict(self.e.actions),
             phase_ns=dict(totals),phases=self.phases,resource_busy_ns=dict(self.s.busy),
             wait_ns=dict(self.s.wait),events=self.s.events,event_count=self.s.count,
+            stage_busy_ns=dict(self.s.by_stage),sampler_audit=self.sampler_audit,
             trace_truncated=self.s.count>len(self.s.events),random_interface=self.rng.report(),
             SRAM={**memory,'layout':self.arena.regions,'reserved_peak_bytes':self.arena.peak},
             DRAM=dram,attention_activity=dict(self.attn_stats),row_receipts=self.attn_rows,

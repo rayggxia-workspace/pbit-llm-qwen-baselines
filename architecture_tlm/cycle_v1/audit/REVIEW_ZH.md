@@ -49,7 +49,7 @@
    FFN 的 32KiB weight credits 表示 DMA admission 到 restore 的单份逻辑所有权。有限 SRAM `weight_local_read` 已按 line/bank/port/II 服务，此后 T 次 SC 采样假设整 tile 静态驻留、并行可见；Python resident list 并不能证明已实现阵列侧宽读口。若物理方案采用独立 SRAM staging 和阵列保持，应分别实现容量、装载端口和生存期；当前额度不能同时证明两份物理存储均已计入。
 3. NativeRandomService 使用已有 native 协议和确定性 seed fixture；不代表物理熵。layer 中 Attention 与 FFN 各自创建 source network / seed bus，当前未验证全层统一随机网络共享与竞争。
 4. `clock_process` 是隔离 FSM 的扩展接口；本轮 adapter 仅从提交后 operation callback 接收请求。任意第三方 callback 直接读写其他进程的可变状态，不自动获得双阶段 old-state 语义保证。
-5. Attention 查询从已投影、已 RoPE 的 Q/K 开始；显式候选列表不等于已实现真实 selector。reduced layer 为单头、全候选、合成尺寸，不包括完整 Qwen/Llama 多头/GQA、24/32 层质量验证。
+5. Attention 查询从已投影、已 RoPE 的 Q/K 开始；显式候选列表不等于已实现真实 selector。reduced layer 为单头、全候选、合成尺寸。后续独立 GQA group 已实现共享一个 KV head，见下节；它尚未接入 reduced layer 或完整 Qwen/Llama decoder，不包括 24/32 层质量验证。
 6. 数学契约包含 double fsum/softmax 或连续 SiLU 配合已声明 FP32 边界；它不是全算子固定点或流水 RTL 的 bit-true 数学声明。
 7. 外部框架构建/小例、合成握手 RTL 和已有局部算术 RTL 各有独立覆盖范围。主代理将另附回执；它们不能自动证明完整 SC 数据通路、真实 CDC 电路、物理时序或 DRAM 闭环。
 
@@ -90,6 +90,20 @@ Slurm **2776** 的固定 v5 结果包含 **68 个真实片段配置和 8 个 syn
 固定执行版本 `d0ccc5e`、五例回执提交 `b741427` 的 FFN/exact/PV/winner/rejection 经过独立离线复核：**47 个制品、38 个源依赖**散列匹配，五份完整周期 trace 的 actions、旧态容量、资源和 bank/completion 端口守恒通过。源码按执行 Git SHA 核验；仅当 LF/CRLF checkout 变体的 SHA 与原记录精确相同时接受，未把后续 package_snapshot 变更误当旧执行版本。
 
 桥只调用旧 FullDecode 的算子方法，旧 FFN 没有权重数值输出；screen 模式已给候选后才进入桥。已明确旧桥 QK 逐乘/逐加 FP32 与 cycle 的 double fsum 后 FP32 可以产生不同 logits，加上不同 source 端点/请求时刻，不构成样本、数值、周期或加速比等价。`speedup=null` 正确保留；桥拒绝 cropped FFN、GQA、多时钟/native 不兼容和无法忠实映射的 II，不声称完整 decoder 已迁移。回执为 `results/v6_bridge_offline_review_final.json`。
+
+## 后续 GQA group 独立验收
+
+固定生产 `0cd8a26` / `de6123d` / `f94c9db` 新增同一 Kernel 中多个 query 共享一个 KV head。独立测试增加 **16 项**，全部 **70 项**在审查工作树 `a47fd64` 对应源码上重新通过，回执为 `results/gqa_a47fd64/RESULT.json`。历史 54 项回执和 Slurm 2776 的 68 real / 8 smoke 矩阵保持原样，没有用新增功能的通过数改写历史执行。
+
+小 fixture 的两组稀疏候选为 `[1,2,10]`、`[10,3,2]`；手工确定 K union 为四行，PV 每 head 六次保留样本时各候选重复两次。exact、PV、winner hold、rejection 失败重试由独立 scalar/冻结轨迹计算每 head 答案，逐项 FP32 乘加采用物理 token 升序。除已知相等 logits 外，还核对不同非零 Q 的非均匀 softmax。K/V 各一个行槽、memory window/bank 为 1，以及一个 operand slot 均完成，所有信用归还；两槽实际乱序回复不导致先消费数据饥饿。每条共享读的实际地址、字节、全部 consumer、最后释放依赖及输出 SRAM bytes 均被检查，破坏实际 K/V payload 必须显式失败。
+
+本轮审查发现并推动修复两个新 P1：运行时 V union 原先只在 Python set/sort 中完成，没有有限吞吐；cache read 完成后到 MAC 消费前没有有限 operand holding。现有独立手算验收为：两 head、四 union 项需要 **136B** metadata，136B 接受 / 135B 拒绝；六候选 scan 和四项 compact 在 1 lane 时分别为 6 / 4 周期，在 16 lanes 时分别为 1 / 1 周期。V 读不得提前于 compact 完成，metadata 保留至所有输出写回与行释放。一个 operand slot 从 cache read 受理至对应 MAC 完成持续占用，不能同沿复用。共享资源的 lane 数和物理 latency 不一致时明确拒绝。
+
+12 head 的动态地址布局保持 Q/histogram/output 互不重叠；不同 head 的 source network/seed bus 明确为独立实例，而非同一全局随机网络。原始 K 候选 union 是给定输入的预编译计划，V 是有限 scanner 上的运行时 union。source 内部 state 与 cache/SRAM 宏仍没有物理 PPA/STA 证据，模型没有接入 QKV 投影、RoPE、selector、Wo、动态 KV append 或完整 decoder。
+
+默认 Attention 路径的回归另用原始 v5 冻结结果检查：真实 layer23 的 exact seed0、PV/winner/rejection seed2，共 **4 case / 8 次 cycle/event 执行**的完整 payload SHA、输出、采样历史和信用均与原结果一致；包括原先发生死锁的 PV seed2。第一版及最终 operand hook 修改分别保存 `results/gqa_default_attention_1122365.json` 和 `results/gqa_default_attention_a47fd64.json`。这是代表 case 的完整执行回归，不宣称重新执行了全部 68 real 配置。
+
+`verify_gqa_fixture.py` 为服务器内私有真实激活验收入口，已经用公开合成小 fixture 跑通 6 case × 两模式整入口。脚本独立核算 QK 与 FP32 weighted-V、实际共享字节、union/consumer 生存期及完整 trace 的动作/旧态容量；sampled 数值核验条件于实际 native 保留索引，不把这项检查冒称独立分布/IID 证明。公共回执仅含配置、hash、误差、计数和时间；张量、输出数组、直方图、索引、native transcript 和完整 trace 留在服务器私有目录。真实 7-head fixture 的执行状态以随后固定的服务器回执为准，本段不预告通过。
 
 ## 重现
 

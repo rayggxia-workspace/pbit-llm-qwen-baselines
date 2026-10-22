@@ -1,3 +1,7 @@
+# 第六轮追加99/100
+
+100文档通过并随本PR保留原head；99草稿保留，最终报告待齐。实际4项远端接入与本轮清理以Issue55最终回执为准。
+
 # Issue55最新入口：第六轮
 
 93/97原生合并，94原head随本次review集成PR；详见[round6/REVIEW_ZH.md](round6/REVIEW_ZH.md)、[round6/HANDOFF.md](round6/HANDOFF.md)及Issue55最终回执。原任务90/92/95不自动关闭；无新服务器作业。

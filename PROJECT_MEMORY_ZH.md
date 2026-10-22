@@ -44,6 +44,8 @@
 
 ## 0 恢复工作先读这里
 
+> 第六轮收尾新增99/100：100协议文档33检查和关键一手口径核验通过，原head5a89ced1纳入本人集成分支；99仍为draft，整机同资源情景最终结果待补，保留不合并。本轮共审核5项、通过4项（93/94/97/100），实际远端集成回执查Issue55。
+
 > 2026-10-22第六轮审核：PR93/97已原生合并129ae823/27bf9c48；PR94的90配置冻结盲评、45检查与成本重放通过，原head424b4206纳入本人review/55-pr-round6，唯一STATUS冲突保留作者原blob9ee7dbdd，无作者分支改写。将通过本轮集成PR交付，实际远端合并/目录回收结果查Issue55最终回执和work/jieruiz/55/round6/。本轮未启动服务器/GPU/Slurm/PPL/DC/PT；旧定时不恢复。
 
 > 2026-10-22第五轮收尾追加：PR89评估补充已直接合并作者原head，现共82/83/85/86/88/89六项成果已合并；下方五项记录为追加前快照。Issue37/78仍开放。完整回执work/jieruiz/55/round5/。
@@ -930,3 +932,33 @@ Issue73 publication receipt (2026-10-22): completed26 status/report and automati
 ## 2026-10-22 第六轮PR审核（Issue55）
 
 PR93环境交付32源/5报告与94包冻结逐SHA通过，Windows git archive/checkout会受core.autocrlf影响；本轮改用git cat-file原blob核验，不改作者字节。作者两台19CPU/6GPU记录仅核对冻结报告，本轮没有重新登录/安装/申请GPU或重新取得13份私有原件。PR94的45CPU检查通过（本地Python3.8补等价Path.is_relative_to运行时shim，作者3.12源码不改），134包成员/90模型SHA、先冻结再评估及VAL预选强max4通过，15逐文档原件按48篇×3eval seed重聚合；2304隐藏态门控等价/6均值回算的成本JSON逐字节重放一致。强max4下是分层权衡且33–39%超512容量，不改默认或冒称PPL/PPA。PR97的47CPU、三后端三seed8100沿与FFN250沿/120帧均重放一致，27源blob/向量SHA/操作账本和便携包26文件一致；数字核心不等于物理熵/IID或工艺PPA。93/97合并回执与94原head集成证明在round6；90/92/95仍由原负责人按Issue验收接续，不自动关闭。旧材料与canonical原未提交增量完整保留。
+
+
+<!-- issue96-unified-v6 -->
+## 2026-10-22 统一整机TLM v6（Issue96 / PR99）
+
+用户同意整机保留tile/事件粒度，关键机制先验证，差异足以改变结论再细化。jieruiz独立task/96-unified-tlm、tmp/unified-tlm-issue96-20261022；基线83e15289，冻结执行fba22b192ab914046e50cc405f6dd473bf30d154。入口architecture_tlm/unified_v6/README_ZH.md与RESULTS_ZH.md；三个模型可选tlm-unified，历史默认不改。
+
+本版将固定W8、动态四档PoT、T32/K32、gate/up共享x与跨输出波重放、FP32 SwiGLU后z独立编码接入完整decode；包含embedding/全部层/最终norm/lm_head/选词。Attention有数字在线GQA、比例PV（systematic CDF）、max4筛选后准确/PV、赢家与校正拒绝；K/V按GQA并集和物理burst收费。采样器内部FSM/反馈/输出等待复用v5；直方图采用明确但保守的逐地址RMW，不声称最优。独立BF16残差/x/z/宽部分和区域；SRAM容量/端口/fabric、权重ping-pong和有限32请求窗口显式计入。初始KV和摘要已存在，不含prefill/TTFT。
+
+52项整机情景全部完成：Qwen2K/8K各8方案×3seed共48；Llama1/2各数字BF16、SC/PV两项完整32层单seed连通。21新机制+18原并行采样器+10原v4检查通过；62原件、22执行blob、764模型契约核查通过。原门禁4e0d26b的W8尺度寻址越界已修复，失败前缀与EXEC原件保留，不计正式52项。无新PPL、训练、GPU、Slurm、PT或实际DRAMSys运行。
+
+条件100MHz核/80MHz SRAM/16GBs：Qwen2K BF16准确234.360ms、W8数字163.565ms、SC准确201.677ms、SC筛选PV197.946ms、SC拒绝286.556ms、SC赢家303.646ms；8K分别260.453/189.658/227.770/202.770/551.715/622.894ms。赢家预算是PV/拒绝8倍，不按同S比较。QwenSC主采样波约3.411ms，64路通用向量恢复约55.158ms，恢复/搬运/接口是优先核查瓶颈；不能把短流阵列收益等同整机收益。相比同W8数字SC更慢；完整物理能量/面积、新组合PPL均null，部分已定价小计禁止当总能量比例。默认Link外存64pJ/B/50mW是条件值，不是新DRAMPower。Qwen1MiB/Llama8MiB是配置预算，未证明最优。
+
+随机源按用户要求仅本地PRNG接口，随机流SRAM/FIFO/额外概率副本均0；必要编码/计数/映射仍保留。有偏候选独立需求、种子/新帧/重放/并行服务需求单列，未标定成本不置零。本任务期间PR97随机服务已合并27bf9c48，但本轮不启用该后端或其量化；采用新上游采样器默认接口覆盖49项也通过（前两次本地temp/脚本导入问题保留）。后续可由Issue95接口适配，不使用FFN共享门限替代Attention独立提议。Projects本轮GraphQL实测缺read:project，待同步。
+
+源码已上传PR99，成果/文档发布以Issue96、work/jieruiz/96/PUBLICATION.json/REMOTE_VERIFY.json最新回执为准；PR待审，不自动合并或关闭Issue96。后续优先表征B4恢复/编码、权重驻留接口、采样器偏移与直方图流水和本地源。当前TLM不是周期精确芯片、GPU模拟或质量验收。
+<!-- /issue96-unified-v6 -->
+
+
+## Upstream Issue90 complete receipt (27bf9c48; prior local history preserved)
+
+<!-- llm-env-issue90 -->
+## 2026-10-22 Issue90：两台4090备用LLM环境
+
+个人隔离Python3.12.3/Torch2.6.0+cu118/Transformers4.45.2/lm_eval0.4.8已安装并验证。A CPU9041/GPU9042、B CPU14101/GPU14104均COMPLETED/0:0，每台19CPU检查及6GPU synthetic smoke通过，27参数/3非持久RoPE buffer逐位相同、重载logits差0.0。94包freeze两台原字节相同SHA636ea0599fc983e7c003c3a8881aefa2f05d8167f2877dcab8992dfc3f145ae5；正式入口为个人环境bin/llm-python进程wrapper，旧glibc兼容层不改系统或共享环境。
+
+正式入口[环境报告](maintenance/llm_env_4090_20261022/README_ZH.md)，原执行源scripts/llm_env_4090_20261022，私有原件hash/脱敏视图及交接work/amlink1219/90。原失败与恢复各阶段保留，70wheel恢复包仅LLM扩展层，不含Torch底座。服务器地址/连接配置/凭据不发布。Torch版本不同于5090的2.7.1cu128，未下载真实权重/语料、未训练或产生真实PPL/准确率/PPA，后续真实实验需匹配数字基线。5090优先、备用当次告知、个人目录/Slurm/跨服务器单GPU规则继续适用。上传与PR状态见该任务PUBLICATION.json，Issue保持open等待审阅，不自动合并。
+<!-- /llm-env-issue90 -->
+
+第六轮追加PR100评估协议：33项结构/来源SHA/内部链接/数值复算通过；独立核对lm-eval0.4.8字符长度acc_norm、SANTA batch分母、HSA输入输出token、MLPerf5.1版本质量门槛、DRAMPower时序边界及Kelle Table2；本机MBA第6节/HBM3.9pJ-bit与技术缩放文字核对。16篇矩阵/CSV一致性不冒充重新穷尽全文查新。协议为未批准未执行提议，不改变用户质量预算或启动模型/PPA。PR100与97仅负责人STATUS冲突，直接继承100作者原blob，旧97状态保留Git历史，无作者分支改写。PR99读取fba22b19仍draft、最终整机情景报告未齐，保留待审，不因已有机制测试通过而合并。

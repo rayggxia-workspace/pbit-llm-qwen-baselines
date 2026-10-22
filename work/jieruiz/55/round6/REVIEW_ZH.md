@@ -1,6 +1,6 @@
 # 第六轮PR审核与原始head集成（2026-10-22）
 
-本轮审阅93/94/97，实际账号jieruiz，正式目标pbit-tlm-attention-details-20261016。93/97已原生合并；94因唯一负责人STATUS冲突，保持作者分支与原始head，通过本集成PR携带。全部实现和科学成果按原blob保留。
+本轮共审核5项：93/94/97/100通过，99草稿保留。初始审阅93/94/97，实际账号jieruiz，正式目标pbit-tlm-attention-details-20261016。93/97已原生合并；94因唯一负责人STATUS冲突，保持作者分支与原始head，通过本集成PR携带。全部实现和科学成果按原blob保留。
 
 | PR | 原head | 交付方式 |
 |---|---|---|
@@ -33,3 +33,11 @@
 本轮没有服务器写入、Slurm/GPU、真实模型推理/PPL、训练或综合功耗任务，也没有恢复旧定时。仓库实际admin/push可用，原生合并门禁checks/status为空，不能称CI执行。Projects沿原任务权限记录待同步，本轮没有改权限或宣称看板已完成。90/92/95均由原负责人接续，不自动关闭。
 
 本报告为本次集成PR中的冻结快照；94远端合并、源PR状态与本轮目录回收等后续结果以Issue55最终回执为准。只保留一个稀疏审核目录，导出/仿真产物逐SHA本地归档后回收本人目录，不清理作者工作树、模型、唯一数据或共享Git对象。
+
+## 收尾新增100与草稿99
+
+PR100原head5a89ced1ce57aac5859f9c18299c04f4c2c5bbc9已审核通过，本PR同样携带作者原始head。33项检查重跑通过，4份正式文档字节/来源与Git内部链接有效；输出重定向到本人证据目录，作者原VALIDATION未改。独立核对关键一手口径：lm-eval0.4.8的字符长度acc_norm、SANTA全batch分母、HSA包含prompt与output、MLPerf5.1质量/延迟版本、DRAMPower不检查trace时序及独立I/O计费、Kelle Table2；MBA原PDF第6节文字/实际SHA核对。16行矩阵一致性核查与关键来源抽查不宣称重新逐篇穷尽全文审阅。协议明确PROPOSED_NOT_APPROVED_NOT_EXECUTED、不设用户已接受PPL预算、不启动新模型/TLM/PPA。关键原文URL与定位见PR100_PRIMARY_SOURCE_AUDIT.json。
+
+100与97唯一冲突为rayggxia STATUS，直接使用100作者原blob，97状态仍在既有Git历史；其余100原blob不变，未推送作者分支。源94/100在本PR发布前最新head、审阅/线程/检查汇总已复核。
+
+PR99读取head fba22b192ab914046e50cc405f6dd473bf30d154，仍draft，最终同资源整机情景报告待补；仅作范围/完整性分流，不宣称已经完成其21项新机制与全套整机独立重审。保留待审，待ready及报告/校验回执齐备后接续Issue96，本轮不合并。

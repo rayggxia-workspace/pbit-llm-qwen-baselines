@@ -6,7 +6,7 @@
 
 实际服务器训练已完成，Slurm2741 COMPLETED/ExitCode0:0，没有本任务运行中作业。论文级优势尚未成立：49参数4→8→1网在层0/12/23的holdout遗漏质量为6.173%/4.493%/37.082%，原max4为4.552%/3.319%/32.298%；网的预算略高仍更差。BCE下降只能说明训练流程能优化首轮代理目标。完整学生PPL/Ising联合/PPA没有执行，正式Attention默认未改。
 
-任务分支task/92-pbit-gate-pilot，独立目录workspace_projects/gt92；PR base为pbit-tlm-attention-details-20261016，初始83e15289434af50fc09c35e699d8b39965389d98。上传/PR状态以本目录PUBLICATION.json最终回执为准；本文件首次编写时尚待上传，不能由训练完成推断已经发布/合并。
+任务分支task/92-pbit-gate-pilot，独立目录workspace_projects/gt92；PR base为pbit-tlm-attention-details-20261016，初始83e15289434af50fc09c35e699d8b39965389d98。代码和报告已推送，payload提交074172c93b00b30eef30923223fe8a408b1ccd13；PR94开放待审、未合并，Issue92验收和评论已更新。82项远端Git对象、8项关键原始文件SHA256已核。准确回执见PUBLICATION.json；本次后续提交仅补发布元数据。Projects缺read:project，因此看板待同步，未改权限/凭证。
 
 ## 执行与成果
 

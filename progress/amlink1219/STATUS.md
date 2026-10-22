@@ -2,7 +2,7 @@
 
 负责人amlink1219；task/92-pbit-gate-pilot，独立workspace_projects/gt92，base集成83e15289。CPU2740检查16/16，单5090 GPU2741已COMPLETED/0:0，总45.90秒、训练评估30.05秒；本任务无在运行作业。实际执行53c24f28，48篇文章隔离、1296组，18模型+3基线全部完成。49参数网在三层holdout均落后原max4，预算略高仍差；证明服务器训练可行，未建立算法/PPA优势。未跑学生整模型PPL。
 
-正式入口qwen/results/pbit_gate_pilot_20261022/README_ZH.md；代码experiments/pbit_gate_pilot_20261022；交接work/amlink1219/92/HANDOFF.md。teacher NPZ、LLM与语料保留本人服务器，54项小报告SHA已核。任务成果待分支/PR发布，远端状态以PUBLICATION.json最终回执为准；不自动合并，Projects按实际权限同步。
+正式入口qwen/results/pbit_gate_pilot_20261022/README_ZH.md；代码experiments/pbit_gate_pilot_20261022；交接work/amlink1219/92/HANDOFF.md。teacher NPZ、LLM与语料保留本人服务器，54项小报告SHA已核。结果提交074172c93b00b30eef30923223fe8a408b1ccd13已推送，[PR94](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/94)开放待审、未合并；82项远端Git对象和8项关键原始SHA256已核，Issue92验收与结果评论已同步。Projects因缺read:project待同步，未进行看板写入。实际回执work/amlink1219/92/PUBLICATION.json；不自动合并。
 
 ---
 

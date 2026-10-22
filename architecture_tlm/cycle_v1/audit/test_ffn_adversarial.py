@@ -5,6 +5,7 @@ import struct
 import unittest
 
 from architecture_tlm.cycle_v1.ffn import FFNConfig, build_ffn, encode_group, make_kernel
+from architecture_tlm.cycle_v1.contracts import Operation
 from architecture_tlm.cycle_v1.audit.scalar_oracles import frozen_thresholds, scalar_ffn
 
 
@@ -23,7 +24,7 @@ def endpoint_fixture():
 
 class IndependentFFNAudit(unittest.TestCase):
     def test_positive_signed_endpoint_and_true_one(self):
-        config = FFNConfig(output_bf16=False)
+        config = FFNConfig(output_bf16=False, random_backend="replay")
         for mode in ("cycle", "event"):
             k = make_kernel(config)
             state = build_ffn(k, endpoint_fixture(), config)
@@ -43,6 +44,20 @@ class IndependentFFNAudit(unittest.TestCase):
             FFNConfig(count_bits=19, counter_layout="signed_bin").validate()
         with self.assertRaises(ValueError):
             FFNConfig(count_bits=11, counter_layout="bitplane").validate()
+
+    def test_raw_bitplanes_match_legacy_input_sign_and_twos_complement(self):
+        fixture = endpoint_fixture()
+        fixture["wg"]["codes"] = [[-1]*64]
+        config = FFNConfig(output_bf16=False, random_backend="replay", restore_latency=8)
+        k = make_kernel(config)
+        state = build_ffn(k, fixture, config)
+        observed = []
+        def inspect_counter(kernel, operation):
+            observed.append(copy.deepcopy(state["counters"]["wg", 0, 0][0][0]))
+        k.add(Operation("audit.observe", "control", deps=("ffn.wg.r0.k0.sample31",), on_complete=inspect_counter))
+        k.run(mode="event")
+        self.assertEqual(observed, [[[0]*8, [2048]*8]])
+        self.assertEqual(state["gate"], [64.0])
 
     def test_cross_input_tiles_reduce_before_swiglu(self):
         fixture = {"x": [1.0]*128,
@@ -87,7 +102,7 @@ class IndependentFFNAudit(unittest.TestCase):
         self.assertLess(state["output"][2], 0)
 
     def test_data_corruption_cannot_be_invisible_to_arithmetic(self):
-        config = FFNConfig(output_bf16=False)
+        config = FFNConfig(output_bf16=False, random_backend="replay")
         k = make_kernel(config)
         state = build_ffn(k, endpoint_fixture(), config)
         # Replace the gate W8 payload in backing memory, leaving its valid scale.
@@ -113,7 +128,7 @@ class IndependentFFNAudit(unittest.TestCase):
                            "wg": matrix(hidden, width), "wu": matrix(hidden, width),
                            "wd": matrix(output, hidden), "residual": [rng.uniform(-2, 2) for _ in range(output)],
                            "thresholds": frozen_thresholds(width, hidden, samples=samples, strata=samples, seed=seed+77)}
-                config = FFNConfig(samples=samples, strata=samples, bins=bins, output_bf16=bool(seed % 2))
+                config = FFNConfig(samples=samples, strata=samples, bins=bins, output_bf16=bool(seed % 2), random_backend="replay")
                 expected = scalar_ffn(fixture, samples=samples, bins=bins, output_bf16=config.output_bf16)
                 kernel = make_kernel(config)
                 state = build_ffn(kernel, fixture, config)

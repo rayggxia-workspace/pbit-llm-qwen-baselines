@@ -1,5 +1,6 @@
 """Externally specified finite trajectories for sampler and sparse addresses."""
 import unittest
+from dataclasses import replace
 
 from architecture_tlm.cycle_v1.attention import (
     AttentionConfig, SamplerCapError, _Source, build_attention, make_kernel,
@@ -16,6 +17,8 @@ def fixture_three():
 
 class IndependentAttentionAudit(unittest.TestCase):
     def run_pair(self, fixture, config):
+        if fixture.get("random_replay"):
+            config = replace(config, random_backend="replay")
         pairs = []
         for mode in ("cycle", "event"):
             kernel = make_kernel(config)
@@ -80,7 +83,7 @@ class IndependentAttentionAudit(unittest.TestCase):
     def test_proposal_cap_raises_without_inventing_an_output(self):
         fixture = fixture_three()
         fixture["random_replay"] = {"frames": [[True, True], [True, True]]}
-        config = AttentionConfig(mode="rejection", samples=1, max_proposals_per_sample=2)
+        config = AttentionConfig(mode="rejection", samples=1, max_proposals_per_sample=2, random_backend="replay")
         kernel = make_kernel(config)
         state = build_attention(kernel, fixture, config)
         with self.assertRaises(SamplerCapError):

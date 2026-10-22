@@ -18,12 +18,13 @@ def main():
         raise FileExistsError("Choose a new audit output directory")
     here = Path(__file__).resolve().parent
     root = here.parents[2]
-    modules = ["architecture_tlm.cycle_v1.audit.test_"+name+"_adversarial" for name in ("core", "ffn", "attention")]
+    modules = ["architecture_tlm.cycle_v1.audit.test_"+name+"_adversarial" for name in ("core", "ffn", "attention", "native", "layer")]
     suite = unittest.defaultTestLoader.loadTestsFromNames(modules)
     log = io.StringIO()
     result = unittest.TextTestRunner(stream=log, verbosity=2).run(suite)
     paths = sorted((here.parent).glob("*.py")) + sorted(here.glob("*.py"))
-    paths.append(root/"architecture_tlm"/"random_service"/"service.py")
+    paths += [root/"architecture_tlm"/name for name in ("random_service/service.py", "random_service/model.py",
+              "random_service/backends.py", "unified_v6/rng_integrated.py")]
     source_hashes = {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     proc = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, text=True, capture_output=True, check=True)
     report = dict(timestamp_utc=datetime.now(timezone.utc).isoformat(), python=platform.python_version(),

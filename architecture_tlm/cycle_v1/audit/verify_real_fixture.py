@@ -21,21 +21,26 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--fixture", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--backend", choices=("native", "replay"), default="replay")
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError("preserve prior audit evidence: choose a new output")
     frozen = json.loads(args.fixture.read_text(encoding="utf-8"))
     values = copy.deepcopy(frozen["ffn"])
     layer = frozen["provenance"]["layer"]
-    threshold_seed = 88100+layer
-    values["thresholds"] = scalar_oracles.frozen_thresholds(len(values["x"]), len(values["wg"]["codes"]), seed=threshold_seed)
-    expected = scalar_oracles.scalar_ffn(values)
-    config = ffn.FFNConfig()
+    threshold_seed = 88100+layer if args.backend == "replay" else None
+    if args.backend == "replay":
+        values["thresholds"] = scalar_oracles.frozen_thresholds(len(values["x"]), len(values["wg"]["codes"]), seed=threshold_seed)
+    config = ffn.FFNConfig(random_backend=args.backend)
     engine = ffn.make_kernel(config)
     state = ffn.build_ffn(engine, values, config)
     started = time.perf_counter()
     result = engine.run(mode="event")
     elapsed = time.perf_counter()-started
+    if args.backend == "native":
+        values["thresholds"] = {phase:[state["thresholds"][phase, i] for i in range((size+63)//64)]
+            for phase, size in (("x", len(values["x"])), ("z", len(values["wg"]["codes"])))}
+    expected = scalar_oracles.scalar_ffn(values)
     checks = []
     for field in ("gate", "up", "z", "projected", "output"):
         actual = state[field]
@@ -49,7 +54,8 @@ def main():
     report = dict(scope="Independent scalar FP32-boundary audit of one real cropped FFN; not full-layer/model/PPL or physical hardware evidence",
                   timestamp_utc=datetime.now(timezone.utc).isoformat(), python=platform.python_version(),
                   fixture_sha256=sha(args.fixture), source_fixture_name=args.fixture.name,
-                  provenance=frozen["provenance"], threshold_seed=threshold_seed,
+                  provenance=frozen["provenance"], threshold_seed=threshold_seed, random_backend=args.backend,
+                  native_random=state.get("native_random"),
                   thresholds_sha256=hashlib.sha256(json.dumps(values["thresholds"], sort_keys=True).encode()).hexdigest(),
                   config={key:getattr(config,key) for key in config.__dataclass_fields__},
                   execution_source_sha256={"contracts.py":sha(contracts.__file__), "ffn.py":sha(ffn.__file__),

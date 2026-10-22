@@ -143,6 +143,7 @@ class RunResult:
     resource_stats: dict[str, dict[str, int]]
     steps: int
     mode: str
+    process_ticks: dict[str, int] = field(default_factory=dict)
 
     def equivalence_payload(self) -> dict[str, Any]:
         """Everything that must agree between cycle and event execution.
@@ -151,5 +152,5 @@ class RunResult:
         """
         return {name: getattr(self, name) for name in (
             "finish_ps", "accepted_ps", "completion_ps", "actions", "trace",
-            "memory_reads", "buffer_peak", "buffer_final", "resource_peak", "resource_stats",
+            "memory_reads", "buffer_peak", "buffer_final", "resource_peak", "resource_stats", "process_ticks",
         )}

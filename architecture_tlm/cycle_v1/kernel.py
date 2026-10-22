@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass, replace
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 from .contracts import Buffer, Clock, Operation, Resource, RunResult, nonnegative_int, positive_int
 from .memory import MemoryPort, MemoryReservation, MemoryRuntime
@@ -30,6 +30,16 @@ class _Flight:
     due_ps: int
     instance: int | None
     reservation: MemoryReservation | None = None
+
+
+@dataclass
+class _ClockProcess:
+    clock: Clock
+    callback: Callable[["Kernel"], bool]
+    active: bool = False
+    not_before_ps: int = 0
+    started: bool = False
+    ticks: int = 0
 
 
 class Kernel:
@@ -73,6 +83,32 @@ class Kernel:
         self.now_ps = 0
         self._running = False
         self._ran = False
+        self._processes: dict[str, _ClockProcess] = {}
+
+    def register_clock_process(self, name: str, clock: Clock, callback: Callable[["Kernel"], bool]) -> None:
+        """Register an initially sleeping native state machine.
+
+        callback(kernel) executes once per active local edge and returns whether
+        to remain active. It runs AFTER all kernel commits but BEFORE operation
+        completion callbacks; newly enqueued requests therefore cannot be used
+        by a process on their enqueue edge. Active processes prevent event mode
+        from skipping their clock edges. Their native action accounting stays
+        with the adapter; a process tick is not automatically a random draw.
+        """
+        if self._ran and not self._running:
+            raise RuntimeError("a finished Kernel is single-use")
+        if not name or name in self._processes or not callable(callback):
+            raise ValueError("clock process needs a unique name and callable")
+        if clock.name in self._clocks and self._clocks[clock.name] != clock:
+            raise ValueError("a clock name cannot describe different clocks")
+        self._clocks[clock.name] = clock
+        self._processes[name] = _ClockProcess(clock, callback)
+
+    def wake_clock_process(self, name: str) -> None:
+        process = self._processes[name]
+        if not process.active:
+            process.active = True
+            process.not_before_ps = self.now_ps + 1 if self._running else 0
 
     def clock_for(self, resource: str) -> Clock:
         if resource in self.resources:
@@ -220,6 +256,8 @@ class Kernel:
 
     def _step(self, time_ps: int) -> None:
         self.now_ps = time_ps
+        active_processes = [(name, process) for name, process in sorted(self._processes.items())
+                            if process.active and process.not_before_ps <= time_ps and process.clock.is_edge(time_ps)]
         # COMPLETE decisions use old buffer occupancies. Independently accepted
         # consumers do not provide same-edge room for these outputs.
         output_shadow = dict(self.buffers)
@@ -376,12 +414,29 @@ class Kernel:
         for name in self.resource_peak:
             used = self._memory[name].inflight if name in self._memory else sum(self._occupancy[name])
             self.resource_peak[name] = max(self.resource_peak[name], used)
+        for name, process in active_processes:
+            if not process.started:
+                self.trace.append({"time_ps": time_ps, "kind": "process_start", "process": name,
+                                   "clock": process.clock.name})
+                process.started = True
+            process.ticks += 1
+            keep_active = process.callback(self)
+            if not isinstance(keep_active, bool):
+                raise ValueError("clock process callback must return bool")
+            process.active = keep_active
+            if not keep_active:
+                self.trace.append({"time_ps": time_ps, "kind": "process_stop", "process": name,
+                                   "clock": process.clock.name})
+                process.started = False
         for flight in finishing:
             if flight.op.on_complete is not None:
                 flight.op.on_complete(self, flight.op)
 
     def _next_event_time(self, after_ps: int) -> int | None:
         times: list[int] = []
+        for process in self._processes.values():
+            if process.active:
+                times.append(process.clock.next_edge(max(after_ps + 1, process.not_before_ps)))
         for flight in self._flights.values():
             clock = self.clock_for(flight.op.resource)
             if flight.due_ps > after_ps:
@@ -458,12 +513,12 @@ class Kernel:
         steps = 0
         now = min((c.phase_ps for c in self._clocks.values()), default=0)
         try:
-            while self._pending or self._flights:
+            while self._pending or self._flights or any(p.active for p in self._processes.values()):
                 if now > max_time_ps or steps >= max_steps:
                     raise RuntimeError("execution limit: " + self._diagnostic())
                 self._step(now)
                 steps += 1
-                if not self._pending and not self._flights:
+                if not self._pending and not self._flights and not any(p.active for p in self._processes.values()):
                     break
                 event_time = self._next_event_time(now)
                 if event_time is None:
@@ -473,9 +528,10 @@ class Kernel:
         finally:
             self._running = False
         return RunResult(
-            finish_ps=max(self.completed.values(), default=0), accepted_ps=dict(self.accepted),
+            finish_ps=max([*self.completed.values(), self.now_ps if steps else 0]), accepted_ps=dict(self.accepted),
             completion_ps=dict(self.completed), actions=dict(sorted(self.actions.items())), trace=self.trace.copy(),
             memory_reads=dict(self.memory_reads), buffer_peak=dict(self.buffer_peak), buffer_final=dict(self.buffers),
             resource_peak=dict(self.resource_peak), resource_stats={k: dict(v) for k, v in self._stats.items()},
             steps=steps, mode=mode,
+            process_ticks={name: p.ticks for name, p in self._processes.items()},
         )

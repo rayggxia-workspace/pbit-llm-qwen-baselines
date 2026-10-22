@@ -176,6 +176,48 @@ class KernelTests(unittest.TestCase):
         self.assertEqual(list(r.accepted_ps.values()), [0, 20_000, 40_000, 60_000, 80_000])
         self.assertEqual(r.actions["proposal"], 5)
 
+    def test_native_clock_process_ticks_every_edge_and_sleeps(self):
+        traces = []
+        def build():
+            k = Kernel([Resource("r", C, 1)])
+            seen = []
+            traces.append(seen)
+            def tick(kernel):
+                seen.append(kernel.now_ps)
+                if len(seen) == 4:
+                    kernel.add(Operation("delivery", "r", actions={"delivered": 1}))
+                    return False
+                return True
+            k.register_clock_process("native", C, tick)
+            def request(kernel, op):
+                kernel.wake_clock_process("native")
+            k.add(Operation("request", "r", on_complete=request))
+            return k
+        r = self.both(build)
+        self.assertEqual(traces, [[20_000, 30_000, 40_000, 50_000]] * 2)
+        self.assertEqual(r.process_ticks, {"native": 4})
+        self.assertEqual(r.accepted_ps["delivery"], 60_000)
+
+    def test_active_process_cannot_see_same_edge_new_submission(self):
+        observations = []
+        def build():
+            queue, seen = [], []
+            observations.append(seen)
+            k = Kernel([Resource("r", C, 1)])
+            def tick(kernel):
+                seen.append((kernel.now_ps, tuple(queue)))
+                return kernel.now_ps < 20_000
+            k.register_clock_process("native", C, tick)
+            k.wake_clock_process("native")
+            def submit(kernel, op):
+                queue.append("new")
+                kernel.wake_clock_process("native")
+            k.add(Operation("request", "r", on_complete=submit))
+            return k
+        self.both(build)
+        self.assertEqual(observations[0], [(0, ()), (10_000, ()), (20_000, ("new",))])
+        self.assertEqual(observations[0], observations[1])
+
     def test_registration_order_does_not_change_arbitration(self):
         ops = [Operation("a", "r"), Operation("b", "r"), Operation("c", "r", deps=("a", "b"))]
         def run(order):

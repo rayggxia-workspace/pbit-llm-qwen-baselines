@@ -1,3 +1,7 @@
+## 2026-10-23 Issue117：资源预算计划的首轮执行
+
+用户要求按Issue112方案优化并先上传workspace。在实时集成46804fb上新增resource_optimization_v1（负责人amlink1219），与并行Issue116周期后端分开；既有103/105/106/108/109/111/113/114已合并，以实时Issue55为准。P0资源/缺项账本和固定流量/服务下界已完成：92封存情景145payload未变，整机面积/能量/A0未知。128项共享资源候选搜索基于执行44dbbbd启动，完成前不宣称最优配置；同1MiB映射、容量only和增配对照分开。恢复入口architecture_tlm/resource_optimization_v1/README_ZH.md、work/amlink1219/117/HANDOFF.md及Issue117。
+
 # p-bit LLM 项目长期备忘录
 
 ## 2026-10-22 Issue107：真实RNG接入后的Verilog仿真需求

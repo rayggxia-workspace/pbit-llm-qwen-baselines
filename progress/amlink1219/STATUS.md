@@ -1,3 +1,11 @@
+# 2026-10-23 Issue117：ASIC资源计划首轮优化
+
+负责人amlink1219；独立workspace_projects/ar117，task/117-asic-resource-optimization；base集成46804fb。接续Issue112规划的新实现范围，不接管Issue116周期后端。首批P0：92封存情景/145payload SHA通过、完整资源缺项账本/下界、28新增测试＋43原v6测试通过；新bf16/2K和SC筛选PV/8K smoke复现。源44dbbbdbc2720963b2b24bf03cdf7582a2d97075已冻结，16候选×4方法×2上下文的128项资源搜索执行中，尚非完整优化验收。
+
+正式入口architecture_tlm/resource_optimization_v1/P0_RESULTS_ZH.md及README_ZH.md；交接work/amlink1219/117/HANDOFF.md。新结果先上传任务分支/PR，精确发布回执见PUBLICATION.json。无GPU/Slurm/PPL/RTL/EDA；完整面积/能量/A0仍null。实际合并与Projects状态按回执，不能把下方旧历史“待审”当成今日PR状态。
+
+---
+
 发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
 
 # Issue98 Prefill专项补充（2026-10-22）

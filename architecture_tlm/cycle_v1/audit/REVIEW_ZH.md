@@ -2,11 +2,11 @@
 
 审查代理不负责 kernel、FFN、Attention 或 layer 的实现。检查依据为用户提供的周期深化方案、`audit/ACCEPTANCE_ZH.md`、已有 v6/native RNG 协议和原始 W8 位平面 RTL。自有 `cycle`/`event` 两种循环共享执行核，因此它们的相等只作为回归检查，不能代替独立 oracle 或 RTL 验证。
 
-本稿状态：**所列实现范围内的独立验收已完成，未发现尚未修复的 P0 反例**。这不表示整份深化方案、完整模型或物理硬件已经完成。最终固定范围为 core `d4f08a1`/`5a6078f`、native operators `a751442`/`9b69c64`、FFN `da24266`、Attention `0597d06`、layer `cd27d98`/`c5f9a20`。以结果文件中的源码 SHA-256 为准；各工作树 cherry-pick 后 Git 提交 ID 可以不同。
+本稿状态：**所列实现范围内的独立验收已完成，未发现尚未修复的 P0 反例**。这不表示整份深化方案、完整模型或物理硬件已经完成。固定范围为 core `d4f08a1`/`5a6078f`、native operators `a751442`/`9b69c64`、FFN `da24266`/`93c26d9`、Attention `0597d06`/`e2695e2`、layer `cd27d98`/`c5f9a20`。以结果文件中的源码 SHA-256 为准；各工作树 cherry-pick 后 Git 提交 ID 可以不同。
 
 ## 当前结论与实测范围
 
-- 已独立通过 **50 个测试方法**：core 20、FFN 11、Attention 12、native 2、layer 5；其中包含 32 个随机跨域 DAG、32 个随机重叠字节内存案例、4 组 B/T/K 数值配置、2,043 个 Q256 查表中心/半边界/饱和点。
+- 已独立通过 **54 个测试方法**：core 20、FFN 13、Attention 14、native 2、layer 5；其中包含 32 个随机跨域 DAG、32 个随机重叠字节内存案例、4 组 B/T/K 数值配置、2,043 个 Q256 查表中心/半边界/饱和点。
 - 核心时序由手工推导的接受沿、完成沿、II、完成端口和保守释放约束检查；内存值由独立字节数组按程序序核验。单纯“两个循环输出相同”不计作独立时序 oracle。
 - FFN 标量 oracle 不导入生产 encoder、PRNG、sample accumulator、restore 或 reference 函数；从冻结门限统计每输入 lane 的命中数，再按约定 FP32 边界还原，核对 gate/up/z/projected/output。
 - 真实 Qwen fixture 的 layer 0、12、23 各执行 **4,725 个** native FFN 操作，上述五个数组均与独立 oracle **逐位相等**。这些是完整 896 输入维、裁剪 70 intermediate / 16 output 的 FFN，不能称完整 Qwen 层、完整模型质量或 PPL 结果。native 门限来自实际服务返回，再冻结给独立数学 oracle。
@@ -15,6 +15,10 @@
 - 17 项 EXP 在 16 lane / 1 lane 下分别服务 9 / 24 个配置周期；数字 Softmax 只有一个 reciprocal，阶段依赖隔沿生效。PV 的 2 项 CDF 构造占 2 周期、4 样本扫描占 6 周期。21 个逻辑 source lane 使用 40 个 native lane 时，生成/使用/padding 计数单独守恒。layer 单 bank、window=1 仍保留相同结果并增大完成时间。
 
 对应保存结果为 `results/restoration_da24266/RESULT.json` 和 `results/real_layer{0,12,23}_native_da24266.json`。测试源码后续新增时必须重跑，不能把这份回执的通过数自动推广到新增代码。三个真实片段回执包含 native 随机服务报告、实际门限 hash 和完整本地运行依赖的源码 hash。
+
+后续固定 `e2695e2` / `93c26d9` 的完整 **54 项**回执为 `results/prefetch_profile_08f3c48/RESULT.json`。新增检查不是沿用原 50 项结论：实际重跑全部独立测试，包括 V 预取死锁和两个恢复 profile。逐 bin oracle 改用 `Fraction` 精确有理数及整数 ties-to-even FP32 舍入，260 组正负/normal/subnormal 输入逐位符合两种公开舍入契约；另对正常和 tiny 输入、两个 profile 的多 bin / 跨 tile 完整 FFN，核对两模式和五个数值边界。
+
+`integer=3, activation_scale=2^-145, T=32, weight_scale=1.5` 明确产生 host `0x00000002`、`rtl_fused0_order` `0x00000003`。该逐 bin 反例不等于当前 encoder 会生成该 scale；encoder 的低档最小 normal clamp 仍是独立契约。profile 只改变恢复舍入顺序，不构成整套 encoder/SiLU/异常处理/FFN RTL bit-true 声明。
 
 ## 审查发现及修复闭环
 
@@ -33,6 +37,8 @@
 | tiny FP32 的倒数中间溢出 | `[1e-38,-1e-39,0]` 本应有有限 A8 编码，却因 FP32(256/scale) 溢出 | 改用 PoT 指数缩放；最小 subnormal、正常 tiny、最大允许 scale 测试通过；显式拒绝 group max > 2^127 |
 | encoder 原始输入驻留少计 | 64 lane 的 FP32 输入为 256B，只保留 196B 编码状态额度 | 原地复用取 raw/encoded 最大值；196B 容量不能接受 256B 输入 |
 | restore 作为一个定长宏操作 | 不同位平面/行数的还原缺少有限算术 lane 和中间态 | 已拆 rail subtract、三级 plane tree、每 bin 有序 FP32 restore、跨 tile add；有限 scratch 先预留，最后阶段才释放 counters；16/1 lane 时延和数值通过 |
+| V 额度与顺序消费形成死锁 | sparse ID 1/2/10 按字符串读仲裁，使后面的 V 占满额度，物理数字顺序中前面的 accumulator 无 V 可消费 | 改为消费前沿的有限窗口；3 种 candidate 顺序 × exact/PV × 两模式、仅 1 slot 全通过；2 slots 加真实乱序返回也通过，未退化为强制顺序返回 |
+| 默认 host 恢复被误当原 RTL 顺序 | 次正规边界先除 T 再 FP32 与先 FP32 再乘权重/除 T 可相差 1 ulp | 显式 host_order / rtl_fused0_order；独立精确有理数 oracle 及已知十六进制反例通过 |
 
 上述修复均在固定版本上重新运行独立反例。完整生产矩阵、最终运行器和外部工具回执由主代理另附；本报告不把未列出的检查继承为已通过。
 

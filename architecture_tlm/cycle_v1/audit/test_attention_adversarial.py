@@ -6,6 +6,7 @@ from dataclasses import replace
 from architecture_tlm.cycle_v1.attention import (
     AttentionConfig, SamplerCapError, _Source, build_attention, make_kernel,
 )
+from architecture_tlm.cycle_v1.kernel import Kernel
 from architecture_tlm.random_service.service import SigmoidTable
 from architecture_tlm.cycle_v1.audit.scalar_oracles import f32
 
@@ -18,6 +19,46 @@ def fixture_three():
 
 
 class IndependentAttentionAudit(unittest.TestCase):
+    def test_sparse_decimal_ids_with_one_v_slot_cannot_deadlock_ordered_accumulation(self):
+        for ids in ([1, 2, 10], [10, 1, 2], [2, 10, 1]):
+            for mode in ("exact", "pv"):
+                fixture = {"q": [0.0], "k": [[0.0] for _ in range(11)],
+                           "v": [[float(i)] for i in range(11)], "candidate_ids": ids,
+                           "random_replay": {"uniforms": [.5]}}
+                state, result = self.run_pair(fixture, AttentionConfig(mode=mode, samples=6, kv_capacity_bytes=4))
+                self.assertEqual(state["unique_V"], 3)
+                expected = 0.0
+                for physical in (1, 2, 10):
+                    expected = f32(expected+f32(physical/3))
+                self.assertEqual(state["output"], [expected])
+                self.assertEqual(result.actions["V_read_bytes"], 12)
+                self.assertEqual(result.buffer_final["attention.kv"], 4)
+                if mode == "pv":
+                    self.assertEqual(state["histogram"], {1: 2, 2: 2, 10: 2})
+                for before, after in ((1, 2), (2, 10)):
+                    complete = result.completion_ps[f"attention.V.{before}.accumulate"]
+                    third_dram_edge = (complete//12500+3)*12500
+                    self.assertGreaterEqual(result.accepted_ps[f"attention.V.{after}.read"], third_dram_edge)
+
+    def test_two_slot_v_window_allows_ooo_replies_without_starving_first_consumer(self):
+        fixture = {"q": [0.0], "k": [[0.0] for _ in range(11)],
+                   "v": [[float(i)] for i in range(11)], "candidate_ids": [10, 1, 2]}
+        config = AttentionConfig(mode="exact", kv_capacity_bytes=8)
+        pairs = []
+        for mode in ("cycle", "event"):
+            template = make_kernel(config)
+            ports = [replace(port, latency_by_address={0x72000004: 20, 0x72000008: 1}) if port.name == "dram" else port
+                     for port in template.memory_ports.values()]
+            k = Kernel(template.resources.values(), template.buffer_specs.values(), ports)
+            state = build_attention(k, fixture, config)
+            result = k.run(mode=mode)
+            self.assertLess(result.completion_ps["attention.V.2.read"], result.completion_ps["attention.V.1.read"])
+            self.assertGreater(result.accepted_ps["attention.V.10.read"], result.completion_ps["attention.V.1.accumulate"])
+            self.assertEqual(result.buffer_final["attention.kv"], 8)
+            self.assertEqual(state["unique_V"], 3)
+            pairs.append(result.equivalence_payload())
+        self.assertEqual(*pairs)
+
     def run_pair(self, fixture, config):
         if fixture.get("random_replay"):
             config = replace(config, random_backend="replay")

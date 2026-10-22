@@ -4,9 +4,9 @@ import random
 import struct
 import unittest
 
-from architecture_tlm.cycle_v1.ffn import FFNConfig, build_ffn, encode_group, make_kernel
+from architecture_tlm.cycle_v1.ffn import FFNConfig, build_ffn, encode_group, make_kernel, restore_bin_value
 from architecture_tlm.cycle_v1.contracts import Operation
-from architecture_tlm.cycle_v1.audit.scalar_oracles import frozen_thresholds, scalar_ffn
+from architecture_tlm.cycle_v1.audit.scalar_oracles import f32, frozen_thresholds, scalar_ffn, scalar_restore
 
 
 def quantized(rows, scales):
@@ -23,6 +23,50 @@ def endpoint_fixture():
 
 
 class IndependentFFNAudit(unittest.TestCase):
+    def test_restore_profiles_match_exact_rational_rounding_and_known_subnormal_bits(self):
+        rng = random.Random(0x310023)
+        terms = [(3, 2**-145, 1.5, 32), (-3, 2**-145, 1.5, 32),
+                 (1, 2**-149, 16.0, 32), (-1, 2**-149, 16.0, 32)]
+        for _ in range(256):
+            terms.append((rng.randrange(-262144, 262145), 2.0**rng.randrange(-149, 65),
+                          f32(rng.uniform(.5, 2)*2.0**rng.randrange(-25, 26)), 2**rng.randrange(0, 7)))
+        for integer, scale, weight, samples in terms:
+            for profile in ("host_order", "rtl_fused0_order"):
+                actual = restore_bin_value(integer, scale, weight, samples, profile)
+                expected = scalar_restore(integer, scale, weight, samples, profile)
+                self.assertEqual(struct.pack("!f", actual), struct.pack("!f", expected),
+                                 (integer, scale, weight, samples, profile))
+        self.assertEqual(struct.pack("<f", restore_bin_value(3, 2**-145, 1.5, 32, "host_order")), bytes.fromhex("02000000"))
+        self.assertEqual(struct.pack("<f", restore_bin_value(3, 2**-145, 1.5, 32, "rtl_fused0_order")), bytes.fromhex("03000000"))
+        with self.assertRaisesRegex(ValueError, "power-of-two"):
+            FFNConfig(samples=48, strata=16, restore_rounding="rtl_fused0_order").validate()
+
+    def test_both_restore_profiles_preserve_ordered_bins_and_cross_tile_scalar_contract(self):
+        rng = random.Random(0x2345)
+        width, hidden, output = 70, 5, 3
+        def matrix(rows, cols):
+            return quantized([[rng.randrange(-128, 128) for _ in range(cols)] for _ in range(rows)],
+                             [[f32(.00137+rng.random()*.017) for _ in range((cols+63)//64)] for _ in range((rows+63)//64)])
+        fixture = {"x": [(-1)**i*2.0**(-(i % 8)) for i in range(width)],
+                   "wg": matrix(hidden, width), "wu": matrix(hidden, width), "wd": matrix(output, hidden),
+                   "thresholds": frozen_thresholds(width, hidden, seed=919)}
+        for tiny in (False, True):
+            data = copy.deepcopy(fixture)
+            if tiny:
+                data["x"] = [f32(value*2**-126) for value in data["x"]]
+            for profile in ("host_order", "rtl_fused0_order"):
+                config = FFNConfig(random_backend="replay", output_bf16=False, restore_rounding=profile)
+                expected = scalar_ffn(data, output_bf16=False, restore_rounding=profile)
+                pairs = []
+                for mode in ("cycle", "event"):
+                    k = make_kernel(config)
+                    state = build_ffn(k, data, config)
+                    result = k.run(mode=mode)
+                    for field in ("gate", "up", "z", "projected", "output"):
+                        self.assertEqual(state[field], expected[field], (tiny, profile, field))
+                    pairs.append(result.equivalence_payload())
+                self.assertEqual(*pairs)
+
     def test_positive_signed_endpoint_and_true_one(self):
         config = FFNConfig(output_bf16=False, random_backend="replay")
         for mode in ("cycle", "event"):

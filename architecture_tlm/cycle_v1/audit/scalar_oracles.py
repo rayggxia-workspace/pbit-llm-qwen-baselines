@@ -8,10 +8,50 @@ of equivalence to a PyTorch reduction tree or synthesized arithmetic datapath.
 import math
 import random
 import struct
+from fractions import Fraction
 
 
 def f32(value):
     return struct.unpack("!f", struct.pack("!f", float(value)))[0]
+
+
+def rational_f32(value):
+    """Round an exact rational to binary32, including subnormals, using integers.
+
+    The inputs used by this oracle stay below binary32 overflow. This does not
+    reuse the implementation's host-float arithmetic or struct-pack rounding.
+    """
+    value = Fraction(value)
+    negative = value < 0
+    value = abs(value)
+    if not value:
+        return 0.0
+    exponent = value.numerator.bit_length()-value.denominator.bit_length()
+    unit = Fraction(2)**exponent
+    if value < unit:
+        exponent -= 1
+    quantum_exponent = max(exponent-23, -149)
+    scaled = value / Fraction(2)**quantum_exponent
+    quotient, remainder = divmod(scaled.numerator, scaled.denominator)
+    if 2*remainder > scaled.denominator or (2*remainder == scaled.denominator and quotient & 1):
+        quotient += 1
+    result = math.ldexp(float(quotient), quantum_exponent)
+    return -result if negative else result
+
+
+def scalar_restore(integer, activation_scale, weight_scale, samples, rounding="host_order"):
+    scale = Fraction(activation_scale)
+    weight = Fraction(weight_scale)
+    if rounding == "host_order":
+        first = rational_f32(integer*scale)
+        result = rational_f32(Fraction(first)*weight/samples)
+    elif rounding == "rtl_fused0_order":
+        first = rational_f32(integer*scale/samples)
+        result = rational_f32(Fraction(first)*weight)
+    else:
+        raise ValueError("unknown scalar restoration profile")
+    # Fraction has no signed zero; both positive scales preserve integer sign.
+    return -0.0 if result == 0 and integer < 0 else result
 
 
 def bfloat16(value):
@@ -54,14 +94,14 @@ def _encoding_counts(values, thresholds, bins):
             if abs(value) <= candidate:
                 selected, scale = index, candidate
         full = value != 0 and abs(value) >= scale
-        q = min(255, max(0, round(f32(abs(value)*f32(256.0/scale)))))
+        q = min(255, max(0, round(rational_f32(Fraction(abs(value))*256/Fraction(scale)))))
         magnitude_count = len(thresholds) if full else sum(word < q for word in thresholds)
         signed_count = magnitude_count * ((value > 0) - (value < 0))
         result.append((selected, scale, signed_count))
     return result
 
 
-def scalar_ffn(fixture, *, samples=32, bins=4, output_bf16=True):
+def scalar_ffn(fixture, *, samples=32, bins=4, output_bf16=True, restore_rounding="host_order"):
     """Exact prototype scalar contract from explicit W8/scales/threshold words.
 
     Inputs must be prequantized; raw weight quantizer correctness is a different
@@ -88,7 +128,7 @@ def scalar_ffn(fixture, *, samples=32, bins=4, output_bf16=True):
                     lanes = [(offset, scale, count) for offset, (b, scale, count) in enumerate(encoded) if b == bin_index]
                     integer = sum(count*weights[start+offset] for offset, _, count in lanes)
                     scale = lanes[0][1] if lanes else 0.0
-                    restored = f32(f32(integer*scale)*f32(matrix["scales"][row//64][group])/samples)
+                    restored = scalar_restore(integer, scale, f32(matrix["scales"][row//64][group]), samples, restore_rounding)
                     block_total = f32(block_total+restored)
                 result[row] = f32(result[row]+block_total)
         return result

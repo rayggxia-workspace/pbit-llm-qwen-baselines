@@ -10,7 +10,7 @@
 
 Qwen权重和语料在本人原项目 `/home/Weican_Chen/projects/pbit-qwen-sigmoid-20260929/`；不得复制到Git。私有冻结片段在本人任务根 `real_fixtures_v1`，本机ignored `work/amlink1219/116/private_fixtures`；MANIFEST列出model/config/text/token和逐fixture SHA。删除/覆盖仍需要用户明确授权，本轮没有清理任何历史数据。
 
-后续恢复：先读取远端Issue116/本PR、最新集成入口、PR119/120/122/125及成员STATUS。PR122兼容性复验针对固定8007d98，不等于合并；新的来源提交要重新核接口。PR125在a9c0031d4b4f45697f6b52144948d6ac084df2f4已经记录完整FFN fixture抓取（2777）和编码恢复45场景（2778），接合仍在独立工作树进行，依赖本后端正式发布；不要重复抓取或接管。实际STA/PPA按其交接由jieruiz执行，EDA尚未运行。中央台账目前新增独立record，多个并行PR集成时合并record_ids后重建总览，不能直接覆盖其他人的catalog。
+后续恢复：先读取远端Issue116/本PR、最新集成入口、PR119/120/122/125及成员STATUS。PR122兼容性复验针对固定8007d98，不等于合并；新的来源提交要重新核接口。PR125最新d944081a22dc346a3a50d505633e5d15c857ba78（19:31 UTC核验）已公开完整FFN接合/活动内存调度，base改为task116；完整FFN fixture抓取（2777）、编码恢复45场景（2778）、28软件测试及120次独立随机复核为其回执。完整形状作业2783仍在运行；不要重复抓取或接管，未终态不得声称完成。实际STA/PPA按其交接由jieruiz执行，EDA尚未运行。中央台账目前新增独立record，多个并行PR集成时合并record_ids后重建总览，不能直接覆盖其他人的catalog。
 
 最小命令（新输出路径；服务器上必须Slurm CPU allocation）：
 

@@ -4,6 +4,8 @@
 
 起点为集成分支 `pbit-tlm-attention-details-20261016@46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d`，正式任务分支 `task/116-cycle-execution`。计划原件SHA-256为 `b6425a140c404c347c1e458a073cea2da0eb3a2aeb645a4ff579348f2b887b13`。旧 `unified_v6`、`random_service` 和历史结果没有改动；43项旧回归通过。
 
+[逐条需求映射](../../work/amlink1219/116/PLAN_COVERAGE_ZH.md)另按原方案章节核对格式schema、物理供给、筛选、采样指标、关键路径、DRAM/互连和最终停止条件，列出下一项可检查验收；阶段表中的“原型完成”不替代这些横向要求。
+
 ## 实际达成范围
 
 | 原阶段 | 本轮状态 | 可检查证据 |
@@ -85,7 +87,7 @@ Slurm2782在2CPU/8GiB、隐藏GPU的分配内运行2分57秒，COMPLETED/0:0。�
 
 本轮核对到PR119资源优化、PR120供数/整数状态、PR122编码恢复和PR125完整FFN接合均待审。未合并或改写这些业务代码。对固定PR122 `8007d98f15676ad316180ee18b5d1b29aa00af95`，在当前核心上新跑28软件测试、12场景/1536完整恢复，16份JSON与其原冻结结果相等；其27组RTL/6861输出仅引用原回执，未计作本任务重跑。中央台账的独立record需合并后重建，不能互相覆盖catalog。
 
-[PR125](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/125)在本轮核对时为 `a9c0031d4b4f45697f6b52144948d6ac084df2f4`：其回执已记录真实896→4864→896完整FFN单token fixture（Slurm2777），以及T16/T32/T64编码恢复45场景、11667输出、180 reset flush（2778）。这些是并行任务的证据，没有计入Issue116新跑数量；完整FFN接合仍在进行。实际STA/PPA按该任务安排交由jieruiz执行，当前EDA仍not_run。本次正式发布周期后端供其继续接合，不重复抓取完整权重或接管其运行。
+[PR125](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/125)最新在2026-10-22 19:31 UTC核到 `d944081a22dc346a3a50d505633e5d15c857ba78`，base已调整为本任务分支，公开完整FFN接合和活动内存调度优化；它仍待审未合并。其回执记录真实896→4864→896完整FFN单token fixture（Slurm2777），T16/T32/T64编码恢复45场景、11667输出、180 reset flush（2778），以及28软件测试/120次独立随机复核。完整形状作业2783仍在运行，尚无完整形状通过结论。这些是并行任务的证据，没有计入Issue116新跑数量。实际STA/PPA按该任务安排交由jieruiz执行，当前EDA仍not_run。本次正式发布周期后端供其接合，不重复抓取完整权重或接管其运行；任何在GQA上采用该优化的结论必须另附固定来源和等价性验证。
 
 ## 资源、归档和剩余风险
 

@@ -23,8 +23,37 @@ def synthetic_gqa(heads=2):
         k=[row(16,i*.13) for i in range(12)],v=[row(12,i*.27) for i in range(12)])
 
 
+def public_report(summary):
+    """Allowlisted non-payload receipt for private server-side activation runs.
+
+    Do not recursively copy arbitrary fixture provenance, traces, native words,
+    sampled indices, score/output arrays or histogram contents into this file.
+    """
+    shared=summary['shared']
+    return dict(schema='cycle_v1.gqa.public.1',status=summary['status'],source=summary['source'],
+        fixture_sha256=summary['fixture_sha256'],query_configs=summary['query_configs'],group_config=summary['group_config'],
+        query_heads=summary['query_heads'],KV_heads=summary['KV_heads'],
+        finish_ps=summary['finish_ps'],latency_ns=summary['latency_ns'],operations=summary['operations'],
+        mode_equivalence=summary['mode_equivalence'],execution_modes=summary['execution_modes'],
+        actions=summary['actions'],storage=summary['storage'],resource_peak=summary['resource_peak'],
+        resource_stats=summary['resource_stats'],equivalence_payload_sha256=summary['equivalence_payload_sha256'],
+        shared=dict(K_union_count=len(shared['K_union']),V_union_count=len(shared['V_union']),
+            K_union_sha256=digest(canonical(shared['K_union'])),V_union_sha256=digest(canonical(shared['V_union'])),
+            K_capacity_bytes=shared['K_capacity_bytes'],V_capacity_bytes=shared['V_capacity_bytes'],
+            operand_capacity_bytes=shared['operand_capacity_bytes'],metadata_bytes=shared['metadata_bytes'],
+            query_state_capacity_bytes=shared['query_state_capacity_bytes']),
+        queries=[dict(head=q['head'],numeric_validation=q['numeric_validation'],output_sha256=q['output_sha256'],
+            complete_ps=q['complete_ps'],retained_samples=len(q['local_indices']),unique_V_count=len(q['physical_weights']),
+            histogram_sum=sum(q['histogram'].values()),proposals=q['proposals'],source_frames=q['source_frames'],
+            source_waves=q['source_waves'],native_report_sha256=digest(canonical(q['native_random']))) for q in summary['queries']],
+        source_instances=summary['model_boundary']['source_instances'],
+        boundary='precompiled K candidate plan; timed V union scan/compact after all head histograms; finite row/operand/metadata credits; per-head source state',
+        privacy='raw fixture, logits, output arrays, probabilities, indices, histogram maps, native reports and full trace stay in private execution directory',
+        physical_status=summary['physical_status'])
+
+
 def run_gqa_case(fixture,attention_configs,group_config,output,*,fixture_sha256=None,
-                 memory_latency=4,memory_window=4,memory_banks=4):
+                 memory_latency=4,memory_window=4,memory_banks=4,write_public_report=False):
     output=Path(output)
     output.mkdir(parents=True,exist_ok=False)
     source=source_provenance()
@@ -83,7 +112,8 @@ def run_gqa_case(fixture,attention_configs,group_config,output,*,fixture_sha256=
                    buffers=_buffer_accounting(k,result.trace))
         shared={key:state[key] for key in ('K_union','V_union','K_addresses','V_addresses',
             'K_read_ids','V_read_ids','K_consumers','V_consumers','K_release_ids','V_release_ids',
-            'K_capacity_bytes','V_capacity_bytes','query_state_capacity_bytes','address_regions','V_barrier_id')}
+            'K_capacity_bytes','V_capacity_bytes','operand_capacity_bytes','metadata_bytes',
+            'query_state_capacity_bytes','address_regions','V_barrier_id','V_union_ready_id')}
         summary=dict(schema='cycle_v1.gqa.execution.1',operator='gqa_group',status='passed',
             source=source,fixture_sha256=fixture_hash,fixture_provenance=fixture.get('provenance',{}),
             query_configs=[asdict(c) for c in configs],group_config=asdict(gc),
@@ -107,6 +137,10 @@ def run_gqa_case(fixture,attention_configs,group_config,output,*,fixture_sha256=
         json_write(output/'summary.json',summary)
         write_inspector(output/'timeline.html',dict(operator='gqa_group',finish_ps=result.finish_ps,
                         model_boundary=state['provenance']),rows)
+        if write_public_report:
+            receipt=public_report(summary)
+            receipt['private_artifact_hashes']={p.name:digest(p.read_bytes()) for p in sorted(output.iterdir()) if p.is_file()}
+            json_write(output/'public_report.json',receipt)
         json_write(output/'MANIFEST.json',{p.name:digest(p.read_bytes()) for p in sorted(output.iterdir()) if p.is_file()})
         return summary
     except Exception as exc:
@@ -127,6 +161,10 @@ def main():
     parser.add_argument('--v-slots',type=int,default=2)
     parser.add_argument('--cache-bytes-per-cycle',type=int,default=64)
     parser.add_argument('--query-state-capacity',type=int,default=1048576)
+    parser.add_argument('--operand-slots',type=int,default=2)
+    parser.add_argument('--metadata-capacity',type=int,default=65536)
+    parser.add_argument('--union-scan-lanes',type=int,default=16)
+    parser.add_argument('--public-report',action='store_true',help='also write allowlisted metrics/hashes; keep raw output and trace in execution directory')
     parser.add_argument('--memory-window',type=int,default=4)
     parser.add_argument('--memory-banks',type=int,default=4)
     parser.add_argument('--memory-latency',type=int,default=4)
@@ -137,10 +175,12 @@ def main():
     configs=([AttentionConfig(**(base|v)) for v in override] if isinstance(override,list)
              else AttentionConfig(**(base|override)))
     gc=GQAConfig(k_slots=args.k_slots,v_slots=args.v_slots,cache_bytes_per_cycle=args.cache_bytes_per_cycle,
-                 query_state_capacity_bytes=args.query_state_capacity)
+                 query_state_capacity_bytes=args.query_state_capacity,operand_slots=args.operand_slots,
+                 metadata_capacity_bytes=args.metadata_capacity,union_scan_lanes=args.union_scan_lanes)
     summary=run_gqa_case(fixture,configs,gc,args.output,
         fixture_sha256=digest(args.fixture.read_bytes()) if args.fixture else None,
-        memory_latency=args.memory_latency,memory_window=args.memory_window,memory_banks=args.memory_banks)
+        memory_latency=args.memory_latency,memory_window=args.memory_window,memory_banks=args.memory_banks,
+        write_public_report=args.public_report)
     print(json.dumps({key:summary[key] for key in ('status','query_heads','KV_heads','latency_ns','operations','mode_equivalence')}))
 
 

@@ -600,7 +600,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention',*,
             state['logits'][local]=fp32(math.fsum(a*b for a,b in zip(actual_q,row))/math.sqrt(d))
         qk_done.append(add(f'QK.{local}','qk',deps=read_dependencies,
             latency_cycles=3+math.ceil(d/c.mac_lanes)-1,on_complete=dot,
-            outputs={} if shared_k is not None else {free_kv:d*4},actions={'QK_mac':d}))
+            outputs=shared_k.consumer_outputs() if shared_k is not None else {free_kv:d*4},actions={'QK_mac':d}))
         if shared_k is not None: shared_k.consume(physical,qk_done[-1])
     def prepared(k,op):
         if c.mode=='exact':

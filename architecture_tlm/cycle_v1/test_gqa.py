@@ -38,7 +38,7 @@ class GQATests(unittest.TestCase):
     def test_two_and_seven_heads_minimal_slots_and_window(self):
         for heads in (2,7):
             data=fixture(heads)
-            k,s,r=run(data,gc=GQAConfig(k_slots=1,v_slots=1),memory_window=1,memory_banks=1)
+            k,s,r=run(data,gc=GQAConfig(k_slots=1,v_slots=1,operand_slots=1),memory_window=1,memory_banks=1)
             for head,query in enumerate(s['queries']):
                 ids=data['queries'][head]['candidate_ids']
                 expected=[sum(data['v'][i][j] for i in ids)/len(ids) for j in range(2)]
@@ -48,6 +48,28 @@ class GQATests(unittest.TestCase):
             self.assertEqual(r.actions['K_read_bytes'],len(s['K_union'])*3*4)
             self.assertEqual(r.actions['V_read_bytes'],len(s['V_union'])*2*4)
             self.check_lifetimes(k,s,r)
+            self.assertEqual(r.actions['gqa_histogram_scan_entries'],sum(len(q['candidate_ids']) for q in data['queries']))
+            self.assertEqual(r.actions['gqa_union_bitmap_tests'],len(s['K_union']))
+            self.assertEqual(s['complete_ps'],r.finish_ps)
+
+    def test_operand_credit_is_held_through_mac_and_union_scan_has_finite_rate(self):
+        data=fixture(7,d=16,dv=16)
+        gc=GQAConfig(k_slots=1,v_slots=1,operand_slots=1,union_scan_lanes=16)
+        k,s,r=run(data,gc=gc,memory_window=1)
+        cache_ids=[op.id for op in k.operations.values() if op.resource=='gqa.cache']
+        consumes=[op for op in k.operations.values() if 'gqa.operand.free' in op.outputs]
+        self.assertEqual(len(cache_ids),len(consumes))
+        for op in consumes:
+            self.assertEqual(op.outputs['gqa.operand.free'],64)
+            self.assertTrue(any(dep in cache_ids for dep in op.deps))
+        balance=64
+        for event in r.trace:
+            if event['kind']=='accept': balance-=event.get('inputs',{}).get('gqa.operand.free',0)
+            elif event['kind']=='complete': balance+=event.get('outputs',{}).get('gqa.operand.free',0)
+            self.assertIn(balance,(0,64))
+        _,slow,sr=run(data,gc=dataclasses.replace(gc,union_scan_lanes=1),memory_window=1)
+        self.assertGreater(sr.finish_ps,r.finish_ps)
+        self.assertEqual([q['output'] for q in s['queries']],[q['output'] for q in slow['queries']])
 
     def test_per_head_multiplicity_and_post_histogram_union_barrier(self):
         data=fixture()
@@ -118,7 +140,8 @@ class GQATests(unittest.TestCase):
 
     def test_explicit_capacity_and_resource_rejections(self):
         data=fixture()
-        for gc in (GQAConfig(k_slots=0),GQAConfig(v_slots=0),GQAConfig(query_state_capacity_bytes=65535)):
+        for gc in (GQAConfig(k_slots=0),GQAConfig(v_slots=0),GQAConfig(operand_slots=0),
+                   GQAConfig(metadata_capacity_bytes=1),GQAConfig(query_state_capacity_bytes=65535)):
             with self.assertRaises(ValueError): make_gqa(data,group_config=gc)
         for field,value in (('exp_latency',9),('mac_lanes',32),('vector_lanes',32),('exp_lanes',8),
                             ('reciprocal_latency',13),('drive_latency',4),('lut_latency',3)):

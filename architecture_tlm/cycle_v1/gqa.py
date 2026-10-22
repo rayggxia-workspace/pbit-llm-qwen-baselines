@@ -20,9 +20,13 @@ class GQAConfig:
     cache_bytes_per_cycle: int = 64
     query_state_capacity_bytes: int = 1048576
     base_address: int = 0x80000000
+    operand_slots: int = 2
+    metadata_capacity_bytes: int = 65536
+    union_scan_lanes: int = 16
 
     def validate(self):
-        for name in ('k_slots','v_slots','cache_bytes_per_cycle','query_state_capacity_bytes'):
+        for name in ('k_slots','v_slots','cache_bytes_per_cycle','query_state_capacity_bytes',
+                     'operand_slots','metadata_capacity_bytes','union_scan_lanes'):
             positive_int(getattr(self,name),name)
         nonnegative_int(self.base_address,'base_address')
 
@@ -52,7 +56,20 @@ def _prepare(fixture,attention_configs,group_config):
         raise ValueError('query configs must agree on shared physical resource and CDC settings')
     if sum(c.score_capacity_bytes for c in configs)>gc.query_state_capacity_bytes:
         raise ValueError('sum of per-query score/state capacity exceeds the group budget')
+    if sum(metadata_bytes(data).values())>gc.metadata_capacity_bytes:
+        raise ValueError('group union/consumer metadata exceeds finite capacity')
     return gc,configs,data
+
+
+def metadata_bytes(data):
+    """Two bounded directories: ID, refcount, head mask, compaction scratch.
+
+    Candidate maps, scores and histograms already belong to each query budget.
+    The V directory is bounded by the statically known K candidate union.
+    """
+    union=len(set(i for item in data for i in item[4]))
+    entry=12+math.ceil(len(data)/8)
+    return dict(K_directory=union*entry,V_directory=union*entry,head_ready_and_cursors=len(data)*16)
 
 
 def _layout(data,gc):
@@ -85,7 +102,9 @@ def default_buffers(fixture,attention_configs=None,group_config=None,prefix='gqa
     gc,configs,data=_prepare(fixture,attention_configs,group_config)
     d,dv=len(data[0][1]),len(data[0][3][0])
     buffers=[Buffer(prefix+'.K.free',gc.k_slots*d*4,gc.k_slots*d*4,'byte credit'),
-             Buffer(prefix+'.V.free',gc.v_slots*dv*4,gc.v_slots*dv*4,'byte credit')]
+             Buffer(prefix+'.V.free',gc.v_slots*dv*4,gc.v_slots*dv*4,'byte credit'),
+             Buffer(prefix+'.operand.free',gc.operand_slots*max(d,dv)*4,gc.operand_slots*max(d,dv)*4,'byte credit'),
+             Buffer(prefix+'.metadata.free',gc.metadata_capacity_bytes,gc.metadata_capacity_bytes,'byte credit')]
     for h,c in enumerate(configs):
         p=f'{prefix}.q{h}'
         buffers.extend(b for b in attention.default_buffers(c,p) if b.name!=p+'.kv')
@@ -94,7 +113,9 @@ def default_buffers(fixture,attention_configs=None,group_config=None,prefix='gqa
 
 def default_resources(config=None,prefix='gqa'):
     return attention.default_resources(config)+[Resource(prefix+'.cache',Clock('core',10000),1,capacity=2,
-        provenance='one shared cache row read port, explicitly batched bytes; not SRAM macro calibration')]
+        provenance='one shared cache row read port, explicitly batched bytes; not SRAM macro calibration'),
+        Resource(prefix+'.union',Clock('core',10000),1,capacity=1,
+                 provenance='bounded metadata scanner; configured entries per cycle, not combinational free union')]
 
 
 def make_gqa(fixture,attention_configs=None,group_config=None,*,prefix='gqa',
@@ -127,6 +148,8 @@ def build_gqa(kernel,fixture,attention_configs=None,group_config=None,*,prefix='
             raise ValueError('GQA address region overlaps an existing memory operation: '+region['name'])
     _,_,keys,values,_=data[0]
     d,dv=len(keys[0]),len(values[0])
+    operand_bytes=max(d,dv)*4
+    meta=metadata_bytes(data)
     pack=lambda row:struct.pack('<'+'f'*len(row),*row)
     unpack=lambda blob:list(struct.unpack('<'+'f'*(len(blob)//4),blob))
     for token,row in enumerate(keys): kernel.load_memory('dram',layouts[0]['k']+token*d*4,pack(row))
@@ -135,10 +158,12 @@ def build_gqa(kernel,fixture,attention_configs=None,group_config=None,*,prefix='
         K_addresses=[],V_addresses=[],K_read_ids={},V_read_ids={},K_consumers={},V_consumers={},
         K_release_ids={},V_release_ids={},physical_weight_maps={},address_regions=regions,
         K_capacity_bytes=gc.k_slots*d*4,V_capacity_bytes=gc.v_slots*dv*4,
+        operand_capacity_bytes=gc.operand_slots*operand_bytes,metadata_bytes=meta,
         query_state_capacity_bytes=sum(c.score_capacity_bytes for c in configs),
         operation_ids=[],provenance=dict(scope='one KV head and explicit query head group; preprojected Q/K/V',
             V_schedule='all query weight/histogram writes finish, then explicit union barrier and ordered bounded prefetch',
-            cache='finite K/V response rows held through every MAC consumer; one explicitly timed shared read port',
+            cache='finite K/V rows held through every MAC consumer; timed shared read port plus finite operand slots held until MAC completion',
+            union='precompiled bounded K candidate directory; runtime V histogram scan and sorted-directory compaction use finite lanes and reserved metadata',
             physical_memory_reads='one DRAM read per physical token in each K or V union',
             accumulation_order='each query visits its physical V token IDs in ascending order; each product and add round to FP32',
             source='one independent native-network state/seed bus per native sampled query; shared submit/delivery resources; no IID or shared-global-source claim',
@@ -155,13 +180,16 @@ def build_gqa(kernel,fixture,attention_configs=None,group_config=None,*,prefix='
         kernel.add(Operation(ident,resource,**kw))
         state['operation_ids'].append(ident)
         return ident
-    def cache_read(label,read,size):
+    group_start=add('initialize','control',inputs={prefix+'.metadata.free':sum(meta.values())},
+                    actions={'gqa_metadata_reserve_bytes':sum(meta.values())})
+    def cache_read(label,read,size,other_deps=()):
         batches=math.ceil(size/gc.cache_bytes_per_cycle)
-        return add(label,prefix+'.cache',deps=(read,),latency_cycles=batches,ii_cycles=batches,
+        return add(label,prefix+'.cache',deps=(read,*other_deps),latency_cycles=batches,ii_cycles=batches,
+                   inputs={prefix+'.operand.free':operand_bytes},
                    actions={'shared_cache_read_bytes':size},metadata={'payload_read_id':read,'bytes':size})
     for order,token in enumerate(state['K_union']):
         release=f'{prefix}.K.{token}.release'
-        dependencies=() if order<gc.k_slots else (state['K_release_ids'][state['K_union'][order-gc.k_slots]],)
+        dependencies=(group_start,) if order<gc.k_slots else (state['K_release_ids'][state['K_union'][order-gc.k_slots]],)
         address=layouts[0]['k']+token*d*4
         read=add(f'K.{token}.read','dram',deps=dependencies,memory=MemoryRequest(address,d*4),
                  inputs={prefix+'.K.free':d*4},actions={'K_read_bytes':d*4,'shared_K_rows':1},
@@ -176,17 +204,30 @@ def build_gqa(kernel,fixture,attention_configs=None,group_config=None,*,prefix='
             cache=cache_read(f'K.{token}.cache.{len(state["K_consumers"][token])}',ident,d*4)
             return ident,cache
         def consume(self,token,operation): state['K_consumers'][token].append(operation)
+        def consumer_outputs(self): return {prefix+'.operand.free':operand_bytes}
     ready={}
     def values_ready(head,query_state,dependency,weights,finish):
         if head in ready: raise AssertionError('head submitted V weights twice')
         ready[head]=(dependency,dict(weights),finish)
         state['physical_weight_maps'][head]=dict(weights)
         if len(ready)!=len(data): return
-        union=sorted(set(token for _,w,_ in ready.values() for token in w))
-        state['V_union']=union
         barrier=add('V.union_barrier','control',deps=tuple(ready[h][0] for h in range(len(data))),
-                    actions={'gqa_ready_heads':len(data),'gqa_V_union_entries':len(union)})
+                    actions={'gqa_ready_heads':len(data)})
         state['V_barrier_id']=barrier
+        scan_entries=sum(len(item[4]) for item in data)
+        scan_cycles=math.ceil(scan_entries/gc.union_scan_lanes)
+        def scanned(k,op):
+            active=set(token for _,weights,_ in ready.values() for token in weights)
+            union=[token for token in state['K_union'] if token in active]
+            compact_cycles=math.ceil(len(state['K_union'])/gc.union_scan_lanes)
+            add('V.union_compact',prefix+'.union',deps=(op.id,),latency_cycles=compact_cycles,
+                ii_cycles=compact_cycles,actions={'gqa_union_bitmap_tests':len(state['K_union']),
+                'gqa_V_union_entries':len(union)},on_complete=lambda k2,op2:schedule_values(union,op2.id))
+        add('V.union_scan',prefix+'.union',deps=(barrier,),latency_cycles=scan_cycles,
+            ii_cycles=scan_cycles,actions={'gqa_histogram_scan_entries':scan_entries},on_complete=scanned)
+    def schedule_values(union,barrier):
+        state['V_union']=union
+        state['V_union_ready_id']=barrier
         acc=[[0.0]*dv for _ in data]
         last=[barrier]*len(data)
         for order,token in enumerate(union):
@@ -201,13 +242,14 @@ def build_gqa(kernel,fixture,attention_configs=None,group_config=None,*,prefix='
             for h in range(len(data)):
                 if token not in ready[h][1]: continue
                 weight=ready[h][1][token]
-                cached=cache_read(f'V.{token}.cache.q{h}',read,dv*4)
+                cached=cache_read(f'V.{token}.cache.q{h}',read,dv*4,(last[h],))
                 def accumulate(k,op,h=h,read=read,weight=weight,token=token):
                     row=unpack(k.memory_reads[read])
                     if row!=values[token]: raise AssertionError('shared V address/payload mismatch')
                     for j,value in enumerate(row): acc[h][j]=attention.fp32(acc[h][j]+attention.fp32(weight*value))
                 consumer=add(f'q{h}.V.{token}.accumulate','v_accumulate',deps=(cached,last[h]),
                     latency_cycles=3+math.ceil(dv/configs[h].mac_lanes)-1,on_complete=accumulate,
+                    outputs={prefix+'.operand.free':operand_bytes},
                     actions={'V_weighted_mac':dv},metadata={'query':h,'physical_token':token,
                         'weight':weight,'multiplicity':state['queries'][h]['histogram'].get(token)})
                 last[h]=consumer
@@ -216,6 +258,11 @@ def build_gqa(kernel,fixture,attention_configs=None,group_config=None,*,prefix='
             state['V_release_ids'][token]=add(f'V.{token}.release','control',deps=tuple(consumers),
                 outputs={prefix+'.V.free':dv*4},actions={'shared_V_release':1})
         for h in range(len(data)): ready[h][2](last[h],acc[h])
+        def group_finished(k,op): state['complete_ps']=k.now_ps
+        add('release','control',deps=tuple([f'{prefix}.q{h}.output.write' for h in range(len(data))]+
+            list(state['K_release_ids'].values())+list(state['V_release_ids'].values())),
+            outputs={prefix+'.metadata.free':sum(meta.values())},on_complete=group_finished,
+            actions={'gqa_metadata_release_bytes':sum(meta.values())})
     shared=SharedK()
     for h,((item,_,_,_,_),c,layout) in enumerate(zip(data,configs,layouts)):
         query=attention.build_attention(kernel,item,c,f'{prefix}.q{h}',address_layout=layout,shared_k=shared,

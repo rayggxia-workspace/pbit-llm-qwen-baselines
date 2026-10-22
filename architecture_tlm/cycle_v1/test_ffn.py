@@ -4,7 +4,7 @@ import random
 import struct
 import unittest
 
-from .ffn import FFNConfig, build_ffn, encode_group, make_kernel, matrix_spec, reference_ffn, reference_ffn_tiled, replay_fixture
+from .ffn import FFNConfig, build_ffn, encode_group, make_kernel, matrix_spec, reference_ffn, reference_ffn_tiled, replay_fixture, restore_bin_value
 
 
 def fixture(d=65,f=3,o=2):
@@ -182,6 +182,30 @@ class FFNTests(unittest.TestCase):
         cycles=(ar.completion_ps[rail]-ar.accepted_ps[rail])//10000
         self.assertEqual(cycles,fast.restore_latency+math.ceil(64*4*8/16)-1)
         self.assertEqual(a['restore_intermediates'],{})
+
+    def test_explicit_restore_rounding_profiles(self):
+        bits=lambda x:struct.unpack('<I',struct.pack('<f',x))[0]
+        # Each expected word follows exact minimum-subnormal units and RNE,
+        # independent of the implementation expression.
+        for integer,scale,weight,host,rtl in (
+                (3,2.0**-145,1.5,0x2,0x3),
+                (-3,2.0**-145,1.5,0x80000002,0x80000003),
+                (3,2.0**-145,2.5,0x4,0x5),
+                (-5,2.0**-145,1.5,0x80000004,0x80000003),
+                (1,2.0**-149,1.5,0,0),
+                (8192,1.0,.125,0x42000000,0x42000000)):
+            self.assertEqual(bits(restore_bin_value(integer,scale,weight,32,'host_order')),host)
+            self.assertEqual(bits(restore_bin_value(integer,scale,weight,32,'rtl_fused0_order')),rtl)
+        for rounding in ('host_order','rtl_fused0_order'):
+            c=FFNConfig(restore_rounding=rounding,random_backend='behavioral')
+            for data in (fixture(),dict(x=[1e-38,-1e-39,0.0],wg=[[1.,-1.,0.]],wu=[[1.,1.,0.]],wd=[[1.]])):
+                state,result,_=execute(data,c)
+                expected=reference_ffn_tiled(replay_fixture(data,state),c)
+                for field in ('gate','up','z','projected','output'):
+                    self.assertEqual(state[field],expected[field])
+                self.assertEqual(state['provenance']['restore_rounding'],rounding)
+        with self.assertRaisesRegex(ValueError,'power-of-two'):
+            FFNConfig(samples=96,restore_rounding='rtl_fused0_order').validate()
 
 
 if __name__=='__main__': unittest.main()

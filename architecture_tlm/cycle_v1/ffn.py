@@ -46,6 +46,7 @@ class FFNConfig:
     seed: int = 0
     count_bits: int | None = None
     counter_layout: str = 'bitplane'
+    restore_rounding: str = 'host_order'
     engines: int = 8
     weight_slots: int = 8
     weight_slot_bytes: int = 4096
@@ -78,12 +79,16 @@ class FFNConfig:
             raise ValueError('reference requires 64-lane groups and B2/B4')
         if self.counter_layout not in ('bitplane','signed_bin'):
             raise ValueError('counter_layout must be bitplane or signed_bin')
+        if self.restore_rounding not in ('host_order','rtl_fused0_order'):
+            raise ValueError('restore_rounding must be host_order or rtl_fused0_order')
         if self.random_backend not in ('native','behavioral','replay'):
             raise ValueError('random_backend must be native, behavioral or replay')
         if (type(self.samples) is not int or type(self.strata) is not int or
                 self.samples < 1 or self.strata < 1 or
                 256 % self.strata or self.samples % self.strata):
             raise ValueError('strata must divide 256 and positive sample count')
+        if self.restore_rounding=='rtl_fused0_order' and self.samples&(self.samples-1):
+            raise ValueError('rtl_fused0_order requires a power-of-two sample count')
         if type(self.seed) is not int or (self.count_bits is not None and type(self.count_bits) is not int):
             raise ValueError('integer seed and counter width required')
         required=(self.samples*self.tile).bit_length() if self.counter_layout=='bitplane' else (self.samples*self.tile*128).bit_length()+1
@@ -137,6 +142,19 @@ def encode_group(values, bins=4):
         out.append(dict(q=q, sign=(x > 0) - (x < 0), scale=scale,
                         bin=bin_id, full_one=(abs(x) >= scale and x != 0)))
     return out
+
+
+def restore_bin_value(integer,activation_scale,weight_scale,samples,rounding='host_order'):
+    """One bin, explicit rounding order; finite-intermediate domain only.
+
+    rtl_fused0_order matches the conversion-before-weight-multiply order, not
+    the complete RTL encoder / FFN / exception handling implementation.
+    """
+    if rounding=='host_order':
+        return fp32(fp32(integer*activation_scale)*weight_scale/samples)
+    if rounding=='rtl_fused0_order':
+        return fp32(fp32(integer*activation_scale/samples)*weight_scale)
+    raise ValueError('unknown restoration rounding order')
 
 
 def threshold_words(config, phase, group, fixture=None):
@@ -276,6 +294,8 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                     RNG_is_physical=False, timing='configured, uncharacterized',
                     weight_layout='offline tile-major packed signed W8; FP32 scale read/stored separately',
                     counter_layout=c.counter_layout,
+                    restore_rounding=c.restore_rounding,
+                    restore_rounding_scope='per-bin restoration order only; no full-FFN/encoder/exception RTL equivalence claim',
                     encoder_domain='finite FP32 group maximum <= 2**127; lower bins clamp at minimum normal; exponent-grid scaling supports subnormals',
                     encoder_storage='one raw FP32 group is overwritten in place by packed A8/sign/bin/endpoint metadata after encoding',
                     restore_implementation='shared vector_lanes arithmetic slots; rail subtraction and positional shifts, integer plane reduction, ordered per-bin FP32 restore/accumulate, cross-tile FP32 addition; configured pipeline depths, not characterized RTL',
@@ -533,10 +553,13 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                             _,weight_scale=state['resident_weights'][tile_key]
                             subtotal=state['restore_intermediates'][tile_key]['total']
                             for row in range(nr):
-                                term=fp32(fp32(state['counters'][tile_key][row][b]*scale_by_bin.get(b,0.0))*weight_scale/c.samples)
+                                term=restore_bin_value(state['counters'][tile_key][row][b],scale_by_bin.get(b,0.0),
+                                                       weight_scale,c.samples,c.restore_rounding)
                                 subtotal[row]=fp32(subtotal[row]+term)
                         restore_stage('restore_bin'+str(b),nr,bin_cb,
-                            {'restore_integer_scale_fp32':nr,'restore_weight_scale_sample_normalize':nr,
+                            {'restore_integer_scale_fp32':nr,
+                             ('restore_weight_scale_sample_normalize' if c.restore_rounding=='host_order'
+                              else 'restore_fp32_weight_multiply_after_sample_normalize'):nr,
                              'restore_ordered_bin_fp32_add':nr})
                     def restore_cb(k, op, key=key, tile_key=tile_key, matrix=matrix,
                                    matrix_name=matrix_name, r=r, gi=gi, nr=nr, label=label,readp=readp):
@@ -678,7 +701,11 @@ def reference_ffn_tiled(fixture,config=None):
                         members=[i for i,item in enumerate(encoded) if item['bin']==b]
                         integer=sum(counts[i]*encoded[i]['sign']*codes[group*64+i] for i in members)
                         scale=encoded[members[0]]['scale'] if members else 0.0
-                        restored=fp32(fp32(integer*scale)*matrix['scales'][row//64][group]/c.samples)
+                        if c.restore_rounding=='host_order':
+                            restored=fp32(fp32(integer*scale)*matrix['scales'][row//64][group]/c.samples)
+                        else:
+                            normalized=fp32(integer*scale/c.samples)
+                            restored=fp32(normalized*matrix['scales'][row//64][group])
                         partial=fp32(partial+restored)
                     total=fp32(total+partial)
                 result.append(total)

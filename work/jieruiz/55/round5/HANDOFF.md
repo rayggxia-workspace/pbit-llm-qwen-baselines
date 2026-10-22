@@ -1,0 +1,9 @@
+# 第五轮审核恢复入口
+
+5项成果均已合并，科学集成8d4ce51be7ecace716bc83688dc4768eb2574d38；逐项原head/base/merge见receipts及REVIEW.json，模块接入和限制见REVIEW_ZH.md。新成果不是一套已完成最新全组合质量/PPA的默认模型；qwen的tlm-parallel是可选入口。
+
+83的26项官方oracle已完成，用户删除的定时不重建。73/84/87已按有限范围实际关闭，78/37继续开放。恢复先核最新远端和STATUS，别重复推理/采样/提交任务。CPU验证只读既有结果，无服务器写入。
+
+唯一稀疏目录tmp/pr55-review-20261022、scratch tmp/pr55-round5-artifacts将在报告合并后回收。保留refs/heads/review/55-pr-round5及共享Git对象；独有材料按SHA存project_archives/pr_review_issue55_20261022/review_scratch.zip，RECOVERY_INDEX/CLEANUP_RECEIPT及Issue55记录实际执行。私有capture、原PDF/official README仅授权本地归档，不随公开报告上传。
+
+canonical原HEAD a71e4bc01ef67f604008325c80e8d58a766ef02c不变，原pending按SHA 73c90e2ac481cb0eecfd10948d63fa711214716312002f7a5e063fc5acf425d5备份。当前memory SHA d092a7b580007a3d21932c911dc82b1aea3eda1b89efc66d226b6daa4415bc19，canonical/root/报告同步；不要reset覆盖其后续未提交内容。报告提交仅文档、本人STATUS/HANDOFF和记忆，不改已合科学实现/原件。

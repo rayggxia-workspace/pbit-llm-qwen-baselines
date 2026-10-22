@@ -1,3 +1,7 @@
+# Issue55最新入口：第五轮
+
+PR82/83/85/86/88已合并。最新[round5/REVIEW_ZH.md](round5/REVIEW_ZH.md)与[round5/HANDOFF.md](round5/HANDOFF.md)。83最终26项官方oracle已完成，新采样器模型/PPA未完成；历史回执保留原字节与日期。
+
 # Issue55最新入口：第四轮
 
 PR75/77/79/80已合并；最新报告[round4/REVIEW_ZH.md](round4/REVIEW_ZH.md)及交接[round4/HANDOFF.md](round4/HANDOFF.md)。Issue73/78继续，76按用户授权关闭。旧轮回执/原件按原提交保存。

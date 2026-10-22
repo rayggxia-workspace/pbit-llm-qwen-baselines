@@ -6,7 +6,7 @@ jieruiz沿用task/107/PR109，未新开复制。对照最新PR103 b05fb36d和中
 
 重要边界：当前逐位/符号/档计数映射为6KiB/tile、8tile48KiB；每档signed20整数和对照可为640B/tile，理论状态差9.6倍不是功耗面积结论，尚无新RTL。单波次32KiB权重需明确SRAM可见输出/保持，不能认为SRAM里有就是免费驻留；单64B命令/拍100MHz只有6.4GB/s，不证明16GB/s。完整赢家需要0..512真计数/均匀选秩，KIND17的0/1/多树不能替代。源字R8，实际drive−255..255是9bit signed，q256需满幅表示；LUT/阈值保持未由原native端点PPA覆盖。
 
-本次仅需求分析/来源位宽校核：32源Git SHA、路径和288组档内整数等价通过，无新RTL/工艺仿真/TLM/模型PPL。旧源23e8d65f及66组功能证据保持；拟新增顶层未冒充可执行包。成果当前本地完成，实际发布以Issue107/PR109/latest_gap回执为准，Projects待read:project，不自动合并。
+本次仅需求分析/来源位宽校核：32源Git SHA、路径和288组档内整数等价通过，无新RTL/工艺仿真/TLM/模型PPL。旧源23e8d65f及66组功能证据保持；拟新增顶层未冒充可执行包。成果已通过同PR109实际推送科学head e7b5d256ca00a725394c4ee8decf4d562a672f5c，8关键远端blob原字节核验通过，Issue107/PR说明已更新；latest_gap/PUBLICATION.json为回执，待审未合并。Projects待read:project，不自动合并。
 
 ## 2026-10-22 Issue96：真实随机架构已接入完整TLM
 

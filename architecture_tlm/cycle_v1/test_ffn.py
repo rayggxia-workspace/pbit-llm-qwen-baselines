@@ -76,8 +76,10 @@ class FFNTests(unittest.TestCase):
             wd={'codes':[[1]],'scales':[[1.]]})
         state,_,_=execute(data)
         self.assertEqual(state['gate'],[8192.])
-        self.assertEqual(max(r['counter_peak'] for r in state['tile_receipts']),262144)
-        with self.assertRaises(ValueError): execute(data,FFNConfig(count_bits=19))
+        self.assertEqual(max(r['counter_peak'] for r in state['tile_receipts']),2048)
+        self.assertEqual(max(r['integer_equivalent_peak'] for r in state['tile_receipts']),262144)
+        with self.assertRaises(ValueError): execute(data,FFNConfig(counter_layout='signed_bin',count_bits=19))
+        with self.assertRaises(ValueError): execute(data,FFNConfig(count_bits=11))
 
     def test_backpressure_changes_timing_not_numeric(self):
         data=fixture(d=130,f=70,o=3)
@@ -116,6 +118,18 @@ class FFNTests(unittest.TestCase):
             if narrow: payload=b''.join(payload[i+2:i+4] for i in range(0,len(payload),4))
             self.assertEqual(kernel.read_memory('sram',state['output_address'],state['output_bytes']),payload)
             self.assertEqual(state['complete_ps'],result.finish_ps)
+
+    def test_original_bitplane_capacity_and_signed_alternative(self):
+        c=FFNConfig()
+        self.assertEqual(c.weight_slots*c.weight_slot_bytes,32768)
+        self.assertEqual(c.weight_scale_capacity_bytes,32)
+        self.assertEqual(c.counter_capacity_bytes,49152)
+        self.assertEqual(64*c.bins*2*8*c.counter_width//8,6144)
+        data=fixture(d=130,f=70,o=3)
+        bitplanes,_,_=execute(data,c)
+        signed,_,_=execute(data,dataclasses.replace(c,counter_layout='signed_bin'))
+        for field in ('gate','up','z','projected','output'):
+            self.assertEqual(bitplanes[field],signed[field])
 
 
 if __name__=='__main__': unittest.main()

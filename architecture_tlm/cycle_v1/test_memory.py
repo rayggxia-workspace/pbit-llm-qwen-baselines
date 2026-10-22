@@ -144,6 +144,30 @@ class MemoryTests(unittest.TestCase):
         self.assertEqual(r.memory_reads["read"], b"TEST")
         self.assertGreater(r.accepted_ps["read"], r.completion_ps["write"])
 
+    def test_cdc_visibility_expiry_exposes_bank_stall_before_ready(self):
+        def build():
+            core, mem = Clock("core", 10_000), Clock("mem", 12_500)
+            k = Kernel([Resource("source", core, 1)], memory_ports=[
+                MemoryPort("m", mem, banks=1, line_bytes=16, latency_cycles=2)])
+            k.add(Operation("occupy", "m", memory=MemoryRequest(0, 160)))
+            k.add(Operation("source", "source"))
+            k.add(Operation("wait", "m", deps=("source",), cdc_cycles=3,
+                            memory=MemoryRequest(256, 16)))
+            return k
+        r = self.both(build)
+        self.assertIn((37_500, "memory_bank_port:0"),
+                      [(x["time_ps"], x.get("reason")) for x in r.trace if x["op"] == "wait"])
+
+    def test_multiple_bank_unblock_transitions_are_not_skipped(self):
+        def build():
+            k = Kernel([], memory_ports=[MemoryPort("m", C, banks=2, line_bytes=16,
+                       ii_cycles=3, latency_cycles=2)])
+            k.add(Operation("a", "m", memory=MemoryRequest(0, 16)))
+            k.add(Operation("b", "m", memory=MemoryRequest(16, 16), earliest_ps=10))
+            k.add(Operation("c", "m", memory=MemoryRequest(0, 32), earliest_ps=20))
+            return k
+        self.both(build)
+
     def test_invalid_requests_and_strict_uninitialized_reads(self):
         for request_args in ((0, 0), (-1, 4), (0, -2)):
             with self.assertRaises(ValueError):

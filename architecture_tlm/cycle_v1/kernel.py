@@ -408,15 +408,30 @@ class Kernel:
             if self._current_reason(op, next_edge) != self._last_stall.get((op.id, "accept")):
                 times.append(next_edge)
             ready, reason = self._dependency_ready(op)
-            if reason is not None or any(self.buffers[name] < amount for name, amount in op.inputs.items()):
+            if reason is not None:
+                continue
+            # Visibility expiration is itself an explanatory state transition:
+            # a later resource availability must not hide the newly exposed
+            # input/bank/port stall from the event trace.
+            if ready > after_ps:
+                times.append(clock.next_edge(ready))
+            if any(self.buffers[name] < amount for name, amount in op.inputs.items()):
                 continue
             if self._memory_hazard(op) is not None:
                 continue
             earliest = max(after_ps + 1, ready)
             if op.memory is not None:
-                possible = self._memory[op.resource].future_ready(op.memory, earliest)
+                runtime = self._memory[op.resource]
+                possible = runtime.future_ready(op.memory, earliest)
                 if possible is not None:
                     times.append(clock.next_edge(possible))
+                # Several banks may unblock on different edges. Preserve the
+                # reason change at each earlier bank rather than jumping to
+                # the last bank that makes the whole descriptor acceptable.
+                for bank in runtime.spec.bank_beats(op.memory):
+                    bank_ready = min(runtime.next_issue[bank])
+                    if bank_ready > after_ps:
+                        times.append(clock.next_edge(max(earliest, bank_ready)))
             else:
                 spec = self.resources[op.resource]
                 candidates = [max(earliest, self._next_issue[op.resource][i]) for i in range(spec.instances)

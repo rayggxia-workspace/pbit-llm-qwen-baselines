@@ -1,6 +1,5 @@
 """Verify the downloaded archive and copy auditable text artifacts unchanged."""
 import hashlib
-import io
 import json
 from pathlib import Path
 import tarfile
@@ -40,6 +39,6 @@ receipt = dict(host='10.129.164.156:21570', account='Weican_Chen', job_id='2764'
                excluded_generated_binaries=excluded,
                original_archive='work/amlink1219/116/rtl/rtl-contract-2764-results.tar.gz',
                remote_root='/home/Weican_Chen/projects/tlm-cycle-issue116-20261023/rtl-contract-2764/results')
-(destination / 'LOCAL_RECEIPT.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+(destination / 'LOCAL_RECEIPT.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8', newline='\n')
 print(json.dumps({'archive_sha256': actual, 'verified_artifacts': len(report['artifact_sha256']),
                   'destination': str(destination), 'iverilog': report['iverilog_version']}))

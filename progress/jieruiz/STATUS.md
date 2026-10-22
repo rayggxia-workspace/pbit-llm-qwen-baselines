@@ -1,3 +1,9 @@
+# Issue110 数字电路仿真统一台账
+
+2026-10-22；jieruiz；task/110-circuit-simulation-registry；基线eb317e4f，PR base pbit-tlm-attention-details-20261016。独立稀疏tmp/circuit-registry-issue110-20261022。本地完成35批次/模块记录、516配置行、117数字原始归档索引；入口digital_circuit_simulation_registry/README_ZH.md，原件地址/源绑定/PVT/范围/限制和实际阶段分开。8守卫测试、157独立文件SHA和26tar成员SHA通过，无新仿真、无大原件移动/复制。根同名目录为同字节阅读镜像；AGENTS/长期记忆新增每次仿真登记规则。推送/PR实际回执见work/jieruiz/110/PUBLICATION.json，未合并前不标任务完成。Projects缺read:project待同步；HANDOFF保留后续登记命令，不重跑已有健康任务。
+
+以下保留此前任务状态原文：
+
 # Issue55第六轮最终补审PR99 ready
 
 2026-10-22；jieruiz；review/55-pr-round6。93/94/97/100已进入集成5dbd9e39，PR99新heada7a48297转ready后49检查/52情景清单与两项完整Qwen24层重放通过，原head随本次补充PR交付。旧草稿记录保留为fba时点。最新报告work/jieruiz/55/round6/pr99_ready/；实际远端合并与本轮目录回收以Issue55最终回执为准。无新模型/GPU/Slurm/PPL/PT，TLM条件结果不继承质量或PPA。

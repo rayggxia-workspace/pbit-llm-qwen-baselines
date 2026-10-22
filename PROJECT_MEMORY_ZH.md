@@ -44,6 +44,8 @@
 
 ## 0 恢复工作先读这里
 
+> 2026-10-22第六轮审核：PR93/97已原生合并129ae823/27bf9c48；PR94的90配置冻结盲评、45检查与成本重放通过，原head424b4206纳入本人review/55-pr-round6，唯一STATUS冲突保留作者原blob9ee7dbdd，无作者分支改写。将通过本轮集成PR交付，实际远端合并/目录回收结果查Issue55最终回执和work/jieruiz/55/round6/。本轮未启动服务器/GPU/Slurm/PPL/DC/PT；旧定时不恢复。
+
 > 2026-10-22第五轮收尾追加：PR89评估补充已直接合并作者原head，现共82/83/85/86/88/89六项成果已合并；下方五项记录为追加前快照。Issue37/78仍开放。完整回执work/jieruiz/55/round5/。
 
 > 2026-10-22第五轮最新验收：PR82/83/85/86/88均已实际合并。Issue73的26项推理与官方逐题oracle已全部核验（54782配置内题、109564指标），不是旧19/26/pending；回查已由用户要求删除，不重建。新采样器仍无整模型PPL/物理PPA；PR88补齐可选tlm-parallel入口和4项24层合成组合验证，旧tlm默认保留。详见文末第五轮回执及work/jieruiz/55/round5/。
@@ -907,10 +909,24 @@ Issue73 publication receipt (2026-10-22): completed26 status/report and automati
 
 第五轮追加PR89：19固定源、8组TLM中位数/单位/null及3组固定预算覆盖核验通过，旧数字全上下文D0与原评估保留，局部误差/合成时序没有冒充新PPL/PPA。自动审批曾拒绝向其他成员分支推送刷新；未执行该推送，已改为原head69b1accc的无冲突原生合并9bd908b5，无作者分支改写或STATUS/HANDOFF手工改动。作者自己的新状态按原blob继承，Issue37不关闭。
 
+2026-10-22第五轮最终发布/回收回执：报告PR91已原生合并83e15289434af50fc09c35e699d8b39965389d98，收尾开放PR为0，Issue55于05:31:46Z验收关闭；Issue73/84/87已关闭，78/37继续开放。唯一review稀疏目录和helper已于05:30:52Z逐SHA归档后回收，逻辑移除35,991,762B；525份临时文件压缩10,041,404B，project_archives/pr_review_issue55_20261022/review_scratch.zip SHA256 fd9cec6bab3955cdd9100e9eba82fb4fb5c01ae41060bb5b7b17265c4818e339，恢复/清理实际回执在同目录RECOVERY_INDEX.json、CLEANUP_RECEIPT.json及FINAL_ISSUE55_RECEIPT.json。保留review/55-pr-round5 head80e712eac8c28a413c06dd8b8927e66b644c8e78；其他成员目录、共享对象、模型与原始证据未清理。含私有NPZ的归档仅限授权本地。此最终回执为报告合并后的Issue28维护增量；报告冻结备忘录SHA9ef4fc794fd2fbd51993849972346b90153b36e971cd8731e78a10919880f049不改写。
 <!-- llm-env-issue90 -->
 ## 2026-10-22 Issue90：两台4090备用LLM环境
 
 个人隔离Python3.12.3/Torch2.6.0+cu118/Transformers4.45.2/lm_eval0.4.8已安装并验证。A CPU9041/GPU9042、B CPU14101/GPU14104均COMPLETED/0:0，每台19CPU检查及6GPU synthetic smoke通过，27参数/3非持久RoPE buffer逐位相同、重载logits差0.0。94包freeze两台原字节相同SHA636ea0599fc983e7c003c3a8881aefa2f05d8167f2877dcab8992dfc3f145ae5；正式入口为个人环境bin/llm-python进程wrapper，旧glibc兼容层不改系统或共享环境。
 
+## 2026-10-22 随机源统一操作模型与核心RTL（Issue95 / PR97）
+
+用户要求准确操作统计、基础LFSR/共享扩展/非LFSR后端、启动新种子与慢速换种，并由用户自行仿真PPA。本轮实际GitHub连接器身份rayggxia，独立task/95-rng-service-rtl、tmp/rng-service-issue95-20261022，基线83e15289434af50fc09c35e699d8b39965389d98。源码提交970260e21ebcf98822b9cf47b643fb8360a31e2f已发布PR97，开放待审未合并；Issue95继续open，Projects未核实/待同步。原生Git本机连接失败不影响连接器已发布事实，本地/远端状态以work/rayggxia/95/PUBLICATION.json及最新远端head为准。
+
+入口architecture_tlm/random_service/：LFSR32 1×8bit、现有GF扩展64×8bit、Bivium177bit状态/160bit展开20×8bit；端点/种子入口Python与7份SystemVerilog，统一valid/ready、q/256阈值、响应保持、SAVE/RESTORE/RELEASE。默认1亿拍换种（10ns约1s），0仅启动；每端点每epoch独立取得新总线材料，无免费根种子派生或固定种子回退。LFSR每次32bit、Bivium192bit总线包保留177bit并明确丢15bit，预热5拍。FFN锁定重放时延期记账；无源不输出。OS/fixture/有来源trace严格区分，软件OS不宣称物理熵。操作数/总线/等待分开，PPA null。
+
+现有parallel_sampler_v5.py只加可选计时源适配，旧理想默认保留；26个Bivium可供512路帧（额外8路收费），公平辅助另端口。核心与入口逐周期不等于整个Attention/互联RTL周期精确。GF64总秩32、两两秩16，不保证64路联合/跨时IID，Attention默认拒绝。概率LUT量化改变目标，未继承旧PPL。模拟读出、健康调理、CDC、共享仲裁器和sigmoid LUT完整RTL仍缺，记录DESIGN_QUESTIONS_ZH.md；优先综合top/活动场景见POWER_SIM_ZH.md。
+
+47项Python检查通过，3后端×3seed×900=8100沿及连续活动6000沿逐沿一致，FFN250沿120帧通过；便携包独立19检查/fixture示例通过。有限3seed统计诊断不等于质量验收；没有DC/PT/PPL/GPU/Slurm/新Spectre。包远端上传/rng_service_v1_20261022.zip，SHA7b067edb8dfd452242830ac6f01c068d6200e76ae0d9a0711f2ab4a9097c8f45；原始验证ZIP在project_archives/rng_service_issue95_20261022/verification_raw.zip，SHA684e69f452933b05abaeafab8963f26367c313015940b49208facee2cc6d3524；失败/成功记录按成员SHA保留，PR待审保留最小工作树，不重复旧实验。
 正式入口[环境报告](maintenance/llm_env_4090_20261022/README_ZH.md)，原执行源scripts/llm_env_4090_20261022，私有原件hash/脱敏视图及交接work/amlink1219/90。原失败与恢复各阶段保留，70wheel恢复包仅LLM扩展层，不含Torch底座。服务器地址/连接配置/凭据不发布。Torch版本不同于5090的2.7.1cu128，未下载真实权重/语料、未训练或产生真实PPL/准确率/PPA，后续真实实验需匹配数字基线。5090优先、备用当次告知、个人目录/Slurm/跨服务器单GPU规则继续适用。上传与PR状态见该任务PUBLICATION.json，Issue保持open等待审阅，不自动合并。
 <!-- /llm-env-issue90 -->
+
+## 2026-10-22 第六轮PR审核（Issue55）
+
+PR93环境交付32源/5报告与94包冻结逐SHA通过，Windows git archive/checkout会受core.autocrlf影响；本轮改用git cat-file原blob核验，不改作者字节。作者两台19CPU/6GPU记录仅核对冻结报告，本轮没有重新登录/安装/申请GPU或重新取得13份私有原件。PR94的45CPU检查通过（本地Python3.8补等价Path.is_relative_to运行时shim，作者3.12源码不改），134包成员/90模型SHA、先冻结再评估及VAL预选强max4通过，15逐文档原件按48篇×3eval seed重聚合；2304隐藏态门控等价/6均值回算的成本JSON逐字节重放一致。强max4下是分层权衡且33–39%超512容量，不改默认或冒称PPL/PPA。PR97的47CPU、三后端三seed8100沿与FFN250沿/120帧均重放一致，27源blob/向量SHA/操作账本和便携包26文件一致；数字核心不等于物理熵/IID或工艺PPA。93/97合并回执与94原head集成证明在round6；90/92/95仍由原负责人按Issue验收接续，不自动关闭。旧材料与canonical原未提交增量完整保留。

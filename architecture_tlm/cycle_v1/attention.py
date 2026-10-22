@@ -45,6 +45,12 @@ class AttentionConfig:
     seed_startup: int = 10
     reseed_cycles: int = 100000000
     native_hold_cycles: int = 0
+    vector_lanes: int = 64
+    exp_lanes: int = 16
+    exp_latency: int = 8
+    reciprocal_latency: int = 12
+    drive_latency: int = 3
+    lut_latency: int = 2
 
     def validate(self):
         if self.mode not in ('exact','pv','winner','rejection'):
@@ -57,7 +63,8 @@ class AttentionConfig:
             raise ValueError('native comparator response is q256, not ideal sigmoid')
         for name in ('samples','capacity','source_lanes','output_capacity','kv_capacity_bytes',
                      'score_capacity_bytes','mac_lanes','source_latency','source_ii',
-                     'max_proposals_per_sample','rank_retry_cap','cdc_cycles'):
+                     'max_proposals_per_sample','rank_retry_cap','cdc_cycles','vector_lanes',
+                     'exp_lanes','exp_latency','reciprocal_latency','drive_latency','lut_latency'):
             if type(getattr(self,name)) is not int or getattr(self,name)<1:
                 raise ValueError(name+' must be positive integer')
         if type(self.seed_word_interval) is not int or self.seed_word_interval<1:
@@ -85,6 +92,7 @@ def default_resources(config=None):
     return [Resource('control',clock,1,capacity=16),
             Resource('qk',clock,3,capacity=4),
             Resource('vector',clock,3,capacity=4),
+            Resource('attention_exp',clock,c.exp_latency,capacity=2),
             Resource('sampler',clock,1,capacity=1),
             Resource('rng',clock,c.source_latency,ii_cycles=c.source_ii,capacity=2),
             Resource('v_accumulate',clock,3,capacity=1)]+rng_protocol.resources()
@@ -148,7 +156,8 @@ def softmax(logits):
     m=max(logits)
     weights=[math.exp(x-m) for x in logits]
     total=math.fsum(weights)
-    return [x/total for x in weights]
+    inverse=1/total
+    return [x*inverse for x in weights]
 
 
 class _Source:
@@ -427,9 +436,8 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
 
     def begin_sampler(dependency):
         logits=state['logits']
-        ref=max(range(n),key=logits.__getitem__)
+        ref=state['max_index']
         if c.mode=='pv':
-            state['probabilities']=softmax(logits)
             def built_cdf(k,op):
                 cumulative=0.0
                 state['cdf']=[]
@@ -462,7 +470,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
             return
         if c.mode=='winner':
             winner=[ref]
-            drives=[z-logits[ref]-c.winner_shift for z in logits]
+            drives=[z-c.winner_shift for z in state['base_drives']]
             def step(index,dep):
                 if index==c.samples+c.burn_updates:
                     mark_done(dep)
@@ -512,7 +520,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                 state['status']='failed_proposal_cap'
                 raise SamplerCapError('proposal cap: no IID fallback or valid partial result')
             old_shift=shift[0]
-            drives=[logits[i]-logits[ref]-old_shift*math.log(2.0) for i in nonref]
+            drives=[state['base_drives'][i]-old_shift*math.log(2.0) for i in nonref]
             def responded(bits,ready):
                 active=[i for i,b in zip(nonref,bits) if b]
                 state['proposals']+=1
@@ -525,8 +533,10 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                         else: proposal(final_dep)
                     if new_shift!=old_shift:
                         add(unique('offset_reprogram'),'vector',deps=(decision_dep,),
-                            latency_cycles=2+math.ceil(max(1,len(nonref))/c.mac_lanes),
-                            actions={'drive_reprogram_values':len(nonref),'offset_changes':1},
+                            latency_cycles=c.drive_latency+c.lut_latency+math.ceil(max(1,len(nonref))/c.vector_lanes)-1,
+                            ii_cycles=max(1,math.ceil(len(nonref)/c.vector_lanes)),
+                            actions={'drive_reprogram_values':len(nonref),'drive_subtract':len(nonref),
+                                     'q256_lut_lookup':len(nonref) if c.response=='q256' else 0,'offset_changes':1},
                             on_complete=lambda k,op:after_feedback(op.id))
                     else: after_feedback(decision_dep)
                 if len(active)==1: decision(active[0],old_shift,ready)
@@ -560,13 +570,49 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
             outputs={free_kv:d*4},actions={'QK_mac':d}))
     def prepared(k,op):
         if c.mode=='exact':
-            state['probabilities']=softmax(state['logits'])
             finish_values(op.id,{i:p for i,p in enumerate(state['probabilities'])})
         else: begin_sampler(op.id)
-    add('score_prepare','vector',deps=tuple(qk_done),
-        latency_cycles=3+math.ceil(n/c.mac_lanes)-1,on_complete=prepared,
-        actions={'softmax_values':n if c.mode in ('exact','pv') else 0,
-                 'drive_program_values':n if c.mode=='winner' else n-1 if c.mode=='rejection' else 0})
+    batches=max(1,math.ceil(n/c.vector_lanes))
+    reduction_latency=max(1,(min(n,c.vector_lanes)-1).bit_length()+batches-1+(batches-1).bit_length())
+    def found_max(k,op):
+        state['max_index']=max(range(n),key=state['logits'].__getitem__)
+        state['score_max']=state['logits'][state['max_index']]
+    maximum=add('score.max_reduce','vector',deps=tuple(qk_done),
+        latency_cycles=reduction_latency,ii_cycles=batches,on_complete=found_max,
+        actions={'score_max_compare':n-1},
+        metadata={'lanes':c.vector_lanes,'contract':'pipelined lane tree, finite batches, final batch tree; uncharacterized'})
+    if c.mode in ('exact','pv'):
+        def exponentiated(k,op):
+            # Reuse the allocated double-precision probability scratch in place.
+            state['probabilities']=[math.exp(value-state['score_max']) for value in state['logits']]
+        exp_batches=math.ceil(n/c.exp_lanes)
+        exponent=add('score.subtract_exp','attention_exp',deps=(maximum,),
+            latency_cycles=c.exp_latency+exp_batches-1,ii_cycles=exp_batches,
+            on_complete=exponentiated,actions={'score_subtract':n,'exp_values':n},
+            metadata={'lanes':c.exp_lanes,'latency':c.exp_latency,'II_per_lane':1,
+                      'numeric':'functional double precision; no inherited approximate-RTL PPA'})
+        def summed(k,op): state['denominator']=math.fsum(state['probabilities'])
+        summation=add('score.sum_reduce','vector',deps=(exponent,),latency_cycles=reduction_latency,
+            ii_cycles=batches,on_complete=summed,actions={'softmax_sum_add':n-1},metadata={'lanes':c.vector_lanes})
+        def inverted(k,op): state['inverse_denominator']=1/state['denominator']
+        inverse=add('score.reciprocal','vector',deps=(summation,),latency_cycles=c.reciprocal_latency,
+            on_complete=inverted,actions={'softmax_reciprocal':1},metadata={'functional_results':1})
+        def normalized(k,op):
+            state['probabilities']=[value*state['inverse_denominator'] for value in state['probabilities']]
+        ready=add('score.normalize','vector',deps=(inverse,),latency_cycles=3+batches-1,ii_cycles=batches,
+            on_complete=normalized,actions={'softmax_normalize_multiply':n,'softmax_values':n},metadata={'lanes':c.vector_lanes})
+    else:
+        def centered(k,op): state['base_drives']=[value-state['score_max'] for value in state['logits']]
+        centered_id=add('score.center_drives','vector',deps=(maximum,),
+            latency_cycles=c.drive_latency+batches-1,ii_cycles=batches,on_complete=centered,
+            actions={'drive_subtract':n},metadata={'lanes':c.vector_lanes})
+        drive_count=n if c.mode=='winner' else n-1
+        ready=add('score.program_drives','vector',deps=(centered_id,),
+            latency_cycles=c.lut_latency+max(1,math.ceil(drive_count/c.vector_lanes))-1,
+            ii_cycles=max(1,math.ceil(drive_count/c.vector_lanes)),
+            actions={'drive_program_values':drive_count,'q256_lut_lookup':drive_count if c.response=='q256' else 0},
+            metadata={'lanes':c.vector_lanes,'contract':'drive quantization/LUT cache populated before first source request'})
+    add('score_prepare','control',deps=(ready,),on_complete=prepared)
     return state
 
 

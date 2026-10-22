@@ -22,6 +22,16 @@ def execute(data,c,mode='event',latency=4):
 
 
 class AttentionTests(unittest.TestCase):
+    def test_exact_softmax_finite_exp_lanes_change_time_not_values(self):
+        data=fixture()
+        fast,fr,_=execute(data,AttentionConfig(mode='exact',exp_lanes=16))
+        slow,sr,_=execute(data,AttentionConfig(mode='exact',exp_lanes=1))
+        self.assertEqual(fast['output'],slow['output'])
+        self.assertGreater(sr.finish_ps,fr.finish_ps)
+        self.assertEqual(fr.actions['exp_values'],len(data['candidate_ids']))
+        self.assertEqual(fr.actions['softmax_reciprocal'],1)
+        self.assertEqual(fr.actions['softmax_normalize_multiply'],len(data['candidate_ids']))
+
     def assertClose(self,a,b,tol=2e-6):
         for x,y in zip(a,b): self.assertLessEqual(abs(x-y),tol*max(1,abs(y)))
 

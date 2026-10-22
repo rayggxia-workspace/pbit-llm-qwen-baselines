@@ -55,6 +55,11 @@ def synthetic_fixture():
 def source_provenance():
     root = Path(__file__).resolve().parent
     hashes = {p.name: digest(p.read_bytes()) for p in sorted(root.glob('*.py'))}
+    repository=root.parents[1]
+    runtime_dependencies=['architecture_tlm/random_service/'+name for name in
+        ('__init__.py','model.py','backends.py','service.py','shared64_mapping.json')]
+    runtime_dependencies.append('architecture_tlm/unified_v6/rng_integrated.py')
+    hashes.update({name:digest((repository/name).read_bytes()) for name in runtime_dependencies})
     def git(*args):
         result = subprocess.run(['git', '-C', str(root), *args], capture_output=True, text=True,
                                 encoding='utf-8', errors='replace', check=False)
@@ -180,7 +185,8 @@ def run_case(operator, fixture_bundle, config, output, *, fixture_sha256=None,
         'output': state['output'], 'output_memory_sha256': digest(stored),
         'equivalence_payload_sha256': digest(canonical(payload)),
         'model_boundary': state['provenance'],
-        'energy': {'status': 'unknown', 'reason': 'no matched characterized coefficient set; action counts only; no fabricated total'},
+        'energy': {'status': 'unknown', 'reason': 'no matched characterized coefficient set; action counts only; no fabricated total',
+                   'accounting_rule':'memory.* physical bytes and semantic operator byte counters overlap; select one billing layer, never sum both'},
         'global_memory_capacity': 'not allocated; finite local working storage and finite request windows only',
         'hardware_status': 'configured cycle model; no full-datapath STA, synthesis or silicon evidence'}
     summary['timing_details']=timing_details

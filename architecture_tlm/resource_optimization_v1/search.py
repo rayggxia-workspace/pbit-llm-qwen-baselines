@@ -94,7 +94,7 @@ def apply_candidate(candidate, method='w8_exact', context=2048, seed=0, base_con
         for part in parts[:-1]:
             target = target[part]
         target[parts[-1]] = value
-    cfg.update(context_tokens=context, seed=seed, decode_tokens=1)
+    cfg.update(context_tokens=context, seed=seed, decode_tokens=1, row_receipt_limit=4096)
     cfg['ffn'].update(mode=METHODS[method][0], bins=4, samples=32, strata=32)
     cfg['attention']['mode'] = METHODS[method][1]
     cfg['random']['backend'] = 'integrated_service'
@@ -199,29 +199,63 @@ def case_id(candidate, method, context, seed, cfg, shape):
                                   digest(dict(config=cfg, shape=shape))[:12])
 
 
+class ReceiptDecode(FullDecode):
+    """Read-only receipts after original scheduling calls; no timing override."""
+    def __init__(self, cfg, shape):
+        super().__init__(cfg, shape)
+        self.route_hash, self.sample_hash = hashlib.sha256(), hashlib.sha256()
+        self.route_rows = self.sample_rows = 0
+
+    def route(self, t, token, layer, kv, length):
+        done, rows = super().route(t, token, layer, kv, length)
+        for row in rows:
+            receipt = dict(token=token, layer=layer, head=row['head'], candidate_token_ids=row['ids'])
+            self.route_hash.update((digest(receipt)+'\n').encode('ascii'))
+            self.route_rows += 1
+        return done, rows
+
+    def sample_row(self, t, token, layer, row, samples):
+        done, indices = super().sample_row(t, token, layer, row, samples)
+        receipt = dict(token=token, layer=layer, head=row['head'],
+                       sampled_token_ids=[row['ids'][index] for index in indices])
+        self.sample_hash.update((digest(receipt)+'\n').encode('ascii'))
+        self.sample_rows += 1
+        return done, indices
+
+
 def run_case(candidate, method, context, seed, sources=None, shape=None, base_config=None):
     sources = source_record() if sources is None else sources
     shape = load('qwen')[1] if shape is None else shape
     cfg = apply_candidate(candidate, method, context, seed, base_config)
     validated = validate_candidate(candidate, cfg, shape)
     begin = time.perf_counter()
-    result = FullDecode(cfg, shape).run()
+    model = ReceiptDecode(cfg, shape)
+    result = model.run()
     seconds = time.perf_counter()-begin
     _finite(result)
     if result['SRAM']['physical_bytes'] != validated['physical_capacity_bytes']:
         raise AssertionError('execution/validation physical memory mismatch')
     if result['random_interface']['random_stream_SRAM_bytes'] != 0:
         raise AssertionError('unexpected stored random stream')
+    expected_rows = shape['num_hidden_layers']*shape['num_attention_heads']*cfg['decode_tokens']
+    expected_samples = expected_rows if method == 'sc_screen_pv' else 0
+    if model.route_rows != expected_rows or model.sample_rows != expected_samples:
+        raise AssertionError('incomplete route/sample receipt coverage')
+    if expected_samples and len(result['row_receipts']) != expected_samples:
+        raise AssertionError('incomplete native per-head receipt coverage')
     result.update(execution_commit=sources['commit'], execution_source_sha256=sources['source_sha256'],
                   config_sha256=digest(cfg), source_wall_seconds=seconds)
     result['resource_search'] = dict(candidate=copy.deepcopy(candidate), validation=validated,
         case_id=case_id(candidate, method, context, seed, cfg, shape), method=method,
         input_shape_sha256=digest(shape), candidate_sha256=digest(candidate),
-        routing_sha256=digest(dict(receipts=result['row_receipts'], activity=result['attention_activity'])),
+        routing_sha256=model.route_hash.hexdigest(),
+        sample_addresses_sha256=model.sample_hash.hexdigest(),
+        routing_rows=model.route_rows, sampled_rows=model.sample_rows,
+        attention_activity_sha256=digest(result['attention_activity']),
         physical_traffic_sha256=digest(dict(DRAM=result['DRAM']['traffic'], SRAM=result['SRAM']['traffic'])),
         source_output_sha256=result['random_interface']['frame_output_sha256'],
         source_activity_sha256=digest(result['random_interface']),
-        route_scope='activity plus bounded row receipts; not a complete all-layer sample trace',
+        route_scope='all layer/head candidate token IDs and sampled absolute token IDs, ordered per query; source draw equality separately hashed',
         randomness_warning='elapsed-time source clocks/reseeding can change realized draws across resource configurations despite equal seed; compare traffic and three-seed confirmation',
         energy_warning='priced subtotal is not full energy; full area/energy/quality remain unknown')
     return result

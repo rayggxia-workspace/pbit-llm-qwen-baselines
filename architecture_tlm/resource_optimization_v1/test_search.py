@@ -5,7 +5,7 @@ import unittest
 from architecture_tlm.unified_v6.config import load, tiny
 from architecture_tlm.unified_v6.model import FullDecode
 from architecture_tlm.resource_optimization_v1.search import (
-    apply_candidate, digest, generate_candidates, validate_candidate)
+    ReceiptDecode, apply_candidate, digest, generate_candidates, validate_candidate)
 
 
 class SearchContracts(unittest.TestCase):
@@ -85,6 +85,17 @@ class SearchContracts(unittest.TestCase):
         invalid['overrides']['ffn.samples'] = 16
         with self.assertRaisesRegex(ValueError, 'resource/mapping'):
             apply_candidate(invalid)
+
+    def test_full_receipts_preserve_schedule_and_source_outputs(self):
+        base, shape = tiny()
+        cfg = apply_candidate(self.candidates['baseline_1m'], 'sc_screen_pv', 65, 0, base)
+        plain = FullDecode(cfg, shape).run()
+        instrumented = ReceiptDecode(cfg, shape)
+        recorded = instrumented.run()
+        self.assertEqual(plain, recorded)
+        self.assertEqual(instrumented.route_rows, 2)
+        self.assertEqual(instrumented.sample_rows, 2)
+        self.assertEqual(len(recorded['row_receipts']), 2)
 
 
 if __name__ == '__main__':

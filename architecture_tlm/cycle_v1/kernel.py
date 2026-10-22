@@ -94,6 +94,12 @@ class Kernel:
         by a process on their enqueue edge. Active processes prevent event mode
         from skipping their clock edges. Their native action accounting stays
         with the adapter; a process tick is not automatically a random draw.
+
+        A process is an isolated native FSM. Its request inputs must arrive via
+        operation completion callbacks, not by inspecting newly committed
+        kernel state or another process's mutable queue on this edge. Processes
+        must communicate through next-edge operations. This adapter interface
+        does not provide a two-phase shared-state language between callbacks.
         """
         if self._ran and not self._running:
             raise RuntimeError("a finished Kernel is single-use")

@@ -2,6 +2,8 @@
 
 ## 2026-10-23 Issue118：FFN供数与逐档整数状态合同
 
+已上传PR120（待审、未合并），科学head8bea1dfd，48个远端Git文件对象逐项一致。Issue118已同步；Projects实测缺read:project，待同步。实际回执`work/amlink1219/118/PUBLICATION.json`，后续元数据提交不改变科学结果。
+
 amlink1219，`task/118-ffn-storage-contract`，基线集成46804fb。入口`architecture_tlm/ffn_storage_contract/README_ZH.md`与`RESEARCH_STATUS_ZH.md`；复用107/112，向116提供独立合同，不改其周期核。明确真实随机服务已经整机接入、新q/256接口不能继承旧PPL，旧52/新40分开。
 
 6项T16/32/64保持/重读接口执行、4非法配置拒绝、30功能测试通过；66合成整数场景888逐档输出一致。T32显式32KiB保持/256B响应方案6.92us，零持久权重/16B响应重读3.2768ms；不同局部资源，不是同面积/全FFN加速。8tile计数48KiB→5KiB仅状态量，FP32恢复未改也未执行。F/SS库表周期/访问门槛拒绝100MHz，不冒称新STA。

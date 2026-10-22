@@ -1,5 +1,7 @@
 # Issue118交接
 
+发布已完成：[PR120](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/120)，科学head `8bea1dfd1db24263a6daea5e6a29de641b23f03c`，48个远端文件Git对象一致；Issue118结果与清单已同步。PR未合并，Issue保留开放。Projects实测缺read:project，未写看板；本轮后续提交仅补回执和当前状态。
+
 负责人amlink1219；分支`task/118-ffn-storage-contract`，base `pbit-tlm-attention-details-20261016@46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d`；独立本机目录`workspace_projects/sf23`。开发/审阅辅助目录`sf23-model`未用于别的任务，不触碰`cycle23*`的未提交内容。
 
 本轮交付：`architecture_tlm/ffn_storage_contract/` 的供数模型、独立validator、A/B整数诊断、30功能测试、6项条件接口执行、4非法配置、完整小轨迹、源码/结果SHA；另有研究状态报告与EVIDENCE表。32KiB/T32保持/重读为6.92µs/3.2768ms；48KiB→5KiB只是8tile计数状态，非物理PPA改善。

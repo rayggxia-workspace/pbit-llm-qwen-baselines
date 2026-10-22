@@ -1,5 +1,7 @@
 # 统一整机 TLM v6：先保证执行过程可检查
 
+新增：[与Issue95随机源架构的接口核实和连通检查](RNG_COMPATIBILITY_ZH.md)。已提供分层共享输入/PV薄前端并实测两种采样器，整机默认与原52项冻结结果不变。
+
 任务 [Issue96](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/96)，负责人 jieruiz。基线为 workspace 集成提交 `83e15289434af50fc09c35e699d8b39965389d98`。旧入口、冻结代码和历史结果均保留。
 
 **本版覆盖完整 decoder 的单 token decode，包括 embedding、全部层、最终 RMSNorm、lm_head 和贪心选词。** 用分块和资源事件模拟，不宣称整机周期精确、全局最优或芯片实测。初始上下文已有 KV 和筛选摘要，**不包含 prefill、摘要首次构建或 TTFT**。`context=2048` 表示当前查询可见 2048 个位置，首次调用前已有 2047 个历史 KV，先追加当前 K/V；后续 token 递增。

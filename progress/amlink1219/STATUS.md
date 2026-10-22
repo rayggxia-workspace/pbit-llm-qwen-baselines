@@ -1,3 +1,5 @@
+发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
+
 # Issue98 Prefill专项补充（2026-10-22）
 
 负责人amlink1219；原Issue98负责人rayggxia保持。独立分支task/98-prefill-analysis-amlink1219，PR base pbit-tlm-attention-details-20261016@eb317e4f6fb1b0d8844887401f3275f128ef8a83。独立工作目录为本机visualizations/2026/10/22/01a16312-a5d6-71b0-a2e7-06d7139a3b28/prefill_upload，仅文档暂存和Git对象发布，不切换或覆盖其他checkout。

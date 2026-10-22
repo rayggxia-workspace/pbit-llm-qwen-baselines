@@ -19,3 +19,6 @@ python -X utf8 work/amlink1219/98/prefill/verify.py --root .
 Projects实测GraphQL要求read:project，未同步；不修改权限。原Issue98不关闭，不改负责人。Issue107/96/78/95与其他成员STATUS只读；项目备忘录由既有唯一维护任务接续，本文不建立新的维护副本。
 
 恢复步骤：先读最新Issue98、本分支PR及其head，再查PR106和集成HEAD；核对科学制品hash；评审prefill资源与摘要构建/FFN调度，后续实现由对应任务承接。建议备忘录追加入口：Issue98 prefill报告明确完整decode与完整请求边界、数字prefill Attention分工；无新增模型或PPA，质量门槛未批准。
+
+
+发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。

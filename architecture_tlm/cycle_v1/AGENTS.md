@@ -1,0 +1,8 @@
+# Cycle execution maintenance
+
+- Keep `unified_v6` and historical result sets unchanged. New timing or numeric mappings require new configuration/results and explicit evidence boundaries.
+- Event skipping must preserve every observable stall-reason transition, including dependency/CDC visibility while a resource remains blocked and partial bank release. Compare full traces and memory/state/actions with the clock-by-clock reference; equal finish times alone are insufficient.
+- Memory program order follows operation registration. Register dynamic memory writers before their dependent memory readers, or the RAW/WAR scoreboard can correctly detect a contradictory cycle. A control node may await a future producer; create its downstream memory accesses in the completion callback.
+- Runtime-created activation/KV writes must depend on their actual producer and use the declared CDC visibility. A `born_ps` next-edge restriction alone is not a multi-stage CDC contract.
+- Include runtime data such as `architecture_tlm/random_service/shared64_mapping.json` in server snapshots. Import and run a small case from a fresh extracted snapshot with no inherited `PYTHONPATH` before submitting an expensive matrix.
+- Bit-plane mappings must preserve input-sign rails and signed two's-complement W8 bit weights when referencing the existing RTL. Equal numerical output and equal storage size do not establish identical bit-plane activity or PPA.

@@ -189,7 +189,9 @@ def run_case(operator, fixture_bundle, config, output, *, fixture_sha256=None,
     if operator == 'attention':
         summary['sampler'] = {k: state.get(k) for k in ('proposals','rejected_empty','rejected_multi',
             'source_requests','source_frames','source_waves','fair_draws','rank_retries',
-            'winner_holds','winner_switches','algorithm_updates','retained_samples','unique_V','physical_indices','histogram')}
+            'winner_holds','winner_switches','algorithm_updates','retained_samples','unique_V','physical_indices','histogram',
+            'native_biased_lanes','native_biased_generated_lanes','native_biased_used_lanes','native_biased_padding_lanes',
+            'native_fair_generated_bits','native_fair_used_bits','native_fair_unused_bits')}
         summary['K_addresses'] = state['K_addresses']
         summary['V_addresses'] = state['V_addresses']
     if write_trace:

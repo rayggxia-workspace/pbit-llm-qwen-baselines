@@ -94,7 +94,8 @@ class _RuntimeInitializer:
             metadata={'kind':'online producer-to-consumer initialization','payload_bytes':len(data)}))
 
 
-def make_layer(fixture=None,layer_config=None,ffn_config=None,attention_config=None,memory_latency=4):
+def make_layer(fixture=None,layer_config=None,ffn_config=None,attention_config=None,memory_latency=4,
+               memory_banks=4,memory_window=4):
     data=fixture or synthetic_layer()
     c=layer_config or LayerConfig()
     fc=ffn_config or ffn.FFNConfig()
@@ -128,8 +129,8 @@ def make_layer(fixture=None,layer_config=None,ffn_config=None,attention_config=N
         Buffer('layer.local',c.local_bytes,c.local_bytes,'byte credit'),
         Buffer('layer.state',c.working_bytes,c.working_bytes,'byte credit')]
     k=Kernel(resources.values(),buffers,memory_ports=[
-        MemoryPort('dram',Clock('dram',12500),latency_cycles=memory_latency,window=4,strict_reads=True),
-        MemoryPort('sram',Clock('sram',12500),latency_cycles=2,window=4,strict_reads=True)])
+        MemoryPort('dram',Clock('dram',12500),banks=memory_banks,latency_cycles=memory_latency,window=memory_window,strict_reads=True),
+        MemoryPort('sram',Clock('sram',12500),banks=memory_banks,latency_cycles=2,window=memory_window,strict_reads=True)])
     initial={}
     def preload(port,address,payload):
         k.load_memory(port,address,payload)
@@ -159,6 +160,7 @@ def make_layer(fixture=None,layer_config=None,ffn_config=None,attention_config=N
                'selection':'all candidates; no screening or GQA',
                'arithmetic':'FP32 boundaries with double fsum reference digital kernels; not bit-true full RTL',
                'timing':'uncharacterized configured contracts','global_memory_capacity':'not allocated',
+               'random_network_scope':'independent per-operator source/seed networks, assumed present from time zero; not whole-layer shared seed-bus arbitration',
                'shared_resource_overrides':{'vector_latency_cycles':3,'rng_latency_cycles':max(fc.rng_latency,ac.source_latency)}},
            'configs':{'layer':asdict(c),'ffn':asdict(fc),'attention':asdict(ac)}}
     from .layer_flow import build_flow

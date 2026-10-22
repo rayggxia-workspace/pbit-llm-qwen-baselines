@@ -1,3 +1,19 @@
+# Issue96最新交接：真实源整机接入完成（2026-10-22）
+
+负责人jieruiz，task/96-unified-tlm，PR103仍开放不自动合并；原PR99已经合并。继续使用本独立checkout，不另建全量副本。最新代码31aa4fa已推送；本轮40结果、报告及校验本地完成，最终发布/远端HEAD以integrated/PUBLICATION.json和Issue96最新回执为准。
+
+- 执行冻结31aa4fa31fbfb7d74629b54811936ac30a41c250；40/40完成0失败，93机制/回归、1421归档与模型契约核对通过。run_targeted.py是40项精确计划；源/配置/数据(合成)/校准版本和SHA在results/integrated_rng_20261022_v3/EXECUTION、PLAN、逐case及ARTIFACT_MANIFEST；AUDIT在work/jieruiz/96/integrated。
+- integrated_service为默认，core/RNG/sampler/seed100MHz；SRAM80MHz单独约束。FFN本地LFSR32流式共享64/T32K32，源与SC重叠不算双份；SAVE锁epoch/RESTORE/RELEASE及换种延后。Attention真实Bivium池+独立fair源，q/256、有限端点/种子包/预热/输出等待累计一次。原random_service源码/RTL未改。完整设计与结果RNG_INTEGRATION_ZH.md、RNG_INTEGRATION_RESULTS_ZH.md。
+- 40项含12项S8赢家/拒绝各3seed×两后端诊断，倍率1，非默认质量预算；其余完整Qwen24层2K/8K、筛选PV三seed及Llama1/2的32层形状对照。Llama数据为合成路由，并未加载权重。新数字q/256不继承旧PPL。
+- 首个完整pilot v1独立封存；v2 104项扫描0完成/0失败，CPU参考开销过大，主动Ctrl-C停止本人session90160，CANCELLED说明替代40定向验证；不计入成果或失败。新session93988已正常40/40退出0，无本任务运行作业。
+- 初始deferred-age跳事件偏差修正和无效长换种测试改为压力200拍，FAILED_PREFLIGHT保留；默认1亿拍不改。旧v4第一次默认临时目录权限失败，指定本人test_tmp后10通过，未改旧源。补充3检查源码check_extra.py及独立重放EXTRA_REPRO，不把重放再计数。
+- 原生LFSR/Bivium100MHz PPA只按active/idle条件插值，任务38322118/中央记录PR111；无CTS/SPEF/SDF与库告警保留。FFN共享比较/分层、Attention LUT/阈值保持、全局seed材料/仲裁/长线等未知；全随机和整机PPA null。普通算子512/64/16吞吐和编码/恢复仍假设，外存本次Link非DRAMSys。
+- 执行冻结源不修改。重跑unittest/check_extra可直接；新整机执行先提交依赖并用新输出目录。run_targeted.py和audit.py包含本次封存路径，重放须在新目录/副本明确改OUT后冻结源码，不覆盖原件。
+- 发布工具integrated/publish_exact.py保持双亲merge原SHA，限定本人路径，force=False，上传前重新核实jieruiz/workspace和原branchhead。原publish.py为旧线性helper，不支持本轮merge。外部发布原件放root/project_archives/rng_integration_issue96_20261022/。不要上传凭据/工艺本体，不改他人STATUS。
+- 无新GPU/Slurm/模型PPL/RTL/DC/PT/STA/实际DRAMSys，未改变任何其他远端任务或定时。Projects沿read:project不足，最终Issue/STATUS仍需如实同步。旧架构检查台冻结52项，不假装跟本版自动刷新。
+
+下一步：将本地成果提交同PR103，远端逐blob读取核对；更新Issue96/本人STATUS/长期备忘录并保留最小待审工作目录。review前不自动关闭Issue或合并PR。以下为历史交接，旧未接入结论只适用于旧源。
+
 # Issue96: complete implementation and52 verified TLM scenarios
 
 ## 2026-10-22 随机源接口可用性补充

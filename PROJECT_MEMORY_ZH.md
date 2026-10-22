@@ -1,5 +1,13 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-22 Issue96：真实随机架构已接入完整TLM
+
+负责人jieruiz，沿用task/96-unified-tlm/PR103（原PR99已合并）。FullDecode默认integrated_service，core/SC/RNG/sampler/seed100MHz，SRAM按SS宏80MHz保留。原Issue95模型/RTL未改；FFN LFSR32/R8共享64、B4/T32/K32、流式消费与SAVE/RESTORE/RELEASE，Attention有限Bivium池+fair源真实输出进入筛选/PV/赢家/拒绝。源跨层/查询保留epoch与计时，种子总线/预热/到期换种/锁定延后/回压计入一次；无随机流SRAM/额外FIFO/第二概率副本，native状态/阈值保持不是免费。
+
+执行31aa4fa31fbfb7d74629b54811936ac30a41c250；40/40完整模型情景、93机制回归、1421归档/模型契约核对通过。12项S8、赢家倍率1是整机连通诊断，非默认S128/8倍质量；其余2K/8K、三seed筛选PV、Llama1/2完整32层。原52结果不改；104宽扫描0完成/0失败主动取消并留CANCELLED，不混计。Qwen2K SC/screenPV seed0旧197.93816→新198.00316ms；BF16准确对照时延/存储/阶段一致。新q/256 sigmoid改变分布，无继承模型PPL；全部为合成事务，非真实推理/芯片时间。
+
+正式入口architecture_tlm/unified_v6/RNG_INTEGRATION_ZH.md和RNG_INTEGRATION_RESULTS_ZH.md，原件results/integrated_rng_20261022_v3及work/jieruiz/96/integrated；代码31aa已上传，结果/报告目前本地完成，最终远端状态以Issue96与PUBLICATION回执为准。100MHz native端点PPA取38322118/中央记录PR111，有条件active/idle插值；前端/全局seed/长线和SC等未知，完整能量/面积null。512MAC/64向量/16非线性吞吐仍假设，默认Link非本次实际DRAMSys。无新PPL/GPU/Slurm/RTL/PT。旧界面52项快照不自动刷新；Projects read:project不足待同步，PR103不自动合并。当前无本人本任务运行作业。
+
 ## 2026-10-22 Issue92：小网部署计算成本
 
 负责人amlink1219，接续Issue92/task/92-pbit-gate-pilot/PR94。新增部署运算账本qwen/results/pbit_gate_cost_20261022/README_ZH.md、COST.json及compute_cost.py。每自由块32连续乘法/40加法/8bit门控/9概率事件、两阶段；原三位置混合F21，层0/12/23候选QK省378/−165/379 MAC，小网第一层新增672乘法，不能称整体节能。含公共特征/动态归一化、GQA并集与固定S的PV边界。9模型形状、2304隐藏态门控等价、6项均值回算及独立只读审阅通过；没有新训练/Slurm/完整PPL/RTL/PPA，原质量结果保持。发布随PR94，待审未合并；上传核验以work/amlink1219/92/compute_cost/PUBLICATION.json实际回执为准。Projects沿同日已验证read:project不足待同步，不自动合并/关闭Issue。

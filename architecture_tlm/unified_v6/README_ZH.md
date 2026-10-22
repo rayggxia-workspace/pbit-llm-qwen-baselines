@@ -1,6 +1,6 @@
 # 统一整机 TLM v6：先保证执行过程可检查
 
-新增：[与Issue95随机源架构的接口核实和连通检查](RNG_COMPATIBILITY_ZH.md)。已提供分层共享输入/PV薄前端并实测两种采样器，整机默认与原52项冻结结果不变。
+2026-10-22更新：[真实随机服务接入整机](RNG_INTEGRATION_ZH.md)。默认已切换为`integrated_service`，计算核与源均100MHz；SAVE/RESTORE/RELEASE、有限端点、种子等待/预热/换种、实际输出和回压进入整机时间线。新结果与原52项封存分开，旧接口可显式选择`local_prng_interface`。此前[接口连通报告](RNG_COMPATIBILITY_ZH.md)是尚未整机接入时的历史证据。
 
 任务 [Issue96](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/96)，负责人 jieruiz。基线为 workspace 集成提交 `83e15289434af50fc09c35e699d8b39965389d98`。旧入口、冻结代码和历史结果均保留。
 
@@ -17,7 +17,7 @@
 | 采样预算 | PV/拒绝按 L/16，2K 为128、8K为512；赢家默认8倍更新作不同预算候选 | 8倍仅来自既有局部 QKV 网格，不是新完整模型精度保证 |
 | SRAM | 已校准 55nm SS、1RW、80MHz，16 bank，共享16GB/s fabric；Qwen1MiB/Llama8MiB | wrapper、CDC、CTS，bank内部最优仲裁 |
 | DRAM | 默认有限32请求窗口的 Link 情景；可配置现有 DRAMSys 桥接 | 本次默认运行不是 DRAMSys/DRAMPower 实测 |
-| 随机源 | 算子附近本地 PRNG 接口；记录宽度、并行度、共享、重放、种子与费用需求 | 后端、熵分发、有限吞吐、真实功耗/面积归 Issue95 |
+| 随机源 | 持久Issue95端点网络；FFN本地LFSR与Attention本地Bivium池，100MHz实际协议和输出 | 端点PPA仅有条件两状态标定；全局种子、LUT/编程/分层前端/长线等仍未知 |
 
 三个模型采用独立形状文件和结果子目录。Llama1 的 8K 只用于存储压力，超出其配置上下文；没有因此验证位置编码或质量。Llama2 8K 同理超出原4K规范。Qwen/Llama的绝对数值不得跨模型混比。
 
@@ -46,7 +46,9 @@
 
 筛选摘要在DRAM中持久保存，每个KV组读入SRAM使用；每个新token更新当前子摘要。摘要暖启动不是免费在SRAM常驻所有层。合成logits只用于决定事务地址；不将离线生成logits作为硬件额外完整QK，也不叫真实Qwen轨迹。`--trace`可接完整、逐token/layer/head匹配的既有logit格式，缺行/长度错误直接失败。
 
-## 随机接口：第一版不建立随机流存储
+## 随机接口历史版本：不建立随机流存储
+
+下表是原`local_prng_interface`的冻结语义，现可显式作为对照。当前默认真实接入以[RNG_INTEGRATION_ZH](RNG_INTEGRATION_ZH.md)为准；原52项与此处历史计费不改写。
 
 `LocalRandomService.request(site, ready, words, width, parallel_lanes, semantic, frame, replay)` 是可替换端口；采样FSM内部源调用用 `embedded` 计需求，防止重复收费。
 

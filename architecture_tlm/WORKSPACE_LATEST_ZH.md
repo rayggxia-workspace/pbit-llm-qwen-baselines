@@ -1,5 +1,7 @@
 # 工作区最新 TLM 文件索引（2026-10-16）
 
+2026-10-22补充：完整decode的新默认为[unified_v6真实随机服务接入](unified_v6/RNG_INTEGRATION_ZH.md)，计算/源100MHz，SRAM80MHz；旧52项和下文各历史版本保持封存。新旧结果、质量与功耗边界请勿混合。
+
 发布目标：rayggxia-workspace/pbit-llm-qwen-baselines。
 这是现有实现的发布快照；本次对话提出的“原生 p-bit 直接驱动筛选”及“耦合预算筛选器”尚未实现，不能当作本版功能。
 

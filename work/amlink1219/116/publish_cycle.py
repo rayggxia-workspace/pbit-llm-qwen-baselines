@@ -30,7 +30,7 @@ def save(path, data):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['create', 'verify'])
+    parser.add_argument('action', choices=['create', 'verify', 'update-metadata'])
     parser.add_argument('--no-save', action='store_true', help='Read-only final verification of a metadata commit')
     args = parser.parse_args()
     cred = subprocess.run(['git', 'credential', 'fill'],
@@ -75,6 +75,31 @@ def main():
             'pr_url': pr['html_url'], 'status': 'published_pending_remote_artifact_verification',
             'merged': pr['merged_at'] is not None})
         print(json.dumps({'pr_number':pr['number'], 'url':pr['html_url'], 'head':head}))
+        return
+
+    if args.action == 'update-metadata':
+        assert len(existing) == 1 and existing[0]['number'] == 126
+        assert existing[0]['state'] == 'open' and existing[0]['merged_at'] is None
+        title = '周期TLM后端：有限FFN、共享KV GQA与独立周期审查'
+        pr_body = (HERE/'PR_BODY.md').read_text(encoding='utf-8')
+        issue_body = (HERE/'ISSUE_UPDATE.md').read_text(encoding='utf-8')
+        save(HERE/'METADATA_UPDATE_INTENT.json', {
+            'created_utc': datetime.now(timezone.utc).isoformat(), 'head': head,
+            'identity': me['login'], 'repo': REPO, 'pr': 126, 'issue': 116,
+            'pr_body_sha256': hashlib.sha256(pr_body.encode()).hexdigest(),
+            'issue_body_sha256': hashlib.sha256(issue_body.encode()).hexdigest()})
+        api(repo_path+'/pulls/126', {'title': title, 'body': pr_body}, 'PATCH')
+        api(repo_path+'/issues/116', {'body': issue_body}, 'PATCH')
+        checked_pr = api(repo_path+'/pulls/126')
+        checked_issue = api(repo_path+'/issues/116')
+        assert checked_pr['title'] == title and checked_pr['body'] == pr_body
+        assert checked_issue['body'] == issue_body and checked_issue['state'] == 'open'
+        save(HERE/'METADATA_UPDATE_RECEIPT.json', {
+            'verified_utc': datetime.now(timezone.utc).isoformat(), 'head': head,
+            'identity': me['login'], 'pr': 126, 'issue': 116,
+            'exact_body_readback': True, 'pr_open_unmerged': checked_pr['merged_at'] is None,
+            'issue_open': True})
+        print(json.dumps({'pr':126, 'issue':116, 'exact_body_readback':True}))
         return
 
     assert len(existing) == 1

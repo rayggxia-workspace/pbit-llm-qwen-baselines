@@ -1,5 +1,7 @@
 # 小型 p-bit QK 筛选网训练验证（Issue92）
 
+第二轮直接质量目标、隐式预算梯度与90配置冻结盲评见[优化协议](OPTIMIZATION_PROTOCOL_ZH.md)及[独立留出结果](../../qwen/results/pbit_gate_optimization_20261022/README_ZH.md)。下文保留首轮协议，不能用它覆盖第二轮的输入、目标或数据版本。
+
 本实验回答：四个子块摘要分数能否通过一个很小的可训练概率映射，在相同训练集平均选块预算下减少遗漏的重要 Attention 概率质量。Qwen 主模型、FFN 和 Attention 教师全部冻结。本目录不训练 LLM，也不把软件 Bernoulli 抽样称为物理器件训练。
 
 本说明对应冻结执行代码 `53c24f28eb24d25f0edffc4e45354dab6cd86154`，参考配置为 [pilot.json](pilot.json)。这里给出协议与复现方法，不预先声称训练收益、完整模型 PPL 或硬件 PPA 改善。

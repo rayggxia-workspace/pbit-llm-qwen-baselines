@@ -1,3 +1,11 @@
+# Issue92 第二轮直接目标优化（2026-10-22，当前）
+
+负责人amlink1219，task/92-pbit-gate-pilot/PR94。CPU45项通过、90配置先冻结后独立盲评全部完成，GPU2744/2746/2748/2751均COMPLETED/0:0；无在运行作业。pbit三seed盲集遗漏1.978%/2.021%/24.845%，原T1 4.253%/3.550%/31.365%，强max4 2.069%/2.163%/24.723%。层0平均候选与质量改善；层12成本+0.5%；层23权衡。不能称全面优势/PPL/PPA。135文件小档逐SHA通过，原大数据/日志/32MB冻结留个人服务器。
+
+正式入口qwen/results/pbit_gate_optimization_20261022/README_ZH.md；代码experiments/pbit_gate_pilot_20261022；交接work/amlink1219/92/HANDOFF.md。本轮成果待发布，最终状态以optimization_v2/PUBLICATION.json为准。原第一轮负结果保持，已看blind不再调参，Projects权限不足待同步。
+
+---
+
 # Issue92 小型p-bit筛选网首轮训练（2026-10-22，当前）
 
 负责人amlink1219；task/92-pbit-gate-pilot，独立workspace_projects/gt92，base集成83e15289。CPU2740检查16/16，单5090 GPU2741已COMPLETED/0:0，总45.90秒、训练评估30.05秒；本任务无在运行作业。实际执行53c24f28，48篇文章隔离、1296组，18模型+3基线全部完成。49参数网在三层holdout均落后原max4，预算略高仍差；证明服务器训练可行，未建立算法/PPA优势。未跑学生整模型PPL。

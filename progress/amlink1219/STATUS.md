@@ -1,6 +1,12 @@
-# Issue98 频率与时序补充（2026-10-22，amlink1219）
+发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
 
-接续原负责人rayggxia的Issue98，PR100已核实合并。本人仅补充16项工作频率/时序域及原文依据，分支task/98-ppa-frequency-amlink1219，base集成eb317e4f。正式入口architecture_tlm/benchmark_protocol_20261022/README_ZH.md第2.1节，机器证据FREQUENCY_EVIDENCE.json。原报告其余内容逐字节保留，原PAPERS.json/.csv和协议不改；AttAcc计算频率仍待原始表格复核。文档与SHA/链接核验通过，无新模型/训练/GPU/Slurm/TLM/EDA或器件PPA。科学报告1198a544f11174f7976980ea1f9d8750d8805c7c已通过[PR106](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/106)上传待审、未合并；7项远端原始文件SHA已回读一致，Issue98评论6339719096已同步。实际回执work/amlink1219/98/frequency/PUBLICATION.json；后续提交仅补发布元数据。Projects实时查询缺read:project，看板待同步。原负责人及其他成员STATUS/HANDOFF不改，不自动合并或关闭Issue。
+# Issue98 Prefill专项补充（2026-10-22）
+
+负责人amlink1219；原Issue98负责人rayggxia保持。独立分支task/98-prefill-analysis-amlink1219，PR base pbit-tlm-attention-details-20261016@eb317e4f6fb1b0d8844887401f3275f128ef8a83。独立工作目录为本机visualizations/2026/10/22/01a16312-a5d6-71b0-a2e7-06d7139a3b28/prefill_upload，仅文档暂存和Git对象发布，不切换或覆盖其他checkout。
+
+阶段：报告及文献证据本地整理完成，上传/PR状态以work/amlink1219/98/prefill/PUBLICATION.json的实际远端回执为准。正式入口architecture_tlm/benchmark_protocol_20261022/PREFILL_ANALYSIS_ZH.md。覆盖原16项文献与库内3项补充；核对当前统一TLM明确不含prefill/摘要首次构建/TTFT，建议数字prefill Attention＋概率decode，不改变联合FFN双阶段约定或活动默认。
+
+验证：逐项来源、JSON/矩阵ID、相对链接、UTF-8/LF、SANTA算术与科学制品SHA，实际结果见work/amlink1219/98/prefill/VALIDATION.json。无新模型/PPL/训练/服务器/TLM/RTL/EDA；无运行任务。Projects实时缺read:project，待有权限者同步；PR审核/合并待定，不关闭Issue。恢复先查Issue98、PR106及本分支PR，交接见work/amlink1219/98/prefill/HANDOFF.md。
 
 ---
 

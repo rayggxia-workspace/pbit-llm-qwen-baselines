@@ -46,6 +46,7 @@
 
 1. `cycle_v1` 是有明确有限资源契约的周期模型。配置 latency/II 不是 STA 结果；`energy.status=unknown` 保留未知，总功率/面积/能耗没有由动作数臆造。旧 PPA 只能在其原映射和边界下引用。`memory.*` 与前端语义动作有重叠，不能直接求和收费；free-credit buffer 的 token 高水位不是已用容量峰值，应同拍聚合 trace 后计算 `capacity-min_free`。
 2. MemoryPort 按地址、line、bank、端口和有限 window 建模并返回真实字节；它不是已校准 DDR/HBM controller。全局 SRAM/DRAM 地址空间没有总容量 allocator，不能声称整层/整模型 SRAM 闭合。
+   FFN 的 32KiB weight credits 表示 DMA admission 到 restore 的单份逻辑所有权。有限 SRAM `weight_local_read` 已按 line/bank/port/II 服务，此后 T 次 SC 采样假设整 tile 静态驻留、并行可见；Python resident list 并不能证明已实现阵列侧宽读口。若物理方案采用独立 SRAM staging 和阵列保持，应分别实现容量、装载端口和生存期；当前额度不能同时证明两份物理存储均已计入。
 3. NativeRandomService 使用已有 native 协议和确定性 seed fixture；不代表物理熵。layer 中 Attention 与 FFN 各自创建 source network / seed bus，当前未验证全层统一随机网络共享与竞争。
 4. `clock_process` 是隔离 FSM 的扩展接口；本轮 adapter 仅从提交后 operation callback 接收请求。任意第三方 callback 直接读写其他进程的可变状态，不自动获得双阶段 old-state 语义保证。
 5. Attention 查询从已投影、已 RoPE 的 Q/K 开始；显式候选列表不等于已实现真实 selector。reduced layer 为单头、全候选、合成尺寸，不包括完整 Qwen/Llama 多头/GQA、24/32 层质量验证。
@@ -73,6 +74,22 @@
 只读检查 `run_layer.py` 和 `results/reduced_layer_20261023` 的 7 个成功场景、2 个容量拒绝场景。运行器明确将内部复用 primitive 的计算称为功能回归，独立闭式/标量证明另见上述测试。exact / PV / winner / rejection 各自比较完整 cycle/event payload；单 bank/window、慢内存、刚好 768B layer state 的 exact 输出 hash 与默认相等。767B working state 和 9 候选容量分别因预期的工作存储/10 候选越界拒绝。
 
 `verify_layer_artifacts.py` 重新解压全部 7 份原始 trace，核对唯一操作 ID、全部接受/完成集合与时间、实际 memory 字节/请求数、逐拍汇总后的额度范围/归还/已用峰值、BF16 输出 hash 和压缩 trace hash。全数通过，回执为 `results/reduced_layer_artifact_review.json`。当前 exact 为 728 操作 / 24,850 ns，单 bank/window 为 28,110 ns，慢内存为 27,510 ns；这些只反映已配置的缩小合成架构，不是完整模型性能或硬件预测精度。
+
+## 最终真实矩阵的独立离线核验
+
+Slurm **2776** 的固定 v5 结果包含 **68 个真实片段配置和 8 个 synthetic smoke**，本审查独立枚举 B/T/K、seed、layer、mode、N128/N512 和 S32/S512 的期望组合，核对全部 case 身份及有效配置。解包后的 **302 项制品**逐字节数量/SHA-256 通过；实际 source archive 的 **64 个源文件**逐项对照 execution manifest，再绑定各结果运行时记录的源码闭包。源 archive SHA 为 `f6c596f3d772dee19bea1d85badb25fe0088aefaaae70ab959555b68daf96cbf`，结果 archive SHA 为 `82319f0d95054149e7d3dbeba5248648d461fe91539107aaa85e83fd44429ee5`。
+
+有完整 trace 的 **34 个配置 / 403,583 个事件 / 98,340 个操作**由独立程序重放：核对唯一 accept/complete、时钟沿、每拍旧态容量和信用、有限资源完成端、memory window/bank issue port、每项语义及物理 memory action、resource held/execution/blocked 汇总与容量使用峰值。另直接从私有 fixture 重建初始 FP32 Q/K/V/x/residual 与 signed W8/FP32 scale bytes，核对 **4,597 项实际 read hash**；不借用生产模拟器的 pack/matrix/算术 helper。
+
+全部 76 配置的输出存储 hash、sample multiplicity/unique V/真实地址/字节、native seed/端口/事务报告、credits 与 `unknown` PPA 边界通过。未保存 trace 的 42 配置只有 summary/manifest/配置/数值门限回执层复核，不伪装为完整 trace 重放。矩阵数值 `pass` 和容差被核作**运行器回执**；本次离线核验没有重新计算全部 76 配置的数学答案。独立数学证据仍是三个真实裁剪 FFN 标量 oracle 和上述 54 项测试。
+
+完整新回执与可重现程序为 `results/matrix_v5_offline_review_final.json` 和 `verify_matrix_artifacts.py`。旧 Slurm 2775 的 62 pass / 6 deadlock 应保留为修复来源；不能与本轮 68/68 结果混算。
+
+## v6 可执行桥复核
+
+固定执行版本 `d0ccc5e`、五例回执提交 `b741427` 的 FFN/exact/PV/winner/rejection 经过独立离线复核：**47 个制品、38 个源依赖**散列匹配，五份完整周期 trace 的 actions、旧态容量、资源和 bank/completion 端口守恒通过。源码按执行 Git SHA 核验；仅当 LF/CRLF checkout 变体的 SHA 与原记录精确相同时接受，未把后续 package_snapshot 变更误当旧执行版本。
+
+桥只调用旧 FullDecode 的算子方法，旧 FFN 没有权重数值输出；screen 模式已给候选后才进入桥。已明确旧桥 QK 逐乘/逐加 FP32 与 cycle 的 double fsum 后 FP32 可以产生不同 logits，加上不同 source 端点/请求时刻，不构成样本、数值、周期或加速比等价。`speedup=null` 正确保留；桥拒绝 cropped FFN、GQA、多时钟/native 不兼容和无法忠实映射的 II，不声称完整 decoder 已迁移。回执为 `results/v6_bridge_offline_review_final.json`。
 
 ## 重现
 

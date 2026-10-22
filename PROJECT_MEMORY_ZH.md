@@ -6,7 +6,7 @@
 
 盲集pbit三seed平均遗漏1.978%/2.021%/24.845%，原T1 4.253%/3.550%/31.365%，验证选强max4 2.069%/2.163%/24.723%。层0候选和局部质量均改善，层12多0.5%候选换质量，层23遗漏略差/候选少/PV好，不称全面胜出或隐藏随机性独有优势。确定性网仅300epoch，pbit6000；未做完整学生PPL/W8/物理PPA，约33–39% mask超512容量。blind已看，后续不得复用它调参仍称独立测试。
 
-结果qwen/results/pbit_gate_optimization_20261022、代码experiments/pbit_gate_pilot_20261022、交接work/amlink1219/92；执行cfa19622/cfad3902/6241ab7f/f66b65ac，CPU包装727ed629，135文件SHA回传通过。完整32MB冻结/NPZ/长日志留本人服务器。原负结果和旧回执保留；第二轮发布状态看Issue92/PR94最终回执，不改正式Attention默认。
+结果qwen/results/pbit_gate_optimization_20261022、代码experiments/pbit_gate_pilot_20261022、交接work/amlink1219/92；执行cfa19622/cfad3902/6241ab7f/f66b65ac，CPU包装727ed629，135文件SHA回传通过。完整32MB冻结/NPZ/长日志留本人服务器。原负结果和旧回执保留；第二轮科学成果64848a345c7926881f0c4b1ff543954fcc851eea已通过PR94上传待审、未合并，263项远端Git对象/8项关键SHA256已核，Issue92已同步；实际回执work/amlink1219/92/optimization_v2/PUBLICATION.json。看板因read:project不足待同步，不改正式Attention默认。
 
 
 ## 2026-10-22 Issue92：小型p-bit筛选网络首轮训练

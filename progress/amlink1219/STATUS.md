@@ -2,7 +2,7 @@
 
 负责人amlink1219，task/92-pbit-gate-pilot/PR94。CPU45项通过、90配置先冻结后独立盲评全部完成，GPU2744/2746/2748/2751均COMPLETED/0:0；无在运行作业。pbit三seed盲集遗漏1.978%/2.021%/24.845%，原T1 4.253%/3.550%/31.365%，强max4 2.069%/2.163%/24.723%。层0平均候选与质量改善；层12成本+0.5%；层23权衡。不能称全面优势/PPL/PPA。135文件小档逐SHA通过，原大数据/日志/32MB冻结留个人服务器。
 
-正式入口qwen/results/pbit_gate_optimization_20261022/README_ZH.md；代码experiments/pbit_gate_pilot_20261022；交接work/amlink1219/92/HANDOFF.md。本轮成果待发布，最终状态以optimization_v2/PUBLICATION.json为准。原第一轮负结果保持，已看blind不再调参，Projects权限不足待同步。
+正式入口qwen/results/pbit_gate_optimization_20261022/README_ZH.md；代码experiments/pbit_gate_pilot_20261022；交接work/amlink1219/92/HANDOFF.md。本轮科学成果64848a345c7926881f0c4b1ff543954fcc851eea已推送，PR94标题/报告已更新，开放待审、未合并；263项远端Git对象及8项关键原始SHA256已核，Issue92里程碑与结果评论已同步。准确回执见work/amlink1219/92/optimization_v2/PUBLICATION.json；后续提交仅补发布元数据。原第一轮负结果保持，已看blind不再调参，Projects权限不足待同步。
 
 ---
 

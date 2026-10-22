@@ -62,3 +62,12 @@ python qwen/run.py tlm --help
 ## FFN裁剪与固定二次幂尺度（2026-10-19）
 
 见[Issue39前缀PPL与证据边界](results/ffn_clipping_20261019/RESULTS_ZH.md)。八项主策略及端点/温和裁剪补充共65项替换对照已完成，Attention保持原BF16；完整WT2仅重跑原BF16基线，不能把替换前缀分数称为完整PPL。固定范围的质量与电路开销分别记录，没有修改TLM默认。
+
+
+## 可选：全候选并行采样TLM
+
+```powershell
+python qwen/run.py tlm-parallel --attention --context 512 --samples 16 --output NEW_EMPTY_DIRECTORY
+```
+
+此入口接入赢家保持/校正拒绝的事务模型，默认数字FFN。显式`--variant fixed_sc_exact`沿用历史随机FFN参数，未重标定最新B4/T32/K32；原`tlm`保留历史v3。审阅补充四个24层组合情景见`architecture_tlm/results/parallel_sampler_v5_20261021/REVIEW_FULL24_20261022.json`。它验证连通，不是新采样器整模型PPL、器件或完整PPA验收；未知能量/面积仍为null。

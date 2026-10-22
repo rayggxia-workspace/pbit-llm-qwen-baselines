@@ -34,7 +34,20 @@ class ScreenIsingMixin:
         # Reuse max4 screening/RNG and metadata utilities; sampled_rows is replaced.
         actual['attention_v3'].update(mode='screen_pv',samples=v['samples'])
         super().__init__(actual,variant,evidence,shape)
-        self.v4=copy.deepcopy(v);self.macro=IsingMacro(v['ising'],v['candidate_capacity'])
+        self.v4=copy.deepcopy(v);self.macro=self.make_sampler(v)
+
+    def make_sampler(self,v):
+        return IsingMacro(v['ising'],v['candidate_capacity'])
+
+    def prepare_sampler_input(self,t,n,cap):
+        # Historical v4 behavior. Explicit samplers may implement these stages
+        # internally; the hook prevents charging max/encode/programming twice.
+        t=self.op(t,'ising_bias_encode',vec=4*n)
+        config_size=math.ceil(cap*(self.v4['ising']['bias_bits']+1)/8)
+        return self.scratch(t,write=config_size,read=config_size,kind='ising_configuration')
+
+    def sampler_work_bytes(self,cap,samples):
+        return cap*8+math.ceil(cap*(self.v4['ising']['bias_bits']+1)/8)+samples*4
 
     def score_and_route(self,t,L,layer,token):
         t,rows,summary_bytes=super().score_and_route(t,L,layer,token)
@@ -102,7 +115,7 @@ class ScreenIsingMixin:
         # full response index buffer and finite V cache. No LxL attention map.
         b=math.ceil(L/64);sort_records=(1<<(b-1).bit_length())*24 if self.v4['selection']=='fixed_budget' else 0
         peak=(summary_bytes+self.qheads*b*5+sort_records+count*8+
-            cap*8+math.ceil(cap*(self.v4['ising']['bias_bits']+1)/8)+N*4+
+            self.sampler_work_bytes(cap,N)+
             self.qheads*self.dim*4+self.ac['kv_tile_tokens']*self.kheads*self.vecbytes*2+self.ac['v_cache_bytes'])
         self.attn_work_peak=max(self.attn_work_peak,peak)
         if peak>self.cfg['scratchpad']['capacity_MiB']*1024**2:raise ValueError('v4 scratch capacity exceeded')
@@ -112,9 +125,7 @@ class ScreenIsingMixin:
             h=row['head'];n=len(row['logits'])
             t=self.scratch(t,read=n*4,kind='compact_logits')
             # Max/subtract/scale/encode only. No external sigmoid or Softmax.
-            t=self.op(t,'ising_bias_encode',vec=4*n)
-            config_size=math.ceil(cap*(self.v4['ising']['bias_bits']+1)/8)
-            t=self.scratch(t,write=config_size,read=config_size,kind='ising_configuration')
+            t=self.prepare_sampler_input(t,n,cap)
             ids,service=self.macro.request(t,row['logits'],N,
                 self.source.random(token,layer,h,'ising_macro_oracle'),(token,layer,h),row['indices'],
                 output_ns_per_index=4/self.cfg['scratchpad']['bandwidth_GBs'])

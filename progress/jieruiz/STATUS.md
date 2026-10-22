@@ -1,3 +1,19 @@
+# Issue87 交付回执：PR88草稿已上传、未合并
+
+2026-10-22；jieruiz；task/87-parallel-sampler-tlm。科学交付head8687c1d8124af192e82ec13aa3dbe12ccaa240b7已推送workspace，PR88草稿开放未合并；两个采样器、公共接口、中文说明、结果报告及验证文件6份远端原字节SHA已读回核验，详见work/jieruiz/87/REMOTE_VERIFY.json和PUBLICATION.json。
+
+18新＋10旧检查通过，执行f6c6bd8；30三seed合成模块＋2单层decode连通完成。全宽候选一次读取、随机源后端未定；未知完整能量/面积null，不冒充PPL/PT/DRAMSys或实际源结果。下一步填源/数字模块成本或做真实模型质量与调度验证，现阶段等待PR评审；Issue87保持open，不自动合并。看板本轮未写，沿既有权限限制待同步；Issue73/78作业不改。
+
+以下为此前阶段记录，待发布描述不代表当前阻塞：
+
+# Issue87 全宽并行采样器TLM：本地完成、发布以回执为准
+
+2026-10-21；jieruiz；task/87-parallel-sampler-tlm；base5b26c80；独立稀疏tmp/parallel-sampler-issue87-20261021。赢家保持/原校正拒绝、源后端抽象、全候选一次读取、时序/反馈/回压及未知PPA契约已实现；18新＋10旧检查通过。执行f6c6bd8215c2d702ab42e6a3078f64e0888cade8；30三seed合成模块＋2单层decode情景完成，非模型PPL或芯片结果；无新Slurm/训练/PT/DRAMSys运行。
+
+正式说明architecture_tlm/PARALLEL_SAMPLERS_V5_ZH.md；正式结果architecture_tlm/results/parallel_sampler_v5_20261021；交接work/jieruiz/87/HANDOFF.md。源技术不决定，完整能量/面积null；公共偏移与逐驱动重写是可调前端模式。推送/PR/远端SHA以本任务PUBLICATION及Issue87回执为准，未合并；看板沿既有权限限制待同步。本任务不接管Issue37、不重跑Issue73/78。
+
+以下保留此前各任务记录：
+
 # 发布回执：真实QKV比较已推送PR86
 
 2026-10-21T13:41:36.925189+00:00；jieruiz；task/78-sampler-qkv-benchmark。科学head346bbb12f1181ab1b974940d79f052d0757fec80已按相同Git commit/tree/blob实际上传，草稿PR86开放未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/86 。90/90统计与报告齐全；本次仅补发布回执，科学结果不改。原始QKV/长曲线留服务器，无本任务运行作业。Issue78保持open，Projects本轮未写。最终分支head与远端字节核验见Issue78最新回执；下方待发布字样是此前阶段状态。

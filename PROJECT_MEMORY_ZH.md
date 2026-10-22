@@ -1,5 +1,13 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-22 Issue107：真实RNG接入后的Verilog仿真需求
+
+jieruiz沿用task/107/PR109，未新开复制。对照最新PR103 b05fb36d和中央台账PR111，正式文件architecture_tlm/digital_ppa_v1/LATEST_TLM_RTL_GAPS_ZH.md及同目录机器任务表/回传模板。分已有PPA、现成RTL待工艺、新整合RTL三类，共11组：SC64×64四档T32/计数与权重驻留；BF16/FP32动态分档、恢复/累加/窄化；普通阵列/lm_head；共享比较与q/256前端、完整赢家/拒绝FSM；筛选/CDF/稀疏V；实际SRAM/CDC/DMA；普通非线性；顶层状态/互连。
+
+重要边界：当前逐位/符号/档计数映射为6KiB/tile、8tile48KiB；每档signed20整数和对照可为640B/tile，理论状态差9.6倍不是功耗面积结论，尚无新RTL。单波次32KiB权重需明确SRAM可见输出/保持，不能认为SRAM里有就是免费驻留；单64B命令/拍100MHz只有6.4GB/s，不证明16GB/s。完整赢家需要0..512真计数/均匀选秩，KIND17的0/1/多树不能替代。源字R8，实际drive−255..255是9bit signed，q256需满幅表示；LUT/阈值保持未由原native端点PPA覆盖。
+
+本次仅需求分析/来源位宽校核：32源Git SHA、路径和288组档内整数等价通过，无新RTL/工艺仿真/TLM/模型PPL。旧源23e8d65f及66组功能证据保持；拟新增顶层未冒充可执行包。成果已通过同PR109实际推送科学head e7b5d256ca00a725394c4ee8decf4d562a672f5c，8关键远端blob原字节核验通过，Issue107/PR说明已更新；latest_gap/PUBLICATION.json为回执，待审未合并。Projects待read:project，不自动合并。
+
 ## 2026-10-22 Issue96：真实随机架构已接入完整TLM
 
 负责人jieruiz，沿用task/96-unified-tlm/PR103（原PR99已合并）。FullDecode默认integrated_service，core/SC/RNG/sampler/seed100MHz，SRAM按SS宏80MHz保留。原Issue95模型/RTL未改；FFN LFSR32/R8共享64、B4/T32/K32、流式消费与SAVE/RESTORE/RELEASE，Attention有限Bivium池+fair源真实输出进入筛选/PV/赢家/拒绝。源跨层/查询保留epoch与计时，种子总线/预热/到期换种/锁定延后/回压计入一次；无随机流SRAM/额外FIFO/第二概率副本，native状态/阈值保持不是免费。

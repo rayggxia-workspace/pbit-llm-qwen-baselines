@@ -1,5 +1,13 @@
 # Issue96：真实随机服务已接入整机（2026-10-22）
 # Issue104：架构可视化与全面检查
+# Issue107后续：最新TLM的Verilog仿真缺口（2026-10-22）
+
+负责人jieruiz，沿用task/107-tlm-cycle-digital-rtl和原独立checkout/PR109；远端初始aedc08d。原23e8d65f RTL/66功能组及12870输出不改。本次只读核对PR103@b05fb36d、台账PR111@2b7935f4，新增11组硬件表征需求、机器任务JSON和回传模板，无新RTL/EDA/TLM/模型运行。
+
+正式入口architecture_tlm/digital_ppa_v1/LATEST_TLM_RTL_GAPS_ZH.md，区分既有PPA、已有RTL待工艺、需新增整合；优先SC64×64四档T32的归约/计数与32KiB权重驻留、编码/恢复、普通512MAC吞吐、Attention前端/完整控制和读写。明确6KiB/tile计数状态与640B/tile精确档内累计对照只是状态位数，不是PPA结论；单发射64B@100MHz为6.4GB/s，不能证明16GB/s。
+
+来源/声明核对在work/jieruiz/107/latest_gap/SOURCE_INDEX.json和VALIDATION_FINAL.json：32个源Git字节、路径/位宽/单位、288组逐档整数等价均通过；9626内部断言大部分是循环边界检查，不作为9626电路测试。完整执行验证无新工艺结果、无新模型PPL。新增源码顶层只标拟议，不伪称已提供Verilog。已实际推送同PR109，科学交付e7b5d256ca00a725394c4ee8decf4d562a672f5c，8关键远端blob原字节核验通过；PR109/Issue107已同步，待审未合并，回执latest_gap/PUBLICATION.json。下一步等评审与用户工艺表征；Projects沿read:project不足待同步，不自动合并/关闭。以下旧交付为此前快照。
+
 # Issue107：TLM周期/存储审计与非随机数字RTL
 # Issue110 数字电路仿真统一台账
 

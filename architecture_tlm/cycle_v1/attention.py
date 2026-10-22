@@ -135,6 +135,8 @@ def local_state_bytes(n,d,dv,c):
     network=c.mode in ('winner','rejection')
     return dict(q=d*4,output_accumulator=dv*4,logits=n*4,candidate_map=n*4,
         softmax_probabilities=n*8 if c.mode in ('exact','pv') else 0,
+        cdf_prefix=n*8 if c.mode=='pv' else 0,
+        pv_index_buffer=c.samples*4 if c.mode=='pv' else 0,
         histogram=n*4 if sampled else 0,drive_values=n*8 if network else 0,
         q256_thresholds=n*2 if network and c.response=='q256' else 0,
         proposal_mask_and_valid=2*math.ceil(n/8) if network else 0,
@@ -231,6 +233,8 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                source_requests=0,source_frames=0,source_waves=0,fair_draws=0,rank_retries=0,
                winner_holds=0,winner_switches=0,algorithm_updates=0,
                operation_ids=[],K_addresses=[],V_addresses=[],local_state_bytes=storage,
+               native_biased_generated_lanes=0,native_biased_used_lanes=0,native_biased_padding_lanes=0,
+               native_fair_generated_bits=0,native_fair_used_bits=0,native_fair_unused_bits=0,
                provenance=dict(scope='one query from preprojected RoPE Q/K and explicit candidate IDs',
                   tensor_format='FP32 Q/K/V storage; not BF16 traffic',
                   arithmetic='QK double-precision products/fsum rounded to FP32; functional double-precision Softmax; per-term FP32 V accumulation; not a bit-true hardware datapath',
@@ -368,6 +372,9 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
             if width>160: raise ValueError('native fair Bivium word width exceeded')
             def response(data,done):
                 state['fair_draws']+=1
+                state['native_fair_generated_bits']+=160
+                state['native_fair_used_bits']+=width
+                state['native_fair_unused_bits']+=160-width
                 value=sum(w<<(8*i) for i,w in enumerate(data['words']['fair']))&((1<<width)-1)
                 callback(value,done)
             native.frame(unique(label),{'fair':[128]*20},(dependency,),response)
@@ -400,6 +407,9 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                 def received(data,done,start=start,count=count):
                     delivered=[bit for name in biased_names for bit in data['bits'][name]]
                     bits[start:start+count]=delivered[:count]
+                    state['native_biased_generated_lanes']+=len(delivered)
+                    state['native_biased_used_lanes']+=count
+                    state['native_biased_padding_lanes']+=len(delivered)-count
                 previous=native.frame(label,requests,(previous,),received)
             else:
                 previous=add(label,'rng',deps=(previous,),
@@ -420,24 +430,35 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
         ref=max(range(n),key=logits.__getitem__)
         if c.mode=='pv':
             state['probabilities']=softmax(logits)
+            def built_cdf(k,op):
+                cumulative=0.0
+                state['cdf']=[]
+                for probability in state['probabilities']:
+                    cumulative+=probability
+                    state['cdf'].append(cumulative)
+            cdf_ready=add('pv.cdf_build','vector',deps=(dependency,),latency_cycles=n,
+                actions={'cdf_prefix_serial_add':n},on_complete=built_cdf,
+                metadata={'contract':'one FP64 functional prefix item per cycle; physical circuit uncharacterized'})
             def offset_value(uniform,dependency):
-                out=[]
-                cumulative=state['probabilities'][0]
-                local=0
-                for sample in range(c.samples):
-                    target=(uniform+sample)/c.samples
-                    while cumulative<=target and local+1<n:
-                        local+=1
-                        cumulative+=state['probabilities'][local]
-                    out.append(local)
-                def next_index(index,dep):
-                    if index==len(out): mark_done(dep)
-                    else: emit(out[index],dep,lambda done:next_index(index+1,done))
-                next_index(0,dependency)
+                def scan(k,op):
+                    out=[]
+                    local=0
+                    for sample in range(c.samples):
+                        target=(uniform+sample)/c.samples
+                        while state['cdf'][local]<=target and local+1<n:
+                            local+=1
+                        out.append(local)
+                    def next_index(index,dep):
+                        if index==len(out): mark_done(dep)
+                        else: emit(out[index],dep,lambda done:next_index(index+1,done))
+                    next_index(0,op.id)
+                add('pv.cdf_scan','vector',deps=(dependency,cdf_ready),latency_cycles=n+c.samples,
+                    actions={'cdf_serial_scan_slots':n+c.samples,'cdf_sample_indices':c.samples},
+                    on_complete=scan,metadata={'contract':'ordered CDF/sample merge, one slot per cycle including tail padding'})
             if native: fair(32,dependency,lambda value,done:offset_value(value/2**32,done),'pv.offset')
             else:
                 add('pv.offset','rng',deps=(dependency,),on_complete=lambda k,op:offset_value(source.uniform(),op.id),
-                    actions={'uniform_random_bits':32,'cdf_intervals':n})
+                    actions={'uniform_random_bits':32})
             return
         if c.mode=='winner':
             winner=[ref]

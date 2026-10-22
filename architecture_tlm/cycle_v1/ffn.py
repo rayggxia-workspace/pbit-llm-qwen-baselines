@@ -398,23 +398,30 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                         actions={'counter_initialize_bits':nr*c.bins*counter_factor*c.counter_width})
                     for step in range(c.samples):
                         rng_suffix=f'{name}.g{gi}.wave{wave}.rng{step}'
-                        rng=prefix+'.'+rng_suffix+('.done' if native else '')
+                        rng=prefix+'.'+rng_suffix+('.frontend' if native else '')
                         if first_in_wave:
                             rng_deps=tuple(prefix+'.'+wl+('.count_init' if step==0 else f'.sample{step-1}') for wl in wave_labels)
+                            frontend_actions={'ffn_threshold_low_bits_used':8-int(math.log2(c.strata)),
+                                'ffn_activation_compare':len(block),'ffn_shared64_broadcast_tiles':len(wave_tiles),
+                                'ffn_stratum_updates':1,'ffn_bit_sinks':len(block)*len(wave_tiles)}
                             if native:
                                 if step==0:
                                     prepared=native.command(f'{name}.g{gi}.wave{wave}.prepare','ffn',1 if wave==0 else 2,rng_deps)
                                     rng_deps=(prepared,)
-                                def received(response,done,key=key,step=step,wave=wave):
-                                    width=256//c.strata
-                                    threshold=(step//(c.samples//c.strata))*width+(response['words']['ffn'][0]&(width-1))
-                                    if wave==0: state['thresholds'][key][step]=threshold
-                                    elif state['thresholds'][key][step]!=threshold:
-                                        raise AssertionError('native SAVE/RESTORE changed shared group trajectory')
-                                rng=native.frame(rng_suffix,{'ffn':[128]},rng_deps,received)
+                                def received(response,done,key=key,step=step,wave=wave,rng_suffix=rng_suffix,
+                                             frontend_actions=frontend_actions):
+                                    def frontend(k,op):
+                                        width=256//c.strata
+                                        threshold=(step//(c.samples//c.strata))*width+(response['words']['ffn'][0]&(width-1))
+                                        if wave==0: state['thresholds'][key][step]=threshold
+                                        elif state['thresholds'][key][step]!=threshold:
+                                            raise AssertionError('native SAVE/RESTORE changed shared group trajectory')
+                                    add(rng_suffix+'.frontend','rng',deps=(done,),on_complete=frontend,
+                                        actions=frontend_actions,metadata={'purpose':'stratum/low-bit frontend and shared64 broadcast; separate from native PRNG ledger'})
+                                native.frame(rng_suffix,{'ffn':[128]},rng_deps,received)
                             else:
                                 add(rng_suffix,'rng',deps=rng_deps,
-                                    actions={'behavioral_word8':1,'shared64_broadcast_tiles':len(wave_tiles)},
+                                    actions={'behavioral_word8':1,**frontend_actions},
                                     metadata={'phase':name,'group':gi,'step':step,'wave':wave,'replay_same_group':wave>0})
                         def sample_cb(k, op, key=key, tile_key=tile_key, matrix=matrix,
                                       r=r, start=start, nr=nr, step=step):

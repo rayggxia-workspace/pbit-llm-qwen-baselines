@@ -8,7 +8,8 @@ set case_type arithmetic
 if {[info exists env(CASE_TYPE)]} {set case_type $env(CASE_TYPE)}
 if {$case_type=="router"} {set mapped_top nr_sram_router_mapped;set strip tb_memory/router;set window_file router_window.txt
 } elseif {$case_type=="dma"} {set mapped_top nr_dma_window_mapped;set strip tb_memory/dma;set window_file dma_window.txt
-} else {set mapped_top nr_digital_probe_mapped;set strip tb_power/dut;set window_file window.txt}
+} elseif {$case_type=="arithmetic"} {set mapped_top nr_digital_probe_mapped;set strip tb_power/dut;set window_file window.txt
+} else {error "unknown CASE_TYPE"}
 current_design $mapped_top
 link
 read_sdc [file join $env(NET_DIR) mapped.sdc]

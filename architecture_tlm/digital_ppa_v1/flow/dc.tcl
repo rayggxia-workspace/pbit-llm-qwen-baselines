@@ -19,19 +19,21 @@ if {$case_type=="router"} {
  set mapped_top nr_dma_window_mapped
 } elseif {$case_type=="arithmetic"} {
  if {![info exists env(KIND)]} {error "KIND required"}
+ if {[lsearch -exact {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 20 21 22} $env(KIND)]<0} {error "unsupported KIND"}
  elaborate nr_digital_probe -parameters "KIND=$env(KIND)"
  set mapped_top nr_digital_probe_mapped
 } else {error "unknown CASE_TYPE"}
 rename_design [current_design] $mapped_top
 link
 redirect [file join $out check_design.rpt] {check_design}
+redirect [file join $out units.rpt] {report_units}
 set period 10.0
 if {[info exists env(PERIOD_NS)]} {set period $env(PERIOD_NS)}
 create_clock -name core_clk -period $period [get_ports clk]
 set_clock_uncertainty -setup 2.0 [get_clocks core_clk]
 set_clock_uncertainty -hold 0.1 [get_clocks core_clk]
 set_clock_transition 0.1 [get_clocks core_clk]
-set data_inputs [remove_from_collection [all_inputs] [get_ports {clk rst_n}]]
+set data_inputs [remove_from_collection [all_inputs] [get_ports clk]]
 set_input_delay -max 1.0 -clock core_clk $data_inputs
 set_input_delay -min 0.2 -clock core_clk $data_inputs
 set_input_transition 0.1 $data_inputs

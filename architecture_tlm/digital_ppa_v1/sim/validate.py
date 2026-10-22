@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import platform
 from pathlib import Path
 import random
 import re
@@ -180,9 +181,10 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('--iverilog',type=Path,required=True);ap.add_argument('--vvp',type=Path,required=True);ap.add_argument('--ivl-lib',type=Path,required=True);ap.add_argument('--out',type=Path,required=True)
     args=ap.parse_args();out=args.out.resolve();out.mkdir(parents=True,exist_ok=False)
     rtl=sorted((HERE/'rtl').glob('*.sv'))+sorted((ROOT/'format_conversion_rtl_20261016/rtl').glob('*.sv'))
-    sources=rtl+sorted((HERE/'rtl').glob('*.svh'))+list((HERE/'sim').glob('*.*'))
+    sources=rtl+sorted((HERE/'rtl').glob('*.svh'))+list((HERE/'sim').glob('*.*'))+[ROOT/'format_conversion_rtl_20261016/sim/reference.py']
     git_result=subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,capture_output=True,text=True)
     record=dict(scope='functional RTL and synthetic activity, not DC/PT/PPL',git_head=git_result.stdout.strip() if git_result.returncode==0 else None,
+                python=sys.version,platform=platform.platform(),tool_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (args.iverilog,args.vvp)},
                 source_sha256={p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in sources if p.suffix in ('.sv','.svh','.py')},results=[],power_activity=[])
     log=[]
     def save():

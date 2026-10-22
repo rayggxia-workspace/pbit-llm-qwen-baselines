@@ -14,7 +14,8 @@ module tb_power;
 `else
  nr_digital_probe #(.KIND(`KIND)) dut(clk,rst_n,in_valid,first,last,data_a,data_b,aux0,aux1,scale_exp,mean_log2,out_valid,result);
 `endif
- integer mode=1,cycles=4096,seed=20261022,i,j,inputs=0,outputs=0,logical_input=0,fd;
+ integer mode=1,cycles=4096,seed=20261022,i,j,inputs=0,outputs=0,logical_input=0,fd,changes=0;
+ reg [2047:0] previous_result=0;
  reg measuring=0;reg [31:0] state=20261022,word;reg [4095:0] vcd_name;
  real start_ns,end_ns;
  function automatic [31:0] advance(input [31:0] value);
@@ -27,7 +28,9 @@ module tb_power;
   if(rst_n&&measuring&&in_valid)inputs=inputs+1;
   #1;
   if(rst_n&&measuring&&out_valid)begin
-   if(^result===1'bx)$fatal(1,"valid output X");outputs=outputs+1;
+   if(^result===1'bx)$fatal(1,"valid output X");
+   if(outputs!=0&&result!==previous_result)changes=changes+1;
+   previous_result=result;outputs=outputs+1;
   end
  end
  initial begin
@@ -58,6 +61,7 @@ module tb_power;
     aux0=32'h3c800000|state[18:0];scale_exp=(logical_input%12)-6;
    end
    if(`KIND==11)data_a[31]=1;
+   if(`KIND==12||`KIND==13)data_a[31]=0;
    if(`KIND==16)begin
     first=logical_input%32==0;last=logical_input%32==31;data_a=33'h008000000;
     aux0=32'h04567890;
@@ -67,16 +71,26 @@ module tb_power;
     if(logical_input%4!=0)data_a[state%512]=1;
     if(logical_input%4==2)data_a[(state+31)%512]=1;
    end
-   if(`KIND==20)begin data_a[31:0]={16'h3f00,16'hbf00};aux0=32'h3f3504f3;aux1=32'h3f3504f3;end
+   if(`KIND==20)begin
+    data_a[15:0]=finite_value(state)>>16;state=advance(state);data_a[31:16]=finite_value(state)>>16;
+    case(logical_input%4)
+     0:begin aux0=32'h3f800000;aux1=0;end
+     1:begin aux0=32'h3f3504f3;aux1=32'h3f3504f3;end
+     2:begin aux0=0;aux1=32'h3f800000;end
+     3:begin aux0=32'hbf3504f3;aux1=32'h3f3504f3;end
+    endcase
+   end
    if(in_valid)logical_input=logical_input+1;
   end
   @(negedge clk);in_valid=0;first=0;last=0;
   repeat(32)@(negedge clk);end_ns=$realtime;measuring=0;
   if(mode==0&&(inputs!=0||outputs!=0))$fatal(1,"idle activity");
   if(mode!=0&&outputs==0)$fatal(1,"no completed output");
+  if(mode!=0&&outputs>1&&`KIND!=16&&changes==0)$fatal(1,"active stimulus produced only a constant output");
   fd=$fopen("window.txt","w");
   $fdisplay(fd,"start_ns=%0.3f",start_ns);$fdisplay(fd,"end_ns=%0.3f",end_ns);
   $fdisplay(fd,"inputs=%0d",inputs);$fdisplay(fd,"outputs=%0d",outputs);$fdisplay(fd,"mode=%0d",mode);
+  $fdisplay(fd,"valid_output_transitions=%0d",changes);
   $fclose(fd);
   $display("PASS power KIND=%0d MODE=%0d inputs=%0d outputs=%0d window_ns=%0.3f",`KIND,mode,inputs,outputs,end_ns-start_ns);$finish;
  end

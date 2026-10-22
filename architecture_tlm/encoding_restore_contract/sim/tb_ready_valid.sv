@@ -5,8 +5,15 @@
 `ifndef DEPTH
  `define DEPTH 3
 `endif
+`ifndef T_LOG2
+ `define T_LOG2 5
+`endif
+`ifndef COUNT_W
+ `define COUNT_W 12
+`endif
 module tb_ready_valid;
  localparam integer KIND=`KIND,DEPTH=`DEPTH,FRAC=(KIND==0?7:23);
+ localparam integer T_LOG2=`T_LOG2,COUNT_W=`COUNT_W;
  localparam integer CW=(DEPTH<2?1:$clog2(DEPTH+1));
  localparam integer VISIBLE_LATENCY=(KIND==2?1:2);
  reg clk=0;always #5 clk=~clk;
@@ -15,9 +22,17 @@ module tb_ready_valid;
  reg [15:0] exp_in=0;reg [31:0] scale_in=0,in_tag=0;
  wire [31:0] out_tag;wire [784:0] data_out;
  wire [CW-1:0] reserved_count,queued_count;
+`ifdef ER_DUT_TOP
+ // Same explicit interface for a generated RTL top or a separately supplied
+ // mapped top. Defining this macro does not establish gate-level validation.
+ `ER_DUT_TOP dut(.clk(clk),.rst_n(rst_n),.in_valid(in_valid),.in_ready(in_ready),
+  .data_in(data_in),.exp_in(exp_in),.scale_in(scale_in),.in_tag(in_tag),
+  .out_valid(out_valid),.out_ready(out_ready),.data_out(data_out),.out_tag(out_tag),
+  .reserved_count(reserved_count),.queued_count(queued_count));
+`else
  generate if(KIND==2)begin:restore
-  er_bin_restore_rv #(.DEPTH(DEPTH)) dut(clk,rst_n,in_valid,in_ready,
-   data_in[767:0],exp_in,scale_in,in_tag,out_valid,out_ready,
+  er_bin_restore_rv #(.COUNT_W(COUNT_W),.T_LOG2(T_LOG2),.DEPTH(DEPTH)) dut(clk,rst_n,in_valid,in_ready,
+   data_in[64*COUNT_W-1:0],exp_in,scale_in,in_tag,out_valid,out_ready,
    data_out[31:0],out_tag,reserved_count,queued_count);
   assign data_out[784:32]=0;
  end else begin:encode
@@ -26,11 +41,16 @@ module tb_ready_valid;
    data_out[511:0],data_out[639:512],data_out[703:640],data_out[767:704],
    data_out[783:768],data_out[784],out_tag,reserved_count,queued_count);
  end endgenerate
+`endif
  reg [2047:0] vectors[0:255];reg [15:0] exponents[0:255];
  reg [31:0] scales[0:255];reg [784:0] golden[0:255];
  reg [784:0] expected[0:4095];reg [31:0] expected_tags[0:4095];
  integer accepted_at[0:4095];reg seen[0:4095];
  integer vector_count=0,fd,scan;reg [2047:0] filename;
+ reg [2047:0] vcd_path,window_path;integer window_fd;
+ time window_start_ps=0,window_end_ps=0;
+ integer window_accepted_start=0,window_received_start=0;
+ integer window_accepted=0,window_received=0;
  integer cycle=0,stage=-1,head=0,tail=0,tx_sequence=0;
  integer accepted_total=0,received_total=0,flushed_total=0;
  integer blocked_inputs=0,stalled_outputs=0,max_reserved=0,max_queued=0;
@@ -107,6 +127,17 @@ module tb_ready_valid;
   begin
    for(n=0;n<count;n=n+1)begin
     @(negedge clk);stage=mode;
+    // First 32 continuous cycles warm the bounded pipeline. Record the last
+    // 64 cycles only; the selected window contains neither reset nor drain.
+    if(mode==3&&n==32)begin
+     window_start_ps=$time*1000;
+     window_accepted_start=accepted_total;window_received_start=received_total;
+    end
+    if(mode==4&&n==0)begin
+     window_end_ps=$time*1000;
+     window_accepted=accepted_total-window_accepted_start;
+     window_received=received_total-window_received_start;
+    end
     rng=rng*32'd1664525+32'd1013904223;
     // Once offered, a transaction remains valid with the same payload until
     // accepted (or reset). Random bubbles only occur between transactions.
@@ -120,6 +151,13 @@ module tb_ready_valid;
   end
  endtask
  initial begin
+  if(KIND==2&&(T_LOG2<4||T_LOG2>6||COUNT_W!=T_LOG2+7))
+   $fatal(1,"unsupported restoration T/count-width configuration");
+`ifdef ER_DUT_TOP
+  if($value$plusargs("VCD=%s",vcd_path))begin
+   $dumpfile(vcd_path);$dumpvars(0,dut);
+  end
+`endif
   if(!$value$plusargs("VECTORS=%s",filename))$fatal(1,"missing vectors");
   if($value$plusargs("SEED=%d",seed))begin end
   rng=seed;fd=$fopen(filename,"r");if(!fd)$fatal(1,"cannot read vectors");
@@ -157,8 +195,24 @@ module tb_ready_valid;
    $fatal(1,"full-rate capacity has an avoidable II bubble");
   if(DEPTH==1&&(ii_min!=VISIBLE_LATENCY+1||ii_max!=VISIBLE_LATENCY+1))
    $fatal(1,"single-slot II differs from reservation lifetime");
-  $display("PASS kind=%0d depth=%0d seed=%0d accepted=%0d received=%0d flushed=%0d blocked=%0d stalled=%0d max_reserved=%0d max_queued=%0d visible_min=%0d visible_max=%0d transfer_min=%0d transfer_max=%0d ii_min=%0d ii_max=%0d simultaneous=%0d input_bubbles=%0d",
-   KIND,DEPTH,seed,accepted_total,received_total,flushed_total,blocked_inputs,stalled_outputs,
+  if(window_end_ps-window_start_ps!=640000||window_accepted<=0||window_received<=0)
+   $fatal(1,"invalid selected activity window");
+  if(DEPTH>=VISIBLE_LATENCY+1&&(window_accepted!=64||window_received!=64))
+   $fatal(1,"full-rate selected activity window is not 64 complete operations");
+  if($value$plusargs("WINDOW=%s",window_path))begin
+   window_fd=$fopen(window_path,"w");if(!window_fd)$fatal(1,"cannot write activity window");
+   $fdisplay(window_fd,"scenario=synthetic_active");
+   $fdisplay(window_fd,"timescale=1ns/1ps");
+   $fdisplay(window_fd,"start_ps=%0d",window_start_ps);
+   $fdisplay(window_fd,"end_ps=%0d",window_end_ps);
+   $fdisplay(window_fd,"period_ps=10000");
+   $fdisplay(window_fd,"accepted=%0d",window_accepted);
+   $fdisplay(window_fd,"completed=%0d",window_received);
+   $fdisplay(window_fd,"contains_reset=0");$fdisplay(window_fd,"contains_drain=0");
+   $fdisplay(window_fd,"warmup_continuous_cycles=32");$fclose(window_fd);
+  end
+  $display("PASS kind=%0d samples=%0d count_width=%0d depth=%0d seed=%0d accepted=%0d received=%0d flushed=%0d blocked=%0d stalled=%0d max_reserved=%0d max_queued=%0d visible_min=%0d visible_max=%0d transfer_min=%0d transfer_max=%0d ii_min=%0d ii_max=%0d simultaneous=%0d input_bubbles=%0d",
+   KIND,(KIND==2?(1<<T_LOG2):0),(KIND==2?COUNT_W:0),DEPTH,seed,accepted_total,received_total,flushed_total,blocked_inputs,stalled_outputs,
    max_reserved,max_queued,visible_min,visible_max,transfer_min,transfer_max,ii_min,ii_max,
    simultaneous_transfer_accept,input_bubbles);
   $finish;

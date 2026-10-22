@@ -1,3 +1,13 @@
+# Issue123 完整FFN接合与STA/PPA协作（2026-10-23）
+
+任务分支task/123-full-ffn-ppa，依赖PR122及116冻结发布。116仍在开发，复用其最新restore_rounding，不接管或重复其kernel/memory/Attention/crop工作。
+
+新结果：CPU2777捕获真实896→4864→896完整FFN单token fixture，模型派生数据仅留个人服务器。CPU2778通过45RTL场景、11667输出、180reset flush，T16/T32/T64全覆盖；18源SHA已核。完整周期接合/数值验证继续进行。
+
+按用户本轮明确安排，STA/PPA交给jieruiz明日执行。具体可执行交接在architecture_tlm/encoding_restore_contract/ppa/HANDOFF_JIERUI_ZH.md；实际DC/PT/功耗尚未运行，不能报面积/能量。发布与@回执见work/amlink1219/123/，不自动合并。
+
+---
+
 发布回执（Issue121）：科学提交`3e8cb017e71a96aa628b1772810b7fdf12884245`已上传[PR122](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/122)，87项远端Git对象一致，开放待审、未合并。Issue116已回传接合结果；后续元数据提交不改变验证源码。
 
 # 2026-10-23 Issue121：编码恢复与周期后端接合

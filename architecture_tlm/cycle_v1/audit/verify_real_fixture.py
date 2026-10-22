@@ -63,6 +63,11 @@ def main():
                       "audit/scalar_oracles.py":sha(scalar_oracles.__file__), "audit/verify_real_fixture.py":sha(__file__)},
                   checks=checks, passed=all(row["bit_equal"] for row in checks),
                   operations=len(result.completion_ps), finish_ps=result.finish_ps, wall_seconds=elapsed)
+    architecture_root = Path(ffn.__file__).resolve().parents[1]
+    for relative in ("cycle_v1/rng_protocol.py", "random_service/__init__.py", "random_service/model.py",
+                     "random_service/backends.py", "random_service/service.py", "random_service/shared64_mapping.json",
+                     "unified_v6/rng_integrated.py"):
+        report["execution_source_sha256"]["architecture_tlm/"+relative] = sha(architecture_root/relative)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
     print(json.dumps({"passed":report["passed"], "layer":layer, "operations":report["operations"],

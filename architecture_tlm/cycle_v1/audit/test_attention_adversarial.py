@@ -1,11 +1,13 @@
 """Externally specified finite trajectories for sampler and sparse addresses."""
 import unittest
+import math
 from dataclasses import replace
 
 from architecture_tlm.cycle_v1.attention import (
     AttentionConfig, SamplerCapError, _Source, build_attention, make_kernel,
 )
 from architecture_tlm.random_service.service import SigmoidTable
+from architecture_tlm.cycle_v1.audit.scalar_oracles import f32
 
 
 def fixture_three():
@@ -108,6 +110,46 @@ class IndependentAttentionAudit(unittest.TestCase):
         self.assertEqual(pv["output"], [4.0])
         self.assertFalse(pv["provenance"]["independent_samples"])
         self.assertEqual(result.actions["uniform_random_bits"], 32)
+        self.assertEqual(result.actions["cdf_prefix_serial_add"], 2)
+        self.assertEqual(result.actions["cdf_serial_scan_slots"], 6)
+        self.assertEqual(result.completion_ps["attention.pv.cdf_build"]-result.accepted_ps["attention.pv.cdf_build"], 20000)
+        self.assertEqual(result.completion_ps["attention.pv.cdf_scan"]-result.accepted_ps["attention.pv.cdf_scan"], 60000)
+        self.assertGreater(result.accepted_ps["attention.emit.0"], result.completion_ps["attention.pv.cdf_scan"])
+
+    def test_native_partial_waves_charge_generated_used_and_padding_lanes(self):
+        fixture = {"q":[0.0], "k":[[0.0]]*45, "v":[[float(i)] for i in range(45)]}
+        state, result = self.run_pair(fixture, AttentionConfig(mode="winner", samples=2, burn_updates=1,
+                                                               source_lanes=21, seed_word_interval=2, seed_startup=0))
+        self.assertEqual(state["source_frames"], 3)
+        self.assertEqual(state["source_waves"], 9)
+        self.assertEqual(state["native_biased_generated_lanes"], 360)
+        self.assertEqual(state["native_biased_used_lanes"], 135)
+        self.assertEqual(state["native_biased_padding_lanes"], 225)
+        self.assertEqual(state["output"], [sum(state["physical_indices"])/2])
+        ports = state["native_random"]["ports"]
+        self.assertEqual(ports["biased_0"]["counts"]["frames_generated"], 9)
+        self.assertEqual(ports["biased_1"]["counts"]["frames_generated"], 9)
+        self.assertEqual(state["native_fair_generated_bits"], 160*state["fair_draws"])
+        self.assertEqual(state["native_fair_generated_bits"], state["native_fair_used_bits"]+state["native_fair_unused_bits"])
+
+    def test_staged_softmax_has_one_reciprocal_and_finite_exp_lanes(self):
+        fixture = {"q":[1.0], "k":[[i/8] for i in range(17)],
+                   "v":[[float(i-8)] for i in range(17)], "candidate_ids":list(reversed(range(17)))}
+        exponentials = [math.exp(i/8-2.0) for i in range(17)]
+        reciprocal = 1/math.fsum(exponentials)
+        expected = 0.0
+        for i in range(17):
+            expected = f32(expected+f32((exponentials[i]*reciprocal)*(i-8)))
+        for lanes, latency in ((16, 9), (1, 24)):
+            state, result = self.run_pair(fixture, AttentionConfig(mode="exact", exp_lanes=lanes))
+            self.assertEqual(state["output"], [expected])
+            self.assertEqual(result.actions["exp_values"], 17)
+            self.assertEqual(result.actions["softmax_reciprocal"], 1)
+            exp = "attention.score.subtract_exp"
+            self.assertEqual(result.completion_ps[exp]-result.accepted_ps[exp], latency*10000)
+            chain = ["max_reduce", "subtract_exp", "sum_reduce", "reciprocal", "normalize"]
+            for before, after in zip(chain, chain[1:]):
+                self.assertGreater(result.accepted_ps["attention.score."+after], result.completion_ps["attention.score."+before])
 
     def test_q256_response_matches_frozen_existing_lut_including_ties(self):
         source = _Source({}, AttentionConfig(response="q256"))

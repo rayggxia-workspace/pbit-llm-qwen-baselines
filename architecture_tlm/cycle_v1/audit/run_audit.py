@@ -24,7 +24,8 @@ def main():
     result = unittest.TextTestRunner(stream=log, verbosity=2).run(suite)
     paths = sorted((here.parent).glob("*.py")) + sorted(here.glob("*.py"))
     paths += [root/"architecture_tlm"/name for name in ("random_service/service.py", "random_service/model.py",
-              "random_service/backends.py", "unified_v6/rng_integrated.py")]
+              "random_service/backends.py", "random_service/__init__.py", "random_service/shared64_mapping.json",
+              "unified_v6/rng_integrated.py")]
     source_hashes = {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
     proc = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, text=True, capture_output=True, check=True)
     report = dict(timestamp_utc=datetime.now(timezone.utc).isoformat(), python=platform.python_version(),

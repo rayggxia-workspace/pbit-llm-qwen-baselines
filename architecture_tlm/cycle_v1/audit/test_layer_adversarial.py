@@ -92,6 +92,19 @@ class IndependentLayerAudit(unittest.TestCase):
             earliest = destination.next_edge(result.completion_ps[producer], strict=True)+2*destination.period_ps
             self.assertGreaterEqual(result.accepted_ps[op.id], earliest, op.id)
 
+    def test_one_bank_one_window_preserves_end_to_end_values(self):
+        pairs = []
+        for banks, window in ((4, 4), (1, 1)):
+            k, state = make_layer(two_lane_fixture(), ffn_config=FFNConfig(samples=16, strata=16),
+                                  memory_banks=banks, memory_window=window)
+            result = k.run(mode="event")
+            pairs.append((state["output"], result.finish_ps))
+            for resource in ("dram", "sram"):
+                self.assertLessEqual(result.resource_peak[resource], window)
+            self.assertTrue(all(result.buffer_final[name] == spec.initial for name, spec in k.buffer_specs.items()))
+        self.assertEqual(pairs[0][0], pairs[1][0])
+        self.assertGreater(pairs[1][1], pairs[0][1])
+
 
 if __name__ == "__main__":
     unittest.main()

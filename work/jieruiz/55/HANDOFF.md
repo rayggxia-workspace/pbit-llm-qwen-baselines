@@ -1,3 +1,15 @@
+# 第六轮最终补审：PR99已ready并核验通过
+
+源heada7a48297；49检查/52情景清单/两项24层重放通过，随本次补充集成PR交付。最新[pr99_ready/REVIEW_ZH.md](round6/pr99_ready/REVIEW_ZH.md)。PR101的draft分流是旧fba时点，最终状态以Issue55回执为准。
+
+# 第六轮追加99/100
+
+100文档通过并随本PR保留原head；99草稿保留，最终报告待齐。实际4项远端接入与本轮清理以Issue55最终回执为准。
+
+# Issue55最新入口：第六轮
+
+93/97原生合并，94原head随本次review集成PR；详见[round6/REVIEW_ZH.md](round6/REVIEW_ZH.md)、[round6/HANDOFF.md](round6/HANDOFF.md)及Issue55最终回执。原任务90/92/95不自动关闭；无新服务器作业。
+
 # Issue55最新入口：第五轮
 
 PR82/83/85/86/88/89已合并。最新[round5/REVIEW_ZH.md](round5/REVIEW_ZH.md)与[round5/HANDOFF.md](round5/HANDOFF.md)。83最终26项官方oracle已完成，新采样器模型/PPA未完成；历史回执保留原字节与日期。

@@ -1,12 +1,24 @@
-# 2026-10-22 Issue90：两台4090隔离LLM环境已验证
+# Issue92 计算成本补充（2026-10-22，当前）
 
-负责人amlink1219；分支task/90-4090-llm-environments；PR base pbit-tlm-attention-details-20261016，初始base8d4ce51be7ecace716bc83688dc4768eb2574d38；独立最小稀疏目录workspace_projects/env90。两台Python3.12.3/Torch2.6.0+cu118/Transformers4.45.2/lm_eval0.4.8已安装：A CPU9041/GPU9042、B CPU14101/GPU14104均COMPLETED/0:0，每台19CPU/6GPU。94包freeze完全同字节SHA636ea0599fc983e7c003c3a8881aefa2f05d8167f2877dcab8992dfc3f145ae5，wrapper和预载库SHA相同；27参数/3buffer逐位相同，logits误差0.0。任务作业均结束。
+负责人amlink1219，接续Issue92/task/92-pbit-gate-pilot/PR94。新增部署运算账本qwen/results/pbit_gate_cost_20261022/README_ZH.md、COST.json及compute_cost.py。每自由块32连续乘法/40加法/8bit门控/9概率事件、两阶段；原三位置混合F21，层0/12/23候选QK省378/−165/379 MAC，小网第一层新增672乘法，不能称整体节能。含公共特征/动态归一化、GQA并集与固定S的PV边界。9模型形状、2304隐藏态门控等价、6项均值回算及独立只读审阅通过；没有新训练/Slurm/完整PPL/RTL/PPA，原质量结果保持。发布随PR94，待审未合并；上传核验以work/amlink1219/92/compute_cost/PUBLICATION.json实际回执为准。Projects沿同日已验证read:project不足待同步，不自动合并/关闭Issue。
 
-正式入口maintenance/llm_env_4090_20261022/README_ZH.md与exact freeze；原执行输入/阶段manifest在scripts/llm_env_4090_20261022；13私有原件SHA、脱敏报告、执行历史、验证和交接在work/amlink1219/90。原失败保留，70wheel仅LLM层恢复包，已验证receiver闭包及固定Torch底座元数据前后相同。根AGENTS新增1条严格保存重载/nonpersistent buffer精度规则，全局和memory未改。
+---
 
-仅synthetic环境验证，未下载真实模型/语料、训练或产生完整PPL/准确率/PPA；Torch与5090不同，不宣称跨硬件等价。正式入口bin/llm-python，Slurm/个人路径/跨服务器单GPU/备用告知规则保留。上传和PR的实际状态见work/amlink1219/90/PUBLICATION.json，不自动合并或关闭Issue。
+# Issue92 第二轮直接目标优化（2026-10-22，当前）
 
-## 以下保留远端最新既有进度，历史时点以实时Issue/PR为准
+负责人amlink1219，task/92-pbit-gate-pilot/PR94。CPU45项通过、90配置先冻结后独立盲评全部完成，GPU2744/2746/2748/2751均COMPLETED/0:0；无在运行作业。pbit三seed盲集遗漏1.978%/2.021%/24.845%，原T1 4.253%/3.550%/31.365%，强max4 2.069%/2.163%/24.723%。层0平均候选与质量改善；层12成本+0.5%；层23权衡。不能称全面优势/PPL/PPA。135文件小档逐SHA通过，原大数据/日志/32MB冻结留个人服务器。
+
+正式入口qwen/results/pbit_gate_optimization_20261022/README_ZH.md；代码experiments/pbit_gate_pilot_20261022；交接work/amlink1219/92/HANDOFF.md。本轮科学成果64848a345c7926881f0c4b1ff543954fcc851eea已推送，PR94标题/报告已更新，开放待审、未合并；263项远端Git对象及8项关键原始SHA256已核，Issue92里程碑与结果评论已同步。准确回执见work/amlink1219/92/optimization_v2/PUBLICATION.json；后续提交仅补发布元数据。原第一轮负结果保持，已看blind不再调参，Projects权限不足待同步。
+
+---
+
+# Issue92 小型p-bit筛选网首轮训练（2026-10-22，当前）
+
+负责人amlink1219；task/92-pbit-gate-pilot，独立workspace_projects/gt92，base集成83e15289。CPU2740检查16/16，单5090 GPU2741已COMPLETED/0:0，总45.90秒、训练评估30.05秒；本任务无在运行作业。实际执行53c24f28，48篇文章隔离、1296组，18模型+3基线全部完成。49参数网在三层holdout均落后原max4，预算略高仍差；证明服务器训练可行，未建立算法/PPA优势。未跑学生整模型PPL。
+
+正式入口qwen/results/pbit_gate_pilot_20261022/README_ZH.md；代码experiments/pbit_gate_pilot_20261022；交接work/amlink1219/92/HANDOFF.md。teacher NPZ、LLM与语料保留本人服务器，54项小报告SHA已核。结果提交074172c93b00b30eef30923223fe8a408b1ccd13已推送，[PR94](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/94)开放待审、未合并；82项远端Git对象和8项关键原始SHA256已核，Issue92验收与结果评论已同步。Projects因缺read:project待同步，未进行看板写入。实际回执work/amlink1219/92/PUBLICATION.json；不自动合并。
+
+---
 
 # 2026-10-22 Issue37：Ising最新实现与结果补充
 
@@ -192,5 +204,3 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 辅助/交接：work/amlink1219/<Issue>/。本地工作目录及原任务提交见各PUBLICATION.json；旧STATUS可从原提交恢复。
 原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
 下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。
-
-已推送结果提交`2b0fb4c6a85759bc4ee4adbbd9d0540847a0041f`，PR#93（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/93）开放待审、未合并；远端ref、PR head、60项文件范围和55个稳定blob SHA已核验。Projects：pending_permission。

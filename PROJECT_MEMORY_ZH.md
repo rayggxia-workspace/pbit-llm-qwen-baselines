@@ -443,6 +443,8 @@ FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700�
 
 ## 6 随机源、p-bit与相关性
 
+2026-10-22数字随机服务功耗结果38322118已由用户提供：原汇总`远端上传/rng_service_v1_20261022/architecture_tlm/random_service/POWER_RESULTS_38322118_ZH_20261022.txt`。本会话独立复核12归档SHA/同v3源码manifest、7920已下载阶段成员、216门级PASS及252窗口能量算术；未独立重放VCD/网表、未重跑EDA或接管Issue95。100MHz三seed(LFSR/GF64/Bivium/FFN)面积3154.32/14804.64/19331.64/12360.96um2，连续功率162.467/1355.333/1204/639.6uW，1.62467/13.55333/12.04/6.396pJ每生成帧；输出宽度用途不同，FFN为单8bit字共享64比较。SS1.08V125C布局前零延迟活动/PT，CALCULATED_PROVISIONAL；PWR-981/库表外警告、无CTS/SPEF及物理熵源/健康调理/CDC等。100MHz所有已报告配置时序过，300/500未全过；FFN不停钟idle492.3uW约77%active，门控仍待诊断，不能等同已实现收益。证据`analog_pbit_20261016/digital_rng_38322118_review_20261022/`；旧Issue95段落“PPA null”仅指交付时点，不代表现今无结果，正式TLM尚未由本会话回填。数字100MHz不证明模拟源100MHz独立位率。
+
 2026-10-22时钟口径澄清：用户提醒阵列/数字侧初步100MHz目标；row_shared_array_v1的clock_s=50ns（20MHz）、settle4/resolve2及比较器行为延迟50ns只是独立功能演示配置，不是实测物理上限或已决定降低架构频率。后续阵列周期模型应区分100MHz/10ns控制拍、模拟选通/比较/锁存读出时长及同源去相关间隔；较慢模拟读出可用多拍ready/valid表示，100MHz不代表每拍一个独立物理随机字。本次只澄清口径，未修改旧功能包/已提交快照；最新8核Spectre包扫描0.2/0.5/1us读出槽，与50ns演示时钟无关。
 
 2026-10-22用户要求申请8核加速当前模拟任务，已另建`远端上传/p50_shared_speed_8core_v1/`（22文件215041字节），旧p50_shared_speed_v1及已提交快照不改。`bash submit.sh both`现在只提交一个总8核16GB作业，两研究方向共用最多8个单线程Spectre(-mt)案例池；同Vref三seed并行、自适应电压顺序/冻结后独立验证不变，共享27例及供电审计并行排队。config/base_config/circuits/metrics/PDK哈希逐字未改，110预览网表与旧版及1-worker逐字一致；31测试、Python3.6 AST、Bash语法、27PDK哈希及上传逐字校验通过。并发夹具和预览不是实测加速比，尚未远端提交/运行；实际许可证与速度待远端日志确认，校准依赖阶段不保证占满8核。一个归档`p50_shared_speed_8core_JOB.tar.gz`+.sha256，内部results/JOB/lowpower及shared_fast；记录并行事件/案例耗时并保留失败兄弟结果。入口`analog_pbit_20261016/p50_shared_speed_8core_v1_delivery.json`、README和local_validation.txt；仍为独立EDA源码manifest交付，无LLM仓库Issue/PR或PDK上传。
@@ -1004,5 +1006,5 @@ jieruiz，task/107-tlm-cycle-digital-rtl，独立tmp/tlm-digital-issue107-202610
 
 最终源码23e8d65fbd84cf548ab82a6c9cfe423d37e59ae4，66功能组/12870逐位输出/63活动预检通过，29源输入与Git原字节一致。21KIND及SRAM/DMA控制、4lane数组；不含PRNG/p-bit/随机矩阵阵列。FP32非线性与融合恢复为候选，不继承PPL；probe功能延迟1拍不证明组合路径10ns。新最后一次归一化/转换输入隔离避免无效翻转；恢复器一次输出不能按72个完整核计费。
 
-113124B本机源码包digital_ppa_v1_20261022.zip，SHA d8004f0fdf586dc020e99c3d6e6ed3b29050a652a55af037220af898c03aafb2；Git保留正式源码、验证和索引。原始波形/编译/失败逐SHA本地归档回收，仅保留待审主目录。没有新GPU/PPL/Slurm/DC/PT/STA/真实DRAMSys，完整能量/面积仍null。代码/报告本地已完成，实际上传/PR回执以work/jieruiz/107/PUBLICATION、REMOTE_VERIFY和Issue107为准；不自动合并/关闭。用户下一步55nm工艺表征先查STA，再按实例/latency/II和正确计费单位更新新TLM。PR105/103保持独立，Projects沿既有read:project不足待同步。
+113124B本机源码包digital_ppa_v1_20261022.zip，SHA d8004f0fdf586dc020e99c3d6e6ed3b29050a652a55af037220af898c03aafb2；Git保留正式源码、验证和索引。原始波形/编译/失败逐SHA本地归档回收，仅保留待审主目录。没有新GPU/PPL/Slurm/DC/PT/STA/真实DRAMSys，完整能量/面积仍null。科学成果7b12fea03bd2596cc206f3f0c32571196688e665已推送，PR109（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/109）ready/open待审、未合并；9关键blob原字节已核，最终任务分支head以Issue107和本地FINAL_REMOTE_VERIFY为准，不自动合并/关闭。用户下一步55nm工艺表征先查STA，再按实例/latency/II和正确计费单位更新新TLM。PR105/103保持独立，Projects本轮实际查询见work/jieruiz/107/PROJECTS_CHECK。
 <!-- /issue107-digital-ppa -->

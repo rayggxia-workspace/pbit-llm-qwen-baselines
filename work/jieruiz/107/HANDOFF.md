@@ -18,7 +18,7 @@
 
 ## 当前状态、限制和恢复
 
-本地完成；实际推送/PR/远端字节核验以PUBLICATION/REMOTE_VERIFY和Issue107最新回执为准，不自动合并/关闭。无本任务远端运行作业或定时。PR105/103仍分开；不接管95随机源或7已有Q10表征。Projects沿历史read:project不足待同步，本轮没有重测看板。
+科学成果7b12fea03bd2596cc206f3f0c32571196688e665已推送；PR109 ready/open待审、未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/109 。9关键远端blob原字节核验通过，PUBLICATION/REMOTE_VERIFY封存该科学head，最终任务分支head见Issue107回执及本地project_archives/tlm_digital_issue107_20261022/FINAL_REMOTE_VERIFY.json。不自动合并/关闭。无本任务远端运行作业或定时。PR105/103仍分开；不接管95随机源或7已有Q10表征。Projects本轮GraphQL实测见PROJECTS_CHECK；缺read:project待同步，不影响repo admin/push。
 
 1. 读长期记忆0/1/12与本主题、最新Issue107/PR/STATUS，复用本目录。
 2. 周期重建用cycle_audit.py/write_report.py；依赖基线52原件和PR105观察Git对象，精简检出不要漏依赖。

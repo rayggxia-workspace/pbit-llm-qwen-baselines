@@ -38,6 +38,10 @@ class InspectorTests(unittest.TestCase):
         r=copy.deepcopy(self.raw);r['FFN_activity']['SC_64x64_tiles']+=1
         self.assertIn('FFN tile/乘积次数',self.failures(r))
 
+    def test_missing_attention_stage_is_detected(self):
+        r=copy.deepcopy(self.raw);r['phases']=[p for p in r['phases'] if not (p['name']=='QKV_projection' and p['layer']==12)]
+        self.assertIn('完整层覆盖',self.failures(r))
+
     def test_wrong_evidence_is_rejected(self):
         r=copy.deepcopy(self.raw);r['metrics']['full_physical_energy_J']=0
         self.assertIn('未知证据保留null',self.failures(r))
@@ -54,6 +58,12 @@ class InspectorTests(unittest.TestCase):
         self.assertEqual(len(c['events']),10)
         self.assertGreater(c['event_count'],len(c['events']))
         self.assertTrue(c['trace_truncated'])
+
+    def test_archive_link_uses_commit_containing_result(self):
+        c=case_record(self.path)
+        self.assertNotEqual(c['archive_commit'],c['execution'])
+        raw=subprocess.check_output(['git','show',c['archive_commit']+':'+c['path']],cwd=ROOT)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),c['sha256'])
 
     def test_all_archived_files_are_bound(self):
         data=json.loads((Path(__file__).parent/'snapshot.json').read_text(encoding='utf-8'))

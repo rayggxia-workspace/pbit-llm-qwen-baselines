@@ -44,6 +44,9 @@
 
 ## 0 恢复工作先读这里
 
+> Issue104最新检查入口：architecture_tlm/inspector/README_ZH.md；可点击模块/周期/存储/证据与明确未闭合项，详见文末Issue104。模型账本检查不等于物理PPA或新PPL。
+
+
 > 第六轮最新追加：PR99已于新heada7a48297转ready并完成审核，旧fba22b1草稿分流仅为历史。49检查、52情景/62原件/22执行blob/764合同与中文报告字节核验通过，另独立重跑Qwen24层BF16与SC准确情景、26输出字段全等。其原head随本次补充集成PR交付；本轮93/94/97/99/100五项均已审阅通过，远端实际合并以Issue55最终回执为准。统一TLM仍是条件decode/合成事务，非新PPL或物理PPA。
 
 > Issue96最新交付回执（2026-10-22）：PR99的完整实现、52项条件decode结果与报告已全部推送，科学交付head9621e1db，远端五个关键blob原字节已核验；PR已转为ready/open，待审、未合并。下方本日早先审核记录中的“99仍draft/结果待补”是此前快照。冻结执行fba22b1未改，Issue96保持open，Projects缺read:project待同步。
@@ -968,3 +971,13 @@ PR93环境交付32源/5报告与94包冻结逐SHA通过，Windows git archive/ch
 第六轮追加PR100评估协议：33项结构/来源SHA/内部链接/数值复算通过；独立核对lm-eval0.4.8字符长度acc_norm、SANTA batch分母、HSA输入输出token、MLPerf5.1版本质量门槛、DRAMPower时序边界及Kelle Table2；本机MBA第6节/HBM3.9pJ-bit与技术缩放文字核对。16篇矩阵/CSV一致性不冒充重新穷尽全文查新。协议为未批准未执行提议，不改变用户质量预算或启动模型/PPA。PR100与97仅负责人STATUS冲突，直接继承100作者原blob，旧97状态保留Git历史，无作者分支改写。PR99读取fba22b19仍draft、最终整机情景报告未齐，保留待审，不因已有机制测试通过而合并。
 
 第六轮PR99 ready补审：冻结52项已齐，21新＋18旧v5＋10旧v4=49检查通过；最小导出首次缺SRAM校准JSON，补齐同Git blob53,770B后通过，未改源/测试。原52结果清单62文件、22执行blob、764契约和汇总逐字节重建一致；独立Qwen2K/24层BF16 234.36001ms与SC准确201.67681ms全部26核心输出字段一致，均为TLM。旧入口命令不变，新增tlm-unified。原PR97后端未启用，新FFN/采样组合质量和完整能量/面积仍null。原heada7a48297按本次本人分支交付，不改执行快照。
+
+<!-- issue104-inspector -->
+## 2026-10-22 架构检查台与全面审计（Issue104）
+
+jieruiz，task/104-architecture-inspector，独立tmp/architecture-inspector-issue104-20261022，集成基线eb317e4f。入口architecture_tlm/inspector/README_ZH.md、model-inspector.html、CHECK_REPORT_ZH.md。21模块/5视图，52封存情景、完整phase、存储/精度/源代码SHA；旧底层事件每项只有80条，禁止假造完整微观轨迹。
+
+新增旁路stage/query账本，不改时序、动作或数值；观测执行124d37d2，Qwen24层336query与旧序列化字段严格相同，另三tiny共6query。76CPU检查、686模型内部不变量及16组观测检查通过，浏览器与Node语法已核。128输出的示例实际387提议/25983服务周期，其中16835为驱动重写；S、sweep、attempt、lane工作与FSM周期必须分别报告。
+
+权重32KiB/波驻留并行供给、48KiB局部计数状态、新源后端整机接入与部分格式转换尚未闭合；PR103仅小接口，完整decode默认LocalRandomService。Link非新DRAMSys，总物理能量/面积/PPL仍null。没有新GPU/Slurm/PPL/PT。新页面和观测本地已完成，上传/PR状态以work/jieruiz/104/PUBLICATION.json、REMOTE_VERIFY.json与Issue104为准，不自动合并或关闭。辅助hooks目录与失败v1/v2逐SHA本地归档后回收；待审主目录最小保留。Projects仍沿read:project不足待同步。
+<!-- /issue104-inspector -->

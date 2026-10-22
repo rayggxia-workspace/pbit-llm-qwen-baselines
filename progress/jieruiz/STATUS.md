@@ -1,3 +1,13 @@
+# Issue104：架构可视化与全面检查
+
+2026-10-22；负责人jieruiz；Issue104；task/104-architecture-inspector；base eb317e4f6fb1b0d8844887401f3275f128ef8a83。独立工作目录 tmp/architecture-inspector-issue104-20261022。交付阶段：本地代码、页面、报告和验证已完成，待本次任务分支推送/PR回执，不自动合并。
+
+成果 architecture_tlm/inspector/README_ZH.md、model-inspector.html、CHECK_REPORT_ZH.md。76项CPU功能/接口检查通过；52旧封存情景686模型不变量、4新观测16组检查通过；新Qwen24层336query与旧序列化字段严格相同。浏览器五页、模型/模式/上下文/seed/层控制及截图已核，Node语法通过。观察执行124d37d2；没有新PPL/GPU/Slurm/PT/DRAMSys/物理PPA。完整能量/面积仍null。
+
+首要未闭合：32KiB/波驻留权重并行供给、48KiB局部计数状态、源后端整机连接和格式转换；PR103仍open，仅薄接口。Projects沿实际read:project不足待同步，不影响repo admin/push。主任务保留最小工作树；自己的已完成hooks helper与两轮比较器诊断已逐SHA归档回收，恢复索引在work/jieruiz/104。下一步：发布同任务PR并核远端blob，再按检查台逐项落实硬件合同；HANDOFF及PUBLICATION/REMOTE_VERIFY为实际状态入口。
+
+以下保留此前历史：
+
 # Issue55第六轮最终补审PR99 ready
 
 2026-10-22；jieruiz；review/55-pr-round6。93/94/97/100已进入集成5dbd9e39，PR99新heada7a48297转ready后49检查/52情景清单与两项完整Qwen24层重放通过，原head随本次补充PR交付。旧草稿记录保留为fba时点。最新报告work/jieruiz/55/round6/pr99_ready/；实际远端合并与本轮目录回收以Issue55最终回执为准。无新模型/GPU/Slurm/PPL/PT，TLM条件结果不继承质量或PPA。

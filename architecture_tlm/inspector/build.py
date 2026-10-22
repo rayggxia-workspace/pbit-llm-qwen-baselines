@@ -121,7 +121,9 @@ def modules():
         except ValueError:
             if i=='selector':ref=source(MODEL,needle='def select_rows(')
             else:raise
-        nodes.append(dict(id=i,title=title,lane=lane,io=io,contract=contract,gap=gap,source=ref))
+        node=dict(id=i,title=title,lane=lane,io=io,contract=contract,gap=gap,source=ref)
+        if i in ('gu','down'):node['digital_source']=source(MODEL,'FullDecode.matrix')
+        nodes.append(node)
     return nodes
 
 
@@ -152,7 +154,14 @@ def audit_case(r, rel):
     check('单资源忙时边界',all(0<=v<=end+.01 for v in r['resource_busy_ns'].values()),'每资源busy≤墙钟；不能累加busy当墙钟')
     regions=sorted(r['SRAM']['layout'].values(),key=lambda v:v['address']);cap=r['SRAM']['configured_bytes']
     check('SRAM容量及不交叠',all(v['address']>=0 and v['address']+v['bytes']<=cap and (i==0 or v['address']>=regions[i-1]['address']+regions[i-1]['bytes']) for i,v in enumerate(regions)),'静态预留，不是动态live occupancy')
-    check('完整层覆盖',all({p['layer'] for p in phases if p['token']==token and p['name']=='FFN_down'}==set(range(m['num_hidden_layers'])) for token in range(c['decode_tokens'])),'每token全部层完成FFN_down')
+    required={'attention_norm','QKV_projection','RoPE_bias_KV_append','attention_core','O_projection',
+              'residual_and_ffn_norm','FFN_gate_up','FFN_SwiGLU','FFN_down','ffn_residual'}
+    if c['ffn']['mode']!='bf16':required.add('ffn_output_conversion')
+    coverage=all(all(Counter(p['name'] for p in phases if p['token']==token and p['layer']==layer)[name]==1
+                     for name in required) for token in range(c['decode_tokens']) for layer in range(m['num_hidden_layers']))
+    check('完整层覆盖',coverage,'每token每层全部必需阶段恰好一次；含Attention和SwiGLU')
+    check('全局读出覆盖',all(all(sum(p['token']==token and p['layer'] is None and p['name']==name for p in phases)==1
+                for name in ('embedding','final_norm','lm_head_and_argmax')) for token in range(c['decode_tokens'])),'每token入口与最终读出各一次')
     check('QK/物理KV上界',a['QK_logical_positions']<=a['possible_QK_positions'] and a['K_unique_group_positions']<=a['possible_K_group_positions'] and a['V_unique_group_positions']<=a['possible_V_group_positions'],'逻辑头候选与GQA组物理并集分开')
     check('未知证据保留null',all(r['metrics'][k] is None for k in ('full_physical_energy_J','full_physical_area_mm2','quality_reference_ppl')),'未用缺项小计宣称完整PPA/PPL')
     check('配置SHA',hashlib.sha256(json.dumps(c,sort_keys=True,separators=(',',':')).encode()).hexdigest()==r['config_sha256'],'配置原值规范JSON SHA256')
@@ -173,6 +182,8 @@ def audit_case(r, rel):
 
 
 def case_record(path):
+    archived=subprocess.check_output(['git','show',BASE+':'+path.relative_to(ROOT).as_posix()],cwd=ROOT)
+    if path.read_bytes()!=archived:raise ValueError('archived result bytes changed: '+str(path))
     r=json.loads(path.read_text(encoding='utf-8'));c=r['config'];mode=c['attention']['mode'];a=r['actions'];clk=1e9/c['core_hz']
     fused=r['DRAM']['traffic'].get('KV_fused_physical_bytes',0);d=r['DRAM']['traffic']
     key='|'.join(map(str,(c['model_record']['name'] if 'name' in c['model_record'] else ('qwen' if r['model']['hidden_size']==896 else 'llama'),c['context_tokens'],c['seed'],c['ffn']['mode'],mode)))
@@ -180,7 +191,7 @@ def case_record(path):
     waves=r['random_interface']['requests'].get('shared64_stratified',0)
     cfg=f"{c['ffn']['bins']}档/T{c['ffn']['samples']}/K{c['ffn']['strata']}"
     return dict(id=model+'|'+key,model=model,context=c['context_tokens'],seed=c['seed'],ffn=c['ffn']['mode'],attention=mode,
-       path=path.relative_to(ROOT).as_posix(),sha256=digest(path),execution=r['execution_commit'],config_sha256=r['config_sha256'],
+       path=path.relative_to(ROOT).as_posix(),sha256=digest(path),archive_commit=BASE,execution=r['execution_commit'],config_sha256=r['config_sha256'],
        metric=r['metrics'],phase_ns=r['phase_ns'],phases=[[p['name'],p['token'],p['layer'],p['start_ns'],p['end_ns']] for p in r['phases']],
        resources=r['resource_busy_ns'],waits=r['wait_ns'],actions=a,unpriced=r['unpriced_actions'],energy=r['energy_J'],
        memory=r['SRAM'],dram=r['DRAM'],random=r['random_interface'],shape=r['model'],attention_activity=r['attention_activity'],ffn_activity=r['FFN_activity'],
@@ -191,6 +202,24 @@ def case_record(path):
        restore_ns=a.get('SC_restore_op',0)/c['vector_lanes']*clk,
        K_bytes=d.get('K_selected_physical_bytes',0)+fused//2,V_bytes=d.get('V_sparse_union_physical_bytes',0)+fused//2,
        checks=audit_case(r,path.relative_to(ROOT).as_posix()),source_kind=r['input_provenance'])
+
+
+def observation_checks(obs):
+    checks=[]
+    for run in obs['runs']:
+        p=ROOT/run['path'];raw=json.loads(p.read_text(encoding='utf-8'));view=run['result'];audits=raw['sampler_audit'];c=raw['config'];m=raw['model']
+        exact=digest(p)==run['sha256'] and all(view[k]==raw[k] for k in ('model','metrics','input_provenance','sampler_audit','stage_busy_ns'))
+        cycles=all(math.isclose(sum(v['stage_cycles'].values()),v['elapsed_cycles'],abs_tol=.001)
+             and math.isclose((v['end_ns']-v['start_ns'])/v['clock_ns'],v['elapsed_cycles'],abs_tol=.001) for v in audits)
+        total=math.isclose(sum(v['elapsed_cycles']*v['clock_ns'] for v in audits),raw['resource_busy_ns']['sampler'],abs_tol=.001)
+        keys={(v['token'],v['layer'],v['head']) for v in audits}
+        full=len(keys)==len(audits) and keys=={(t,l,h) for t in range(c['decode_tokens']) for l in range(m['num_hidden_layers']) for h in range(m['num_attention_heads'])}
+        for name,ok in [('观测原件SHA与视图',exact),('逐query阶段与周期',cycles),('逐query时间总和',total),('全部层头唯一覆盖',full)]:
+            checks.append(dict(run=run['label'],name=name,passed=ok))
+        run['profile']=dict(hidden=m['hidden_size'],layers=m['num_hidden_layers'],heads=m['num_attention_heads'],
+            context=c['context_tokens'],seed=c['seed'],S=c['attention']['samples'] or math.ceil(c['context_tokens']*c['attention']['sample_ratio']),clock_ns=1e9/c['core_hz'])
+    if not all(c['passed'] for c in checks):raise ValueError('observation audit failed')
+    return checks
 
 
 def main():
@@ -209,7 +238,9 @@ def main():
           actual_events=sum(c['event_count'] for c in cases),kept_events=sum(c['saved_event_count'] for c in cases)),
        pending_rng=dict(pr=103,head='af98f9c87f801c3cf0fcaa8eae6966a4e5535575',status='接口证明，未接入整机默认'))
     observations=HERE/'observations.json'
-    if observations.exists():data['observations']=json.loads(observations.read_text(encoding='utf-8'))
+    if observations.exists():
+        data['observations']=json.loads(observations.read_text(encoding='utf-8'))
+        data['observations']['checks']=observation_checks(data['observations'])
     encoded=json.dumps(data,ensure_ascii=False,separators=(',',':'),allow_nan=False)
     (HERE/'snapshot.json').write_text(encoded+'\n',encoding='utf-8',newline='\n')
     html=(HERE/'template.html').read_text(encoding='utf-8').replace('__SNAPSHOT__',encoded.replace('<','\\u003c'))

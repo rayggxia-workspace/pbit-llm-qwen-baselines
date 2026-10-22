@@ -103,7 +103,13 @@ Slurm **2776** 的固定 v5 结果包含 **68 个真实片段配置和 8 个 syn
 
 默认 Attention 路径的回归另用原始 v5 冻结结果检查：真实 layer23 的 exact seed0、PV/winner/rejection seed2，共 **4 case / 8 次 cycle/event 执行**的完整 payload SHA、输出、采样历史和信用均与原结果一致；包括原先发生死锁的 PV seed2。第一版及最终 operand hook 修改分别保存 `results/gqa_default_attention_1122365.json` 和 `results/gqa_default_attention_a47fd64.json`。这是代表 case 的完整执行回归，不宣称重新执行了全部 68 real 配置。
 
-`verify_gqa_fixture.py` 为服务器内私有真实激活验收入口，已经用公开合成小 fixture 跑通 6 case × 两模式整入口。脚本独立核算 QK 与 FP32 weighted-V、实际共享字节、union/consumer 生存期及完整 trace 的动作/旧态容量；sampled 数值核验条件于实际 native 保留索引，不把这项检查冒称独立分布/IID 证明。公共回执仅含配置、hash、误差、计数和时间；张量、输出数组、直方图、索引、native transcript 和完整 trace 留在服务器私有目录。真实 7-head fixture 的执行状态以随后固定的服务器回执为准，本段不预告通过。
+`verify_gqa_fixture.py` 为服务器内私有真实激活验收入口，先用公开合成小 fixture 跑通 6 case × 两模式整入口。脚本独立核算 QK 与 FP32 weighted-V、实际共享字节、union/consumer 生存期及完整 trace 的动作/旧态容量；sampled 数值核验条件于实际 native 保留索引，不把这项检查冒称独立分布/IID 证明。公共回执仅含配置、hash、误差、计数和时间；张量、输出数组、直方图、索引、native transcript 和完整 trace 留在服务器私有目录。
+
+随后 Slurm CPU 作业 **2782** 实际执行 Qwen layer12 的 **7 query heads / 1 KV head / D=Dv=64 / context64** 私有 fixture，2 CPU、GPU 隐藏，首次终态 `COMPLETED / 0:0`，用时 2m57s。独立脚本固定 `9f1122e` 四文件，生产固定 `f94c9db`；**6 case / 12 次执行、42 个 case/head、2,688 个输出值**全部与独立 QK/FP32 weighted-V oracle 逐位相等。六份 event 轨迹在服务器由独立 checker 核对 **12,776 操作 / 70,185 事件**，另有 **636 次真实共享输入行字节**逐项核对。exact/PV 默认与 row/operand/window/bank 均为 1 的紧容量模式、winner/rejection 默认，均归还全部信用。此组独审使用 S16；另 5 个生产 CLI 配置使用 S32，分别计数，不把生产参考函数重命名为独立 oracle。
+
+本地 `verify_gqa_public_receipts.py` 未读取私有激活或完整原始轨迹，而是逐项核对 **74 个 source archive 文件与固定 Git blobs**、实际执行闭包、fixture SHA、11 个公开 archive 成员（其中 10 个有 manifest SHA）、作业终态和全部白名单结果字段。`ea989a4` 中两份 gzip 的已提交 Git bytes 也与服务器 SHA 完全一致，避免仅本地正确而提交被文本属性改写。最终回执为 `results/gqa_public_offline_review_final.json`。因此这里的真实数学/轨迹证据来自已核源码的服务器独立执行，本地步骤是身份与回执复核，不虚构本地重复运算。
+
+真实输入由 BF16 model/projections 导出，再做已声明的 CPU FP32 RoPE；不等于完整模型 attention 的逐位结果。context64 的条件时延、DRAM 去重读字节及数学通过，不能推广为 context2048、完整 attention 层、PPL 或硬件收益。
 
 ## 重现
 

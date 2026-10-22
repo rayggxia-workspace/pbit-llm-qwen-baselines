@@ -1,6 +1,6 @@
 # Issue98 频率与时序补充（2026-10-22，amlink1219）
 
-接续原负责人rayggxia的Issue98，PR100已核实合并。本人仅补充16项工作频率/时序域及原文依据，分支task/98-ppa-frequency-amlink1219，base集成eb317e4f。正式入口architecture_tlm/benchmark_protocol_20261022/README_ZH.md第2.1节，机器证据FREQUENCY_EVIDENCE.json。原报告其余内容逐字节保留，原PAPERS.json/.csv和协议不改；AttAcc计算频率仍待原始表格复核。文档与SHA/链接核验通过，无新模型/训练/GPU/Slurm/TLM/EDA或器件PPA。上传状态以work/amlink1219/98/frequency/PUBLICATION.json为准；Projects实时查询缺read:project，看板待同步。原负责人及其他成员STATUS/HANDOFF不改，不自动合并或关闭Issue。
+接续原负责人rayggxia的Issue98，PR100已核实合并。本人仅补充16项工作频率/时序域及原文依据，分支task/98-ppa-frequency-amlink1219，base集成eb317e4f。正式入口architecture_tlm/benchmark_protocol_20261022/README_ZH.md第2.1节，机器证据FREQUENCY_EVIDENCE.json。原报告其余内容逐字节保留，原PAPERS.json/.csv和协议不改；AttAcc计算频率仍待原始表格复核。文档与SHA/链接核验通过，无新模型/训练/GPU/Slurm/TLM/EDA或器件PPA。科学报告1198a544f11174f7976980ea1f9d8750d8805c7c已通过[PR106](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/106)上传待审、未合并；7项远端原始文件SHA已回读一致，Issue98评论6339719096已同步。实际回执work/amlink1219/98/frequency/PUBLICATION.json；后续提交仅补发布元数据。Projects实时查询缺read:project，看板待同步。原负责人及其他成员STATUS/HANDOFF不改，不自动合并或关闭Issue。
 
 ---
 

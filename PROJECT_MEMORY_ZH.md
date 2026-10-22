@@ -394,6 +394,10 @@ FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700�
 
 ## 6 随机源、p-bit与相关性
 
+2026-10-22用户要求同时细调现有比较参考Vref到50%并探索共享高速比较器，已准备`远端上传/p50_shared_speed_v1/`（20文件约193KB）。两独立作业：旧两款10nA仅细校准Vref；新1.2V/10MOS非限流输出比较器扫描100nA/1uA/10uA后，做4源/1比较器/1个8T列锁存的真实TG共享探针，槽0.2/0.5/1us、Cbus0/1/5fF。新cal1201/1303/1409每点20ms，冻结后新val1601/1709/1801，shared2203/2309/2411不混用；不外推、不用验证数据重调。21本地测试、Python3.6/Bash语法、27PDK哈希和110份预览网表通过，未远端执行或认定50%/100ns达标；100ns未达时仍诊断最快物理有效候选并标记未达。旧快照不改，初步使用仍需按相关性选择低速采样。入口`analog_pbit_20261016/p50_shared_speed_v1/README_ZH.txt`及delivery索引。
+
+2026-10-22零外加C结果38237164已下载复核（更新下段历史待下载状态）：归档SHA `d57893e605adc7b1463094a6ab717afcccab76915230e35fd619400f10a29760`，728成员哈希、98案例完成、14源码/98网表/27PDK及原始87噪声＋2阶跃＋6DC＋3OP/AC/noise复算通过。裸源固定0.6V判决P1=49.99..50.39%，rho(0.5us)=.00183...00256；T32@0.5us方差1.040..1.066倍IID，T128仍1.191..1.270，不认证2M独立bit/s。两旧10nA连续比较器新seed P1=44.38..48.70%，rho(1us)=.493...541，±10mV过驱动到轨1.3..2.1us；冻结参考后50%目标未达到，不能认定完整通道统计验收。真实S形曲线已测，三seed离散不是器件/PVT范围。保留0C裸源，下一步真实列共享快速比较器与MUX负载联合验证；现有阵列模型50ns仍为行为假设，不能只改延迟冒充连续滤波动态。详细入口`analog_pbit_20261016/review_38237164/结果审阅_20261022.txt`与`review_summary.json`；原包不改、不重跑、没有改旧提交快照。
+
 2026-10-21独立CMOS模拟电路工作：用户确定先建立选bank/选行、按列共享比较器的随机源阵列功能模型。入口`analog_pbit_20261016/row_shared_array_v1/README_ZH.txt`，直接上传副本`远端上传/row_shared_array_v1/`；默认2bank×3行×8列、48裸核心共用8个采样/保持比较器，一个8bit端口，无每源DAC/比较器/自旋保持、不强制FIFO。请求捕获地址与公共Vref，输出有效后保持到消费；核心持续演化，公共Vref不代表每列任意概率。Python功能模型和Spectre/Verilog-A生成器已写，封装现有无Ccore两MOS；28项本地检查、Python3.6 AST/Bash语法、27项PDK哈希及网表生成通过，Spectre/AHDL远端实编译未做，zero_cap作业38237164结果仍待本地核查。时序/OU/总线负载为演示假设，不能替代真实速率、熵或PPA；下方120.80µW/450MHz/16bit仍为另一路历史宏预算。源包/证据保留在独立模拟目录，未作为LLM仓库代码发布。
 
 双流误差追加诊断见Issue30公开结果目录 `ERROR_DIAGNOSIS_ZH.md`。已有47项的T4096精确双流x概率层均值5.3492%、z0.8255%；T256/4096最大z裁剪约0.000964%/0.001767%，不支持大面积饱和是当前主因。在同一固定输入/尺度下，独立权重流增加非负条件方差；经SwiGLU和多层传播的主导位置仍待消融。DS-CIM使用加128偏移、128粒度FP8对齐、优化PRNG/seed及SRR，LLM为T256误差pattern注入和六任务准确率，不能等同本项目IID逐连接短测，也不能认为加SRR就会比现有精确计数更准。
@@ -759,6 +763,9 @@ Issue78后续分支变更（2026-10-21）：并行审阅已将PR79合并a7a2c5b3
 Issue78发布回执（2026-10-21 08:55 UTC）：后续分支task/78-score-interface已推送0d3dfa2fa107ea5925751cdb686cda089b414628，创建PR80（草稿未合并）；原PR79已合并a7a2c5b。旧OFFSET网络阻塞解除，原件远端blob SHA6a628a...核验通过；本次dtype/接口审计一并交付，见work/jieruiz/78/SCORE_INTERFACE_PUBLICATION.json。Issue78仍open、无新模型/量化/PPA作业，Projects待权限。
 
 
+## 2026-10-21 Issue78 sigmoid驱动8位接口诊断
+
+用户明确仅指sigmoid括号内a=(z−zref)−m ln2，而非Q/K INT8或R8概率阈值。PR79已合并a7a2c5b、PR80后续已合并e24414b；本次task/78-field-int8接续。CPU2630源757fb90完成25合同，24层2688行保存分数＋42行S64三seed真实驱动局部解析。a中位−8.70，5/95%−26.15/−4.70，负尾约−98。负幅度8位h1/8/范围−31.875~0，理想访问状态平均条件TV1.262%；signed8 h1/16范围−8~7.9375因饱和平均6.947%、最大51.475%。h1/16负幅度本批0.631%，但m14压力截断严重，不能直接外推；10位h1/16对照0.630%。均不是量化自适应完整轨迹/PPL或PPA；默认未改，原始capture私有。SOT SoftMax论文披露电流映射与平移/伸缩校准，未披露局部场INT8质量；其INT8/4图指输出概率。报告qwen/results/ising_broadcast_20261021/FIELD_INT8_ZH.md，manifest和work/jieruiz/78/FIELD_*含SHA、命令与新PR待发布状态。无运行作业、不重交2630，下一步独立校准＋模型PPL。
 ## 2026-10-21 第四轮PR审核与合并回执（Issue55）
 
 PR77四条训练讨论稿、PR79广播/正确拒绝采样、PR75 Llama2任务阶段、追加PR80偏移与score接口均已实际合并。精确head/base/merge及独立证据见work/jieruiz/55/round4/REVIEW_ZH.md和receipts。旧时点的draft/未上传/未合并描述保留为历史，本节覆盖本轮发布状态。新报告本身通过后续PR交付，不计入4项成果。
@@ -842,3 +849,13 @@ Issue78本轮最终发布核验完成：PR86草稿开放未合并，最终head 4
 
 
 Issue87发布回执（2026-10-22）：科学head8687c1d8124af192e82ec13aa3dbe12ccaa240b7已上传workspace；PR88草稿开放未合并，6份关键模块/中文说明/报告/验证文件的GitHub原始blob逐SHA-256读回一致。PUBLICATION和REMOTE_VERIFY在work/jieruiz/87/；后续仅交付状态元数据，实验执行仍f6c6bd8。上方待推送描述为历史，无用户待处理权限阻塞；看板沿既有限制未同步。Issue87保持open，源后端/真实能耗面积与新模型质量仍待后续标定，未调用新Slurm或改Issue73/78任务。原型36文件已逐SHA压缩核验至本地project_archives/parallel_sampler_issue87_20261021/prototype_before_f6c6bd8.zip（SHA1c6ae1c9367f4e67634283fc68c5d31c4ee35e0187d11f3e7a7edaf24503bb51），原型目录回收，当前仅最小稀疏任务工作树。
+
+
+## 2026-10-22 Issue73：26项推理完成，按用户要求删除定时
+
+北京时间12:43（04:43:23 UTC）SSH只读检查：Llama2任务26/26 completed，PIQA1838/ARC-E2376各13项，逐题文件SHA/字节数/路径及声明32层计分守卫通过，当前Hongjie_Zeng的Slurm队列空；旧2572健康8＋修复2585十八项均按原计划保留，没有重跑或取消。原件llama2/results/task_accuracy_20261020/checkpoints/20261022T044323Z/STATUS.json，汇总PROGRESS_20261022_ZH.md。此次只重聚合已存summary指标，官方逐题process_results与最终完整层/输入源合同复核仍待做，不将推理完成等同最终科学验收。
+
+用户本轮明确任务跑完即结束定时；automation_update(delete,id=llama2-7b)返回deleted，本地配置确认已不存在，回执work/jieruiz/73/AUTOMATION_STOP_20261022.json。尽管最终oracle待做，不得因为旧交接提示而自动重建此定时。Issue73/PR83继续open/draft未合并，后续同任务完成验收与同步；报告发布以PUBLICATION_STOP_20261022回执为准。其他暂停的p-bit抢救回查没有改动。
+
+
+Issue73 publication receipt (2026-10-22): completed26 status/report and automation-deletion receipt pushed to PR83, scientific head 6acac58eac394b940907a5e4265db39fd043a761; three GitHub blobs read back SHA-identical. Issue comment: https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/73#issuecomment-6332960590. PR83 remains draft/unmerged; oracle pending, daily follow-up deleted at user request. PUBLICATION_STOP_20261022.json records exact evidence.

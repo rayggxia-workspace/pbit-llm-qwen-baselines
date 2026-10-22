@@ -10,6 +10,7 @@ Issue116，独立于既有 `unified_v6`。此实现把 FFN tile 和 Attention qu
 python -m architecture_tlm.cycle_v1.run --operator ffn --output /personal/new-ffn
 python -m architecture_tlm.cycle_v1.run --operator attention --mode winner --output /personal/new-query
 python -m architecture_tlm.cycle_v1.run_layer --output /personal/new-reduced-layer
+python -m architecture_tlm.cycle_v1.run_gqa --heads 7 --mode exact --output /personal/new-gqa
 python -m architecture_tlm.cycle_v1.matrix --suite smoke --workers 1 --output /personal/new-smoke
 python -m unittest discover -s architecture_tlm/cycle_v1 -t . -v
 python -m architecture_tlm.cycle_v1.audit.run_audit --output /personal/new-audit
@@ -27,6 +28,7 @@ python -m architecture_tlm.cycle_v1.audit.run_audit --output /personal/new-audit
 | `memory.py` | 实际 byte backing、地址/line/bank/端口、有限请求窗口、RAW/WAR/WAW、乱序返回、在线写后读 | banked 假设模型；未执行 Ramulator/DRAMSys；全局地址空间没有总容量 allocator |
 | `ffn.py` | 固定 W8、64×64 tile、B/T/K、原输入符号 rails 与二补码 W8 位平面、有限计数/权重/尺度/partial、分级 restore、完整 gate/up→SwiGLU→down→残差 | 连续 SiLU、条件 FP32 边界；编码/恢复流水未做完整 STA；32KiB 阵列驻留供给是声明的接口假设 |
 | `attention.py` | 实际候选 K/V、QK、分级数字 Softmax/PV、winner/rejection 反馈、空/多命中、无偏 rank 重试、计数/去重 V 地址 | query 从已投影/RoPE 的 Q/K 开始；候选输入不等于真实筛选器；q/256 自适应采样不声明 IID 或继承 PPL |
+| `gqa.py` / `run_gqa.py` | 同 kernel 的多 query / 单 KV head，共享物理 K/V union 读；有限行缓存、操作数响应、metadata和运行时V合并扫描 | [GQA契约](GQA_GROUP_ZH.md)；K候选读计划是输入，V在所有query准备后合并；每head独立随机网络，不含投影/筛选/动态append/Wo/整层 |
 | `rng_protocol.py` | 原 native LFSR32/Bivium、seed bus、warmup、epoch、hold、SAVE/RESTORE/RELEASE、有限交易信用 | 确定性协议模型，不是物理熵；整层当前为各算子独立网络，不是全局共享总线闭合 |
 | `layer.py` / `layer_flow.py` | 单 kernel 的 RMSNorm→QKV→RoPE→KV append→Attention→Wo→残差→RMSNorm→FFN，所有动态跨界 payload 都走有 producer/CDC 的写请求 | 合成 16 维单头小层，不能称完整 Qwen/Llama 层；没有多头/GQA 或学习筛选 |
 

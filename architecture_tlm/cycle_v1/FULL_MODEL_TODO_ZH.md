@@ -10,7 +10,7 @@ Issue116，2026-10-23。当前 `v6_adapter.py` 是可运行的算子配置桥；
 |---|---|---|
 | 统一有界地址分配/生存期 | cycle MemoryPort有真实字节、地址依赖和有限在途；全局address space未实施容量分配 | 所有DRAM/SRAM张量范围可追溯；输出/weight/KV不得覆盖未完成消费者；容量不足明确失败 |
 | 全维权重与格式读取 | 已有真实/合成operator fixture；v6桥拒绝裁剪FFN冒充完整shape | 读取模型确定版本，固定W8及scale布局、BF16/FP32边界、bias与norm参数；验证全部矩阵维度和散列 |
-| 多头/GQA执行与物理共享 | query为已投影Q、已有KV及候选；小层仅单头 | 在统一资源上运行完整head组；K/V候选并集只物理读一次，各query multiplicity保留，不能按逻辑保留率缩流量 |
+| 多头/GQA执行与物理共享 | 新gqa.py已在同kernel实现单KV head组的K/V union真实共享、有限row/operand/metadata与V扫描；入口仍为预投影Q/K/V，小层仍单头 | 将该组接口接入真实投影/RoPE/多KV head层；K/V候选并集只物理读一次，各query multiplicity保留，不能按逻辑保留率缩流量；实际验收范围见GQA_GROUP_ZH.md与独审回执 |
 | 候选筛选/摘要的在线产生 | query候选由fixture给定；v6桥screen_*只接post-screen部分 | max4摘要读取/当前token更新、归一化、随机判决、预算修复、候选图写入均产生真实完成事件，并驱动后续QK地址 |
 | 真实QKV/RoPE/输出投影 | reduced layer有同kernel闭环，非完整Qwen/GQA | 用模型实际heads、KV heads、RoPE参数和bias执行；不能把fixture中预投影Q/K/V记作本次投影计算 |
 | 持久KV追加与多token状态 | query使用冻结历史KV；小层追加一次 | token t 的真实K/V写完成后，t+1才能读取；验证长度、RoPE位置、物理layout、读写竞争和完整跨token依赖 |

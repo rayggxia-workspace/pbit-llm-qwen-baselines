@@ -9,7 +9,7 @@
 | winner | 15050 | 439 | 6 | 6 |
 | corrected rejection | 15500 | 617 | 6 | 5 |
 
-四例均通过 cycle/event 全 payload与全部head状态比较、实际输出写回字节、独立head数值/轨迹oracle、共享物理读计数、row/operand/metadata信用恢复与消费者生命周期门。执行前20项生产/旧query测试通过。具体source/fixture SHA、配置、结果、完整gzip trace和HTML在各case内，`MANIFEST.json`逐项保存成果散列。
+四例均通过 cycle/event 全 payload与全部head状态比较、实际输出写回字节、各head生产参考函数的数值/轨迹回归、共享物理读计数、row/operand/metadata信用恢复与消费者生命周期门。独立oracle验证见 `architecture_tlm/cycle_v1/audit/REVIEW_ZH.md`，不把这四例生产回归计为独立验证。执行前20项生产/旧query测试通过。具体source/fixture SHA、配置、结果、完整gzip trace和HTML在各case内，`MANIFEST.json`逐项保存成果散列。
 
 这是公开合成协议/数值接合回归，不是真实模型fixture、PPL、全层、STA或物理PPA。真实Qwen 7query/1KV fixture保留在服务器，由独立CPU-only作业执行，只回传白名单报告；不能与本目录混称。
 

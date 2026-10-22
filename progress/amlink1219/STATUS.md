@@ -1,8 +1,8 @@
 # Issue116 周期级TLM执行后端（2026-10-23）
 
-负责人amlink1219，task/116-cycle-execution，独立workspace_projects/cycle23。FFN/query有限周期核、native随机协议、缩小单层、v6桥与交互trace已完成；71实现测试、54独立测试、43旧回归通过。最终Slurm2776 real68+smoke8全通过；独立核302制品/34trace/98,340操作与4,597真实read hashes。协议RTL9case252握手、ONNXim2官方+4场景、PR122固定版本12case兼容复验通过。首轮真实V预取死锁已修并保留失败；无完整新后端Qwen/Llama/PPL/STA/PPA结论。
+负责人amlink1219，task/116-cycle-execution，独立workspace_projects/cycle23。FFN/query有限周期核、共享KV的GQA分组、native随机协议、缩小单层、v6桥与交互trace已完成；最终81实现测试、71独立测试、43旧回归通过。Slurm2776 real68+smoke8全通过，矩阵独立核302制品/34trace/98,340操作与4,597真实read hashes。新增真实context64、7query/1KVhead：Slurm2782的5个S32 CLI与6个S16独审配置双模式通过，独审42个case/head共2,688值逐bit相等。协议RTL9case252握手、ONNXim2官方+4场景、PR122固定版本12case兼容复验通过。有限预取死锁、免费union、无界operand响应已修并保留证据；无完整新后端Qwen/Llama/PPL/STA/PPA结论。
 
-入口architecture_tlm/cycle_v1/IMPLEMENTATION_ZH.md，独立审查audit/REVIEW_ZH.md，交接work/amlink1219/116/HANDOFF.md。基础科学成果ddd2e3406caac5075689f9388a041603e17d2b19已上传[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)，438个远端Git对象和8项原始blob已核，待审未合并；准确状态见PUBLICATION.json。尚缺完整全维多头/GQA、全局容量/随机网络、在线DRAM命令后端和PPA校准，不能把原方案A–G写成全部完成。旧v6/random_service/历史结果未改，权重/私有fixture留本人存储；并行PR119/120/122/125不覆盖。PR125已捕获完整FFN fixture并继续接合，已在其PR留下正式后端交接；其实际STA/PPA交由jieruiz，尚未运行。剩余授权时间内继续实现和独审有界GQA共享K/V增量，尚未验收；Projects实测缺read:project待同步，不改权限。
+入口architecture_tlm/cycle_v1/IMPLEMENTATION_ZH.md，独立审查audit/REVIEW_ZH.md，交接work/amlink1219/116/HANDOFF.md。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审、未合并；基础发布ddd2e340的438对象/8原始blob已核，包含GQA的最终发布以PUBLICATION.json的verified_head/对象与SHA回执为准。尚缺真实全维整层、多token/2K/8K、全局容量/随机网络、在线DRAM命令后端和PPA校准，原方案A–G未全部完成。N64/128规模探针显示超线性成本，未启动2K；PR125已在独立工作树接续完整FFN及调度性能工作，不复制未发表实现。旧v6/random_service/历史结果未改，权重/私有fixture留本人存储；并行PR119/120/122/125不覆盖。已在PR125留下正式后端交接；实际STA/PPA交由jieruiz，尚未运行。本任务作业均已完成，GPU仅2759/2781捕获（14秒/9秒），其余CPU-only；5090可用，未切4090。新GQA私有fixture下载被自动审批拒绝，改在服务器验证，仅回传白名单回执。Projects缺read:project待同步，不改权限。
 
 ---
 以下为Issue98历史发布回执，与Issue116发布状态分开：

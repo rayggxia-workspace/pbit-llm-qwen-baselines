@@ -12,6 +12,7 @@
 | `silu_values`、`gated_multiply` | `swiglu-38100634-ss`、`swiglu-38100634-tt` | 旧模块是 Q10 单通道；本轮连续SiLU/FP32边界不同，不能继承其单元能耗或16lane面积 |
 | QK/数字投影 MAC、EXP、reciprocal、normalize、PV CDF、winner/rejection反馈、V加权累加 | `digital-107-functional` 等功能入口 | 本轮格式、共享宽度、流水与源码函数需要匹配的 RTL/STA/活动表征；旧 BF16 2pJ/MAC 等条件系数不能作为这些 FP32/double-fsum 数学边界的实测价格 |
 | 有限资源、FIFO、CDC mailbox 握手 | `cycle-116-protocol-rtl` | 本轮9组252握手只提供 RTL_FUNCTIONAL，综合/STA/面积/功耗均未运行 |
+| GQA物理K/V union读、`shared_cache_read_bytes`、V union扫描/压缩、metadata与operand占用 | 无匹配工艺表征记录 | DRAM union节省不等于全部访存节省；每head cache读和MAC仍收费。有限本地目录/操作数响应已建模，但其SRAM宏/寄存器/布线能量和面积未知 |
 
 输出中的 source `receipts` 是协议事件；`native_response_copy` 是桥接动作，不是一次新的 p-bit 源帧。一个 shared64 随机字广播给多个 tile 时，随机字只在 native ledger 计一次，sink/比较/广播成本另列。20-lane Bivium 的物理生成、逻辑使用及padding分别记录，不能用逻辑64lane价格覆盖实际80lane实例。
 

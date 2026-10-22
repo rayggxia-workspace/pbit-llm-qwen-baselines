@@ -103,8 +103,11 @@ def main():
         local[path.decode()] = metadata.split()[2].decode()
     assert all(remote_blobs.get(p) == local[p] for p in changes)
     selected = ['architecture_tlm/cycle_v1/'+name for name in (
-        'kernel.py','memory.py','ffn.py','attention.py','rng_protocol.py','IMPLEMENTATION_ZH.md',
-        'audit/REVIEW_ZH.md','results/matrix_20261023/PUBLISHED_MANIFEST.json')]
+        'kernel.py','memory.py','ffn.py','attention.py','rng_protocol.py','gqa.py','run_gqa.py',
+        'IMPLEMENTATION_ZH.md','audit/REVIEW_ZH.md',
+        'results/matrix_20261023/PUBLISHED_MANIFEST.json',
+        'results/gqa_real_20261023/PUBLIC_MANIFEST.json',
+        'audit/results/gqa_root_integrated_public_review.json')]
     checks = []
     for path in selected:
         raw = base64.b64decode(api(repo_path+'/git/blobs/'+local[path])['content'])

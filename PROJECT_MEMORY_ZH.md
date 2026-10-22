@@ -1,3 +1,9 @@
+## 2026-10-23 Issue123 完整FFN与STA/PPA交接
+
+Issue116已通过PR126发布正式后端，本任务PR125固定160f46e与PR122@8007d98接合完整gate/up→SiLU/product→z重编码→down→BF16/残差，legacy默认保留。新接口按FP32 x/z、共享64组、逐输出B4恢复、独立跨k加法和有限信用执行。独立提取执行包28项测试通过，原核全payload等价。完整896→4864→896真实fixture已捕获（CPU2777），CPU2783全尺寸T32正在运行，尚无完整形状通过结论；早期2779/2780中断证据保留。
+
+CPU2778已通过45RTL场景/11667输出/180reset flush，覆盖T16/32/64、BF16/FP32、depth1/3/5及3seed。按用户安排已上传 `architecture_tlm/encoding_restore_contract/ppa/HANDOFF_JIERUI_ZH.md` 并在Issue123 @jieruiz，由其执行实际STA/PPA；当前EDA未运行、物理指标null。没有新PPL。源、作业、报告、发布状态在 `work/amlink1219/123/HANDOFF.md`；PR均待审未合并。Issue124短投影优化继续由原任务维护，未重复。
+
 ## 2026-10-23 Issue121 编码/恢复接合阶段
 
 独立入口[编码恢复合同](architecture_tlm/encoding_restore_contract/README_ZH.md)，分支task/121-encoding-cycle；复用107算术，116核心保持原负责人和工作树。两类计数rail含义不可直连，原FUSED0与旧hostfloat恢复在次正规数有反例。28软件测试、12周期重放、27严格协议RTL场景通过；最终CPU-only job2773为6861输出/108复位清空。后台数值适配当前按单活动组、逐输出恢复、有限结果信用运行，条件周期与RTL握手相位分开标注，未替换全FFN默认。完整STA/PPA/PPL仍未知。发布回执见work/amlink1219/121/PUBLICATION.json；116后端公开版本待再次冻结回归，Projects缺read:project。

@@ -1,0 +1,455 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-22",
+  "issue": 98,
+  "status": "PROPOSED_NOT_APPROVED_NOT_EXECUTED",
+  "not_runnable_simulator_config": true,
+  "purpose": "A common contract joining numerical quality, system workload, cost evidence and reporting; not a new TLM implementation or new result.",
+  "frozen_reference": {
+    "repository": "rayggxia-workspace/pbit-llm-qwen-baselines",
+    "commit": "83e15289434af50fc09c35e699d8b39965389d98",
+    "integration_branch": "pbit-tlm-attention-details-20261016",
+    "implementation_issues_read_only": [
+      37,
+      78,
+      95,
+      96
+    ]
+  },
+  "models": [
+    {
+      "id": "qwen25_05b_base",
+      "role": "primary_fast_loop_GQA",
+      "model_name": "Qwen2.5-0.5B Base",
+      "checkpoint_revision": null,
+      "tokenizer_sha256": null,
+      "manifest_policy": "Reuse verified project manifests; must resolve exact bytes before any new execution",
+      "quality_and_system_both_required": true,
+      "context_guard": "Read model configuration; require prompt+generation within frozen configuration"
+    },
+    {
+      "id": "llama2_7b_base",
+      "role": "primary_scale_MHA",
+      "model_name": "Llama2-7B Base",
+      "checkpoint_revision": null,
+      "tokenizer_sha256": null,
+      "quality_and_system_both_required": true,
+      "context_guard": "Native4K: no8K workload without separate context-extension protocol"
+    },
+    {
+      "id": "llama1_7b_legacy",
+      "role": "optional_historical_continuity",
+      "checkpoint_revision": null,
+      "context_guard": "Native2K legacy point cannot accept2048 prompt+128 output; choose smaller legal input"
+    },
+    {
+      "id": "llama31_8b",
+      "role": "optional_modern_GQA_after_access_and_budget",
+      "checkpoint_revision": null,
+      "quality_and_system_both_required": true,
+      "not_requested_for_download_or_execution": true
+    }
+  ],
+  "quality": {
+    "language_modeling": {
+      "dataset": "WikiText2 raw, full test corpus",
+      "corpus_sha256": null,
+      "token_ids_sha256": null,
+      "window_stride": "reuse model-specific frozen protocol, not cross-model inferred",
+      "target_count": null,
+      "required_outputs": [
+        "total_nll_nat",
+        "target_count",
+        "token_ppl",
+        "delta_nll_nat_per_target",
+        "ppl_ratio_vs_matched_reference"
+      ],
+      "reproduction": "Verify checkpoint/tokenizer/data hashes and rerun unchanged BF16 in the same environment before a new numerical comparison",
+      "raw_line_rule": "Restore parquet empty rows as space+LF, concatenate without extra separator; require recorded hashes"
+    },
+    "tasks": [
+      {
+        "id": "piqa",
+        "split": "validation",
+        "items": 1838,
+        "metrics": [
+          "acc",
+          "acc_norm"
+        ],
+        "priority": "primary_existing"
+      },
+      {
+        "id": "arc_easy",
+        "split": "test",
+        "items": 2376,
+        "metrics": [
+          "acc",
+          "acc_norm"
+        ],
+        "priority": "primary_existing"
+      },
+      {
+        "id": "hellaswag_fixed1000",
+        "items": 1000,
+        "metrics": [
+          "acc",
+          "acc_norm"
+        ],
+        "priority": "existing_Qwen_subset_only",
+        "restriction": "Never label as full10042; full validation is a new protocol"
+      },
+      {
+        "id": "long_context_QA_or_retrieval",
+        "items": null,
+        "metrics": [
+          "task-specific EM/F1"
+        ],
+        "priority": "required_if_claiming_long_context_filtering_or_KV_benefit",
+        "dataset_revision": null,
+        "prompt_format": null,
+        "generation_settings": null
+      }
+    ],
+    "harness": {
+      "version": "v0.4.8",
+      "commit": null,
+      "task_yaml_sha256": null,
+      "code_source": "https://github.com/EleutherAI/lm-evaluation-harness/blob/v0.4.8/lm_eval/api/task.py",
+      "default_multiple_choice_acc_norm_denominator": "len(choice_string), Unicode character count; task overrides must be inspected",
+      "num_fewshot": 0,
+      "chat_template": "must freeze per Base/Instruct; no silent substitution"
+    },
+    "stochastic": {
+      "minimum_independent_runs": 3,
+      "selected_best_seed_for_main_result": false,
+      "report_per_seed": true,
+      "report_ppl_arithmetic_mean_and_exp_mean_nll_with_distinct_names": true,
+      "averaging_predictions_across_runs_allowed_only_if_implemented_as_ensemble": false
+    },
+    "uncertainty": {
+      "seed_sd": "Report denominator convention separately from task-set uncertainty",
+      "task_delta": "Paired per-document outcomes and paired confidence interval; no cross-seed voting",
+      "ppl_delta": "Paired documents/blocks as resampling unit; do not assume token independence",
+      "cost_uncertainty": "Independent provenance/error category; not equivalent to seed variance"
+    },
+    "acceptance": {
+      "status": "NOT_FIXED_BY_USER",
+      "noninferiority_margin": null,
+      "illustrative_ppl_relative_budgets": [
+        0.01,
+        0.03,
+        0.05
+      ],
+      "illustrative_budgets_are_venue_rules": false,
+      "task_specific_margins": null,
+      "calibration_and_model_selection_separated_from_final_test": true
+    },
+    "path_coverage_required": [
+      "all model layers",
+      "prefill calls",
+      "decode calls",
+      "q_len1 replacement coverage",
+      "active/dummy rows",
+      "actual candidates/retained_fraction",
+      "actual RNG backend",
+      "finite_precision_driver_and_sampler",
+      "cache layout and GQA mapping"
+    ]
+  },
+  "workloads": {
+    "performance_input_modes": [
+      "fixed_real_token_replay_for_equal_work",
+      "separate_closed_loop_generation_for_application_quality"
+    ],
+    "fixed_batch_primary": [
+      1,
+      4
+    ],
+    "batch16": "Optional only if resource capacity permits; report exclusions rather than changing resources silently",
+    "request_points": [
+      {
+        "id": "short_input_long_output",
+        "prompt_tokens": 128,
+        "output_tokens": 512,
+        "models": [
+          "qwen25_05b_base",
+          "llama2_7b_base"
+        ]
+      },
+      {
+        "id": "long_input_short_output",
+        "prompt_tokens": 2048,
+        "output_tokens": 128,
+        "models": [
+          "qwen25_05b_base",
+          "llama2_7b_base"
+        ]
+      },
+      {
+        "id": "long_context_qwen",
+        "prompt_tokens": 8192,
+        "output_tokens": 128,
+        "models": [
+          "qwen25_05b_base"
+        ],
+        "required_guard": "verify maximum total context from checkpoint"
+      }
+    ],
+    "decode_diagnostic_points": [
+      {
+        "initial_context_tokens": 2048,
+        "steps": 128,
+        "context_growth": "2048..2175",
+        "purpose": "match historical GPU replay convention"
+      },
+      {
+        "initial_context_tokens": 8192,
+        "steps": 128,
+        "context_growth": "8192..8319",
+        "models": [
+          "qwen25_05b_base"
+        ],
+        "purpose": "historical_GPU_and_long_KV_diagnostic"
+      }
+    ],
+    "fixed_cache_diagnostic": "If cache length held constant, label separately from growing-cache points",
+    "first_token_convention": "Prefer prefill produces logits for first output, G-1 subsequent generation intervals; record any alternative explicitly",
+    "cold_warm_modes": [
+      "warm execution excludes model loading but includes actual source reseed/start as configured",
+      "cold initialization separately priced and timed"
+    ],
+    "serving": "Optional future extension: request arrival distribution, SLO targets, scheduling and tail latency must be specified before calling goodput"
+  },
+  "comparison_groups": [
+    {
+      "id": "digital_bf16",
+      "purpose": "original model/reference"
+    },
+    {
+      "id": "digital_matched_quantized",
+      "purpose": "matching W8/coding/scale/conversion semantics with deterministic arithmetic"
+    },
+    {
+      "id": "ffn_only",
+      "purpose": "probabilistic FFN; original Attention"
+    },
+    {
+      "id": "attention_only",
+      "purpose": "new Attention; original FFN"
+    },
+    {
+      "id": "joint",
+      "purpose": "actual combined implementation"
+    },
+    {
+      "id": "source_ablation",
+      "purpose": "ideal vs LFSR32 vs shared expansion vs Bivium and eventual physical source"
+    },
+    {
+      "id": "strong_digital_optional",
+      "purpose": "lowbit/LUT/sparse digitally optimized baseline at matched quality; no new unsupported result"
+    }
+  ],
+  "fairness": {
+    "same_resource_experiment": [
+      "same external memory capacity/organization/bandwidth",
+      "same SRAM capacity/bank/ports constraints",
+      "explicit compute resource constraints",
+      "optimize legal mapping independently per design"
+    ],
+    "same_area_experiment": [
+      "same total declared on-chip area budget",
+      "allow different engine counts and storage allocations",
+      "charge RNG/periphery/control/conversion",
+      "use quality-constrained frontiers"
+    ],
+    "these_are_distinct_experiments": true,
+    "GPU_role": "measured external platform reference; no whole-GPU node scaling to prove architecture gain",
+    "quality_and_PPA_config_must_match": true
+  },
+  "random_service": {
+    "interfaces": "Reuse Issue95 local services and Issue96 contract; do not introduce SRAM/FIFO bitstream staging by default",
+    "required_fields": [
+      "backend",
+      "seed/reseed policy",
+      "raw entropy bits",
+      "PRNG state updates",
+      "logical words issued",
+      "shared expansion logic",
+      "comparator decisions",
+      "observed samples",
+      "effective-sample diagnostic by observable",
+      "bias/correlation checks",
+      "warmup/burn/spacing/reject/hold",
+      "backpressure/wait",
+      "fanout/distribution/clock costs"
+    ],
+    "physical_entropy_not_equal_logical_output_bits": true,
+    "unknown_source_PPA_is_null": true
+  },
+  "physical_cost": {
+    "preferred_flow": "Existing usable target library, preferably same55nm family for both digital and p-bit; resolve licensed PDK/PVT before execution",
+    "preferred_evidence": "Representative activity -> synthesis/netlist power; critical modules P&R/CTS/parasitics; exact SRAM macro lookup; calibrated resource/DRAM model",
+    "required_metadata": [
+      "foundry/PDK/library revision/hash",
+      "device/cell Vt",
+      "process corner",
+      "V",
+      "temperature_C",
+      "frequency_Hz",
+      "STA constraint/slack",
+      "synthesis/P&R/CTS/parasitic status",
+      "activity source/hash/window",
+      "tool/version",
+      "cost scope/included/excluded",
+      "validation error and source"
+    ],
+    "energy_partition": [
+      "digital compute",
+      "probabilistic compute",
+      "entropy/PRNG/expansion/distribution",
+      "encoding/comparison/accumulation",
+      "casts/scales/nonlinear",
+      "SRAM",
+      "NoC/DMA/control",
+      "DRAM core",
+      "DRAM IO/PHY",
+      "other declared domains"
+    ],
+    "null_means_unknown_not_zero": true,
+    "action_plus_state_double_count_guard": true,
+    "area_partition": [
+      "standard-cell area",
+      "SRAM and other macros",
+      "core/die area with utilization",
+      "separate external DRAM/stack/chiplet footprint"
+    ],
+    "scaling": {
+      "role": "supplementary projection only",
+      "required": [
+        "original results",
+        "target node/PVT",
+        "tool/version/formula",
+        "per-component scaling coefficients",
+        "power vs energy/frequency transformation",
+        "unscaled objects",
+        "sensitivity"
+      ],
+      "whole_GPU_or_physical_device_uniform_scaling_forbidden_as_proof": true
+    }
+  },
+  "dram": {
+    "reuse_existing_backend": true,
+    "required": [
+      "simulator/version",
+      "DRAM standard and part",
+      "channel/rank/bank organization",
+      "IDD and voltage source",
+      "controller and queue policy",
+      "address map",
+      "burst/transaction sizes",
+      "timestamps and legal command trace",
+      "REF/lowpower policy",
+      "core/IO/PHY scope"
+    ],
+    "metrics": [
+      "logical K/V elements",
+      "unique V rows",
+      "GQA reuse",
+      "SRAM hit/miss",
+      "physical request bytes",
+      "ACT/PRE/RD/WR/REF counts",
+      "row-hit rate",
+      "queue stall",
+      "background time and energy",
+      "IO energy or explicit unknown"
+    ],
+    "timing_owner": "Exactly one timing/controller owner per path; avoid adding controller/ACT delays twice",
+    "energy_owner": "Charge a component/power domain once"
+  },
+  "output_contract": {
+    "design_point_id": "stable ID tying all records together",
+    "join_keys": [
+      "model_manifest_sha256",
+      "quality_config_sha256",
+      "hardware_config_sha256",
+      "rng_config_sha256",
+      "workload_sha256",
+      "mapping_sha256",
+      "code_commit"
+    ],
+    "performance_fields": [
+      "device_prefill_s",
+      "TTFT_s_with_origin",
+      "TPOT_s_per_request",
+      "ITL_p50_p95_p99_s",
+      "request_E2E_s",
+      "output_token_count",
+      "input_token_count",
+      "output_tokens_per_s",
+      "first_token_is_in_prefill",
+      "decode_step_count",
+      "decode_output_count",
+      "conditional_time_lower_bound_s",
+      "time_gap_to_declared_lower_bound"
+    ],
+    "energy_fields": [
+      "prefill_J",
+      "decode_J",
+      "handoff_J",
+      "other_J",
+      "request_J",
+      "decode_J_per_generated_token",
+      "request_J_per_generated_token",
+      "average_power_W",
+      "power_boundary",
+      "included_domains",
+      "unknown_domains"
+    ],
+    "area_fields": [
+      "cell_mm2",
+      "macro_mm2",
+      "core_mm2",
+      "die_mm2",
+      "external_memory_area_separate",
+      "process_and_scope"
+    ],
+    "quality_fields": [
+      "PPL_and_NLL_by_seed",
+      "task_scores_by_metric_and_seed",
+      "paired_delta",
+      "seed_sd",
+      "task_set_interval",
+      "path_coverage"
+    ],
+    "evidence_fields": [
+      "MEASURED/SIMULATED/SCALED/ASSUMED per field",
+      "physical_stage",
+      "calibration_coverage",
+      "missing_costs",
+      "quality_PPA_match_status",
+      "not_an_executed_run_if_template",
+      "lower_bound_assumptions_and_scope"
+    ]
+  },
+  "formulas": {
+    "ppl": "exp(total_nll_nat/target_count)",
+    "delta_nll": "ln(ppl_new/ppl_ref)",
+    "TTFT": "t_first_output-t_arrival",
+    "TPOT": "(t_last_output-t_first_output)/(G-1), G>1; null atG1",
+    "throughput": "sum(output_tokens)/declared_batch_interval",
+    "energy": "sum(count_i*incremental_energy_i)+sum(state_power_s*state_duration_s), disjoint accounting",
+    "EDP": "E_J*T_s",
+    "AEDP": "A_mm2*E_J*T_s",
+    "time_gap_to_lower_bound": "T_sim/T_LB-1; T_LB must be a valid bound for the declared algorithm, quality and resource contract"
+  },
+  "non_goals": [
+    "No model downloads/runs",
+    "No training or Slurm jobs",
+    "No EDA execution",
+    "No TLM code changes",
+    "No automatic quality acceptance",
+    "No claim of measured ASIC PPA",
+    "No claim of full MLPerf compliance"
+  ]
+}

@@ -6,9 +6,9 @@
 
 另通过21项文档链接/历史保留/边界与Git检查，见ISING_UPDATE_DOC_CHECKS_20261022.json；7项稳定文件SHA见ISING_UPDATE_DELIVERY_20261022.json。2026-10-22实际只读GraphQL返回INSUFFICIENT_SCOPES，缺read:project，看板待同步；不影响仓库分支/PR。
 
-尚未做：任务分支上传/PR及读回、Issue完成回执。后续发布只含本补充文档、索引和本人状态/交接/项目记忆，不包含PR82/86/88源码。最终完整模型PPL与物理PPA继续待原负责人/后续任务；不能因本报告而关闭37/78/87。
+发布已完成：结果提交18bd5f299cba76ff0c33dbf0d02d8133eac165d7已推送，[PR89](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/89)开放待审、未合并；ref/PR head和7项稳定文件的GitHub原字节SHA读回一致。最新PR82/86/88 head与报告固定版本相同且仍未合并。回执见ISING_UPDATE_PUBLICATION_20261022.json；本次发布仅含评估补充、来源验证和本人状态/交接/项目记忆，不包含PR82/86/88源码。最终完整模型PPL与物理PPA继续待原负责人/后续任务；不能因本报告而关闭37/78/87。
 
-恢复：先读最新Issue37、78、87与PR82/86/88，复核远端集成和head是否变化，再读本报告、来源及验证；需要验证旧数据时只读冻结提交，不重放Slurm提交。不把旧README/HANDOFF中的权限时点当当前状态。常规发布命令为git push -u origin task/37-ising-update-20261022，然后以本集成为base创建PR，保存ref/head/SHA回执；不要自动合并。
+恢复：先读最新Issue37、78、87与PR82/86/88/89，复核远端集成和head是否变化，再读本报告、来源及验证；需要验证旧数据时只读冻结提交，不重放Slurm提交。不把旧README/HANDOFF中的权限时点当当前状态。当前继续PR89评审，无需重建PR或重推已确认结果；不要自动合并。
 
 以下全部为历史时点记录，按其原日期理解：
 

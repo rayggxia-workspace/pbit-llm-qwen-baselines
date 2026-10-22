@@ -59,6 +59,52 @@ class IndependentFFNAudit(unittest.TestCase):
         self.assertEqual(observed, [[[0]*8, [2048]*8]])
         self.assertEqual(state["gate"], [64.0])
 
+    def test_encoder_tiny_values_and_explicit_largest_scale_domain(self):
+        tiny = encode_group([1e-38, -1e-39, 0.0])
+        self.assertEqual([item["q"] for item in tiny], [218, 22, 0])
+        self.assertEqual([item["sign"] for item in tiny], [1, -1, 0])
+        self.assertTrue(all(item["scale"] == 2**-126 for item in tiny))
+        subnormal = encode_group([2**-149, -(2**-149)])
+        self.assertEqual([item["q"] for item in subnormal], [0, 0])
+        maximum_scale = encode_group([2**127])[0]
+        self.assertEqual(maximum_scale["scale"], 2**127)
+        self.assertTrue(maximum_scale["full_one"])
+        with self.assertRaisesRegex(ValueError, "2\\*\\*127"):
+            encode_group([struct.unpack("<f", bytes.fromhex("ffff7f7f"))[0]])
+
+    def test_raw_input_residency_and_restore_scratch_are_finite(self):
+        for config in (FFNConfig(encoded_capacity_bytes=196, random_backend="replay"),
+                       FFNConfig(restore_capacity_bytes=11, random_backend="replay")):
+            with self.subTest(config=config):
+                k = make_kernel(config)
+                with self.assertRaisesRegex(ValueError, "capacity"):
+                    state = build_ffn(k, endpoint_fixture(), config)
+                    k.run(mode="event")
+
+    def test_restoration_scales_with_lanes_and_keeps_counter_credits_until_done(self):
+        outputs = []
+        durations = []
+        for lanes in (16, 1):
+            c = FFNConfig(vector_lanes=lanes, random_backend="replay", output_bf16=False)
+            k = make_kernel(c)
+            state = build_ffn(k, endpoint_fixture(), c)
+            r = k.run(mode="event")
+            prefix = "ffn.wg.r0.k0."
+            rail = prefix+"restore_rails"
+            # One row x four bins x eight bit positions: 32 lane operations.
+            self.assertEqual(r.completion_ps[rail]-r.accepted_ps[rail], (4+32//lanes-1)*10000)
+            restore = k.operations[prefix+"restore"]
+            self.assertIn("ffn.counters", restore.outputs)
+            self.assertIn("ffn.restore", restore.outputs)
+            for name in ("restore_rails", "restore_plane_tree0", "restore_plane_tree1", "restore_plane_tree2", "restore_bin0", "restore_bin1", "restore_bin2", "restore_bin3"):
+                self.assertNotIn("ffn.counters", k.operations[prefix+name].outputs)
+            self.assertEqual(r.buffer_final["ffn.restore"], c.restore_capacity_bytes)
+            self.assertEqual(state["restore_intermediates"], {})
+            outputs.append(state["output"])
+            durations.append(r.finish_ps)
+        self.assertEqual(outputs[0], outputs[1])
+        self.assertGreater(durations[1], durations[0])
+
     def test_cross_input_tiles_reduce_before_swiglu(self):
         fixture = {"x": [1.0]*128,
                    "wg": quantized([[1]*64 + [-1]*64], [[1.0, 1.0]]),

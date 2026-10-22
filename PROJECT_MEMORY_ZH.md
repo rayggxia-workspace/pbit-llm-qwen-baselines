@@ -24,6 +24,10 @@
 
 ## 0 恢复工作先读这里
 
+> 2026-10-22第五轮收尾追加：PR89评估补充已直接合并作者原head，现共82/83/85/86/88/89六项成果已合并；下方五项记录为追加前快照。Issue37/78仍开放。完整回执work/jieruiz/55/round5/。
+
+> 2026-10-22第五轮最新验收：PR82/83/85/86/88均已实际合并。Issue73的26项推理与官方逐题oracle已全部核验（54782配置内题、109564指标），不是旧19/26/pending；回查已由用户要求删除，不重建。新采样器仍无整模型PPL/物理PPA；PR88补齐可选tlm-parallel入口和4项24层合成组合验证，旧tlm默认保留。详见文末第五轮回执及work/jieruiz/55/round5/。
+
 > 2026-10-21最新审核：PR75/77/79/80均已合并，Issue76已按用户明确授权关闭；Issue73仍收集26项最终结果、Issue78继续有限精度/模型/硬件验证。详见文末“第四轮PR审核与合并回执”及work/jieruiz/55/round4/。旧draft、GPU修复pending和未上传描述是历史快照。
 
 > 2026-10-20 17:40 Issue73更新：旧2572三项FFN-only初始化OOM，失败日志保留、只撤回15个尚未执行FFN项；健康8项保留。新309ca9c无损把W8码INT16存储压为INT8，FP32恢复/算术/RNG不变、省4.03GiB；CPU2583七项通过，GPU2584待资源，18项补跑2585依赖其成功（尚未完成GPU验证）。请求/模板/Harness一致，最终8旧+18新=26唯一项。PIQA原BF16正式完成；其余分数未齐。预计1卡40～55h/较快2卡22～32h。用户要求的本对话heartbeat llama2-7b已设每24h，首检预计10/21 17:35北京时间，核验完成后停用；本地关机不能SSH、即时补跑未保证。恢复先读work/jieruiz/73/HANDOFF.md最新顶部，不重交健康任务。
@@ -865,3 +869,20 @@ Issue87发布回执（2026-10-22）：科学head8687c1d8124af192e82ec13aa3dbe12c
 
 
 Issue73 publication receipt (2026-10-22): completed26 status/report and automation-deletion receipt pushed to PR83, scientific head 6acac58eac394b940907a5e4265db39fd043a761; three GitHub blobs read back SHA-identical. Issue comment: https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/73#issuecomment-6332960590. PR83 remains draft/unmerged; oracle pending, daily follow-up deleted at user request. PUBLICATION_STOP_20261022.json records exact evidence.
+
+
+## 2026-10-22 第五轮PR审核与模块接入边界（Issue55）
+
+本轮82/83/85/86/88已按精确head/base实际合并，见work/jieruiz/55/round5/。82是既有logits的完整驱动量化局部条件律：25检查/9格式重放及冻结源核验，非量化自适应整轨迹或模型质量。85是SANTA++ v1原PDF/公式/表格/官方源码的文献对照，不是新模型或全领域查新。
+
+83的26项已完成最后官方验收：原8＋修复18、54782道配置内文档、109564指标，与固定lm_eval0.4.8原process_results和原始YAML/parquet标签逐题一致，源/输入/文档封存与32层覆盖通过；三seed及BF16逐题配对统计见llama2/results/task_accuracy_20261020/FINAL_RESULTS_20261022_ZH.md和FINAL_METRIC_ORACLE_20261022.json。旧19/26与oracle pending是历史。未重复推理/重哈希14GB权重、未恢复已删除定时；原CTMC/FFN任务验收不等于新采样器/q8、长上下文筛选或质量无损保证。
+
+86核验90行=54原始+36派生、3seed×8重复、122归档执行源字节与CRLF等价、90原件SHA/源输入计划和V参考方差；固定预算/组表只读重算通过。14本地检查通过；解析IID/拒绝的40个MC95注释修正不改任何数值。局部V-MSE和经验网格预算不能继承为PPL/ASIC周期。
+
+88的18新+10旧检查通过，审阅补做两采样器×数字FFN/历史fixed_sc_exact共4项24层/context512/S16合成Link连通。新增python qwen/run.py tlm-parallel --attention可选入口，原tlm/v3保留；FFN历史参数不是最新B4/T32/K32重标定。采样后地址直接V读取，无重复PV采样，完整能量/面积未知仍null、quality_reference_ppl仍null。接入通过不等于最新FFN＋新采样器＋8位驱动的整模型质量/物理实现已经完成。
+
+本人元数据冲突保留双方有序历史，其他成员STATUS和原科学blob不覆盖。继续研究归Issue78/37；有限任务73/84/87验收状态以Issue原生最终回执为准。仅本轮本人稀疏review/helper目录在报告合并后逐SHA归档回收，恢复project_archives/pr_review_issue55_20261022/RECOVERY_INDEX.json。canonical原未提交资料先备份、HEAD不reset，根阅读副本同字节同步。
+
+2026-10-22原生验收回执：Issue73（最终26项官方逐题）、84（文献）、87（可用TLM）已按各自有限范围实际关闭；Issue78/37继续开放。旧待审与pending文字仅为历史。
+
+第五轮追加PR89：19固定源、8组TLM中位数/单位/null及3组固定预算覆盖核验通过，旧数字全上下文D0与原评估保留，局部误差/合成时序没有冒充新PPL/PPA。自动审批曾拒绝向其他成员分支推送刷新；未执行该推送，已改为原head69b1accc的无冲突原生合并9bd908b5，无作者分支改写或STATUS/HANDOFF手工改动。作者自己的新状态按原blob继承，Issue37不关闭。

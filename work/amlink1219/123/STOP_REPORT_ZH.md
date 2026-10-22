@@ -2,6 +2,8 @@
 
 按用户要求在当前进度停止。只完成停机、归档、核验和发布，不再启动优化或仿真。PR125待审未合并，Issue123保留开放供后续接手。
 
+已在[停止交接评论](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/123#issuecomment-6349890389)再次@jieruiz，附本总结与STA/PPA任务文件；通知已回读核验。
+
 收尾只读核对时，PR126任务分支已前进到 `3347bd8a0a46ad2533298d680d8a6800ad9fa8d4`。本任务实际执行仍固定 `160f46e`，停止阶段不纳入后续改动；恢复时应先看其新进展，不能把旧快照当远端最新状态。
 
 ## 已完成并有证据

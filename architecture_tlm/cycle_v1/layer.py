@@ -73,8 +73,9 @@ class _RuntimeInitializer:
     activation, appended KV value and zeroed histogram is a real online memory
     write. Kernel's RAW scoreboard orders subsequent reads behind those writes.
     """
-    def __init__(self,kernel,initial,prefix):
+    def __init__(self,kernel,initial,prefix,producer_id,cdc_cycles):
         self.kernel,self.initial,self.prefix=kernel,initial,prefix
+        self.producer_id,self.cdc_cycles=producer_id,cdc_cycles
         self.serial=0
 
     def __getattr__(self,name):
@@ -87,6 +88,7 @@ class _RuntimeInitializer:
             return
         self.serial+=1
         self.kernel.add(Operation(f'{self.prefix}.initialize.{self.serial}',port,
+            deps=(self.producer_id,),cdc_cycles=self.cdc_cycles,
             memory=MemoryRequest(address,len(data),write=True,data=data),
             actions={'boundary_write_bytes':len(data)},
             metadata={'kind':'online producer-to-consumer initialization','payload_bytes':len(data)}))
@@ -121,6 +123,7 @@ def make_layer(fixture=None,layer_config=None,ffn_config=None,attention_config=N
     # Sharing is explicit: one digital matrix unit and one vector pipeline.
     resources['digital_matrix']=Resource('digital_matrix',Clock('core',10000),3,capacity=4)
     resources['vector']=Resource('vector',Clock('core',10000),3,capacity=4)
+    resources['rng']=Resource('rng',Clock('core',10000),max(fc.rng_latency,ac.source_latency),capacity=2)
     buffers=ffn.default_buffers(fc)+attention.default_buffers(ac)+[
         Buffer('layer.local',c.local_bytes,c.local_bytes,'byte credit'),
         Buffer('layer.state',c.working_bytes,c.working_bytes,'byte credit')]
@@ -155,7 +158,8 @@ def make_layer(fixture=None,layer_config=None,ffn_config=None,attention_config=N
            'provenance':{**data.get('provenance',{}),'scope':'reduced single-head decoder in one online kernel',
                'selection':'all candidates; no screening or GQA',
                'arithmetic':'FP32 boundaries with double fsum reference digital kernels; not bit-true full RTL',
-               'timing':'uncharacterized configured contracts','global_memory_capacity':'not allocated'},
+               'timing':'uncharacterized configured contracts','global_memory_capacity':'not allocated',
+               'shared_resource_overrides':{'vector_latency_cycles':3,'rng_latency_cycles':max(fc.rng_latency,ac.source_latency)}},
            'configs':{'layer':asdict(c),'ffn':asdict(fc),'attention':asdict(ac)}}
     from .layer_flow import build_flow
     return build_flow(k,state,data,c,fc,ac,addresses,matrix_addresses,initial,x,state_bytes)

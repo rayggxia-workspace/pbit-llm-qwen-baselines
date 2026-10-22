@@ -28,7 +28,7 @@ def build_flow(k,state,data,c,fc,ac,addresses,matrix_addresses,initial,x,state_b
             mlp={name:data[name] for name in ('wg','wu','wd')}
             mlp.update(x=unpack(kernel.memory_reads[fr]),residual=unpack(kernel.memory_reads[rr]))
             state['ffn_fixture']=mlp
-            state['ffn']=ffn.build_ffn(_RuntimeInitializer(kernel,initial,'layer.ffn'),mlp,fc)
+            state['ffn']=ffn.build_ffn(_RuntimeInitializer(kernel,initial,'layer.ffn',op.id,c.cdc_cycles),mlp,fc)
             # A control dependency may name a future dynamic output. Do not
             # register a memory reader before the producer's writer exists.
             def done(kernel,op):
@@ -74,7 +74,7 @@ def build_flow(k,state,data,c,fc,ac,addresses,matrix_addresses,initial,x,state_b
             query={'q':qv,'k':data['past_k']+[kv],'v':data['past_v']+[vv],
                    'candidate_ids':list(range(len(data['past_k'])+1))}
             state['query_fixture']=query
-            state['attention']=attention.build_attention(_RuntimeInitializer(kernel,initial,'layer.attention'),query,ac)
+            state['attention']=attention.build_attention(_RuntimeInitializer(kernel,initial,'layer.attention',op.id,c.cdc_cycles),query,ac)
             add('attention_ready','control',deps=('attention.output.write',),on_complete=lambda kernel,op:wo(op.id))
         add('attention_start','control',deps=tuple(reads.values()),on_complete=ready,
             outputs={'layer.local':d*12},actions={'kv_append_values':2*d,'all_candidate_indices':len(data['past_k'])+1})

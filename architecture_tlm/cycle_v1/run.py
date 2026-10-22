@@ -25,6 +25,7 @@ import subprocess
 import time
 
 from . import attention, ffn
+from .reporting import timeline_summary, write_inspector
 
 
 def digest(data):
@@ -101,7 +102,8 @@ def _buffer_accounting(kernel, trace):
 
 def _numeric(operator, fixture, config, state):
     if operator == 'ffn':
-        ref = ffn.reference_ffn_tiled(fixture, config)
+        frozen = ffn.replay_fixture(fixture,state) if hasattr(ffn,'replay_fixture') else fixture
+        ref = ffn.reference_ffn_tiled(frozen, config)
         checks = {name: state[name] == ref[name] for name in ('gate','up','z','projected','output')}
         if not all(checks.values()):
             raise AssertionError('FFN tiled numeric mismatch: '+str(checks))
@@ -158,6 +160,7 @@ def run_case(operator, fixture_bundle, config, output, *, fixture_sha256=None,
                 raise AssertionError('cycle/event functional mismatch: '+field)
     payload = _safe_payload(result)
     numeric = _numeric(operator, fixture, config, state)
+    timing_details, timeline_rows = timeline_summary(kernel,result)
     specs = {'resources': [asdict(x) for x in kernel.resources.values()],
              'memory_ports': [{k:v for k,v in asdict(x).items() if k!='initial_data'} for x in kernel.memory_ports.values()],
              'buffers': _buffer_accounting(kernel, result.trace)}
@@ -180,6 +183,9 @@ def run_case(operator, fixture_bundle, config, output, *, fixture_sha256=None,
         'energy': {'status': 'unknown', 'reason': 'no matched characterized coefficient set; action counts only; no fabricated total'},
         'global_memory_capacity': 'not allocated; finite local working storage and finite request windows only',
         'hardware_status': 'configured cycle model; no full-datapath STA, synthesis or silicon evidence'}
+    summary['timing_details']=timing_details
+    if 'native_random' in state:
+        summary['native_random']=state['native_random']
     if operator == 'attention':
         summary['sampler'] = {k: state.get(k) for k in ('proposals','rejected_empty','rejected_multi',
             'source_requests','source_frames','source_waves','fair_draws','rank_retries',
@@ -195,6 +201,8 @@ def run_case(operator, fixture_bundle, config, output, *, fixture_sha256=None,
                                      'uncompressed_sha256': digest(blob), 'bytes': len(compressed)}
     json_write(output/'contracts.json', specs)
     json_write(output/'summary.json', summary)
+    write_inspector(output/'timeline.html',{'operator':operator,'finish_ps':result.finish_ps,
+                    'config':asdict(config),'model_boundary':state['provenance']},timeline_rows)
     lines = [f'# {operator} cycle execution', '',
              f'Latency: **{summary["latency_ns"]:,.2f} ns** under declared timing assumptions.',
              f'Operations: {summary["operations"]}; cycle/event equivalence checked: {compare_modes}.',

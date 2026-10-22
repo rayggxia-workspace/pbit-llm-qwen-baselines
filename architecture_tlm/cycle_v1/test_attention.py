@@ -1,5 +1,6 @@
 import dataclasses
 import math
+import struct
 import unittest
 
 from .attention import AttentionConfig, SamplerCapError, build_attention, make_kernel, reference_attention
@@ -103,6 +104,15 @@ class AttentionTests(unittest.TestCase):
         build_attention(kernel,fixture())
         kernel.load_memory('dram',0x71000000+7*12,bytes(12))
         with self.assertRaisesRegex(AssertionError,'payload mismatch'): kernel.run()
+
+    def test_output_bytes_and_local_storage_capacity(self):
+        state,result,kernel=execute(fixture(),AttentionConfig(mode='pv',samples=9))
+        self.assertEqual(kernel.read_memory('sram',state['output_address'],state['output_bytes']),
+                         struct.pack('<3f',*state['output']))
+        self.assertEqual(state['complete_ps'],result.finish_ps)
+        required=sum(state['local_state_bytes'].values())
+        with self.assertRaises(ValueError):
+            execute(fixture(),AttentionConfig(mode='pv',samples=9,score_capacity_bytes=required-1))
 
 
 if __name__=='__main__': unittest.main()

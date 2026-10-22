@@ -66,6 +66,8 @@ class FFNConfig:
                 self.samples < 1 or self.strata < 1 or
                 256 % self.strata or self.samples % self.strata):
             raise ValueError('strata must divide 256 and positive sample count')
+        if type(self.seed) is not int or (self.count_bits is not None and type(self.count_bits) is not int):
+            raise ValueError('integer seed and counter width required')
         if self.counter_width < (self.samples * self.tile * 128).bit_length() + 1:
             raise ValueError('signed counter cannot hold positive T*64*128 endpoint')
         for name in ('weight_slots', 'weight_slot_bytes', 'counter_capacity_bytes',
@@ -211,12 +213,16 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
     residual = [fp32(v) for v in fixture.get('residual', [0.0]*wd['rows'])]
     if len(residual) != wd['rows'] or any(not math.isfinite(v) for v in x+residual):
         raise ValueError('finite residual must match down output dimension')
-    partial_bytes = (2*wg['rows'] + 2*wd['rows']) * 4
+    # Conservative simultaneous g/u/z/down/residual allocation; no implicit
+    # aliasing of z with a released g/u region is assumed.
+    partial_bytes = (3*wg['rows'] + 2*wd['rows']) * 4
     if partial_bytes > c.partial_capacity_bytes:
         raise ValueError('partial-sum storage exceeds configured capacity')
     state = dict(gate=[0.0]*wg['rows'], up=[0.0]*wu['rows'], z=[],
                  projected=[0.0]*wd['rows'], output=None, counters={},
                  encoded={}, thresholds={}, operation_ids=[], tile_receipts=[],
+                 local_state_bytes=dict(gate=wg['rows']*4,up=wu['rows']*4,z=wg['rows']*4,
+                     down=wd['rows']*4,residual=wd['rows']*4),
                  provenance=dict(scope='one explicitly shaped FFN chain',
                     numeric='signed integer per-bin accumulation; FP32 tile restore/reduction; BF16 optional output',
                     random_source='frozen_replay' if fixture.get('thresholds') else 'Python Random local behavioral PRNG',
@@ -224,6 +230,8 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                     weight_layout='offline tile-major packed signed W8 plus FP32 scale',
                     counter_layout='B signed integer sums per output row; NOT legacy bit-plane counter layout',
                     tensor_storage='FP32 input/z/partial/residual; fixed W8 plus FP32 scale; BF16 output when configured',
+                    storage_boundary='finite local weights/counters/encoded/partial state; backing SRAM/DRAM address space has no total-capacity allocator',
+                    trace_storage='retained threshold histories and receipts are simulator evidence, not hardware buffers',
                     fixture=fixture.get('provenance', {})))
     ids = state['operation_ids']
     free_weights, free_counts = prefix+'.weights', prefix+'.counters'
@@ -440,3 +448,48 @@ def reference_ffn(fixture, config=None):
     residual=fixture.get('residual',[0.0]*len(projected))
     out=[bf16(fp32(bf16(v)+r)) if c.output_bf16 else fp32(v+r) for v,r in zip(projected,residual)]
     return dict(gate=gate,up=up,z=z,projected=projected,output=out)
+
+
+def reference_ffn_tiled(fixture,config=None):
+    """Bit-equal count-compressed oracle at the declared rounding boundaries.
+
+    The execution path updates signed bin sums once per temporal sample. This
+    oracle first counts each lane's complete stream and contracts counts with
+    integer weights, independently checking the time/space interchange before
+    applying the same explicitly specified FP32 restoration and tile order.
+    """
+    c=config or FFNConfig()
+    c.validate()
+    matrices={name:matrix_spec(fixture[name]) for name in ('wg','wu','wd')}
+    def project_phase(vector,names,phase):
+        groups=[]
+        for group,start in enumerate(range(0,len(vector),64)):
+            encoded=encode_group(vector[start:start+64],c.bins)
+            words=threshold_words(c,phase,group,fixture)
+            groups.append((encoded,[sum(item['full_one'] or word<item['q'] for word in words)
+                                    for item in encoded]))
+        outputs={}
+        for name in names:
+            matrix=matrices[name]
+            result=[]
+            for row,codes in enumerate(matrix['codes']):
+                total=0.0
+                for group,(encoded,counts) in enumerate(groups):
+                    partial=0.0
+                    for b in range(c.bins):
+                        members=[i for i,item in enumerate(encoded) if item['bin']==b]
+                        integer=sum(counts[i]*encoded[i]['sign']*codes[group*64+i] for i in members)
+                        scale=encoded[members[0]]['scale'] if members else 0.0
+                        restored=fp32(fp32(integer*scale)*matrix['scales'][row//64][group]/c.samples)
+                        partial=fp32(partial+restored)
+                    total=fp32(total+partial)
+                result.append(total)
+            outputs[name]=result
+        return outputs
+    gu=project_phase(fixture['x'],('wg','wu'),'x')
+    gate,up=gu['wg'],gu['wu']
+    z=[fp32(fp32(g*fp32(sigmoid(g)))*u) for g,u in zip(gate,up)]
+    projected=project_phase(z,('wd',),'z')['wd']
+    residual=[fp32(v) for v in fixture.get('residual',[0.0]*len(projected))]
+    output=[bf16(fp32(bf16(v)+r)) if c.output_bf16 else fp32(v+r) for v,r in zip(projected,residual)]
+    return dict(gate=gate,up=up,z=z,projected=projected,output=output)

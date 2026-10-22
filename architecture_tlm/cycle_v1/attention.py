@@ -26,7 +26,7 @@ class AttentionConfig:
     source_lanes: int = 64
     output_capacity: int = 1
     kv_capacity_bytes: int = 4096
-    score_capacity_bytes: int = 8192
+    score_capacity_bytes: int = 32768
     mac_lanes: int = 64
     source_latency: int = 2
     source_ii: int = 1
@@ -104,9 +104,27 @@ def validate_fixture(fixture,config):
         raise ValueError('candidate IDs must be unique valid physical token indices')
     if len(ids)>config.capacity:
         raise ValueError('candidate capacity exceeded; no silent truncation or unsupported batching')
-    if max(len(q),len(values[0]))*4>config.kv_capacity_bytes or (len(ids)*2+len(q)+len(values[0]))*4>config.score_capacity_bytes:
+    if max(len(q),len(values[0]))*4>config.kv_capacity_bytes or sum(local_state_bytes(len(ids),len(q),len(values[0]),config).values())>config.score_capacity_bytes:
         raise ValueError('query exceeds finite KV/score storage')
     return q,keys,values,ids
+
+
+def local_state_bytes(n,d,dv,c):
+    """Conservative simultaneous local storage, including functional doubles.
+
+    No undocumented overlap of score/probability/histogram/drive storage is
+    assumed. Source internal PRNG state belongs to its uncharacterized backend;
+    the request/response staging and all query-visible state are charged here.
+    """
+    sampled=c.mode!='exact'
+    network=c.mode in ('winner','rejection')
+    return dict(q=d*4,output_accumulator=dv*4,logits=n*4,candidate_map=n*4,
+        softmax_probabilities=n*8 if c.mode in ('exact','pv') else 0,
+        histogram=n*4 if sampled else 0,drive_values=n*8 if network else 0,
+        q256_thresholds=n*2 if network and c.response=='q256' else 0,
+        proposal_mask_and_valid=2*math.ceil(n/8) if network else 0,
+        output_fifo=c.output_capacity*4 if sampled else 0,
+        fsm_scalar_state=64)
 
 
 def softmax(logits):
@@ -179,7 +197,8 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
     c.validate()
     q,keys,values,candidates=validate_fixture(fixture,c)
     n,d,dv=len(candidates),len(q),len(values[0])
-    score_bytes=n*8+(d+dv)*4
+    storage=local_state_bytes(n,d,dv,c)
+    score_bytes=sum(storage.values())
     source=_Source(fixture,c)
     pack=lambda row:struct.pack('<'+'f'*len(row),*row)
     unpack=lambda data:list(struct.unpack('<'+'f'*(len(data)//4),data))
@@ -192,7 +211,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                histogram={},frames=[],proposals=0,rejected_empty=0,rejected_multi=0,
                source_requests=0,source_frames=0,source_waves=0,fair_draws=0,rank_retries=0,
                winner_holds=0,winner_switches=0,algorithm_updates=0,
-               operation_ids=[],K_addresses=[],V_addresses=[],
+               operation_ids=[],K_addresses=[],V_addresses=[],local_state_bytes=storage,
                provenance=dict(scope='one query from preprojected RoPE Q/K and explicit candidate IDs',
                   tensor_format='FP32 Q/K/V storage; not BF16 traffic',
                   arithmetic='QK double-precision products/fsum rounded to FP32; functional double-precision Softmax; per-term FP32 V accumulation; not a bit-true hardware datapath',
@@ -202,6 +221,8 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                   pv_sampling='one-offset systematic sampling; outputs are not independent' if c.mode=='pv' else None,
                   timing='configured, uncharacterized',candidate_overflow='error',
                   omitted='QKV projections, RoPE, screening, GQA union, Wo, full decoder',
+                  storage_boundary='finite query-local state and KV response credits; backing DRAM/SRAM address space has no total-capacity allocator',
+                  source_state='Python PRNG state is backend-owned and uncharacterized; source staging/masks are in local_state_bytes',
                   fixture=fixture.get('provenance',{})))
     if c.mode=='pv': state['provenance']['independent_samples']=False
     if c.mode=='rejection' and c.response!='ideal_sigmoid':

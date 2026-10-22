@@ -1,9 +1,10 @@
 import dataclasses
 import math
 import random
+import struct
 import unittest
 
-from .ffn import FFNConfig, build_ffn, encode_group, make_kernel, matrix_spec, reference_ffn
+from .ffn import FFNConfig, build_ffn, encode_group, make_kernel, matrix_spec, reference_ffn, reference_ffn_tiled
 
 
 def fixture(d=65,f=3,o=2):
@@ -46,8 +47,10 @@ class FFNTests(unittest.TestCase):
                 self.assertEqual(ar.equivalence_payload(),br.equivalence_payload())
                 self.assertEqual(a['output'],b['output'])
                 reference=reference_ffn(data,c)
+                tiled=reference_ffn_tiled(data,c)
                 for field in ('gate','up','z','projected','output'):
                     self.assertClose(a[field],reference[field])
+                    self.assertEqual(a[field],tiled[field])
                 self.assertEqual(a['counters'],{})
                 self.assertEqual(a['resident_weights'],{})
                 self.assertEqual(a['encoded'],{})
@@ -105,6 +108,14 @@ class FFNTests(unittest.TestCase):
         with self.assertRaises(ValueError): execute(data,FFNConfig(weight_slot_bytes=8))
         data['thresholds']={'x':[[0]*32,[0]*32]}
         with self.assertRaisesRegex(ValueError,'stratified'): execute(data)
+
+    def test_output_bytes_match_interface(self):
+        for narrow in (False,True):
+            state,result,kernel=execute(fixture(),FFNConfig(output_bf16=narrow))
+            payload=struct.pack('<'+'f'*len(state['output']),*state['output'])
+            if narrow: payload=b''.join(payload[i+2:i+4] for i in range(0,len(payload),4))
+            self.assertEqual(kernel.read_memory('sram',state['output_address'],state['output_bytes']),payload)
+            self.assertEqual(state['complete_ps'],result.finish_ps)
 
 
 if __name__=='__main__': unittest.main()

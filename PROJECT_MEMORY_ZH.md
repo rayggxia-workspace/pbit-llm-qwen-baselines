@@ -947,3 +947,14 @@ PR93环境交付32源/5报告与94包冻结逐SHA通过，Windows git archive/ch
 
 源码已上传PR99，成果/文档发布以Issue96、work/jieruiz/96/PUBLICATION.json/REMOTE_VERIFY.json最新回执为准；PR待审，不自动合并或关闭Issue96。后续优先表征B4恢复/编码、权重驻留接口、采样器偏移与直方图流水和本地源。当前TLM不是周期精确芯片、GPU模拟或质量验收。
 <!-- /issue96-unified-v6 -->
+
+
+## Upstream Issue90 complete receipt (27bf9c48; prior local history preserved)
+
+<!-- llm-env-issue90 -->
+## 2026-10-22 Issue90：两台4090备用LLM环境
+
+个人隔离Python3.12.3/Torch2.6.0+cu118/Transformers4.45.2/lm_eval0.4.8已安装并验证。A CPU9041/GPU9042、B CPU14101/GPU14104均COMPLETED/0:0，每台19CPU检查及6GPU synthetic smoke通过，27参数/3非持久RoPE buffer逐位相同、重载logits差0.0。94包freeze两台原字节相同SHA636ea0599fc983e7c003c3a8881aefa2f05d8167f2877dcab8992dfc3f145ae5；正式入口为个人环境bin/llm-python进程wrapper，旧glibc兼容层不改系统或共享环境。
+
+正式入口[环境报告](maintenance/llm_env_4090_20261022/README_ZH.md)，原执行源scripts/llm_env_4090_20261022，私有原件hash/脱敏视图及交接work/amlink1219/90。原失败与恢复各阶段保留，70wheel恢复包仅LLM扩展层，不含Torch底座。服务器地址/连接配置/凭据不发布。Torch版本不同于5090的2.7.1cu128，未下载真实权重/语料、未训练或产生真实PPL/准确率/PPA，后续真实实验需匹配数字基线。5090优先、备用当次告知、个人目录/Slurm/跨服务器单GPU规则继续适用。上传与PR状态见该任务PUBLICATION.json，Issue保持open等待审阅，不自动合并。
+<!-- /llm-env-issue90 -->

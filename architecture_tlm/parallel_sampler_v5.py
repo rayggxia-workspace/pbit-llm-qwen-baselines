@@ -123,12 +123,32 @@ class Session:
         started = self.t
         cycles = sum(self.c[k] for k in
                      ('source_command_cycles', 'source_settle_cycles', 'source_capture_cycles'))
-        bits = list(source.draw(drives))
+        if hasattr(source, 'draw_at'):
+            bits, done_ns = source.draw_at(started*self.period, drives)
+            if not math.isfinite(done_ns) or done_ns < started*self.period:
+                raise ValueError('invalid timed-source completion')
+            cycles = math.ceil(done_ns/self.period)-started
+            bits = list(bits)
+            self.module.provenance.update(source_backend=source.kind,
+                independent_ideal_response=False, quantization_changes_target=True,
+                source_timing='explicit local PRNG protocol; mapped timing/PPA uncharacterized')
+        else:
+            bits = list(source.draw(drives))
+            if isinstance(source, IdealBitSource):
+                self.module.provenance.update(source_backend='UNDECIDED',
+                    independent_ideal_response=True,
+                    quantization_changes_target=self.c['drive_step'] is not None)
+                self.module.provenance.pop('source_timing', None)
         if len(bits) != len(drives) or any(type(b) is not bool for b in bits):
             raise ValueError('source must return one boolean per requested lane')
         self.stage('parallel_source_read', cycles, 'biased_bit_draws', len(bits),
                    parallel_lanes=len(bits), service_waves=1)
-        self.actions['source_slot_cycles'] += len(bits) * cycles
+        if hasattr(source, 'draw_at'):
+            # Source wait/warmup/LUT time is NOT a PRNG update or active lane cycle.
+            # Actual work is counted exactly once in the source's cumulative ledger.
+            self.actions['timed_source_service_cycles'] += cycles
+        else:
+            self.actions['source_slot_cycles'] += len(bits) * cycles
         self.actions['buffer_bit_accesses'] += len(bits) * 2
         self.source_free = started + self.c['source_min_interval_cycles']
         self.module.source_ready_ns = self.source_free*self.period
@@ -138,10 +158,17 @@ class Session:
     def fair(self, source, width):
         if width == 0:
             return 0
-        v = source.fair(width)
+        cycles = self.c['fair_capture_cycles']
+        if hasattr(source, 'fair_at'):
+            v, done_ns = source.fair_at(self.t*self.period, width)
+            if not math.isfinite(done_ns) or done_ns < self.t*self.period:
+                raise ValueError('invalid timed fair-source completion')
+            cycles = math.ceil(done_ns/self.period)-self.t
+        else:
+            v = source.fair(width)
         if type(v) is not int or not 0 <= v < (1 << width):
             raise ValueError('invalid fair-bit vector')
-        self.stage('parallel_fair_read', self.c['fair_capture_cycles'],
+        self.stage('parallel_fair_read', cycles,
                    'fair_bit_draws', width, parallel_lanes=width)
         self.peak_fair = max(self.peak_fair, width)
         return v
@@ -182,7 +209,7 @@ class Session:
             biased_parallel_lanes=self.n if m.kind == 'winner_hold' else self.n-1,
             provisioned_biased_lanes=m.biased_capacity,
             peak_fair_parallel_lanes=self.peak_fair, provisioned_fair_lanes=m.fair_capacity,
-            source_backend='UNDECIDED', numerical_source=copy.deepcopy(m.provenance),
+            source_backend=m.provenance.get('source_backend','UNDECIDED'), numerical_source=copy.deepcopy(m.provenance),
             actions=dict(self.actions), frames=self.frames, events=self.events,
             retained_internal_output_indices=1, energy_J=known,
             known_dynamic_energy_J=known, physical_dynamic_energy_J=None if missing else known,

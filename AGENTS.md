@@ -15,6 +15,8 @@
 
 - Server-side tests must create temporary checkpoints under the verified personal project directory (pass an explicit `dir` to `TemporaryDirectory`); do not rely on the shared host's default temporary directory. Keep execution snapshots immutable after submitting a job and record later test-only fixes separately.
 
+- For model save/reload validation, initialize both instances with matching parameter and nonpersistent-buffer precision before comparing outputs. Keep Qwen RoPE buffers explicitly FP32; do not compare a blanket `model.to(dtype=...)` instance with `from_pretrained(torch_dtype=...)` without checking those buffers. Require matching parameter/buffer keys, shapes, dtypes, devices and values before the logits comparison, and preserve the original logits tolerance rather than relaxing it to hide initialization differences.
+
 ## Workspace collaboration rules（2026-10-16）
 
 本规则适用于本仓库及其 LLM 实验、RTL、TLM、文档和发布任务。执行用户明确授权的任务时，持续完成修改、适当验证、任务分支上传、PR 和进度同步；遇到权限、环境、数据阻塞，应完成不受影响的部分并如实记录待办，不把本地完成写成远端已完成。

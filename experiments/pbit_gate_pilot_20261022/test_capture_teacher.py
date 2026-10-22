@@ -29,7 +29,7 @@ class DocumentTests(unittest.TestCase):
         docs = capture.parse_documents("".join(f" = Article {i} =\nunique body {i}\n" for i in range(12)))
         def encode(text):
             article = int(text.split("Article ", 1)[1].split()[0])
-            return list(range(4 if article == 0 else 12))
+            return [article * 100 + t for t in range(4 if article == 0 else 12)]
         options = dict(context=8, train_docs=3, val_docs=2, holdout_docs=2, seed=42)
         chosen, summary = capture.select_documents(docs, encode, **options)
         repeated, _ = capture.select_documents(docs, encode, **options)
@@ -39,6 +39,17 @@ class DocumentTests(unittest.TestCase):
         self.assertTrue(all(len(d["token_ids"]) == 9 for d in chosen))
         self.assertTrue(all(d["source_document_index"] != 0 for d in chosen))
         self.assertEqual(summary["selected_articles"], 7)
+
+    def test_duplicate_truncated_inputs_cannot_cross_splits(self):
+        docs = capture.parse_documents("".join(f" = Article {i} =\nunique body {i}\n" for i in range(8)))
+        def encode(text):
+            article = int(text.split("Article ", 1)[1].split()[0])
+            prefix = 30 if article in (3, 4) else article
+            return [prefix * 100 + t for t in range(9)] + [article]
+        chosen, summary = capture.select_documents(
+            docs, encode, context=8, train_docs=3, val_docs=2, holdout_docs=2, seed=42)
+        self.assertEqual(len({d["truncated_token_ids_sha256"] for d in chosen}), 7)
+        self.assertEqual(summary["duplicate_truncated_inputs_skipped"], 1)
 
     def test_missing_articles_and_insufficient_unique_text_fail(self):
         with self.assertRaises(ValueError):

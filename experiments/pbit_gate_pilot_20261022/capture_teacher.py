@@ -87,7 +87,8 @@ def select_documents(documents, encode, *, context, train_docs, val_docs,
             seen.add(key)
     order = list(range(len(unique)))
     random.Random(int(seed)).shuffle(order)
-    selected, scanned = [], 0
+    selected, scanned, prefix_duplicates = [], 0, 0
+    seen_prefixes = set()
     for index in order:
         scanned += 1
         document = unique[index]
@@ -100,6 +101,10 @@ def select_documents(documents, encode, *, context, train_docs, val_docs,
                       original_token_count=len(ids), token_ids=ids[:context + 1])
         chosen["truncated_token_ids_sha256"] = hashlib.sha256(
             np.asarray(chosen["token_ids"], dtype="<i8").tobytes()).hexdigest()
+        if chosen["truncated_token_ids_sha256"] in seen_prefixes:
+            prefix_duplicates += 1
+            continue
+        seen_prefixes.add(chosen["truncated_token_ids_sha256"])
         selected.append(chosen)
         if len(selected) == sum(counts):
             break
@@ -108,7 +113,8 @@ def select_documents(documents, encode, *, context, train_docs, val_docs,
     if len({d["content_sha256"] for d in selected}) != len(selected):
         raise AssertionError("document isolation failed")
     return selected, dict(parsed_articles=len(documents), unique_articles=len(unique),
-                          articles_scanned=scanned, selected_articles=len(selected))
+                          articles_scanned=scanned, selected_articles=len(selected),
+                          duplicate_truncated_inputs_skipped=prefix_duplicates)
 
 
 def row_statistics(q, k, v, position, *, max_blocks=32, block_tokens=64,

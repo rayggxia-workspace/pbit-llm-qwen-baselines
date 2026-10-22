@@ -108,6 +108,8 @@ def p0(output):
 
 
 def search_summary(inputs, output):
+    inputs = [source.resolve() for source in inputs]
+    output = output.resolve()
     rows, signatures, grids, manifests, ledgers = [], {}, {}, {}, {}
     for source in inputs:
         for manifest in sorted(source.rglob('RUN_MANIFEST.json')):

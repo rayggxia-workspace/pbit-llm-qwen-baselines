@@ -1,6 +1,10 @@
 ## 2026-10-23 Issue117：资源预算计划的首轮执行
 
-用户要求按Issue112方案优化并先上传workspace。在实时集成46804fb上新增resource_optimization_v1（负责人amlink1219），与并行Issue116周期后端分开；既有103/105/106/108/109/111/113/114已合并，以实时Issue55为准。P0资源/缺项账本和固定流量/服务下界已完成：92封存情景145payload未变，整机面积/能量/A0未知。128项共享资源候选搜索基于执行44dbbbd启动，完成前不宣称最优配置；同1MiB映射、容量only和增配对照分开。恢复入口architecture_tlm/resource_optimization_v1/README_ZH.md、work/amlink1219/117/HANDOFF.md及Issue117。
+用户要求按Issue112方案优化并先上传workspace。在实时集成46804fb上新增resource_optimization_v1（负责人amlink1219），既有103/105/106/108/109/111/113/114已合并，以实时Issue55为准。本轮208项新完整decode TLM已全部完成：128共同候选粗筛＋64预声明代表点补充＋16vector128跟进；五个代表点各四方法/2K8K/三seed，没有仍运行或待补case。71项测试（28新增＋43原v6）及独立208case验收通过，原52＋40封存情景145payload未变。执行提交44dbbbdbc2720963b2b24bf03cdf7582a2d97075、315862412e15695c3fa21e6c573d9e5f3547e70d、b1b4d183678e25f24b7b37c273fcb3f61c37483b，十份执行清单数值/调度源SHA集合相同。
+
+结果保留正负两面：同映射容量only2/4/8MiB全部无时延收益；同1MiB重新分块仅小幅改善。vector128下SC筛选/PV三seed均值在8K比同配置W8快7.543849%，2K仍慢4.166733%；该补充由seed0结果触发，非盲测质量证明。完整面积/能量/A0未知，无新PPL/GPU/Slurm/RTL/EDA，不能把宏面积散点当完整同面积前沿。下一步优先恢复latency/II、SC权重保持和局部计数物理归属，随后真实驻留与持续在途DRAM调度。
+
+恢复入口architecture_tlm/resource_optimization_v1/README_ZH.md、RESULTS_ZH.md、results/analysis_20261023/SUMMARY.json与VALIDATION.json；work/amlink1219/117/HANDOFF.md有精确重汇总/验收命令。208项完整交付通过PR119；PR待审未合并，准确远端head与原字节核验按PUBLICATION.json最终回执。统一台账已按CALIBRATED_ESTIMATE登记（check/render及8项台账测试通过；历史指定镜像路径本机不存在）；Projects缺read:project待补。并行PR120/Issue118已有独立供数/逐档整数局部状态合同，待审且未纳入本轮；后续对接它和Issue116周期后端，不重做、接管或覆盖其范围。
 
 # p-bit LLM 项目长期备忘录
 

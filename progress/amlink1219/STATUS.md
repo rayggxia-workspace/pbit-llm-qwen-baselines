@@ -1,8 +1,10 @@
 # 2026-10-23 Issue117：ASIC资源计划首轮优化
 
-负责人amlink1219；独立workspace_projects/ar117，task/117-asic-resource-optimization；base集成46804fb。接续Issue112规划的新实现范围，不接管Issue116周期后端。首批P0：92封存情景/145payload SHA通过、完整资源缺项账本/下界、28新增测试＋43原v6测试通过；新bf16/2K和SC筛选PV/8K smoke复现。源44dbbbdbc2720963b2b24bf03cdf7582a2d97075已冻结，16候选×4方法×2上下文的128项资源搜索执行中，尚非完整优化验收。
+负责人amlink1219；独立workspace_projects/ar117，task/117-asic-resource-optimization；base集成46804fb。接续Issue112规划，本轮208项新完整decode TLM已全部完成：128共同候选粗筛＋64预声明代表点补充＋16vector128跟进，五代表点覆盖四方法/2K8K/三seed。没有剩余运行、待补case或GPU/Slurm任务。71项测试通过（28新增＋43原v6），52＋40旧情景145payload SHA未变；独立verify通过208完整键集合、配置/源/receipt、336query覆盖及容量/相位/资源守恒。
 
-正式入口architecture_tlm/resource_optimization_v1/P0_RESULTS_ZH.md及README_ZH.md；交接work/amlink1219/117/HANDOFF.md。新结果先上传任务分支/PR，精确发布回执见PUBLICATION.json。无GPU/Slurm/PPL/RTL/EDA；完整面积/能量/A0仍null。实际合并与Projects状态按回执，不能把下方旧历史“待审”当成今日PR状态。
+执行提交44dbbbdbc2720963b2b24bf03cdf7582a2d97075、315862412e15695c3fa21e6c573d9e5f3547e70d、b1b4d183678e25f24b7b37c273fcb3f61c37483b；十份执行清单的数值/调度源SHA集合相同。容量only无时延收益，同1MiB映射小幅改善；vector128下SC筛选/PV三seed均值比同配置W8在8K快7.543849%，2K慢4.166733%。结果是合成事务条件估计，未做新PPL/RTL/EDA；完整面积/能量/A0仍null，不能宣称SC普遍更优或完整同面积验收。
+
+正式入口architecture_tlm/resource_optimization_v1/README_ZH.md、RESULTS_ZH.md、results/analysis_20261023/SUMMARY.json与VALIDATION.json；交接work/amlink1219/117/HANDOFF.md含精确重汇总/验收命令。208项完整交付通过PR119，PR待审未合并，最终远端head/验证见PUBLICATION.json；统一台账已按CALIBRATED_ESTIMATE登记，check/render与8项台账测试通过。历史指定阅读镜像路径本机不存在、未同步。Projects缺read:project待补。不重复Issue116周期后端或PR120/Issue118供数/局部状态合同；后者待审且未纳入本轮。下方历史保留，实时状态以各任务最新回执为准。
 
 ---
 

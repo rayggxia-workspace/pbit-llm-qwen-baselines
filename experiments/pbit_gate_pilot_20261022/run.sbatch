@@ -36,6 +36,9 @@ elif [ "$GATE_STAGE" = gpu_blind ]; then
 elif [ "$GATE_STAGE" = cpu_freeze ]; then
   export CUDA_VISIBLE_DEVICES=""
   "$GATE_PYTHON" -P -u -m experiments.pbit_gate_pilot_20261022.freeze_driver --config "$GATE_CONFIG" --output "$GATE_OUTPUT"
+elif [ "$GATE_STAGE" = cpu_package ]; then
+  export CUDA_VISIBLE_DEVICES=""
+  "$GATE_PYTHON" -P -u -m experiments.pbit_gate_pilot_20261022.package_optimization --config "$GATE_CONFIG" --output "$GATE_OUTPUT"
 else
   exit 2
 fi

@@ -73,12 +73,31 @@ def parse_documents(text):
     return documents
 
 
+def sha256_set(values, label):
+    """Validate exclusion lists instead of accidentally treating a string as one."""
+    if not isinstance(values, (list, tuple)):
+        raise ValueError(label + " must be a list of SHA-256 strings")
+    if any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", value)
+           for value in values):
+        raise ValueError(label + " contains an invalid SHA-256")
+    return {value.lower() for value in values}
+
+
 def select_documents(documents, encode, *, context, train_docs, val_docs,
-                     holdout_docs, seed):
-    """Shuffle unique articles, then select long-enough documents without reuse."""
+                     holdout_docs, seed, exclude_document_sha256=(),
+                     exclude_truncated_token_sha256=()):
+    """Shuffle unique articles and exclude previously observed text or inputs.
+
+    Document exclusions match either normalized ``content_sha256`` or the exact
+    ``article_text_sha256``.  Truncated exclusions match the saved little-endian
+    int64 ``truncated_token_ids_sha256`` (context+1 IDs).  Exclusions are applied
+    to the shuffled order, preserving the old ordering for an empty exclusion.
+    """
     counts = (int(train_docs), int(val_docs), int(holdout_docs))
     if min(counts) < 1:
         raise ValueError("each document split must be nonempty")
+    excluded_documents = sha256_set(exclude_document_sha256, "exclude_document_sha256")
+    excluded_prefixes = sha256_set(exclude_truncated_token_sha256, "exclude_truncated_token_sha256")
     unique, seen = [], set()
     for document in documents:
         key = document["content_sha256"]
@@ -88,10 +107,15 @@ def select_documents(documents, encode, *, context, train_docs, val_docs,
     order = list(range(len(unique)))
     random.Random(int(seed)).shuffle(order)
     selected, scanned, prefix_duplicates = [], 0, 0
+    excluded_document_count, excluded_prefix_count = 0, 0
     seen_prefixes = set()
     for index in order:
         scanned += 1
         document = unique[index]
+        if ({document["content_sha256"], document.get("article_text_sha256")}
+                & excluded_documents):
+            excluded_document_count += 1
+            continue
         ids = list(encode(document["text"]))
         if len(ids) < context + 1:
             continue
@@ -101,6 +125,9 @@ def select_documents(documents, encode, *, context, train_docs, val_docs,
                       original_token_count=len(ids), token_ids=ids[:context + 1])
         chosen["truncated_token_ids_sha256"] = hashlib.sha256(
             np.asarray(chosen["token_ids"], dtype="<i8").tobytes()).hexdigest()
+        if chosen["truncated_token_ids_sha256"] in excluded_prefixes:
+            excluded_prefix_count += 1
+            continue
         if chosen["truncated_token_ids_sha256"] in seen_prefixes:
             prefix_duplicates += 1
             continue
@@ -114,7 +141,11 @@ def select_documents(documents, encode, *, context, train_docs, val_docs,
         raise AssertionError("document isolation failed")
     return selected, dict(parsed_articles=len(documents), unique_articles=len(unique),
                           articles_scanned=scanned, selected_articles=len(selected),
-                          duplicate_truncated_inputs_skipped=prefix_duplicates)
+                          duplicate_truncated_inputs_skipped=prefix_duplicates,
+                          excluded_document_sha256_count=len(excluded_documents),
+                          excluded_truncated_token_sha256_count=len(excluded_prefixes),
+                          excluded_documents_skipped=excluded_document_count,
+                          excluded_truncated_inputs_skipped=excluded_prefix_count)
 
 
 def row_statistics(q, k, v, position, *, max_blocks=32, block_tokens=64,
@@ -248,6 +279,58 @@ def write_json(path, value):
     Path(path).write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
 
 
+def write_dataset_artifacts(output, arrays, *, emit_blind_split=False):
+    """Archive full rows and optionally physically isolate train/val from blind.
+
+    Original row ordering, document IDs and array schema are preserved in each
+    partition.  The full archive remains ``dataset.npz`` for provenance; callers
+    training phase two must explicitly use ``training_dataset.npz``.  No loader
+    is redirected to the full archive or the blind holdout.
+    """
+    if not isinstance(emit_blind_split, bool):
+        raise ValueError("emit_blind_split must be a JSON boolean")
+    if not arrays or "split" not in arrays or arrays["split"].ndim != 1:
+        raise ValueError("dataset requires one-dimensional split labels")
+    groups = len(arrays["split"])
+    if any(array.dtype.hasobject or array.ndim == 0 or len(array) != groups
+           for array in arrays.values()):
+        raise ValueError("dataset arrays must share row count and forbid object dtype")
+    if not groups or not np.isin(arrays["split"], [0, 1, 2]).all():
+        raise ValueError("invalid or empty dataset split labels")
+    partitions = {"dataset": arrays}
+    if emit_blind_split:
+        if set(arrays["split"].tolist()) != {0, 1, 2}:
+            raise ValueError("blind partition requires nonempty train, val and holdout")
+        partitions["training_dataset"] = {key: value[arrays["split"] != 2] for key, value in arrays.items()}
+        partitions["blind_holdout"] = {key: value[arrays["split"] == 2] for key, value in arrays.items()}
+        if "document" in arrays:
+            train_docs = set(partitions["training_dataset"]["document"].tolist())
+            blind_docs = set(partitions["blind_holdout"]["document"].tolist())
+            if train_docs & blind_docs:
+                raise ValueError("a document crosses train/val and blind partitions")
+    output = Path(output)
+    paths = {key: output / (key + ".npz") for key in partitions}
+    for path in paths.values():
+        if path.exists():
+            raise FileExistsError(path)
+    manifest = {}
+    for name, partition in partitions.items():
+        path = paths[name]
+        with path.open("xb") as stream:
+            np.savez_compressed(stream, **partition)
+        with np.load(path, allow_pickle=False) as saved:
+            if set(saved.files) != set(partition):
+                raise RuntimeError("dataset schema readback mismatch: " + name)
+            for key, array in partition.items():
+                if not np.array_equal(saved[key], array):
+                    raise RuntimeError("dataset readback mismatch: " + name + "/" + key)
+        manifest[name] = dict(path=str(path), bytes=path.stat().st_size, sha256=digest(path),
+                              groups=len(partition["split"]), split_values=sorted(set(partition["split"].tolist())),
+                              arrays={key: dict(shape=list(array.shape), dtype=str(array.dtype))
+                                      for key, array in partition.items()})
+    return manifest
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", required=True)
@@ -255,6 +338,13 @@ def main(argv=None):
     args = parser.parse_args(argv)
     config_path = Path(args.config).resolve(strict=True)
     config = json.loads(config_path.read_text(encoding="utf-8"))
+    exclusions = dict(exclude_document_sha256=config.get("exclude_document_sha256", []),
+                      exclude_truncated_token_sha256=config.get("exclude_truncated_token_sha256", []))
+    for label, values in exclusions.items():
+        sha256_set(values, label)
+    emit_blind_split = config.get("emit_blind_split", False)
+    if not isinstance(emit_blind_split, bool):
+        raise ValueError("emit_blind_split must be a JSON boolean")
     text_path = Path(config["text"]).resolve(strict=True)
     # No test split is read or hashed, including during provenance collection.
     if text_path.name != "wiki.train.raw":
@@ -297,7 +387,10 @@ def main(argv=None):
                   policy=dict(original_attention=True, original_ffn=True, post_rope_keys=True,
                               teacher="explicit full-causal FP32 Softmax", block_tokens=64, sub_tokens=16,
                               raw_text_saved=False, no_test_access=True,
-                              document_content_dedup="body whitespace collapsed, title excluded"),
+                              document_content_dedup="body whitespace collapsed, title excluded",
+                              blind_split_emitted=emit_blind_split,
+                              training_input="training_dataset.npz" if emit_blind_split else "dataset.npz",
+                              blind_input="blind_holdout.npz" if emit_blind_split else None),
                   environment=dict(python=sys.version, platform=platform.platform(), numpy=np.__version__,
                                    torch=torch.__version__, transformers=transformers.__version__,
                                    cuda=torch.version.cuda, device=torch.cuda.get_device_name(),
@@ -314,7 +407,7 @@ def main(argv=None):
         selected, selection = select_documents(
             documents, lambda text: tokenizer.encode(text, add_special_tokens=False), context=context,
             train_docs=config.get("train_docs", 32), val_docs=config.get("val_docs", 8),
-            holdout_docs=config.get("holdout_docs", 8), seed=seed)
+            holdout_docs=config.get("holdout_docs", 8), seed=seed, **exclusions)
         report["selection"] = dict(selection, seed=seed, context=context,
                                    split_names={0: "train", 1: "val", 2: "holdout"},
                                    layers=layers, heads=heads, positions=positions,
@@ -392,16 +485,7 @@ def main(argv=None):
         for key in ("layer", "head", "document", "position"):
             arrays[key] = np.asarray([row[key] for row in records], dtype=np.int64)
         arrays["split"] = np.asarray([row["split"] for row in records], dtype=np.int8)
-        if any(array.dtype.hasobject for array in arrays.values()):
-            raise AssertionError("object dtype forbidden")
-        dataset_path = output / "dataset.npz"
-        with dataset_path.open("xb") as stream:
-            np.savez_compressed(stream, **arrays)
-        # Read independently with pickle prohibited before accepting the artifact.
-        with np.load(dataset_path, allow_pickle=False) as saved:
-            for key, array in arrays.items():
-                if not np.array_equal(saved[key], array):
-                    raise RuntimeError("dataset readback mismatch: " + key)
+        datasets = write_dataset_artifacts(output, arrays, emit_blind_split=emit_blind_split)
         totals = {str(split): dict(nll_sum=sum(c["nll_sum"] for c in controls if c["split"] == split),
                                   scored_targets=sum(c["scored_targets"] for c in controls if c["split"] == split))
                   for split in (0, 1, 2)}
@@ -411,12 +495,11 @@ def main(argv=None):
         report.update(status="completed", groups=len(records),
                       bf16_control=dict(scope="selected WikiText TRAIN articles, not complete WT2 test",
                                         documents=controls, splits=totals),
-                      dataset=dict(path=str(dataset_path), bytes=dataset_path.stat().st_size,
-                                   sha256=digest(dataset_path), arrays={k: dict(shape=list(a.shape), dtype=str(a.dtype))
-                                                                      for k, a in arrays.items()}),
+                      dataset=datasets["dataset"], datasets=datasets,
                       elapsed_seconds=time.time() - started)
         write_json(report_path, report)
-        print(json.dumps(dict(status="completed", groups=len(records), dataset_sha256=digest(dataset_path))), flush=True)
+        print(json.dumps(dict(status="completed", groups=len(records),
+                              dataset_sha256=datasets["dataset"]["sha256"])), flush=True)
     except BaseException as exc:
         report.update(status="failed", error=dict(type=type(exc).__name__, message=str(exc)),
                       elapsed_seconds=time.time() - started)

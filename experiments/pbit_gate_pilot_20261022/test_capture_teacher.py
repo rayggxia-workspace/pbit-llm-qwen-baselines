@@ -1,6 +1,8 @@
 """Small CPU checks for article isolation and the exact causal teacher contract."""
 import importlib.util
+import os
 from pathlib import Path
+import tempfile
 import unittest
 
 import numpy as np
@@ -58,6 +60,106 @@ class DocumentTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             capture.select_documents(docs, lambda _: range(20), context=8,
                                      train_docs=1, val_docs=1, holdout_docs=1, seed=1)
+
+    def test_phase_two_excludes_old_content_exact_article_and_truncated_tokens(self):
+        docs = capture.parse_documents("".join(f" = Article {i} =\nunique body {i}\n" for i in range(20)))
+        encoded = []
+        def encode(text):
+            article = int(text.split("Article ", 1)[1].split()[0])
+            encoded.append(article)
+            return [100 * article + token for token in range(12)]
+        old, _ = capture.select_documents(docs, encode, context=8, train_docs=1,
+                                          val_docs=1, holdout_docs=1, seed=42)
+        excluded_document_sha256 = [old[0]["content_sha256"].upper(), old[1]["article_text_sha256"]]
+        excluded_token_sha256 = [old[2]["truncated_token_ids_sha256"]]
+        encoded.clear()
+        options = dict(context=8, train_docs=3, val_docs=2, holdout_docs=2, seed=42,
+                       exclude_document_sha256=excluded_document_sha256,
+                       exclude_truncated_token_sha256=excluded_token_sha256)
+        new, summary = capture.select_documents(docs, encode, **options)
+        self.assertFalse({d["content_sha256"] for d in old} & {d["content_sha256"] for d in new})
+        self.assertFalse({d["truncated_token_ids_sha256"] for d in old}
+                         & {d["truncated_token_ids_sha256"] for d in new})
+        self.assertNotIn(old[0]["source_document_index"], encoded)
+        self.assertNotIn(old[1]["source_document_index"], encoded)
+        self.assertEqual(summary["excluded_documents_skipped"], 2)
+        self.assertEqual(summary["excluded_truncated_inputs_skipped"], 1)
+        repeated, repeated_summary = capture.select_documents(docs, encode, **options)
+        self.assertEqual(new, repeated)
+        self.assertEqual(summary, repeated_summary)
+
+    def test_exclusions_are_validated_and_insufficient_remaining_data_fails(self):
+        docs = capture.parse_documents("".join(f" = Article {i} =\nunique body {i}\n" for i in range(3)))
+        options = dict(context=8, train_docs=1, val_docs=1, holdout_docs=1, seed=42)
+        def encode(text):
+            article = int(text.split("Article ", 1)[1].split()[0])
+            return [article * 100 + token for token in range(12)]
+        with self.assertRaisesRegex(ValueError, "only 2 eligible"):
+            capture.select_documents(docs, encode,
+                                     exclude_document_sha256=[docs[0]["content_sha256"]], **options)
+        for invalid in ("a" * 64, ["abc"], [None]):
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                capture.select_documents(docs, encode,
+                                         exclude_truncated_token_sha256=invalid, **options)
+
+
+class ArtifactTests(unittest.TestCase):
+    def setUp(self):
+        # Never use the shared server's global /tmp for test artifacts.
+        self.temporary = tempfile.TemporaryDirectory(
+            prefix="capture-test-", dir=Path(os.environ.get("GATE_OUTPUT_ROOT", str(_path.parent))).resolve())
+        self.addCleanup(self.temporary.cleanup)
+        self.output = Path(self.temporary.name)
+        self.arrays = dict(
+            x=np.arange(6 * 32 * 4, dtype=np.float32).reshape(6, 32, 4),
+            mass=np.ones((6, 32), dtype=np.float32) / 32,
+            block_v=np.zeros((6, 32, 64), dtype=np.float32),
+            valid=np.ones((6, 32), dtype=np.bool_),
+            forced=np.zeros((6, 32), dtype=np.bool_),
+            counts=np.full((6, 32), 64, dtype=np.int16),
+            teacher_output=np.zeros((6, 64), dtype=np.float32),
+            document=np.array([0, 0, 1, 1, 2, 2], dtype=np.int64),
+            layer=np.array([0, 12] * 3, dtype=np.int64),
+            head=np.zeros(6, dtype=np.int64), position=np.full(6, 2047, dtype=np.int64),
+            split=np.array([0, 0, 1, 1, 2, 2], dtype=np.int8),
+        )
+
+    def test_blind_and_training_files_preserve_schema_and_row_values(self):
+        artifacts = capture.write_dataset_artifacts(self.output, self.arrays, emit_blind_split=True)
+        self.assertEqual(set(artifacts), {"dataset", "training_dataset", "blind_holdout"})
+        self.assertEqual(artifacts["training_dataset"]["split_values"], [0, 1])
+        self.assertEqual(artifacts["blind_holdout"]["split_values"], [2])
+        self.assertEqual(artifacts["training_dataset"]["groups"], 4)
+        self.assertEqual(artifacts["blind_holdout"]["groups"], 2)
+        for name, mask in (("dataset", np.ones(6, dtype=np.bool_)),
+                           ("training_dataset", self.arrays["split"] != 2),
+                           ("blind_holdout", self.arrays["split"] == 2)):
+            path = self.output / (name + ".npz")
+            self.assertEqual(artifacts[name]["sha256"], capture.digest(path))
+            with np.load(path, allow_pickle=False) as saved:
+                self.assertEqual(set(saved.files), set(self.arrays))
+                for key, original in self.arrays.items():
+                    np.testing.assert_array_equal(saved[key], original[mask])
+                    self.assertEqual(saved[key].dtype, original.dtype)
+
+    def test_legacy_mode_emits_only_full_dataset(self):
+        artifacts = capture.write_dataset_artifacts(self.output, self.arrays)
+        self.assertEqual(set(artifacts), {"dataset"})
+        self.assertEqual([path.name for path in self.output.iterdir()], ["dataset.npz"])
+
+    def test_blind_partition_rejects_crossed_documents_before_any_write(self):
+        self.arrays["document"][-1] = 0
+        with self.assertRaisesRegex(ValueError, "document crosses"):
+            capture.write_dataset_artifacts(self.output, self.arrays, emit_blind_split=True)
+        self.assertEqual(list(self.output.iterdir()), [])
+
+    def test_preexisting_archive_is_never_overwritten(self):
+        target = self.output / "blind_holdout.npz"
+        target.write_bytes(b"original archive")
+        with self.assertRaises(FileExistsError):
+            capture.write_dataset_artifacts(self.output, self.arrays, emit_blind_split=True)
+        self.assertEqual(target.read_bytes(), b"original archive")
+        self.assertFalse((self.output / "dataset.npz").exists())
 
 
 class TeacherTests(unittest.TestCase):

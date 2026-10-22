@@ -54,6 +54,7 @@ class FFNConfig:
     sc_latency: int = 1
     rng_latency: int = 1
     vector_lanes: int = 16
+    cdc_cycles: int = 3
 
     @property
     def counter_width(self):
@@ -76,6 +77,8 @@ class FFNConfig:
                      'sc_latency', 'rng_latency', 'vector_lanes'):
             if type(getattr(self, name)) is not int or getattr(self, name) < 1:
                 raise ValueError(name + ' must be positive integer')
+        if type(self.cdc_cycles) is not int or self.cdc_cycles<1:
+            raise ValueError('positive destination-edge CDC visibility count required')
 
 
 def encode_group(values, bins=4):
@@ -232,6 +235,7 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                     tensor_storage='FP32 input/z/partial/residual; fixed W8 plus FP32 scale; BF16 output when configured',
                     storage_boundary='finite local weights/counters/encoded/partial state; backing SRAM/DRAM address space has no total-capacity allocator',
                     trace_storage='retained threshold histories and receipts are simulator evidence, not hardware buffers',
+                    cdc=f'producer completion to destination acceptance: {c.cdc_cycles} destination edges; 3 models two synchronizers plus old-state consumer',
                     fixture=fixture.get('provenance', {})))
     ids = state['operation_ids']
     free_weights, free_counts = prefix+'.weights', prefix+'.counters'
@@ -259,7 +263,7 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
 
     def add(suffix, resource, **kwargs):
         ident = prefix+'.'+suffix
-        kwargs.setdefault('cdc_cycles',2)
+        kwargs.setdefault('cdc_cycles',c.cdc_cycles)
         kernel.add(Operation(ident, resource, **kwargs))
         ids.append(ident)
         return ident

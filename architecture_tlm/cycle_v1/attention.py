@@ -38,6 +38,7 @@ class AttentionConfig:
     winner_shift: float = 0.0
     response: str = 'q256'
     drive_step: float = 0.125
+    cdc_cycles: int = 3
 
     def validate(self):
         if self.mode not in ('exact','pv','winner','rejection'):
@@ -46,7 +47,7 @@ class AttentionConfig:
             raise ValueError('unknown source response')
         for name in ('samples','capacity','source_lanes','output_capacity','kv_capacity_bytes',
                      'score_capacity_bytes','mac_lanes','source_latency','source_ii',
-                     'max_proposals_per_sample','rank_retry_cap'):
+                     'max_proposals_per_sample','rank_retry_cap','cdc_cycles'):
             if type(getattr(self,name)) is not int or getattr(self,name)<1:
                 raise ValueError(name+' must be positive integer')
         for name in ('histogram_delay_cycles','max_shift','burn_updates'):
@@ -223,6 +224,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
                   omitted='QKV projections, RoPE, screening, GQA union, Wo, full decoder',
                   storage_boundary='finite query-local state and KV response credits; backing DRAM/SRAM address space has no total-capacity allocator',
                   source_state='Python PRNG state is backend-owned and uncharacterized; source staging/masks are in local_state_bytes',
+                  cdc=f'producer completion to destination acceptance: {c.cdc_cycles} destination edges; 3 models two synchronizers plus old-state consumer',
                   fixture=fixture.get('provenance',{})))
     if c.mode=='pv': state['provenance']['independent_samples']=False
     if c.mode=='rejection' and c.response!='ideal_sigmoid':
@@ -238,7 +240,7 @@ def build_attention(kernel,fixture,config=None,prefix='attention'):
 
     def add(suffix,resource,**kwargs):
         ident=prefix+'.'+suffix
-        kwargs.setdefault('cdc_cycles',2)
+        kwargs.setdefault('cdc_cycles',c.cdc_cycles)
         kernel.add(Operation(ident,resource,**kwargs))
         state['operation_ids'].append(ident)
         return ident

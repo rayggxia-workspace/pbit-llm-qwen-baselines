@@ -46,7 +46,8 @@ def _prepare(fixture,attention_configs,group_config):
         item=dict(query,k=fixture['k'],v=fixture['v'],provenance=fixture.get('provenance',{}))
         q,k,v,ids=attention.validate_fixture(item,c)
         data.append((item,q,k,v,ids))
-    physical=('source_latency','source_ii','exp_latency','cdc_cycles')
+    physical=('source_latency','source_ii','exp_latency','cdc_cycles','mac_lanes',
+              'vector_lanes','exp_lanes','reciprocal_latency','drive_latency','lut_latency')
     if any(any(getattr(c,n)!=getattr(configs[0],n) for n in physical) for c in configs):
         raise ValueError('query configs must agree on shared physical resource and CDC settings')
     if sum(c.score_capacity_bytes for c in configs)>gc.query_state_capacity_bytes:
@@ -139,8 +140,11 @@ def build_gqa(kernel,fixture,attention_configs=None,group_config=None,*,prefix='
             V_schedule='all query weight/histogram writes finish, then explicit union barrier and ordered bounded prefetch',
             cache='finite K/V response rows held through every MAC consumer; one explicitly timed shared read port',
             physical_memory_reads='one DRAM read per physical token in each K or V union',
+            accumulation_order='each query visits its physical V token IDs in ascending order; each product and add round to FP32',
             source='one independent native-network state/seed bus per native sampled query; shared submit/delivery resources; no IID or shared-global-source claim',
-            source_instances=[dict(query=h,backend=c.random_backend,seed=c.seed,
+            source_instances=[dict(query=h,backend=c.random_backend,seed=c.seed,logical_source_lanes=c.source_lanes,
+                                   seed_word_interval=c.seed_word_interval,seed_startup=c.seed_startup,
+                                   reseed_cycles=c.reseed_cycles,
                                    native_network=(c.random_backend=='native' and c.mode!='exact')) for h,c in enumerate(configs)],
             omitted='QKV projection, RoPE, screening, Wo, dynamic KV append, full decoder, PPA/STA',
             fixture=fixture.get('provenance',{})))

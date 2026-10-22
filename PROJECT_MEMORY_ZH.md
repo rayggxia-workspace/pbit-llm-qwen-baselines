@@ -853,3 +853,6 @@ Issue87发布回执（2026-10-22）：科学head8687c1d8124af192e82ec13aa3dbe12c
 北京时间12:43（04:43:23 UTC）SSH只读检查：Llama2任务26/26 completed，PIQA1838/ARC-E2376各13项，逐题文件SHA/字节数/路径及声明32层计分守卫通过，当前Hongjie_Zeng的Slurm队列空；旧2572健康8＋修复2585十八项均按原计划保留，没有重跑或取消。原件llama2/results/task_accuracy_20261020/checkpoints/20261022T044323Z/STATUS.json，汇总PROGRESS_20261022_ZH.md。此次只重聚合已存summary指标，官方逐题process_results与最终完整层/输入源合同复核仍待做，不将推理完成等同最终科学验收。
 
 用户本轮明确任务跑完即结束定时；automation_update(delete,id=llama2-7b)返回deleted，本地配置确认已不存在，回执work/jieruiz/73/AUTOMATION_STOP_20261022.json。尽管最终oracle待做，不得因为旧交接提示而自动重建此定时。Issue73/PR83继续open/draft未合并，后续同任务完成验收与同步；报告发布以PUBLICATION_STOP_20261022回执为准。其他暂停的p-bit抢救回查没有改动。
+
+
+Issue73 publication receipt (2026-10-22): completed26 status/report and automation-deletion receipt pushed to PR83, scientific head 6acac58eac394b940907a5e4265db39fd043a761; three GitHub blobs read back SHA-identical. Issue comment: https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/73#issuecomment-6332960590. PR83 remains draft/unmerged; oracle pending, daily follow-up deleted at user request. PUBLICATION_STOP_20261022.json records exact evidence.

@@ -235,7 +235,7 @@ def evaluate(q, sample_function, layer_data, split_id, config):
         selected_mass = np.einsum("rgb,gb->rg", mask, mass)
         output = np.einsum("rgb,gbv->rgv", mask, block_v) / np.maximum(selected_mass[..., None], config["epsilon"])
         nmse = ((output - teacher[None]) ** 2).sum(-1) / np.maximum((teacher ** 2).sum(-1)[None], config["epsilon"])
-        record = {"miss": 1 - selected_mass, "blocks": mask.sum(-1),
+        record = {"miss": 1 - selected_mass, "selected_mass": selected_mass, "blocks": mask.sum(-1),
                   "tokens": np.einsum("rgb,gb->rg", mask, counts), "nmse": nmse}
         sampled.append(record)
         per_seed.append({"seed": seed, "mean_missed_mass": float(record["miss"].mean()),
@@ -258,6 +258,9 @@ def evaluate(q, sample_function, layer_data, split_id, config):
             "expected_missed_mass": float(expected_miss.mean()), "expected_selected_blocks": float(expected_blocks.mean()),
             "expected_selected_tokens": float(expected_tokens.mean()),
             "sampled_missed_mass_mean": float(pooled["miss"].mean()),
+            "sampled_selected_mass_min": float(pooled["selected_mass"].min()),
+            "sampled_mass_at_or_below_epsilon_count": int(np.sum(pooled["selected_mass"] <= config["epsilon"])),
+            "subset_pv_clamped_denominator_count": int(np.sum(pooled["selected_mass"] < config["epsilon"])),
             "sampled_selected_blocks_mean": float(pooled["blocks"].mean()),
             "sampled_selected_blocks_p95": float(np.percentile(pooled["blocks"], 95)),
             "sampled_selected_blocks_max": int(pooled["blocks"].max()),

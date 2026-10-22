@@ -35,8 +35,11 @@ module nr_stream_accumulator #(parameter integer KIND=0)(
  assign operand=(KIND==0)?{a,16'b0}:product;
  fc_fp_add add(first?32'b0:state,operand,sum,flags[0],flags[1],flags[2]);
  wire signed [15:0] neg_log=-$signed({1'b0,mean_log2});
- fc_fp_scale #(.IN_FRAC(23),.OUT_FRAC(7)) mean_cv(sum,neg_log,bfmean,f0,f1,f2,f3);
- nr_fp32_mul mmean(sum,inverse_length,mean);
+ // Final-only normalization is operand-isolated. Holding only its OUTPUT
+ // register would still toggle the expensive conversion/LUT on every partial.
+ wire [31:0] final_sum=(in_valid&&last)?sum:32'b0;
+ fc_fp_scale #(.IN_FRAC(23),.OUT_FRAC(7)) mean_cv(final_sum,neg_log,bfmean,f0,f1,f2,f3);
+ nr_fp32_mul mmean(final_sum,inverse_length,mean);
  fc_fp_add ae(mean,epsilon,eps_sum,,,);
  nr_unary_lut #(.KIND(3)) rs(eps_sum,inv);
  always @(posedge clk) begin

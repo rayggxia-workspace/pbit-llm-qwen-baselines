@@ -43,9 +43,9 @@ def collect():
                        sampler_cycles=v['resource_busy_ns'].get('sampler', 0)/period,
                        K_read_bytes=v['DRAM']['traffic'].get('K_selected_physical_bytes', 0)+v['DRAM']['traffic'].get('KV_fused_physical_bytes', 0)//2,
                        V_read_bytes=v['DRAM']['traffic'].get('V_sparse_union_physical_bytes', 0)+v['DRAM']['traffic'].get('KV_fused_physical_bytes', 0)//2,
-                       source=rel, sha256=hashlib.sha256(raw).hexdigest())
+                       config_sha256=v['config_sha256'], source=rel, sha256=hashlib.sha256(raw).hexdigest())
             rows.append(row)
-            evidence.append(dict(path=rel, archive_commit=BASE, execution_commit=v['execution_commit'], sha256=row['sha256']))
+            evidence.append(dict(path=rel, archive_commit=BASE, execution_commit=v['execution_commit'], config_sha256=v['config_sha256'], sha256=row['sha256']))
             for name, ns in v['phase_ns'].items():
                 phases.append(dict(model=model, context=row['context'], seed=row['seed'], ffn=row['ffn'],
                                    attention=row['attention'], phase=name, equivalent_core_cycles=ns/period, ms=ns/1e6))

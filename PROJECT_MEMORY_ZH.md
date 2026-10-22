@@ -1,5 +1,13 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-23 Issue118：FFN供数与逐档整数状态合同
+
+amlink1219，`task/118-ffn-storage-contract`，基线集成46804fb。入口`architecture_tlm/ffn_storage_contract/README_ZH.md`与`RESEARCH_STATUS_ZH.md`；复用107/112，向116提供独立合同，不改其周期核。明确真实随机服务已经整机接入、新q/256接口不能继承旧PPL，旧52/新40分开。
+
+6项T16/32/64保持/重读接口执行、4非法配置拒绝、30功能测试通过；66合成整数场景888逐档输出一致。T32显式32KiB保持/256B响应方案6.92us，零持久权重/16B响应重读3.2768ms；不同局部资源，不是同面积/全FFN加速。8tile计数48KiB→5KiB仅状态量，FP32恢复未改也未执行。F/SS库表周期/访问门槛拒绝100MHz，不冒称新STA。
+
+新结果登记`ffn-storage-118-design`为DESIGN_PROOF；本轮无模型/PPL/GPU/Slurm/RTL/STA/PPA。执行源码与输出SHA、独立审阅、复现/交接在`work/amlink1219/118/`及结果目录。发布状态以该任务PUBLICATION回执为准，不自动合并/关闭Issue；另一台机器的固定台账镜像未同步。后续接合116、表征保持/计数，再进行合法同资源搜索。
+
 ## 2026-10-22 Issue107：真实RNG接入后的Verilog仿真需求
 
 jieruiz沿用task/107/PR109，未新开复制。对照最新PR103 b05fb36d和中央台账PR111，正式文件architecture_tlm/digital_ppa_v1/LATEST_TLM_RTL_GAPS_ZH.md及同目录机器任务表/回传模板。分已有PPA、现成RTL待工艺、新整合RTL三类，共11组：SC64×64四档T32/计数与权重驻留；BF16/FP32动态分档、恢复/累加/窄化；普通阵列/lm_head；共享比较与q/256前端、完整赢家/拒绝FSM；筛选/CDF/稀疏V；实际SRAM/CDC/DMA；普通非线性；顶层状态/互连。

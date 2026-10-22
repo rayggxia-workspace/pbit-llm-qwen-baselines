@@ -1,6 +1,6 @@
 # Issue96: complete implementation and52 verified TLM scenarios
 
-Owner jieruiz; branch task/96-unified-tlm; base83e15289434af50fc09c35e699d8b39965389d98; immutable execution fba22b192ab914046e50cc405f6dd473bf30d154. Checkout C:/Users/86134/Documents/a_P_BIT/tmp/unified-tlm-issue96-20261022. Target only rayggxia-workspace/pbit-llm-qwen-baselines, PR99 open/draft; final publication state from PUBLICATION/REMOTE_VERIFY and Issue96.
+Owner jieruiz; branch task/96-unified-tlm; base83e15289434af50fc09c35e699d8b39965389d98; immutable execution fba22b192ab914046e50cc405f6dd473bf30d154. Checkout C:/Users/86134/Documents/a_P_BIT/tmp/unified-tlm-issue96-20261022. Target only rayggxia-workspace/pbit-llm-qwen-baselines. All implementation,52 results and report published at9621e1db35491e530d35b86e0ef884572b1df0a6; PR99 ready/open, not merged. Five critical remote blobs byte-verified. PUBLICATION/REMOTE_VERIFY record that snapshot; later receipt-only commits do not change execution or results. Issue96 implementation checklist updated; review/acceptance and Projects permissions remain pending.
 
 ## Completed
 

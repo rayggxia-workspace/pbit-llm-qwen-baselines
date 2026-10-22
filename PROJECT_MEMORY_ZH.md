@@ -44,6 +44,8 @@
 
 ## 0 恢复工作先读这里
 
+> Issue96最新交付回执（2026-10-22）：PR99的完整实现、52项条件decode结果与报告已全部推送，科学交付head9621e1db，远端五个关键blob原字节已核验；PR已转为ready/open，待审、未合并。下方本日早先审核记录中的“99仍draft/结果待补”是此前快照。冻结执行fba22b1未改，Issue96保持open，Projects缺read:project待同步。
+
 > 2026-10-22第六轮审核：PR93/97已原生合并129ae823/27bf9c48；PR94的90配置冻结盲评、45检查与成本重放通过，原head424b4206纳入本人review/55-pr-round6，唯一STATUS冲突保留作者原blob9ee7dbdd，无作者分支改写。将通过本轮集成PR交付，实际远端合并/目录回收结果查Issue55最终回执和work/jieruiz/55/round6/。本轮未启动服务器/GPU/Slurm/PPL/DC/PT；旧定时不恢复。
 
 > 2026-10-22第五轮收尾追加：PR89评估补充已直接合并作者原head，现共82/83/85/86/88/89六项成果已合并；下方五项记录为追加前快照。Issue37/78仍开放。完整回执work/jieruiz/55/round5/。

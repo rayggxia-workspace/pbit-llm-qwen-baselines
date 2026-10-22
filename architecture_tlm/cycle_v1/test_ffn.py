@@ -37,6 +37,18 @@ class FFNTests(unittest.TestCase):
         self.assertFalse(encoded[-1]['full_one'])
         self.assertEqual(encoded[4]['sign'],0)
 
+    def test_encoding_tiny_subnormal_and_explicit_upper_domain(self):
+        for vector in ([1e-38,-1e-39,0.0],[2.0**-149,-2.0**-148,0.0],[0.0],[2.0**127]):
+            encoded=encode_group(vector)
+            for raw,item in zip(vector,encoded):
+                actual=struct.unpack('<f',struct.pack('<f',raw))[0]
+                self.assertEqual(item['q'],min(255,round(abs(actual)/item['scale']*256)))
+                self.assertTrue(math.isfinite(item['scale']))
+        with self.assertRaisesRegex(ValueError,'ceil-PoT'):
+            encode_group([struct.unpack('<f',struct.pack('<I',0x7f7fffff))[0]])
+        with self.assertRaisesRegex(ValueError,'FP32 encoder domain'):
+            encode_group([2.0**128])
+
     def test_tails_samples_and_cycle_event_equivalence(self):
         data=fixture()
         for t in (16,32,64):
@@ -109,6 +121,10 @@ class FFNTests(unittest.TestCase):
         data=fixture()
         with self.assertRaises(ValueError): execute(data,FFNConfig(partial_capacity_bytes=1))
         with self.assertRaises(ValueError): execute(data,FFNConfig(weight_slot_bytes=8))
+        with self.assertRaisesRegex(ValueError,'encoded group'):
+            execute(data,FFNConfig(encoded_capacity_bytes=196))
+        with self.assertRaisesRegex(ValueError,'restore scratch'):
+            execute(data,FFNConfig(restore_capacity_bytes=1))
         data['thresholds']={'x':[[0]*32,[0]*32]}
         with self.assertRaisesRegex(ValueError,'stratified'): execute(data,FFNConfig(random_backend='replay'))
 
@@ -148,6 +164,24 @@ class FFNTests(unittest.TestCase):
         self.assertEqual(source['restore_bits_loaded'],32)
         self.assertEqual(source['checkpoint_bits_written'],6*32)
         self.assertEqual(source['frames_generated'],7*32)
+
+    def test_restore_work_is_bounded_by_lanes(self):
+        data=fixture(d=3,f=64,o=2)
+        fast=FFNConfig(random_backend='behavioral',vector_lanes=16)
+        a,ar,_=execute(data,fast)
+        b,br,_=execute(data,dataclasses.replace(fast,vector_lanes=4))
+        self.assertEqual(a['output'],b['output'])
+        self.assertGreater(br.finish_ps,ar.finish_ps)
+        tile_rows=64+64+2
+        self.assertEqual(ar.actions['restore_counter_reads'],tile_rows*4*16)
+        self.assertEqual(ar.actions['restore_signed_rail_subtract'],tile_rows*4*8)
+        self.assertEqual(ar.actions['restore_integer_plane_add'],tile_rows*4*7)
+        self.assertEqual(ar.actions['restore_integer_scale_fp32'],tile_rows*4)
+        self.assertEqual(ar.actions['restore_ordered_bin_fp32_add'],tile_rows*4)
+        rail='ffn.wg.r0.k0.restore_rails'
+        cycles=(ar.completion_ps[rail]-ar.accepted_ps[rail])//10000
+        self.assertEqual(cycles,fast.restore_latency+math.ceil(64*4*8/16)-1)
+        self.assertEqual(a['restore_intermediates'],{})
 
 
 if __name__=='__main__': unittest.main()

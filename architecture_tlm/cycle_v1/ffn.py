@@ -4,7 +4,8 @@ This is a conditional architecture model, not characterized RTL. The arithmetic
 uses the original signed-rail/bit-plane counters by default, with a separately
 named signed-bin alternative (not evidence of a physical area improvement),
 FP32 restoration/cross-tile addition, continuous SiLU, and separate x/z streams.
-Python Random supplies local behavioral words; it is not a physical RNG model.
+The default source is the existing finite native LFSR protocol model; Python
+Random and frozen replay are explicit alternatives, not physical RNG models.
 """
 from dataclasses import dataclass
 import math
@@ -52,6 +53,7 @@ class FFNConfig:
     counter_capacity_bytes: int = 49152
     encoded_capacity_bytes: int = 256
     partial_capacity_bytes: int = 65536
+    restore_capacity_bytes: int = 8192
     output_bf16: bool = True
     encode_latency: int = 7
     restore_latency: int = 4
@@ -88,7 +90,7 @@ class FFNConfig:
         if self.counter_width < required:
             raise ValueError('counter cannot hold configured full-frame endpoint')
         for name in ('engines','weight_slots', 'weight_slot_bytes','weight_scale_capacity_bytes', 'counter_capacity_bytes',
-                     'encoded_capacity_bytes', 'partial_capacity_bytes',
+                     'encoded_capacity_bytes', 'partial_capacity_bytes', 'restore_capacity_bytes',
                      'encode_latency', 'restore_latency', 'nonlinear_latency',
                      'sc_latency', 'rng_latency', 'vector_lanes'):
             if type(getattr(self, name)) is not int or getattr(self, name) < 1:
@@ -102,11 +104,24 @@ class FFNConfig:
 
 
 def encode_group(values, bins=4):
-    """PoT encode one real/tail group, rounding on the FP32 A8 grid."""
-    values = [fp32(x) for x in values]
+    """PoT encode finite FP32 inputs whose group maximum is <= 2**127.
+
+    Scales are stored as FP32; a larger group would require the unrepresentable
+    ceil-PoT scale 2**128 and is rejected explicitly. Exponent scaling avoids an
+    overflowing reciprocal for tiny/subnormal values without changing normal
+    FP32 grid rounding. The existing minimum-normal lower-bin clamp is retained.
+    """
+    try:
+        values = [fp32(x) for x in values]
+    except OverflowError as exc:
+        raise ValueError('activation is outside the finite FP32 encoder domain') from exc
     if not values or len(values) > 64 or any(not math.isfinite(x) for x in values):
         raise ValueError('one finite group of 1..64 values required')
+    if bins not in (2,4):
+        raise ValueError('encoder requires B2/B4')
     maximum = max(abs(x) for x in values)
+    if maximum > math.ldexp(1.0,127):
+        raise ValueError('FP32 ceil-PoT scale requires group maximum <= 2**127')
     mantissa, exponent = math.frexp(maximum)
     exponent = 0 if maximum == 0 else exponent - (mantissa == .5)
     top = fp32(math.ldexp(1.0, exponent))
@@ -117,7 +132,8 @@ def encode_group(values, bins=4):
             candidate = max(fp32(top * 4.0 ** -index), 2.0 ** -126)
             if abs(x) <= candidate:
                 scale, bin_id = candidate, index
-        q = min(255, max(0, round(fp32(abs(x) * fp32(256.0 / scale)))))
+        scale_exponent = math.frexp(scale)[1]-1
+        q = min(255, max(0, round(fp32(math.ldexp(abs(x),8-scale_exponent)))))
         out.append(dict(q=q, sign=(x > 0) - (x < 0), scale=scale,
                         bin=bin_id, full_one=(abs(x) >= scale and x != 0)))
     return out
@@ -179,6 +195,8 @@ def matrix_spec(value, tile=64):
                 if not math.isfinite(x) or x <= 0:
                     raise ValueError('weight scale must be positive finite')
                 scales[i][j] = fp32(x)
+                if not math.isfinite(scales[i][j]) or scales[i][j]<=0:
+                    raise ValueError('weight scale must remain positive finite in FP32')
     else:
         rows = [[fp32(x) for x in row] for row in rows]
         if any(not math.isfinite(x) for row in rows for x in row):
@@ -213,7 +231,8 @@ def default_buffers(config=None, prefix='ffn'):
             Buffer(prefix+'.scales',c.weight_scale_capacity_bytes,initial=c.weight_scale_capacity_bytes),
             Buffer(prefix+'.counters', c.counter_capacity_bytes, initial=c.counter_capacity_bytes),
             Buffer(prefix+'.encoded', c.encoded_capacity_bytes, initial=c.encoded_capacity_bytes),
-            Buffer(prefix+'.partials', c.partial_capacity_bytes, initial=c.partial_capacity_bytes)]+rng_protocol.buffers(prefix)
+            Buffer(prefix+'.partials', c.partial_capacity_bytes, initial=c.partial_capacity_bytes),
+            Buffer(prefix+'.restore',c.restore_capacity_bytes,initial=c.restore_capacity_bytes)]+rng_protocol.buffers(prefix)
 
 
 def make_kernel(config=None, memory_latency=4):
@@ -248,7 +267,7 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
         raise ValueError('partial-sum storage exceeds configured capacity')
     state = dict(gate=[0.0]*wg['rows'], up=[0.0]*wu['rows'], z=[],
                  projected=[0.0]*wd['rows'], output=None, counters={},
-                 encoded={}, thresholds={}, operation_ids=[], tile_receipts=[],
+                 encoded={}, thresholds={}, operation_ids=[], tile_receipts=[],restore_intermediates={},
                  local_state_bytes=dict(gate=wg['rows']*4,up=wu['rows']*4,z=wg['rows']*4,
                      down=wd['rows']*4,residual=wd['rows']*4),
                  provenance=dict(scope='one explicitly shaped FFN chain',
@@ -257,6 +276,12 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                     RNG_is_physical=False, timing='configured, uncharacterized',
                     weight_layout='offline tile-major packed signed W8; FP32 scale read/stored separately',
                     counter_layout=c.counter_layout,
+                    encoder_domain='finite FP32 group maximum <= 2**127; lower bins clamp at minimum normal; exponent-grid scaling supports subnormals',
+                    encoder_storage='one raw FP32 group is overwritten in place by packed A8/sign/bin/endpoint metadata after encoding',
+                    restore_implementation='shared vector_lanes arithmetic slots; rail subtraction and positional shifts, integer plane reduction, ordered per-bin FP32 restore/accumulate, cross-tile FP32 addition; configured pipeline depths, not characterized RTL',
+                    restore_storage='packed counter banks overwritten by signed positional terms then collapsed sums; extra small-T bit growth plus 3 FP32 row vectors use finite restore scratch',
+                    encoder_implementation='one fully parallel 64-lane group frontend, 64-way max tree, per-lane B-bin select and exponent-grid conversion; configured encode_latency, uncharacterized',
+                    sc_implementation='per engine parallel 64x64 W8 gating / per-bin rail-plane popcounts and counter update; configured sc_latency; no timing-closure or PPA claim',
                     counter_mapping='B bins x 2 input-sign rails x original W8 two-complement bit planes (bit7=-128) x output rows' if c.counter_layout=='bitplane' else 'B signed integer sums per output row; alternate mapping with no inherited PPA',
                     tensor_storage='FP32 input/z/partial/residual; fixed W8 plus FP32 scale; BF16 output when configured',
                     storage_boundary='finite local weights/counters/encoded/partial state; backing SRAM/DRAM address space has no total-capacity allocator',
@@ -271,6 +296,7 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
         if c.random_backend=='native' else None)
     free_weights, free_counts,free_scales = prefix+'.weights', prefix+'.counters',prefix+'.scales'
     free_encoded, free_partials = prefix+'.encoded', prefix+'.partials'
+    free_restore=prefix+'.restore'
     slots = [None]*c.weight_slots
     matrix_base = {'wg':0x10000000, 'wu':0x20000000, 'wd':0x30000000}
     partial_base = {'wg':0x50000000, 'wu':0x51000000, 'wd':0x52000000}
@@ -308,7 +334,7 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
         def build_group(gi, previous_group):
             start=gi*64
             block = vector[start:start+64]
-            encoded_bytes = len(block)*3+4
+            encoded_bytes = max(len(block)*4,len(block)*3+4)
             if encoded_bytes > c.encoded_capacity_bytes:
                 raise ValueError('encoded group exceeds configured capacity')
             key = name, gi
@@ -322,7 +348,11 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                 state['encoded'][key] = encode_group(actual, c.bins)
                 state['thresholds'][key] = ([None]*c.samples if native else threshold_words(c, name, key[1], fixture))
             encoded = add(f'{name}.g{gi}.encode', 'encode', deps=(read,),
-                          actions={'activation_encode_values':len(block)}, on_complete=encoded_cb)
+                          actions={'activation_encode_values':len(block),'activation_abs_values':len(block),
+                                   'activation_group_max_compare':len(block)-1,
+                                   'activation_bin_compare':len(block)*(c.bins-1),
+                                   'activation_exponent_grid_convert':len(block)}, on_complete=encoded_cb,
+                          metadata={'parallel_lanes':64,'max_tree_depth':math.ceil(math.log2(len(block))) if len(block)>1 else 0})
             group_done = []
             group_tiles=[(mn,rr) for mn in projections for rr in range(0,matrices[mn]['rows'],64)]
             largest_rows=min(64,max(matrices[mn]['rows'] for mn in projections))
@@ -447,48 +477,89 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                             actions={'sc_sample_frames':1,'weight_input_trials':nr*nc,
                                      'counter_clocked_slots':nr*c.bins*counter_factor},
                             metadata={'tile':label,'step':step,'samples':c.samples,'engine':slot%c.engines})
-                    deps=[previous]
+                    # Reserve before a partial-read response can become resident.
+                    # Counter banks are overwritten with signed positional terms
+                    # and collapsed sums; small-T bit growth uses scratch too.
+                    plane_scratch=max(0,math.ceil(nr*c.bins*8*(c.counter_width+8)/8)-count_bytes) if c.counter_layout=='bitplane' else 0
+                    restore_bytes=nr*12+plane_scratch
+                    if restore_bytes>c.restore_capacity_bytes:
+                        raise ValueError('tile restore scratch exceeds configured capacity')
+                    restore_reserved=add(label+'.restore_reserve','control',deps=(previous,),
+                        inputs={free_restore:restore_bytes})
+                    deps=[restore_reserved]
                     partial_key=matrix_name,r
                     readp=None
                     if partial_key in last_partial:
-                        readp=add(label+'.partial_read','sram',deps=(last_partial[partial_key],),
+                        readp=add(label+'.partial_read','sram',deps=(last_partial[partial_key],restore_reserved),
                             memory=MemoryRequest(partial_base[matrix_name]+r*4,nr*4),actions={'partial_read_bytes':nr*4})
                         deps.append(readp)
                     writep=prefix+'.'+label+'.partial_write'
+                    def prepare_restore(k,op,tile_key=tile_key,readp=readp,nr=nr):
+                        raw=state['counters'][tile_key]
+                        flat=[v for row in raw for b in row for rail in b for v in rail] if c.counter_layout=='bitplane' else [v for row in raw for v in row]
+                        state['restore_intermediates'][tile_key]=dict(
+                            counter_peak=max(abs(v) for v in flat),nonzero_slots=sum(v!=0 for v in flat),
+                            old=unpack(k.memory_reads[readp]) if readp else [0.0]*nr,total=[0.0]*nr)
+                    restored=add(label+'.restore_prepare','control',deps=tuple(deps),
+                        on_complete=prepare_restore)
+                    def restore_stage(suffix,work,callback,actions,min_steps=1):
+                        nonlocal restored
+                        batches=max(min_steps,math.ceil(work/c.vector_lanes))
+                        restored=add(label+'.'+suffix,'restore',deps=(restored,),
+                            latency_cycles=c.restore_latency+batches-1,ii_cycles=batches,
+                            on_complete=callback,actions=actions,
+                            metadata={'arithmetic_lanes':c.vector_lanes,'issue_batches':batches,
+                                      'pipeline_latency':c.restore_latency,'timing':'configured, uncharacterized'})
+                    if c.counter_layout=='bitplane':
+                        def rails_cb(k,op,tile_key=tile_key):
+                            raw=state['counters'][tile_key]
+                            state['counters'][tile_key]=[[[(b[0][bit]-b[1][bit])*(-128 if bit==7 else 1<<bit)
+                                for bit in range(8)] for b in row] for row in raw]
+                        restore_stage('restore_rails',nr*c.bins*8,rails_cb,
+                            {'restore_counter_reads':nr*c.bins*16,'restore_signed_rail_subtract':nr*c.bins*8,
+                             'restore_positional_shift':nr*c.bins*8})
+                        for tree_level,width in enumerate((4,2,1)):
+                            def planes_cb(k,op,tile_key=tile_key,width=width):
+                                raw=state['counters'][tile_key]
+                                reduced=[[[planes[index*2]+planes[index*2+1] for index in range(width)]
+                                          for planes in row] for row in raw]
+                                state['counters'][tile_key]=([[planes[0] for planes in row] for row in reduced]
+                                                             if width==1 else reduced)
+                            restore_stage('restore_plane_tree'+str(tree_level),nr*c.bins*width,planes_cb,
+                                {'restore_integer_plane_add':nr*c.bins*width})
+                    for b in range(c.bins):
+                        def bin_cb(k,op,tile_key=tile_key,key=key,b=b,nr=nr):
+                            scale_by_bin={item['bin']:item['scale'] for item in state['encoded'][key]}
+                            _,weight_scale=state['resident_weights'][tile_key]
+                            subtotal=state['restore_intermediates'][tile_key]['total']
+                            for row in range(nr):
+                                term=fp32(fp32(state['counters'][tile_key][row][b]*scale_by_bin.get(b,0.0))*weight_scale/c.samples)
+                                subtotal[row]=fp32(subtotal[row]+term)
+                        restore_stage('restore_bin'+str(b),nr,bin_cb,
+                            {'restore_integer_scale_fp32':nr,'restore_weight_scale_sample_normalize':nr,
+                             'restore_ordered_bin_fp32_add':nr})
                     def restore_cb(k, op, key=key, tile_key=tile_key, matrix=matrix,
                                    matrix_name=matrix_name, r=r, gi=gi, nr=nr, label=label,readp=readp):
-                        enc=state['encoded'][key]
-                        scale_by_bin={item['bin']:item['scale'] for item in enc}
-                        raw_counts=state['counters'].pop(tile_key)
-                        if c.counter_layout=='bitplane':
-                            counts=[[sum((planes[0][bit]-planes[1][bit])*(-128 if bit==7 else 1<<bit) for bit in range(8))
-                                     for planes in row] for row in raw_counts]
-                            counter_peak=max(v for row in raw_counts for b in row for rail in b for v in rail)
-                            nonzero_slots=sum(v!=0 for row in raw_counts for b in row for rail in b for v in rail)
-                        else:
-                            counts=raw_counts
-                            counter_peak=max(abs(v) for row in counts for v in row)
-                            nonzero_slots=sum(v!=0 for row in counts for v in row)
-                        _,weight_scale=state['resident_weights'].pop(tile_key)
-                        old=unpack(k.memory_reads[readp]) if readp else [0.0]*nr
+                        counts=state['counters'].pop(tile_key)
+                        scratch=state['restore_intermediates'].pop(tile_key)
+                        state['resident_weights'].pop(tile_key)
                         for row in range(nr):
-                            total=0.0
-                            for b in range(c.bins):
-                                # Each bin restores before cross-bin/tile FP32 addition.
-                                term=fp32(fp32(counts[row][b]*scale_by_bin.get(b,0.0))*weight_scale/c.samples)
-                                total=fp32(total+term)
-                            values[matrix_name][r+row]=fp32(old[row]+total)
+                            values[matrix_name][r+row]=fp32(scratch['old'][row]+scratch['total'][row])
                         add(label+'.partial_write','sram',deps=(op.id,),
                             memory=MemoryRequest(partial_base[matrix_name]+r*4,nr*4,write=True,
                                                  data=pack(values[matrix_name][r:r+nr])),
                             actions={'partial_write_bytes':nr*4})
-                        state['tile_receipts'].append(dict(tile=label,counter_peak=counter_peak,
-                                                          nonzero_counter_slots=nonzero_slots,
+                        state['tile_receipts'].append(dict(tile=label,counter_peak=scratch['counter_peak'],
+                                                          nonzero_counter_slots=scratch['nonzero_slots'],
                                                           integer_equivalent_peak=max(abs(v) for row in counts for v in row),
                                                           counter_layout=c.counter_layout,
                                                           restored_rows=nr,complete_ps=k.now_ps))
-                    restored=add(label+'.restore','restore',deps=tuple(deps),on_complete=restore_cb,
-                        outputs={free_counts:count_bytes},actions={'complete_tile_restore':1,'cross_tile_fp32_add':nr})
+                    batches=math.ceil(nr/c.vector_lanes)
+                    restored=add(label+'.restore','restore',deps=(restored,),on_complete=restore_cb,
+                        latency_cycles=c.restore_latency+batches-1,ii_cycles=batches,
+                        outputs={free_counts:count_bytes,free_restore:restore_bytes},
+                        actions={'complete_tile_restore':1,'cross_tile_fp32_add':nr},
+                        metadata={'arithmetic_lanes':c.vector_lanes,'issue_batches':batches})
                     release=add(label+'.weight_release','control',deps=(restored,),outputs={free_weights:weight_bytes,free_scales:4})
                     slots[slot]=release
                     last_partial[partial_key]=writep
@@ -531,9 +602,11 @@ def build_ffn(kernel, fixture, config=None, prefix='ffn'):
                 memory=MemoryRequest(state['output_address'],len(payload),write=True,data=payload),
                 outputs={free_partials:partial_bytes},on_complete=stored,actions={'output_write_bytes':len(payload)})
         add('residual','vector',deps=(residual_read,),on_complete=output_cb,
+            latency_cycles=2+math.ceil(len(residual)/c.vector_lanes)-1,ii_cycles=math.ceil(len(residual)/c.vector_lanes),
             actions={'residual_add':len(residual),'down_fp32_to_bf16':len(residual) if c.output_bf16 else 0,
                      'residual_fp32_to_bf16':len(residual) if c.output_bf16 else 0})
     add('swiglu','nonlinear',deps=(x_done,),latency_cycles=c.nonlinear_latency+math.ceil(wg['rows']/c.vector_lanes)-1,
+        ii_cycles=math.ceil(wg['rows']/c.vector_lanes),
         on_complete=nonlinear_cb,actions={'silu_values':wg['rows'],'gated_multiply':wg['rows']},
         metadata={'all_input_tiles_reduced':True})
     return state

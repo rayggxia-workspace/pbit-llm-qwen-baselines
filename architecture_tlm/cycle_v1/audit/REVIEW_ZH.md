@@ -48,6 +48,12 @@
 
 旧 v6 与 random_service 源码相对本任务基线未改。主代理另行运行三个旧 v6 测试模块共 43 项通过；其日志需由主代理附入最终证据，不并入本审查代理的独立测试数量。
 
+## 外部 ONNXim 回执复核
+
+固定提交 `e3972ac` 已在独立审查工作树读取 C++ 探针与全部四个逐请求 JSON，并运行离线 `external/onnxim/verify_results.py`。12 个服务器原始文件的 SHA-256、实际编译探针源码 hash、Slurm 2772 首次终态 `COMPLETED / 0:0` 和官方两例/自定义一例通过日志一致。拒收时 ID 4 / 地址 0x1020 保持 10 拍，随后受理并返回；乱序例实际返回 0x1020 再 0x1000。COMP 处理 64 bytes 时，64/32 bit 数据宽度分别占 8/16 active cycles，完成时间由 17 增至 25 cycles。
+
+这确认了真实 native Operation / Tile / Core 指令路径、有效性依赖、外部窗口和请求 ID 控制。探针内存返回不携带数值，因此不验证随机门限、矩阵/FFN 数学；它也未执行原生 DRAM 命令后端、完整 ONNX graph 自定义节点、全模型，或与 cycle_v1 做逐周期等价比较。ONNXim 允许同沿返回后再受理，在 bounded trace 的 cycle 12 可以直接看到；不能把这组总周期与严格 old-state 的 cycle_v1 直接相减解释为速度差异。
+
 ## 重现
 
 ```powershell

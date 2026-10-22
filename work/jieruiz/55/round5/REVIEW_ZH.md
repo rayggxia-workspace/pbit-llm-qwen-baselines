@@ -11,7 +11,7 @@
 |[#88](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/88)|`59e846f0ec0e5898863c508a2e0de62762eebc7c`|`8d4ce51be7ecace716bc83688dc4768eb2574d38`|可选全宽采样TLM与组合接入|
 |[#89](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/89)|`69b1accc93da4f51189680cdf89b8024904d8565`|`9bd908b5d06a4dd72af67655a4c4a30a2c72e1c0`|原评估中的新并行路线与证据边界补充|
 
-科学集成`9bd908b5d06a4dd72af67655a4c4a30a2c72e1c0`。回读每项merge两父必须为[base,head]、tree等审阅head，且全部为最终祖先；无force/bypass。原生status/check列表为空，无失败/changes_requested/未解决线程，不宣称CI执行。所有原PR非协作元数据blob（含work下封存档案）逐项精确保留，见evidence/FINAL_SCIENTIFIC_BLOB_PROOF.json。
+科学集成`9bd908b5d06a4dd72af67655a4c4a30a2c72e1c0`。回读每项merge两父必须为[base,head]，且全部为最终祖先；前5项tree等刷新后的审阅head树，89的tree等原head/base经独立核验的无冲突自动合并树；无force/bypass。原生status/check列表为空，无失败/changes_requested/未解决线程，不宣称CI执行。所有原PR非协作元数据blob（含work下封存档案）逐项精确保留，见evidence/FINAL_SCIENTIFIC_BLOB_PROOF.json。
 
 ## 模块究竟怎么接入
 

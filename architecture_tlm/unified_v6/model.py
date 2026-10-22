@@ -506,6 +506,10 @@ class FullDecode:
         self.attn_stats['sampler_proposal_frames'] += receipt['actions'].get('proposal_frames',0)
         self.attn_stats['sampler_outputs'] += len(out)
         self.attn_stats['sampler_rejected'] += receipt['actions'].get('rejected_multi',0)+receipt['actions'].get('rejected_empty',0)
+        if self.integrated_rng:
+            # CPU simulation memory only: aggregate ledgers and bounded row
+            # receipts suffice; no need to retain every full query history.
+            module.requests.clear()
         return t, out
 
     def sampled_attention(self, t, token, layer, kv, rows, samples):

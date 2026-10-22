@@ -125,6 +125,8 @@ class Session:
         return -min(round(max(0., -x) / step), self.c['drive_max_code']) * step
 
     def draw(self, source, drives):
+        if self.c['external_source_programming'] and not hasattr(source,'draw_at'):
+            raise ValueError('external source programming requires a timed backend')
         if self.t < self.source_free:
             self.stage('source_interval_wait', self.source_free - self.t)
         started = self.t

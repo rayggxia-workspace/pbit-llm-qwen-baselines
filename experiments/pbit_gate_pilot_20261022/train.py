@@ -105,13 +105,16 @@ def validate_dataset(data):
             for i, name in enumerate(("train", "val", "holdout"))}
 
 
-def max4_logits(x, valid):
+def max4_logits(x, valid, forced):
     """Per-query standardization of the existing max-of-four score, temperature 1."""
     score = np.max(x, axis=-1)
-    count = valid.sum(1, keepdims=True)
-    mean = np.where(valid, score, 0).sum(1, keepdims=True) / count
-    var = np.where(valid, (score - mean) ** 2, 0).sum(1, keepdims=True) / count
-    return np.where(valid, (score - mean) / np.maximum(np.sqrt(var), 1e-6), 0).astype(np.float32)
+    free = valid & ~forced
+    count = free.sum(1, keepdims=True)
+    if np.any(count == 0):
+        raise ValueError("max4 reference requires at least one free block per query")
+    mean = np.where(free, score, 0).sum(1, keepdims=True) / count
+    var = np.where(free, (score - mean) ** 2, 0).sum(1, keepdims=True) / count
+    return np.where(free, (score - mean) / np.maximum(np.sqrt(var), 0.01), 0).astype(np.float32)
 
 
 def probability_from_scores(scores, valid, forced, bias):
@@ -289,7 +292,7 @@ def run(config_path, dataset_path, output_path):
     try:
         git_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=Path(__file__).parent, text=True, stderr=subprocess.DEVNULL).strip()
     except (OSError, subprocess.CalledProcessError):
-        git_sha = os.environ.get("PBIT_SOURCE_SHA", "unavailable_frozen_snapshot")
+        git_sha = config.get("code_commit", os.environ.get("PBIT_SOURCE_SHA", "unavailable_frozen_snapshot"))
     binding = {"dataset_path": str(Path(dataset_path).resolve()), "dataset_sha256": sha256(dataset_path),
                "config_path": str(Path(config_path).resolve()), "config_sha256": sha256(config_path),
                "resolved_config": config, "git_commit": git_sha,
@@ -325,7 +328,7 @@ def run(config_path, dataset_path, output_path):
                                           "label_tau": -label_bias, "label_temperature": 1.0,
                                           "label_train_mean_effective_blocks": float(label_np[train].sum(1).mean())}
         # Fixed max4 baseline: only one train-fitted bias; no learned feature weights.
-        score = max4_logits(clean_x, valid_np)
+        score = max4_logits(clean_x, valid_np, forced_np)
         bias = calibrate_scalar(score[train], valid_np[train], forced_np[train], config["target_blocks"])
         q = probability_from_scores(score, valid_np, forced_np, bias)
         def baseline_sample(indices, seed, draws):

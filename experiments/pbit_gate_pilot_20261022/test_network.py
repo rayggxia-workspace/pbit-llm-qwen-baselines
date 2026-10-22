@@ -10,12 +10,12 @@ import torch
 
 try:
     from .network import PBitNetwork, budget_penalty, effective_probability, export_model, import_model
-    from .train import calibrate_model, calibrate_scalar, fit_normalization, probability_from_scores, validate_dataset
+    from .train import calibrate_model, calibrate_scalar, fit_normalization, max4_logits, probability_from_scores, validate_dataset
 except ImportError:
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from network import PBitNetwork, budget_penalty, effective_probability, export_model, import_model
-    from train import calibrate_model, calibrate_scalar, fit_normalization, probability_from_scores, validate_dataset
+    from train import calibrate_model, calibrate_scalar, fit_normalization, max4_logits, probability_from_scores, validate_dataset
 
 
 class TestPBitNetwork(unittest.TestCase):
@@ -87,6 +87,14 @@ class TestPBitNetwork(unittest.TestCase):
         labels = probability_from_scores(np.log(mass + 1e-12), valid, forced, bias)
         self.assertAlmostEqual(labels.sum(1).mean(), 8, places=10)
         self.assertFalse(np.allclose(labels[~forced], mass[~forced]))
+
+    def test_max4_reference_excludes_forced_blocks(self):
+        x = np.repeat(np.array([1000.0, 1.0, 3.0, -1000.0])[None, :, None], 4, axis=2)
+        valid = np.ones((1, 4), dtype=bool)
+        forced = np.array([[True, False, False, True]])
+        np.testing.assert_array_equal(max4_logits(x, valid, forced), [[0, -1, 1, 0]])
+        x[:, [1, 2]] = np.array([1.0, 1.002])[None, :, None]
+        np.testing.assert_allclose(max4_logits(x, valid, forced), [[0, -0.1, 0.1, 0]], atol=1e-6)
 
     def fixture(self):
         rng = np.random.default_rng(42)

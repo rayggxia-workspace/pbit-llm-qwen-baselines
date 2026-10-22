@@ -109,6 +109,29 @@ class KernelTests(unittest.TestCase):
         r = self.both(build)
         self.assertEqual([r.completion_ps[f"p{i}"] for i in range(3)], [60_000, 60_000, 90_000])
 
+    def test_pipeline_does_not_overtake_older_long_operation(self):
+        def build(in_order=True):
+            k = Kernel([Resource("pipe", C, 1, capacity=3, in_order_completion=in_order)])
+            k.add(Operation("a", "pipe", latency_cycles=8))
+            k.add(Operation("b", "pipe", latency_cycles=1))
+            return k
+        r = self.both(build)
+        self.assertEqual(r.completion_ps, {"a": 80_000, "b": 90_000})
+        out_of_order = self.both(lambda: build(False))
+        self.assertEqual(out_of_order.completion_ps, {"b": 20_000, "a": 80_000})
+
+    def test_pipeline_head_output_blockage_stalls_younger_other_output(self):
+        def build():
+            k = Kernel([Resource("pipe", C, 1, capacity=3), Resource("sink", C, 1)],
+                       [Buffer("a_out", 1, 1), Buffer("b_out", 1)])
+            k.add(Operation("a", "pipe", outputs={"a_out": 1}))
+            k.add(Operation("b", "pipe", outputs={"b_out": 1}))
+            k.add(Operation("sink", "sink", inputs={"a_out": 1}, earliest_ps=50_000))
+            return k
+        r = self.both(build)
+        self.assertEqual(r.completion_ps["a"], 60_000)
+        self.assertEqual(r.completion_ps["b"], 70_000)
+
     def test_cross_domain_two_destination_edges(self):
         def build():
             sram = Clock("sram", 12_500)

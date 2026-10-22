@@ -49,6 +49,13 @@ class Clock:
 
 @dataclass(frozen=True)
 class Resource:
+    """Finite elastic pipeline with a bounded output interface.
+
+    Capacity and completion ports are per instance. By default, results retire
+    in acceptance order on each instance, so an output blockage stalls younger
+    results. Set in_order_completion=False only for explicitly modeled
+    reservation-station/out-of-order execution resources.
+    """
     name: str
     clock: Clock
     latency_cycles: int
@@ -58,6 +65,7 @@ class Resource:
     provenance: str = "assumption; not STA calibrated"
     completion_ports: int = 1
     output_ii_cycles: int = 1
+    in_order_completion: bool = True
 
     def __post_init__(self) -> None:
         for key in ("latency_cycles", "ii_cycles", "capacity", "instances", "completion_ports", "output_ii_cycles"):

@@ -186,8 +186,28 @@ class Kernel:
             return "resource_ii"
         return None
 
+    def _older_inflight(self, flight: _Flight, selected: set[str] | None = None) -> str | None:
+        if flight.reservation is not None or not self.resources[flight.op.resource].in_order_completion:
+            return None
+        selected = selected or set()
+        earlier = [other for other in self._flights.values()
+                   if other.op.resource == flight.op.resource and other.instance == flight.instance
+                   and (other.accepted_ps, other.op.id) < (flight.accepted_ps, flight.op.id)
+                   and other.op.id not in selected]
+        if not earlier:
+            return None
+        return min(earlier, key=lambda item: (item.accepted_ps, item.op.id)).op.id
+
+    def _completion_sort_key(self, flight: _Flight) -> tuple:
+        if flight.reservation is None and self.resources[flight.op.resource].in_order_completion:
+            return flight.op.resource, flight.instance, flight.accepted_ps, flight.op.id
+        return flight.op.resource, -1, flight.due_ps, flight.op.id
+
     def _completion_reason(self, flight: _Flight, time_ps: int) -> str | None:
         op = flight.op
+        earlier = self._older_inflight(flight)
+        if earlier is not None:
+            return "completion_order:" + earlier
         for name, amount in sorted(op.outputs.items()):
             if self.buffers[name] + amount > self.buffer_specs[name].capacity:
                 return "output_full:" + name
@@ -209,9 +229,13 @@ class Kernel:
                           for name, instances in self._next_complete.items()}
         response_issue = {name: runtime.next_response.copy() for name, runtime in self._memory.items()}
         selected_completion_ports: dict[str, int] = {}
-        for flight in sorted(self._flights.values(), key=lambda f: (f.due_ps, f.op.id)):
+        for flight in sorted(self._flights.values(), key=self._completion_sort_key):
             op = flight.op
             if flight.due_ps > time_ps or not self.clock_for(op.resource).is_edge(time_ps):
+                continue
+            earlier = self._older_inflight(flight, {f.op.id for f in finishing})
+            if earlier is not None:
+                self._stall(op, "complete", "completion_order:" + earlier)
                 continue
             full = next((name for name, amount in sorted(op.outputs.items())
                          if output_shadow[name] + amount > self.buffer_specs[name].capacity), None)

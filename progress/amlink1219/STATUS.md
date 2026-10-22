@@ -1,8 +1,8 @@
 # Issue123 完整FFN接合与STA/PPA协作（2026-10-23）
 
-任务分支task/123-full-ffn-ppa，依赖PR122及116冻结发布。116仍在开发，复用其最新restore_rounding，不接管或重复其kernel/memory/Attention/crop工作。
+任务分支task/123-full-ffn-ppa，依赖PR122@8007d98及已发布PR126@160f46e（均待审）。116基础后端已交付，复用其最新restore_rounding，不接管或重复其kernel/memory/Attention/crop工作。
 
-新结果：CPU2777捕获真实896→4864→896完整FFN单token fixture，模型派生数据仅留个人服务器。CPU2778通过45RTL场景、11667输出、180reset flush，T16/T32/T64全覆盖；18源SHA已核。完整周期接合/数值验证继续进行。
+新结果：CPU2777捕获真实896→4864→896完整FFN单token fixture，模型派生数据仅留个人服务器。CPU2778通过45RTL场景、11667输出、180reset flush，T16/T32/T64全覆盖；18源SHA已核。已接合正式PR126后端，冻结包28项测试通过；完整T32运行CPU2783进行中。
 
 按用户本轮明确安排，STA/PPA交给jieruiz明日执行。具体可执行交接在architecture_tlm/encoding_restore_contract/ppa/HANDOFF_JIERUI_ZH.md；实际DC/PT/功耗尚未运行，不能报面积/能量。发布与@回执见work/amlink1219/123/，不自动合并。
 
@@ -21,6 +21,15 @@
 成果已完成，上传/PR状态以work/amlink1219/121/PUBLICATION.json回执及远端ref为准；不自动合并/关闭。Projects实测缺read:project，暂待有权限者同步；仓库上传不受影响。
 
 ---
+
+# Issue116 周期级TLM执行后端（2026-10-23）
+
+负责人amlink1219，task/116-cycle-execution，独立workspace_projects/cycle23。FFN/query有限周期核、native随机协议、缩小单层、v6桥与交互trace已完成；71实现测试、54独立测试、43旧回归通过。最终Slurm2776 real68+smoke8全通过；独立核302制品/34trace/98,340操作与4,597真实read hashes。协议RTL9case252握手、ONNXim2官方+4场景、PR122固定版本12case兼容复验通过。首轮真实V预取死锁已修并保留失败；无完整新后端Qwen/Llama/PPL/STA/PPA结论。
+
+入口architecture_tlm/cycle_v1/IMPLEMENTATION_ZH.md，独立审查audit/REVIEW_ZH.md，交接work/amlink1219/116/HANDOFF.md。基础科学成果ddd2e3406caac5075689f9388a041603e17d2b19已上传[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)，438个远端Git对象和8项原始blob已核，待审未合并；准确状态见PUBLICATION.json。尚缺完整全维多头/GQA、全局容量/随机网络、在线DRAM命令后端和PPA校准，不能把原方案A–G写成全部完成。旧v6/random_service/历史结果未改，权重/私有fixture留本人存储；并行PR119/120/122/125不覆盖。PR125已捕获完整FFN fixture并继续接合，已在其PR留下正式后端交接；其实际STA/PPA交由jieruiz，尚未运行。剩余授权时间内继续实现和独审有界GQA共享K/V增量，尚未验收；Projects实测缺read:project待同步，不改权限。
+
+---
+以下为Issue98历史发布回执，与Issue116发布状态分开：
 
 发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
 

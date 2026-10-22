@@ -1,11 +1,18 @@
 # rayggxia 当前任务
 
-更新时间2026-10-22；GitHub连接器实际账号rayggxia。Issue95：随机源操作模型与核心RTL。
-分支task/95-rng-service-rtl；PR base pbit-tlm-attention-details-20261016@83e15289434af50fc09c35e699d8b39965389d98。
-工作目录C:/Users/86134/Documents/a_P_BIT/tmp/rng-service-issue95-20261022。
+更新时间：2026-10-22；本会话 GitHub 连接器实际账号 rayggxia。
 
-本地实现、验证和用户交付包已完成；已发布PR97 https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/97 ，开放待审、未合并。源提交970260e21ebcf98822b9cf47b643fb8360a31e2f；最终元数据head见远端分支。实际账号rayggxia经连接器发布，Git原生直连fetch连接失败的本地状态见PUBLICATION.json，不能因此把已发布说成未发布。
-成果architecture_tlm/random_service/；原Attention增加可选计时源接口，保持旧默认。3种后端、外部种子传输与缓慢重播种、操作统计、核心SV、测试平台与功耗仿真说明。
-验证47项Python通过；14100沿三后端Python/RTL对照、FFN250沿/120帧通过；便携包19项检查与示例通过。入口work/rayggxia/95/VALIDATION.json、RTL_VALIDATION.json、ACTIVITY_VALIDATION.json、DELIVERY.json；硬件PPA留给用户，本轮未运行DC/PT/模型/GPU/Slurm。
-疑点DESIGN_QUESTIONS_ZH.md；下一步用户按POWER_SIM_ZH.md仿真工艺PPA并评审；恢复时先确认远端head/树SHA，再继续同一目录。Projects待同步。完整交付包远端上传/rng_service_v1_20261022.zip及同名目录；原始运行按RAW_ARCHIVE.json归档。
-完整交接work/rayggxia/95/HANDOFF.md。
+## Issue98：benchmark / LLM质量 / PPA统一调研
+
+- 分支：task/98-benchmark-protocol；PR base：pbit-tlm-attention-details-20261016@83e15289434af50fc09c35e699d8b39965389d98。
+- 工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/benchmark-protocol-issue98-20261022，最小稀疏 worktree。
+- 阶段：研究文档、16篇结构化对照与协议已上传；PR100开放待审未合并，源提交618b85ac59e4823497dc8ae7083aefc75247b7f4，9份来源文件已远端读回一致。最终发布状态见work/rayggxia/98/PUBLICATION.json；不关闭Issue。
+- 验证：work/rayggxia/98/verify.py，33项文档/数据一致性、来源制品hash、Git内链接及例子复算通过；不是33项模型或PPA测试。
+- 成果：architecture_tlm/benchmark_protocol_20261022/README_ZH.md、PAPERS.json/.csv、PROTOCOL_PROPOSAL.json。
+- 未运行：模型、训练、GPU、Slurm、TLM、EDA；协议/质量门槛是提议，未知物理成本仍null。
+- 待同步：Projects权限/写入未核实；长期备忘录唯一维护目录已有其他任务未提交增量，不覆盖。待合并/维护时追加本研究入口，拟追加文字在HANDOFF。
+- 下一步：PR100评审验收；质量预算与协议评审后再决定新实验。接口实现仍由Issue95/96负责。
+
+## 并行既有任务保留
+
+Issue95随机源模型/RTL已由本账号发布PR97，开放待审未合并；其工作目录、进度及实际验证以 task/95-rng-service-rtl 的 work/rayggxia/95/HANDOFF.md / PUBLICATION.json为准。本分支没有修改其源码、默认配置、冻结结果或工作目录，也未接管Issue96等成员任务。

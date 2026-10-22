@@ -1,5 +1,25 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-22 Issue92：小网部署计算成本
+
+负责人amlink1219，接续Issue92/task/92-pbit-gate-pilot/PR94。新增部署运算账本qwen/results/pbit_gate_cost_20261022/README_ZH.md、COST.json及compute_cost.py。每自由块32连续乘法/40加法/8bit门控/9概率事件、两阶段；原三位置混合F21，层0/12/23候选QK省378/−165/379 MAC，小网第一层新增672乘法，不能称整体节能。含公共特征/动态归一化、GQA并集与固定S的PV边界。9模型形状、2304隐藏态门控等价、6项均值回算及独立只读审阅通过；没有新训练/Slurm/完整PPL/RTL/PPA，原质量结果保持。发布随PR94，待审未合并；上传核验以work/amlink1219/92/compute_cost/PUBLICATION.json实际回执为准。Projects沿同日已验证read:project不足待同步，不自动合并/关闭Issue。
+
+## 2026-10-22 Issue92第二轮：直接目标与冻结盲评
+
+用户要求持续优化小网：max4 warmup后直接最小化期望遗漏mass，准确TRAIN平均8块及隐式梯度；加入query-relative输入、温度扩展与TRAIN全局硬阈值。新192/48/48篇排除旧48篇，54原候选＋9长pbit＋27max4控制，CPU45项、先冻结90配置再一次blind全部通过；GPU2744/2746/2748/2751完成，无在运行作业。
+
+盲集pbit三seed平均遗漏1.978%/2.021%/24.845%，原T1 4.253%/3.550%/31.365%，验证选强max4 2.069%/2.163%/24.723%。层0候选和局部质量均改善，层12多0.5%候选换质量，层23遗漏略差/候选少/PV好，不称全面胜出或隐藏随机性独有优势。确定性网仅300epoch，pbit6000；未做完整学生PPL/W8/物理PPA，约33–39% mask超512容量。blind已看，后续不得复用它调参仍称独立测试。
+
+结果qwen/results/pbit_gate_optimization_20261022、代码experiments/pbit_gate_pilot_20261022、交接work/amlink1219/92；执行cfa19622/cfad3902/6241ab7f/f66b65ac，CPU包装727ed629，135文件SHA回传通过。完整32MB冻结/NPZ/长日志留本人服务器。原负结果和旧回执保留；第二轮科学成果64848a345c7926881f0c4b1ff543954fcc851eea已通过PR94上传待审、未合并，263项远端Git对象/8项关键SHA256已核，Issue92已同步；实际回执work/amlink1219/92/optimization_v2/PUBLICATION.json。看板因read:project不足待同步，不改正式Attention默认。
+
+
+## 2026-10-22 Issue92：小型p-bit筛选网络首轮训练
+
+用户要求先在现有服务器做简单训练；冻结Qwen2.5-0.5B，4→8→1每层49参数（8个条件独立隐藏p-bit），256态精确边缘训练，评估真隐藏/输出bit采样。32/8/8个WikiText训练文章隔离，0/12/23层、3head、3位置、3训练seed，1296完整组。Slurm2740 CPU16项通过、2741单5090训练完成，总45.90秒，训练评估30.05秒。执行53c24f28，正式代码experiments/pbit_gate_pilot_20261022、结果qwen/results/pbit_gate_pilot_20261022、交接work/amlink1219/92。
+
+这是明确的局部负结果：训练BCE下降，但49参数网holdout遗漏6.173%/4.493%/37.082%，max4为4.552%/3.319%/32.298%，网络预算8.021/8.016/8.061块略高仍差。每层8篇留出文章配对均未改善；候选PV误差亦更差。不能称方法极限或隐藏随机性优势；当前代理BCE未证明与实际质量目标对齐。可变mask约35%–40%超过512token，不能默认现有512宏容纳。无学生完整PPL、Ising/FFN联合或PPA。后续调参须新留出协议，避免复用已看holdout。小网训练已完成且代码/报告已通过PR94上传待审、未合并，Issue92已同步；payload074172c9的82项Git对象及8项关键SHA256回读一致。看板因read:project不足待同步；不改正式默认。
+
+
 ## 2026-10-22 Ising评估更新（Issue37，amlink1219）
 
 入口：[并行采样实现与结果评估补充](architecture_tlm/attention_comparison/ISING_UPDATE_20261022_ZH.md)。核查基线5b26c80c；PR79/80已合并，PR82驱动量化、PR86真实QKV、PR88全宽TLM仍开放未合并，分别按固定head读取。旧互斥Ising不能按旧状态独立同步提交；新赢家保持/校正拒绝改了规则，允许全候选独立并行提议。赢家仍是相关链；拒绝在理想响应与空态校正下直接采类别。
@@ -23,6 +43,10 @@
 用户指定v1正文和附录核查完成，Zotero原条目/PDF保持，唯一机器note25FR4EFX；24例独立数学校核通过。入口architecture_tlm/research_readings/REMIX_V1_ZH_20261019.md，工作资料work/amlink1219/70/。没有模型复现、训练/PPL/PPA；研究原任务61已关闭，本任务独立交付待审。
 
 ## 0 恢复工作先读这里
+
+> 第六轮收尾新增99/100：100协议文档33检查和关键一手口径核验通过，原head5a89ced1纳入本人集成分支；99仍为draft，整机同资源情景最终结果待补，保留不合并。本轮共审核5项、通过4项（93/94/97/100），实际远端集成回执查Issue55。
+
+> 2026-10-22第六轮审核：PR93/97已原生合并129ae823/27bf9c48；PR94的90配置冻结盲评、45检查与成本重放通过，原head424b4206纳入本人review/55-pr-round6，唯一STATUS冲突保留作者原blob9ee7dbdd，无作者分支改写。将通过本轮集成PR交付，实际远端合并/目录回收结果查Issue55最终回执和work/jieruiz/55/round6/。本轮未启动服务器/GPU/Slurm/PPL/DC/PT；旧定时不恢复。
 
 > 2026-10-22第五轮收尾追加：PR89评估补充已直接合并作者原head，现共82/83/85/86/88/89六项成果已合并；下方五项记录为追加前快照。Issue37/78仍开放。完整回执work/jieruiz/55/round5/。
 
@@ -887,6 +911,48 @@ Issue73 publication receipt (2026-10-22): completed26 status/report and automati
 
 第五轮追加PR89：19固定源、8组TLM中位数/单位/null及3组固定预算覆盖核验通过，旧数字全上下文D0与原评估保留，局部误差/合成时序没有冒充新PPL/PPA。自动审批曾拒绝向其他成员分支推送刷新；未执行该推送，已改为原head69b1accc的无冲突原生合并9bd908b5，无作者分支改写或STATUS/HANDOFF手工改动。作者自己的新状态按原blob继承，Issue37不关闭。
 
+2026-10-22第五轮最终发布/回收回执：报告PR91已原生合并83e15289434af50fc09c35e699d8b39965389d98，收尾开放PR为0，Issue55于05:31:46Z验收关闭；Issue73/84/87已关闭，78/37继续开放。唯一review稀疏目录和helper已于05:30:52Z逐SHA归档后回收，逻辑移除35,991,762B；525份临时文件压缩10,041,404B，project_archives/pr_review_issue55_20261022/review_scratch.zip SHA256 fd9cec6bab3955cdd9100e9eba82fb4fb5c01ae41060bb5b7b17265c4818e339，恢复/清理实际回执在同目录RECOVERY_INDEX.json、CLEANUP_RECEIPT.json及FINAL_ISSUE55_RECEIPT.json。保留review/55-pr-round5 head80e712eac8c28a413c06dd8b8927e66b644c8e78；其他成员目录、共享对象、模型与原始证据未清理。含私有NPZ的归档仅限授权本地。此最终回执为报告合并后的Issue28维护增量；报告冻结备忘录SHA9ef4fc794fd2fbd51993849972346b90153b36e971cd8731e78a10919880f049不改写。
+<!-- llm-env-issue90 -->
+## 2026-10-22 Issue90：两台4090备用LLM环境
+
+个人隔离Python3.12.3/Torch2.6.0+cu118/Transformers4.45.2/lm_eval0.4.8已安装并验证。A CPU9041/GPU9042、B CPU14101/GPU14104均COMPLETED/0:0，每台19CPU检查及6GPU synthetic smoke通过，27参数/3非持久RoPE buffer逐位相同、重载logits差0.0。94包freeze两台原字节相同SHA636ea0599fc983e7c003c3a8881aefa2f05d8167f2877dcab8992dfc3f145ae5；正式入口为个人环境bin/llm-python进程wrapper，旧glibc兼容层不改系统或共享环境。
+
+## 2026-10-22 随机源统一操作模型与核心RTL（Issue95 / PR97）
+
+用户要求准确操作统计、基础LFSR/共享扩展/非LFSR后端、启动新种子与慢速换种，并由用户自行仿真PPA。本轮实际GitHub连接器身份rayggxia，独立task/95-rng-service-rtl、tmp/rng-service-issue95-20261022，基线83e15289434af50fc09c35e699d8b39965389d98。源码提交970260e21ebcf98822b9cf47b643fb8360a31e2f已发布PR97，开放待审未合并；Issue95继续open，Projects未核实/待同步。原生Git本机连接失败不影响连接器已发布事实，本地/远端状态以work/rayggxia/95/PUBLICATION.json及最新远端head为准。
+
+入口architecture_tlm/random_service/：LFSR32 1×8bit、现有GF扩展64×8bit、Bivium177bit状态/160bit展开20×8bit；端点/种子入口Python与7份SystemVerilog，统一valid/ready、q/256阈值、响应保持、SAVE/RESTORE/RELEASE。默认1亿拍换种（10ns约1s），0仅启动；每端点每epoch独立取得新总线材料，无免费根种子派生或固定种子回退。LFSR每次32bit、Bivium192bit总线包保留177bit并明确丢15bit，预热5拍。FFN锁定重放时延期记账；无源不输出。OS/fixture/有来源trace严格区分，软件OS不宣称物理熵。操作数/总线/等待分开，PPA null。
+
+现有parallel_sampler_v5.py只加可选计时源适配，旧理想默认保留；26个Bivium可供512路帧（额外8路收费），公平辅助另端口。核心与入口逐周期不等于整个Attention/互联RTL周期精确。GF64总秩32、两两秩16，不保证64路联合/跨时IID，Attention默认拒绝。概率LUT量化改变目标，未继承旧PPL。模拟读出、健康调理、CDC、共享仲裁器和sigmoid LUT完整RTL仍缺，记录DESIGN_QUESTIONS_ZH.md；优先综合top/活动场景见POWER_SIM_ZH.md。
+
+47项Python检查通过，3后端×3seed×900=8100沿及连续活动6000沿逐沿一致，FFN250沿120帧通过；便携包独立19检查/fixture示例通过。有限3seed统计诊断不等于质量验收；没有DC/PT/PPL/GPU/Slurm/新Spectre。包远端上传/rng_service_v1_20261022.zip，SHA7b067edb8dfd452242830ac6f01c068d6200e76ae0d9a0711f2ab4a9097c8f45；原始验证ZIP在project_archives/rng_service_issue95_20261022/verification_raw.zip，SHA684e69f452933b05abaeafab8963f26367c313015940b49208facee2cc6d3524；失败/成功记录按成员SHA保留，PR待审保留最小工作树，不重复旧实验。
+正式入口[环境报告](maintenance/llm_env_4090_20261022/README_ZH.md)，原执行源scripts/llm_env_4090_20261022，私有原件hash/脱敏视图及交接work/amlink1219/90。原失败与恢复各阶段保留，70wheel恢复包仅LLM扩展层，不含Torch底座。服务器地址/连接配置/凭据不发布。Torch版本不同于5090的2.7.1cu128，未下载真实权重/语料、未训练或产生真实PPL/准确率/PPA，后续真实实验需匹配数字基线。5090优先、备用当次告知、个人目录/Slurm/跨服务器单GPU规则继续适用。上传与PR状态见该任务PUBLICATION.json，Issue保持open等待审阅，不自动合并。
+<!-- /llm-env-issue90 -->
+
+## 2026-10-22 第六轮PR审核（Issue55）
+
+PR93环境交付32源/5报告与94包冻结逐SHA通过，Windows git archive/checkout会受core.autocrlf影响；本轮改用git cat-file原blob核验，不改作者字节。作者两台19CPU/6GPU记录仅核对冻结报告，本轮没有重新登录/安装/申请GPU或重新取得13份私有原件。PR94的45CPU检查通过（本地Python3.8补等价Path.is_relative_to运行时shim，作者3.12源码不改），134包成员/90模型SHA、先冻结再评估及VAL预选强max4通过，15逐文档原件按48篇×3eval seed重聚合；2304隐藏态门控等价/6均值回算的成本JSON逐字节重放一致。强max4下是分层权衡且33–39%超512容量，不改默认或冒称PPL/PPA。PR97的47CPU、三后端三seed8100沿与FFN250沿/120帧均重放一致，27源blob/向量SHA/操作账本和便携包26文件一致；数字核心不等于物理熵/IID或工艺PPA。93/97合并回执与94原head集成证明在round6；90/92/95仍由原负责人按Issue验收接续，不自动关闭。旧材料与canonical原未提交增量完整保留。
+
+
+<!-- issue96-unified-v6 -->
+## 2026-10-22 统一整机TLM v6（Issue96 / PR99）
+
+用户同意整机保留tile/事件粒度，关键机制先验证，差异足以改变结论再细化。jieruiz独立task/96-unified-tlm、tmp/unified-tlm-issue96-20261022；基线83e15289，冻结执行fba22b192ab914046e50cc405f6dd473bf30d154。入口architecture_tlm/unified_v6/README_ZH.md与RESULTS_ZH.md；三个模型可选tlm-unified，历史默认不改。
+
+本版将固定W8、动态四档PoT、T32/K32、gate/up共享x与跨输出波重放、FP32 SwiGLU后z独立编码接入完整decode；包含embedding/全部层/最终norm/lm_head/选词。Attention有数字在线GQA、比例PV（systematic CDF）、max4筛选后准确/PV、赢家与校正拒绝；K/V按GQA并集和物理burst收费。采样器内部FSM/反馈/输出等待复用v5；直方图采用明确但保守的逐地址RMW，不声称最优。独立BF16残差/x/z/宽部分和区域；SRAM容量/端口/fabric、权重ping-pong和有限32请求窗口显式计入。初始KV和摘要已存在，不含prefill/TTFT。
+
+52项整机情景全部完成：Qwen2K/8K各8方案×3seed共48；Llama1/2各数字BF16、SC/PV两项完整32层单seed连通。21新机制+18原并行采样器+10原v4检查通过；62原件、22执行blob、764模型契约核查通过。原门禁4e0d26b的W8尺度寻址越界已修复，失败前缀与EXEC原件保留，不计正式52项。无新PPL、训练、GPU、Slurm、PT或实际DRAMSys运行。
+
+条件100MHz核/80MHz SRAM/16GBs：Qwen2K BF16准确234.360ms、W8数字163.565ms、SC准确201.677ms、SC筛选PV197.946ms、SC拒绝286.556ms、SC赢家303.646ms；8K分别260.453/189.658/227.770/202.770/551.715/622.894ms。赢家预算是PV/拒绝8倍，不按同S比较。QwenSC主采样波约3.411ms，64路通用向量恢复约55.158ms，恢复/搬运/接口是优先核查瓶颈；不能把短流阵列收益等同整机收益。相比同W8数字SC更慢；完整物理能量/面积、新组合PPL均null，部分已定价小计禁止当总能量比例。默认Link外存64pJ/B/50mW是条件值，不是新DRAMPower。Qwen1MiB/Llama8MiB是配置预算，未证明最优。
+
+随机源按用户要求仅本地PRNG接口，随机流SRAM/FIFO/额外概率副本均0；必要编码/计数/映射仍保留。有偏候选独立需求、种子/新帧/重放/并行服务需求单列，未标定成本不置零。本任务期间PR97随机服务已合并27bf9c48，但本轮不启用该后端或其量化；采用新上游采样器默认接口覆盖49项也通过（前两次本地temp/脚本导入问题保留）。后续可由Issue95接口适配，不使用FFN共享门限替代Attention独立提议。Projects本轮GraphQL实测缺read:project，待同步。
+
+源码已上传PR99，成果/文档发布以Issue96、work/jieruiz/96/PUBLICATION.json/REMOTE_VERIFY.json最新回执为准；PR待审，不自动合并或关闭Issue96。后续优先表征B4恢复/编码、权重驻留接口、采样器偏移与直方图流水和本地源。当前TLM不是周期精确芯片、GPU模拟或质量验收。
+<!-- /issue96-unified-v6 -->
+
+
+## Upstream Issue90 complete receipt (27bf9c48; prior local history preserved)
+
 <!-- llm-env-issue90 -->
 ## 2026-10-22 Issue90：两台4090备用LLM环境
 
@@ -894,3 +960,5 @@ Issue73 publication receipt (2026-10-22): completed26 status/report and automati
 
 正式入口[环境报告](maintenance/llm_env_4090_20261022/README_ZH.md)，原执行源scripts/llm_env_4090_20261022，私有原件hash/脱敏视图及交接work/amlink1219/90。原失败与恢复各阶段保留，70wheel恢复包仅LLM扩展层，不含Torch底座。服务器地址/连接配置/凭据不发布。Torch版本不同于5090的2.7.1cu128，未下载真实权重/语料、未训练或产生真实PPL/准确率/PPA，后续真实实验需匹配数字基线。5090优先、备用当次告知、个人目录/Slurm/跨服务器单GPU规则继续适用。上传与PR状态见该任务PUBLICATION.json，Issue保持open等待审阅，不自动合并。
 <!-- /llm-env-issue90 -->
+
+第六轮追加PR100评估协议：33项结构/来源SHA/内部链接/数值复算通过；独立核对lm-eval0.4.8字符长度acc_norm、SANTA batch分母、HSA输入输出token、MLPerf5.1版本质量门槛、DRAMPower时序边界及Kelle Table2；本机MBA第6节/HBM3.9pJ-bit与技术缩放文字核对。16篇矩阵/CSV一致性不冒充重新穷尽全文查新。协议为未批准未执行提议，不改变用户质量预算或启动模型/PPA。PR100与97仅负责人STATUS冲突，直接继承100作者原blob，旧97状态保留Git历史，无作者分支改写。PR99读取fba22b19仍draft、最终整机情景报告未齐，保留待审，不因已有机制测试通过而合并。

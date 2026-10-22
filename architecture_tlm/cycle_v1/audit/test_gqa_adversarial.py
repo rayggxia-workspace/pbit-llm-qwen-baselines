@@ -1,6 +1,9 @@
 """Independent GQA numeric, lifetime, transport and address adversaries."""
 import copy
 from collections import Counter
+import bisect
+import math
+import random
 import struct
 import unittest
 from dataclasses import replace
@@ -8,6 +11,7 @@ from dataclasses import replace
 from architecture_tlm.cycle_v1.attention import AttentionConfig, SamplerCapError
 from architecture_tlm.cycle_v1.gqa import GQAConfig, address_layout, build_gqa, make_gqa
 from architecture_tlm.cycle_v1.audit.gqa_oracles import overlap_fixture, scalar_query
+from architecture_tlm.cycle_v1.audit.scalar_oracles import f32
 
 
 class IndependentGQAAudit(unittest.TestCase):
@@ -272,6 +276,51 @@ class IndependentGQAAudit(unittest.TestCase):
             with self.subTest(field=field):
                 with self.assertRaisesRegex(ValueError,"shared physical"):
                     make_gqa(data,[base,replace(base,**{field:getattr(base,field)+1})])
+
+    def test_random_sparse_head_graphs_match_independent_systematic_oracle(self):
+        # Distinct overlap patterns, candidate orders and response latencies
+        # exercise cycles not present in the fixed two-head regression.
+        for seed in range(32):
+            with self.subTest(seed=seed):
+                rng=random.Random(982000+seed)
+                d,dv,heads=rng.randint(1,9),rng.randint(1,7),rng.randint(1,5)
+                data=dict(k=[[rng.randint(-8,8)/8 for _ in range(d)] for _ in range(11)],
+                          v=[[rng.randint(-16,16)/4 for _ in range(dv)] for _ in range(11)],queries=[])
+                configs=[]
+                manual=[]
+                for head in range(heads):
+                    ids=rng.sample(range(11),rng.randint(1,7))
+                    query=dict(q=[rng.randint(-8,8)/8 for _ in range(d)],candidate_ids=ids)
+                    pv=bool(rng.randrange(2))
+                    samples=rng.randint(1,13)
+                    config=AttentionConfig(mode="pv" if pv else "exact",samples=samples,
+                        random_backend="replay" if pv else "native",mac_lanes=2,vector_lanes=4,exp_lanes=2)
+                    counts=None
+                    if pv:
+                        offset=rng.choice((.125,.375,.625,.875))
+                        query["random_replay"]={"uniforms":[offset]}
+                        logits=[f32(math.fsum(a*b for a,b in zip(query["q"],data["k"][t]))/math.sqrt(d)) for t in ids]
+                        exp=[math.exp(x-max(logits)) for x in logits]
+                        inv=1/math.fsum(exp)
+                        cdf=[]
+                        running=0.0
+                        for value in exp:
+                            running+=value*inv
+                            cdf.append(running)
+                        local=[min(len(ids)-1,bisect.bisect_right(cdf,(offset+s)/samples)) for s in range(samples)]
+                        counts=Counter(ids[i] for i in local)
+                    data["queries"].append(query);configs.append(config);manual.append(counts)
+                gc=GQAConfig(k_slots=rng.randint(1,3),v_slots=rng.randint(1,3),
+                             operand_slots=rng.randint(1,3),cache_bytes_per_cycle=rng.choice((4,16,64)),
+                             union_scan_lanes=rng.choice((1,4,16)))
+                layout,_=address_layout(data,configs,gc)
+                latency={layout[0][kind]+t*width:rng.randint(1,15) for kind,width in (("k",d*4),("v",dv*4)) for t in range(11)}
+                _,state,_=self.run_pair(data,configs,gc,memory_latency_by_address=latency,
+                    memory_window=rng.choice((1,2,4)),memory_banks=rng.choice((1,2,4)))
+                for query,actual,counts in zip(data["queries"],state["queries"],manual):
+                    self.assertEqual(actual["output"],scalar_query(data,query,physical_counts=counts))
+                    if counts is not None:
+                        self.assertEqual(actual["histogram"],dict(counts))
 
 
 if __name__=="__main__":

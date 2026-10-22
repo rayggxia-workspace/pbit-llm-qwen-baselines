@@ -93,7 +93,7 @@ Slurm **2776** 的固定 v5 结果包含 **68 个真实片段配置和 8 个 syn
 
 ## 后续 GQA group 独立验收
 
-固定生产 `0cd8a26` / `de6123d` / `f94c9db` 新增同一 Kernel 中多个 query 共享一个 KV head。独立测试增加 **16 项**，全部 **70 项**在审查工作树 `a47fd64` 对应源码上重新通过，回执为 `results/gqa_a47fd64/RESULT.json`。历史 54 项回执和 Slurm 2776 的 68 real / 8 smoke 矩阵保持原样，没有用新增功能的通过数改写历史执行。
+固定生产 `0cd8a26` / `de6123d` / `f94c9db` 新增同一 Kernel 中多个 query 共享一个 KV head。独立测试增加 **17 项**，全部 **71 项**在同一固定生产源码上重新通过，最终回执为 `results/gqa_sparse_7570fc9/RESULT.json`；前一轮 70 项回执另保留在 `results/gqa_a47fd64/RESULT.json`。新增随机图方法含 32 个固定 seed，覆盖 1–5 head、不同 D/Dv、稀疏候选子集/顺序、exact/PV 混合、随机 bank/window/row/operand 容量和返回延迟；PV 保留索引由独立 CDF + bisect oracle 预先算出，不读取生产 histogram 作期望。历史 54 项回执和 Slurm 2776 的 68 real / 8 smoke 矩阵保持原样，没有用新增功能的通过数改写历史执行。
 
 小 fixture 的两组稀疏候选为 `[1,2,10]`、`[10,3,2]`；手工确定 K union 为四行，PV 每 head 六次保留样本时各候选重复两次。exact、PV、winner hold、rejection 失败重试由独立 scalar/冻结轨迹计算每 head 答案，逐项 FP32 乘加采用物理 token 升序。除已知相等 logits 外，还核对不同非零 Q 的非均匀 softmax。K/V 各一个行槽、memory window/bank 为 1，以及一个 operand slot 均完成，所有信用归还；两槽实际乱序回复不导致先消费数据饥饿。每条共享读的实际地址、字节、全部 consumer、最后释放依赖及输出 SRAM bytes 均被检查，破坏实际 K/V payload 必须显式失败。
 

@@ -33,7 +33,7 @@ def main():
                   tests_run=result.testsRun, successful=result.wasSuccessful(),
                   failures=[dict(test=str(test), detail=detail) for test, detail in result.failures],
                   errors=[dict(test=str(test), detail=detail) for test, detail in result.errors],
-                  deterministic_subcases=dict(random_dag_seeds=32, random_byte_memory_seeds=32,
+                  deterministic_subcases=dict(random_dag_seeds=32, random_byte_memory_seeds=32,random_gqa_sparse_graphs=32,
                                              synthetic_scalar_ffn_profiles=4),
                   scope="Independent hand-derived timing, byte memory and numeric/trajectory oracles; not RTL/STA/PPA/PPL",
                   modules=modules)

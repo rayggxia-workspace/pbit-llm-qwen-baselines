@@ -12,6 +12,65 @@
 
 以下保留此前各任务状态原文：
 
+# Issue84：SANTA++精读报告已上传，PR85待审
+
+更新时间2026-10-21T12:10:56.373304+00:00；负责人jieruiz。Issue84，task/84-santapp-novelty；PR85草稿开放未合并；base pbit-tlm-attention-details-20261016@5b26c80c28ab22383f12ab31046dd723ca985abb。工作目录tmp/santapp-novelty-issue84-20261021，科学head ad92485c9f98cc50fdb706f620c96d681fb339e9已推送。
+
+正式报告architecture_tlm/research_readings/SANTAPP_V1_NOVELTY_ZH_20261021.md，SHA96f123e75e48212956fc50f740956310b06d61d5e95766b625f7976548834f05。结论：筛选/随机选组/GQA并集已重合；具体p-bit类别采样器、短流FFN和存储协同仍有研究空间，但缺长上下文/匹配PPA证据。当前max4筛选未做选择校正。
+
+实际验证：PDF32页身份与SHA、正文和附录方法核查、4页渲染检查、8个项目源blob/字节SHA、10项预算/算术/编码核查；无模型/GPU/训练/RTL/PT/TLM运行。源版本/证据见work/jieruiz/84/SOURCE_MANIFEST.json与VALIDATION.json。原PDF/权重/工艺/私有capture不上传。
+
+本轮科学文件已由GitHub API按相同commit/tree/blob上传；交接及备忘录随收尾提交同PR，最终远端以Issue84评论为准。Issue保持open待评审，无运行任务，不改默认数值核。Projects本轮未写入，沿既有权限限制留待同步。下一步评审PR85；不要重复昂贵实验或接管其他任务。
+
+以下保留此前各任务状态原文：
+
+# 2026-10-22：26/26任务推理完成，定时回查已删除
+
+Issue73/PR83（草稿开放未合并）；jieruiz；task/73-results-followup。北京时间12:43只读检查：26份完整JSON均completed，逐题文件SHA/大小/路径及声明32层守卫通过，当前Slurm队列空。按用户最新条件指令已删除llama2-7b回查，工具回执deleted、本地配置已不存在；不因官方oracle待做而重新创建定时。
+
+最新报告llama2/results/task_accuracy_20261020/PROGRESS_20261022_ZH.md；原始状态checkpoints/20261022T044323Z/STATUS.json，停止回执work/jieruiz/73/AUTOMATION_STOP_20261022.json。此次只检查/汇总已有结果，未重跑推理或改冻结快照；没有新的完整32层独立复核或官方process_results复算，最终验收仍待这些步骤。不要把summary聚合当官方oracle已完成，不关闭Issue或合并PR。
+
+下一步：同Issue73/PR83继续官方oracle、逐题源/输入/层覆盖完整复核及配对统计，已有26项不再推理。状态/报告推送以本次PUBLICATION_STOP_20261022.json为准；看板沿既有权限限制待同步。
+
+以下为旧检查点与历史回查状态，不代表仍有推理任务运行：
+
+# 2026-10-21 18:25用户回查：19/26已核验
+
+Issue73/PR83（草稿开放未合并），jieruiz，task/73-results-followup。CPU2634复用源86ccedc封存核验完成exit0：19completed、2running（2585_12/20）、5pending（21～25），无无效或缺项。比18:11新增ARC-E FFN-only seed2，故PIQA/ARC-E的仅FFN三seed均齐。PIQA acc/acc_norm77.80196%/78.99891%，ARC-E76.27666%/74.32660%；相对原BF16分别−0.05441/约0与−0.02806/−0.33670个百分点。只重聚合已存逐题metrics，官方oracle仍待26项齐全，不作为最终验收。
+
+报告PROGRESS_20261021_ZH.md已更新；新原件checkpoints/20261021T102541Z/CHECKPOINT.json，SHA c3e1ac52858d6f3cb3006e1e36c032c0c20eb0bf4df93858e7dc708a42da4871。旧18项检查点不改。五项排队约6.71GPU小时，另有两项运行尾部；保持两卡估计仍需4～6h。Qwen39/39服务器status全completed（PIQA/ARC-E/Hella1000题子集各13），未重复跑GPU、未改旧推理snapshot。
+
+本次报告待随本提交同步PR83并核验远端blob，发布以Issue73新评论为准。继续同目录/分支收齐26项，最终官方process_results/配对统计后再停每日回查。旧18/26与旧running16为历史时点。Projects待既有scope。
+
+# 发布回执：18/26检查点已在PR83核验
+
+2026-10-21；jieruiz；Issue73。科学结果提交7a75c53eb4db9dc261bdba76ba6ad86f4e61a4b6已通过GitHub Git对象API上传，blob/tree/commit SHA完全等于本地，非强制更新任务分支；PR83 draft/open未合并。检查点原件GitHub字节SHA7f894690ee8482dbf98d019df2a272cb4ac0c6d9f138350a6975a7b22bba65b4一致，Issue73评论6313631692已同步，回执PUBLICATION_CHECKPOINT_20261021.json。此前原生Git超时已通过替代传输解决，不能再写作报告未上传。26项仍未齐；原推理任务和每日回查继续。下文“发布以新回执为准”由本回执覆盖。
+
+# 2026-10-21 18:11 Llama2检查点：18/26，后续PR83
+
+jieruiz；Issue73 open；后续分支task/73-results-followup，PR83 draft/open未合并，base5b26c80c28ab22383f12ab31046dd723ca985abb；独立目录tmp/llama2-task-accuracy-issue73-20261020。原PR75已合并3fe790ecc2d4849662b60216922fd45dc4300848，只验收代码/提交/恢复阶段，旧“未合并/GPU2584 pending”不再代表当前状态。
+
+CPU Slurm2632、源86ccedc1f14432fc993b4032a9af7873bbf579c6完成exit0；7项本地/远端合同通过。18份sealed full JSON及documents SHA/全量唯一id/候选token/32层与active-dummy/输入与源身份链通过，逐题已存metrics重聚合一致；官方process_results尚未独立复算。未重哈希14GB权重，只核对已验identity manifest绑定，不冒充新模型完整质量验收。
+
+2026-10-21 10:11:23Z：completed18（旧8＋修复10）、running2（2585_12/16）、pending6（2585_20～25），无无效或缺项；本轮比08:39检查点新增ARC-E FFN-only seed0/1。PIQA联合S512仍2/3、ARC-E FFN仍2/3，不算组均值。六项待运行按实测吞吐约7.98GPU小时；保持现有两卡估计还需4～6h，若单卡约8～11h，不是排程保证。原2572健康八项和2585十八项不动，没有新GPU推理或冻结源修改。
+
+正式入口llama2/results/task_accuracy_20261020/PROGRESS_20261021_ZH.md；原件/checksum/ETA见checkpoints/20261021T101123Z/；命令work/jieruiz/73/CHECKPOINT_SUBMISSION_20261021.json。源码已用GitHub Git对象API逐SHA一致上传（原生Git两次连接超时）；后续报告发布以PR83/Issue73新回执为准，不宣称本地文件自动已远端。
+
+下一步沿用同目录/分支和最新Issue73状态，只读收集26项；收齐后加官方lm_eval0.4.8/parquet/YAML逐题oracle和同轮BF16配对统计，再验收最终结果。现有checkpoint的complete仅指封存合同齐全，不替代官方指标复算。Apple FP32两模型单列；当前Attention是原有限CTMC/all-K短题，不是8位p-bit新驱动。heartbeat llama2-7b仍ACTIVE/每日，提示已纠正PR75关闭状态，完整26项核验交付后删除。Projects缺read:project依旧待同步。
+
+以下为历史：
+
+# 最新：sigmoid输入8位驱动分析完成，后续分支待发布
+
+2026-10-21；jieruiz；Issue78；task/78-field-int8；独立目录tmp/ising-broadcast-issue78-20261021；base e24414b8f0ba47e8df46ba64475dbbf45568e2f4。PR80已经实际合并e24414b，原head0d73671；本次新成果后续PR号待创建，不向已关闭PR追加。
+
+CPU Slurm2630源757fb90完成，25项本地/远端合同通过。保存输入24层2688行的范围统计＋42行/三seed/S64理想轨迹的局部条件分布分析；不是新PPL、训练、RTL或PPA。完整sigmoid驱动a中位约−8.70，5/95%约−26.15/−4.70，极小约−97.86。负幅度8位h1/8局部TV均值1.262%；h1/16本批0.631%，但强制m14负尾钳位明显，因此优先h1/8、负范围−31.875～0，10位h1/16作对照。都是解析局部偏差，不是模型质量承诺。
+
+正式报告qwen/results/ising_broadcast_20261021/FIELD_INT8_ZH.md；原始JSON、manifest与work/jieruiz/78/FIELD_SOURCE/SUBMISSION/VERIFY.json含输入/源/配置/结果SHA。私有logits不上传，旧快照不变，模型默认不改，无本任务运行作业。SOT文章核查到局部场电流映射/偏移斜率校准，但未披露局部场INT8/PPL；论文INT8/4对照指输出概率。
+
+下一步在独立校准样本确定a/m范围，接模型PPL验证负幅度8位和10位，不重交2630。发布前核对远端，普通push新分支、创建PR并核验原件Git blob SHA；Projects沿用缺read:project待同步。当前科学成果本地已完成，尚待本次推送核验。
+
+以下是旧时点：
 # Issue55第四轮：4项成果PR已实际合并
 
 2026-10-21；负责人jieruiz；review/55-pr-round4；本轮稀疏目录tmp/pr55-review-20261021（报告合并后按恢复索引回收）。目标pbit-tlm-attention-details-20261016，科学集成e24414b8f0ba47e8df46ba64475dbbf45568e2f4。PR75/77/79/80已按单项原生门禁合并，精确head/base/merge和测试边界见work/jieruiz/55/round4/REVIEW_ZH.md、REVIEW.json、receipts。审计报告通过后续独立PR交付，报告PR不计入4项成果。

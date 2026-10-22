@@ -19,6 +19,7 @@ DEFAULT = dict(
     decision_cycles=1, commit_cycles=1, fair_capture_cycles=1,
     offset_feedback_cycles=1, offset_update_mode='per_candidate',
     burn_updates=0, winner_shift=0., rank_retry_cap=1024,
+    external_source_programming=False,
     max_proposals_per_sample=64, max_shift=24, record_events=False,
     # These are NOT zero-cost defaults. Unknown terms produce null totals.
     energy_pJ={}, idle_W=None, area={},
@@ -108,6 +109,12 @@ class Session:
                                     resource='sampler_fsm', **detail))
 
     def program(self, bits, name):
+        if self.c['external_source_programming']:
+            # The actual source frontend owns Q/256 conversion and threshold
+            # writes. Do not charge a second fictitious drive programming bus.
+            self.actions['delegated_drive_bits'] += bits
+            self.stage(name+'_delegated',0)
+            return
         self.stage(name, self.c['config_setup_cycles'] +
                    math.ceil(bits / self.c['config_bits_per_cycle']), 'config_bits', bits)
 
@@ -244,7 +251,7 @@ class ParallelSampler:
         self.cfg.update(copy.deepcopy(cfg or {}))
         c = self.cfg
         for k, v in c.items():
-            if k in ('energy_pJ', 'area', 'drive_step', 'idle_W', 'record_events', 'offset_update_mode'):
+            if k in ('energy_pJ', 'area', 'drive_step', 'idle_W', 'record_events', 'offset_update_mode','external_source_programming'):
                 continue
             if type(v) not in (int, float) or not math.isfinite(v) or v < 0:
                 raise ValueError(k)
@@ -258,6 +265,8 @@ class ParallelSampler:
                 raise ValueError(k)
         if type(c['record_events']) is not bool:
             raise ValueError('record_events')
+        if type(c['external_source_programming']) is not bool:
+            raise ValueError('external_source_programming')
         if c['offset_update_mode'] not in ('per_candidate', 'shared_scalar'):
             raise ValueError('offset update mode')
         if c['drive_step'] is not None:

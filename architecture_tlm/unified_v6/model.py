@@ -21,6 +21,7 @@ from winner_hold_tlm_v5 import WinnerHoldSampler
 from corrected_rejection_tlm_v5 import CorrectedRejectionSampler
 from sram_cacti_calibration_v1 import macro_lookup
 from .core import Ledger, Scheduler, Arena, SRAM, DRAM, AddressMap, LocalRandomService, ceildiv, sha
+from .rng_integrated import IntegratedRandomService, selector_parameters
 
 
 MODES = ('exact', 'pv', 'screen_exact', 'screen_pv', 'screen_rejection', 'screen_winner', 'screen_serial_ising')
@@ -134,7 +135,13 @@ class FullDecode:
         self.worklist_base = self.arena.allocate('GQA_sorted_V_worklists',max(16,worklist_bytes))
         self.kv_buffer = self.arena.allocate('K_V_tile', c['attention']['tile_tokens']*self.d*4)
         self.mem.regions = self.arena.regions
-        self.rng = LocalRandomService(c['random'], self.s, self.e, self.period)
+        self.integrated_rng=c['random'].get('backend','local_prng_interface')=='integrated_service'
+        if c['random'].get('backend','local_prng_interface') not in ('local_prng_interface','integrated_service'):
+            raise ValueError('unknown random backend')
+        self.rng = (IntegratedRandomService(c['random'],self.s,self.e,self.period,
+                    ffn=f['mode'],mode=mode,group=self.group,context=c['context_tokens']+c['decode_tokens']-1,
+                    candidates=self.row_capacity,seed=c['seed'])
+                    if self.integrated_rng else LocalRandomService(c['random'], self.s, self.e, self.period))
         self.layout = self.make_layout()
         self.dram = DRAM(c['dram'], self.layout, self.s, self.e)
         a = c['attention']
@@ -146,6 +153,7 @@ class FullDecode:
         for name, cls in [('screen_rejection', CorrectedRejectionSampler), ('screen_winner', WinnerHoldSampler)]:
             options = copy.deepcopy(c['sampler_v5'])
             options['clock_ns'] = self.period
+            if self.integrated_rng:options['external_source_programming']=True
             self.samplers[name] = cls(options, max(1, candidates))
         self.phases, self.attn_rows = [], []
         self.attn_stats = Counter()
@@ -278,12 +286,18 @@ class FullDecode:
                 loaded = self.dram.tensor(loaded, name, info['bytes']+(k*groups+j)*4, scale_n, kind='weight_scales')
                 loaded = self.mem.transfer(loaded, self.slots[slot], scale_n, True, 'weight_scales')
                 loaded = self.mem.transfer(loaded, self.slots[slot], scale_n, False, 'weight_scales')
-                begin = self.rng.request('ffn', max(t, loaded), T, 8-int(math.log2(K)), 1,
-                    'shared64_stratified', frame, replay=(j>0))
+                if self.integrated_rng:
+                    begin=self.rng.prepare_ffn(max(t,loaded),frame,j>0)
+                else:
+                    begin = self.rng.request('ffn', max(t, loaded), T, 8-int(math.log2(K)), 1,
+                        'shared64_stratified', frame, replay=(j>0))
                 resources = ['sc:'+str(i) for i in range(n)]
                 start = max([begin]+[self.s.free[r] for r in resources])
                 # B bins in parallel; exact bit-plane counts. No B*T serial pass.
                 duration = (f['startup_cycles']+T*f['sample_II_cycles']+f['drain_cycles'])*self.period
+                if self.integrated_rng:
+                    consumed=self.rng.stream_ffn(start+f['startup_cycles']*self.period,T,K,f['sample_II_cycles'])
+                    duration=max(duration,consumed-start)
                 t = self.s.reserve('SC_'+name.split('/')[-1], start, duration, resources, self.period,
                     tiles=n, samples=T, strata=K, bins=B, stationary_weight_bytes=data)
                 self.slot_free[slot] = t
@@ -309,6 +323,7 @@ class FullDecode:
                 if k:
                     t = self.mem.transfer(t, self.matrix_output+j*64*4, partial, False, 'SC_partial')
                 t = self.mem.transfer(t, self.matrix_output+j*64*4, partial, True, 'SC_partial')
+            if self.integrated_rng:t=self.rng.release_ffn(t)
         return t
 
     def kv_ranges(self, layer, kv, ids, value=False):
@@ -337,17 +352,31 @@ class FullDecode:
             t = self.mem.transfer(t, self.summary_base, size, False, 'summary_operand')
             t = self.vec(t, 'summary_mean', subs*self.d, nonlinear=subs)
             t = self.mac(t, 'screen_Q_summary', len(heads)*subs*self.d)
-            t = self.vec(t, 'screen_max4_normalize_sigmoid', len(heads)*blocks*12, len(heads)*(blocks+2))
-            t = self.rng.request('selector', t, 1, 8, len(heads)*blocks, 'independent_block_keep', (token,layer,kv))
-            self.e.action('selector_compare', len(heads)*blocks, 'screening')
+            t = self.vec(t, 'screen_max4_normalize_sigmoid', len(heads)*blocks*12,
+                len(heads)*(2 if self.integrated_rng else blocks+2))
+            if not self.integrated_rng:
+                t = self.rng.request('selector', t, 1, 8, len(heads)*blocks, 'independent_block_keep', (token,layer,kv))
+                self.e.action('selector_compare', len(heads)*blocks, 'screening')
+        source_info=[]
+        if screen and self.integrated_rng:
+            for h in heads:
+                logits=self.source.logits(token,layer,h,length)
+                bias,temperature=self.source.parameters(layer,h)
+                source_info.append(selector_parameters(logits,bias,temperature))
+            keep,t=self.rng.selector(t,source_info)
         rows = []
         for h in heads:
             logits = self.source.logits(token, layer, h, length)
             ids = list(range(length))
             if screen:
                 bias, temperature = self.source.parameters(layer, h)
-                _, info = selector(logits, bias, temperature,
-                    self.source.random(token, layer, h, 'selector'))
+                if self.integrated_rng:
+                    info=source_info[h-heads[0]]
+                    base=(h-heads[0])*blocks
+                    info['selected_blocks']=[i for i,b in enumerate(keep[base:base+blocks]) if b]
+                else:
+                    _, info = selector(logits, bias, temperature,
+                        self.source.random(token, layer, h, 'selector'))
                 if a['selection'] == 'fixed_budget':
                     chosen = budget_blocks(info['block_scores'], info['selected_blocks'], a['candidate_blocks'])
                 elif a['selection'] == 'variable':
@@ -414,9 +443,13 @@ class FullDecode:
             t = self.vec(t, 'CDF_prefix', n)
             # One systematic offset. Counts per CDF interval avoid S binary
             # searches; all multiplicities survive deduplication.
-            t = self.rng.request('pv', t, 1, 32, 1, 'systematic_PV_offset', (token,layer,row['head']))
+            if self.integrated_rng:
+                uniform,t=self.rng.systematic(t)
+            else:
+                t = self.rng.request('pv', t, 1, 32, 1, 'systematic_PV_offset', (token,layer,row['head']))
+                uniform=rng.random()
             p = softmax(row['logits'])
-            u = rng.random()/samples
+            u = uniform/samples
             out, total, j = [], p[0], 0
             for i in range(samples):
                 q = u+i/samples
@@ -439,7 +472,8 @@ class FullDecode:
             return t, out
         module = self.samplers[name]
         retained = samples*a['winner_update_multiplier'] if name == 'screen_winner' else samples
-        t = self.rng.request('parallel_sampler', t, 0, 1, n, 'biased_source_setup', (token,layer,row['head']))
+        if not self.integrated_rng:
+            t = self.rng.request('parallel_sampler', t, 0, 1, n, 'biased_source_setup', (token,layer,row['head']))
         # Explicit conservative stream sink: one index occupies one SRAM word,
         # whole source+FSM request owns sampler and common SRAM fabric. This
         # counts output backpressure without inventing a hidden address FIFO.
@@ -447,7 +481,8 @@ class FullDecode:
         ready = max([t]+[self.s.free[r] for r in resources])
         output_ns = self.mem.period+self.mem.spec['write_access_ns']+self.c['sram']['cdc_ns']
         out, receipt = module.request(ready, row['logits'], retained, rng,
-            (token,layer,row['head']), row['ids'], output_ns_per_index=output_ns)
+            (token,layer,row['head']), row['ids'], output_ns_per_index=output_ns,
+            **({'source':self.rng} if self.integrated_rng else {}))
         start, end = receipt['start_ns'], receipt['end_ns']
         t = self.s.reserve('parallel_'+name, start, end-start, resources, self.period,
             frames=receipt['actions'].get('proposal_frames',0), outputs=len(out))
@@ -457,15 +492,17 @@ class FullDecode:
         self.mem.traffic['write_physical_bytes'] += len(out)*self.mem.word
         self.mem.traffic['write_words'] += len(out)
         self.e.action('sram_write', len(out), 'SRAM_internal', self.mem.spec['write_internal_pJ'])
-        self.rng.embedded('parallel_sampler', receipt['actions'], receipt['actions'].get('source_slot_cycles',0))
+        if not self.integrated_rng:
+            self.rng.embedded('parallel_sampler', receipt['actions'], receipt['actions'].get('source_slot_cycles',0))
         for action, count in receipt['actions'].items():
-            if action not in ('biased_bit_draws','fair_bit_draws','source_slot_cycles'):
+            if action not in ('biased_bit_draws','fair_bit_draws','source_slot_cycles','delegated_drive_bits','timed_source_service_cycles'):
                 self.e.action('sampler_'+action, count, 'sampler')
         # A local digital PRNG p-bit backend still needs a response conversion
         # and comparators. They are pending costs, not free sigmoid operations.
-        response_updates = n*(1+receipt['actions'].get('offset_changes',0))
-        self.e.action('local_sigmoid_response_encode', response_updates, 'random_frontend')
-        self.e.action('local_probability_compare', receipt['actions'].get('biased_bit_draws',0), 'random_frontend')
+        if not self.integrated_rng:
+            response_updates = n*(1+receipt['actions'].get('offset_changes',0))
+            self.e.action('local_sigmoid_response_encode', response_updates, 'random_frontend')
+            self.e.action('local_probability_compare', receipt['actions'].get('biased_bit_draws',0), 'random_frontend')
         self.attn_stats['sampler_proposal_frames'] += receipt['actions'].get('proposal_frames',0)
         self.attn_stats['sampler_outputs'] += len(out)
         self.attn_stats['sampler_rejected'] += receipt['actions'].get('rejected_multi',0)+receipt['actions'].get('rejected_empty',0)
@@ -576,6 +613,7 @@ class FullDecode:
             token_times.append(t-begin)
         if abs(self.s.end()-t)>1e-6:
             raise AssertionError('unretired asynchronous resource at token end')
+        random_report=self.rng.finish(t) if self.integrated_rng else self.rng.report()
         dram = self.dram.finish(t)
         memory = self.mem.report(t)
         for state in ('digital_idle_ns','sc_idle_ns','control_interconnect_ns'):
@@ -598,7 +636,7 @@ class FullDecode:
             energy_J=dict(self.e.energy),unpriced_actions=dict(self.e.missing),actions=dict(self.e.actions),
             phase_ns=dict(totals),phases=self.phases,resource_busy_ns=dict(self.s.busy),
             wait_ns=dict(self.s.wait),events=self.s.events,event_count=self.s.count,
-            trace_truncated=self.s.count>len(self.s.events),random_interface=self.rng.report(),
+            trace_truncated=self.s.count>len(self.s.events),random_interface=random_report,
             SRAM={**memory,'layout':self.arena.regions,'reserved_peak_bytes':self.arena.peak},
             DRAM=dram,attention_activity=dict(self.attn_stats),row_receipts=self.attn_rows,
             FFN_activity=dict(self.metadata),input_provenance=self.source.provenance,
@@ -610,7 +648,8 @@ class FullDecode:
                 'stationary weight tile interface is an unverified macro contract, not free DFF replacement',
                 'FFN input-group-major full gu/SwiGLU/down barriers; not claimed optimal channel pipeline',
                 'one KV group at a time; no head/group parallelism inferred from array size',
-                'local source interface assumes enough lanes; backend/sigmoid resolution/physical cost pending Issue95',
+                ('actual finite Issue95 backend with q/256 response; complete random PPA still incomplete'
+                 if self.integrated_rng else 'local source interface assumes enough lanes; backend pending'),
                 'parallel sampling sink owns SRAM fabric for complete FSM; conservative blocking mapping',
                 'SRAM blocking descriptors and DRAM bounded windows, no arbitrary multi-DMA reorder',
                 'warm K summaries live in DRAM; context prefill/build cost excluded, steady updates included',

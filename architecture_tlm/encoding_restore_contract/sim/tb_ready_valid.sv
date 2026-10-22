@@ -39,18 +39,25 @@ module tb_ready_valid;
  integer previous_accept=-1,previous_stage=-1,ii_min=99999,ii_max=0;
  integer age,ii,steps,i,seed=7;reg [31:0] rng;
  reg held=0;reg [784:0] held_data;reg [31:0] held_tag;
+ reg producer_waiting=0;reg [2047:0] producer_data;
+ reg [15:0] producer_exp;reg [31:0] producer_scale,producer_tag;
  // Pre-edge samples define transfers. Post-edge samples define visibility.
  // Both are reported to prevent a one-edge ambiguity in cycle integration.
  always @(posedge clk)begin
   cycle=cycle+1;
   if(!rst_n)begin
-   flushed_total=flushed_total+(tail-head);head=0;tail=0;held=0;
+   flushed_total=flushed_total+(tail-head);head=0;tail=0;held=0;producer_waiting=0;
    previous_accept=-1;previous_stage=-1;
   end else begin
    if(tail-head!=reserved_count)$fatal(1,"reservation/scoreboard mismatch");
    if(reserved_count>DEPTH||queued_count>reserved_count)$fatal(1,"unbounded queue");
    if(held&&(!out_valid||data_out!==held_data||out_tag!==held_tag))
     $fatal(1,"output changed under backpressure");
+   if(producer_waiting&&(!in_valid||data_in!==producer_data||
+      exp_in!==producer_exp||scale_in!==producer_scale||in_tag!==producer_tag))
+    $fatal(1,"producer withdrew valid or changed payload before acceptance");
+   producer_waiting=in_valid&&!in_ready;
+   producer_data=data_in;producer_exp=exp_in;producer_scale=scale_in;producer_tag=in_tag;
    held=out_valid&&!out_ready;held_data=data_out;held_tag=out_tag;
    if(in_valid&&!in_ready)blocked_inputs=blocked_inputs+1;
    if(out_valid&&!out_ready)stalled_outputs=stalled_outputs+1;
@@ -101,7 +108,9 @@ module tb_ready_valid;
    for(n=0;n<count;n=n+1)begin
     @(negedge clk);stage=mode;
     rng=rng*32'd1664525+32'd1013904223;
-    in_valid=(mode==4)?0:((mode==2)?rng%100<67:1);
+    // Once offered, a transaction remains valid with the same payload until
+    // accepted (or reset). Random bubbles only occur between transactions.
+    in_valid=producer_waiting?1:((mode==4)?0:((mode==2)?rng%100<67:1));
     rng=rng*32'd1664525+32'd1013904223;
     out_ready=(mode==1)?0:((mode==2)?rng%100<53:1);
     data_in=vectors[tx_sequence%vector_count];

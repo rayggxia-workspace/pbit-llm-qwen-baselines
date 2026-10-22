@@ -31,6 +31,7 @@ def save(path, data):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=['create', 'verify'])
+    parser.add_argument('--no-save', action='store_true', help='Read-only final verification of a metadata commit')
     args = parser.parse_args()
     cred = subprocess.run(['git', 'credential', 'fill'],
         input='protocol=https\nhost=github.com\nusername=amlink1219\n\n',
@@ -85,7 +86,7 @@ def main():
         pr = api(repo_path+'/pulls/'+str(pr['number']))
     assert pr['head']['sha'] == head
     assert pr['base']['ref'] == BASE and pr['state'] == 'open' and pr['merged_at'] is None
-    changes = git('diff', '--name-only', '-z', BASE_SHA, 'HEAD').decode().split('\0')
+    changes = git('diff', '--name-only', '-z', BASE_SHA, head).decode().split('\0')
     changes = [p for p in changes if p]
     allowed = ('architecture_tlm/cycle_v1/', 'work/amlink1219/116/',
                'digital_circuit_simulation_registry/', 'progress/amlink1219/STATUS.md')
@@ -95,7 +96,7 @@ def main():
     assert not remote['truncated']
     remote_blobs = {item['path']:item['sha'] for item in remote['tree'] if item['type']=='blob'}
     local = {}
-    for entry in git('ls-tree', '-rz', 'HEAD').split(b'\0'):
+    for entry in git('ls-tree', '-rz', head).split(b'\0'):
         if not entry:
             continue
         metadata, path = entry.split(b'\t', 1)
@@ -107,14 +108,15 @@ def main():
     checks = []
     for path in selected:
         raw = base64.b64decode(api(repo_path+'/git/blobs/'+local[path])['content'])
-        original = git('show', 'HEAD:'+path)
+        original = git('show', head+':'+path)
         assert raw == original
         checks.append({'path':path, 'sha256':hashlib.sha256(raw).hexdigest(), 'git_blob':local[path]})
     old = json.loads((HERE/'PUBLICATION.json').read_text(encoding='utf-8'))
     old.update(status='published_verified_open_unmerged', verified_utc=datetime.now(timezone.utc).isoformat(),
         verified_head=head, verified_changed_git_objects=len(changes), raw_blob_checks=checks,
         legacy_changed_paths=[], push_urls=push_urls)
-    save(HERE/'PUBLICATION.json', old)
+    if not args.no_save:
+        save(HERE/'PUBLICATION.json', old)
     print(json.dumps({'pr':pr['number'], 'head':head, 'git_objects_verified':len(changes),
                       'raw_blobs_verified':len(checks), 'merged':False}))
 

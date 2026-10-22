@@ -21,4 +21,6 @@ python -m architecture_tlm.cycle_v1.v6_adapter --operator ffn --smoke --output /
 python -m architecture_tlm.cycle_v1.audit.run_audit --output /personal/new-audit
 ```
 
-发布阶段最初为prepared；实际远端ref、PR head、文件blob核验及看板结果以同目录 `PUBLICATION.json` 为准。不得自动合并或关闭Issue116。若无Projects权限，明确保留待同步，不把看板更新写成完成。
+基础版本ddd2e3406caac5075689f9388a041603e17d2b19已上传[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)，开放待审、未合并。438个任务Git对象和8项原始blob远端核验通过，实际回执见同目录 `PUBLICATION.json`；后续发布元数据提交不改变该科学版本。Projects实测缺read:project，记录在PROJECTS_CHECK.json，待有权限者同步，不修改权限或自动关闭Issue。
+
+当前继续在独立cycle23-gqa工作树实现有界GQA共享K/V，cycle_ops另以Slurm抓取7query/1KVhead真实小context输入；截止本交接更新时尚未作为完成结果。该增量必须单独数学/容量/逐拍与事件审查后才能加入PR；不能改写旧v5矩阵来源与回执。

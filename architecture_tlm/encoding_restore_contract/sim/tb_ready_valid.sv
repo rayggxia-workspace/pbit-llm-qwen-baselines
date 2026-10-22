@@ -34,6 +34,7 @@ module tb_ready_valid;
  integer cycle=0,stage=-1,head=0,tail=0,tx_sequence=0;
  integer accepted_total=0,received_total=0,flushed_total=0;
  integer blocked_inputs=0,stalled_outputs=0,max_reserved=0,max_queued=0;
+ integer simultaneous_transfer_accept=0,input_bubbles=0;
  integer visible_min=99999,visible_max=0,transfer_min=99999,transfer_max=0;
  integer previous_accept=-1,previous_stage=-1,ii_min=99999,ii_max=0;
  integer age,ii,steps,i,seed=7;reg [31:0] rng;
@@ -53,6 +54,9 @@ module tb_ready_valid;
    held=out_valid&&!out_ready;held_data=data_out;held_tag=out_tag;
    if(in_valid&&!in_ready)blocked_inputs=blocked_inputs+1;
    if(out_valid&&!out_ready)stalled_outputs=stalled_outputs+1;
+   if(stage==2&&!in_valid)input_bubbles=input_bubbles+1;
+   if(in_valid&&in_ready&&out_valid&&out_ready)
+    simultaneous_transfer_accept=simultaneous_transfer_accept+1;
    if(in_valid&&in_ready)begin
     expected[tail]=golden[tx_sequence%vector_count];
     expected_tags[tail]=tx_sequence;accepted_at[tail]=cycle;seen[tail]=0;
@@ -124,13 +128,19 @@ module tb_ready_valid;
   if(reserved_count!=DEPTH||!out_valid)$fatal(1,"queue did not saturate");
   rst_n=0;in_valid=0;out_ready=0; // Flush accepted work while backpressured.
   repeat(2)@(negedge clk);rst_n=1;
+  drive(5,1);
+  @(negedge clk);
+  if(reserved_count!=1||queued_count!=0)$fatal(1,"missing in-flight reset setup");
+  rst_n=0;in_valid=0;out_ready=0; // Also flush an unfinished core operation.
+  repeat(2)@(negedge clk);rst_n=1;
   drive(2,240); // Independent bubbles and output stalls.
   drive(3,96); // Recover full throughput after stalls and reset.
   drive(4,DEPTH+8); // Drain.
   @(negedge clk);
   if(head!=tail||reserved_count||out_valid)$fatal(1,"drain did not finish");
   if(accepted_total!=received_total+flushed_total)$fatal(1,"lost or duplicate operation");
-  if(flushed_total!=DEPTH||blocked_inputs==0||stalled_outputs==0)
+  if(flushed_total!=DEPTH+1||blocked_inputs==0||stalled_outputs==0||
+     input_bubbles==0||simultaneous_transfer_accept==0)
    $fatal(1,"missing backpressure/reset coverage");
   if(visible_min!=VISIBLE_LATENCY||transfer_min!=VISIBLE_LATENCY+1)
    $fatal(1,"unexpected no-stall latency");
@@ -138,9 +148,10 @@ module tb_ready_valid;
    $fatal(1,"full-rate capacity has an avoidable II bubble");
   if(DEPTH==1&&(ii_min!=VISIBLE_LATENCY+1||ii_max!=VISIBLE_LATENCY+1))
    $fatal(1,"single-slot II differs from reservation lifetime");
-  $display("PASS kind=%0d depth=%0d seed=%0d accepted=%0d received=%0d flushed=%0d blocked=%0d stalled=%0d max_reserved=%0d max_queued=%0d visible_min=%0d visible_max=%0d transfer_min=%0d transfer_max=%0d ii_min=%0d ii_max=%0d",
+  $display("PASS kind=%0d depth=%0d seed=%0d accepted=%0d received=%0d flushed=%0d blocked=%0d stalled=%0d max_reserved=%0d max_queued=%0d visible_min=%0d visible_max=%0d transfer_min=%0d transfer_max=%0d ii_min=%0d ii_max=%0d simultaneous=%0d input_bubbles=%0d",
    KIND,DEPTH,seed,accepted_total,received_total,flushed_total,blocked_inputs,stalled_outputs,
-   max_reserved,max_queued,visible_min,visible_max,transfer_min,transfer_max,ii_min,ii_max);
+   max_reserved,max_queued,visible_min,visible_max,transfer_min,transfer_max,ii_min,ii_max,
+   simultaneous_transfer_accept,input_bubbles);
   $finish;
  end
  initial begin #200000;$fatal(1,"timeout");end

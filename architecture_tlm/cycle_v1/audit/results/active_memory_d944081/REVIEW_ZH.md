@@ -11,7 +11,7 @@
 检查器 `audit/verify_active_memory_candidate.py` 在自身进程内加载公开源码，临时替换 GQA 工厂的 Kernel 类；没有修改 root 文件。37 个既有独立审查方法全部通过，合计运行 5.914 秒：
 
 - 17 个 GQA 方法中，47 个实际构图场景分别运行原 Kernel cycle/event 和候选 cycle/event，共 188 次执行。每个场景四方比较完整 `equivalence_payload()` 和整个 GQA state，检查结束时 live-memory 表清空。
-- 场景包括 32 个随机稀疏图、非连续/无序候选、重复采样、混合 exact/PV、native winner/rejection、slot/window/operand 为 1、不同返回顺序、有限带宽、延迟 histogram 屏障、地址和容量拒绝、真实字节污染检测。继承独立标量数值断言，不把候选自己的结果当数学 oracle。
+- 四方场景包括 32 个随机稀疏图、非连续/无序候选、重复采样、混合 exact/PV、native PV、replay winner/rejection、slot/window/operand 为 1、不同返回顺序、有限带宽和延迟 histogram 屏障。继承独立标量数值断言，不把候选自己的结果当数学 oracle。套件中另有直接调用工厂的地址/容量拒绝、失败采样与字节污染检查，它们保持原 Kernel 路径；不能计作候选四方覆盖。
 - 20 个 core 方法在候选上通过独立手算时序、随机 DAG、随机字节内存与 native clock-process 断言；这些方法未全部另做原 Kernel 对照，不能与上面的四方场景混称。
 - 另加 1 个动态内存图，四方执行 4 次：先读后写、写后读、连续写、callback 动态增加请求、尚未注册的 producer、部分依赖完成与 CDC。读回初始 `ABCD` 和最终 `WXYZ`，完整执行 payload 四方相同。
 

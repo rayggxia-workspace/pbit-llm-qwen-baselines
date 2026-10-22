@@ -16,7 +16,7 @@
 
 实验清单不适用：本轮未运行模型、训练、服务器、Slurm、GPU、TLM或EDA；新运行模型/数据revision、种子、精度、运行环境/完整推理命令均不适用。提议JSON中待冻结字段保留null。旧实验仅按已验证manifest索引，不重复推理。
 
-发布：以PUBLICATION.json和远端PR为准；本交接创建时本地完成待发布。Issue保持open直至PR审核验收；不把创建PR写为合并。Projects权限/看板同步未核实，待同步。没有给其他任务发送消息。
+发布：源提交618b85ac59e4823497dc8ae7083aefc75247b7f4已上传workspace；PR100开放待审未合并，9份来源文件远端UTF-8内容逐一读回一致，源tree64eb1c73459cfb0db5b796f37238e3f8b308cbd3与本地index相同。PUBLICATION.json记录回执，元数据追加不改变四份研究文档。Issue保持open直至PR审核验收。Projects权限/看板同步未核实，待同步。没有给其他任务发送消息。
 
 并发边界：Issue37/78/95/96仅只读；95的PR97已开放。本研究不改系统实现、活动默认、随机源或实验输入。个人STATUS只写rayggxia。后续若97先合并导致STATUS冲突，保留两项任务状态按最新远端刷新，不覆盖95成果。
 

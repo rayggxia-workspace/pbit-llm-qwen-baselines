@@ -44,6 +44,8 @@ python -m architecture_tlm.cycle_v1.v6_adapter --operator ffn \
 
 五例都完成新 cycle/event 全 payload 一致性与数值检查，六项映射/拒绝测试通过：
 
+最终回执位于 `results/v6_adapter_20261023_v2/`，固定执行提交 `d0ccc5e`，已包含 `414e1aa` 的恢复舍入profile与 `e2695e2` 的有序V消费者prefetch信用死锁修复。先前 `results/v6_adapter_20261023/` 仅保留为历史输入/执行记录；最终报告引用v2。
+
 | 算子 | 旧 v6 operator ns | 新 cycle ns |
 |---|---:|---:|
 | FFN B4/T32/K32，64→64→64 | 6890.5 | 11962.5 |

@@ -18,6 +18,52 @@ def check(condition,label):
     if not condition: raise AssertionError(label)
 
 
+REGISTRY_ALLOWED_PATHS=frozenset({
+    "digital_circuit_simulation_registry/00_总览.md",
+    "digital_circuit_simulation_registry/01_结果地址索引.md",
+    "digital_circuit_simulation_registry/README_ZH.md",
+    "digital_circuit_simulation_registry/artifact_locations.csv",
+    "digital_circuit_simulation_registry/catalog.json",
+    "digital_circuit_simulation_registry/records/cycle-116-gqa-conditional-model.json",
+    "digital_circuit_simulation_registry/runs.csv",
+})
+
+
+def git_paths(blob):
+    """Decode Git -z output, never core.quotePath-escaped presentation text."""
+    check(not blob or blob.endswith(b"\0"),"Git path list is not NUL terminated")
+    return [name.decode("utf-8") for name in blob.split(b"\0") if name]
+
+
+def registry_record_blobs(blob):
+    records={}
+    for entry in git_paths(blob):
+        metadata,name=entry.split("\t",1)
+        mode,kind,oid=metadata.split(" ")
+        check(kind=="blob" and mode=="100644","registry record is not a regular file")
+        check(name not in records,"duplicate registry record")
+        records[name]=oid
+    return records
+
+
+def publication_scope(git,base,head):
+    changed=git_paths(git("diff","--name-only","-z",base,head))
+    prefixes=("architecture_tlm/cycle_v1/","work/amlink1219/116/","progress/amlink1219/")
+    check(all(n.startswith(prefixes) or n in REGISTRY_ALLOWED_PATHS for n in changed),
+          "changed another task/member path")
+    record_dir="digital_circuit_simulation_registry/records/"
+    before=registry_record_blobs(git("ls-tree","-r","-z",base,"--",record_dir))
+    after=registry_record_blobs(git("ls-tree","-r","-z",head,"--",record_dir))
+    check(len(before)==37,"unexpected baseline registry record count")
+    # Identical immutable Git blob IDs establish byte identity. Do not allow
+    # removal, renaming or mutation of any prior record through index updates.
+    check(all(after.get(name)==oid for name,oid in before.items()),
+          "historical registry record removed or bytes changed")
+    new_record=record_dir+"cycle-116-gqa-conditional-model.json"
+    check(set(after)-set(before)<= {new_record},"unrelated new registry record")
+    return changed,prefixes,before
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--root",type=Path,required=True)
@@ -28,10 +74,8 @@ def main():
     root=args.root.resolve()
     def git(*parts): return subprocess.check_output(["git",*parts],cwd=root)
     head=git("rev-parse","HEAD").decode().strip()
-    changed=git("diff","--name-only",args.base,head).decode().splitlines()
-    prefixes=("architecture_tlm/cycle_v1/","work/amlink1219/116/","progress/amlink1219/")
-    check(all(n.startswith(prefixes) for n in changed),"changed another task/member path")
-    tracked=git("ls-tree","-r","--name-only",head).decode().splitlines()
+    changed,prefixes,historical_records=publication_scope(git,args.base,head)
+    tracked=git_paths(git("ls-tree","-r","--name-only","-z",head))
     forbidden_suffix=(".safetensors",".pt",".pth",".ckpt",".bin",".npy",".npz")
     check(not any(n.lower().endswith(forbidden_suffix) for n in changed),"new raw/model tensor file")
     check(not any("private_fixture" in n.lower() or "qwen_layer12_gqa7_context64.json" in n for n in tracked),"tracked private real fixture")
@@ -91,6 +135,9 @@ def main():
     check(event["mode_equivalence"]["checked"] is False and event["mode_equivalence"]["equal"] is None,"event-only overclaims comparison")
     report=dict(timestamp_utc=datetime.now(timezone.utc).isoformat(),git_head=head,base=args.base,passed=True,
         changed_paths=len(changed),scope_paths=list(prefixes),other_member_paths_changed=False,
+        authorized_registry_paths=sorted(REGISTRY_ALLOWED_PATHS),
+        historical_registry_records_unchanged=len(historical_records),
+        historical_registry_record_blob_ids=historical_records,
         private_real_fixture_tracked=False,high_specificity_credential_signatures=False,
         manifests=manifest_reports,synthetic_cases=cases,archive_members=archive_members,event_only_scope_correct=True,
         limits="No simulation rerun. Public synthetic fixture reconstructed independently and actual addressed read hashes checked. Real private payload was not opened, downloaded or copied; separately authenticated public receipts establish server execution.")

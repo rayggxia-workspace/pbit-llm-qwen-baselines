@@ -14,6 +14,6 @@
 
 边界：batch1暖KV/摘要decode，不含prefill/TTFT；默认Link未跑新DRAMSys；合成logits不是真实模型张量。有限本地源吞吐、真实后端、物理PPA及新组合PPL仍待表征；完整能量/面积/quality_reference_ppl保持null，priced_subtotal不能用于总能效排名。W8数字FP32速率、宏驻留权重、编码/偏置细节和更细流水均为显式假设/后续验证项，不能当芯片已实现。
 
-与5dbd9e39仅memory与本人jieruiz STATUS发生冲突，保留双方有序历史；PR99其余120个原blob全部相等，其他成员状态不改。原head通过本人分支正常合并，未推送/改写源分支。最终GitHub合并状态和目录归档回收看Issue55最终回执。
+与5dbd9e39仅memory与本人jieruiz STATUS发生冲突，保留双方有序历史；PR99其余122个原blob全部相等，其他成员状态不改。原head通过本人分支正常合并，未推送/改写源分支。最终GitHub合并状态和目录归档回收看Issue55最终回执。
 
 a7a48297相对已测9621e1db仅8份交付元数据变化；执行源码、配置、测试和52结果blob均未变，未重复计算。原先四项及其审核冻结报告仍在PR101/round6，当前五项均已审核完成。没有新的GPU、Slurm、PPL、训练或DC/PT作业。

@@ -351,6 +351,7 @@ class NativeQwen3Tests(unittest.TestCase):
         self.assertEqual(x['nll_sum'], y['nll_sum'])
 
     def test_native_dynamic_cache_document_branching_and_bf16_shape_boundary(self):
+        from .core import SparQConfig
         for dtype in (torch.float32, torch.bfloat16):
             m = self.fresh()
             for parameter in m.parameters():
@@ -369,6 +370,17 @@ class NativeQwen3Tests(unittest.TestCase):
                     self.assertLessEqual(per_token, .02 if dtype == torch.bfloat16 else 2e-5)
                 self.assertEqual(max(range(len(a['choices'])), key=lambda i: a['choices'][i]['logprob']),
                                  max(range(len(b['choices'])), key=lambda i: b['choices'][i]['logprob']))
+            sparse_config = SparQConfig(r=8, k_total=3, local_total=1)
+            sparse_serial = evaluate_tasks(m, rows, mode='sparq', config=sparse_config, choice_batch=1)
+            sparse_batched = evaluate_tasks_batched(m, rows, mode='sparq', config=sparse_config)
+            self.assertGreater(sum(layer['diagnostics']['logical_counts.sparse_groups']
+                                   for layer in sparse_batched['execution_audit']['replacement']['layers'].values()), 0)
+            self.assertEqual(sparse_serial['execution_audit']['tokens_per_layer'],
+                             sparse_batched['execution_audit']['tokens_per_layer'])
+            for a, b in zip(sparse_serial['documents'], sparse_batched['documents']):
+                for p, q in zip(a['choices'], b['choices']):
+                    difference = abs(p['logprob'] - q['logprob']) / p['tokens']
+                    self.assertLessEqual(difference, .02 if dtype == torch.bfloat16 else 2e-5)
 
 
 if __name__ == '__main__':

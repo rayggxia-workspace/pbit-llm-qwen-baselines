@@ -1,3 +1,9 @@
+## 2026-10-23 Issue158：切换Qwen3-4B非Base
+
+用户明确改用Qwen/Qwen3-4B，不使用Base。jieruiz/task/158-qwen3-4b-posttrained，PR160 draft/open未合并，base PR147@357db588；独立tmp/qwen3-4b-posttrained-issue158-20261023。官方revision1cfa9a7208912126459214e8b04321603b3df60c，经hf-mirror下载；只换4B权重，保留原动态W8/B4/T32/K32共享64、max4/64token/8块、拒绝128和赢家1024参数，不引入Issue150固定幅度。原文teacher-forced PPL不加聊天模板/不生成thinking；新token绑定和TRAIN校准独立生成，Base结果不替代新基线。
+
+执行源e174d91cfcdb318da6481884bbf17ff37c1e3797冻结，44源SHA/5本地及提取快照合同通过、17发布文件GitHub原字节验证通过。新ROOT /home/Hongjie_Zeng/projects/pbit-qwen3-stochastic-nonbase-20261023-issue158；CPU2869基础2覆盖+tiny重载通过，下载新模型中；GPU2870 afterok等待，仅1GPU。将先新模型完整BF162048/1024及精确复跑，再13项4096目标后缀（BF16+4方案三seed）；没有新PPL、没有完整概率WT2。包SHA7d840ad5f5b09bad8419c73d88b1e23499e02f7f62f90f81ece789c820120f65。旧Base快照/环境不改、不重交健康任务；未新建定时检查。SparQ是amlink1219的Issue157，分工评论6367526124已登记，本任务只提供只读模型manifest接口。恢复先读work/jieruiz/158/HANDOFF.md及最新2869/2870；独立新模型原件核验，不能直接用旧Base硬编码验证器。Projects权限待同步。
+
 ## 2026-10-23 Issue144：Qwen3最新概率架构迁移已启动
 
 22:00 CST实际发布闭环：科学结果b8cc1daaec9bb46d992fb867dc05c117d1e4bd6f已推PR147，177个GitHub文件逐blob原字节核验和77服务器原件Git blob校验通过；PR147 ready/open未合并，Issue144清单更新、保持open待审。26/26全完成，无在跑作业；应用实际删除heartbeat qwen3，deleteStatus=deleted。回执work/jieruiz/144/FINAL_PUBLICATION.json。下一步PR审阅，完整WT2仍未提交；其他任务条目保留。下方准备发布/运行中为历史。

@@ -1,3 +1,7 @@
+# Issue144：Qwen3概率架构迁移（2026-10-23）
+
+负责人jieruiz；task/144-qwen3-stochastic；base task/136-qwen3-bf16@0829b9c，依赖PR137/Issue141固定执行7a286ec。独立稀疏tmp/qwen3-stochastic-issue144-20261023。已实现Qwen3 QK-Norm/GQA/非等Q投影适配、固定W8 B4/T32/K32 FFN、max4+拒绝128/赢家1024、全层计分审计、TRAIN独立标量校准、13配置每模型4096目标三种子后缀先导。仅语法与diff检查通过，CPU/GPU门槛和PPL尚待Slurm，不能称结果完成。个人新ROOT /home/Hongjie_Zeng/projects/pbit-qwen3-stochastic-20261023-issue144；既有权重/venv只读复用。正式实现qwen3/stochastic；HANDOFF work/jieruiz/144/HANDOFF.md。下一步冻结源、CPU预检通过再GPU；PR未建、未合并，Projects缺read:project待有权限成员同步。
+
 # Issue136：Qwen3-1.7B/4B Base BF16基线已提交（2026-10-23）
 
 最终发布：科学结果60d6947已上传，35远端文件原字节核对和11已提交原件SHA通过；PR137实际ready/open、未合并，Issue136待评审，定时qwen3已实际删除。FINAL_PUBLICATION.json和Issue评论6364341645为回执；不再等待结果或重复提交。

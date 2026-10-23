@@ -263,6 +263,45 @@ class ScoringTests(unittest.TestCase):
             context.assert_called_once_with(torch.device('cuda:3'))
             seed.assert_called_once_with(1234)
 
+    def test_twenty_layer_cached_oracle_replay_permutation_and_all_layer_coverage(self):
+        layers = score.TWENTY_LAYER_INDICES
+        model = fresh_model(layers)
+        case = variant(layers)
+        before = torch.get_rng_state().clone()
+        expected = independent_cached_reference(model, documents(), case)
+        result = score.evaluate_tasks(model, documents(), case)
+        self.assertEqual({r['id']: r['choices'] for r in result['documents']}, expected)
+        self.assertTrue(torch.equal(before, torch.get_rng_state()))
+        replay = score.evaluate_tasks(model, documents(), case)
+        self.assertEqual(result['documents'], replay['documents'])
+        reversed_docs = copy.deepcopy(documents())
+        for row in reversed_docs:
+            row['choices_ids'].reverse()
+        permuted = score.evaluate_tasks(model, reversed_docs, case)
+        for left, right in zip(result['documents'], permuted['documents']):
+            self.assertEqual(left['choices'], list(reversed(right['choices'])))
+        audit = result['execution_audit']
+        self.assertEqual(audit['replaced_layers'], list(layers))
+        for phase in ('prefill', 'decode'):
+            count = audit['actual_' + phase + '_calls']
+            self.assertGreater(count, 0)
+            self.assertEqual(audit['decoder_' + phase + '_calls_per_layer'], [count] * 24)
+            self.assertEqual(audit['ffn_' + phase + '_calls_per_layer'], [count] * 24)
+            self.assertEqual(audit['replaced_' + phase + '_calls'], {str(i): count for i in layers})
+        self.assertTrue(audit['every_scored_target_used_24_decoder_ffn_layers'])
+
+    def test_twenty_layer_variant_and_guard_reject_arbitrary_topologies(self):
+        for indices in (list(range(20)), list(score.TWENTY_LAYER_INDICES[:-1]),
+                        [*score.TWENTY_LAYER_INDICES[:-1], 1]):
+            with self.subTest(indices=indices):
+                with self.assertRaises(ValueError):
+                    score._variant(variant(indices))
+                with self.assertRaises(ValueError):
+                    score.ModelGuard(fresh_model(score.TWENTY_LAYER_INDICES), variant(indices))
+        # Input ordering is irrelevant; the exact set is mandatory.
+        self.assertEqual(score._variant(variant(tuple(reversed(score.TWENTY_LAYER_INDICES))))['layers'],
+                         list(score.TWENTY_LAYER_INDICES))
+
 
 class LoaderTests(unittest.TestCase):
     def setUp(self):
@@ -367,6 +406,31 @@ class LoaderTests(unittest.TestCase):
         self.assertEqual(records[0]['phase'], 'joint_end_to_end_distillation')
         self.assertEqual(records[0]['step'], 1000)
         self.assertEqual(model.model.layers[6].mlp.config.coding, 'bipolar')
+
+    def test_twenty_checkpoint_strict_install_exact_layer_coverage(self):
+        entries = []
+        for index in score.TWENTY_LAYER_INDICES:
+            config = FullPathPBitFFNConfig(input_size=4, hidden_sizes=(6,), output_size=4,
+                                          input_temperature=.25)
+            student = FullPathPBitFFN(config)
+            path = self.root / f'twenty_layer{index}.pt'
+            torch.save(dict(student_type='full_path_bipolar_pdnn_v1', student_config=asdict(config),
+                            student_state_dict=student.state_dict(), training_args=dict(layer=index)), path)
+            entries.append(dict(layer=index, path=str(path), bytes=path.stat().st_size,
+                                sha256=score.file_sha256(path)))
+        model, records = self.load(list(reversed(entries)))
+        self.assertEqual([r['layer'] for r in records], list(score.TWENTY_LAYER_INDICES))
+        actual = [i for i, layer in enumerate(model.model.layers) if type(layer.mlp) is FullPathPBitFFN]
+        self.assertEqual(actual, list(score.TWENTY_LAYER_INDICES))
+        self.assertEqual([i for i, layer in enumerate(model.model.layers)
+                          if type(layer.mlp).__name__ == 'Qwen2MLP'], [0, 2, 3, 23])
+        score.ModelGuard(model, variant(score.TWENTY_LAYER_INDICES)).verify()
+
+    def test_twenty_checkpoint_loader_rejects_wrong_set_before_reading_files(self):
+        entries = [dict(layer=i, path=str(self.root / 'must_not_open.pt'), bytes=1, sha256='0' * 64)
+                   for i in range(20)]
+        with self.assertRaisesRegex(ValueError, 'twenty-layer topology'):
+            self.load(entries)
 
 
 if __name__ == '__main__':

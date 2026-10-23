@@ -1,9 +1,10 @@
 from pathlib import Path
-import importlib.util,json,base64,hashlib
+import importlib.util,json,base64,hashlib,subprocess
 P=Path(__file__).resolve().parent;R=P.parents[2]
 s=importlib.util.spec_from_file_location('g','C:/Users/86134/Documents/a_P_BIT/tmp/tlm-digital-issue107-20261022/work/jieruiz/107/publish.py')
 g=importlib.util.module_from_spec(s);s.loader.exec_module(g)
 g.ROOT=R;g.BRANCH='task/129-two-page-brief';g.BASE='6966739a5223680888bf0315f7bb4f73423a1ae6'
+g.git=lambda *args:subprocess.check_output(['git','-c','core.quotePath=false',*args],cwd=R)
 g.allowed=lambda p:p.startswith(('architecture_tlm/memory_savings_20261023/','work/jieruiz/129/')) or p=='progress/jieruiz/STATUS.md'
 assert g.api('GET','/user')['login']=='jieruiz'
 out=g.publish()

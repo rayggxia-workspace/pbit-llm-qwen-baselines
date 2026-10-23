@@ -211,6 +211,16 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
 下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。
 
+---
+
+# Issue151：20层P-DNN准确率准备（2026-10-23）
+
+负责人amlink1219，独立`task/151-pdnn20-task-accuracy`／`workspace_projects/pa20`，依赖PR149@86eb22e1；不编辑pa145或其冻结收尾helper。用户确认20层权重在师弟处、由用户获取，本轮先准备其他；没有提交20层GPU，没有新20层准确率。
+
+已准备原joint20 step1000的20文件大小／SHA与交接文档，替换1、4–22，保留0/2/3/23；N4、三seed、同PIQA1838／ARC-Easy2376／固定HellaSwag1000，共9候选case，严格复用145三项匹配新BF16。22项CPU机制测试通过=18原2/4回归＋4个20层拓扑／真实tiny strict安装／独立oracle／RNG检查，未把tiny当真实模型。
+
+正式入口`experiments/pdnn20_task_accuracy_20261023/README_ZH.md`及CHECKPOINT_REQUEST_ZH.md；结果状态`qwen/results/pdnn20_task_accuracy_20261023/README_ZH.md`；接续`work/amlink1219/151/HANDOFF.md`。CPU inspect-only仅PREPARATION_ONLY，正式checkpoint／baseline全齐才PREFLIGHT_READY，真实GPU六smoke后SMOKE_READY、9完整case后才汇总。准备阶段服务器CPU预检与PR发布回执待补；权重未提供是实际待办，不重训或借读他人目录。
+
 ## PR42 原始交付状态（历史时点）
 
 源head：ee47cb86c75f8a2bc049f25507f785f087ed671d。以下保留该任务新增的历史状态；最新合并状态以Issue55/相应Issue和GitHub为准。

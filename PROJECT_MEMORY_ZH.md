@@ -1092,6 +1092,14 @@ jieruiz，task/107-tlm-cycle-digital-rtl，独立tmp/tlm-digital-issue107-202610
 
 LLM对话先前独立压缩10网表约2.713GB及回收1个Issue19回执约0.188GB，均不包含在上述1.183GB；该对话继续新增清理，Issue68保持open。模型、唯一原件、主对象库、进行中任务和其他成员目录保留。恢复先读索引，不因工作目录已移除而重复实验。发布/合并状态查Issue68最新回执；本条随review/68-cleanup-receipt-20261023交付。
 
+## 2026-10-23 Issue151：20层P-DNN任务准确率准备
+
+用户要求在原两层／四层之外补20层的PIQA、ARC-Easy、HellaSwag，并确认原权重应在师弟处、由用户获取，本轮先准备其他。独立Issue151、task/151-pdnn20-task-accuracy、工作树pa20，依赖PR149发布的86eb22e1；不编辑运行中的145工作树／冻结收尾helper，不恢复暂停116/123。
+
+目标固定原串联bipolar FullPath v1 joint20 step1000，层1及4–22，保留原0/2/3/23；N4完整路径、BF16连续权重／读出、原SDPA。20原文件总697875430B，逐SHA与交接请求在experiments/pdnn20_task_accuracy_20261023/。严格20拓扑扩展22项CPU通过，含18项2/4旧回归；tiny机制检查不当作真实模型。三任务同Issue145官方0-shot协议，共9候选case，匹配3个新完整BF16必须经SHA／覆盖核验。
+
+当前未收到真实20层权重，无20层GPU作业或新准确率。CPU inspect-only仅准备记录；只有权重／数据／基线／源码严格核验后才CPU READY，真实GPU smoke通过后才正式run。正式准备入口同目录README_ZH.md，结果状态qwen/results/pdnn20_task_accuracy_20261023/，实际CPU／PR回执与下一步见work/amlink1219/151/HANDOFF.md。所有运行状态执行前重新查，不把旧PPL48.910814或准备成功写成新的任务准确率。
+
 ## 2026-10-23 Issue55第八轮审核快照
 
 PR119/120/122/125/126/127/130限定阶段成果通过；新#130为存储总结。独立组合359测试注册、358通过、1个Windows符号链接场景跳过；已复核208资源结果、48数据流轨迹及真实GQA公开回执。74份GQA源码有公开同字节祖先映射，修复旧未公开commit复核入口。台账取45记录/964配置行并集，不重复计新实验。详见work/jieruiz/55/round8/REVIEW_ZH.md；实际远端合并以Issue55收尾回执为准。Issue116/123暂停不变；全尺寸2783取消未验收，DC/PT未执行。下一项工艺工作是#125编码恢复SS/T32最小PPA，与Issue107八模块PPA包分开计费。

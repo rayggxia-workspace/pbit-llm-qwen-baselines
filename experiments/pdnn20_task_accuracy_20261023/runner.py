@@ -338,6 +338,10 @@ def reference_inputs(a, current_model):
             'Issue145 reference run/version/protocol differs')
     checked_artifact(meta['config'], REFERENCE_PROJECT)
     require(meta['model'] == current_model, 'current model/tokenizer differs from reference BF16')
+    current_environment = environment()
+    require(all(meta['environment'].get(key) == current_environment[key]
+                for key in ('python', 'torch', 'transformers', 'lm_eval', 'cuda')),
+            'execution runtime differs from the matching Issue145 BF16 environment')
     require(meta['harness_sources'] == harness_sources(), 'installed official Harness sources differ from Issue145')
     tasks, identity = load_tasks(a.task_data)
     require(identity == meta['tasks'], 'official task/parquet identities differ from Issue145')

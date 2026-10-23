@@ -3,6 +3,11 @@
 负责人jieruiz，task/138-trainable-samplers，基线6966739，源码b6e3d034。新增experiments/trainable_pbit_attention；真实Bernoulli提议、均匀仲裁/保持、2^-m全零校正和自适应拒绝；全部轨迹score-function训练，有偏Softmax代理显式分离，量化禁冒称精确梯度。22/22合成数值测试，81条有限赢家轨迹/梯度穷举、三seed分布对照和6个小训练通过；无Qwen/Llama新PPL、CUDA、物理随机源或RTL/PPA。训练源码/配置/结果SHA见results/VALIDATION.json，交接work/jieruiz/138/HANDOFF.md。科学交付42beb199已推送PR142（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/142），14文件远端原字节核验通过；PR待审、未合并，回执PUBLICATION.json/REMOTE_VERIFY.json；未改正式TLM/硬件默认，后续真实LLM集成和梯度方差/内存仍待验证。复用现有本地Torch2.4.1 CPU，无新服务器作业。
 
 工作目录：tmp/sampler-training-issue138-20261023；PR base pbit-tlm-attention-details-20261016；范围/验证已上传PR142，Issue138已同步；Projects缺read:project，待维护者同步看板。
+2026-10-23：两页说明已推送 PR132（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/132），待审未合并；科学交付125560a，远端Word与正文原字节已核验。详见work/jieruiz/129/BRIEF_PUBLICATION.json。
+
+## 2026-10-23 Issue129 两页通俗说明
+
+按用户要求补充功耗面积节省机制、速度控制与剩余验证，面向非专业听众，省略内部结构细节。正式文件 architecture_tlm/memory_savings_20261023/概率计算的能耗面积与速度_两页说明.docx；两页，Word导出及逐页PNG检查通过。原7页报告保留，无新实验，不恢复暂停任务。分支 task/129-two-page-brief，复用 tmp/memory-savings-issue129-20261023；上传/PR以 BRIEF_PUBLICATION.json 为准，合并前不关闭Issue129。
 
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 

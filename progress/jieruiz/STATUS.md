@@ -1,6 +1,6 @@
-# Issue150 固定多档尺度（2026-10-23）
+# Issue150 固定多档尺度（2026-10-23，完整评测交付）
 
-负责人jieruiz；task/150-fixed-multiscale；base6966739；独立tmp/fixed-multiscale-issue150-20261023。离线六候选四档取代每token/64路absmax；TRAIN校准/选择/留出隔离，原Attention，固定W8，T32/K32及T64/K64，20项完整替换+BF16。当前源码/测试准备中，尚无Slurm或PPL，PR待创建。交接work/jieruiz/150/HANDOFF.md。无新TLM/RTL/PPA，不改141/144运行源；看板权限待核实。
+负责人jieruiz；task/150-fixed-multiscale；base6966739；PR153待审、未合并；独立tmp/fixed-multiscale-issue150-20261023。执行49bc6bd，Slurm2840/2841/2842产出21/21完整WT2+12selection+4holdout，全部SHA/选优/24层全输入覆盖核验通过。d2_h0固定四档，固定T32 PPL11.851810、T64 11.736412，动态T32 11.736131；主要差距z侧，无attention联合替换、新TLM/RTL/PPA。正式REPORT_ZH与SUMMARY在qwen/results/static_multiscale_20261023；原件压缩单份本地归档及远端，RAW_INDEX含SHA。核心42功能测试通过。内核helper已回收，保留最小主工作树。Projects缺read:project；无需重交实验，下一步评审PR。实际推送/原字节核验以FINAL_PUBLICATION.json和REMOTE_VERIFY.json为准，PR未合并不关闭Issue。
 
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 

@@ -11,6 +11,15 @@ SANTA++已覆盖代表筛选、Gumbel校正、GQA union与packed布局；Issue84
 ## 2026-10-23 Issue139：Qwen3-4B GQA候选筛选文献
 
 amlink1219新增architecture_tlm/qwen3_gqa_literature/REPORT_ZH.md。32Q/8KV/d128，每组4Q；建议按KV组候选和物理并集预算比较SparQ式概率汇总、逐头union及SeerAttention-R已训练gate，原模型最终每头QK/归一化独立。mean-Q、概率sum、教师head-max不是同一操作。Seer已评后训练Qwen3-4B，Issue136的4B-Base需独立迁移核验；本轮只有调研，未启动训练/仿真/完整PPL/PPA，116/123暂停保持。12篇PDF与来源已暂存核SHA；Zotero关闭，未入库，恢复见work/amlink1219/139/HANDOFF.md。交付分支task/139-qwen3-gqa-literature，PR状态查实时回执。
+## 2026-10-23 Issue146：CIM前端PPA批处理v2
+
+继续PR148/task/146-cim-frontend，保持原RTL/TB字节不变，补SS/TT100MHz八项smoke/正式Slurm、三seed、真实buffer自动验证、互斥叶子面积/功耗汇总与失败小包。修复原Tcl `$i(a)` 被当作数组变量的生成错误。11辅助检查、4个实际小RTL与48波形窗口通过，未运行DC/VCS/PT，不能写成已测PPA。包sc_cim_frontend_ppa_20261023_v2.zip，49471B，SHA f2ef9036c30adcbccd4a2c2c24543fe27061ff04facb3d6a27948f294b701228；manifest34d5b2031c141b41d8b8f14096d12539a969c5a1dbeb9027219f70b0d0caf856。台账cim-frontend-146-ppa-v2-prepared；旧v1证据不覆盖，原manifest移到project_archives/cim_frontend_20261023/SOURCE_MANIFEST_V1.json同字节保留。下一步用户依RUN_BATCH_ZH先smoke，回传reports包和logs；源码发布结果见work/jieruiz/146/V2_PUBLICATION.json，未运行服务器任务，Projects待同步。
+
+## 2026-10-23 Issue146：SRAM邻近SNG/驱动/W8门控
+
+新增architecture_tlm/sc_cim_frontend_20261023，任务task/146-cim-frontend，PR148已推送待审、未合并；科学提交74979fc。N64共享R8、W8固定权重、T32/K32，显式库buffer绑定，不加概率/权重副本寄存器；完整前端、SNG、门控、Q缓冲四种探针。旧计数器已有AND，初估只再加SNG/分发，避免重复；SRAM保持/装载另计，32768并行权重Q仍是CIM接口假设。附DC/VCS/PT流程及真实bitcell加载SPICE模板，无工艺模型。
+
+最终27组13620周期、5流程检查、12窗口×115位活动检查通过；较早N64/M64前端本地/外部源各三seed通过，独立大门阵列Icarus180秒超时保留。无新DC/PT/SPICE/PPA/PPL，包根sc_cim_frontend_ppa_20261023_v1.zip，36990B，SHA73bee486fd7d1f0fff0b3ba6bf915836715ed9496e92902351f86c18c68bda6d。统一台账cim-frontend-146-functional，原件project_archives/cim_frontend_20261023，交接work/jieruiz/146/HANDOFF.md；先用户SS/TT M1 smoke再M64。发布与逐blob核验见PUBLICATION/REMOTE_VERIFY，Projects待权限/维护者同步，无运行作业。保留其他任务镜像记录。
 
 ## 2026-10-23 Issue123 完整FFN与STA/PPA交接
 

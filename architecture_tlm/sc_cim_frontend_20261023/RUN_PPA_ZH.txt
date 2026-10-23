@@ -1,0 +1,56 @@
+SRAM 邻近计算门/SNG/驱动，Issue146
+
+2026-10-23 v2：推荐批量上传/运行入口见同目录 RUN_BATCH_ZH.txt。
+下方保留单项手工接口与成本边界；v2新增自动库选择、真实buffer验证、
+Slurm源码快照、三seed、叶子分类汇总和成功/失败小报告打包。
+
+1. 解压后进入 sc_cim_frontend_20261023。Linux 上启用已有 DC/VCS/PT 环境。
+   不需要新安装模型、GPU、工艺库。需要 Python >=3.6。
+   本机只做了 RTL 功能验证和脚本静态/辅助验证，未运行此工艺流程。
+
+2. 为当前工艺角设置：
+   export STD_DB=/真实路径/ss_1p08_125c.db
+   export STD_MODEL=/真实路径/匹配标准单元.v
+   export BUF_REF=真实非反相buffer单元名
+   BUF_REF 不知道时，从 .lib 找一输入一输出、function 等于输入的 BUF。
+   不可用 INV 直接代替。脚本会读取实际引脚名和 function 自动生成绑定。
+   默认 100MHz，输入slew0.1ns，输出2fF，setup uncertainty2ns。
+   确认库单位是 ns/pF；否则先换算。电压与温度由库检查，不能乱填角名。
+
+3. 先 smoke（仍 N64，但 M1），看映射、逐位功能和功耗注释：
+   bash flow/run_one.sh 0 ss 1 /绝对路径/新目录/smoke_ss
+   切换 TT 1.2V/25℃ 的 STD_DB，再执行：
+   bash flow/run_one.sh 0 tt 1 /绝对路径/新目录/smoke_tt
+
+4. smoke 无错误后完整 tile，SS/TT 各一次：
+   bash flow/run_one.sh 0 ss 64 /绝对路径/新目录/full_ss
+   bash flow/run_one.sh 0 tt 64 /绝对路径/新目录/full_tt
+   必须在每次切换角时同时换 STD_DB，不覆盖前一目录。
+   可选：LOAD_PF=0.001 或 0.005 做负载敏感性。
+   可选：CIM_EXT=1 删除本地 LFSR，仅保留外部随机字接口。
+   可选：CIM_T=32 CIM_K=1 对照普通随机；CIM_T=64 CIM_K=32 对照两次/区间。
+
+5. 拆分成本时：
+   KIND=1 只SNG；KIND=2 分发+W8AND；KIND=3 SRAM侧Q缓冲探针。
+   KIND3 建议先 M1（64*1*8=512位）。这不是 SRAM 宏，也不含存储寄存器。
+   KIND0 的 hierarchy.rpt 中取 sng 和 gates/sample_drive 作为新增前端估计。
+   不把 KIND0 全部功耗加到已有计数器上：计数器已有权重门控。
+
+6. 回传新结果目录中的以下小文件（不要上传受限制工艺库）：
+   SOURCE.json, CONFIG.json, COMPLETE.json（失败则 failure.txt及相关log）；
+   net/area.rpt, references.rpt, driver_count.txt, buffer_binding.txt, pvt.txt；
+   net/setup.rpt、hold.rpt、constraints.rpt、check_design.rpt；
+   gate/compile.log, sim.log, vectors/vectors.json；
+   active_*/与idle_*/中的*.rpt、*.txt、*.json、pt.log。
+   本地保留 mapped.v/.ddc/.sdc、波形和工具版本记录，以便追查。
+
+7. 计算口径：
+   输出每个窗口内部/开关/漏电功耗、层次面积、slack、超表和未注释告警。
+   每窗口能量=P_total*窗口时间；活跃帧含启动与完成边界，不只除32。
+   如计入idle漏电，再加真实idle时间，不把active功率重复加一次背景。
+   KIND2/3无帧计数器，按窗口时间和实际驱动次数，不伪造完成帧数。
+   零延迟门级波形无真实毛刺、SDF、寄生和时钟树；结果是综合级初估。
+
+8. SRAM补测见README与sram_probe/cell_load.sp.template。
+   不需要重新跑全部14种宏；先验证稳定存储节点驱动计算门的小接口。
+   真实bitcell晶体管级模型不可用时，先保留这项为待标定参数，其他数字项可先测。

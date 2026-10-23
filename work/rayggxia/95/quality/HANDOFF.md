@@ -31,3 +31,5 @@ bundled-python是C:/Users/86134/.cache/codex-runtimes/codex-primary-runtime/depe
 本地台账46记录check/render通过；根阅读入口已有另3条并行增量，本次仅添加同字节的新record，保留其全部原件并重建为49记录。根与canonical记忆在相同旧hash上追加，仍同字节；任务分支只追加本轮入口，不夹带其他未发布记忆。没有后台计算或远端作业。
 
 网络恢复后：核实账号rayggxia、目标workspace仓库、最新集成和本任务分支；将新record与最新catalog合并重建，保留其他并行任务。按明确范围上传此分支/新PR，关联Issue95并附着本聊天；更新回执和STATUS，不重跑189项。SOURCE_MANIFEST及稳定归档支持原件复核。
+
+2026-10-23 Issue95发布回执：网络已恢复，分层质量实现/结果已上传PR134（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/134），开放待审未合并；科学交付1f8e1d468792b5af17d337db885b482c189c00f9。完整远端tree与本地c8162a04b3c32bd0d5615108d8dc7b93bdf0b1ee相同，报告读回逐字符一致。旧网络阻塞文字仅为先前时点，无需重复实验。

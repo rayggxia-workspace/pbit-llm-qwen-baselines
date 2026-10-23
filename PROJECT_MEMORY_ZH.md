@@ -1101,3 +1101,5 @@ PR119/120/122/125/126/127/130限定阶段成果通过；新#130为存储总结�
 负责人rayggxia；task/95-rng-quality，tmp/rng-quality-issue95-20261023，基线6966739a。复用38237164已有Spectre原始9条轨迹，189案例（两端点各4096帧）与30调理/36抽样诊断完成，9机制测试及1269原件/算术/结构核对通过。质量不是自动逐层改善：旧比较器VN后P1近50%仍有负时间相关；GF64在q128前4路严格xor=0；重复种子使三后端两端点同流。无新Spectre/RTL/PT/LLM/PPL，不认证熵率或最佳换种周期；两个独立电路记录不是同一物理噪声因果链，缺同时多路阵列记录。
 
 入口architecture_tlm/random_service/quality/README_ZH.md及results/20261023/REPORT.html；用户副本远端上传/rng_quality_20261023.html。稳定原件project_archives/rng_quality_20261023，SOURCE_MANIFEST绑定8文件，执行本地8a862a38cf6e4e46f50e719f8b2b3877db745c75。中央run rng-quality-95-20261023为DESIGN_PROOF，PPA未运行；新增record单独同步固定入口，保留其他并行记录，不用旧catalog覆盖。当前本地完成；发布前GitHub连接器出现HTTP传输错误，远端发布状态以work/rayggxia/95/quality/PUBLICATION.json为准。恢复见同目录HANDOFF，不重复实验。
+
+2026-10-23 Issue95发布回执：网络已恢复，分层质量实现/结果已上传PR134（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/134），开放待审未合并；科学交付1f8e1d468792b5af17d337db885b482c189c00f9。完整远端tree与本地c8162a04b3c32bd0d5615108d8dc7b93bdf0b1ee相同，报告读回逐字符一致。旧网络阻塞文字仅为先前时点，无需重复实验。

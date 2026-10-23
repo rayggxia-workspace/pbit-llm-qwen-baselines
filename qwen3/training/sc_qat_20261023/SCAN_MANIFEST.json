@@ -1,0 +1,872 @@
+{
+  "schema": "sc_qat_design_v1",
+  "created_date": "2026-10-23",
+  "issue": 159,
+  "owner": "jieruiz",
+  "launch_ready": false,
+  "model": {
+    "id": "Qwen/Qwen3-4B",
+    "revision": null,
+    "teacher_id": "Qwen/Qwen3-4B",
+    "teacher_frozen": true,
+    "layers": 36,
+    "hidden": 2560,
+    "ffn_width": 9728,
+    "weight_sha_manifest": null,
+    "chat_template_sha256": null
+  },
+  "not_execution_config": true,
+  "required_before_launch": [
+    "pinned_model_revision_and_artifact_sha",
+    "licensed_train_calibration_validation_data_manifest",
+    "trainable_ffn_forward_and_gradient_validation",
+    "legal_scale_exponent_bounds_from_calibration",
+    "H200_Slurm_partition_personal_root_and_environment_lock",
+    "non_Base_BF16_reference"
+  ],
+  "references": {
+    "pr147": "357db5884726a66d988d75f92447ff8ecf8698e6",
+    "pr153": "c28549b7d19ad3fc1f0b8e961ac5c61ca4ddbfcc",
+    "numbers_are_not_target_model_baselines": true
+  },
+  "training_defaults": {
+    "optimizer": "AdamW",
+    "lr_ffn": 1e-05,
+    "lr_other": 2.5e-06,
+    "lr_scale": 0.0001,
+    "scale_weight_decay": 0.0,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "weight_decay": 0.01,
+    "gradient_clip": 1.0,
+    "lr_warmup_fraction": 0.03,
+    "lr_schedule": "cosine",
+    "loss": "CE + lambda_KD * temperature^2 * KL(teacher||student)",
+    "lambda_KD": 0.5,
+    "temperature": 1.0,
+    "sequence_length": 4096,
+    "target_supervised_tokens_per_update": 131072,
+    "data_token_mix": {
+      "general_text_code_multilingual": 0.4,
+      "non_thinking_instruction": 0.3,
+      "thinking_instruction": 0.3
+    },
+    "instruction_loss_mask": "assistant_targets_only_including_current_reasoning",
+    "teacher_and_student_identical_tokens_and_masks": true,
+    "sampled_curriculum": [
+      {
+        "until_fraction": 0.05,
+        "mode": "encoded_mean"
+      },
+      {
+        "until_fraction": 0.125,
+        "mode": "sampled",
+        "samples": 128
+      },
+      {
+        "until_fraction": 0.2,
+        "mode": "sampled",
+        "samples": 64
+      },
+      {
+        "until_fraction": 1.0,
+        "mode": "sampled",
+        "samples": "target"
+      }
+    ],
+    "recompute_same_random_keys": true,
+    "calibration_tokens": 2000000,
+    "calibration_holdout_tokens": 1000000,
+    "calibration_top_scale": "max_abs_ceil_power_of_two_no_headroom",
+    "calibration_split": "TRAIN_only_x_z_separate_W8_only_and_dynamic_student_paths",
+    "calibration_observer_disabled_on_holdout_and_test": true,
+    "scale_exponent_bounds": null,
+    "initial_ffn_numeric_backend": "PR147_FP32_oracle_BF16_boundary"
+  },
+  "stage_A_cases": [
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_D_B4_d2_T8",
+      "kind": "sampled_sc",
+      "scale_x": "dynamic",
+      "scale_z": "dynamic",
+      "samples_x": 8,
+      "samples_z": 8,
+      "strata_x": 8,
+      "strata_z": 8,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_D_B4_d2_T16",
+      "kind": "sampled_sc",
+      "scale_x": "dynamic",
+      "scale_z": "dynamic",
+      "samples_x": 16,
+      "samples_z": 16,
+      "strata_x": 16,
+      "strata_z": 16,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_D_B4_d2_T32",
+      "kind": "sampled_sc",
+      "scale_x": "dynamic",
+      "scale_z": "dynamic",
+      "samples_x": 32,
+      "samples_z": 32,
+      "strata_x": 32,
+      "strata_z": 32,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_D_B4_d2_T64",
+      "kind": "sampled_sc",
+      "scale_x": "dynamic",
+      "scale_z": "dynamic",
+      "samples_x": 64,
+      "samples_z": 64,
+      "strata_x": 64,
+      "strata_z": 64,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_F_B4_d2_T8",
+      "kind": "sampled_sc",
+      "scale_x": "calibrated_static",
+      "scale_z": "calibrated_static",
+      "samples_x": 8,
+      "samples_z": 8,
+      "strata_x": 8,
+      "strata_z": 8,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_F_B4_d2_T16",
+      "kind": "sampled_sc",
+      "scale_x": "calibrated_static",
+      "scale_z": "calibrated_static",
+      "samples_x": 16,
+      "samples_z": 16,
+      "strata_x": 16,
+      "strata_z": 16,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_F_B4_d2_T32",
+      "kind": "sampled_sc",
+      "scale_x": "calibrated_static",
+      "scale_z": "calibrated_static",
+      "samples_x": 32,
+      "samples_z": 32,
+      "strata_x": 32,
+      "strata_z": 32,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_F_B4_d2_T64",
+      "kind": "sampled_sc",
+      "scale_x": "calibrated_static",
+      "scale_z": "calibrated_static",
+      "samples_x": 64,
+      "samples_z": 64,
+      "strata_x": 64,
+      "strata_z": 64,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_L_B4_d2_T8",
+      "kind": "sampled_sc",
+      "scale_x": "learned_static",
+      "scale_z": "learned_static",
+      "samples_x": 8,
+      "samples_z": 8,
+      "strata_x": 8,
+      "strata_z": 8,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": 0.8
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_L_B4_d2_T16",
+      "kind": "sampled_sc",
+      "scale_x": "learned_static",
+      "scale_z": "learned_static",
+      "samples_x": 16,
+      "samples_z": 16,
+      "strata_x": 16,
+      "strata_z": 16,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": 0.8
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_L_B4_d2_T32",
+      "kind": "sampled_sc",
+      "scale_x": "learned_static",
+      "scale_z": "learned_static",
+      "samples_x": 32,
+      "samples_z": 32,
+      "strata_x": 32,
+      "strata_z": 32,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": 0.8
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_L_B4_d2_T64",
+      "kind": "sampled_sc",
+      "scale_x": "learned_static",
+      "scale_z": "learned_static",
+      "samples_x": 64,
+      "samples_z": 64,
+      "strata_x": 64,
+      "strata_z": 64,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": 0.8
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_H_B4_d2_T8",
+      "kind": "sampled_sc",
+      "scale_x": "calibrated_static",
+      "scale_z": "dynamic",
+      "samples_x": 8,
+      "samples_z": 8,
+      "strata_x": 8,
+      "strata_z": 8,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_H_B4_d2_T16",
+      "kind": "sampled_sc",
+      "scale_x": "calibrated_static",
+      "scale_z": "dynamic",
+      "samples_x": 16,
+      "samples_z": 16,
+      "strata_x": 16,
+      "strata_z": 16,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_H_B4_d2_T32",
+      "kind": "sampled_sc",
+      "scale_x": "calibrated_static",
+      "scale_z": "dynamic",
+      "samples_x": 32,
+      "samples_z": 32,
+      "strata_x": 32,
+      "strata_z": 32,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "status": "planned_not_run",
+      "train_seed": 20261023,
+      "inference_seeds": [
+        0,
+        1,
+        2
+      ],
+      "supervised_tokens": 200000000,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "weight_bits": 8,
+      "weight_tile": [
+        64,
+        64
+      ],
+      "activation_probability_bits": 8,
+      "input_group": 64,
+      "rng_sharing": 64,
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "gate_up_share_x_draw": true,
+      "z_independent_draw": true,
+      "full_one_bypass": true,
+      "probability_denominator": 256,
+      "id": "A_H_B4_d2_T64",
+      "kind": "sampled_sc",
+      "scale_x": "calibrated_static",
+      "scale_z": "dynamic",
+      "samples_x": 64,
+      "samples_z": 64,
+      "strata_x": 64,
+      "strata_z": 64,
+      "rng_rule": "random_stratified",
+      "freeze_scale_at_fraction": null
+    },
+    {
+      "id": "A_control_bf16",
+      "kind": "bf16",
+      "status": "planned_not_run",
+      "supervised_tokens": 200000000,
+      "train_seed": 20261023,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "inference_seeds": [
+        0
+      ],
+      "weight_bits": 16,
+      "samples_x": 0,
+      "samples_z": 0,
+      "strata_x": 0,
+      "strata_z": 0,
+      "rng_rule": "none"
+    },
+    {
+      "id": "A_control_w8_only",
+      "kind": "w8_only",
+      "status": "planned_not_run",
+      "supervised_tokens": 200000000,
+      "train_seed": 20261023,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "inference_seeds": [
+        0
+      ],
+      "weight_bits": 8,
+      "samples_x": 0,
+      "samples_z": 0,
+      "strata_x": 0,
+      "strata_z": 0,
+      "rng_rule": "none"
+    },
+    {
+      "id": "A_control_a8_encoded_mean",
+      "kind": "a8_encoded_mean",
+      "status": "planned_not_run",
+      "supervised_tokens": 200000000,
+      "train_seed": 20261023,
+      "train_scope": "full_model",
+      "attention_algorithm": "original_exact",
+      "inference_seeds": [
+        0
+      ],
+      "weight_bits": 8,
+      "samples_x": 0,
+      "samples_z": 0,
+      "strata_x": 0,
+      "strata_z": 0,
+      "rng_rule": "none",
+      "scale_x": "calibrated_static",
+      "scale_z": "calibrated_static",
+      "bins_x": 4,
+      "bins_z": 4,
+      "gap_log2_x": 2,
+      "gap_log2_z": 2,
+      "input_group": 64,
+      "activation_probability_bits": 8,
+      "full_one_bypass": true,
+      "probability_denominator": 256
+    }
+  ],
+  "stage_B_template": {
+    "status": "await_validation_selection",
+    "parent_selection_split": "validation_not_test",
+    "parents": [
+      "best_dynamic",
+      "best_fully_static_F_or_L"
+    ],
+    "bins_x_equal_z": [
+      2,
+      4,
+      8
+    ],
+    "gap_log2_x_equal_z": [
+      1,
+      2,
+      3
+    ],
+    "samples": "inherit_exact_parent_T",
+    "supervised_tokens": 200000000,
+    "max_cases": 18,
+    "reuse_only_identical_configuration_and_budget": true,
+    "initialize_from": "original_Qwen3-4B_not_stage_A_checkpoint",
+    "parent_checkpoint_sha_is_selection_evidence_only": true
+  },
+  "stage_C_options": {
+    "status": "not_expanded",
+    "unequal_samples_x_z": [
+      [
+        8,
+        16
+      ],
+      [
+        16,
+        32
+      ],
+      [
+        32,
+        64
+      ]
+    ],
+    "extra_z_bins": 8,
+    "static_percentiles": [
+      99.9,
+      99.99,
+      99.999
+    ],
+    "iid_matched_training": {
+      "finalist_structures": 2,
+      "strata": 1,
+      "samples": [
+        16,
+        32,
+        64
+      ]
+    },
+    "do_not_change_multiple_knobs_at_once": true
+  },
+  "stage_D": {
+    "finalists": [
+      2,
+      4
+    ],
+    "tokens_initial": 2000000000,
+    "tokens_if_learning_continues": 5000000000,
+    "training_seeds_for_final_selected_designs": [
+      0,
+      1,
+      2
+    ],
+    "inference_seeds": [
+      0,
+      1,
+      2
+    ],
+    "evaluate_samples": [
+      8,
+      16,
+      32,
+      64,
+      128
+    ],
+    "final_context_token_mix": {
+      "4096": 0.5,
+      "8192": 0.3,
+      "16384": 0.2
+    }
+  },
+  "evaluation": {
+    "full_wt2": {
+      "window": 2048,
+      "stride": 1024
+    },
+    "tasks": [
+      "piqa",
+      "arc_easy",
+      "arc_challenge",
+      "hellaswag",
+      "winogrande",
+      "ifeval",
+      "gsm8k_or_math500",
+      "representative_code_task"
+    ],
+    "thinking_modes_separate": true,
+    "generation_rng_separate_from_ffn_rng": true,
+    "coverage": "all_36_FFN_layers_prefill_and_decode",
+    "goals_not_measured": {
+      "relative_ppl_increase_max": 0.01,
+      "mean_task_accuracy_drop_percentage_points": 1.0
+    }
+  }
+}

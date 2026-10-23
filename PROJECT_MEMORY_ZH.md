@@ -1,3 +1,9 @@
+## 2026-10-23 Issue159：Qwen3-4B非Base随机FFN训练设计
+
+用户改为Qwen/Qwen3-4B，教师/学生均非Base；PR147 Base后缀结果仅机制参考，不能继承基线。负责人jieruiz，task/159-qwen3-sc-qat-plan。全模型36层FFN W8+真实共享64/分层随机前向、主权重STE训练；动态/固定/可学习静态/固定x动态z，T8/16/32/64共16配置，加3同预算控制。B2/4/8、gap1/2/3后续分阶段；必须区分K=T与IID。
+
+正式方案qwen3/training/sc_qat_20261023/TRAINING_PLAN_ZH.md，SCAN_MANIFEST有19项planned；清单/语法/未就绪拒绝守卫与独立审阅通过。尚无训练器、非Base基线、模型下载或H200/Slurm作业；需绑定revision/数据/环境并验证重算随机重放。上传状态见work/jieruiz/159/PUBLICATION.json及FINAL_RECEIPT，不自动合并。保留其他任务及既有证据。
+
 ## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
 
 负责人jieruiz，task/138-trainable-samplers，基线6966739，源码b6e3d034。新增experiments/trainable_pbit_attention；真实Bernoulli提议、均匀仲裁/保持、2^-m全零校正和自适应拒绝；全部轨迹score-function训练，有偏Softmax代理显式分离，量化禁冒称精确梯度。22/22合成数值测试，81条有限赢家轨迹/梯度穷举、三seed分布对照和6个小训练通过；无Qwen/Llama新PPL、CUDA、物理随机源或RTL/PPA。训练源码/配置/结果SHA见results/VALIDATION.json，交接work/jieruiz/138/HANDOFF.md。科学交付42beb199已推送PR142（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/142），14文件远端原字节核验通过；PR待审、未合并，回执PUBLICATION.json/REMOTE_VERIFY.json；未改正式TLM/硬件默认，后续真实LLM集成和梯度方差/内存仍待验证。复用现有本地Torch2.4.1 CPU，无新服务器作业。

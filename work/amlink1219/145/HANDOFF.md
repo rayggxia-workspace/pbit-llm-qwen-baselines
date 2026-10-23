@@ -1,3 +1,14 @@
+# Issue145 两层／四层 P-DNN 21项完整准确率已交付（2026-10-23）
+
+负责人amlink1219，task/145-pdnn-task-accuracy，PR149。RTX5090单GPU2835 COMPLETED/0:0；CPU2834、18机制检查、9真实GPU smoke与21正式case全部通过，源f4eb25e53834e06220cbfad670ae03195eba8706。完整结果qwen/results/pdnn_task_accuracy_20261023/README_ZH.md与complete_21/，默认21case独立原件／SHA／固定题ID／24层执行／指标聚合审计通过。两层为现存joint4的10/12子集，非历史6/12；四层10..13，现存SHA不同于旧公开joint4，不继承旧PPL。无训练、W8或PPA结论。
+
+任务分支已准备完整结果，通过同一PR149上传、待审、未合并，不自动关闭Issue。最终远端核验以本任务PUBLICATION.json为准；Projects现场缺read:project，未同步看板。旧失败2833与初始1/21快照保留，Issue116/123仍暂停。没有本任务运行中的GPU作业；不得重复提交21case。
+
+
+完整统计见正式结果；下方保留执行中的历史记录，不当作当前运行状态。
+
+---
+
 # Issue145 接续记录
 
 ## 本次有限后台收尾

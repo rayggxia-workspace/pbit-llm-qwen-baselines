@@ -1,16 +1,16 @@
 # Issue157 当前执行与交接
 
-更新时间：2026-10-24T00:16:33+08:00。唯一目标 `rayggxia-workspace/pbit-llm-qwen-baselines`；认证 `amlink1219`；分支 `task/157-sparq-qwen3`；[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163) 待审、未自动合并，依赖 PR147@357db588。
+更新时间：2026-10-24T00:29:30+08:00。唯一目标 `rayggxia-workspace/pbit-llm-qwen-baselines`；认证 `amlink1219`；分支 `task/157-sparq-qwen3`；[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163) 待审、未自动合并，依赖 PR147@357db588。
 
 ## 已核验结果
 
-最新独立复核：[REVIEW_ZH.md](../../../../qwen3/sparq/results/8d60abe4e7c5/reviews/ppl_complete_20261024/REVIEW_ZH.md)，结论 `partial_verified`。
+最新独立复核：[REVIEW_ZH.md](../../../../qwen3/sparq/results/8d60abe4e7c5/reviews/auto_20261024_002921_ppl/REVIEW_ZH.md)，结论 `partial_verified`。
 
 - cached dense：292/292 窗，299077 个目标；完整 PPL=11.5381534；完整核验=True。
 - cached sparq：292/292 窗，299077 个目标；完整 PPL=10.7979258；完整核验=True。
 - 向量化 BF16 anchor：292/292 窗，PPL=11.5371605，完整核验=True；执行形状与 cached 不同。
-- piqa/dense：0/1838 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
-- piqa/sparq：0/1838 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
+- piqa/dense：512/1838 题，已验子集 acc=0.755859375, acc_norm=0.75；完整核验=False。
+- piqa/sparq：512/1838 题，已验子集 acc=0.75390625, acc_norm=0.751953125；完整核验=False。
 - arc_easy/dense：0/2376 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
 - arc_easy/sparq：0/2376 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
 - hellaswag/dense：0/10042 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
@@ -22,7 +22,7 @@ GPU benchmark 完整核验=True；NVIDIA GeForce RTX 5090，context2048/decode12
 
 ## 调度证据和恢复入口
 
-GPU 2878 最近保存的 Slurm 状态 **RUNNING**，ExitCode=0:0，观测文件时间 2026-10-23T16:14:22+00:00。这是保存的调度证据；监控断连或文件缺失不证明作业结束。
+GPU 2878 最近保存的 Slurm 状态 **RUNNING**，ExitCode=0:0，观测文件时间 2026-10-23T16:29:18+00:00。这是保存的调度证据；监控断连或文件缺失不证明作业结束。
 
 固定执行提交 `8d60abe4e7c5c245c8f5f87b7f66e49e23ae0eea`；后训练 `Qwen/Qwen3-4B@1cfa9a7208912126459214e8b04321603b3df60c`，原 FFN。CPU 依赖 2877 历史终态见回执，不能代替当前 GPU 状态。
 
@@ -30,7 +30,7 @@ GPU 2878 最近保存的 Slurm 状态 **RUNNING**，ExitCode=0:0，观测文件�
 - 环境 `env-v2/bin/python`，Torch2.7.1+cu128、TF4.51.3、lm_eval0.4.8；模型10文件及语料已登记 SHA。本次只重建并核固定源码，不重新下载权重。
 - 命令 `python -B -m qwen3.sparq.run --root /home/Weican_Chen/projects/sparq-qwen3-issue157 --phase full --batch 32 --ppl-chunk 32 --task-chunk 256 --diagnose-document-batching`，只能在原 Slurm 分配中运行，不能在登录节点直接执行。
 - WT2 2048/1024；正式 MC 逐题/choice_batch4，每256题分片落盘；分片大小不是跨题 batch。
-- 本检查点下载清单为 `reviews/ppl_complete_20261024/TRANSFER.json`；raw/TRANSFER 是可更新的最新下载索引，每版原件按检查点保存。报告、输入哈希、调度终态和日志均按检查点冻结。
+- 本检查点下载清单为 `reviews/auto_20261024_002921_ppl/TRANSFER.json`；raw/TRANSFER 是可更新的最新下载索引，每版原件按检查点保存。报告、输入哈希、调度终态和日志均按检查点冻结。
 
 ## 验证和负结果
 
@@ -44,6 +44,3 @@ GPU 2878 最近保存的 Slurm 状态 **RUNNING**，ExitCode=0:0，观测文件�
 2. 当前本人 GPU 作业结束并核本人队列后，才可另冻计量源补板级功率。补测关联原质量 identity 和新测量 SHA，不能混写原 `8d60abe4e7c5` 结果。
 3. [EDA_HANDOFF_ZH.md](../../../../architecture_tlm/sparq_baseline/EDA_HANDOFF_ZH.md)已交接并通知 jieruiz；完整 SparQ RTL/STA 尚缺，物理 ASIC 面积、功率、真实延迟为 null。
 4. Projects 与 Zotero 的限制、待办保留在回执，不声称待同步/待入库已完成。Issue116/123 继续暂停，不访问他人 home/工艺库，不上传权重/凭据，不自动合并或重复提交作业。
-
-
-后台延续/补测及故障恢复见[continuation/README_ZH.md](continuation/README_ZH.md)。实际进程存活以本机WATCH状态/PID核验，不据准备文档推断。

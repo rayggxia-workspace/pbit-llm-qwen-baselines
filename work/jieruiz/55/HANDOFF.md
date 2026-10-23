@@ -1,3 +1,7 @@
+# 第八轮入口（2026-10-23）
+
+[审核报告与后续事项](round8/REVIEW_ZH.md)。原head保留，唯一review/55-pr-round8目录；恢复前核Issue55远端回执与七个源PR状态。测试/原件日志见round8/evidence，精确映射见GQA_PUBLIC_SOURCE_MAP.json。没有运行中实验。116/123为用户暂停；合并不自动恢复。合并后按恢复索引归档本人的忽略缓存，再回收本轮工作副本，不删共享Git或其他成员目录。
+
 # 第七轮入口
 
 8项原head审核与集成，详见[round7/REVIEW_ZH.md](round7/REVIEW_ZH.md)。实际合并/清理查Issue55最终回执。

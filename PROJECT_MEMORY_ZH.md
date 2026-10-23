@@ -1,10 +1,48 @@
+## 2026-10-23 Issue123 完整FFN与STA/PPA交接
+
+Issue116已通过PR126发布正式后端，本任务PR125固定160f46e与PR122@8007d98接合完整gate/up→SiLU/product→z重编码→down→BF16/残差，legacy默认保留。新接口按FP32 x/z、共享64组、逐输出B4恢复、独立跨k加法和有限信用执行。独立提取执行包28项测试通过，原核全payload等价。完整896→4864→896真实fixture已捕获（CPU2777），CPU2783全尺寸T32于03:41按用户要求取消（24:20、CANCELLED/0:15），无完整形状通过结论；2779/2780中断证据保留。候选调度源码/已有小烟测仅归档，不接入默认，不自动继续；停止总结为work/amlink1219/123/STOP_REPORT_ZH.md。
+
+CPU2778已通过45RTL场景/11667输出/180reset flush，覆盖T16/32/64、BF16/FP32、depth1/3/5及3seed。按用户安排已上传 `architecture_tlm/encoding_restore_contract/ppa/HANDOFF_JIERUI_ZH.md` 并在Issue123 @jieruiz，由其执行实际STA/PPA；当前EDA未运行、物理指标null。没有新PPL。源、作业、报告、发布状态在 `work/amlink1219/123/HANDOFF.md`；PR均待审未合并。Issue124短投影优化继续由原任务维护，未重复。
+
+## 2026-10-23 Issue121 编码/恢复接合阶段
+
+独立入口[编码恢复合同](architecture_tlm/encoding_restore_contract/README_ZH.md)，分支task/121-encoding-cycle；复用107算术，116核心保持原负责人和工作树。两类计数rail含义不可直连，原FUSED0与旧hostfloat恢复在次正规数有反例。28软件测试、12周期重放、27严格协议RTL场景通过；最终CPU-only job2773为6861输出/108复位清空。后台数值适配当前按单活动组、逐输出恢复、有限结果信用运行，条件周期与RTL握手相位分开标注，未替换全FFN默认。完整STA/PPA/PPL仍未知。发布回执见work/amlink1219/121/PUBLICATION.json；116后端公开版本待再次冻结回归，Projects缺read:project。
+## 2026-10-23 Issue117：资源预算计划的首轮执行
+
+用户要求按Issue112方案优化并先上传workspace。在实时集成46804fb上新增resource_optimization_v1（负责人amlink1219），既有103/105/106/108/109/111/113/114已合并，以实时Issue55为准。本轮208项新完整decode TLM已全部完成：128共同候选粗筛＋64预声明代表点补充＋16vector128跟进；五个代表点各四方法/2K8K/三seed，没有仍运行或待补case。71项测试（28新增＋43原v6）及独立208case验收通过，原52＋40封存情景145payload未变。执行提交44dbbbdbc2720963b2b24bf03cdf7582a2d97075、315862412e15695c3fa21e6c573d9e5f3547e70d、b1b4d183678e25f24b7b37c273fcb3f61c37483b，十份执行清单数值/调度源SHA集合相同。
+
+结果保留正负两面：同映射容量only2/4/8MiB全部无时延收益；同1MiB重新分块仅小幅改善。vector128下SC筛选/PV三seed均值在8K比同配置W8快7.543849%，2K仍慢4.166733%；该补充由seed0结果触发，非盲测质量证明。完整面积/能量/A0未知，无新PPL/GPU/Slurm/RTL/EDA，不能把宏面积散点当完整同面积前沿。下一步优先恢复latency/II、SC权重保持和局部计数物理归属，随后真实驻留与持续在途DRAM调度。
+
+恢复入口architecture_tlm/resource_optimization_v1/README_ZH.md、RESULTS_ZH.md、results/analysis_20261023/SUMMARY.json与VALIDATION.json；work/amlink1219/117/HANDOFF.md有精确重汇总/验收命令。208项完整交付通过PR119；PR待审未合并，准确远端head与原字节核验按PUBLICATION.json最终回执。统一台账已按CALIBRATED_ESTIMATE登记（check/render及8项台账测试通过；历史指定镜像路径本机不存在）；Projects缺read:project待补。并行PR120/Issue118已有独立供数/逐档整数局部状态合同，待审且未纳入本轮；后续对接它和Issue116周期后端，不重做、接管或覆盖其范围。
+
 # p-bit LLM 项目长期备忘录
+## 2026-10-23 Issue129 SRAM与DRAM节省报告
+
+新增architecture_tlm/memory_savings_20261023/REPORT_ZH.md及7页Word，8个已封存v6情景复算、20源SHA、64文档/数字检查。W8减半权重不是随机独有收益；Qwen已记账2K/8K外存读写少31.95/35.52%，SRAM读写少29.82/33.49%，未闭合局部保持/计数未包含；条件存储能量不是整机PPA。采样不自动缩小完整KV缓存。PR120的48→5KiB是逻辑状态，PR127加宽读口不减少字节；新周期/完整FFN暂停保持。本轮无新实验，成果通过PR130已推送待审、未合并；Word及来源JSON原字节已核验。来源/回执见Issue129与work/jieruiz/129/PUBLICATION.json，Projects缺read:project待同步。
 
 ## 2026-10-23 Issue107：8类数字模块SS/TT 100MHz脚本包
 
 沿用task/107/PR109，正式architecture_tlm/digital_ppa_v1/ppa8，脚本源6bc3389de08fba8250a17f0991849a4368898205，原RTL23e8d65f未改。KIND0/2/4/5/6/7/8/21，各SS1.08V125C及TT1.2V25C，100MHz、setup uncertainty2ns。自包含RTL/ROM/转换/TB/参考向量包在本机根digital_ppa8_ss_tt_100_20261023_v1.zip，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出逐位通过、6流程守卫/Tcl/Python兼容/Bash检查通过；没有本地DC/VCS/PT，没有已测面积功耗。建议smoke两角KIND21后remaining14项，不重复运行健康任务；快照/阶段SHA恢复，结果自动小包。
 
 中央台账新增digital-ppa8-20261023-prepared，功能是本地RTL证据，16工艺配置仍not_run；基于PR111@2b7935f4同PR109登记，保留原35条。零延迟门级不含CTS/布线/毛刺，PT时序独立；含边界寄存器，SwiGLU为近似PWL，不继承PPL。KIND4/5按64元素一组、KIND6完整恢复不得再乘64/72；累加采用混合帧，非单独S128能量。原始验证含失败在project_archives/digital_ppa8_20261023/LOCAL_VALIDATION_RAW.tar.gz。上传状态以work/jieruiz/107/ppa8/PUBLICATION.json为准；任务未自动合并，Projects read:project待同步，暂无本任务BSCC作业。本文同步本地canonical与根阅读副本；本条远端随后续记忆维护，不宣称canonical脏改动已发布。
+## 2026-10-23 Issue118：FFN供数与逐档整数状态合同
+
+已上传PR120（待审、未合并），科学head8bea1dfd，48个远端Git文件对象逐项一致。Issue118已同步；Projects实测缺read:project，待同步。实际回执`work/amlink1219/118/PUBLICATION.json`，后续元数据提交不改变科学结果。
+
+amlink1219，`task/118-ffn-storage-contract`，基线集成46804fb。入口`architecture_tlm/ffn_storage_contract/README_ZH.md`与`RESEARCH_STATUS_ZH.md`；复用107/112，向116提供独立合同，不改其周期核。明确真实随机服务已经整机接入、新q/256接口不能继承旧PPL，旧52/新40分开。
+
+6项T16/32/64保持/重读接口执行、4非法配置拒绝、30功能测试通过；66合成整数场景888逐档输出一致。T32显式32KiB保持/256B响应方案6.92us，零持久权重/16B响应重读3.2768ms；不同局部资源，不是同面积/全FFN加速。8tile计数48KiB→5KiB仅状态量，FP32恢复未改也未执行。F/SS库表周期/访问门槛拒绝100MHz，不冒称新STA。
+
+新结果登记`ffn-storage-118-design`为DESIGN_PROOF；本轮无模型/PPL/GPU/Slurm/RTL/STA/PPA。执行源码与输出SHA、独立审阅、复现/交接在`work/amlink1219/118/`及结果目录。发布状态以该任务PUBLICATION回执为准，不自动合并/关闭Issue；另一台机器的固定台账镜像未同步。后续接合116、表征保持/计数，再进行合法同资源搜索。
+## Issue124 恢复吞吐与数据流消费实验（2026-10-23）
+
+负责人amlink1219，独立task/124-recovery-dataflow，执行54a9968，基于集成46804fb3。先核Issue116、PR120/122和Issue123/PR125后划分范围；只消费既有合同，完整FFN由123继续，不复制116开发源。
+
+48/48短投影条件仿真、24对同配置SC/W8、20项测试、8项登记守卫通过；独立验证467520操作及15类篡改拒绝。SC221.3625→205.75µs（−7.05%），同配置W8也205.75µs；主瓶颈是部分和接口。读宽128B单独候选206.35µs，增加双槽仅再降0.6µs而需更多保持状态。输入/门限为冻结合成数据，非完整FFN/PPL/STA/PPA。
+
+入口architecture_tlm/ffn_dataflow_optimization/README_ZH.md，原始48gzip、3输入及SHA清单已准备；中央台账新增本任务1条/48行，当前分支36条564行，未合并其他任务登记须集成取并集。交接work/amlink1219/124/HANDOFF.md；结果提交c509772已上传PR127，未合并，回执见PUBLICATION.json。最终PR126已发布116冻结依赖；13份GitHub空缓存重建逐SHA与原20项测试通过，复现阻塞解除，执行源不漂移。Projects实测缺read:project，本机固定阅读镜像路径不存在，二者待同步。不自动合并/关闭Issue，无运行中的本任务作业。
+
+
 
 ## 2026-10-22 Issue107：真实RNG接入后的Verilog仿真需求
 
@@ -1053,3 +1091,7 @@ jieruiz，task/107-tlm-cycle-digital-rtl，独立tmp/tlm-digital-issue107-202610
 本对话00:19实际移除10个已结束任务副本，逻辑1,182,605,540 B（约1.183 GB），64独有文件/10 ZIP/3增量bundle保留；10:29复核全部原分支和恢复ref、归档SHA/bundle通过，仿真台账157文件/26成员无缺失。正式回执maintenance/storage_cleanup_20261023_review，实际恢复索引project_archives/cleanup_20261023/REVIEW_REMOVAL_RECEIPT.json和REVIEW_FINAL_VERIFICATION.json。部分包位于review_audit_collision_preimages，按最终路径/SHA恢复，不用早期计划重跑删除。并发ZIP重名已恢复对方原SHA，无源文件损失。
 
 LLM对话先前独立压缩10网表约2.713GB及回收1个Issue19回执约0.188GB，均不包含在上述1.183GB；该对话继续新增清理，Issue68保持open。模型、唯一原件、主对象库、进行中任务和其他成员目录保留。恢复先读索引，不因工作目录已移除而重复实验。发布/合并状态查Issue68最新回执；本条随review/68-cleanup-receipt-20261023交付。
+
+## 2026-10-23 Issue55第八轮审核快照
+
+PR119/120/122/125/126/127/130限定阶段成果通过；新#130为存储总结。独立组合359测试注册、358通过、1个Windows符号链接场景跳过；已复核208资源结果、48数据流轨迹及真实GQA公开回执。74份GQA源码有公开同字节祖先映射，修复旧未公开commit复核入口。台账取45记录/964配置行并集，不重复计新实验。详见work/jieruiz/55/round8/REVIEW_ZH.md；实际远端合并以Issue55收尾回执为准。Issue116/123暂停不变；全尺寸2783取消未验收，DC/PT未执行。下一项工艺工作是#125编码恢复SS/T32最小PPA，与Issue107八模块PPA包分开计费。

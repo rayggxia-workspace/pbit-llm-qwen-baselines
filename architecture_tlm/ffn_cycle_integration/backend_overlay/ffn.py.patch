@@ -1,0 +1,167 @@
+--- a/architecture_tlm/cycle_v1/ffn.py
++++ b/architecture_tlm/cycle_v1/ffn.py
+@@ -47,6 +47,8 @@
+     count_bits: int | None = None
+     counter_layout: str = 'bitplane'
+     restore_rounding: str = 'host_order'
++    encoding_restore_contract: str = 'legacy'
++    encoding_restore_profile: dict | None = None
+     engines: int = 8
+     weight_slots: int = 8
+     weight_slot_bytes: int = 4096
+@@ -75,6 +77,13 @@
+         return self.count_bits if self.count_bits is not None else required
+ 
+     def validate(self):
++        if self.encoding_restore_contract not in ('legacy','pr122_b4_fused0'):
++            raise ValueError('unknown encoding/restoration contract')
++        if self.encoding_restore_contract != 'legacy':
++            from .ffn_contract import profile
++            profile(self)
++        elif self.encoding_restore_profile is not None:
++            raise ValueError('legacy path does not consume an encoding_restore_profile')
+         if self.tile != 64 or self.bins not in (2, 4):
+             raise ValueError('reference requires 64-lane groups and B2/B4')
+         if self.counter_layout not in ('bitplane','signed_bin'):
+@@ -233,29 +242,37 @@
+ def default_resources(config=None):
+     c = config or FFNConfig()
+     clock = Clock('core', 10000)
+-    return [Resource('control', clock, 1, capacity=16),
++    resources = [Resource('control', clock, 1, capacity=16),
+             Resource('encode', clock, c.encode_latency, capacity=2),
+             Resource('restore', clock, c.restore_latency, capacity=2),
+             Resource('nonlinear', clock, c.nonlinear_latency, capacity=2),
+             Resource('vector', clock, 2, capacity=2),
+             Resource('rng', clock, c.rng_latency, capacity=2)]+[
+             Resource('sc:'+str(i),clock,c.sc_latency,capacity=1) for i in range(c.engines)]+rng_protocol.resources()
++    if c.encoding_restore_contract != 'legacy':
++        from .ffn_contract import specs
++        resources = [r for r in resources if r.name not in ('encode','restore')]+specs(c)[0]
++    return resources
+ 
+ 
+ def default_buffers(config=None, prefix='ffn'):
+     c = config or FFNConfig()
+-    return [Buffer(prefix+'.weights', c.weight_slots*c.weight_slot_bytes,
++    buffers = [Buffer(prefix+'.weights', c.weight_slots*c.weight_slot_bytes,
+                    initial=c.weight_slots*c.weight_slot_bytes),
+             Buffer(prefix+'.scales',c.weight_scale_capacity_bytes,initial=c.weight_scale_capacity_bytes),
+             Buffer(prefix+'.counters', c.counter_capacity_bytes, initial=c.counter_capacity_bytes),
+             Buffer(prefix+'.encoded', c.encoded_capacity_bytes, initial=c.encoded_capacity_bytes),
+             Buffer(prefix+'.partials', c.partial_capacity_bytes, initial=c.partial_capacity_bytes),
+             Buffer(prefix+'.restore',c.restore_capacity_bytes,initial=c.restore_capacity_bytes)]+rng_protocol.buffers(prefix)
+-
+-
+-def make_kernel(config=None, memory_latency=4):
++    if c.encoding_restore_contract != 'legacy':
++        from .ffn_contract import specs
++        buffers += specs(c,prefix)[1]
++    return buffers
++
++
++def make_kernel(config=None, memory_latency=4, *, kernel_factory=Kernel):
+     c = config or FFNConfig()
+-    return Kernel(default_resources(c), default_buffers(c), memory_ports=[
++    return kernel_factory(default_resources(c), default_buffers(c), memory_ports=[
+         MemoryPort('dram', Clock('dram', 12500), latency_cycles=memory_latency, window=4,strict_reads=True),
+         MemoryPort('sram', Clock('sram', 12500), latency_cycles=2, window=4,strict_reads=True)])
+ 
+@@ -309,6 +326,21 @@
+                     cdc=f'producer completion to destination acceptance: {c.cdc_cycles} destination edges; 3 models two synchronizers plus old-state consumer',
+                     fixture=fixture.get('provenance', {})))
+     ids = state['operation_ids']
++    contract = None
++    if c.encoding_restore_contract != 'legacy':
++        from . import ffn_contract as contract
++        state['encoding_restore'] = contract.initial_state(c)
++        state['local_state_bytes']['encoding_restore_slots'] = state['encoding_restore']['result_slot_bytes']
++        state['provenance'].update(
++            encoding_restore_contract=c.encoding_restore_contract,
++            encoding_restore_profile=state['encoding_restore']['profile'],
++            encoder_domain='PR122 complete 64-word finite FP32 exponent-domain encoding; tails zero-padded',
++            encoder_implementation='one shared group operation across all gate/up tiles and waves',
++            restore_implementation='one B4 FUSED0 restore per output, then one separate FP32 cross-k add',
++            restore_storage='original bitplanes remain resident until every row add; finite reserved tagged result slots and tile scratch',
++            arithmetic_scope='exact PR122 encode/restore; continuous SiLU and existing BF16/residual boundaries; finite complete-chain intermediate domain',
++            timing='explicit Profile on existing core clock, conservative old-state credits; not RTL handshake-equivalent or STA',
++            action_accounting='complete_encode_group64 and complete_restore_output_b4 replace legacy substage actions; do not sum alternative macro/child prices')
+     if c.random_backend=='native' and fixture.get('thresholds'):
+         raise ValueError('native execution must not silently substitute frozen thresholds')
+     native=(rng_protocol.NativeRandomService(kernel,prefix,{'ffn':'lfsr32'},c.seed,
+@@ -354,7 +386,7 @@
+         def build_group(gi, previous_group):
+             start=gi*64
+             block = vector[start:start+64]
+-            encoded_bytes = max(len(block)*4,len(block)*3+4)
++            encoded_bytes = 256 if contract else max(len(block)*4,len(block)*3+4)
+             if encoded_bytes > c.encoded_capacity_bytes:
+                 raise ValueError('encoded group exceeds configured capacity')
+             key = name, gi
+@@ -365,14 +397,19 @@
+                 actual=unpack(k.memory_reads[read])
+                 if actual != block:
+                     raise AssertionError('activation data changed between producer and encoder')
+-                state['encoded'][key] = encode_group(actual, c.bins)
++                if contract:
++                    state['encoded'][key], state['encoding_restore']['top_exp'][key] = contract.encode_values(actual)
++                else:
++                    state['encoded'][key] = encode_group(actual, c.bins)
+                 state['thresholds'][key] = ([None]*c.samples if native else threshold_words(c, name, key[1], fixture))
+-            encoded = add(f'{name}.g{gi}.encode', 'encode', deps=(read,),
+-                          actions={'activation_encode_values':len(block),'activation_abs_values':len(block),
++            encoded = add(f'{name}.g{gi}.encode', prefix+'.er.encode' if contract else 'encode', deps=(read,),
++                          actions={'complete_encode_group64':1} if contract else {'activation_encode_values':len(block),'activation_abs_values':len(block),
+                                    'activation_group_max_compare':len(block)-1,
+                                    'activation_bin_compare':len(block)*(c.bins-1),
+                                    'activation_exponent_grid_convert':len(block)}, on_complete=encoded_cb,
+-                          metadata={'parallel_lanes':64,'max_tree_depth':math.ceil(math.log2(len(block))) if len(block)>1 else 0})
++                          metadata=({'parallel_lanes':64,'active_values':len(block),'zero_padded_values':64-len(block),
++                                     'max_tree_depth':6} if contract else
++                                    {'parallel_lanes':64,'max_tree_depth':math.ceil(math.log2(len(block))) if len(block)>1 else 0}))
+             group_done = []
+             group_tiles=[(mn,rr) for mn in projections for rr in range(0,matrices[mn]['rows'],64)]
+             largest_rows=min(64,max(matrices[mn]['rows'] for mn in projections))
+@@ -497,6 +534,19 @@
+                             actions={'sc_sample_frames':1,'weight_input_trials':nr*nc,
+                                      'counter_clocked_slots':nr*c.bins*counter_factor},
+                             metadata={'tile':label,'step':step,'samples':c.samples,'engine':slot%c.engines})
++                    if contract:
++                        partial_key=matrix_name,r
++                        writep=prefix+'.'+label+'.partial_write'
++                        restored=contract.schedule_tile(add=add,state=state,config=c,prefix=prefix,
++                            label=label,key=key,tile_key=tile_key,nr=nr,previous=previous,
++                            read_previous=last_partial.get(partial_key),partial_address=partial_base[matrix_name]+r*4,
++                            count_bytes=count_bytes,values=values[matrix_name],row_start=r)
++                        release=add(label+'.weight_release','control',deps=(restored,),
++                            outputs={free_weights:weight_bytes,free_scales:4})
++                        slots[slot]=release
++                        last_partial[partial_key]=writep
++                        group_done.extend([writep,release])
++                        continue
+                     # Reserve before a partial-read response can become resident.
+                     # Counter banks are overwritten with signed positional terms
+                     # and collapsed sums; small-T bit growth uses scratch too.
+@@ -589,6 +639,8 @@
+                     group_done.extend([writep,release])
+             def group_done_cb(k,op):
+                 state['encoded'].pop(key)
++                if contract:
++                    state['encoding_restore']['top_exp'].pop(key)
+                 if start+64<len(vector):
+                     build_group(gi+1,op.id)
+                 else:
+@@ -681,6 +733,13 @@
+     """
+     c=config or FFNConfig()
+     c.validate()
++    if c.encoding_restore_contract != 'legacy':
++        from .ffn_contract_reference import reference
++        # Quantization is an input contract, outside the independent arithmetic
++        # oracle. Prequantized fixtures pass their actual W8/scales unchanged.
++        frozen=dict(fixture)
++        frozen.update({name:matrix_spec(fixture[name]) for name in ('wg','wu','wd')})
++        return reference(frozen,c)
+     matrices={name:matrix_spec(fixture[name]) for name in ('wg','wu','wd')}
+     def project_phase(vector,names,phase):
+         groups=[]

@@ -1,0 +1,80 @@
+{
+  "artifact": {
+    "bytes": 138958,
+    "path": "qwen_layer12_gqa7_context64.json",
+    "sha256": "ee5722b38a1acb94daf4d09e49651c9a4610dbc9a9b0ac444b29bb1ef2280080"
+  },
+  "exact_functional_diagnostic": {
+    "method": "double QK reduction/softmax/PV on exported FP32 tensors; independent of cycle scheduler",
+    "output_sha256": "924fe42c0bdd296d04685e3868e250083b2f221185ec69e09bf6544393ee9c5a",
+    "shape": [
+      7,
+      64
+    ]
+  },
+  "export_scope": "only identity, shape, SHA-256, numerical boundary and execution metadata; no Q/K/V or diagnostic output arrays",
+  "fixture_path": "/home/Weican_Chen/projects/tlm-cycle-issue116-20261023/gqa_capture_v1/private_fixture/qwen_layer12_gqa7_context64.json",
+  "fixture_sha_and_schema_verified_in_place": true,
+  "log_sha256": {
+    "capture-2781.err": "55c5f0b235f42ea2b22f8ab6d0b126339a3e148e37d60bb9b86d6fa62527fdd6",
+    "capture-2781.out": "5dd9c4a3f68694e5e6ccc58f8aecf0c84d618bdbc56d48b267a58db7dd601c02",
+    "terminal.json": "b122435d6d8a9a38bbc49593a7ab80ede5d97d4e858e813e570d8340229ba660"
+  },
+  "private_manifest_sha256": "3b6263e0efb7f8882944106bc7632a2e92a3f0a940b71bc6aa0c3ceb688d24be",
+  "private_payload_retained_on_server": true,
+  "provenance": {
+    "baseline_identity_verified": true,
+    "baseline_manifest_sha256": "1490c98d6de724b1692562a1e7041a1122bbef4b426b19bc3c5f11257efa47a8",
+    "boundary": "QKV projection, RoPE, KV append, screening, Wo and remaining model execution are outside group simulator timing",
+    "candidate_policy": "all causal keys0..context-1, no selector",
+    "config_sha256": "479dcf0c5286339e41ad3992cd08ae88a467c4187587936248e2b7c96283484b",
+    "context": 64,
+    "cuda": "12.8",
+    "dtype": "BF16 model/projections; projections exported to FP32; CPU FP32 RoPE for Q/K",
+    "execution_commit": "c8a0b20e7e6017462af0573be09a10c6e80714d3",
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "head_dimension": 64,
+    "job_id": "2781",
+    "kind": "real_model_gqa_group_activation_fixture_not_full_attention_or_PPL",
+    "layer": 12,
+    "model": "Qwen/Qwen2.5-0.5B",
+    "model_files": {
+      "model.safetensors": "88c142557820ccad55bb59756bfcfcf891de9cc6202816bd346445188a0ed342"
+    },
+    "precision_note": "same declared FP32 RoPE export boundary as original cycle_v1 capture; not bitwise model-attention evidence",
+    "python": "3.12.3",
+    "query_heads": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "query_to_kv_rule": "query_head // (14/2); heads0..6 all map to KVhead0",
+    "query_token_position": 63,
+    "revision": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+    "seed": 0,
+    "shared_kv_head": 0,
+    "source_logits_finite": true,
+    "source_sha256": "0bc5ad45574e043c7b0ca88a377101bb410440bf86372ce788f6be5bbcb141ad",
+    "tensor_sha256": {
+      "k_fp32": "30dffb56f077408df238a267b2034a6267d3c6abd3e0cb1227ad3c1f486a2174",
+      "q_fp32": "196960b9acbb15066f0ee66f36a18712da49f63436712e424c35ebb2e92aa854",
+      "v_fp32": "8edec46b291b566a68ac877970a88c63ce1d8839ef55f731117f4618b19dbc89"
+    },
+    "text_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+    "token_ids_hash_format": "contiguous int64 native-little-endian array shape[1,context]",
+    "token_ids_sha256": "dea85c71b240fd45a016a38995b6c1b602833de45de2f6e0e00b363728d1961d",
+    "tokenizer_files": {
+      "merges.txt": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+      "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "tokenizer_config.json": "c91efca15ceff6e9ee9424db58a6f59cd41294e550a86cbd07e3c1fb500b34f9",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    },
+    "torch": "2.7.1+cu128",
+    "transformers": "4.45.2"
+  },
+  "status": "pass"
+}

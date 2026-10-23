@@ -1,3 +1,11 @@
+# Issue55第八轮：七项阶段成果审核通过（2026-10-23）
+
+负责人jieruiz；review/55-pr-round8；base e8705765；独立稀疏目录tmp/pr55-review-round8-20261023。119/120/122/125/126/127/130按限定范围通过，359测试中358通过、1个Windows符号链接测试跳过；原件与GQA发布源码映射复核通过。45条台账/964行是原任务记录并集，无新硬件实验。修复未公开旧commit导致的新检出审计失败；不改旧manifest。116/123保持暂停，不启动全尺寸/GPU/EDA。成果work/jieruiz/55/round8/REVIEW_ZH.md；集成PR发布、实际合并及目录回收以Issue55最终回执为准。待用户工艺环境SS/T32最小PPA；Issue107独立进行，避免重复任务。
+
+# Issue129 SRAM与DRAM节省总结 2026-10-23
+
+负责人jieruiz，task/129-memory-savings-summary，base pbit-tlm-attention-details-20261016@e8705765。独立稀疏目录tmp/memory-savings-issue129-20261023。7页Word与正文已完成，20来源/8封存情景复算、64检查与7页目视通过；无新实验。成果architecture_tlm/memory_savings_20261023，交接work/jieruiz/129/HANDOFF.md。已通过PR130上传待审，未合并；发布字节核验与原字节属性修复见PUBLICATION.json。暂停的116/123未恢复。Projects查询缺read:project，待同步；Issue/PR已更新。
+
 # Issue68：10个已结束工作副本回收与恢复复核（2026-10-23）
 
 负责人jieruiz；review/68-cleanup-receipt-20261023；base pbit-tlm-attention-details-20261016@46804fb3；独立稀疏目录tmp/cleanup68-review-receipt-20261023，仅用于回执交付。已实际回收10目录1,182,605,540 B，64独有文件和3增量bundle保留并验证；模型/仿真原件/活跃任务保持。35记录157原件26归档成员SHA通过，无新实验。

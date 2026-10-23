@@ -1,5 +1,22 @@
 8类数字算子 SS/TT 100MHz 工艺仿真包
-版本 digital_ppa8_ss_tt_100_20261023_v1，Issue107 / PR109。
+版本 digital_ppa8_ss_tt_100_20261023_v2，Issue107后续分支（原PR109已合并）。
+
+v2修正：VCD所有向量逐位展开，保留每位/别名/时间和X检查，不删除常量位。
+PT的clk、out_valid及有效result位逐位对照VCD的翻转率和高电平占空比；
+PWR-981若仍出现直接停止，不接受仅凭100%覆盖率通过。
+功耗库超范围采用9位有效数字报告，并统计受影响单元的全部功耗占比。
+该占比不是误差界限；不添加虚假负载/修改slew/关闭告警，保留PROVISIONAL。
+
+已有38339971两角结果时，先只重跑PT（不要再次smoke全流程）：
+  cd /public3/home/t6s011227/pbit_chimera_pipeline_20260920
+  unzip -o digital_ppa8_ss_tt_100_20261023_v2.zip
+  cd digital_ppa8_ss_tt_100_20261023_v2
+  bash submit_power_recheck.sh /public3/home/t6s011227/pbit_chimera_pipeline_20260920/digital_ppa8_ss_tt_100_20261023_v1/results/38339971
+不改旧任务目录。逐SHA核验v1源码/库/配置/DC和12功能阶段；原网表/VCD只读复用，
+结果写v2/results/<新arrayJobID>_7或_15，每角9窗口PT，无DC/VCS重跑。
+需要远端保留旧目录里的STAGE_COMPLETE、mapped.v/ddc/sdc、原VCD；小报告包不足以恢复。
+成功回传新版两份reports包后再评估剩余14项，不因FLOW_COMPLETE自动豁免库范围。
+v2本机仅做转换/守卫/语法验证，没有本机DC/VCS/PT授权，实际兼容性由该重检确认。
 
 任务矩阵：索引0..7为SS，8..15为TT；各组KIND依次0,2,4,5,6,7,8,21。
 0 FP32加法；2 BF16乘积/FP32累加；4 BF16分档编码64元素；
@@ -11,8 +28,8 @@ SS=1.08V/125C，TT=1.2V/25C，55nm SVT。两角电压不同，不是只改变温
 上传到 /public3/home/t6s011227/pbit_chimera_pipeline_20260920/ 后：
   source ~/.bashrc
   cd /public3/home/t6s011227/pbit_chimera_pipeline_20260920
-  unzip -o digital_ppa8_ss_tt_100_20261023_v1.zip
-  cd digital_ppa8_ss_tt_100_20261023_v1
+  unzip -o digital_ppa8_ss_tt_100_20261023_v2.zip
+  cd digital_ppa8_ss_tt_100_20261023_v2
   python3 package.py
   bash submit.sh smoke
 smoke为KIND21的SS/TT两项，但执行完整流程，不是假工具测试。

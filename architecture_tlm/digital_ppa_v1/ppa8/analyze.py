@@ -7,6 +7,7 @@ import re
 import sys
 from cell_report_parser import rows
 from report_helpers import library_units, totals, coverage, csvwrite
+from range_review import review as range_review
 
 
 def summarize(work):
@@ -24,7 +25,7 @@ def summarize(work):
         cov = coverage((pt/'activity.rpt').read_text())
         with (pt/'inventory.tsv').open() as f:
             inv = {r['name']: r for r in csv.DictReader(f, delimiter='\t')}
-        groups, seen = {}, set()
+        groups, seen, cell_watts = {}, set(), {}
         for cell, raw, flags in rows(pt/'cells.rpt'):
             if cell is None:
                 if raw[0] != len(seen):
@@ -33,6 +34,7 @@ def summarize(work):
             if cell in seen or cell not in inv:
                 raise ValueError('Duplicate/unknown power cell '+cell)
             seen.add(cell)
+            cell_watts[cell] = raw[3]*scales[3]
             group = groups.setdefault(inv[cell]['category'], dict(area=0., watts=[0.]*4, cells=0))
             group['area'] += float(inv[cell]['area'])
             group['cells'] += 1
@@ -46,6 +48,15 @@ def summarize(work):
         setup = float((pt/'setup_slack_ns.txt').read_text())
         hold = float((pt/'hold_slack_ns.txt').read_text())
         review = []
+        ranges = None
+        if cfg.get('activity_mode') == 'scalar_vcd_bit_checked_v2':
+            binding = json.loads((pt/'BIT_ACTIVITY_PASS.json').read_text())
+            if binding['status'] != 'PASS':
+                raise ValueError('VCD bit activity check failed')
+            ranges = range_review((pt/'ranges.rpt').read_text(), cell_watts, power[3])
+            (pt/'range_review.json').write_text(json.dumps(ranges,indent=2)+'\n')
+            if ranges['flagged_cells']:
+                review.append('POWER_TABLE_EXTRAPOLATION')
         if min(setup, hold) < 0:
             review.append('TIMING_VIOLATION')
         if cov['net_coverage_percent'] < 99.9:
@@ -66,6 +77,7 @@ def summarize(work):
             pJ_per_completed_output=energy/n if n else None,
             setup_slack_ns=setup, hold_slack_ns=hold,
             net_coverage_percent=cov['net_coverage_percent'],
+            affected_cells_power_percent=ranges['affected_cells_power_percent'] if ranges else None,
             status='CALCULATED_PROVISIONAL' if review else 'CALCULATED_PRELAYOUT', review_flags=';'.join(review)))
         for category, g in groups.items():
             breakdown.append(dict(kind=cfg['kind'], corner=cfg['corner'], seed=meta['seed'], mode=meta['mode'],

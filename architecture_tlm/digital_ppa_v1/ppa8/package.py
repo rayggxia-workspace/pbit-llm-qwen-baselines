@@ -6,7 +6,7 @@ from pathlib import Path
 import shutil
 import zipfile
 
-RELEASE = 'digital_ppa8_ss_tt_100_20261023_v1'
+RELEASE = 'digital_ppa8_ss_tt_100_20261023_v2'
 HERE = Path(__file__).resolve().parent
 KINDS = (0, 2, 4, 5, 6, 7, 8, 21)
 

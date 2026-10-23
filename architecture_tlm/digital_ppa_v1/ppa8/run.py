@@ -11,6 +11,8 @@ import time
 from package import verify, sha, RELEASE, KINDS
 from wave import clip
 from analyze import summarize
+from scalar_vcd import scalarize, verify_pt
+from reuse import validate as validate_reuse, copy_reports
 
 SOURCE = Path(__file__).resolve().parent
 
@@ -91,6 +93,7 @@ def main():
     ap.add_argument('--work', type=Path, required=True)
     ap.add_argument('--kind', type=int, choices=KINDS, required=True)
     ap.add_argument('--corner', choices=('ss', 'tt'), required=True)
+    ap.add_argument('--reuse-from', type=Path)
     a = ap.parse_args()
     verify()
     work = a.work.resolve()
@@ -103,30 +106,56 @@ def main():
         std_model=env['STD_MODEL'], std_model_sha256=sha(Path(env['STD_MODEL'])),
         method='PRELAYOUT_ZERO_DELAY_GATE_VCD_AVERAGED_PT_NO_SDF_NO_SPEF_NO_CTS',
         setup_uncertainty_ns=2., hold_uncertainty_ns=.1, input_slew_ns=.1, output_load_pF=.02,
+        activity_mode='scalar_vcd_bit_checked_v2',
         tool_paths={t: shutil.which(t) for t in ('dc_shell', 'vcs', 'pt_shell')})
+    cases = [m for m in json.loads((SOURCE/'vectors/cases.json').read_text()) if m['kind'] == a.kind]
+    cases.sort(key=lambda m: (m['mode'] != 'stress', m['name']))
+    parent = a.reuse_from.resolve() if a.reuse_from else None
+    if parent:
+        if parent == work or parent in work.parents or work in parent.parents:
+            raise ValueError('Recheck output must be separate from parent')
+        provenance = validate_reuse(parent, cfg, SOURCE, cases)
+        cfg['reuse_parent'] = str(parent)
+        cfg['reuse_provenance'] = provenance
     cp = work/'configuration.json'
     if cp.exists() and json.loads(cp.read_text()) != cfg:
         raise ValueError('Source/library/config changed: start a NEW run directory')
     cp.write_text(json.dumps(cfg, indent=2)+'\n')
     shutil.copyfile(str(SOURCE/'package_manifest.json'), str(work/'source_manifest.json'))
     dc, build = work/'dc', work/'build'
-    stage(dc, ['mapped.v', 'mapped.sdc', 'mapped.ddc', 'inventory.tsv', 'hierarchy.txt', 'SYNTH_COMPLETE'],
-          lambda: command(['dc_shell', '-f', SOURCE/'dc.tcl'], dc, 'dc.log', env))
-    stage(build, ['simv', 'dump_scopes.svh'], lambda: compile_gate(dc, build, env))
-    cases = [m for m in json.loads((SOURCE/'vectors/cases.json').read_text()) if m['kind'] == a.kind]
-    cases.sort(key=lambda m: (m['mode'] != 'stress', m['name']))
+    if parent:
+        copy_reports(parent, work, cases, provenance)
+        dc = parent/'dc'
+        print('REUSE VERIFIED DC/VCS '+str(parent), flush=True)
+    else:
+        stage(dc, ['mapped.v', 'mapped.sdc', 'mapped.ddc', 'inventory.tsv', 'hierarchy.txt', 'SYNTH_COMPLETE'],
+              lambda: command(['dc_shell', '-f', SOURCE/'dc.tcl'], dc, 'dc.log', env))
+        stage(build, ['simv', 'dump_scopes.svh'], lambda: compile_gate(dc, build, env))
     for meta in cases:
         sim = work/'gate'/meta['name']
         required = ['FUNCTION_PASS', 'counts.txt', 'workload.json', 'simulation.log']
         if meta['mode'] != 'stress':
             required += ['window.vcd', 'wave_audit.json']
-        stage(sim, required, lambda: simulate(meta, sim, build, env, dc))
+        if not parent:
+            stage(sim, required, lambda: simulate(meta, sim, build, env, dc))
         if meta['mode'] == 'stress':
             continue
-        env.update(NET_DIR=str(dc), ACTIVITY_VCD=str(sim/'window.vcd'))
+        raw = (parent/'gate'/meta['name'] if parent else sim)/'window.vcd'
+        activity = work/'activity'/meta['name']
+        def prepare():
+            audit = scalarize(raw, activity/'scalar.vcd', a.kind)
+            if abs(audit['duration_ns']-json.loads((sim/'wave_audit.json').read_text())['duration_ns'])>1e-6:
+                raise ValueError('Changed window duration')
+            (activity/'scalar_audit.json').write_text(json.dumps(audit,indent=2)+'\n')
+        stage(activity, ['scalar.vcd','scalar_audit.json'], prepare)
+        env.update(NET_DIR=str(dc), ACTIVITY_VCD=str(activity/'scalar.vcd'))
         pt = work/'power'/meta['name']
-        stage(pt, ['POWER_CALCULATED', 'power.rpt', 'cells.rpt', 'inventory.tsv', 'activity.rpt'],
-              lambda: command(['pt_shell', '-f', SOURCE/'pt.tcl'], pt, 'pt.log', env))
+        def power():
+            command(['pt_shell', '-f', SOURCE/'pt.tcl'], pt, 'pt.log', env)
+            audit = verify_pt(json.loads((activity/'scalar_audit.json').read_text()), pt/'output_activity.tsv')
+            (pt/'BIT_ACTIVITY_PASS.json').write_text(json.dumps(audit,indent=2)+'\n')
+        stage(pt, ['POWER_CALCULATED', 'power.rpt', 'cells.rpt', 'inventory.tsv', 'activity.rpt',
+                   'ranges.rpt','output_activity.tsv','BIT_ACTIVITY_PASS.json'], power)
         summarize(work)
     if len(summarize(work)) != 9:
         raise ValueError('Expected nine power windows')

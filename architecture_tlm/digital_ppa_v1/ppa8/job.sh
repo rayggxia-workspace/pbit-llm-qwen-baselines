@@ -25,5 +25,13 @@ finish() {
 }
 trap finish EXIT
 printf 'Start=%s Work=%s Snapshot=%s Kind=%s Corner=%s\n' "$(date)" "$work" "$PPA_SOURCE" "$kind" "$PPA_CORNER"
-"$PYTHON_BIN" "$PPA_SOURCE/run.py" --work "$work" --kind "$kind" --corner "$PPA_CORNER"
+if [[ -n ${POWER_REUSE_BASE:-} ]]; then
+    parent="${POWER_REUSE_BASE}_${idx}"
+    [[ -d $parent ]] || { echo "Missing parent result: $parent" >&2; exit 2; }
+    exec 8<"$parent/.run.lock"
+    flock -n -s 8 || { echo 'Parent is still running' >&2; exit 3; }
+    "$PYTHON_BIN" "$PPA_SOURCE/run.py" --work "$work" --kind "$kind" --corner "$PPA_CORNER" --reuse-from "$parent"
+else
+    "$PYTHON_BIN" "$PPA_SOURCE/run.py" --work "$work" --kind "$kind" --corner "$PPA_CORNER"
+fi
 printf 'End=%s\n' "$(date)"

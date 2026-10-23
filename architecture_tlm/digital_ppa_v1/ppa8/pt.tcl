@@ -1,4 +1,5 @@
 source [file join $::env(PPA_SOURCE) common.tcl]
+source [file join $::env(PPA_SOURCE) activity_check.tcl]
 proc main {} {
     set_app_var power_enable_analysis true
     set_app_var power_analysis_mode averaged
@@ -12,11 +13,14 @@ proc main {} {
     capture units.rpt {report_units}
     capture timing_update.rpt {update_timing}
     timing_reports pt
-    capture activity.rpt {read_vcd -strip_path tb_ppa/dut $::env(ACTIVITY_VCD)}
+    set activity [capture activity.rpt {read_vcd -strip_path tb_ppa/dut $::env(ACTIVITY_VCD)}]
+    if {[regexp {PWR-981} $activity]} {error "Partial VCD mapping persists; inspect scalar waveform"}
     capture coverage.rpt {report_switching_activity -list_not_annotated}
-    capture checks.rpt {check_power -verbose}
+    capture checks.rpt {check_power -verbose -significant_digits 9}
+    capture ranges.rpt [list check_power -verbose -significant_digits 9 -override_defaults {out_of_table_range} $leaves]
     capture model_checks.rpt [list check_power -verbose -override_defaults {missing_table missing_function} $leaves]
     capture update.rpt {update_power}
+    write_output_activity
     capture power.rpt {report_power -verbose}
     capture hierarchy.rpt {report_power -hierarchy}
     capture cells.rpt [list report_power -cell_power $leaves]

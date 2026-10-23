@@ -1,5 +1,5 @@
 """Publish an archived Issue157 checkpoint; importing performs no API calls."""
-import json, sys
+import json, sys, subprocess
 from pathlib import Path
 from archive_checkpoint import (ROOT,TREE,REPO,load,digest,valid_label,
     progress_text,scheduler_state,scheduler_text,benchmark_text,gate_text)
@@ -75,8 +75,14 @@ def main(argv=None):
     def get(path):
         response=client.get(base+path,timeout=45); response.raise_for_status(); return response.json()
     publication=load(ROOT/'PUBLICATION.json'); pr=get('pulls/163')
-    if pr['head']['sha']!=publication['head'] or pr['state']!='open' or pr.get('merged'):
-        raise ValueError('PR changed/closed/merged; inspect before updating')
+    if pr['state']!='open' or pr.get('merged') or pr['head']['ref']!='task/157-sparq-qwen3' or pr['head']['repo']['full_name']!=REPO:
+        raise ValueError('PR target changed/closed/merged; inspect before updating')
+    ref=get('git/ref/heads/task/157-sparq-qwen3')
+    if ref['object']['sha']!=publication['head'] or not publication.get('ref_verified'):
+        raise ValueError('published Git ref differs; inspect before updating')
+    projection_synced=pr['head']['sha']==publication['head']
+    if not projection_synced:
+        subprocess.run(['git','-C',str(TREE),'merge-base','--is-ancestor',pr['head']['sha'],publication['head']],check=True)
     # Verify uploaded immutable report bytes at the recorded head, not just a link.
     import base64
     key=report['identity']['source_commit'][:12]
@@ -86,6 +92,8 @@ def main(argv=None):
         if item.get('encoding')!='base64' or base64.b64decode(item['content'])!=(ROOT/('review_'+label)/name).read_bytes():
             raise ValueError('published checkpoint bytes differ: '+name)
     body=text['pr_body']
+    if not projection_synced:
+        body+=f'\n\n最新结果已核上传分支 `{publication["head"]}`；PR head 当前仍显示 `{pr["head"]["sha"]}`，投影待同步。报告原件按已验证提交读取，未重推或重建PR。\n'
     control.save('PR_CHECKPOINT_'+label+'_INTENT.json',dict(number=163,body=body,scheduler=state))
     if pr.get('body')!=body:
         response=client.patch(base+'pulls/163',json={'body':body},timeout=45); response.raise_for_status()

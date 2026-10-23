@@ -61,7 +61,13 @@ def main():
     expected_head=git('rev-parse','HEAD')
     assert not git('status','--porcelain'),'checkout must be clean before background continuation'
     assert git('branch','--show-current')=='task/157-sparq-qwen3'
-    published=[];iteration=0;next_collection=0;deadline=time.monotonic()+13*3600
+    published=[]
+    prior=ROOT/'CHECKPOINT_ppl_complete_20261024_PUBLICATION.json'
+    if prior.exists():
+        prior_report=json.loads((ROOT/'review_ppl_complete_20261024/REVIEW.json').read_text(encoding='utf-8'))
+        if prior_report['identity']['source_commit'].startswith(KEY) and 'ppl' in milestone_keys(prior_report):
+            published=['ppl']
+    iteration=0;next_collection=0;deadline=time.monotonic()+13*3600
     state=dict(pid=os.getpid(),started=stamp(),job=JOB,execution=KEY,expected_head=expected_head,
                status='monitoring',published=published,helper_sha256=hashes)
     save(STATE,state)

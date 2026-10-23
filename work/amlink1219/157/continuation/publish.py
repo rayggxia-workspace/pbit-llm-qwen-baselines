@@ -53,13 +53,19 @@ else:
     control.save(intent.name,payload)
     response=session.post(base+'pulls',json=payload,timeout=45);response.raise_for_status();pr=response.json()
 control.save('PR_RECEIPT.json',pr)
-for retry in range(5):
+for retry in range(12):
     current=get('pulls/'+str(pr['number']))
     if current['head']['sha']==head:break
-    time.sleep(2)
-else:raise RuntimeError('ref correct but PR head projection still delayed')
+    time.sleep(3)
+projection_synced=current['head']['sha']==head
+# The ref is the uploaded Git object. A delayed PR projection is metadata
+# pending, not a reason to replay the push or stop independent job monitoring.
+assert current['head']['ref']==branch and current['head']['repo']['full_name']==REPO
+if not projection_synced:
+    subprocess.run(['git','-C',str(TREE),'merge-base','--is-ancestor',current['head']['sha'],head],check=True)
 control.save('PUBLICATION.json',dict(head=head,ref_verified=True,pr=current['html_url'],pr_number=current['number'],
-    pr_head_verified=current['head']['sha'],files=changes,state='draft_open_unmerged'))
+    pr_head_verified=head if projection_synced else None,pr_head_observed=current['head']['sha'],
+    pr_projection_synced=projection_synced,files=changes,state='draft_open_unmerged' if projection_synced else 'ref_uploaded_pr_projection_pending'))
 updated=issue['body'].replace('当前Base与后训练模型名称差异已向用户核对，算法先独立实现。','用户已确认Qwen/Qwen3-4B后训练版，另建匹配BF16基线。')
 updated=updated.replace('- [ ] 固定论文/官方代码SHA','- [x] 固定论文/官方代码SHA')
 marker='\n\n当前交付PR：'+current['html_url']
@@ -67,4 +73,4 @@ if marker not in updated:updated+=marker+'（draft/open/未合并）；CPU45项�
 control.save('ISSUE_UPDATE_INTENT.json',dict(number=157,body=updated))
 response=session.patch(base+'issues/157',json={'body':updated},timeout=45);response.raise_for_status()
 assert get('issues/157')['body']==updated
-print(json.dumps(dict(pr=current['html_url'],head=head,files=len(changes),status='uploaded draft, unmerged'),ensure_ascii=False))
+print(json.dumps(dict(pr=current['html_url'],head=head,files=len(changes),status='uploaded draft, unmerged',pr_projection_synced=projection_synced),ensure_ascii=False))

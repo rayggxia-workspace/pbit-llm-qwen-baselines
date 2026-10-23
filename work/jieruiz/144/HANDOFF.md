@@ -1,5 +1,13 @@
 # Issue144 Qwen3概率架构交接
 
+## 最新：2026-10-23 21:50 CST，26/26全部独立核验，准备发布
+
+2828/2829均已结束，两个PILOT_COMPLETE及complete.json齐全；没有重跑、源码8c35145未改。收取ROOT/exports/complete-v1.tar.gz，SHA a3d0df3f043d4a1fee23f9da547d585bcde0f28e9c325d665880fdd5c1a2ace3，本地tmp/qwen3-issue144-complete-v1.tar.gz，原件qwen3/results/stochastic_20261023/checkpoints/complete。78文件、77清单原字节、37 sidecar、27执行源blob、26病例全目标全层覆盖/NLL/PPL/各SHA绑定核验通过，17篡改负例通过；最终SUMMARY.json/REPORT_ZH.md包含三seed与时间、全部参数、legacy burn字段解释、GQA union和完整WT2预算。
+
+1.7B BF16/FFN/screen/rejection/winner为7.590088/7.666993/8.067234/8.249476/8.091915；4B为6.331575/6.365253/6.676899/6.810810/6.700177。随机均值各3seed，严格4096目标后缀，不是完整WT2。完整26项外推156 GPU小时，若两卡固定分模型约3.7天（规划±30%约2.6–4.8天），未提交全量。
+
+当前仅本地收尾完成；待同branch task/144-qwen3-stochastic推送、逐Git blob/远端原字节核验、Issue清单/PR147 ready与停止heartbeat qwen3。最终实际发布/停表回执以FINAL_PUBLICATION.json和下次顶部为准。PR base仍task/136-qwen3-bf16，不合并、不关闭Issue。Projects仍待有权限成员同步。除最终发布外没有运行实验/待补病例；禁止按下方旧状态重交作业。审计脚本增强不在冻结执行源中；不更新服务器snapshot。保留最小待审工作目录，无新helper/权重。
+
 ## 最新：2026-10-23 20:54 CST，用户要求完成全部方案
 
 2026-10-23 20:54 CST用户要求“请做完全部方案”。继续已冻结两模型各13配置共26项4096目标后缀，不重复健康作业、不扩大为完整WT2；目前日志16/26已完成（1.7B拒绝seed2运行，4B拒绝seed0运行），2828/2829均RUNNING，无错误，未收取的阶段数字不作为正式结果。依据OpenAI Docs官方定时说明通过应用工具实际建立本对话heartbeat id=qwen3，名称“完成Qwen3全部概率方案”，ACTIVE每10分钟，限定收齐26项后核验/汇总/同PR147发布并通知，随后删除定时；无变化保持安静，失败/新权限或范围修改需报告。旧基线同名id曾删除，本次是新建收尾检查。需要本机及桌面应用运行以执行本地SSH/发布，服务器Slurm独立继续。发布源仍8c35145不改，最新科学结果672ad88；此前head5ce00f6的94文件GitHub逐blob原字节通过。

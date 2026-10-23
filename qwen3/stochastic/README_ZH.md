@@ -1,6 +1,6 @@
 # Qwen3 最新概率架构迁移（Issue144）
 
-依赖 Issue136/PR137 的原始 Base 基线，不使用 Chat/Thinking 权重。负责人 jieruiz；分支 task/144-qwen3-stochastic，PR base task/136-qwen3-bf16。截至初次冻结仅实现与待验证计划，不宣称得到概率模型 PPL。
+依赖 Issue136/PR137 的原始 Base 基线，不使用 Chat/Thinking 权重。负责人 jieruiz；分支 task/144-qwen3-stochastic，PR base task/136-qwen3-bf16。2026-10-23全部26项4096目标后缀已完成并独立验证，见[最终结果与完整WT2预算](../results/stochastic_20261023/REPORT_ZH.md)；完整候选WT2未运行。执行快照8c35145保持原字节，当前新增验证/汇总代码只用于收尾审计。
 
 ## 固定架构
 

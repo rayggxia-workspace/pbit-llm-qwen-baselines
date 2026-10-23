@@ -17,7 +17,7 @@ def digest(values):
     return hashlib.sha256(b''.join(struct.pack('<q', x) for x in values)).hexdigest()
 
 
-def validate(root):
+def validate(root, require_complete=False):
     root = Path(root)
     server_sha = json.loads((root / 'SERVER_SHA256.json').read_bytes())
     for name, expected_sha in server_sha.items():
@@ -32,12 +32,19 @@ def validate(root):
     preflight = json.loads((root / 'preflight.json').read_bytes())
     assert preflight['status'] == 'PASS'
     source = preflight['source']
+    assert source['commit'] == '8c35145e0073e48581640cd07c770631412a3f99'
+    assert source['repository'] == 'https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines'
+    assert len(source['files_sha256']) == 27
+    assert preflight['config_sha256'] == source['files_sha256']['qwen3/stochastic/config.json']
     repository = Path(__file__).resolve().parents[2]
     for name, expected_sha in source['files_sha256'].items():
         raw = subprocess.check_output(['git', '-C', str(repository), 'show', source['commit'] + ':' + name])
         assert hashlib.sha256(raw).hexdigest() == expected_sha, name
     specifications = json.loads((repository / 'qwen3/baselines/config.json').read_bytes())
     assert [p['model'] for p in preflight['prepared']] == specifications['models']
+    assert [p['manifest_sha256'] for p in preflight['prepared']] == [
+        'e4f656e2358ec4579580d430c244e28b60b2c72041171aaafb6a1b1dacb7fab6',
+        '30068099f8d08309938e1009a80548fb449a1d7a13edae8b12debc77f5626db8']
     assert {k: v['sha256'] for k, v in preflight['data'].items()} == specifications['data_sha256']
     reports = {}
     expected = {('bf16', 0)} | {(label, seed) for label in
@@ -45,6 +52,10 @@ def validate(root):
     expected_token_sha = '8d41d21825bb0e103dc63337727daf4b51c631cacec5937f014b119ae209081e'
     for index, name in enumerate(['Qwen3-1.7B-Base', 'Qwen3-4B-Base']):
         directory = root / 'results' / name
+        if require_complete:
+            for required in ['gates.json', 'real_model_equivalence.json', 'calibration.json', 'complete.json']:
+                assert str((directory / required).relative_to(root)).replace('\\', '/') in server_sha
+                assert (directory / required).exists()
         rows, seen, targets_reference = [], set(), None
         if not directory.exists():
             reports[name] = dict(status='NOT_YET_AVAILABLE')
@@ -87,12 +98,19 @@ def validate(root):
             assert d['source'] == source and d['config_sha256'] == preflight['config_sha256']
             assert d['model'] == preflight['prepared'][index]['model']
             assert d['input_provenance']['prepared_sha256'] == preflight['prepared'][index]['manifest_sha256']
+            assert d['input_provenance']['model'] == d['model']
+            assert d['input_provenance']['data'] == preflight['data']
+            assert d['input_provenance']['config_sha256'] == d['config_sha256']
+            assert d['input_provenance']['calibration_sha256'] == d['calibration_sha256']
             assert d['token_ids_sha256_le_int64'] == expected_token_sha
             assert d['calibration_sha256'] == sha(directory / 'calibration.json')
             assert d['anchor_sha256'] == sha(root / 'anchor/results' / (name + '.json'))
             assert case['context'] == 2048 and case['decode'] == 128 and case['examples'] == 32
             assert case['batch'] == 2 and d['protocol'] == 'suffix'
             length = d['source_tokens']
+            assert length == 299078
+            assert case['selection'] == 'fixed' and case['budget_blocks'] == 8
+            assert case['target_fraction'] == .3
             starts = [round((length - 2048 - 128) * i / 31) for i in range(32)]
             assert len(d['examples']) == 32
             targets = []
@@ -121,6 +139,11 @@ def validate(root):
             assert audit['decode_calls_per_layer'] == [2048] * layers
             assert audit['prefill_calls_per_layer'] == [16] * layers
             assert audit['ffn_decode_tokens_per_layer'] == [4096] * layers
+            assert audit['ffn_decode_calls_per_layer'] == [2048] * layers
+            assert audit['ffn_prefill_calls_per_layer'] == [16] * layers
+            assert audit['ffn_prefill_tokens_per_layer'] == [65504] * layers
+            assert audit['every_scored_target_executed_all_layers']
+            assert audit['every_scored_target_executed_all_ffns']
             if case['ffn'] != 'none':
                 assert len(d['ffn_stats']) == layers
                 for ffn in d['ffn_stats'].values():
@@ -132,9 +155,17 @@ def validate(root):
                 assert stat['installed_layers'] == layers
                 assert len(stat['layers']) == layers
                 assert stat['actual_sampler'] == case['sampler']
+                assert stat['samples'] == case['samples']
+                assert stat['sampler_parameters'] == dict(winner_initialization='argmax',
+                    winner_burn=0, winner_spacing=1, winner_shift=0, rejection_initial_shift=0,
+                    rejection_max_shift=24, rejection_cap_factor=128, no_second_PV_draw=True)
                 for v in stat['layers'].values():
                     assert v['query_rows'] == 4096 * d['model']['num_attention_heads']
                     assert v['decode_calls'] == 2048 and v['prefill_calls'] == 16
+                    assert v['selected_blocks'] == v['query_rows'] * 8
+                    if case['sampler'] != 'none':
+                        assert v['sampler_calls'] == 2048
+                        assert v['sample_events'] == v['query_rows'] * case['samples']
                 if case['sampler'] in ('rejection', 'winner'):
                     assert case['samples'] == (128 if case['sampler'] == 'rejection' else 1024)
             rows.append(dict(label=key[0], seed=key[1], perplexity=d['perplexity'],
@@ -150,6 +181,9 @@ def validate(root):
         if (directory / 'complete.json').exists():
             complete = json.loads((directory / 'complete.json').read_bytes())
             assert seen == expected and complete['cases'] == 13 and complete['source'] == source
+            assert complete['config_sha256'] == preflight['config_sha256']
+        if require_complete:
+            assert seen == expected
         reports[name] = dict(status='COMPLETE' if seen == expected else 'PARTIAL',
             checked_cases=len(rows), cases=rows, summary=grouped,
             missing=[list(key) for key in sorted(expected - seen)])
@@ -163,8 +197,9 @@ if __name__ == '__main__':
     parser.add_argument('root')
     parser.add_argument('--output')
     parser.add_argument('--git-blobs', action='store_true')
+    parser.add_argument('--require-complete', action='store_true')
     args = parser.parse_args()
-    result = validate(args.root)
+    result = validate(args.root, require_complete=args.require_complete)
     if args.git_blobs:
         repository = Path(__file__).resolve().parents[2]
         raw_root = Path(args.root).resolve()

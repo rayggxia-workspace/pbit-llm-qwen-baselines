@@ -17,6 +17,16 @@
 ---
 以下为Issue98历史发布回执，与Issue116发布状态分开：
 
+# Issue123 已按用户要求停止（2026-10-23）
+
+task/123-full-ffn-ppa / PR125待审。正式PR126@160f46e＋PR122@8007d98接合已上传d944081；28项冻结包测试、120次独立随机payload复核及45RTL场景通过。完整fixture已捕获。
+
+CPU2783于03:41按用户要求取消，CANCELLED/0:15、24:20，无全尺寸成功summary/trace/数值结论；本任务无运行作业。主机候选源码、已有34测试回执和小烟测已归档，未接入发布runner，未新提交全尺寸作业。
+
+已做/未做/恢复步骤及中间文件索引见work/amlink1219/123/STOP_REPORT_ZH.md。STA/PPA交接文件已上传并@jieruiz，待其实际EDA；PPA/PPL未知。保留必要复现快照，未删除唯一数据；无自动继续。Projects待read:project，不自动合并/关闭。
+
+---
+
 发布回执（Issue121）：科学提交`3e8cb017e71a96aa628b1772810b7fdf12884245`已上传[PR122](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/122)，87项远端Git对象一致，开放待审、未合并。Issue116已回传接合结果；后续元数据提交不改变验证源码。
 
 # 2026-10-23 Issue121：编码恢复与周期后端接合
@@ -39,6 +49,8 @@
 ---
 # Issue118 FFN供数与局部状态合同（2026-10-23）
 
+# Issue116 周期级TLM执行后端（2026-10-23）
+
 已上传[PR120](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/120)，科学提交`8bea1dfd1db24263a6daea5e6a29de641b23f03c`，48个远端Git文件对象核验一致；Issue118验收清单/结果评论同步。PR待审、未合并。Projects现场返回INSUFFICIENT_SCOPES/read:project，待有权限者同步；仓库发布不受影响。此后仅发布回执/交接元数据不改科学结果。
 
 负责人amlink1219；`task/118-ffn-storage-contract`；base集成46804fb；独立目录`workspace_projects/sf23`，未改cycle23任务工作树。六项供数合同执行、四非法配置、30功能测试、66整数场景888逐档输出通过，源/结果SHA已核。正式入口`architecture_tlm/ffn_storage_contract/README_ZH.md`与研究状态对齐报告；台账`ffn-storage-118-design`，DESIGN_PROOF。
@@ -56,6 +68,7 @@ T32保持/串行重读6.92us/3.2768ms，只是不同局部资源的SRAM->消费�
 入口architecture_tlm/ffn_dataflow_optimization/README_ZH.md，原始48gzip、3输入及SHA清单已准备；中央台账新增本任务1条/48行，当前分支36条564行，未合并其他任务登记须集成取并集。交接work/amlink1219/124/HANDOFF.md；结果提交c509772已上传PR127，未合并，回执见PUBLICATION.json。最终PR126已发布116冻结依赖；13份GitHub空缓存重建逐SHA与原20项测试通过，复现阻塞解除，执行源不漂移。Projects实测缺read:project，本机固定阅读镜像路径不存在，二者待同步。不自动合并/关闭Issue，无运行中的本任务作业。
 
 ---
+以下为Issue98历史发布回执，与Issue116发布状态分开：
 
 发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
 

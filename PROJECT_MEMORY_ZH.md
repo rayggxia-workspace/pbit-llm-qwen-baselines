@@ -1,3 +1,7 @@
+## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
+
+负责人jieruiz，task/138-trainable-samplers，基线6966739，源码b6e3d034。新增experiments/trainable_pbit_attention；真实Bernoulli提议、均匀仲裁/保持、2^-m全零校正和自适应拒绝；全部轨迹score-function训练，有偏Softmax代理显式分离，量化禁冒称精确梯度。22/22合成数值测试，81条有限赢家轨迹/梯度穷举、三seed分布对照和6个小训练通过；无Qwen/Llama新PPL、CUDA、物理随机源或RTL/PPA。训练源码/配置/结果SHA见results/VALIDATION.json，交接work/jieruiz/138/HANDOFF.md。发布以同目录PUBLICATION.json为准，未合并；未改正式TLM/硬件默认，后续真实LLM集成和梯度方差/内存仍待验证。复用现有本地Torch2.4.1 CPU，无新服务器作业。
+
 ## 2026-10-23 Issue123 完整FFN与STA/PPA交接
 
 Issue116已通过PR126发布正式后端，本任务PR125固定160f46e与PR122@8007d98接合完整gate/up→SiLU/product→z重编码→down→BF16/残差，legacy默认保留。新接口按FP32 x/z、共享64组、逐输出B4恢复、独立跨k加法和有限信用执行。独立提取执行包28项测试通过，原核全payload等价。完整896→4864→896真实fixture已捕获（CPU2777），CPU2783全尺寸T32于03:41按用户要求取消（24:20、CANCELLED/0:15），无完整形状通过结论；2779/2780中断证据保留。候选调度源码/已有小烟测仅归档，不接入默认，不自动继续；停止总结为work/amlink1219/123/STOP_REPORT_ZH.md。

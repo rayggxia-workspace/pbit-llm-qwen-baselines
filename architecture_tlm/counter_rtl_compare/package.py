@@ -35,7 +35,7 @@ def main():
     if x.snapshot:print(snapshot(x.snapshot));return
     assert x.zip is not None
     files=list(entries());m=dict(scope='counter comparison RTL and flow only; PPA not run',files={str(p.relative_to(ROOT)).replace('\\','/'):dict(bytes=p.stat().st_size,sha256=sha(p.read_bytes())) for p in files})
-    (ROOT/'package_manifest.json').write_text(json.dumps(m,indent=2)+'\n',encoding='utf-8')
+    (ROOT/'package_manifest.json').write_bytes((json.dumps(m,indent=2)+'\n').encode('utf-8'))
     with zipfile.ZipFile(x.zip,'w',zipfile.ZIP_DEFLATED) as z:
         for p in files+[ROOT/'package_manifest.json']:z.write(p,x.prefix+'/'+str(p.relative_to(ROOT)).replace('\\','/'))
     assert verify()==len(files)

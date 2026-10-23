@@ -1,6 +1,6 @@
 ## 2026-10-23 Issue133：计数器PPA v2运行包
 
-用户要求对sc_counter_compare_20261023.zip做功耗面积，沿用Issue133/PR135/task/133，不重复建任务。RTL/TB不变；修正scalar VCD输出位宽被后续声明覆盖导致漏核验，补提交源码快照、A/B×SS/TT100MHz的M1 smoke与M64正式四项、数值面积/内开关漏电功耗/完整帧能量与互斥单元分类。源/新解压包9测试、Bash/Python3.6/Tcl检查及小RTL A/B四窗口90bit校验通过；没有DC/VCS/PT或完整M64新结果。zip为根sc_counter_ppa100_20261023_v2.zip，47287B，SHA c20482214c56a6f0daafd90f72915299de3bfd6b711640d2a7210b54657265b9；原始小验证归档project_archives/counter_rtl_20261023/PPA_V2_VALIDATION_RAW.tar.gz。原统一record补索引，仍待跑PPA；先上传跑smoke回传4包。具体指令RUN_PPA_ZH.txt，远端状态以work/jieruiz/133/PPA_V2_DELIVERY.json及后续回执为准，本条不宣称已合并。保留其他任务镜像。
+用户要求对sc_counter_compare_20261023.zip做功耗面积，沿用Issue133/PR135/task/133，不重复建任务。RTL/TB不变；修正scalar VCD输出位宽被后续声明覆盖导致漏核验，补提交源码快照、A/B×SS/TT100MHz的M1 smoke与M64正式四项、数值面积/内开关漏电功耗/完整帧能量与互斥单元分类。源/新解压包9测试、Bash/Python3.6/Tcl检查及小RTL A/B四窗口90bit校验通过；没有DC/VCS/PT或完整M64新结果。zip为根sc_counter_ppa100_20261023_v2.zip，47271B，SHA 84169483a9175f7a12a1a5c5540c237fe85d501826b793b1da300ea56d7aad7f；原始小验证归档project_archives/counter_rtl_20261023/PPA_V2_VALIDATION_RAW.tar.gz。原统一record补索引，仍待跑PPA；先上传跑smoke回传4包。具体指令RUN_PPA_ZH.txt，远端状态以work/jieruiz/133/PPA_V2_DELIVERY.json及后续回执为准，本条不宣称已合并。保留其他任务镜像。
 
 ## 2026-10-23 Issue133：FFN精确计数A/B电路
 

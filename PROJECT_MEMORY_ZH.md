@@ -1091,3 +1091,7 @@ jieruiz，task/107-tlm-cycle-digital-rtl，独立tmp/tlm-digital-issue107-202610
 本对话00:19实际移除10个已结束任务副本，逻辑1,182,605,540 B（约1.183 GB），64独有文件/10 ZIP/3增量bundle保留；10:29复核全部原分支和恢复ref、归档SHA/bundle通过，仿真台账157文件/26成员无缺失。正式回执maintenance/storage_cleanup_20261023_review，实际恢复索引project_archives/cleanup_20261023/REVIEW_REMOVAL_RECEIPT.json和REVIEW_FINAL_VERIFICATION.json。部分包位于review_audit_collision_preimages，按最终路径/SHA恢复，不用早期计划重跑删除。并发ZIP重名已恢复对方原SHA，无源文件损失。
 
 LLM对话先前独立压缩10网表约2.713GB及回收1个Issue19回执约0.188GB，均不包含在上述1.183GB；该对话继续新增清理，Issue68保持open。模型、唯一原件、主对象库、进行中任务和其他成员目录保留。恢复先读索引，不因工作目录已移除而重复实验。发布/合并状态查Issue68最新回执；本条随review/68-cleanup-receipt-20261023交付。
+
+## 2026-10-23 Issue55第八轮审核快照
+
+PR119/120/122/125/126/127/130限定阶段成果通过；新#130为存储总结。独立组合359测试注册、358通过、1个Windows符号链接场景跳过；已复核208资源结果、48数据流轨迹及真实GQA公开回执。74份GQA源码有公开同字节祖先映射，修复旧未公开commit复核入口。台账取45记录/964配置行并集，不重复计新实验。详见work/jieruiz/55/round8/REVIEW_ZH.md；实际远端合并以Issue55收尾回执为准。Issue116/123暂停不变；全尺寸2783取消未验收，DC/PT未执行。下一项工艺工作是#125编码恢复SS/T32最小PPA，与Issue107八模块PPA包分开计费。

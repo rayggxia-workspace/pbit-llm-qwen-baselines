@@ -14,6 +14,11 @@ SHA、验证归档、实际发布状态见PPA_V2_DELIVERY.json及后续回执。
 统一台账原record补充v2，不制造新的已测PPA；看板权限待同步。
 本段本地完成，是否已推送以回执为准；下方已推送描述是此前v1。
 
+实际回执：013859d/7753168本地提交；HTTPS push因low-speed超时失败。
+PR135远端已回读仍7f38018，open未合并；Issue评论6362207999已同步阻塞。
+最终包47271B，SHA84169483a9175f7a12a1a5c5540c237fe85d501826b793b1da300ea56d7aad7f。
+新manifest为UTF-8 LF；最终包31文件校验与解压后9测试通过。网络恢复后推送本分支。
+
 负责人jieruiz；分支task/133-counter-rtl；独立目录tmp/counter-rtl-issue133-20261023；base6966739a5223680888bf0315f7bb4f73423a1ae6，PR目标pbit-tlm-attention-details-20261016。
 
 已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。

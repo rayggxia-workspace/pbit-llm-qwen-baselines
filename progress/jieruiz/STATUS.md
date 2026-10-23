@@ -1,3 +1,11 @@
+# Issue107：8类SS/TT 100MHz PPA任务包（2026-10-23）
+
+负责人jieruiz，复用task/107-tlm-cycle-digital-rtl、tmp/tlm-digital-issue107-20261022、PR109；base pbit-tlm-attention-details-20261016。源码提交6bc3389de08fba8250a17f0991849a4368898205，KIND0/2/4/5/6/7/8/21，各SS1.08V125C、TT1.2V25C，100MHz，setup uncertainty20%。原RTL23e8d65f保持，新增ppa8目录，不改用户服务器快照。
+
+本地交付ZIP digital_ppa8_ss_tt_100_20261023_v1.zip，2173363B，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4；包内包含RTL/ROM/转换依赖/TB/离线参考向量。最终ZIP解压后96场景/17070输出逐位通过，6流程守卫、Python3.6语法/3.8运行、Tcl角条件/约束/错误传播与Bash语法通过。没有运行DC/VCS/PT，实际工艺任务待用户提交，未知功耗面积仍null。
+
+中央台账接续PR111@2b7935f4，仅在本任务副本新增digital-ppa8-20261023-prepared及派生索引，不修改Issue110工作树。原35条保持，现36条/532配置行；新16行是计划不是实测。脚本使用独立只读快照和SHA阶段恢复，建议先smoke(SS/TT KIND21)，通过后remaining14项。默认4CPU/16GB/12h、最多2项并发，无FGP要求。完整说明及回执见work/jieruiz/107/ppa8/。当前本地完成待发布核验，Issue保持open，不自动合并；Projects按read:project权限不足待同步。
+
 # Issue107后续：最新TLM的Verilog仿真缺口（2026-10-22）
 
 负责人jieruiz，沿用task/107-tlm-cycle-digital-rtl和原独立checkout/PR109；远端初始aedc08d。原23e8d65f RTL/66功能组及12870输出不改。本次只读核对PR103@b05fb36d、台账PR111@2b7935f4，新增11组硬件表征需求、机器任务JSON和回传模板，无新RTL/EDA/TLM/模型运行。

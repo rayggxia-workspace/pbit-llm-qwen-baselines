@@ -1,3 +1,15 @@
+# Issue107最新交付：8类SS/TT PPA脚本（2026-10-23）
+
+本轮按用户要求落实8类现成模块KIND0/2/4/5/6/7/8/21，不扩大为随机矩阵/SRAM/整机。脚本源码6bc3389de08fba8250a17f0991849a4368898205，正式architecture_tlm/digital_ppa_v1/ppa8；原RTL23e8d65f无改动。55nm SVT SS1.08V125C、TT1.2V25C；100MHz/10ns、setup2ns、hold0.1ns。2个smoke再14个remaining，或all16，不重复提交活跃任务。每项1次DC、1次VCS编译、12次数值检查、9个PT窗口；三个seed17/43/101，stress只功能，stream/burst/idle用于功耗。
+
+源码包本机根digital_ppa8_ss_tt_100_20261023_v1.zip，2173363B，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。包内全部RTL/ROM/转换依赖和参考向量，不含PDK。最终解压96场景17070输出通过，6流程守卫/Python3.6语法/3.8运行/Tcl/Bash通过。首次本地Icarus正斜杠-B路径导致未启动编译，换Windows原生路径后通过；不是RTL修复。原始记录含失败保留于project_archives/digital_ppa8_20261023/LOCAL_VALIDATION_RAW.tar.gz，SHA ce744dc4c68e96074bf0eb0a84c39fb1807bf0f949a40fe8fae3eafc8b8e21fb。DELIVERY.json记录精确来源/校验。
+
+重要：DC/VCS/PT均未在本地运行，没有新的功耗面积或STA结果。VCS脚本为零延迟门级，STA独立PT；不能由功能通过证明100MHz时序达标。功耗计入边界寄存器，分组另给；不含CTS/布线/真实毛刺。近似SwiGLU不继承PPL，编码按64元素组，恢复不得重复乘64/72。KIND2/8混合1/14/76/128/512帧流的单位能量不是单独S128实测，KIND8短帧仅部分和协议测试。
+
+台账基线为PR111@2b7935f4，其目录被完整引用到本任务分支以便同PR登记，未改110工作树；新增记录digital-ppa8-20261023-prepared，现36条/532行，16行工艺阶段均not_run。发布时注明依赖PR111，保留既有记录。根目录台账只作为同步阅读镜像，不独立编辑。任务在本地完成，远端发布状态以ppa8/PUBLICATION.json为准；Projects仍待read:project。未提交任何BSCC任务。
+
+用户操作：上传根ZIP到远端pbit_chimera_pipeline_20260920，unzip -o，进入release目录，python3 package.py，bash submit.sh smoke；SS/TT KIND21通过再bash submit.sh remaining。下载results/<arrayJobID>_<index>_reports.tar.gz及logs/*.out/*.err。失败按相同release/库使用REUSE_RUN=<原ID> bash submit.sh <index>；源码/库变更必须新目录。恢复前查已运行作业，不重交健康任务。下一步收到实际报告后新增真实run台账，不把计划记录改成另一执行版本。
+
 # Issue107最新补充：仿真需求分析（2026-10-22）
 
 接续用户“最新TLM还需哪些Verilog具体仿真”，jieruiz沿用本task/107分支、PR109、tmp/tlm-digital-issue107-20261022。没有新建全量工作树；原RTL/功能证据/结果包不改。新成果已实际推送科学head e7b5d256ca00a725394c4ee8decf4d562a672f5c，8关键远端blob回读一致；PR109及Issue107已更新，待审未合并。publication和远端核验在latest_gap/PUBLICATION.json、REMOTE_VERIFY_SCIENCE.json；后续metadata不改变原报告/来源。

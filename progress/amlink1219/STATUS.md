@@ -28,6 +28,13 @@
 入口architecture_tlm/encoding_restore_contract/README_ZH.md；交接work/amlink1219/121/HANDOFF.md。116后端四文件固定本地已提交cd27d980，发布时需复核远端新接口；完整FFN接合、STA/每操作能量/质量仍待补。PPA保持null，未声称全链闭合。极小数舍入差和-128总线反号均有反例，新增模块AGENTS约束维护。
 
 成果已完成，上传/PR状态以work/amlink1219/121/PUBLICATION.json回执及远端ref为准；不自动合并/关闭。Projects实测缺read:project，暂待有权限者同步；仓库上传不受影响。
+# 2026-10-23 Issue117：ASIC资源计划首轮优化
+
+负责人amlink1219；独立workspace_projects/ar117，task/117-asic-resource-optimization；base集成46804fb。接续Issue112规划，本轮208项新完整decode TLM已全部完成：128共同候选粗筛＋64预声明代表点补充＋16vector128跟进，五代表点覆盖四方法/2K8K/三seed。没有剩余运行、待补case或GPU/Slurm任务。71项测试通过（28新增＋43原v6），52＋40旧情景145payload SHA未变；独立verify通过208完整键集合、配置/源/receipt、336query覆盖及容量/相位/资源守恒。
+
+执行提交44dbbbdbc2720963b2b24bf03cdf7582a2d97075、315862412e15695c3fa21e6c573d9e5f3547e70d、b1b4d183678e25f24b7b37c273fcb3f61c37483b；十份执行清单的数值/调度源SHA集合相同。容量only无时延收益，同1MiB映射小幅改善；vector128下SC筛选/PV三seed均值比同配置W8在8K快7.543849%，2K慢4.166733%。结果是合成事务条件估计，未做新PPL/RTL/EDA；完整面积/能量/A0仍null，不能宣称SC普遍更优或完整同面积验收。
+
+正式入口architecture_tlm/resource_optimization_v1/README_ZH.md、RESULTS_ZH.md、results/analysis_20261023/SUMMARY.json与VALIDATION.json；交接work/amlink1219/117/HANDOFF.md含精确重汇总/验收命令。208项完整交付通过PR119，PR待审未合并，最终远端head/验证见PUBLICATION.json；统一台账已按CALIBRATED_ESTIMATE登记，check/render与8项台账测试通过。历史指定阅读镜像路径本机不存在、未同步。Projects缺read:project待补。不重复Issue116周期后端或PR120/Issue118供数/局部状态合同；后者待审且未纳入本轮。下方历史保留，实时状态以各任务最新回执为准。
 
 ---
 

@@ -1,5 +1,7 @@
 # Issue107最新交付：8类SS/TT PPA脚本（2026-10-23）
 
+交付时Git HTTPS推送失败/超时，后续PR尚未创建。GitHub API身份jieruiz和Issue107状态open已回读。包可独立上传运行；网络恢复后推送本分支并新建后续PR，不复用已合并PR109。最终回执为ppa8/PUBLICATION.json。本机中央台账阅读镜像同步为36条，旧35条保留集成后的审核修复版。
+
 发布前实时检查确认PR109/111已合并；本批改用task/107-digital-ppa8-ss-tt后续分支，仍为Issue107，复用本工作目录。已合入最新集成e8705765ed3286b225e042378d57e5d010e221ee，台账的digital-107-functional旧原件路径采用审核修复版，其他35条逐字节保留。后续PR编号/推送回读见ppa8/PUBLICATION.json。下文关于PR109的描述指本批开始时基线，不能作为当前PR状态。脚本包既定来源SHA不变，不重新生成同名不同字节包。
 
 本轮按用户要求落实8类现成模块KIND0/2/4/5/6/7/8/21，不扩大为随机矩阵/SRAM/整机。脚本源码6bc3389de08fba8250a17f0991849a4368898205，正式architecture_tlm/digital_ppa_v1/ppa8；原RTL23e8d65f无改动。55nm SVT SS1.08V125C、TT1.2V25C；100MHz/10ns、setup2ns、hold0.1ns。2个smoke再14个remaining，或all16，不重复提交活跃任务。每项1次DC、1次VCS编译、12次数值检查、9个PT窗口；三个seed17/43/101，stress只功能，stream/burst/idle用于功耗。

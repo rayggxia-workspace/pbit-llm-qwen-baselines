@@ -1,5 +1,7 @@
 # Issue107：8类SS/TT 100MHz PPA脚本（2026-10-23）
 
+最终交付核实：本地包、台账和阅读镜像已就绪；Git HTTPS推送失败/超时，尚未创建后续PR。GitHub API已核实jieruiz及Issue107仍open；具体同步状态见work/jieruiz/107/ppa8/PUBLICATION.json，不把本地完成写成远端完成。用户上传运行不依赖此Git网络问题。
+
 负责人jieruiz；当前分支task/107-digital-ppa8-ss-tt，复用tmp/tlm-digital-issue107-20261022。发布前发现PR109/111均已合并，因此合入最新集成e8705765ed3286b225e042378d57e5d010e221ee，保留最新台账原件路径与本页其他任务历史，用新后续PR交付，不向已关闭PR追加。原Issue107保持open。
 
 脚本执行源6bc3389de08fba8250a17f0991849a4368898205，KIND0/2/4/5/6/7/8/21，各SS1.08V125C、TT1.2V25C，100MHz；RTL23e8d65f未改。包digital_ppa8_ss_tt_100_20261023_v1.zip，2173363B，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出通过，6流程守卫、Python3.6语法/3.8运行、Tcl与Bash检查通过。无DC/VCS/PT实跑；功耗/面积null。中央台账36条/532行，新16工艺配置待运行。

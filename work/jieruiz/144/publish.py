@@ -9,6 +9,8 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import time
+import urllib.error
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -31,8 +33,16 @@ def api(method, path, payload=None):
         headers={"Authorization": "Bearer " + credential["password"],
                  "Accept": "application/vnd.github+json", "Content-Type": "application/json",
                  "User-Agent": "pbit-qwen3-issue144"})
-    with urllib.request.urlopen(request, timeout=45) as response:
-        return json.load(response)
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(request, timeout=45) as response:
+                return json.load(response)
+        except urllib.error.URLError:
+            # Only replay idempotent reads; never duplicate a write after an
+            # ambiguous response. GitHub TLS occasionally disconnects here.
+            if method != 'GET' or attempt == 2:
+                raise
+            time.sleep(attempt + 1)
 
 
 def git(*args):

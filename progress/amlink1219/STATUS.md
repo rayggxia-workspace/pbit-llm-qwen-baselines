@@ -1,22 +1,22 @@
-# Issue157：后训练 Qwen3-4B SparQ（2026-10-24T01:10:08+08:00）
+# Issue157：后训练 Qwen3-4B SparQ（2026-10-24T01:27:06+08:00）
 
-[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163) 待审、未自动合并；固定执行源 `8d60abe4e7c5c245c8f5f87b7f66e49e23ae0eea`。GPU 2878 最近保存的 Slurm 状态 **RUNNING**，ExitCode=0:0，观测文件时间 2026-10-23T17:09:49+00:00。这是保存的调度证据；监控断连或文件缺失不证明作业结束。
+[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163) 待审、未自动合并；固定执行源 `8d60abe4e7c5c245c8f5f87b7f66e49e23ae0eea`。GPU 2878 最近保存的 Slurm 状态 **RUNNING**，ExitCode=0:0，观测文件时间 2026-10-23T17:26:48+00:00。这是保存的调度证据；监控断连或文件缺失不证明作业结束。
 
-独立复核 `partial_verified`；尚未完整核验：arc_easy/dense、arc_easy/sparq、hellaswag/dense、hellaswag/sparq、最终 SUMMARY。
+独立复核 `partial_verified`；尚未完整核验：hellaswag/dense、hellaswag/sparq、最终 SUMMARY。
 
 - cached dense：292/292 窗，299077 个目标；完整 PPL=11.5381534；完整核验=True。
 - cached sparq：292/292 窗，299077 个目标；完整 PPL=10.7979258；完整核验=True。
 - 向量化 BF16 anchor：292/292 窗，PPL=11.5371605，完整核验=True；执行形状与 cached 不同。
 - piqa/dense：1838/1838 题，全任务 acc=0.750816104, acc_norm=0.749183896；完整核验=True。
 - piqa/sparq：1838/1838 题，全任务 acc=0.749727965, acc_norm=0.748639826；完整核验=True。
-- arc_easy/dense：256/2376 题，已验子集 acc=0.7734375, acc_norm=0.77734375；完整核验=False。
-- arc_easy/sparq：0/2376 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
+- arc_easy/dense：2376/2376 题，全任务 acc=0.805976431, acc_norm=0.783249158；完整核验=True。
+- arc_easy/sparq：2376/2376 题，全任务 acc=0.804713805, acc_norm=0.784090909；完整核验=True。
 - hellaswag/dense：0/10042 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
 - hellaswag/sparq：0/10042 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
 
 GPU benchmark 完整核验=True；NVIDIA GeForce RTX 5090，context2048/decode128：native 47.8418 token/s，dense 47.8444 token/s，sparq 14.3296 token/s。功率：本次已核源码调用方传入裸 UUID，而采样器要求 GPU- 前缀，导致采样未启用；不是另一块 GPU 或 NVML 缺失的证据。。这是原 FFN 的 Python 全模型参考计时，不是优化稀疏 kernel 或 ASIC 速度/能耗。后续计量修复须另冻结、另存补充，不能替换原质量快照。
 
-见[完整报告](../../qwen3/sparq/results/8d60abe4e7c5/reviews/auto_20261024_010956_piqa/REVIEW_ZH.md)及[交接](../../work/amlink1219/157/HANDOFF.md)。正式 MC 逐题，跨题候选失败保留；完整 RTL/STA/PPA 尚缺，116/123 仍暂停。
+见[完整报告](../../qwen3/sparq/results/8d60abe4e7c5/reviews/auto_20261024_012655_arc_easy/REVIEW_ZH.md)及[交接](../../work/amlink1219/157/HANDOFF.md)。正式 MC 逐题，跨题候选失败保留；完整 RTL/STA/PPA 尚缺，116/123 仍暂停。
 
 ---
 

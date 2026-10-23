@@ -1,3 +1,7 @@
+## 2026-10-23 Issue129 两页通俗说明
+
+按用户要求补充功耗面积节省机制、速度控制与剩余验证，面向非专业听众，省略内部结构细节。正式文件 architecture_tlm/memory_savings_20261023/概率计算的能耗面积与速度_两页说明.docx；两页，Word导出及逐页PNG检查通过。原7页报告保留，无新实验，不恢复暂停任务。分支 task/129-two-page-brief，复用 tmp/memory-savings-issue129-20261023；上传/PR以 BRIEF_PUBLICATION.json 为准，合并前不关闭Issue129。
+
 # Issue129 SRAM与DRAM节省总结
 
 负责人：jieruiz；2026-10-23。正式仓库rayggxia-workspace/pbit-llm-qwen-baselines，base pbit-tlm-attention-details-20261016@e8705765ed3286b225e042378d57e5d010e221ee。

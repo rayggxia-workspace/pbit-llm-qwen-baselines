@@ -1,0 +1,1377 @@
+{
+  "schema_version": 1,
+  "status": "analytic_counts_completed_no_hardware_measurement",
+  "source_sha256": {
+    "__init__.py": "e17cd5cdb5c49d2227c63d05e55becab65e6bff1aa39a546821ba5e63c468831",
+    "ledger.py": "401def319ab0d13ae1d5dd5374c04e661faeffa382c43492a96ff48228b70eb7",
+    "run.py": "129f20cd9e0ed2553ce1606b1426903709ce2e5519fcc6708185ac3f0c4194e2",
+    "test_ledger.py": "58c6047ae863b087ac7be5b67963ed6858017fe37933da3f3e9ab8865766f771"
+  },
+  "model_target": {
+    "repository": "Qwen/Qwen3-4B",
+    "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "weights_loaded": false,
+    "applies_only_if_geometry_matches_config": true
+  },
+  "rates": {
+    "clock_hz": 100000000,
+    "macs_per_cycle": 64,
+    "vector_ops_per_cycle": 16,
+    "compare_exchanges_per_cycle": 16,
+    "exps_per_cycle": 4,
+    "reciprocals_per_cycle": 1,
+    "sqrts_per_cycle": 1,
+    "conversions_per_cycle": 16,
+    "dram_bytes_per_cycle": 16
+  },
+  "cases": [
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 2048,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": 32768,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 32768
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "d01f9583ddd0b8bd1131c0f3a0cf52a9afd8c3b50ff785675d856dd609a2b4c4",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 2097152,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 524288
+        },
+        "approx_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "group_probability_sum": {
+          "head_sum_add": 49152
+        },
+        "token_selection": {
+          "compare_exchange": 540672,
+          "local_membership_test": 16384,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 8388608,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 2101248
+        },
+        "exact_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "exact_pv": {
+          "exact_pv_mac": 8388608,
+          "convert_bf16_to_fp32": 2097152,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 2016,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "dense_V_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          }
+        },
+        "core_logical_read_bytes": 1572864,
+        "core_physical_read_bytes": 1572864,
+        "dense_core_logical_read_bytes": 8388608,
+        "dense_core_physical_read_bytes": 8388608,
+        "core_read_ratio": 0.1875,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 1642496,
+        "dense_core_plus_append_physical_bytes": 8392704,
+        "construction_extra_read_bytes": 4194304,
+        "construction_extra_write_bytes": 4194304
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 67108864,
+        "V_token_major_allocated_bytes": 67108864,
+        "K_channel_major_allocated_bytes": 67108864,
+        "total_cache_allocated_bytes": 201326592,
+        "dense_cache_allocated_bytes": 134217728,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 262144,
+          "approx_probabilities_fp32": 262144,
+          "group_probability_fp32": 65536,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 660480,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 4194304,
+          "logical_read_bytes": 8388608,
+          "cold_burst_read_bytes": 8388608,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": {
+        "status": "conditional_resource_work_only",
+        "rates": {
+          "clock_hz": 100000000,
+          "macs_per_cycle": 64,
+          "vector_ops_per_cycle": 16,
+          "compare_exchanges_per_cycle": 16,
+          "exps_per_cycle": 4,
+          "reciprocals_per_cycle": 1,
+          "sqrts_per_cycle": 1,
+          "conversions_per_cycle": 16,
+          "dram_bytes_per_cycle": 16
+        },
+        "work": {
+          "mac": 3145728,
+          "vector": 292832,
+          "compare_exchange": 624576,
+          "exp": 69632,
+          "reciprocal": 128,
+          "sqrt": 32,
+          "conversion": 794624,
+          "dram_bytes": 1642496
+        },
+        "cycles_by_resource": {
+          "mac": 49152,
+          "vector": 18302,
+          "compare_exchange": 39036,
+          "exp": 17408,
+          "reciprocal": 128,
+          "sqrt": 32,
+          "conversion": 49664,
+          "dram_bytes": 102656
+        },
+        "capacity_lower_bound_cycles": 102656,
+        "no_overlap_service_work_cycles": 276378,
+        "capacity_lower_bound_ns": 1026560.0,
+        "no_overlap_service_work_ns": 2763780.0,
+        "latency_ns": null,
+        "limitations": [
+          "Neither cycle figure is a realized schedule or a latency upper bound",
+          "No reduction/sort dependency latency, pipeline fill, bank conflicts, CDC, command or host overhead",
+          "Aggregate resources are shared by all heads; no implicit replication",
+          "No mapped RTL, STA, clock or throughput qualification"
+        ]
+      },
+      "dense_conditional_cycles": {
+        "status": "conditional_resource_work_only",
+        "rates": {
+          "clock_hz": 100000000,
+          "macs_per_cycle": 64,
+          "vector_ops_per_cycle": 16,
+          "compare_exchanges_per_cycle": 16,
+          "exps_per_cycle": 4,
+          "reciprocals_per_cycle": 1,
+          "sqrts_per_cycle": 1,
+          "conversions_per_cycle": 16,
+          "dram_bytes_per_cycle": 16
+        },
+        "work": {
+          "mac": 16777216,
+          "vector": 200672,
+          "compare_exchange": 65504,
+          "exp": 65536,
+          "reciprocal": 32,
+          "sqrt": 0,
+          "conversion": 4202496,
+          "dram_bytes": 8392704
+        },
+        "cycles_by_resource": {
+          "mac": 262144,
+          "vector": 12542,
+          "compare_exchange": 4094,
+          "exp": 16384,
+          "reciprocal": 32,
+          "sqrt": 0,
+          "conversion": 262656,
+          "dram_bytes": 524544
+        },
+        "capacity_lower_bound_cycles": 524544,
+        "no_overlap_service_work_cycles": 1082396,
+        "capacity_lower_bound_ns": 5245440.0,
+        "no_overlap_service_work_ns": 10823960.0,
+        "latency_ns": null,
+        "limitations": [
+          "Neither cycle figure is a realized schedule or a latency upper bound",
+          "No reduction/sort dependency latency, pipeline fill, bank conflicts, CDC, command or host overhead",
+          "Aggregate resources are shared by all heads; no implicit replication",
+          "No mapped RTL, STA, clock or throughput qualification"
+        ]
+      }
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 2048,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": 32768,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 32768
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "d01f9583ddd0b8bd1131c0f3a0cf52a9afd8c3b50ff785675d856dd609a2b4c4",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 2097152,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 524288
+        },
+        "approx_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "group_probability_sum": {
+          "head_sum_add": 49152
+        },
+        "token_selection": {
+          "compare_exchange": 540672,
+          "local_membership_test": 16384,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 8388608,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 2101248
+        },
+        "exact_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "exact_pv": {
+          "exact_pv_mac": 8388608,
+          "convert_bf16_to_fp32": 2097152,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 2016,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "dense_V_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 1572864,
+        "core_physical_read_bytes": 4718592,
+        "dense_core_logical_read_bytes": 8388608,
+        "dense_core_physical_read_bytes": 8388608,
+        "core_read_ratio": 0.5625,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 4722688,
+        "dense_core_plus_append_physical_bytes": 8392704,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 67108864,
+        "V_token_major_allocated_bytes": 67108864,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 134217728,
+        "dense_cache_allocated_bytes": 134217728,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 262144,
+          "approx_probabilities_fp32": 262144,
+          "group_probability_fp32": 65536,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 660480,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 4194304,
+          "logical_read_bytes": 8388608,
+          "cold_burst_read_bytes": 8388608,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": {
+        "status": "conditional_resource_work_only",
+        "rates": {
+          "clock_hz": 100000000,
+          "macs_per_cycle": 64,
+          "vector_ops_per_cycle": 16,
+          "compare_exchanges_per_cycle": 16,
+          "exps_per_cycle": 4,
+          "reciprocals_per_cycle": 1,
+          "sqrts_per_cycle": 1,
+          "conversions_per_cycle": 16,
+          "dram_bytes_per_cycle": 16
+        },
+        "work": {
+          "mac": 3145728,
+          "vector": 292832,
+          "compare_exchange": 624576,
+          "exp": 69632,
+          "reciprocal": 128,
+          "sqrt": 32,
+          "conversion": 794624,
+          "dram_bytes": 4722688
+        },
+        "cycles_by_resource": {
+          "mac": 49152,
+          "vector": 18302,
+          "compare_exchange": 39036,
+          "exp": 17408,
+          "reciprocal": 128,
+          "sqrt": 32,
+          "conversion": 49664,
+          "dram_bytes": 295168
+        },
+        "capacity_lower_bound_cycles": 295168,
+        "no_overlap_service_work_cycles": 468890,
+        "capacity_lower_bound_ns": 2951680.0,
+        "no_overlap_service_work_ns": 4688900.0,
+        "latency_ns": null,
+        "limitations": [
+          "Neither cycle figure is a realized schedule or a latency upper bound",
+          "No reduction/sort dependency latency, pipeline fill, bank conflicts, CDC, command or host overhead",
+          "Aggregate resources are shared by all heads; no implicit replication",
+          "No mapped RTL, STA, clock or throughput qualification"
+        ]
+      },
+      "dense_conditional_cycles": {
+        "status": "conditional_resource_work_only",
+        "rates": {
+          "clock_hz": 100000000,
+          "macs_per_cycle": 64,
+          "vector_ops_per_cycle": 16,
+          "compare_exchanges_per_cycle": 16,
+          "exps_per_cycle": 4,
+          "reciprocals_per_cycle": 1,
+          "sqrts_per_cycle": 1,
+          "conversions_per_cycle": 16,
+          "dram_bytes_per_cycle": 16
+        },
+        "work": {
+          "mac": 16777216,
+          "vector": 200672,
+          "compare_exchange": 65504,
+          "exp": 65536,
+          "reciprocal": 32,
+          "sqrt": 0,
+          "conversion": 4202496,
+          "dram_bytes": 8392704
+        },
+        "cycles_by_resource": {
+          "mac": 262144,
+          "vector": 12542,
+          "compare_exchange": 4094,
+          "exp": 16384,
+          "reciprocal": 32,
+          "sqrt": 0,
+          "conversion": 262656,
+          "dram_bytes": 524544
+        },
+        "capacity_lower_bound_cycles": 524544,
+        "no_overlap_service_work_cycles": 1082396,
+        "capacity_lower_bound_ns": 5245440.0,
+        "no_overlap_service_work_ns": 10823960.0,
+        "latency_ns": null,
+        "limitations": [
+          "Neither cycle figure is a realized schedule or a latency upper bound",
+          "No reduction/sort dependency latency, pipeline fill, bank conflicts, CDC, command or host overhead",
+          "Aggregate resources are shared by all heads; no implicit replication",
+          "No mapped RTL, STA, clock or throughput qualification"
+        ]
+      }
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 32768,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": 32768,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 32768
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "445a76ab47b62d97df7061f013e09900b844d092fa646688685bac94bd3cdc84",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 33554432,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 8388608
+        },
+        "approx_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "group_probability_sum": {
+          "head_sum_add": 786432
+        },
+        "token_selection": {
+          "compare_exchange": 15728640,
+          "local_membership_test": 262144,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 134217728,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 33558528
+        },
+        "exact_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "exact_pv": {
+          "exact_pv_mac": 134217728,
+          "convert_bf16_to_fp32": 33554432,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 32736,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "dense_V_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          }
+        },
+        "core_logical_read_bytes": 17301504,
+        "core_physical_read_bytes": 17301504,
+        "dense_core_logical_read_bytes": 134217728,
+        "dense_core_physical_read_bytes": 134217728,
+        "core_read_ratio": 0.12890625,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 17371136,
+        "dense_core_plus_append_physical_bytes": 134221824,
+        "construction_extra_read_bytes": 67108864,
+        "construction_extra_write_bytes": 67108864
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 67108864,
+        "V_token_major_allocated_bytes": 67108864,
+        "K_channel_major_allocated_bytes": 67108864,
+        "total_cache_allocated_bytes": 201326592,
+        "dense_cache_allocated_bytes": 134217728,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 4194304,
+          "approx_probabilities_fp32": 4194304,
+          "group_probability_fp32": 1048576,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 9507840,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 67108864,
+          "logical_read_bytes": 134217728,
+          "cold_burst_read_bytes": 134217728,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": {
+        "status": "conditional_resource_work_only",
+        "rates": {
+          "clock_hz": 100000000,
+          "macs_per_cycle": 64,
+          "vector_ops_per_cycle": 16,
+          "compare_exchanges_per_cycle": 16,
+          "exps_per_cycle": 4,
+          "reciprocals_per_cycle": 1,
+          "sqrts_per_cycle": 1,
+          "conversions_per_cycle": 16,
+          "dram_bytes_per_cycle": 16
+        },
+        "work": {
+          "mac": 34603008,
+          "vector": 4224992,
+          "compare_exchange": 16795584,
+          "exp": 1052672,
+          "reciprocal": 128,
+          "sqrt": 32,
+          "conversion": 8658944,
+          "dram_bytes": 17371136
+        },
+        "cycles_by_resource": {
+          "mac": 540672,
+          "vector": 264062,
+          "compare_exchange": 1049724,
+          "exp": 263168,
+          "reciprocal": 128,
+          "sqrt": 32,
+          "conversion": 541184,
+          "dram_bytes": 1085696
+        },
+        "capacity_lower_bound_cycles": 1085696,
+        "no_overlap_service_work_cycles": 3744666,
+        "capacity_lower_bound_ns": 10856960.0,
+        "no_overlap_service_work_ns": 37446660.0,
+        "latency_ns": null,
+        "limitations": [
+          "Neither cycle figure is a realized schedule or a latency upper bound",
+          "No reduction/sort dependency latency, pipeline fill, bank conflicts, CDC, command or host overhead",
+          "Aggregate resources are shared by all heads; no implicit replication",
+          "No mapped RTL, STA, clock or throughput qualification"
+        ]
+      },
+      "dense_conditional_cycles": {
+        "status": "conditional_resource_work_only",
+        "rates": {
+          "clock_hz": 100000000,
+          "macs_per_cycle": 64,
+          "vector_ops_per_cycle": 16,
+          "compare_exchanges_per_cycle": 16,
+          "exps_per_cycle": 4,
+          "reciprocals_per_cycle": 1,
+          "sqrts_per_cycle": 1,
+          "conversions_per_cycle": 16,
+          "dram_bytes_per_cycle": 16
+        },
+        "work": {
+          "mac": 268435456,
+          "vector": 3149792,
+          "compare_exchange": 1048544,
+          "exp": 1048576,
+          "reciprocal": 32,
+          "sqrt": 0,
+          "conversion": 67117056,
+          "dram_bytes": 134221824
+        },
+        "cycles_by_resource": {
+          "mac": 4194304,
+          "vector": 196862,
+          "compare_exchange": 65534,
+          "exp": 262144,
+          "reciprocal": 32,
+          "sqrt": 0,
+          "conversion": 4194816,
+          "dram_bytes": 8388864
+        },
+        "capacity_lower_bound_cycles": 8388864,
+        "no_overlap_service_work_cycles": 17302556,
+        "capacity_lower_bound_ns": 83888640.0,
+        "no_overlap_service_work_ns": 173025560.0,
+        "latency_ns": null,
+        "limitations": [
+          "Neither cycle figure is a realized schedule or a latency upper bound",
+          "No reduction/sort dependency latency, pipeline fill, bank conflicts, CDC, command or host overhead",
+          "Aggregate resources are shared by all heads; no implicit replication",
+          "No mapped RTL, STA, clock or throughput qualification"
+        ]
+      }
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 32768,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": 32768,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 32768
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "445a76ab47b62d97df7061f013e09900b844d092fa646688685bac94bd3cdc84",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 33554432,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 8388608
+        },
+        "approx_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "group_probability_sum": {
+          "head_sum_add": 786432
+        },
+        "token_selection": {
+          "compare_exchange": 15728640,
+          "local_membership_test": 262144,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 134217728,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 33558528
+        },
+        "exact_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "exact_pv": {
+          "exact_pv_mac": 134217728,
+          "convert_bf16_to_fp32": 33554432,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 32736,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "dense_V_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 17301504,
+        "core_physical_read_bytes": 67633152,
+        "dense_core_logical_read_bytes": 134217728,
+        "dense_core_physical_read_bytes": 134217728,
+        "core_read_ratio": 0.50390625,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 67637248,
+        "dense_core_plus_append_physical_bytes": 134221824,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 67108864,
+        "V_token_major_allocated_bytes": 67108864,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 134217728,
+        "dense_cache_allocated_bytes": 134217728,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 4194304,
+          "approx_probabilities_fp32": 4194304,
+          "group_probability_fp32": 1048576,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 9507840,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 67108864,
+          "logical_read_bytes": 134217728,
+          "cold_burst_read_bytes": 134217728,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": {
+        "status": "conditional_resource_work_only",
+        "rates": {
+          "clock_hz": 100000000,
+          "macs_per_cycle": 64,
+          "vector_ops_per_cycle": 16,
+          "compare_exchanges_per_cycle": 16,
+          "exps_per_cycle": 4,
+          "reciprocals_per_cycle": 1,
+          "sqrts_per_cycle": 1,
+          "conversions_per_cycle": 16,
+          "dram_bytes_per_cycle": 16
+        },
+        "work": {
+          "mac": 34603008,
+          "vector": 4224992,
+          "compare_exchange": 16795584,
+          "exp": 1052672,
+          "reciprocal": 128,
+          "sqrt": 32,
+          "conversion": 8658944,
+          "dram_bytes": 67637248
+        },
+        "cycles_by_resource": {
+          "mac": 540672,
+          "vector": 264062,
+          "compare_exchange": 1049724,
+          "exp": 263168,
+          "reciprocal": 128,
+          "sqrt": 32,
+          "conversion": 541184,
+          "dram_bytes": 4227328
+        },
+        "capacity_lower_bound_cycles": 4227328,
+        "no_overlap_service_work_cycles": 6886298,
+        "capacity_lower_bound_ns": 42273280.0,
+        "no_overlap_service_work_ns": 68862980.0,
+        "latency_ns": null,
+        "limitations": [
+          "Neither cycle figure is a realized schedule or a latency upper bound",
+          "No reduction/sort dependency latency, pipeline fill, bank conflicts, CDC, command or host overhead",
+          "Aggregate resources are shared by all heads; no implicit replication",
+          "No mapped RTL, STA, clock or throughput qualification"
+        ]
+      },
+      "dense_conditional_cycles": {
+        "status": "conditional_resource_work_only",
+        "rates": {
+          "clock_hz": 100000000,
+          "macs_per_cycle": 64,
+          "vector_ops_per_cycle": 16,
+          "compare_exchanges_per_cycle": 16,
+          "exps_per_cycle": 4,
+          "reciprocals_per_cycle": 1,
+          "sqrts_per_cycle": 1,
+          "conversions_per_cycle": 16,
+          "dram_bytes_per_cycle": 16
+        },
+        "work": {
+          "mac": 268435456,
+          "vector": 3149792,
+          "compare_exchange": 1048544,
+          "exp": 1048576,
+          "reciprocal": 32,
+          "sqrt": 0,
+          "conversion": 67117056,
+          "dram_bytes": 134221824
+        },
+        "cycles_by_resource": {
+          "mac": 4194304,
+          "vector": 196862,
+          "compare_exchange": 65534,
+          "exp": 262144,
+          "reciprocal": 32,
+          "sqrt": 0,
+          "conversion": 4194816,
+          "dram_bytes": 8388864
+        },
+        "capacity_lower_bound_cycles": 8388864,
+        "no_overlap_service_work_cycles": 17302556,
+        "capacity_lower_bound_ns": 83888640.0,
+        "no_overlap_service_work_ns": 173025560.0,
+        "latency_ns": null,
+        "limitations": [
+          "Neither cycle figure is a realized schedule or a latency upper bound",
+          "No reduction/sort dependency latency, pipeline fill, bank conflicts, CDC, command or host overhead",
+          "Aggregate resources are shared by all heads; no implicit replication",
+          "No mapped RTL, STA, clock or throughput qualification"
+        ]
+      }
+    }
+  ]
+}

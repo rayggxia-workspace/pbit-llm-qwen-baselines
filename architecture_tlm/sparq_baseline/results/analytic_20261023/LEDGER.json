@@ -1,0 +1,4859 @@
+{
+  "schema_version": 1,
+  "status": "analytic_counts_completed_no_hardware_measurement",
+  "source_sha256": {
+    "__init__.py": "e17cd5cdb5c49d2227c63d05e55becab65e6bff1aa39a546821ba5e63c468831",
+    "ledger.py": "401def319ab0d13ae1d5dd5374c04e661faeffa382c43492a96ff48228b70eb7",
+    "run.py": "129f20cd9e0ed2553ce1606b1426903709ce2e5519fcc6708185ac3f0c4194e2",
+    "test_ledger.py": "58c6047ae863b087ac7be5b67963ed6858017fe37933da3f3e9ab8865766f771"
+  },
+  "model_target": {
+    "repository": "Qwen/Qwen3-4B",
+    "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "weights_loaded": false,
+    "applies_only_if_geometry_matches_config": true
+  },
+  "rates": null,
+  "cases": [
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 128,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": true,
+        "dense_fallback_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "sparse_kv_heads": [],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 128
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "10d4bcaab343773b330639d70bc407f9561eb46eadb4a1b91e8fd09dfb46411b",
+      "operations": {
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 135168
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 135168
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 0,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          }
+        },
+        "core_logical_read_bytes": 524288,
+        "core_physical_read_bytes": 524288,
+        "dense_core_logical_read_bytes": 524288,
+        "dense_core_physical_read_bytes": 524288,
+        "core_read_ratio": 1.0,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 593920,
+        "dense_core_plus_append_physical_bytes": 528384,
+        "construction_extra_read_bytes": 262144,
+        "construction_extra_write_bytes": 262144
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 262144,
+        "V_token_major_allocated_bytes": 262144,
+        "K_channel_major_allocated_bytes": 262144,
+        "total_cache_allocated_bytes": 786432,
+        "dense_cache_allocated_bytes": 524288,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 0,
+          "approx_probabilities_fp32": 0,
+          "group_probability_fp32": 0,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 0,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 69632,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 262144,
+          "logical_read_bytes": 524288,
+          "cold_burst_read_bytes": 524288,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 128,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": true,
+        "dense_fallback_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "sparse_kv_heads": [],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 128
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "e0eb84112c7bebcd8633662e940ae56532ee270aaf9647a83d5bed1f21b39c35",
+      "operations": {
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 135168
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 135168
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 0,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          }
+        },
+        "core_logical_read_bytes": 524288,
+        "core_physical_read_bytes": 524288,
+        "dense_core_logical_read_bytes": 524288,
+        "dense_core_physical_read_bytes": 524288,
+        "core_read_ratio": 1.0,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 593920,
+        "dense_core_plus_append_physical_bytes": 528384,
+        "construction_extra_read_bytes": 262144,
+        "construction_extra_write_bytes": 262144
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 262144,
+        "V_token_major_allocated_bytes": 262144,
+        "K_channel_major_allocated_bytes": 262144,
+        "total_cache_allocated_bytes": 786432,
+        "dense_cache_allocated_bytes": 524288,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 0,
+          "approx_probabilities_fp32": 0,
+          "group_probability_fp32": 0,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 0,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 69632,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 262144,
+          "logical_read_bytes": 524288,
+          "cold_burst_read_bytes": 524288,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 128,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": true,
+        "dense_fallback_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "sparse_kv_heads": [],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 128
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "10d4bcaab343773b330639d70bc407f9561eb46eadb4a1b91e8fd09dfb46411b",
+      "operations": {
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 135168
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 135168
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 0,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 524288,
+        "core_physical_read_bytes": 524288,
+        "dense_core_logical_read_bytes": 524288,
+        "dense_core_physical_read_bytes": 524288,
+        "core_read_ratio": 1.0,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 528384,
+        "dense_core_plus_append_physical_bytes": 528384,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 262144,
+        "V_token_major_allocated_bytes": 262144,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 524288,
+        "dense_cache_allocated_bytes": 524288,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 0,
+          "approx_probabilities_fp32": 0,
+          "group_probability_fp32": 0,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 0,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 69632,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 262144,
+          "logical_read_bytes": 524288,
+          "cold_burst_read_bytes": 524288,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 128,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": true,
+        "dense_fallback_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "sparse_kv_heads": [],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 128
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "e0eb84112c7bebcd8633662e940ae56532ee270aaf9647a83d5bed1f21b39c35",
+      "operations": {
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 135168
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 135168
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 0,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 524288,
+        "core_physical_read_bytes": 524288,
+        "dense_core_logical_read_bytes": 524288,
+        "dense_core_physical_read_bytes": 524288,
+        "core_read_ratio": 1.0,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 528384,
+        "dense_core_plus_append_physical_bytes": 528384,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 262144,
+        "V_token_major_allocated_bytes": 262144,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 524288,
+        "dense_cache_allocated_bytes": 524288,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 0,
+          "approx_probabilities_fp32": 0,
+          "group_probability_fp32": 0,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 0,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 69632,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 262144,
+          "logical_read_bytes": 524288,
+          "cold_burst_read_bytes": 524288,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 512,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 512
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "5a89561da4cda16d858cb894161ce000adbfd7bbc9ddd0990efa5d242e758ffb",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 524288,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 131072
+        },
+        "approx_softmax": {
+          "max_compare": 16352,
+          "subtract": 16384,
+          "exp": 16384,
+          "sum_add": 16352,
+          "reciprocal": 32,
+          "normalize_multiply": 16384
+        },
+        "group_probability_sum": {
+          "head_sum_add": 12288
+        },
+        "token_selection": {
+          "compare_exchange": 92160,
+          "local_membership_test": 4096,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 2097152,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 528384
+        },
+        "exact_softmax": {
+          "max_compare": 16352,
+          "subtract": 16384,
+          "exp": 16384,
+          "sum_add": 16352,
+          "reciprocal": 32,
+          "normalize_multiply": 16384
+        },
+        "exact_pv": {
+          "exact_pv_mac": 2097152,
+          "convert_bf16_to_fp32": 524288,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 480,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "dense_V_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          }
+        },
+        "core_logical_read_bytes": 786432,
+        "core_physical_read_bytes": 786432,
+        "dense_core_logical_read_bytes": 2097152,
+        "dense_core_physical_read_bytes": 2097152,
+        "core_read_ratio": 0.375,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 856064,
+        "dense_core_plus_append_physical_bytes": 2101248,
+        "construction_extra_read_bytes": 1048576,
+        "construction_extra_write_bytes": 1048576
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 1048576,
+        "V_token_major_allocated_bytes": 1048576,
+        "K_channel_major_allocated_bytes": 1048576,
+        "total_cache_allocated_bytes": 3145728,
+        "dense_cache_allocated_bytes": 2097152,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 65536,
+          "approx_probabilities_fp32": 65536,
+          "group_probability_fp32": 16384,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 218112,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 1048576,
+          "logical_read_bytes": 2097152,
+          "cold_burst_read_bytes": 2097152,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 512,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 512
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "6c8f688e5949974ee6a18e9f278e3f926be836ec64f6e6ebbcf0bb4efa3c4a7a",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 524288,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 131072
+        },
+        "approx_softmax": {
+          "max_compare": 16352,
+          "subtract": 16384,
+          "exp": 16384,
+          "sum_add": 16352,
+          "reciprocal": 32,
+          "normalize_multiply": 16384
+        },
+        "group_probability_sum": {
+          "head_sum_add": 12288
+        },
+        "token_selection": {
+          "compare_exchange": 92160,
+          "local_membership_test": 4096,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 2097152,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 528384
+        },
+        "exact_softmax": {
+          "max_compare": 16352,
+          "subtract": 16384,
+          "exp": 16384,
+          "sum_add": 16352,
+          "reciprocal": 32,
+          "normalize_multiply": 16384
+        },
+        "exact_pv": {
+          "exact_pv_mac": 2097152,
+          "convert_bf16_to_fp32": 524288,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 480,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "dense_V_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          }
+        },
+        "core_logical_read_bytes": 786432,
+        "core_physical_read_bytes": 786432,
+        "dense_core_logical_read_bytes": 2097152,
+        "dense_core_physical_read_bytes": 2097152,
+        "core_read_ratio": 0.375,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 856064,
+        "dense_core_plus_append_physical_bytes": 2101248,
+        "construction_extra_read_bytes": 1048576,
+        "construction_extra_write_bytes": 1048576
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 1048576,
+        "V_token_major_allocated_bytes": 1048576,
+        "K_channel_major_allocated_bytes": 1048576,
+        "total_cache_allocated_bytes": 3145728,
+        "dense_cache_allocated_bytes": 2097152,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 65536,
+          "approx_probabilities_fp32": 65536,
+          "group_probability_fp32": 16384,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 218112,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 1048576,
+          "logical_read_bytes": 2097152,
+          "cold_burst_read_bytes": 2097152,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 512,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 512
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "5a89561da4cda16d858cb894161ce000adbfd7bbc9ddd0990efa5d242e758ffb",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 524288,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 131072
+        },
+        "approx_softmax": {
+          "max_compare": 16352,
+          "subtract": 16384,
+          "exp": 16384,
+          "sum_add": 16352,
+          "reciprocal": 32,
+          "normalize_multiply": 16384
+        },
+        "group_probability_sum": {
+          "head_sum_add": 12288
+        },
+        "token_selection": {
+          "compare_exchange": 92160,
+          "local_membership_test": 4096,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 2097152,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 528384
+        },
+        "exact_softmax": {
+          "max_compare": 16352,
+          "subtract": 16384,
+          "exp": 16384,
+          "sum_add": 16352,
+          "reciprocal": 32,
+          "normalize_multiply": 16384
+        },
+        "exact_pv": {
+          "exact_pv_mac": 2097152,
+          "convert_bf16_to_fp32": 524288,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 480,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "dense_V_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 786432,
+        "core_physical_read_bytes": 786432,
+        "dense_core_logical_read_bytes": 2097152,
+        "dense_core_physical_read_bytes": 2097152,
+        "core_read_ratio": 0.375,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 790528,
+        "dense_core_plus_append_physical_bytes": 2101248,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 1048576,
+        "V_token_major_allocated_bytes": 1048576,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 2097152,
+        "dense_cache_allocated_bytes": 2097152,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 65536,
+          "approx_probabilities_fp32": 65536,
+          "group_probability_fp32": 16384,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 218112,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 1048576,
+          "logical_read_bytes": 2097152,
+          "cold_burst_read_bytes": 2097152,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 512,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 512
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "6c8f688e5949974ee6a18e9f278e3f926be836ec64f6e6ebbcf0bb4efa3c4a7a",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 524288,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 131072
+        },
+        "approx_softmax": {
+          "max_compare": 16352,
+          "subtract": 16384,
+          "exp": 16384,
+          "sum_add": 16352,
+          "reciprocal": 32,
+          "normalize_multiply": 16384
+        },
+        "group_probability_sum": {
+          "head_sum_add": 12288
+        },
+        "token_selection": {
+          "compare_exchange": 92160,
+          "local_membership_test": 4096,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 2097152,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 528384
+        },
+        "exact_softmax": {
+          "max_compare": 16352,
+          "subtract": 16384,
+          "exp": 16384,
+          "sum_add": 16352,
+          "reciprocal": 32,
+          "normalize_multiply": 16384
+        },
+        "exact_pv": {
+          "exact_pv_mac": 2097152,
+          "convert_bf16_to_fp32": 524288,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 480,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "dense_V_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 786432,
+        "core_physical_read_bytes": 1572864,
+        "dense_core_logical_read_bytes": 2097152,
+        "dense_core_physical_read_bytes": 2097152,
+        "core_read_ratio": 0.75,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 1576960,
+        "dense_core_plus_append_physical_bytes": 2101248,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 1048576,
+        "V_token_major_allocated_bytes": 1048576,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 2097152,
+        "dense_cache_allocated_bytes": 2097152,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 65536,
+          "approx_probabilities_fp32": 65536,
+          "group_probability_fp32": 16384,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 218112,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 1048576,
+          "logical_read_bytes": 2097152,
+          "cold_burst_read_bytes": 2097152,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 2048,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 2048
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "c08ef1a5762a1b43d7a003e1740cb11aa29643b70e3149f13c9a9ee4874e88d6",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 2097152,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 524288
+        },
+        "approx_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "group_probability_sum": {
+          "head_sum_add": 49152
+        },
+        "token_selection": {
+          "compare_exchange": 540672,
+          "local_membership_test": 16384,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 8388608,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 2101248
+        },
+        "exact_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "exact_pv": {
+          "exact_pv_mac": 8388608,
+          "convert_bf16_to_fp32": 2097152,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 2016,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "dense_V_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          }
+        },
+        "core_logical_read_bytes": 1572864,
+        "core_physical_read_bytes": 1572864,
+        "dense_core_logical_read_bytes": 8388608,
+        "dense_core_physical_read_bytes": 8388608,
+        "core_read_ratio": 0.1875,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 1642496,
+        "dense_core_plus_append_physical_bytes": 8392704,
+        "construction_extra_read_bytes": 4194304,
+        "construction_extra_write_bytes": 4194304
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 4194304,
+        "V_token_major_allocated_bytes": 4194304,
+        "K_channel_major_allocated_bytes": 4194304,
+        "total_cache_allocated_bytes": 12582912,
+        "dense_cache_allocated_bytes": 8388608,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 262144,
+          "approx_probabilities_fp32": 262144,
+          "group_probability_fp32": 65536,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 660480,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 4194304,
+          "logical_read_bytes": 8388608,
+          "cold_burst_read_bytes": 8388608,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 2048,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 2048
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "d01f9583ddd0b8bd1131c0f3a0cf52a9afd8c3b50ff785675d856dd609a2b4c4",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 2097152,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 524288
+        },
+        "approx_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "group_probability_sum": {
+          "head_sum_add": 49152
+        },
+        "token_selection": {
+          "compare_exchange": 540672,
+          "local_membership_test": 16384,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 8388608,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 2101248
+        },
+        "exact_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "exact_pv": {
+          "exact_pv_mac": 8388608,
+          "convert_bf16_to_fp32": 2097152,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 2016,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "dense_V_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          }
+        },
+        "core_logical_read_bytes": 1572864,
+        "core_physical_read_bytes": 1572864,
+        "dense_core_logical_read_bytes": 8388608,
+        "dense_core_physical_read_bytes": 8388608,
+        "core_read_ratio": 0.1875,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 1642496,
+        "dense_core_plus_append_physical_bytes": 8392704,
+        "construction_extra_read_bytes": 4194304,
+        "construction_extra_write_bytes": 4194304
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 4194304,
+        "V_token_major_allocated_bytes": 4194304,
+        "K_channel_major_allocated_bytes": 4194304,
+        "total_cache_allocated_bytes": 12582912,
+        "dense_cache_allocated_bytes": 8388608,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 262144,
+          "approx_probabilities_fp32": 262144,
+          "group_probability_fp32": 65536,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 660480,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 4194304,
+          "logical_read_bytes": 8388608,
+          "cold_burst_read_bytes": 8388608,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 2048,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 2048
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "c08ef1a5762a1b43d7a003e1740cb11aa29643b70e3149f13c9a9ee4874e88d6",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 2097152,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 524288
+        },
+        "approx_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "group_probability_sum": {
+          "head_sum_add": 49152
+        },
+        "token_selection": {
+          "compare_exchange": 540672,
+          "local_membership_test": 16384,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 8388608,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 2101248
+        },
+        "exact_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "exact_pv": {
+          "exact_pv_mac": 8388608,
+          "convert_bf16_to_fp32": 2097152,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 2016,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 16384,
+            "physical_bytes": 1048576
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "dense_V_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 1572864,
+        "core_physical_read_bytes": 1572864,
+        "dense_core_logical_read_bytes": 8388608,
+        "dense_core_physical_read_bytes": 8388608,
+        "core_read_ratio": 0.1875,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 1576960,
+        "dense_core_plus_append_physical_bytes": 8392704,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 4194304,
+        "V_token_major_allocated_bytes": 4194304,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 8388608,
+        "dense_cache_allocated_bytes": 8388608,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 262144,
+          "approx_probabilities_fp32": 262144,
+          "group_probability_fp32": 65536,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 660480,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 4194304,
+          "logical_read_bytes": 8388608,
+          "cold_burst_read_bytes": 8388608,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 2048,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 2048
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "d01f9583ddd0b8bd1131c0f3a0cf52a9afd8c3b50ff785675d856dd609a2b4c4",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 2097152,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 524288
+        },
+        "approx_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "group_probability_sum": {
+          "head_sum_add": 49152
+        },
+        "token_selection": {
+          "compare_exchange": 540672,
+          "local_membership_test": 16384,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 8388608,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 2101248
+        },
+        "exact_softmax": {
+          "max_compare": 65504,
+          "subtract": 65536,
+          "exp": 65536,
+          "sum_add": 65504,
+          "reciprocal": 32,
+          "normalize_multiply": 65536
+        },
+        "exact_pv": {
+          "exact_pv_mac": 8388608,
+          "convert_bf16_to_fp32": 2097152,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 2016,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "dense_V_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 1572864,
+        "core_physical_read_bytes": 4718592,
+        "dense_core_logical_read_bytes": 8388608,
+        "dense_core_physical_read_bytes": 8388608,
+        "core_read_ratio": 0.5625,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 4722688,
+        "dense_core_plus_append_physical_bytes": 8392704,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 4194304,
+        "V_token_major_allocated_bytes": 4194304,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 8388608,
+        "dense_cache_allocated_bytes": 8388608,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 262144,
+          "approx_probabilities_fp32": 262144,
+          "group_probability_fp32": 65536,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 660480,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 4194304,
+          "logical_read_bytes": 8388608,
+          "cold_burst_read_bytes": 8388608,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 8192,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 8192
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "e898d5f1e8779474be1197067efa08ac6d5375ca3f419fd14dfd8cff6c49a02f",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 8388608,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 2097152
+        },
+        "approx_softmax": {
+          "max_compare": 262112,
+          "subtract": 262144,
+          "exp": 262144,
+          "sum_add": 262112,
+          "reciprocal": 32,
+          "normalize_multiply": 262144
+        },
+        "group_probability_sum": {
+          "head_sum_add": 196608
+        },
+        "token_selection": {
+          "compare_exchange": 2981888,
+          "local_membership_test": 65536,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 33554432,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 8392704
+        },
+        "exact_softmax": {
+          "max_compare": 262112,
+          "subtract": 262144,
+          "exp": 262144,
+          "sum_add": 262112,
+          "reciprocal": 32,
+          "normalize_multiply": 262144
+        },
+        "exact_pv": {
+          "exact_pv_mac": 33554432,
+          "convert_bf16_to_fp32": 8388608,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 8160,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "dense_V_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          }
+        },
+        "core_logical_read_bytes": 4718592,
+        "core_physical_read_bytes": 4718592,
+        "dense_core_logical_read_bytes": 33554432,
+        "dense_core_physical_read_bytes": 33554432,
+        "core_read_ratio": 0.140625,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 4788224,
+        "dense_core_plus_append_physical_bytes": 33558528,
+        "construction_extra_read_bytes": 16777216,
+        "construction_extra_write_bytes": 16777216
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 16777216,
+        "V_token_major_allocated_bytes": 16777216,
+        "K_channel_major_allocated_bytes": 16777216,
+        "total_cache_allocated_bytes": 50331648,
+        "dense_cache_allocated_bytes": 33554432,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 1048576,
+          "approx_probabilities_fp32": 1048576,
+          "group_probability_fp32": 262144,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 2429952,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 16777216,
+          "logical_read_bytes": 33554432,
+          "cold_burst_read_bytes": 33554432,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 8192,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 8192
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "62a2b74a94beda24a781c6a87f5f7f93ec4eaab9d1a3ddb500175e4778d084a4",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 8388608,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 2097152
+        },
+        "approx_softmax": {
+          "max_compare": 262112,
+          "subtract": 262144,
+          "exp": 262144,
+          "sum_add": 262112,
+          "reciprocal": 32,
+          "normalize_multiply": 262144
+        },
+        "group_probability_sum": {
+          "head_sum_add": 196608
+        },
+        "token_selection": {
+          "compare_exchange": 2981888,
+          "local_membership_test": 65536,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 33554432,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 8392704
+        },
+        "exact_softmax": {
+          "max_compare": 262112,
+          "subtract": 262144,
+          "exp": 262144,
+          "sum_add": 262112,
+          "reciprocal": 32,
+          "normalize_multiply": 262144
+        },
+        "exact_pv": {
+          "exact_pv_mac": 33554432,
+          "convert_bf16_to_fp32": 8388608,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 8160,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "dense_V_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          }
+        },
+        "core_logical_read_bytes": 4718592,
+        "core_physical_read_bytes": 4718592,
+        "dense_core_logical_read_bytes": 33554432,
+        "dense_core_physical_read_bytes": 33554432,
+        "core_read_ratio": 0.140625,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 4788224,
+        "dense_core_plus_append_physical_bytes": 33558528,
+        "construction_extra_read_bytes": 16777216,
+        "construction_extra_write_bytes": 16777216
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 16777216,
+        "V_token_major_allocated_bytes": 16777216,
+        "K_channel_major_allocated_bytes": 16777216,
+        "total_cache_allocated_bytes": 50331648,
+        "dense_cache_allocated_bytes": 33554432,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 1048576,
+          "approx_probabilities_fp32": 1048576,
+          "group_probability_fp32": 262144,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 2429952,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 16777216,
+          "logical_read_bytes": 33554432,
+          "cold_burst_read_bytes": 33554432,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 8192,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 8192
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "e898d5f1e8779474be1197067efa08ac6d5375ca3f419fd14dfd8cff6c49a02f",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 8388608,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 2097152
+        },
+        "approx_softmax": {
+          "max_compare": 262112,
+          "subtract": 262144,
+          "exp": 262144,
+          "sum_add": 262112,
+          "reciprocal": 32,
+          "normalize_multiply": 262144
+        },
+        "group_probability_sum": {
+          "head_sum_add": 196608
+        },
+        "token_selection": {
+          "compare_exchange": 2981888,
+          "local_membership_test": 65536,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 33554432,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 8392704
+        },
+        "exact_softmax": {
+          "max_compare": 262112,
+          "subtract": 262144,
+          "exp": 262144,
+          "sum_add": 262112,
+          "reciprocal": 32,
+          "normalize_multiply": 262144
+        },
+        "exact_pv": {
+          "exact_pv_mac": 33554432,
+          "convert_bf16_to_fp32": 8388608,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 8160,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 65536,
+            "physical_bytes": 4194304
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "dense_V_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 4718592,
+        "core_physical_read_bytes": 4718592,
+        "dense_core_logical_read_bytes": 33554432,
+        "dense_core_physical_read_bytes": 33554432,
+        "core_read_ratio": 0.140625,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 4722688,
+        "dense_core_plus_append_physical_bytes": 33558528,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 16777216,
+        "V_token_major_allocated_bytes": 16777216,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 33554432,
+        "dense_cache_allocated_bytes": 33554432,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 1048576,
+          "approx_probabilities_fp32": 1048576,
+          "group_probability_fp32": 262144,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 2429952,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 16777216,
+          "logical_read_bytes": 33554432,
+          "cold_burst_read_bytes": 33554432,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 8192,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 8192
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "62a2b74a94beda24a781c6a87f5f7f93ec4eaab9d1a3ddb500175e4778d084a4",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 8388608,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 2097152
+        },
+        "approx_softmax": {
+          "max_compare": 262112,
+          "subtract": 262144,
+          "exp": 262144,
+          "sum_add": 262112,
+          "reciprocal": 32,
+          "normalize_multiply": 262144
+        },
+        "group_probability_sum": {
+          "head_sum_add": 196608
+        },
+        "token_selection": {
+          "compare_exchange": 2981888,
+          "local_membership_test": 65536,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 33554432,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 8392704
+        },
+        "exact_softmax": {
+          "max_compare": 262112,
+          "subtract": 262144,
+          "exp": 262144,
+          "sum_add": 262112,
+          "reciprocal": 32,
+          "normalize_multiply": 262144
+        },
+        "exact_pv": {
+          "exact_pv_mac": 33554432,
+          "convert_bf16_to_fp32": 8388608,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 8160,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "dense_V_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 4718592,
+        "core_physical_read_bytes": 17301504,
+        "dense_core_logical_read_bytes": 33554432,
+        "dense_core_physical_read_bytes": 33554432,
+        "core_read_ratio": 0.515625,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 17305600,
+        "dense_core_plus_append_physical_bytes": 33558528,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 16777216,
+        "V_token_major_allocated_bytes": 16777216,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 33554432,
+        "dense_cache_allocated_bytes": 33554432,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 1048576,
+          "approx_probabilities_fp32": 1048576,
+          "group_probability_fp32": 262144,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 2429952,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 16777216,
+          "logical_read_bytes": 33554432,
+          "cold_burst_read_bytes": 33554432,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 32768,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 32768
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "06b4a83aab0597bd85ee7e2cbe4657f5bae348d07e3b6a88900ddf1b4b45f7dd",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 33554432,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 8388608
+        },
+        "approx_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "group_probability_sum": {
+          "head_sum_add": 786432
+        },
+        "token_selection": {
+          "compare_exchange": 15728640,
+          "local_membership_test": 262144,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 134217728,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 33558528
+        },
+        "exact_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "exact_pv": {
+          "exact_pv_mac": 134217728,
+          "convert_bf16_to_fp32": 33554432,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 32736,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "dense_V_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          }
+        },
+        "core_logical_read_bytes": 17301504,
+        "core_physical_read_bytes": 17301504,
+        "dense_core_logical_read_bytes": 134217728,
+        "dense_core_physical_read_bytes": 134217728,
+        "core_read_ratio": 0.12890625,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 17371136,
+        "dense_core_plus_append_physical_bytes": 134221824,
+        "construction_extra_read_bytes": 67108864,
+        "construction_extra_write_bytes": 67108864
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 67108864,
+        "V_token_major_allocated_bytes": 67108864,
+        "K_channel_major_allocated_bytes": 67108864,
+        "total_cache_allocated_bytes": 201326592,
+        "dense_cache_allocated_bytes": 134217728,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 4194304,
+          "approx_probabilities_fp32": 4194304,
+          "group_probability_fp32": 1048576,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 9507840,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 67108864,
+          "logical_read_bytes": 134217728,
+          "cold_burst_read_bytes": 134217728,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 32768,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "dual_k",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 32768
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "445a76ab47b62d97df7061f013e09900b844d092fa646688685bac94bd3cdc84",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 33554432,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 8388608
+        },
+        "approx_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "group_probability_sum": {
+          "head_sum_add": 786432
+        },
+        "token_selection": {
+          "compare_exchange": 15728640,
+          "local_membership_test": 262144,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 134217728,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 33558528
+        },
+        "exact_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "exact_pv": {
+          "exact_pv_mac": 134217728,
+          "convert_bf16_to_fp32": 33554432,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 32736,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "dense_V_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 1024,
+            "physical_bytes": 65536
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "build_transposed_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          }
+        },
+        "core_logical_read_bytes": 17301504,
+        "core_physical_read_bytes": 17301504,
+        "dense_core_logical_read_bytes": 134217728,
+        "dense_core_physical_read_bytes": 134217728,
+        "core_read_ratio": 0.12890625,
+        "append_logical_write_bytes": 6144,
+        "append_physical_write_bytes": 69632,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 17371136,
+        "dense_core_plus_append_physical_bytes": 134221824,
+        "construction_extra_read_bytes": 67108864,
+        "construction_extra_write_bytes": 67108864
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 67108864,
+        "V_token_major_allocated_bytes": 67108864,
+        "K_channel_major_allocated_bytes": 67108864,
+        "total_cache_allocated_bytes": 201326592,
+        "dense_cache_allocated_bytes": 134217728,
+        "cache_capacity_ratio": 1.5,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 4194304,
+          "approx_probabilities_fp32": 4194304,
+          "group_probability_fp32": 1048576,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 9507840,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 67108864,
+          "logical_read_bytes": 134217728,
+          "cold_burst_read_bytes": 134217728,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 32768,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 32768
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "contiguous",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "06b4a83aab0597bd85ee7e2cbe4657f5bae348d07e3b6a88900ddf1b4b45f7dd",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 33554432,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 8388608
+        },
+        "approx_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "group_probability_sum": {
+          "head_sum_add": 786432
+        },
+        "token_selection": {
+          "compare_exchange": 15728640,
+          "local_membership_test": 262144,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 134217728,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 33558528
+        },
+        "exact_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "exact_pv": {
+          "exact_pv_mac": 134217728,
+          "convert_bf16_to_fp32": 33554432,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 32736,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 262144,
+            "physical_bytes": 16777216
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "dense_V_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 17301504,
+        "core_physical_read_bytes": 17301504,
+        "dense_core_logical_read_bytes": 134217728,
+        "dense_core_physical_read_bytes": 134217728,
+        "core_read_ratio": 0.12890625,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 17305600,
+        "dense_core_plus_append_physical_bytes": 134221824,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 67108864,
+        "V_token_major_allocated_bytes": 67108864,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 134217728,
+        "dense_cache_allocated_bytes": 134217728,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 4194304,
+          "approx_probabilities_fp32": 4194304,
+          "group_probability_fp32": 1048576,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 9507840,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 67108864,
+          "logical_read_bytes": 134217728,
+          "cold_burst_read_bytes": 134217728,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    },
+    {
+      "schema_version": 1,
+      "scope": "one layer / one decode token / attention core only",
+      "algorithm": "paper-v6-gqa-probability-sum",
+      "config": {
+        "n_tokens": 32768,
+        "query_heads": 32,
+        "kv_heads": 8,
+        "head_dim": 128,
+        "channels": 32,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "layout": "token_major",
+        "burst_bytes": 64,
+        "capacity_tokens": null,
+        "reallocation": false,
+        "storage_dtype": "bf16",
+        "compute_dtype": "fp32"
+      },
+      "effective": {
+        "group_size": 4,
+        "selected_tokens": 128,
+        "local_tokens": 32,
+        "dense_fallback": false,
+        "dense_fallback_kv_heads": [],
+        "sparse_kv_heads": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "selected_tokens_by_kv_head": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "capacity_tokens": 32768
+      },
+      "input_provenance": {
+        "kind": "synthetic_layout_fixture",
+        "channel_pattern": "spread",
+        "tokens": "prefix plus required recent window; no Q/K-based selection"
+      },
+      "indices_sha256": "445a76ab47b62d97df7061f013e09900b844d092fa646688685bac94bd3cdc84",
+      "operations": {
+        "channel_selection": {
+          "abs": 4096,
+          "head_sum_add": 3072,
+          "compare_exchange": 14336
+        },
+        "tau": {
+          "sum_add": 5056,
+          "zero_selected_l1_test": 32,
+          "multiply": 64,
+          "reciprocal": 32,
+          "sqrt": 32,
+          "convert_bf16_to_fp32": 4096
+        },
+        "approx_qk": {
+          "approx_qk_mac": 33554432,
+          "scale_multiply": 1024,
+          "reciprocal": 32,
+          "convert_bf16_to_fp32": 8388608
+        },
+        "approx_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "group_probability_sum": {
+          "head_sum_add": 786432
+        },
+        "token_selection": {
+          "compare_exchange": 15728640,
+          "local_membership_test": 262144,
+          "selected_index_write": 1024
+        },
+        "exact_qk": {
+          "exact_qk_mac": 524288,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 131072
+        },
+        "exact_softmax": {
+          "max_compare": 4064,
+          "subtract": 4096,
+          "exp": 4096,
+          "sum_add": 4064,
+          "reciprocal": 32,
+          "normalize_multiply": 4096
+        },
+        "exact_pv": {
+          "exact_pv_mac": 524288,
+          "convert_bf16_to_fp32": 131072,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "dense_baseline_operations": {
+        "exact_qk": {
+          "exact_qk_mac": 134217728,
+          "scale_multiply": 4096,
+          "convert_bf16_to_fp32": 33558528
+        },
+        "exact_softmax": {
+          "max_compare": 1048544,
+          "subtract": 1048576,
+          "exp": 1048576,
+          "sum_add": 1048544,
+          "reciprocal": 32,
+          "normalize_multiply": 1048576
+        },
+        "exact_pv": {
+          "exact_pv_mac": 134217728,
+          "convert_bf16_to_fp32": 33554432,
+          "convert_fp32_to_bf16": 4096
+        }
+      },
+      "selection_reference": {
+        "algorithm": "full power-of-two-padded bitonic sorting network",
+        "token_sort_input_count": 32736,
+        "note": "Deterministic comparison baseline, not torch.topk instruction count or optimal top-k; no RTL claimed"
+      },
+      "traffic": {
+        "policy": "burst-aligned per-KV arrays; cold stage transactions; no cross-stage reuse; masked full-burst append writes",
+        "by_stage": {
+          "approx_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "selected_K_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "selected_V_read": {
+            "burst_transactions": 4096,
+            "physical_bytes": 262144
+          },
+          "dense_K_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "dense_V_read": {
+            "burst_transactions": 1048576,
+            "physical_bytes": 67108864
+          },
+          "append_K_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_V_write": {
+            "burst_transactions": 32,
+            "physical_bytes": 2048
+          },
+          "append_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_write": {
+            "burst_transactions": 0,
+            "physical_bytes": 0
+          },
+          "build_transposed_K_read": {
+            "physical_bytes": 0,
+            "burst_transactions": 0
+          }
+        },
+        "core_logical_read_bytes": 17301504,
+        "core_physical_read_bytes": 67633152,
+        "dense_core_logical_read_bytes": 134217728,
+        "dense_core_physical_read_bytes": 134217728,
+        "core_read_ratio": 0.50390625,
+        "append_logical_write_bytes": 4096,
+        "append_physical_write_bytes": 4096,
+        "dense_append_physical_write_bytes": 4096,
+        "core_plus_append_physical_bytes": 67637248,
+        "dense_core_plus_append_physical_bytes": 134221824,
+        "construction_extra_read_bytes": 0,
+        "construction_extra_write_bytes": 0
+      },
+      "storage": {
+        "K_token_major_allocated_bytes": 67108864,
+        "V_token_major_allocated_bytes": 67108864,
+        "K_channel_major_allocated_bytes": 0,
+        "total_cache_allocated_bytes": 134217728,
+        "dense_cache_allocated_bytes": 134217728,
+        "cache_capacity_ratio": 1.0,
+        "materialized_reference_scratch_bytes": {
+          "query_fp32": 16384,
+          "output_accumulator_fp32": 16384,
+          "approx_logits_fp32": 4194304,
+          "approx_probabilities_fp32": 4194304,
+          "group_probability_fp32": 1048576,
+          "exact_logits_fp32": 16384,
+          "exact_probabilities_fp32": 16384,
+          "channel_indices_u32": 1024,
+          "token_indices_u32": 4096
+        },
+        "materialized_reference_scratch_sum_bytes": 9507840,
+        "scratch_note": "Named tensors only, not SRAM minimum/peak. Sort workspace, response FIFOs, transpose/write-combine storage, bank padding and physical state uncharacterized"
+      },
+      "disabled": {
+        "max4_summary": true,
+        "learned_small_network": true,
+        "bernoulli_selector_rng": true,
+        "fixed_eight_block_repair": true,
+        "meanV_alpha_reallocation": true
+      },
+      "hardware": {
+        "area_um2": null,
+        "power_W": null,
+        "energy_J": null,
+        "sta_status": "not_run",
+        "evidence": "analytic_operation_and_burst_accounting"
+      },
+      "reference_implementation_extra": {
+        "finite_validation_if_enabled": {
+          "kv_elements_checked": 67108864,
+          "logical_read_bytes": 134217728,
+          "cold_burst_read_bytes": 134217728,
+          "included_in_core_totals": false
+        },
+        "full_tensor_fp32_conversion_and_mixed_group_where_cost": "not modeled; measure actual GPU reference",
+        "note": "Core logical counts are not the PyTorch reference's actual kernel work or memory transactions"
+      },
+      "limitations": [
+        "No quality, GPU speed or ASIC PPA result is produced",
+        "FP32 compute is an accounting format, not a bit-true arithmetic implementation",
+        "Selected-channel and selected-row reads are separate physical passes even where payload overlaps",
+        "Cold bursts are transactions, not DRAM row/command energy; cache reuse/write combining need explicit state",
+        "Append writes assume masked bursts; devices requiring read-modify-write need additional read cost",
+        "Prefill initialization/transpose is reported separately and never silently amortized over one token",
+        "No QKV projection, QK-Norm, RoPE, Wo, residual, FFN, host or complete-model cost",
+        "Probabilities, selector scratch and response/storage movement are not included in DRAM payload counts",
+        "Per-head probability softmax and sum are retained; official raw-score-sum/k+1 code is a different variant"
+      ],
+      "conditional_cycles": null,
+      "dense_conditional_cycles": null
+    }
+  ]
+}

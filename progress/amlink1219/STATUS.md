@@ -220,6 +220,16 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
 下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。
 
+---
+
+# Issue151：20层P-DNN准确率准备（2026-10-23）
+
+负责人amlink1219，独立`task/151-pdnn20-task-accuracy`／`workspace_projects/pa20`，依赖PR149@86eb22e1；不编辑pa145或其冻结收尾helper。用户确认20层权重在师弟处、由用户获取，本轮先准备其他；没有提交20层GPU，没有新20层准确率。
+
+已准备原joint20 step1000的20文件大小／SHA与交接文档，替换1、4–22，保留0/2/3/23；N4、三seed、同PIQA1838／ARC-Easy2376／固定HellaSwag1000，共9候选case，严格复用145三项匹配新BF16。22项CPU机制测试通过=18原2/4回归＋4个20层拓扑／真实tiny strict安装／独立oracle／RNG检查，未把tiny当真实模型。
+
+正式入口`experiments/pdnn20_task_accuracy_20261023/README_ZH.md`及CHECKPOINT_REQUEST_ZH.md；结果状态`qwen/results/pdnn20_task_accuracy_20261023/README_ZH.md`；接续`work/amlink1219/151/HANDOFF.md`。CPU inspect-only Slurm2862已COMPLETED/0:0，服务器22＋6检查通过、145三个完整新BF16均逐SHA／官方指标回读匹配。执行源ecd9418510565d76585aee71a4c5675dbcbd61e9、87文件快照；原件／终态／远端SHA见151/preparation。当前仅缺20份权重，状态awaiting_external_inputs、gpu_allowed=false，未提交20层GPU。正式checkpoint全齐才PREFLIGHT_READY，真实GPU六smoke后SMOKE_READY、9完整case后才汇总。PR发布状态以本任务PUBLICATION.json实际回执为准；不重训或借读他人目录。
+
 ## PR42 原始交付状态（历史时点）
 
 源head：ee47cb86c75f8a2bc049f25507f785f087ed671d。以下保留该任务新增的历史状态；最新合并状态以Issue55/相应Issue和GitHub为准。
@@ -311,3 +321,10 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 辅助/交接：work/amlink1219/<Issue>/。本地工作目录及原任务提交见各PUBLICATION.json；旧STATUS可从原提交恢复。
 原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
 下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。
+
+
+## Issue151 服务器执行交接（2026-10-23 22:17北京时间）
+
+用户授权把完整包发给师弟，由其agent在自己的账号/个人目录/Slurm资源提交。已新增portable_runner及path-free固定pin、agent必读文档、Slurm模板、12case流程（本机freshBF16三项＋PDNN20九项）、显式源码/数据ZIP构建器和SHA校验；本机36项检查通过，接手CPU模板执行共享22＋便携8项。源码/权重/模型/tokenizer/数据/官方Harness/请求均冻结，不读145私有目录，不传凭据；真实20层权重及GPU仍待持有者验证，无20层新准确率。交接包索引work/amlink1219/151/HANDOFF_BUNDLE_INDEX.json在构建后补入，正式说明experiments/pdnn20_task_accuracy_20261023/handoff/START_HERE_ZH.md。独立pa20/原任务分支，PR155待审未合并；接手者用自己的progress/work/分支并接续Issue151。看板缺read:project仍待有权限者同步。
+
+最新核验依赖PR149@70cadf3484b8d95019d3d7554d7e003dafc6c526已ready/open未合并；原Slurm2835在22:11:55北京时间COMPLETED/0:0、21/21case已发布，未改其pa145或冻结worker；不把旧“运行中”沿用为当前状态。Issue116/123保持暂停。本交接不提交GPU，任何接手提交前重新查项目队列/Issue。

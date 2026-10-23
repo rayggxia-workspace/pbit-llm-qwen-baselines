@@ -1092,6 +1092,23 @@ jieruiz，task/107-tlm-cycle-digital-rtl，独立tmp/tlm-digital-issue107-202610
 
 LLM对话先前独立压缩10网表约2.713GB及回收1个Issue19回执约0.188GB，均不包含在上述1.183GB；该对话继续新增清理，Issue68保持open。模型、唯一原件、主对象库、进行中任务和其他成员目录保留。恢复先读索引，不因工作目录已移除而重复实验。发布/合并状态查Issue68最新回执；本条随review/68-cleanup-receipt-20261023交付。
 
+## 2026-10-23 Issue151：20层P-DNN任务准确率准备
+
+用户要求在原两层／四层之外补20层的PIQA、ARC-Easy、HellaSwag，并确认原权重应在师弟处、由用户获取，本轮先准备其他。独立Issue151、task/151-pdnn20-task-accuracy、工作树pa20，依赖PR149发布的86eb22e1；不编辑运行中的145工作树／冻结收尾helper，不恢复暂停116/123。
+
+目标固定原串联bipolar FullPath v1 joint20 step1000，层1及4–22，保留原0/2/3/23；N4完整路径、BF16连续权重／读出、原SDPA。20原文件总697875430B，逐SHA与交接请求在experiments/pdnn20_task_accuracy_20261023/。严格20拓扑扩展22项CPU通过，含18项2/4旧回归；tiny机制检查不当作真实模型。三任务同Issue145官方0-shot协议，共9候选case，匹配3个新完整BF16必须经SHA／覆盖核验。
+
+当前未收到真实20层权重，无20层GPU作业或新准确率。CPU inspect-only Slurm2862 COMPLETED/0:0，28项检查与145三个完整新BF16绑定均通过，源ecd9418510565d76585aee71a4c5675dbcbd61e9；当前只缺20份真实checkpoint，gpu_allowed=false。CPU准备记录不等于READY；只有权重／数据／基线／源码严格核验后才CPU READY，真实GPU smoke通过后才正式run。正式准备入口同目录README_ZH.md，结果状态qwen/results/pdnn20_task_accuracy_20261023/，原件／CPU／PR回执与下一步见work/amlink1219/151/HANDOFF.md。所有运行状态执行前重新查，不把旧PPL48.910814或准备成功写成新的任务准确率。
+
 ## 2026-10-23 Issue55第八轮审核快照
 
 PR119/120/122/125/126/127/130限定阶段成果通过；新#130为存储总结。独立组合359测试注册、358通过、1个Windows符号链接场景跳过；已复核208资源结果、48数据流轨迹及真实GQA公开回执。74份GQA源码有公开同字节祖先映射，修复旧未公开commit复核入口。台账取45记录/964配置行并集，不重复计新实验。详见work/jieruiz/55/round8/REVIEW_ZH.md；实际远端合并以Issue55收尾回执为准。Issue116/123暂停不变；全尺寸2783取消未验收，DC/PT未执行。下一项工艺工作是#125编码恢复SS/T32最小PPA，与Issue107八模块PPA包分开计费。
+
+
+## Issue151 交给权重持有者执行的便携交接（2026-10-23）
+
+用户改为直接发交接包给师弟、由其agent在自己服务器账号提交。新portable_runner动态核本人home/UID/隔离env及Slurm，沿用固定model/tokenizer/三parquet/YAML/Harness/tokenized pins；重新运行3项本机BF16＋PDNN20三任务三seed，总12case。旧Weican专用151 runner和145私有reference保留为历史入口，异地agent不读取/伪造旧路径。正式handoff/START_HERE_ZH.md、AGENTS.md、SERVER_RUN_ZH.md、RETURN_CHECKLIST_ZH.md及build_bundle.py均位于experiments/pdnn20_task_accuracy_20261023/。显式源码/数据包不含模型/checkpoint/env/凭据，Git只保存代码和包索引；接手者用自己身份、个人STATUS/work与独立分支/PR接续Issue151。
+
+本机36机制检查通过（共享22、历史6、便携8），便携CPU模板执行22＋8；真实20层checkpoint strict与GPU仍待持有者，无新20层准确率。CPU strict→6项真实smoke→12full→CPU汇总，不拿旧PPL当本次结果。结果manifest不散列仍在写的Slurm日志，终态后另记SHA。
+
+依赖145已完成：Slurm2835于2026-10-23 22:11:55北京时间COMPLETED/0:0，21case已验证发布，PR149@70cadf3484b8d95019d3d7554d7e003dafc6c526 ready/open未合并；先前“仍运行”仅为历史准备快照。执行前仍重新查最新任务/队列。交接任务PR155待审未合并，不恢复暂停116/123，不代师弟提交GPU。

@@ -10,6 +10,10 @@ Git blob 7d5046a84c5a55088b06ac148443cc0eb33c889b.
 The unchanged full-path operator used by the strict loader is:
 experiments/pdnn_ffn/full_path_pdnn_ffn.py
 Git blob 35f147161eb5e2b65407417f5f84411cad0e3631.
+
+Issue151 extends this wrapper to one explicitly declared twenty-layer topology.
+The full-path operator and two/four-layer arithmetic are unchanged. Historical
+Issue145 executions remain bound to their original frozen source snapshots.
 """
 from __future__ import annotations
 
@@ -29,7 +33,10 @@ SOURCE_PROVENANCE = {
     'integration': '6966739a5223680888bf0315f7bb4f73423a1ae6',
     'cached_score_git_blob': '7d5046a84c5a55088b06ac148443cc0eb33c889b',
     'full_path_git_blob': '35f147161eb5e2b65407417f5f84411cad0e3631',
+    'wrapper_extension': 'Issue151: explicit twenty-layer topology validation only; unchanged sampling operator',
 }
+
+TWENTY_LAYER_INDICES = (1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
 
 
 def file_sha256(path):
@@ -76,17 +83,26 @@ def rng_seed(seed, device):
             torch.cuda.manual_seed(seed)
 
 
+def _layer_indices(layers, allow_empty=True):
+    if not isinstance(layers, (list, tuple)) or any(type(i) is not int or not 0 <= i < 24 for i in layers):
+        raise ValueError('layers must be unique decoder indices in 0..23')
+    counts = (0, 2, 4, 20) if allow_empty else (2, 4, 20)
+    if len(set(layers)) != len(layers):
+        raise ValueError('repeated decoder layer indices are not permitted')
+    if len(layers) not in counts:
+        raise ValueError('only BF16 or explicitly selected two/four/twenty FFNs are supported')
+    ordered = sorted(layers)
+    if len(ordered) == 20 and tuple(ordered) != TWENTY_LAYER_INDICES:
+        raise ValueError('twenty-layer topology must match the exact Issue151 decoder indices')
+    return ordered
+
+
 def _variant(variant):
     expected = {'layers', 'samples', 'seed', 'batch', 'context'}
     if set(variant) != expected:
         raise ValueError('variant fields must be exactly layers,samples,seed,batch,context')
     result = copy.deepcopy(variant)
-    layers = result['layers']
-    if not isinstance(layers, (list, tuple)) or any(type(i) is not int or not 0 <= i < 24 for i in layers):
-        raise ValueError('layers must be unique decoder indices in 0..23')
-    if len(set(layers)) != len(layers) or len(layers) not in (0, 2, 4):
-        raise ValueError('Issue145 uses BF16 or exactly two/four explicitly selected FFNs')
-    result['layers'] = sorted(layers)
+    result['layers'] = _layer_indices(result['layers'])
     for key, minimum, maximum in (('samples', 1, None), ('seed', 0, None),
                                    ('batch', 1, 16), ('context', 3, None)):
         value = result[key]
@@ -148,7 +164,7 @@ class ModelGuard:
         layers = list(model.model.layers)
         if len(layers) != 24 or model.training or any(m.training for m in model.modules()):
             raise ValueError('all 24 decoder layers and submodules must be in eval mode')
-        selected = set(variant['layers'])
+        selected = set(_layer_indices(variant['layers']))
         for index, layer in enumerate(layers):
             if index in selected:
                 if type(layer.mlp) is not FullPathPBitFFN:
@@ -209,8 +225,9 @@ def install_students(model, checkpoints, samples, personal_root, device):
     weights_only=True. Returned records bind original bytes and effective config.
     """
     from experiments.pdnn_ffn.full_path_pdnn_ffn import FullPathPBitFFN, FullPathPBitFFNConfig
-    if type(samples) is not int or samples <= 0 or len(checkpoints) not in (2, 4):
-        raise ValueError('positive sample count and exactly two/four checkpoints required')
+    if type(samples) is not int or samples <= 0 or len(checkpoints) not in (2, 4, 20):
+        raise ValueError('positive sample count and exactly two/four/twenty checkpoints required')
+    _layer_indices([entry.get('layer') for entry in checkpoints], allow_empty=False)
     actual = model_device(model)
     if actual != torch.device(device):
         raise ValueError('requested device differs from actual base model device')
@@ -463,7 +480,7 @@ def evaluate_tasks(model, documents, variant, progress=None):
             samples='complete stochastic paths averaged after continuous readout',
             rng='per-batch SHA256(task/doc IDs/case seed); caller RNG restored even on failure'),
         limitations=['batch composition and sample count affect global random-draw consumption',
-            'same case seed across two/four layers does not prove shared draws',
+            'same case seed across different layer topologies does not prove shared draws',
             'dummy completed-choice rows retain batch shape but are never scored',
             'software stochastic simulation is not physical p-bit hardware',
             'official task definitions, labels and process_results remain caller responsibilities'])

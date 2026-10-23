@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "id": "physical-rng-long-152-prepared",
+  "name": "旧CMOS随机通道100us采样/三seed秒级记录脚本准备",
+  "family": "RNG物理通道脚本",
+  "registered_on": "2026-10-23",
+  "owner": "jieruiz",
+  "issue": 152,
+  "evidence_level": "DESIGN_PROOF",
+  "status": "prepared_local_script_checks_only_spectre_not_run",
+  "stages": {
+    "functional": "not_run",
+    "synthesis": "not_run",
+    "sta": "not_run",
+    "power": "not_run",
+    "postlayout": "not_run"
+  },
+  "boundary": "单个始终供电的2MOS零外加C核心+旧15MOS buffers_x2比较器+5fF负载；三阶段准备18/27/6案例，未执行Spectre；无MUX/锁存/间歇供电/完整熵调理RTL。",
+  "conditions": {
+    "node_nm": 55,
+    "corner": "TT",
+    "voltage_V": {
+      "core": 1.2,
+      "comparator": 0.8
+    },
+    "temperature_C": 25,
+    "clock_MHz": null,
+    "planned_physical_sample_us": 100,
+    "planned_effective_seconds_per_seed": 1,
+    "planned_warmup_s": 0.02,
+    "seeds": [
+      41011,
+      41047,
+      41077
+    ],
+    "calibration_seeds": [
+      30011,
+      30047,
+      30071
+    ],
+    "pilot_seeds": [
+      32003,
+      32009,
+      32027
+    ],
+    "lowfreq_check_seeds": [
+      35023,
+      35053,
+      35081
+    ],
+    "planned_noisefmin_Hz": [
+      10,
+      500
+    ],
+    "planned_noisefmax_Hz": 100000000,
+    "planned_maxstep_s": 2.5e-09,
+    "planned_noisescale": 1,
+    "long_strobe_us": 10,
+    "load_pF": 0.005,
+    "sdf": false,
+    "spef": false,
+    "cts": false,
+    "local_script_tests": 20,
+    "generated_only_netlists": 51,
+    "packet_interface_probes": 6,
+    "probe_input": "synthetic fixtures, not physical data"
+  },
+  "source": {
+    "git_commit": "8f72debba6ce3b83626be7e1eb892fed8310c634",
+    "base_git_commit": "6966739a5223680888bf0315f7bb4f73423a1ae6",
+    "source_manifest_sha256": "05d606a37c15bd65f583fb8a91cbea09284c69bedccf84429105b7ac2340e224",
+    "config_sha256": "664d02bd3addcfd882667c6b946d43aaa5f3256c71c5a0e879d3b26fced8a720",
+    "binding": "Exact UTF8/LF package source, manifest and config; code commit contains scripts, not a server execution snapshot. Model/tokenizer/dataset N/A for analog preparation."
+  },
+  "artifacts": [
+    {
+      "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\analog_pbit_20261016\\long_channel_v1\\package_manifest.json",
+      "role": "prepared_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "bytes": 1935,
+      "sha256": "05d606a37c15bd65f583fb8a91cbea09284c69bedccf84429105b7ac2340e224",
+      "repository_path": "architecture_tlm/physical_rng_long_channel/src/package_manifest.json"
+    },
+    {
+      "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\analog_pbit_20261016\\long_channel_v1\\config.json",
+      "role": "prepared_config",
+      "present_at_registration": true,
+      "required": true,
+      "bytes": 2012,
+      "sha256": "664d02bd3addcfd882667c6b946d43aaa5f3256c71c5a0e879d3b26fced8a720",
+      "repository_path": "architecture_tlm/physical_rng_long_channel/src/config.json"
+    },
+    {
+      "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\tmp\\long-channel-issue152-20261023\\architecture_tlm\\physical_rng_long_channel\\validation\\VALIDATION.json",
+      "role": "local_script_validation",
+      "present_at_registration": true,
+      "required": true,
+      "bytes": 1231,
+      "sha256": "b04ff809d8115a10a63c4669801765f22a809c245f52e3904c6d0af0d7345534",
+      "repository_path": "architecture_tlm/physical_rng_long_channel/validation/VALIDATION.json"
+    },
+    {
+      "path": "/public3/home/t6s011227/analog_pbit_20261016/long_channel_v1/results/",
+      "role": "planned_remote_results",
+      "present_at_registration": false,
+      "required": false,
+      "sha256": null,
+      "bytes": null,
+      "missing_reason": "User upload/submission pending; no remote job or result asserted"
+    }
+  ],
+  "cases": [],
+  "limitations": [
+    "No local/remote Spectre simulation, actual device noise/precision/calibration/cost pending.",
+    "Functional stage is not_run for actual circuit; 20 local tests and 6 existing-model packet probes use synthetic fixtures only.",
+    "Generated previews are not experiment cases and cannot unlock actual long runs.",
+    "Continuous powered channel only; output 5fF is a defined load, not PEX or a verified 1.2V receiver.",
+    "VN and rail-valid selection do not certify independent entropy; actual irregular timestamps retained.",
+    "No long-record power integration; sparse currents never priced as exact power."
+  ],
+  "next_action": "Upload entire long_channel_v1 folder and run bash submit.sh pilot; inspect noise/precision gate and measured cost before calibrate/long. Register actual server execution manifest, raw archive SHA and result stages after download."
+}

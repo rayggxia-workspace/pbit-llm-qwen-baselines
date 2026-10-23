@@ -1,3 +1,11 @@
+# Issue152 CMOS随机通道秒级记录脚本 / 2026-10-23
+
+负责人jieruiz，task/152-long-channel，base6966739a，目录tmp/long-channel-issue152-20261023。
+源8f72deb；23文件直接上传包已完成，20检查/51预览/27PDK哈希/6合成包接口探针通过。
+独立pilot→calibrate冻结→三seed1s长记录及500Hz对照；没有实际Spectre、远端作业或质量/PPA结果。
+中央prepared记录已check/render，root保留其他52条。源码/配置SHA及命令见work/jieruiz/152/HANDOFF.md。
+本地完成，待推送/PR；实际回执以同目录PUBLICATION.json为准，Projects待核实，不自动关闭Issue。
+
 ## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
 
 负责人jieruiz，task/138-trainable-samplers，基线6966739，源码b6e3d034。新增experiments/trainable_pbit_attention；真实Bernoulli提议、均匀仲裁/保持、2^-m全零校正和自适应拒绝；全部轨迹score-function训练，有偏Softmax代理显式分离，量化禁冒称精确梯度。22/22合成数值测试，81条有限赢家轨迹/梯度穷举、三seed分布对照和6个小训练通过；无Qwen/Llama新PPL、CUDA、物理随机源或RTL/PPA。训练源码/配置/结果SHA见results/VALIDATION.json，交接work/jieruiz/138/HANDOFF.md。科学交付42beb199已推送PR142（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/142），14文件远端原字节核验通过；PR待审、未合并，回执PUBLICATION.json/REMOTE_VERIFY.json；未改正式TLM/硬件默认，后续真实LLM集成和梯度方差/内存仍待验证。复用现有本地Torch2.4.1 CPU，无新服务器作业。

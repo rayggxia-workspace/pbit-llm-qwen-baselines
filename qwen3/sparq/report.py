@@ -26,6 +26,13 @@ TASKS = {
 }
 PLAN_KEYS = ("segment_id", "begin", "end", "first_target", "last_target_exclusive", "prefill_tokens", "scored_tokens")
 COUNTERS = ("query_groups", "sparse_groups", "dense_groups", "full_budget_groups", "zero_coverage_groups")
+# Issue157's declared run.py/benchmark.py protocol, independent of result claims.
+BENCHMARK_CONTEXTS = (128, 512, 2048)
+BENCHMARK_DECODE_LENGTHS = (64, 128)
+BENCHMARK_MODES = ("native", "dense", "sparq")
+BENCHMARK_REPEATS = 3
+BENCHMARK_WARMUP = 1
+BENCHMARK_BATCH = 1
 
 
 class AuditError(ValueError):
@@ -497,16 +504,45 @@ def _benchmark(result, identity):
     provenance = result.get("model_provenance", {})
     require((provenance.get("model"), provenance.get("revision"), provenance.get("source_commit")) ==
             (MODEL, REVISION, identity["execution"]["commit"]), "benchmark model/source identity differs")
+    require(result.get("test") == "qwen3_sparq_real_model_reference_benchmark" and
+            _int(result.get("schema"), "benchmark schema") == 1, "unsupported benchmark schema")
+    for field, declared in (("contexts", BENCHMARK_CONTEXTS), ("decode_lengths", BENCHMARK_DECODE_LENGTHS),
+                            ("modes", BENCHMARK_MODES)):
+        require(result.get(field) == list(declared), f"benchmark {field} differs from fixed Issue157 protocol")
+        if field != "modes":
+            for value in result[field]:
+                _int(value, f"benchmark {field}", 1)
+    require(_int(result.get("measured_repeats"), "benchmark repeats", 1) == BENCHMARK_REPEATS and
+            _int(result.get("warmup_trials_per_case_mode"), "benchmark warmup", 1) == BENCHMARK_WARMUP,
+            "benchmark repeat/warmup count differs from fixed Issue157 protocol")
+    shape = result.get("token_ids_shape")
+    require(isinstance(shape, list) and len(shape) == 2, "invalid benchmark token shape")
+    require(_int(shape[0], "benchmark batch", 1) == BENCHMARK_BATCH and
+            _int(shape[1], "benchmark sequence length", 1) >= max(BENCHMARK_CONTEXTS)+max(BENCHMARK_DECODE_LENGTHS),
+            "benchmark token shape does not cover fixed Issue157 protocol")
+    expected = {(c, d, m, r) for c in BENCHMARK_CONTEXTS for d in BENCHMARK_DECODE_LENGTHS
+                for m in BENCHMARK_MODES for r in range(BENCHMARK_REPEATS)}
     trials = {}
     for row in result["trials"]:
-        key = (row["context_tokens"], row["decode_steps"], row["mode"], row["repeat"])
+        context = _int(row["context_tokens"], "benchmark context", 1)
+        decode = _int(row["decode_steps"], "benchmark decode steps", 1)
+        key = (context, decode, row["mode"], _int(row["repeat"], "benchmark repeat"))
+        require(key in expected, "unexpected benchmark trial")
         require(key not in trials, "duplicate benchmark trial")
-        for phase in ("prefill", "decode"):
+        require(_int(row["batch"], "trial batch", 1) == shape[0], "trial batch differs from token shape")
+        require(_int(row["first_decode_cache_tokens"], "first decode cache tokens", 1) == context+1 and
+                _int(row["last_decode_cache_tokens"], "last decode cache tokens", 1) == context+decode,
+                "benchmark declared cache bounds differ")
+        require(row.get("last_decode_logits_finite") is True, "benchmark finite-output gate did not pass")
+        for phase, steps in (("prefill", context), ("decode", decode)):
             for field in ("wall_seconds", "cuda_event_seconds", "tokens_per_wall_second"):
                 require(_number(row[phase][field], "benchmark timing", 0) > 0, "zero benchmark timing")
+            tokens = shape[0]*steps
+            require(_int(row[phase]["input_tokens"], "phase input tokens", 1) == tokens, "benchmark phase token count differs")
+            _equal_number(row[phase]["tokens_per_wall_second"], tokens/row[phase]["wall_seconds"], "benchmark tokens/wall time")
+        _equal_number(row["decode"]["wall_seconds_per_decode_step"], row["decode"]["wall_seconds"]/decode,
+                      "benchmark decode step time")
         trials[key] = row
-    expected = {(c, d, m, r) for c in result["contexts"] for d in result["decode_lengths"]
-                for m in result["modes"] for r in range(result["measured_repeats"])}
     require(set(trials) == expected, "benchmark trial matrix incomplete")
     summaries, seen = [], set()
     for saved in result["summaries"]:
@@ -536,8 +572,8 @@ def _benchmark(result, identity):
         summaries.append(output)
     require(seen == {k[:3] for k in expected}, "benchmark summaries incomplete")
     ratios = []
-    for c in result["contexts"]:
-        for d in result["decode_lengths"]:
+    for c in BENCHMARK_CONTEXTS:
+        for d in BENCHMARK_DECODE_LENGTHS:
             rows = {r["mode"]:r for r in summaries if (r["context_tokens"],r["decode_steps"]) == (c,d)}
             if {"dense", "sparq"} <= set(rows):
                 ratios.append(dict(context_tokens=c, decode_steps=d,
@@ -551,6 +587,8 @@ def _benchmark(result, identity):
     interpretation = ("本次已核源码调用方传入裸 UUID，而采样器要求 GPU- 前缀，导致采样未启用；不是另一块 GPU 或 NVML 缺失的证据。"
                       if known_prefix_bug else power_reason)
     return dict(present=True, verified_complete=True, gpu_name=result["gpu_name"], gpu_uuid=result.get("torch_device_uuid"),
+        verified_trial_count=len(trials), expected_trial_count=len(expected),
+        protocol="fixed Issue157: batch1, contexts128/512/2048, decode64/128, native/dense/sparq, warmup1, repeats3",
         nvml_unavailable_reason_raw=power_reason, power_unavailable_interpretation=interpretation,
         summaries=summaries, paired_ratios=ratios,
         scope="actual full-model Python reference GPU timing, original FFN; not optimized sparse-kernel speedup", physical_asic_ppa=None)
@@ -657,13 +695,15 @@ def markdown(report):
 
 
 def _self_test():
+    import copy
     import tempfile
     import unittest
     import sys
 
     identity = dict(config=dict(r=32,k_total=128,local_total=32,reallocation=False,
         selection="probability_sum",validate_finite=False), ppl=dict(context=2048,stride=1024,batch=32,chunk=1),
-        tokens_sha256="a"*64, task_chunk=2, document_batch=1, choice_batch=4)
+        tokens_sha256="a"*64, task_chunk=2, document_batch=1, choice_batch=4,
+        execution=dict(commit="b"*40, files={}))
 
     def audit(mode, queries):
         layers = {}
@@ -699,6 +739,27 @@ def _self_test():
             documents=rows,evaluated_documents=count,requested_documents=count,
             choice_target_scores=2*count,shared_first_target_reuses=count,
             execution_audit=audit(mode,count),ffn="none",ffn_config=None)
+
+    def benchmark_fixture():
+        trials, summaries = [], []
+        for context in BENCHMARK_CONTEXTS:
+            for decode in BENCHMARK_DECODE_LENGTHS:
+                for mode in BENCHMARK_MODES:
+                    phases = {name:dict(wall_seconds=2., cuda_event_seconds=1.5,
+                        input_tokens=steps, tokens_per_wall_second=steps/2., power=None)
+                        for name, steps in (("prefill",context),("decode",decode))}
+                    phases["decode"]["wall_seconds_per_decode_step"] = 2./decode
+                    summaries.append(dict(context_tokens=context,decode_steps=decode,mode=mode,**copy.deepcopy(phases)))
+                    for repeat in range(BENCHMARK_REPEATS):
+                        trials.append(dict(context_tokens=context,decode_steps=decode,mode=mode,repeat=repeat,batch=1,
+                            first_decode_cache_tokens=context+1,last_decode_cache_tokens=context+decode,
+                            last_decode_logits_finite=True,**copy.deepcopy(phases)))
+        return dict(test="qwen3_sparq_real_model_reference_benchmark",schema=1,
+            original_ffn_guard_passed=True,physical_PPA=None,attention_config=identity["config"],
+            model_provenance=dict(model=MODEL,revision=REVISION,source_commit=identity["execution"]["commit"]),
+            contexts=list(BENCHMARK_CONTEXTS),decode_lengths=list(BENCHMARK_DECODE_LENGTHS),modes=list(BENCHMARK_MODES),
+            measured_repeats=3,warmup_trials_per_case_mode=1,token_ids_shape=[1,3000],
+            gpu_name="CPU fixture only; no GPU measurement",trials=trials,summaries=summaries)
 
     class Tests(unittest.TestCase):
         def test_actual_plan_tail_and_denominator(self):
@@ -782,6 +843,53 @@ def _self_test():
             item["power_samples_relative_s_w"] = [(-.1,20.),(.1,20.),(1.9,20.),(2.1,20.)]
             with self.assertRaises(AuditError):
                 _verify_power(item)
+
+        def test_benchmark_fixed_matrix_and_self_certification_rejected(self):
+            valid = benchmark_fixture()
+            report = _benchmark(valid, identity)
+            self.assertTrue(report["verified_complete"])
+            self.assertEqual(report["verified_trial_count"], 54)
+            for field, value in (("contexts", []), ("decode_lengths", []), ("modes", []),
+                    ("contexts", [128,512,2048,2048]), ("decode_lengths", [64,128,128]),
+                    ("modes", ["native","dense","sparq","sparq"]),
+                    ("modes", ["dense","sparq"]), ("measured_repeats", 0),
+                    ("measured_repeats", 2), ("warmup_trials_per_case_mode", 0),
+                    ("warmup_trials_per_case_mode", True)):
+                with self.subTest(field=field,value=value):
+                    bad = copy.deepcopy(valid)
+                    bad[field] = value
+                    # Keep the artifacts internally consistent with their own claimed
+                    # matrix: the old self-certified coverage check accepted these.
+                    bad["trials"] = [r for r in bad["trials"] if r["context_tokens"] in bad["contexts"] and
+                        r["decode_steps"] in bad["decode_lengths"] and r["mode"] in bad["modes"] and
+                        r["repeat"] < bad["measured_repeats"]]
+                    keys = {(r["context_tokens"],r["decode_steps"],r["mode"]) for r in bad["trials"]}
+                    bad["summaries"] = [r for r in bad["summaries"] if
+                        (r["context_tokens"],r["decode_steps"],r["mode"]) in keys]
+                    with self.assertRaises(AuditError):
+                        _benchmark(bad, identity)
+
+        def test_benchmark_token_rate_and_declared_bounds_recomputed(self):
+            inflated = benchmark_fixture()
+            for row in inflated["trials"]+inflated["summaries"]:
+                for phase in ("prefill","decode"):
+                    row[phase]["tokens_per_wall_second"] *= 100
+            with self.assertRaises(AuditError):
+                _benchmark(inflated, identity)
+            for field, value in (("batch",2), ("batch",True), ("first_decode_cache_tokens",128),
+                                 ("last_decode_cache_tokens",191), ("last_decode_logits_finite",False)):
+                with self.subTest(field=field):
+                    bad = benchmark_fixture()
+                    bad["trials"][0][field] = value
+                    with self.assertRaises(AuditError):
+                        _benchmark(bad, identity)
+            for phase, field in (("prefill","input_tokens"), ("decode","input_tokens"),
+                                 ("decode","wall_seconds_per_decode_step")):
+                with self.subTest(phase=phase,field=field):
+                    bad = benchmark_fixture()
+                    bad["trials"][0][phase][field] *= 2
+                    with self.assertRaises(AuditError):
+                        _benchmark(bad, identity)
 
         def test_tamper_and_cross_experiment_fail(self):
             with tempfile.TemporaryDirectory(prefix="report_test_", dir=Path(__file__).parent) as temp:

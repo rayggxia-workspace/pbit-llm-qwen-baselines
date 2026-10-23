@@ -105,14 +105,15 @@ if __name__ == "__main__":
         head = api("GET", PREFIX + "/git/ref/heads/" + BRANCH)["object"]["sha"]
         assert head == git("rev-parse", "HEAD").decode().strip()
         paths = git("diff", "--name-only", BASE, head).decode().splitlines()
-        checked = []
-        for path in paths:
+        def verify_blob(path):
             assert allowed(path)
             raw = git("show", head + ":" + path)
             oid = git("rev-parse", head + ":" + path).decode().strip()
             remote = base64.b64decode(api("GET", PREFIX + "/git/blobs/" + oid)["content"])
             assert raw == remote, path
-            checked.append({"path": path, "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()})
+            return {"path": path, "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            checked = list(pool.map(verify_blob, paths))
         save("REMOTE_VERIFY.json", {"head": head, "verified": checked, "status": "PASS"})
         print(json.dumps({"verified_files": len(checked), "head": head, "status": "PASS"}))
     else:

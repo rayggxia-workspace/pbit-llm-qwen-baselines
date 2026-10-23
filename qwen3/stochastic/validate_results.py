@@ -78,6 +78,12 @@ def validate(root):
             key = case['label'], case['seed']
             assert key in expected and key not in seen
             seen.add(key)
+            mode_spec = {'bf16': ('sdpa', 'none', 'none', 1),
+                'ffn': ('sdpa', 'b4_t32', 'none', 1),
+                'screen_exact_ffn': ('screen_exact', 'b4_t32', 'none', 1),
+                'rejection128_ffn': ('screen_ising', 'b4_t32', 'rejection', 128),
+                'winner1024_ffn': ('screen_ising', 'b4_t32', 'winner', 1024)}
+            assert tuple(case[k] for k in ('mode', 'ffn', 'sampler', 'samples')) == mode_spec[key[0]]
             assert d['source'] == source and d['config_sha256'] == preflight['config_sha256']
             assert d['model'] == preflight['prepared'][index]['model']
             assert d['input_provenance']['prepared_sha256'] == preflight['prepared'][index]['manifest_sha256']
@@ -116,6 +122,7 @@ def validate(root):
             assert audit['prefill_calls_per_layer'] == [16] * layers
             assert audit['ffn_decode_tokens_per_layer'] == [4096] * layers
             if case['ffn'] != 'none':
+                assert len(d['ffn_stats']) == layers
                 for ffn in d['ffn_stats'].values():
                     assert (ffn['cycles'], ffn['strata'], ffn['sharing'], ffn['scale_bin_count']) == (32, 32, 64, 4)
                     assert not ffn['weight_stochastic'] and not ffn['finite_width_bittrue']

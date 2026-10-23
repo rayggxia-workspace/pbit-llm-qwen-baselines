@@ -1,5 +1,15 @@
 # Issue144 Qwen3概率架构交接
 
+## 最新：2026-10-23 20:33 CST，双模型FFN三seed已验证
+
+源码审计补充：args中的legacy burn16/spacing4是旧scorer默认字段，新adapter从未将其传入kernels.sample；实际winner burn0/spacing1、rejection无burn，已在sampling_stats.sampler_parameters明确。不要改运行源或原结果字段，报告按真实调用参数。该说明是元数据解释，不是行为变更。
+
+两个模型BF16+FFN-only共8配置完成；1.7B FFN平均7.6669926785±0.0086502594（样本std）、相对7.5900880974为+0.0769045811/+1.013223827%；4B平均6.3652531446±0.0029902575、相对6.3315746169为+0.0336785277/+0.531913935%。都是相同4096目标后缀，不是完整WT2，也不是Attention联合结果。FFN每配置约156/204秒。
+
+GPU2828/2829进入screen_exact_ffn seed0阶段，随后会顺序做其余2seed、拒绝128三seed、赢家1024三seed；不要重复提交。ROOT/exports/ffn-v1.tar.gz SHA53d085047ee27025f2ef42bf04c2ee7c863ae5cb09dcd4eab733c3557af8ab63，38文件；本地tmp/qwen3-issue144-ffn-v1.tar.gz和qwen3/results/stochastic_20261023/checkpoints/ffn。17已签JSON、全部8病例源码/模型/数据/配置/校准SHA、逐层全部4096目标与NLL/PPL重算通过，结果见REPORT_ZH.md。完整候选任务仍未提交，联合结果待跑，初步FFN结论不能代替全量/联合结论。
+
+启动记录head bab6688161e0a5c4ea3c9fb029a6d67e6d1882b0的55文件已经从GitHub逐blob原字节读回通过；后续本FFN结果发布以最新PUSH/REMOTE_VERIFY回执为准。原始3日志最初被全局ignore遗漏，已用3877987显式补齐且25源原件Git blob SHA通过；没有改动任何冻结执行源。
+
 ## 最新：2026-10-23 20:25 CST（下方初始状态为历史）
 
 执行源8c35145e0073e48581640cd07c770631412a3f99已上传官方分支；[PR147](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/147) draft/open，未合并，base task/136-qwen3-bf16。包tmp/qwen3-issue144-source-v1.tar.gz，SHA81df52718c184f026b6cf62230ab2559473225bf8d64f40cd84363a07d4d0de4。ROOT/snapshots/8c35145只读不改。

@@ -1,5 +1,7 @@
 # Issue144：Qwen3概率架构迁移（2026-10-23）
 
+20:33 CST：FFN-only三seed两模型均完成并独立核验。1.7B平均7.66699268±0.00865026（+1.01322%），4B6.36525314±0.00299026（+0.53191%）；均4096目标后缀，配对BF16分别7.59008810/6.33157462。共8病例/17签名JSON已收取，模型/源码/原文/token/配置/校准/全部目标覆盖通过；checkpoints/ffn包SHA53d085047ee27025f2ef42bf04c2ee7c863ae5cb09dcd4eab733c3557af8ab63。2828/2829正跑screen-exact+FFN，后续拒绝128/赢家1024联合仍待结果；完整候选WT2未提交。55文件启动交付远端原字节验证通过；本次FFN结果同PR147继续发布，不合并。原运行源8c35145不改。
+
 20:25 CST更新：8c35145冻结源已发布，PR147 draft/open未合并。CPU2827通过；GPU2828/2829运行各模型首个FFN seed0，不重复提交。两真实模型原生SDPA bitwise、GPU核oracle/分布/仲裁/cap、原始完整BF16精确重放均通过，TRAIN校准完成。后缀4096目标BF16分别7.5900880974/6.3315746169，概率增量尚未完成；13配置/模型、三seed，完整候选WT2未提交。首批26原件/11sidecar/执行源及模型数据绑定/覆盖通过，8篡改负例通过。报告qwen3/results/stochastic_20261023/REPORT_ZH.md，恢复命令与ID见HANDOFF顶部。收取/验证工具为后加不修改冻结源。canonical长期记忆与根同字节同步，未新增定时，Projects缺read:project。
 
 负责人jieruiz；task/144-qwen3-stochastic；base task/136-qwen3-bf16@0829b9c，依赖PR137/Issue141固定执行7a286ec。独立稀疏tmp/qwen3-stochastic-issue144-20261023。已实现Qwen3 QK-Norm/GQA/非等Q投影适配、固定W8 B4/T32/K32 FFN、max4+拒绝128/赢家1024、全层计分审计、TRAIN独立标量校准、13配置每模型4096目标三种子后缀先导。仅语法与diff检查通过，CPU/GPU门槛和PPL尚待Slurm，不能称结果完成。个人新ROOT /home/Hongjie_Zeng/projects/pbit-qwen3-stochastic-20261023-issue144；既有权重/venv只读复用。正式实现qwen3/stochastic；HANDOFF work/jieruiz/144/HANDOFF.md。下一步冻结源、CPU预检通过再GPU；PR未建、未合并，Projects缺read:project待有权限成员同步。

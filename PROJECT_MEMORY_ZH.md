@@ -1,3 +1,7 @@
+## 2026-10-23 Issue139：SANTA++ 对照与采样耦合增量
+
+SANTA++已覆盖代表筛选、Gumbel校正、GQA union与packed布局；Issue84/PR85已合并，不重做。Issue9先有sharedUniform Bernoulli分析，约1.4pp合成收益，不能把共享随机数当新发现。本次SANTAPP_GQA_COUPLING_ZH.md推导固定K共同Gumbel的单头分布保留和固定状态下加权union期望不增；投影方差可增4倍反例说明不保证模型质量。建议先低成本对照，再考虑有界suffix/实际字节与完整硬件成本。文档/解析算例经独立审阅，沿PR140交付；无模型/生产代码/EDA，116/123仍暂停。Zotero原件复用，新增设计笔记待写回。详见work/amlink1219/139/santapp_followup/HANDOFF.md。
+
 ## 2026-10-23 Issue139：Qwen3-4B GQA候选筛选文献
 
 amlink1219新增architecture_tlm/qwen3_gqa_literature/REPORT_ZH.md。32Q/8KV/d128，每组4Q；建议按KV组候选和物理并集预算比较SparQ式概率汇总、逐头union及SeerAttention-R已训练gate，原模型最终每头QK/归一化独立。mean-Q、概率sum、教师head-max不是同一操作。Seer已评后训练Qwen3-4B，Issue136的4B-Base需独立迁移核验；本轮只有调研，未启动训练/仿真/完整PPL/PPA，116/123暂停保持。12篇PDF与来源已暂存核SHA；Zotero关闭，未入库，恢复见work/amlink1219/139/HANDOFF.md。交付分支task/139-qwen3-gqa-literature，PR状态查实时回执。

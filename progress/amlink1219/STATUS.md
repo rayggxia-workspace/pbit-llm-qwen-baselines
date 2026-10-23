@@ -1,5 +1,7 @@
 # Issue157：后训练版 Qwen3-4B SparQ 基线（2026-10-23）
 
+最新：已上传[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163)，draft/open/未合并。CPU2871模型/数据完成；GPU2874真实模型门禁通过（1m33s），源4f381292b011，原生dense逐bit一致。完整质量/速度仍待跑；新增同长度多题批处理和PPL batch32将先验证后执行。原始证据work/amlink1219/157/gpu_preflight/。以下首发准备记录为历史快照。
+
 负责人 amlink1219；分支 `task/157-sparq-qwen3`，独立目录 `workspace_projects/sq157`；PR以PR147的 `task/144-qwen3-stochastic@357db588` 为依赖，不将其称为已合并。用户明确选择 Qwen/Qwen3-4B 后训练版，另建BF16对照。
 
 已完成：论文v6与官方固定标签的GQA/预算差异审计；SparQ核心、原Qwen3接合、缓存PPL/官方任务计分与断点完整覆盖；双K/选择器成本账本。CPU Slurm2872在TF4.51.3/Torch2.7.1+cu128通过45项、无跳过、CUDA未初始化。后续新增诊断和benchmark测试将另列；尚无完整模型质量或物理PPA结论。

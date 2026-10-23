@@ -20,6 +20,7 @@ import torch.nn.functional as F
 
 from .core import SparQConfig
 from .scoring import evaluate_ppl, evaluate_tasks
+from .batch_scoring import evaluate_tasks_batched
 from .task_data import load_tasks, token_documents, harness_sources, sha
 from ..stochastic.vendor.scoring import full_window_plan, ids_sha256, summarize_records
 
@@ -95,7 +96,7 @@ def source_identity():
     tree = Path(__file__).resolve().parents[2]
     manifest = json.loads((tree / 'EXECUTION.json').read_text())
     required={'qwen3/sparq/'+name for name in ('run.py','core.py','adapter.py','scoring.py',
-        'task_data.py','benchmark.py','SOURCES.json','model_identity.json')}
+        'task_data.py','batch_scoring.py','benchmark.py','SOURCES.json','model_identity.json')}
     required.add('qwen3/stochastic/vendor/scoring.py')
     if not required.issubset(manifest['files']):
         raise ValueError('execution manifest omits required dependencies')
@@ -111,7 +112,7 @@ def sum_counter(stats, suffix):
                for row in stats['execution_audit']['replacement']['layers'].values())
 
 
-def preflight(model, ids, documents, tasks, config):
+def preflight(model, ids, documents, tasks, config, batch):
     # Same q_len=1/cache/batch execution must be bitwise identical when delegated.
     options = dict(context=32, stride=16, batch=2, capture_logits_hash=True)
     native = evaluate_ppl(model, ids[:80], mode='native', **options)
@@ -130,8 +131,10 @@ def preflight(model, ids, documents, tasks, config):
     for mode in ('dense','sparq'):
         torch.cuda.reset_peak_memory_stats()
         result=evaluate_ppl(model,ids,mode=mode,config=config,protocol='suffix',context=2048,
-                            suffix_decode=16,suffix_examples=8,batch=8)
+                            suffix_decode=16,suffix_examples=batch,batch=batch)
         result['peak_allocated_bytes']=torch.cuda.max_memory_allocated()
+        if result['peak_allocated_bytes']>28*1024**3:
+            raise RuntimeError('declared PPL batch exceeds 28GiB smoke budget')
         memory_smoke[mode]=result
     for name, rows in documents.items():
         a = evaluate_tasks(model, rows, mode='native', doc_limit=2, tasks=tasks)
@@ -142,6 +145,41 @@ def preflight(model, ids, documents, tasks, config):
         task_smoke[name] = dict(native=a, dense=b, sparq=c)
     return dict(passed=True, native=native, dense=dense, strict_sparq=checked,
                 production_sparq=fast, memory_smoke=memory_smoke, tasks=task_smoke, complete_quality_evaluation=False)
+
+
+def document_batch_gate(model,documents,tasks,config):
+    reports={}
+    for name,rows in documents.items():
+        buckets={}
+        for row in rows:buckets.setdefault(len(row['context_ids']),[]).append(row)
+        eligible={n:r for n,r in buckets.items() if n>=160 and len(r)>=8}
+        bucket=max((eligible or buckets).values(),key=len)
+        sample=bucket[:8]
+        native=evaluate_tasks_batched(model,sample,mode='native',tasks=tasks)
+        dense=evaluate_tasks_batched(model,sample,mode='dense',tasks=tasks)
+        if max(native['group_document_counts'])<=1:
+            raise RuntimeError('document batch gate did not actually batch distinct documents')
+        if native['documents']!=dense['documents']:
+            raise RuntimeError('native/dense batch wrapper differs')
+        report={'context_tokens':len(sample[0]['context_ids']),'doc_ids':[r['id'] for r in sample],
+                'native':native,'dense':dense,'comparisons':{}}
+        for mode in ('dense','sparq'):
+            serial=evaluate_tasks(model,sample,mode=mode,config=config,tasks=tasks)
+            batched=dense if mode=='dense' else evaluate_tasks_batched(model,sample,mode=mode,config=config,tasks=tasks)
+            maximum=0.;flips=0;metric_differences={k:0 for k in ('acc','acc_norm')}
+            for a,b in zip(serial['documents'],batched['documents']):
+                if a['id']!=b['id']:raise RuntimeError('batched score order changed')
+                for x,y in zip(a['choices'],b['choices']):
+                    maximum=max(maximum,abs(x['logprob']-y['logprob'])/x['tokens'])
+                flips+=max(range(len(a['choices'])),key=lambda i:a['choices'][i]['logprob'])!=max(range(len(b['choices'])),key=lambda i:b['choices'][i]['logprob'])
+                for k in metric_differences:metric_differences[k]+=a['metrics'][k]!=b['metrics'][k]
+            if maximum>.02:
+                raise RuntimeError('BF16 document batching exceeded predeclared .02 nats/target gate: '+str(maximum))
+            report['comparisons'][mode]=dict(max_abs_mean_logprob_delta=maximum,raw_prediction_flips=flips,
+                metric_differences=metric_differences,serial=serial,batched=batched)
+        reports[name]=report
+    return dict(passed=True,bf16_tolerance_nats_per_target=.02,tasks=reports,
+                interpretation='batching changes BF16 execution shapes; final dense/SparQ share the same batching')
 
 
 def vectorized_anchor(model, ids, out):
@@ -217,8 +255,8 @@ def paired_tasks(model, documents, tasks, config, out, chunk):
             for mode in ('dense', 'sparq'):
                 name = f'task_parts/{task_name}_{mode}_{start:05d}'
                 if out.existing(name) is None:
-                    result = evaluate_tasks(model, docs[start:start+chunk], mode=mode, config=config,
-                                            tasks=tasks, choice_batch=4, progress=out.progress(name))
+                    result = evaluate_tasks_batched(model, docs[start:start+chunk], mode=mode, config=config,
+                                            tasks=tasks, document_batch=8, max_choice_rows=32, progress=out.progress(name))
                     result['shard_complete'] = result['complete']
                     result['complete'] = False
                     result['scope'] = 'contiguous_task_shard; only final task summary can claim full completion'
@@ -252,9 +290,9 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--root',required=True)
     parser.add_argument('--phase',choices=('preflight','full'),default='preflight')
-    parser.add_argument('--batch',type=int,default=8)
-    parser.add_argument('--ppl-chunk',type=int,default=16)
-    parser.add_argument('--task-chunk',type=int,default=50)
+    parser.add_argument('--batch',type=int,default=32)
+    parser.add_argument('--ppl-chunk',type=int,default=32)
+    parser.add_argument('--task-chunk',type=int,default=256)
     args=parser.parse_args()
     if not os.environ.get('SLURM_JOB_ID') or not os.environ.get('CUDA_VISIBLE_DEVICES'):
         raise RuntimeError('an explicit GPU Slurm allocation is required')
@@ -278,7 +316,9 @@ def main():
     documents={name:token_documents(task,name,tokenizer) for name,task in tasks.items()}
     identity=dict(model=ready['model'],revision=ready['revision'],ready_sha256=sha(root/'prepared/READY.json'),
         execution=execution,config=asdict(config),seed=0,ppl=dict(context=2048,stride=1024,batch=args.batch,chunk=args.ppl_chunk),
-        tasks=task_identity,task_chunk=args.task_chunk,task_tokenization_sha256=fingerprint(documents),
+        tasks=task_identity,task_chunk=args.task_chunk,document_batch=8,max_choice_rows=32,
+        document_bucketing='same context length within contiguous shard; return original id order; no padding',
+        task_tokenization_sha256=fingerprint(documents),
         harness=harness_sources(),tokens_sha256=ids_sha256(ids.tolist()),original_ffn=True,
         environment={n:importlib.metadata.version(n) for n in ('torch','transformers','tokenizers','lm_eval','datasets')})
     out=Artifacts(root/'results'/execution['commit'][:12],identity)
@@ -291,7 +331,9 @@ def main():
         if any(getattr(model.config,k)!=v for k,v in ready['shape'].items()):
             raise ValueError('native Qwen3 shape changed')
         if out.existing('preflight') is None:
-            out.put('preflight',preflight(model,ids,documents,tasks,config))
+            out.put('preflight',preflight(model,ids,documents,tasks,config,args.batch))
+        if out.existing('document_batch_gate') is None:
+            out.put('document_batch_gate',document_batch_gate(model,documents,tasks,config))
         print('PREFLIGHT_PASSED',flush=True)
         if args.phase=='preflight':
             return

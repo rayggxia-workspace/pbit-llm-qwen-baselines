@@ -1,0 +1,31 @@
+* HSPICE template, NOT an executable bitcell model and NOT a foundry library.
+* Supply these local includes. Both cell and gate must use the same process corner.
+.include 'LOCAL_PROCESS_MODELS.sp'
+.include 'LOCAL_CELL_ADAPTERS.sp'
+.option post=2
+.param VCORE=1.08 CL=2f WB=0
+VM vm 0 'VCORE'
+VL vl 0 'VCORE'
+* Initialization: write WB for 2 ns, then retain with WL low.
+VBL bl 0 'WB*VCORE'
+VBB bb 0 '(1-WB)*VCORE'
+VWL wl 0 PULSE(0 'VCORE' 1n 50p 50p 2n 1u)
+* The adapter MUST expose real storage nodes q/qb. Do not replace them by sources.
+XMEM bl bb wl q qb vm 0 CIM_BITCELL
+* Nearby random bit, 100 MHz, 50% duty; sweep activity separately.
+VSNG s 0 PULSE(0 'VCORE' 20n 100p 100p 5n 10n)
+* Compare this loaded deck against deleting XAND, XBUF and COUT (unloaded cell).
+* CIM_AND2 and CIM_BUF are actual transistor-level library-cell adapters.
+XAND q s p vl 0 CIM_AND2
+XBUF p y vl 0 CIM_BUF
+COUT y 0 'CL'
+.tran 10p 220n
+.measure tran PMEM AVG par('-v(vm)*i(VM)') FROM=40n TO=200n
+.measure tran PLOGIC AVG par('-v(vl)*i(VL)') FROM=40n TO=200n
+.measure tran QMIN MIN v(q) FROM=40n TO=200n
+.measure tran QMAX MAX v(q) FROM=40n TO=200n
+.measure tran QBMIN MIN v(qb) FROM=40n TO=200n
+.measure tran QBMAX MAX v(qb) FROM=40n TO=200n
+* For WB=1 only: SNG->output propagation. WB=0 has no rising output.
+* .measure tran TD TRIG v(s) VAL='VCORE/2' RISE=5 TARG v(y) VAL='VCORE/2' RISE=5
+.end

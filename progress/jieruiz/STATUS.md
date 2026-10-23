@@ -1,3 +1,7 @@
+## 2026-10-23 Issue146：SRAM邻近计算前端
+
+负责人jieruiz，task/146-cim-frontend，base 6966739/pbit-tlm-attention-details-20261016；独立目录tmp/cim-frontend-issue146-20261023。正式architecture_tlm/sc_cim_frontend_20261023，本地RTL/中文说明/PPA脚本/小SRAM探针已完成；27组13620周期、5流程与12波形窗口检查通过。完整N64/M64前端此前三seed×两随机接口通过，独立大门阵列超时保留。无新DC/PT/SPICE/PPA/PPL，源/配置/证据SHA见results和中央cim-frontend-146-functional；用户先M1 smoke再M64工艺。PR/远端实际状态见work/jieruiz/146/PUBLICATION.json、REMOTE_VERIFY.json；不自动合并，Projects待权限核对。无在运行作业。下一步依RUN_PPA_ZH回传报告；详细交接HANDOFF.md。
+
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 
 负责人jieruiz；review/55-pr-round8；base e8705765；独立稀疏目录tmp/pr55-review-round8-20261023。119/120/122/125/126/127/130按限定范围通过，359测试中358通过、1个Windows符号链接测试跳过；原件与GQA发布源码映射复核通过。45条台账/964行是原任务记录并集，无新硬件实验。修复未公开旧commit导致的新检出审计失败；不改旧manifest。116/123保持暂停，不启动全尺寸/GPU/EDA。成果work/jieruiz/55/round8/REVIEW_ZH.md；集成PR发布、实际合并及目录回收以Issue55最终回执为准。待用户工艺环境SS/T32最小PPA；Issue107独立进行，避免重复任务。

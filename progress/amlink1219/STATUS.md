@@ -1,3 +1,11 @@
+# 2026-10-23 Issue139：Qwen3-4B GQA筛选文献调研
+
+负责人amlink1219；task/139-qwen3-gqa-literature；base集成6966739a；独立稀疏目录workspace_projects/gqa_lit23。报告与12篇来源在architecture_tlm/qwen3_gqa_literature/，交接work/amlink1219/139/HANDOFF.md。通过独立任务PR交付，远端提交/PR以最终发布回执为准，不自动合并。
+
+已核32Q/8KV/d128及sum/mean-Q/max-teacher/union区别；SeerAttention-R直接评测后训练Qwen3-4B，不能继承为Base结论；原文与accuracy-only代码分开。独立审阅3处修正；12PDF可解析且SHA核对。Zotero关闭，12篇待导入，未声称入库。无训练/仿真/PPL/PPA/服务器作业；116/123暂停不变，136/137基线任务不接管。Projects以本轮权限回执为准。
+
+---
+
 # Issue116 已暂停（用户明确要求，2026-10-23）
 
 目标状态`paused`，不标complete、不自动恢复；只做收尾上传和交接。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审/未合并，暂停前已推送3347bd8，最终收尾提交与远端核验见`work/amlink1219/116/PUBLICATION.json`。权威入口：[暂停总结](../../work/amlink1219/116/PAUSE_REPORT_ZH.md)、[HANDOFF](../../work/amlink1219/116/HANDOFF.md)；A–G仅A完成本轮冻结，B/C/D/E/G部分完成，完整新后端F未开始。

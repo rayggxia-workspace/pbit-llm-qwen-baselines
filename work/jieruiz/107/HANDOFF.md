@@ -1,3 +1,7 @@
+# Issue107 v2重检包（2026-10-23）
+
+源码66cb8b3，ZIP本机根digital_ppa8_ss_tt_100_20261023_v2.zip，SHA/大小在ppa8/V2_DELIVERY.json。14本地单测及语法检查通过，221冻结文件与旧包一致，无本机EDA。上传项目根后进入v2目录，执行bash submit_power_recheck.sh /public3/home/t6s011227/pbit_chimera_pipeline_20260920/digital_ppa8_ss_tt_100_20261023_v1/results/38339971。新任务只重做波形转换/18窗口PT，不修改父结果或重跑DC/VCS；父目录不可清理。先回传两份新reports包，不能预先宣称PWR-981消失或库范围无误差，再决定remaining14项。
+
 # Issue107最新结果：38339971 smoke复核（2026-10-23）
 
 原件APR_results/38339971_7_reports.tar.gz与38339971_15_reports.tar.gz；仅KIND21 SS/TT。复核脚本work/jieruiz/107/ppa8/review_smoke.py已运行，668成员SHA、24功能场景、18功耗窗口回算通过；正式报告results/PPA8_SMOKE_38339971_ZH.md（位于architecture_tlm/digital_ppa_v1），中央记录digital-ppa8-38339971-smoke。未修改EDA脚本/原件，保留PWR-981及库表范围告警，缺mapped.v和原VCD逐位证明。下一步从同一远端任务取dc/mapped.v与gate的VCD及PT活动注释报告，复用阶段诊断，不必重复功能和综合；其余14配置本次未回传。旧prepared记录不改。

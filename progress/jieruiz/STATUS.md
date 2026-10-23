@@ -1,3 +1,7 @@
+# Issue107：v2逐位活动标注和PT重检包（2026-10-23）
+
+源码66cb8b3，v2 ZIP已生成（2184127B，SHA067efe07b99ee85f09569198363be8a7a5155ed98e45a8b4ed698f7b05a887a4）。14单测在源码及交付目录通过，Python3.6 AST/Tcl/Bash通过，221项冻结源码/激励与v1一致。所有VCD位/别名保留；PT逐位检查clk/out_valid/有效result翻转率及静态概率，PWR-981未消除则失败；库表9位精度及受影响单元功耗统计保留provisional。只读复用38339971_7/15，执行新PT、不重跑DC/VCS；剩余14项暂等本次检查。无本机PT实跑，v2远端结果待用户提交。交付/登记work/jieruiz/107/ppa8/V2_DELIVERY.json。沙箱外Git只读网络恢复，最新base6966739；发布状态另行核实，不沿用旧网络阻塞作为完成证明。
+
 # Issue107：38339971首轮结果复核（2026-10-23）
 
 负责人jieruiz，沿用task/107-digital-ppa8-ss-tt和原目录。实际下载仅KIND21 SS/TT两项smoke，24功能场景通过、18功耗窗口有值且STA非负；668成员SHA、源包manifest原字节及逐单元功耗/面积/能量回算通过。PWR-981及2load/1ramp超表范围尚待复核，功耗保留provisional，不写全8类通过。报告architecture_tlm/digital_ppa_v1/results/PPA8_SMOKE_38339971_ZH.md；中央记录digital-ppa8-38339971-smoke。未重跑EDA、未修改仿真脚本。先复用mapped.v/VCD诊断，再考虑remaining14项。GitHub API刷新连接异常，远端同步/PR待办，旧发布阻塞保持。

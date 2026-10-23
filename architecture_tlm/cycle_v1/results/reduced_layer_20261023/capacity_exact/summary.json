@@ -1,0 +1,1738 @@
+{
+  "actions": {
+    "K_read_bytes": 640,
+    "QK_mac": 160,
+    "Q_read_bytes": 64,
+    "V_read_bytes": 640,
+    "V_weighted_mac": 160,
+    "activation_abs_values": 86,
+    "activation_bin_compare": 258,
+    "activation_encode_values": 86,
+    "activation_exponent_grid_convert": 86,
+    "activation_group_max_compare": 83,
+    "all_candidate_indices": 10,
+    "boundary_write_bytes": 360,
+    "complete_tile_restore": 6,
+    "counter_clocked_slots": 352256,
+    "counter_initialize_bits": 132096,
+    "cross_tile_fp32_add": 172,
+    "digital_mac": 1024,
+    "down_fp32_to_bf16": 16,
+    "exp_values": 10,
+    "ffn_activation_compare": 2752,
+    "ffn_bit_sinks": 4288,
+    "ffn_shared64_broadcast_tiles": 192,
+    "ffn_stratum_updates": 96,
+    "ffn_threshold_low_bits_used": 288,
+    "gated_multiply": 70,
+    "kv_append_values": 32,
+    "layer_read_bytes": 5184,
+    "layer_write_bytes": 576,
+    "memory.dram.read_beats": 144,
+    "memory.dram.read_bytes": 8760,
+    "memory.dram.read_requests": 36,
+    "memory.dram.write_beats": 2,
+    "memory.dram.write_bytes": 128,
+    "memory.dram.write_requests": 2,
+    "memory.sram.read_beats": 86,
+    "memory.sram.read_bytes": 5008,
+    "memory.sram.read_requests": 35,
+    "memory.sram.write_beats": 92,
+    "memory.sram.write_bytes": 5256,
+    "memory.sram.write_requests": 34,
+    "native_response_copy": 102,
+    "native_rng_command": 6,
+    "native_rng_request": 96,
+    "output_write_bytes": 96,
+    "partial_read_bytes": 64,
+    "partial_write_bytes": 688,
+    "residual_add": 32,
+    "residual_fp32_to_bf16": 16,
+    "residual_read_bytes": 64,
+    "restore_counter_reads": 11008,
+    "restore_integer_plane_add": 4816,
+    "restore_integer_scale_fp32": 688,
+    "restore_ordered_bin_fp32_add": 688,
+    "restore_positional_shift": 5504,
+    "restore_signed_rail_subtract": 5504,
+    "restore_weight_scale_sample_normalize": 688,
+    "rmsnorm_values": 32,
+    "rope_values": 32,
+    "sc_sample_frames": 192,
+    "score_max_compare": 9,
+    "score_subtract": 10,
+    "silu_values": 70,
+    "softmax_normalize_multiply": 10,
+    "softmax_reciprocal": 1,
+    "softmax_sum_add": 9,
+    "softmax_values": 10,
+    "sram_read_bytes": 3384,
+    "sram_write_bytes": 3384,
+    "weight_input_trials": 107520,
+    "weight_read_bytes": 3360,
+    "weight_scale_read_bytes": 24
+  },
+  "boundary": {
+    "arithmetic": "FP32 boundaries with double fsum reference digital kernels; not bit-true full RTL",
+    "global_memory_capacity": "not allocated",
+    "heads": 1,
+    "hidden": 16,
+    "intermediate": 70,
+    "kind": "reduced_synthetic_decoder",
+    "not_a_qwen_layer": true,
+    "past_tokens": 9,
+    "random_network_scope": "independent per-operator source/seed networks, assumed present from time zero; not whole-layer shared seed-bus arbitration",
+    "scope": "reduced single-head decoder in one online kernel",
+    "selection": "all candidates; no screening or GQA",
+    "shared_resource_overrides": {
+      "rng_latency_cycles": 2,
+      "vector_latency_cycles": 3
+    },
+    "timing": "uncharacterized configured contracts"
+  },
+  "configs": {
+    "attention": {
+      "burn_updates": 0,
+      "capacity": 512,
+      "cdc_cycles": 3,
+      "drive_latency": 3,
+      "drive_step": 0.125,
+      "exp_lanes": 16,
+      "exp_latency": 8,
+      "histogram_delay_cycles": 0,
+      "kv_capacity_bytes": 4096,
+      "lut_latency": 2,
+      "mac_lanes": 64,
+      "max_proposals_per_sample": 64,
+      "max_shift": 24,
+      "mode": "exact",
+      "native_hold_cycles": 0,
+      "output_capacity": 1,
+      "random_backend": "native",
+      "rank_retry_cap": 1024,
+      "reciprocal_latency": 12,
+      "reseed_cycles": 100000000,
+      "response": "q256",
+      "samples": 32,
+      "score_capacity_bytes": 32768,
+      "seed": 0,
+      "seed_startup": 10,
+      "seed_word_interval": 100,
+      "source_ii": 1,
+      "source_lanes": 64,
+      "source_latency": 2,
+      "vector_lanes": 64,
+      "winner_shift": 0.0
+    },
+    "ffn": {
+      "bins": 4,
+      "cdc_cycles": 3,
+      "count_bits": null,
+      "counter_capacity_bytes": 49152,
+      "counter_layout": "bitplane",
+      "encode_latency": 7,
+      "encoded_capacity_bytes": 256,
+      "engines": 8,
+      "native_hold_cycles": 0,
+      "nonlinear_latency": 8,
+      "output_bf16": true,
+      "partial_capacity_bytes": 65536,
+      "random_backend": "native",
+      "reseed_cycles": 100000000,
+      "restore_capacity_bytes": 8192,
+      "restore_latency": 4,
+      "rng_latency": 1,
+      "samples": 32,
+      "sc_latency": 1,
+      "seed": 0,
+      "seed_startup": 10,
+      "seed_word_interval": 100,
+      "strata": 32,
+      "tile": 64,
+      "vector_lanes": 16,
+      "weight_scale_capacity_bytes": 32,
+      "weight_slot_bytes": 4096,
+      "weight_slots": 8
+    },
+    "layer": {
+      "cdc_cycles": 3,
+      "digital_mac_lanes": 64,
+      "epsilon": 1e-06,
+      "local_bytes": 8192,
+      "rope_theta": 10000.0,
+      "working_bytes": 768
+    }
+  },
+  "created_utc": "2026-10-22T18:13:44.448756+00:00",
+  "energy": {
+    "action_namespaces_overlap": true,
+    "status": "unknown"
+  },
+  "execution_modes": {
+    "cycle": {
+      "visited_edges": 3977,
+      "wall_seconds": 1.2631336000049487
+    },
+    "event": {
+      "visited_edges": 1508,
+      "wall_seconds": 0.6943439000751823
+    }
+  },
+  "finish_ps": 24850000,
+  "fixture": {
+    "heads": 1,
+    "hidden": 16,
+    "intermediate": 70,
+    "kind": "reduced_synthetic_decoder",
+    "not_a_qwen_layer": true,
+    "past_tokens": 9
+  },
+  "full_model_ppl": null,
+  "latency_ns": 24850.0,
+  "memory": {
+    "banks": 4,
+    "latency_cycles": 4,
+    "window": 4
+  },
+  "mode_equivalence": true,
+  "native_random": {
+    "attention": null,
+    "ffn": {
+      "adapter": "cycle_v1 native clock process; Issue95 Endpoint/RandomNetwork via EventNetwork/FastEndpoint",
+      "area_mm2": null,
+      "clock_ns": 10,
+      "cycles": 2482,
+      "elapsed_ns": 24820,
+      "energy_J": null,
+      "independent_IID": false,
+      "jumped_idle_edges": 2281,
+      "physical_entropy": false,
+      "physical_timing_characterized": false,
+      "ports": {
+        "ffn": {
+          "area_mm2": null,
+          "counts": {
+            "checkpoint_bits_written": 96,
+            "clock_edges": 2482,
+            "commands": 6,
+            "frames_generated": 96,
+            "output_register_bits_written": 864,
+            "output_stall_cycles": 0,
+            "prng_updates": 96,
+            "random_word_bits_generated": 768,
+            "recurrence_steps": 1536,
+            "request_stall_cycles": 0,
+            "reseed_deferred_cycles": 0,
+            "responses_consumed": 96,
+            "seed_loads": 1,
+            "seed_state_bits_loaded": 32,
+            "seed_wait_cycles": 12,
+            "shared_mapping_evaluations": 0,
+            "threshold_comparisons": 96
+          },
+          "cycles": 2482,
+          "energy_J": null,
+          "kind": "lfsr32",
+          "profile": {
+            "correlation": "single_word_lfsr; temporal dependence",
+            "lanes": 1,
+            "state_bits": 32,
+            "steps": 16,
+            "warmup": 0
+          },
+          "status": "operation counts only; calibrate with delivered RTL"
+        }
+      },
+      "receipts": [
+        {
+          "command": 1,
+          "epoch": 1,
+          "kind": "command",
+          "label": "x.g0.wave0.prepare",
+          "native_complete_ps": 4140000,
+          "submit_ps": 4130000,
+          "wait_edges": 1
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng0",
+          "native_complete_ps": 4200000,
+          "submit_ps": 4180000,
+          "valid_ps": 4190000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng1",
+          "native_complete_ps": 4310000,
+          "submit_ps": 4290000,
+          "valid_ps": 4300000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng2",
+          "native_complete_ps": 4420000,
+          "submit_ps": 4400000,
+          "valid_ps": 4410000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng3",
+          "native_complete_ps": 4530000,
+          "submit_ps": 4510000,
+          "valid_ps": 4520000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng4",
+          "native_complete_ps": 4640000,
+          "submit_ps": 4620000,
+          "valid_ps": 4630000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng5",
+          "native_complete_ps": 4750000,
+          "submit_ps": 4730000,
+          "valid_ps": 4740000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng6",
+          "native_complete_ps": 4860000,
+          "submit_ps": 4840000,
+          "valid_ps": 4850000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng7",
+          "native_complete_ps": 4970000,
+          "submit_ps": 4950000,
+          "valid_ps": 4960000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng8",
+          "native_complete_ps": 5080000,
+          "submit_ps": 5060000,
+          "valid_ps": 5070000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng9",
+          "native_complete_ps": 5190000,
+          "submit_ps": 5170000,
+          "valid_ps": 5180000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng10",
+          "native_complete_ps": 5300000,
+          "submit_ps": 5280000,
+          "valid_ps": 5290000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng11",
+          "native_complete_ps": 5410000,
+          "submit_ps": 5390000,
+          "valid_ps": 5400000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng12",
+          "native_complete_ps": 5520000,
+          "submit_ps": 5500000,
+          "valid_ps": 5510000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng13",
+          "native_complete_ps": 5630000,
+          "submit_ps": 5610000,
+          "valid_ps": 5620000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng14",
+          "native_complete_ps": 5740000,
+          "submit_ps": 5720000,
+          "valid_ps": 5730000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng15",
+          "native_complete_ps": 5850000,
+          "submit_ps": 5830000,
+          "valid_ps": 5840000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng16",
+          "native_complete_ps": 5960000,
+          "submit_ps": 5940000,
+          "valid_ps": 5950000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng17",
+          "native_complete_ps": 6070000,
+          "submit_ps": 6050000,
+          "valid_ps": 6060000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng18",
+          "native_complete_ps": 6180000,
+          "submit_ps": 6160000,
+          "valid_ps": 6170000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng19",
+          "native_complete_ps": 6290000,
+          "submit_ps": 6270000,
+          "valid_ps": 6280000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng20",
+          "native_complete_ps": 6400000,
+          "submit_ps": 6380000,
+          "valid_ps": 6390000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng21",
+          "native_complete_ps": 6510000,
+          "submit_ps": 6490000,
+          "valid_ps": 6500000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng22",
+          "native_complete_ps": 6620000,
+          "submit_ps": 6600000,
+          "valid_ps": 6610000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng23",
+          "native_complete_ps": 6730000,
+          "submit_ps": 6710000,
+          "valid_ps": 6720000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng24",
+          "native_complete_ps": 6840000,
+          "submit_ps": 6820000,
+          "valid_ps": 6830000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng25",
+          "native_complete_ps": 6950000,
+          "submit_ps": 6930000,
+          "valid_ps": 6940000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng26",
+          "native_complete_ps": 7060000,
+          "submit_ps": 7040000,
+          "valid_ps": 7050000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng27",
+          "native_complete_ps": 7170000,
+          "submit_ps": 7150000,
+          "valid_ps": 7160000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng28",
+          "native_complete_ps": 7280000,
+          "submit_ps": 7260000,
+          "valid_ps": 7270000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng29",
+          "native_complete_ps": 7390000,
+          "submit_ps": 7370000,
+          "valid_ps": 7380000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng30",
+          "native_complete_ps": 7500000,
+          "submit_ps": 7480000,
+          "valid_ps": 7490000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "x.g0.wave0.rng31",
+          "native_complete_ps": 7610000,
+          "submit_ps": 7590000,
+          "valid_ps": 7600000,
+          "wait_edges": 2
+        },
+        {
+          "command": 3,
+          "epoch": 1,
+          "kind": "command",
+          "label": "x.g0.native_release",
+          "native_complete_ps": 13940000,
+          "submit_ps": 13930000,
+          "wait_edges": 1
+        },
+        {
+          "command": 1,
+          "epoch": 1,
+          "kind": "command",
+          "label": "z.g0.wave0.prepare",
+          "native_complete_ps": 14700000,
+          "submit_ps": 14690000,
+          "wait_edges": 1
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng0",
+          "native_complete_ps": 14760000,
+          "submit_ps": 14740000,
+          "valid_ps": 14750000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng1",
+          "native_complete_ps": 14870000,
+          "submit_ps": 14850000,
+          "valid_ps": 14860000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng2",
+          "native_complete_ps": 14980000,
+          "submit_ps": 14960000,
+          "valid_ps": 14970000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng3",
+          "native_complete_ps": 15090000,
+          "submit_ps": 15070000,
+          "valid_ps": 15080000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng4",
+          "native_complete_ps": 15200000,
+          "submit_ps": 15180000,
+          "valid_ps": 15190000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng5",
+          "native_complete_ps": 15310000,
+          "submit_ps": 15290000,
+          "valid_ps": 15300000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng6",
+          "native_complete_ps": 15420000,
+          "submit_ps": 15400000,
+          "valid_ps": 15410000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng7",
+          "native_complete_ps": 15530000,
+          "submit_ps": 15510000,
+          "valid_ps": 15520000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng8",
+          "native_complete_ps": 15640000,
+          "submit_ps": 15620000,
+          "valid_ps": 15630000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng9",
+          "native_complete_ps": 15750000,
+          "submit_ps": 15730000,
+          "valid_ps": 15740000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng10",
+          "native_complete_ps": 15860000,
+          "submit_ps": 15840000,
+          "valid_ps": 15850000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng11",
+          "native_complete_ps": 15970000,
+          "submit_ps": 15950000,
+          "valid_ps": 15960000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng12",
+          "native_complete_ps": 16080000,
+          "submit_ps": 16060000,
+          "valid_ps": 16070000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng13",
+          "native_complete_ps": 16190000,
+          "submit_ps": 16170000,
+          "valid_ps": 16180000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng14",
+          "native_complete_ps": 16300000,
+          "submit_ps": 16280000,
+          "valid_ps": 16290000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng15",
+          "native_complete_ps": 16410000,
+          "submit_ps": 16390000,
+          "valid_ps": 16400000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng16",
+          "native_complete_ps": 16520000,
+          "submit_ps": 16500000,
+          "valid_ps": 16510000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng17",
+          "native_complete_ps": 16630000,
+          "submit_ps": 16610000,
+          "valid_ps": 16620000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng18",
+          "native_complete_ps": 16740000,
+          "submit_ps": 16720000,
+          "valid_ps": 16730000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng19",
+          "native_complete_ps": 16850000,
+          "submit_ps": 16830000,
+          "valid_ps": 16840000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng20",
+          "native_complete_ps": 16960000,
+          "submit_ps": 16940000,
+          "valid_ps": 16950000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng21",
+          "native_complete_ps": 17070000,
+          "submit_ps": 17050000,
+          "valid_ps": 17060000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng22",
+          "native_complete_ps": 17180000,
+          "submit_ps": 17160000,
+          "valid_ps": 17170000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng23",
+          "native_complete_ps": 17290000,
+          "submit_ps": 17270000,
+          "valid_ps": 17280000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng24",
+          "native_complete_ps": 17400000,
+          "submit_ps": 17380000,
+          "valid_ps": 17390000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng25",
+          "native_complete_ps": 17510000,
+          "submit_ps": 17490000,
+          "valid_ps": 17500000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng26",
+          "native_complete_ps": 17620000,
+          "submit_ps": 17600000,
+          "valid_ps": 17610000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng27",
+          "native_complete_ps": 17730000,
+          "submit_ps": 17710000,
+          "valid_ps": 17720000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng28",
+          "native_complete_ps": 17840000,
+          "submit_ps": 17820000,
+          "valid_ps": 17830000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng29",
+          "native_complete_ps": 17950000,
+          "submit_ps": 17930000,
+          "valid_ps": 17940000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng30",
+          "native_complete_ps": 18060000,
+          "submit_ps": 18040000,
+          "valid_ps": 18050000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g0.wave0.rng31",
+          "native_complete_ps": 18170000,
+          "submit_ps": 18150000,
+          "valid_ps": 18160000,
+          "wait_edges": 2
+        },
+        {
+          "command": 3,
+          "epoch": 1,
+          "kind": "command",
+          "label": "z.g0.native_release",
+          "native_complete_ps": 19380000,
+          "submit_ps": 19370000,
+          "wait_edges": 1
+        },
+        {
+          "command": 1,
+          "epoch": 1,
+          "kind": "command",
+          "label": "z.g1.wave0.prepare",
+          "native_complete_ps": 19830000,
+          "submit_ps": 19820000,
+          "wait_edges": 1
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng0",
+          "native_complete_ps": 19890000,
+          "submit_ps": 19870000,
+          "valid_ps": 19880000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng1",
+          "native_complete_ps": 20000000,
+          "submit_ps": 19980000,
+          "valid_ps": 19990000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng2",
+          "native_complete_ps": 20110000,
+          "submit_ps": 20090000,
+          "valid_ps": 20100000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng3",
+          "native_complete_ps": 20220000,
+          "submit_ps": 20200000,
+          "valid_ps": 20210000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng4",
+          "native_complete_ps": 20330000,
+          "submit_ps": 20310000,
+          "valid_ps": 20320000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng5",
+          "native_complete_ps": 20440000,
+          "submit_ps": 20420000,
+          "valid_ps": 20430000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng6",
+          "native_complete_ps": 20550000,
+          "submit_ps": 20530000,
+          "valid_ps": 20540000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng7",
+          "native_complete_ps": 20660000,
+          "submit_ps": 20640000,
+          "valid_ps": 20650000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng8",
+          "native_complete_ps": 20770000,
+          "submit_ps": 20750000,
+          "valid_ps": 20760000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng9",
+          "native_complete_ps": 20880000,
+          "submit_ps": 20860000,
+          "valid_ps": 20870000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng10",
+          "native_complete_ps": 20990000,
+          "submit_ps": 20970000,
+          "valid_ps": 20980000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng11",
+          "native_complete_ps": 21100000,
+          "submit_ps": 21080000,
+          "valid_ps": 21090000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng12",
+          "native_complete_ps": 21210000,
+          "submit_ps": 21190000,
+          "valid_ps": 21200000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng13",
+          "native_complete_ps": 21320000,
+          "submit_ps": 21300000,
+          "valid_ps": 21310000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng14",
+          "native_complete_ps": 21430000,
+          "submit_ps": 21410000,
+          "valid_ps": 21420000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng15",
+          "native_complete_ps": 21540000,
+          "submit_ps": 21520000,
+          "valid_ps": 21530000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng16",
+          "native_complete_ps": 21650000,
+          "submit_ps": 21630000,
+          "valid_ps": 21640000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng17",
+          "native_complete_ps": 21760000,
+          "submit_ps": 21740000,
+          "valid_ps": 21750000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng18",
+          "native_complete_ps": 21870000,
+          "submit_ps": 21850000,
+          "valid_ps": 21860000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng19",
+          "native_complete_ps": 21980000,
+          "submit_ps": 21960000,
+          "valid_ps": 21970000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng20",
+          "native_complete_ps": 22090000,
+          "submit_ps": 22070000,
+          "valid_ps": 22080000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng21",
+          "native_complete_ps": 22200000,
+          "submit_ps": 22180000,
+          "valid_ps": 22190000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng22",
+          "native_complete_ps": 22310000,
+          "submit_ps": 22290000,
+          "valid_ps": 22300000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng23",
+          "native_complete_ps": 22420000,
+          "submit_ps": 22400000,
+          "valid_ps": 22410000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng24",
+          "native_complete_ps": 22530000,
+          "submit_ps": 22510000,
+          "valid_ps": 22520000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng25",
+          "native_complete_ps": 22640000,
+          "submit_ps": 22620000,
+          "valid_ps": 22630000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng26",
+          "native_complete_ps": 22750000,
+          "submit_ps": 22730000,
+          "valid_ps": 22740000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng27",
+          "native_complete_ps": 22860000,
+          "submit_ps": 22840000,
+          "valid_ps": 22850000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng28",
+          "native_complete_ps": 22970000,
+          "submit_ps": 22950000,
+          "valid_ps": 22960000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng29",
+          "native_complete_ps": 23080000,
+          "submit_ps": 23060000,
+          "valid_ps": 23070000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng30",
+          "native_complete_ps": 23190000,
+          "submit_ps": 23170000,
+          "valid_ps": 23180000,
+          "wait_edges": 2
+        },
+        {
+          "epochs": {
+            "ffn": 1
+          },
+          "kind": "frame",
+          "label": "z.g1.wave0.rng31",
+          "native_complete_ps": 23300000,
+          "submit_ps": 23280000,
+          "valid_ps": 23290000,
+          "wait_edges": 2
+        },
+        {
+          "command": 3,
+          "epoch": 1,
+          "kind": "command",
+          "label": "z.g1.native_release",
+          "native_complete_ps": 24590000,
+          "submit_ps": 24580000,
+          "wait_edges": 1
+        }
+      ],
+      "response_bridge": "explicit rng_submit/rng_delivery resources; one-cycle registered stages with no same-edge forwarding",
+      "response_hold_cycles": 0,
+      "seed_events": [
+        {
+          "cycle": 11,
+          "epoch": 1,
+          "port": "ffn",
+          "provenance": "explicit deterministic seed-bus fixture; not physical entropy",
+          "rejected": false,
+          "seed_hex": "0xd82c07cd"
+        }
+      ],
+      "seed_source": "explicit deterministic seed-bus fixture; not physical entropy",
+      "seed_transport": {
+        "ffn": {
+          "bus_beats": 1,
+          "bus_bits": 32,
+          "packets_delivered": 1,
+          "padding_bits_discarded": 0
+        }
+      },
+      "seed_word_transcript": [
+        {
+          "cycle": 10,
+          "word": 3626764237
+        }
+      ],
+      "transaction_queue_capacity": 1
+    }
+  },
+  "numeric_validation": {
+    "attention": {
+      "absolute_tolerance": 1.2560110462800367e-05,
+      "max_absolute_error": 1.1920928955078125e-07,
+      "oracle": "double fsum weighted V, compared at documented FP32 reduction tolerance",
+      "quality_scope": "one query output error; not PPL or model accuracy",
+      "sampled_vs_exact_rmse": 4.2475482635568766e-08
+    },
+    "ffn": {
+      "bit_equal_fields": {
+        "gate": true,
+        "output": true,
+        "projected": true,
+        "up": true,
+        "z": true
+      },
+      "oracle": "count-compressed tiled FP32 regression; separate independent audit required"
+    },
+    "oracle_scope": "functional regression reuses primitive routines; see audit for independent formulas and memory mutation tests",
+    "stage_bit_equal": {
+      "k": true,
+      "krope": true,
+      "norm1": true,
+      "norm2": true,
+      "q": true,
+      "qrope": true,
+      "residual": true,
+      "v": true,
+      "wo": true
+    }
+  },
+  "operations": 728,
+  "output": [
+    0.65625,
+    0.7109375,
+    0.734375,
+    0.72265625,
+    0.6796875,
+    0.62109375,
+    0.53125,
+    0.42578125,
+    0.322265625,
+    0.205078125,
+    0.10205078125,
+    -0.004638671875,
+    -0.08642578125,
+    -0.15625,
+    -0.2060546875,
+    -0.2451171875
+  ],
+  "output_memory_sha256": "67ad009ca79ae6dad5e9ab9a03be3a23af634e7bc313f19d48191dec391f6610",
+  "rtl_datapath_validated": false,
+  "schema": "cycle_v1.reduced_decoder.1",
+  "source": {
+    "commit": "9ef05483f4846e99a31c1735c995fb8bfd01e022",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.3",
+    "source_sha256": {
+      "__init__.py": "e606b575e46e7b56d844f3d6fb77087c481cbff95b717d4e37865f4e098aee30",
+      "architecture_tlm/random_service/__init__.py": "5e2a51a64840c2c6bc1061a0daeb4ef94befef38394c74da665c0e2a023d9a5c",
+      "architecture_tlm/random_service/backends.py": "7003510bb575222a4ab32381ad7e4ac440c82f616e56ae4330a08bb9dfa0e70b",
+      "architecture_tlm/random_service/model.py": "d32b82e79eec9fdd579835671edf757f34ae68dbf14039075a728ffbd0c7e4f2",
+      "architecture_tlm/random_service/service.py": "924a6b9a2e007f093cf42d3a8bb13f30f6f85db933af1e88d16e344033068571",
+      "architecture_tlm/random_service/shared64_mapping.json": "4ddd07914a976496edf50e4528caaf3251a363b26e4a1dfa2101a7bec2992c39",
+      "architecture_tlm/unified_v6/rng_integrated.py": "22deac9e9a74e6647385500bf05a5297b6ee801ae2752b731ab94cd5b43a7931",
+      "attention.py": "bdc38030cb0b13029bbf13a631762b8e802dceb5763c700297d0846cdb9b253f",
+      "capture_qwen.py": "c62d4410bc3fa2078ebf7db1ca47d3adf1b8cc9fda937f2982543e12ac853e26",
+      "contracts.py": "935b0ea4dda435274bebf3531a233866ccd6ebd863d237683da7f0eaf26fb320",
+      "ffn.py": "0bac3a0a3413e68fa4222b7f93b938a130e785132f70b163d3b569d3ec8bd0b6",
+      "kernel.py": "b0c8b8e4a79ee28b217f1691dc8629080b7b4288c6e4b7060fb63a22880defd6",
+      "layer.py": "ad61aa43f9dfd8a2ebba45726473a9c906b1d8f8caa61d6a9b70e3b2c2bdce7d",
+      "layer_flow.py": "dc873fece87f5deeabc63a390bd0344a495f17591235f790e1f798401f3d794b",
+      "matrix.py": "0ea22538a32af5bdfcca5eb9ed34b8ec1ffce0d99579bbb150274d3ca14e07e5",
+      "memory.py": "fd1afbd91aad5ddcfdd4d8cc54d4b4af36dd3369f5f67981f92c1241c721cb00",
+      "package_snapshot.py": "cb48756173348bf5ed5f4fe7d64be513d3a5112970f72f14f2463a1bd05dd426",
+      "reporting.py": "998340e2d2298c1c83b6d71019b363eb810e0dcd621cd466c1bd80152769f551",
+      "rng_protocol.py": "f15ff7ff05b7d6d09f4954c53ff9c559cf5d9c3894e92a31a52a0245e481060e",
+      "run.py": "1c2aee4622fc3672600cc4e71efcf1628f2684838b6557025cf892833a68500c",
+      "run_layer.py": "295d63fb0cfac477d3eeacf9e186047e9fd01e31149cf02d8faeefbf43b9296d",
+      "test_attention.py": "7e4be4dedae59fa69ed46b98bef7110ef0205e9e97429c2aed4a1f6f7a336b95",
+      "test_ffn.py": "0b4e966fad29bb7134ca4a1b5ff2dd6a832fbf96595e5694e77b72e8af4ba15f",
+      "test_kernel.py": "5c769794547193e78d547c6dbf86726892c4b2e05302d83e0c081e2b83b6c37b",
+      "test_memory.py": "3cb489a8f7a491dd4c43d929f78fd5f0a4c0e599c1b393a63c721c223adefaa2",
+      "test_rng_protocol.py": "8c53127fdd60de8ee3451d6af60d48b5030ca743ff04bd7a55a08adfee7de0dd"
+    },
+    "working_tree_status": "M \"digital_circuit_simulation_registry/00_\\346\\200\\273\\350\\247\\210.md\"\n M \"digital_circuit_simulation_registry/01_\\347\\273\\223\\346\\236\\234\\345\\234\\260\\345\\235\\200\\347\\264\\242\\345\\274\\225.md\"\n M digital_circuit_simulation_registry/archive_inventory.csv\n M digital_circuit_simulation_registry/artifact_locations.csv\n M digital_circuit_simulation_registry/catalog.json\n M digital_circuit_simulation_registry/registry.py\n M digital_circuit_simulation_registry/runs.csv"
+  },
+  "storage": {
+    "attention.kv": {
+      "capacity": 4096,
+      "final": 4096,
+      "initial": 4096,
+      "maximum_tokens_or_credits": 4096,
+      "minimum_tokens_or_credits": 3520,
+      "name": "attention.kv",
+      "peak_reserved_units": 576,
+      "unit": "byte credit"
+    },
+    "attention.rng_slot": {
+      "capacity": 1,
+      "final": 1,
+      "initial": 1,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 1,
+      "name": "attention.rng_slot",
+      "peak_reserved_units": 0,
+      "unit": "native transaction credit"
+    },
+    "attention.samples": {
+      "capacity": 1,
+      "final": 0,
+      "initial": 0,
+      "maximum_tokens_or_credits": 0,
+      "minimum_tokens_or_credits": 0,
+      "name": "attention.samples",
+      "unit": "index"
+    },
+    "attention.scores": {
+      "capacity": 32768,
+      "final": 32768,
+      "initial": 32768,
+      "maximum_tokens_or_credits": 32768,
+      "minimum_tokens_or_credits": 32416,
+      "name": "attention.scores",
+      "peak_reserved_units": 352,
+      "unit": "byte credit"
+    },
+    "ffn.counters": {
+      "capacity": 49152,
+      "final": 49152,
+      "initial": 49152,
+      "maximum_tokens_or_credits": 49152,
+      "minimum_tokens_or_credits": 35712,
+      "name": "ffn.counters",
+      "peak_reserved_units": 13440,
+      "unit": "token"
+    },
+    "ffn.encoded": {
+      "capacity": 256,
+      "final": 256,
+      "initial": 256,
+      "maximum_tokens_or_credits": 256,
+      "minimum_tokens_or_credits": 0,
+      "name": "ffn.encoded",
+      "peak_reserved_units": 256,
+      "unit": "token"
+    },
+    "ffn.partials": {
+      "capacity": 65536,
+      "final": 65536,
+      "initial": 65536,
+      "maximum_tokens_or_credits": 65536,
+      "minimum_tokens_or_credits": 64568,
+      "name": "ffn.partials",
+      "peak_reserved_units": 968,
+      "unit": "token"
+    },
+    "ffn.restore": {
+      "capacity": 8192,
+      "final": 8192,
+      "initial": 8192,
+      "maximum_tokens_or_credits": 8192,
+      "minimum_tokens_or_credits": 6512,
+      "name": "ffn.restore",
+      "peak_reserved_units": 1680,
+      "unit": "token"
+    },
+    "ffn.rng_slot": {
+      "capacity": 1,
+      "final": 1,
+      "initial": 1,
+      "maximum_tokens_or_credits": 1,
+      "minimum_tokens_or_credits": 0,
+      "name": "ffn.rng_slot",
+      "peak_reserved_units": 1,
+      "unit": "native transaction credit"
+    },
+    "ffn.scales": {
+      "capacity": 32,
+      "final": 32,
+      "initial": 32,
+      "maximum_tokens_or_credits": 32,
+      "minimum_tokens_or_credits": 16,
+      "name": "ffn.scales",
+      "peak_reserved_units": 16,
+      "unit": "token"
+    },
+    "ffn.weights": {
+      "capacity": 32768,
+      "final": 32768,
+      "initial": 32768,
+      "maximum_tokens_or_credits": 32768,
+      "minimum_tokens_or_credits": 30528,
+      "name": "ffn.weights",
+      "peak_reserved_units": 2240,
+      "unit": "token"
+    },
+    "layer.local": {
+      "capacity": 8192,
+      "final": 8192,
+      "initial": 8192,
+      "maximum_tokens_or_credits": 8192,
+      "minimum_tokens_or_credits": 7104,
+      "name": "layer.local",
+      "peak_reserved_units": 1088,
+      "unit": "byte credit"
+    },
+    "layer.state": {
+      "capacity": 768,
+      "final": 768,
+      "initial": 768,
+      "maximum_tokens_or_credits": 768,
+      "minimum_tokens_or_credits": 0,
+      "name": "layer.state",
+      "peak_reserved_units": 768,
+      "unit": "byte credit"
+    }
+  },
+  "timing_details": {
+    "memory_requests": {
+      "dram": {
+        "effective_GB_per_s": 0.35766599597585513,
+        "line_beats": 146,
+        "read_bytes": 8760,
+        "requests": 38,
+        "write_bytes": 128
+      },
+      "sram": {
+        "effective_GB_per_s": 0.41303822937625756,
+        "line_beats": 178,
+        "read_bytes": 5008,
+        "requests": 69,
+        "write_bytes": 5256
+      }
+    },
+    "resource_inflight_union": {
+      "attention_exp": {
+        "at_least_one_inflight_fraction": 0.0032193158953722333,
+        "at_least_one_inflight_ps": 80000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "control": {
+        "at_least_one_inflight_fraction": 0.01488933601609658,
+        "at_least_one_inflight_ps": 370000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "digital_matrix": {
+        "at_least_one_inflight_fraction": 0.0096579476861167,
+        "at_least_one_inflight_ps": 240000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "dram": {
+        "at_least_one_inflight_fraction": 0.045774647887323945,
+        "at_least_one_inflight_ps": 1137500,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "encode": {
+        "at_least_one_inflight_fraction": 0.008450704225352112,
+        "at_least_one_inflight_ps": 210000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "nonlinear": {
+        "at_least_one_inflight_fraction": 0.00482897384305835,
+        "at_least_one_inflight_ps": 120000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "qk": {
+        "at_least_one_inflight_fraction": 0.006036217303822937,
+        "at_least_one_inflight_ps": 150000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "restore": {
+        "at_least_one_inflight_fraction": 0.3203219315895372,
+        "at_least_one_inflight_ps": 7960000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "rng": {
+        "at_least_one_inflight_fraction": 0.0772635814889336,
+        "at_least_one_inflight_ps": 1920000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "rng_delivery": {
+        "at_least_one_inflight_fraction": 0.04104627766599597,
+        "at_least_one_inflight_ps": 1020000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "rng_submit": {
+        "at_least_one_inflight_fraction": 0.04104627766599597,
+        "at_least_one_inflight_ps": 1020000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "sc:0": {
+        "at_least_one_inflight_fraction": 0.012877263581488933,
+        "at_least_one_inflight_ps": 320000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "sc:1": {
+        "at_least_one_inflight_fraction": 0.012877263581488933,
+        "at_least_one_inflight_ps": 320000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "sc:2": {
+        "at_least_one_inflight_fraction": 0.012877263581488933,
+        "at_least_one_inflight_ps": 320000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "sc:3": {
+        "at_least_one_inflight_fraction": 0.012877263581488933,
+        "at_least_one_inflight_ps": 320000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "sc:4": {
+        "at_least_one_inflight_fraction": 0.012877263581488933,
+        "at_least_one_inflight_ps": 320000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "sc:5": {
+        "at_least_one_inflight_fraction": 0.012877263581488933,
+        "at_least_one_inflight_ps": 320000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "sram": {
+        "at_least_one_inflight_fraction": 0.06539235412474849,
+        "at_least_one_inflight_ps": 1625000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "v_accumulate": {
+        "at_least_one_inflight_fraction": 0.012072434607645875,
+        "at_least_one_inflight_ps": 300000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      },
+      "vector": {
+        "at_least_one_inflight_fraction": 0.018108651911468814,
+        "at_least_one_inflight_ps": 450000,
+        "meaning": "union of accepted-to-completed intervals; includes stalled occupancy; not switching utilization"
+      }
+    },
+    "stall_note": "sum of per-operation intervals, may overlap; not an additive wall-clock decomposition",
+    "stall_operation_ps": {
+      "dependency": 1298797500,
+      "memory_bank_port": 1225000,
+      "memory_order": 287500,
+      "memory_response_port": 175000,
+      "memory_window_full": 1387500,
+      "not_visible_yet": 2380000,
+      "resource_capacity": 1100000,
+      "resource_ii": 10170000
+    }
+  },
+  "trace_sha256": "2e434ea3fdd140d438083257ae69e3bd425d27824cd77ef864f4ca7c3eccc348"
+}

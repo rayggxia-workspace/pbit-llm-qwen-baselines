@@ -1,3 +1,22 @@
+# Issue116 已暂停（用户明确要求，2026-10-23）
+
+目标状态`paused`，不标complete、不自动恢复；只做收尾上传和交接。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审/未合并，暂停前已推送3347bd8，最终收尾提交与远端核验见`work/amlink1219/116/PUBLICATION.json`。权威入口：[暂停总结](../../work/amlink1219/116/PAUSE_REPORT_ZH.md)、[HANDOFF](../../work/amlink1219/116/HANDOFF.md)；A–G仅A完成本轮冻结，B/C/D/E/G部分完成，完整新后端F未开始。
+
+既有68真实裁剪+8合成、真实context64 GQA及81实现/71独审/43旧回归保持原结论；公开ActiveMemory候选的兼容和64/128/256探针另列，不改默认Kernel。2K候选仅建图后按用户指令中止，PID290792/251584/274768已停，无2K成功记录。三名子代理已停止；暂停时本人服务器队列为空，并行2783为CANCELLED/0:15，本任务未取消它。
+
+正式结果、完整v5矩阵、v4失败、源快照、153项既有本地诊断和暂停回执均归档于本分支；私有模型/GQA原始输入留本人服务器并登记SHA。主树无未提交生产代码；其他工作树保留诊断草稿及14项仅换行差异，详见PAUSE_WORKTREE_INVENTORY，不清理/重置。Projects仍缺read:project；GitHub交接按用户要求通知仓库成员`@jieruiz`。只有用户明确恢复后才执行HANDOFF中的后续检查。
+
+---
+
+# Issue116 暂停前验收快照（历史时点）
+
+负责人amlink1219，task/116-cycle-execution，独立workspace_projects/cycle23。FFN/query有限周期核、共享KV的GQA分组、native随机协议、缩小单层、v6桥与交互trace已完成；最终81实现测试、71独立测试、43旧回归通过。Slurm2776 real68+smoke8全通过，矩阵独立核302制品/34trace/98,340操作与4,597真实read hashes。新增真实context64、7query/1KVhead：Slurm2782的5个S32 CLI与6个S16独审配置双模式通过，独审42个case/head共2,688值逐bit相等。协议RTL9case252握手、ONNXim2官方+4场景、PR122固定版本12case兼容复验通过。有限预取死锁、免费union、无界operand响应已修并保留证据；无完整新后端Qwen/Llama/PPL/STA/PPA结论。
+
+入口architecture_tlm/cycle_v1/IMPLEMENTATION_ZH.md，独立审查audit/REVIEW_ZH.md，交接work/amlink1219/116/HANDOFF.md。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审、未合并；基础发布ddd2e340的438对象/8原始blob已核，包含GQA的最终发布以PUBLICATION.json的verified_head/对象与SHA回执为准。尚缺真实全维整层、多token/2K/8K、全局容量/随机网络、在线DRAM命令后端和PPA校准，原方案A–G未全部完成。N64/128规模探针显示超线性成本，未启动2K；PR125已在独立工作树接续完整FFN及调度性能工作，不复制未发表实现。旧v6/random_service/历史结果未改，权重/私有fixture留本人存储；并行PR119/120/122/125不覆盖。已在PR125留下正式后端交接；实际STA/PPA交由jieruiz，尚未运行。本任务作业均已完成，GPU仅2759/2781捕获（14秒/9秒），其余CPU-only；5090可用，未切4090。新GQA私有fixture下载被自动审批拒绝，改在服务器验证，仅回传白名单回执。Projects缺read:project待同步，不改权限。
+
+---
+以下为Issue98历史发布回执，与Issue116发布状态分开：
+
 发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
 
 # Issue98 Prefill专项补充（2026-10-22）

@@ -1,0 +1,6124 @@
+{
+  "scope": "Independent scalar FP32-boundary audit of one real cropped FFN; not full-layer/model/PPL or physical hardware evidence",
+  "timestamp_utc": "2026-10-22T18:08:54.170753+00:00",
+  "python": "3.13.3",
+  "fixture_sha256": "ad59d88b212739dff6bcd805a4bae4de71081abd5e69c33516ba1cac70b3d11a",
+  "source_fixture_name": "qwen_layer12.json",
+  "provenance": {
+    "attention_crop": "last query head0, shared KV head0, 128 deterministic spread candidates; selector/QKV/RoPE timing excluded",
+    "config_sha256": "479dcf0c5286339e41ad3992cd08ae88a467c4187587936248e2b7c96283484b",
+    "context": 2048,
+    "cuda": "12.8",
+    "dtype": "BF16 model; FP32 exported projections",
+    "ffn_crop": "full 896 input channels; 70 intermediate outputs; 16 final outputs; first 16 true post-attention residual values; omitted intermediate outputs make this a crop, not full FFN equivalence",
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "job_id": "2759",
+    "kind": "real_model_cropped_fixture_not_full_layer_or_PPL",
+    "layer": 12,
+    "logits_finite": true,
+    "model": "Qwen/Qwen2.5-0.5B",
+    "model_files": {
+      "model.safetensors": "88c142557820ccad55bb59756bfcfcf891de9cc6202816bd346445188a0ed342"
+    },
+    "precision_note": "Q/K projections captured after BF16 linear, RoPE applied in FP32 for exported fixture; not bitwise model-attention evidence",
+    "python": "3.12.3",
+    "revision": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+    "seed": 0,
+    "source_sha256": "c62d4410bc3fa2078ebf7db1ca47d3adf1b8cc9fda937f2982543e12ac853e26",
+    "text_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+    "token_ids_sha256": "15c5408c21dd12777d4e7aa974fca45b6f87baf4228a509ea6da7ad3cfff3e04",
+    "torch": "2.7.1+cu128",
+    "transformers": "4.45.2"
+  },
+  "threshold_seed": null,
+  "random_backend": "native",
+  "native_random": {
+    "clock_ns": 10,
+    "cycles": 16573,
+    "elapsed_ns": 165730,
+    "ports": {
+      "ffn": {
+        "kind": "lfsr32",
+        "profile": {
+          "state_bits": 32,
+          "lanes": 1,
+          "steps": 16,
+          "warmup": 0,
+          "correlation": "single_word_lfsr; temporal dependence"
+        },
+        "cycles": 16573,
+        "counts": {
+          "clock_edges": 16573,
+          "seed_wait_cycles": 12,
+          "output_stall_cycles": 0,
+          "request_stall_cycles": 0,
+          "reseed_deferred_cycles": 0,
+          "seed_loads": 1,
+          "seed_state_bits_loaded": 32,
+          "checkpoint_bits_written": 512,
+          "commands": 32,
+          "frames_generated": 512,
+          "prng_updates": 512,
+          "recurrence_steps": 8192,
+          "random_word_bits_generated": 4096,
+          "threshold_comparisons": 512,
+          "output_register_bits_written": 4608,
+          "shared_mapping_evaluations": 0,
+          "responses_consumed": 512
+        },
+        "energy_J": null,
+        "area_mm2": null,
+        "status": "operation counts only; calibrate with delivered RTL"
+      }
+    },
+    "seed_transport": {
+      "ffn": {
+        "bus_beats": 1,
+        "bus_bits": 32,
+        "padding_bits_discarded": 0,
+        "packets_delivered": 1
+      }
+    },
+    "seed_events": [
+      {
+        "cycle": 11,
+        "port": "ffn",
+        "epoch": 1,
+        "seed_hex": "0xd82c07cd",
+        "rejected": false,
+        "provenance": "explicit deterministic seed-bus fixture; not physical entropy"
+      }
+    ],
+    "seed_source": "explicit deterministic seed-bus fixture; not physical entropy",
+    "seed_word_transcript": [
+      {
+        "cycle": 10,
+        "word": 3626764237
+      }
+    ],
+    "energy_J": null,
+    "area_mm2": null,
+    "adapter": "cycle_v1 native clock process; Issue95 Endpoint/RandomNetwork via EventNetwork/FastEndpoint",
+    "independent_IID": false,
+    "physical_entropy": false,
+    "physical_timing_characterized": false,
+    "transaction_queue_capacity": 1,
+    "response_hold_cycles": 0,
+    "response_bridge": "explicit rng_submit/rng_delivery resources; one-cycle registered stages with no same-edge forwarding",
+    "receipts": [
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 1520000,
+        "native_complete_ps": 1530000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g0.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 1580000,
+        "submit_ps": 1570000,
+        "native_complete_ps": 1590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 1680000,
+        "submit_ps": 1670000,
+        "native_complete_ps": 1690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 1780000,
+        "submit_ps": 1770000,
+        "native_complete_ps": 1790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 1880000,
+        "submit_ps": 1870000,
+        "native_complete_ps": 1890000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 1980000,
+        "submit_ps": 1970000,
+        "native_complete_ps": 1990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2080000,
+        "submit_ps": 2070000,
+        "native_complete_ps": 2090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2180000,
+        "submit_ps": 2170000,
+        "native_complete_ps": 2190000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2280000,
+        "submit_ps": 2270000,
+        "native_complete_ps": 2290000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2380000,
+        "submit_ps": 2370000,
+        "native_complete_ps": 2390000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2480000,
+        "submit_ps": 2470000,
+        "native_complete_ps": 2490000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2580000,
+        "submit_ps": 2570000,
+        "native_complete_ps": 2590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2680000,
+        "submit_ps": 2670000,
+        "native_complete_ps": 2690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2780000,
+        "submit_ps": 2770000,
+        "native_complete_ps": 2790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2880000,
+        "submit_ps": 2870000,
+        "native_complete_ps": 2890000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 2980000,
+        "submit_ps": 2970000,
+        "native_complete_ps": 2990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3080000,
+        "submit_ps": 3070000,
+        "native_complete_ps": 3090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3180000,
+        "submit_ps": 3170000,
+        "native_complete_ps": 3190000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3280000,
+        "submit_ps": 3270000,
+        "native_complete_ps": 3290000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3380000,
+        "submit_ps": 3370000,
+        "native_complete_ps": 3390000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3480000,
+        "submit_ps": 3470000,
+        "native_complete_ps": 3490000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3580000,
+        "submit_ps": 3570000,
+        "native_complete_ps": 3590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3680000,
+        "submit_ps": 3670000,
+        "native_complete_ps": 3690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3780000,
+        "submit_ps": 3770000,
+        "native_complete_ps": 3790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3880000,
+        "submit_ps": 3870000,
+        "native_complete_ps": 3890000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 3980000,
+        "submit_ps": 3970000,
+        "native_complete_ps": 3990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 4080000,
+        "submit_ps": 4070000,
+        "native_complete_ps": 4090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 4180000,
+        "submit_ps": 4170000,
+        "native_complete_ps": 4190000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 4280000,
+        "submit_ps": 4270000,
+        "native_complete_ps": 4290000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 4380000,
+        "submit_ps": 4370000,
+        "native_complete_ps": 4390000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 4480000,
+        "submit_ps": 4470000,
+        "native_complete_ps": 4490000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 4580000,
+        "submit_ps": 4570000,
+        "native_complete_ps": 4590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 4680000,
+        "submit_ps": 4670000,
+        "native_complete_ps": 4690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g0.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 10990000,
+        "native_complete_ps": 11000000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g0.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 12570000,
+        "native_complete_ps": 12580000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g1.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 12630000,
+        "submit_ps": 12620000,
+        "native_complete_ps": 12640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 12730000,
+        "submit_ps": 12720000,
+        "native_complete_ps": 12740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 12830000,
+        "submit_ps": 12820000,
+        "native_complete_ps": 12840000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 12930000,
+        "submit_ps": 12920000,
+        "native_complete_ps": 12940000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13030000,
+        "submit_ps": 13020000,
+        "native_complete_ps": 13040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13130000,
+        "submit_ps": 13120000,
+        "native_complete_ps": 13140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13230000,
+        "submit_ps": 13220000,
+        "native_complete_ps": 13240000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13330000,
+        "submit_ps": 13320000,
+        "native_complete_ps": 13340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13430000,
+        "submit_ps": 13420000,
+        "native_complete_ps": 13440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13530000,
+        "submit_ps": 13520000,
+        "native_complete_ps": 13540000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13630000,
+        "submit_ps": 13620000,
+        "native_complete_ps": 13640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13730000,
+        "submit_ps": 13720000,
+        "native_complete_ps": 13740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13830000,
+        "submit_ps": 13820000,
+        "native_complete_ps": 13840000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 13930000,
+        "submit_ps": 13920000,
+        "native_complete_ps": 13940000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14030000,
+        "submit_ps": 14020000,
+        "native_complete_ps": 14040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14130000,
+        "submit_ps": 14120000,
+        "native_complete_ps": 14140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14230000,
+        "submit_ps": 14220000,
+        "native_complete_ps": 14240000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14330000,
+        "submit_ps": 14320000,
+        "native_complete_ps": 14340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14430000,
+        "submit_ps": 14420000,
+        "native_complete_ps": 14440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14530000,
+        "submit_ps": 14520000,
+        "native_complete_ps": 14540000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14630000,
+        "submit_ps": 14620000,
+        "native_complete_ps": 14640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14730000,
+        "submit_ps": 14720000,
+        "native_complete_ps": 14740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14830000,
+        "submit_ps": 14820000,
+        "native_complete_ps": 14840000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 14930000,
+        "submit_ps": 14920000,
+        "native_complete_ps": 14940000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 15030000,
+        "submit_ps": 15020000,
+        "native_complete_ps": 15040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 15130000,
+        "submit_ps": 15120000,
+        "native_complete_ps": 15140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 15230000,
+        "submit_ps": 15220000,
+        "native_complete_ps": 15240000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 15330000,
+        "submit_ps": 15320000,
+        "native_complete_ps": 15340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 15430000,
+        "submit_ps": 15420000,
+        "native_complete_ps": 15440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 15530000,
+        "submit_ps": 15520000,
+        "native_complete_ps": 15540000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 15630000,
+        "submit_ps": 15620000,
+        "native_complete_ps": 15640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 15730000,
+        "submit_ps": 15720000,
+        "native_complete_ps": 15740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g1.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 22120000,
+        "native_complete_ps": 22130000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g1.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 23680000,
+        "native_complete_ps": 23690000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g2.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 23740000,
+        "submit_ps": 23730000,
+        "native_complete_ps": 23750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 23840000,
+        "submit_ps": 23830000,
+        "native_complete_ps": 23850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 23940000,
+        "submit_ps": 23930000,
+        "native_complete_ps": 23950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24040000,
+        "submit_ps": 24030000,
+        "native_complete_ps": 24050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24140000,
+        "submit_ps": 24130000,
+        "native_complete_ps": 24150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24240000,
+        "submit_ps": 24230000,
+        "native_complete_ps": 24250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24340000,
+        "submit_ps": 24330000,
+        "native_complete_ps": 24350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24440000,
+        "submit_ps": 24430000,
+        "native_complete_ps": 24450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24540000,
+        "submit_ps": 24530000,
+        "native_complete_ps": 24550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24640000,
+        "submit_ps": 24630000,
+        "native_complete_ps": 24650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24740000,
+        "submit_ps": 24730000,
+        "native_complete_ps": 24750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24840000,
+        "submit_ps": 24830000,
+        "native_complete_ps": 24850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 24940000,
+        "submit_ps": 24930000,
+        "native_complete_ps": 24950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25040000,
+        "submit_ps": 25030000,
+        "native_complete_ps": 25050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25140000,
+        "submit_ps": 25130000,
+        "native_complete_ps": 25150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25240000,
+        "submit_ps": 25230000,
+        "native_complete_ps": 25250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25340000,
+        "submit_ps": 25330000,
+        "native_complete_ps": 25350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25440000,
+        "submit_ps": 25430000,
+        "native_complete_ps": 25450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25540000,
+        "submit_ps": 25530000,
+        "native_complete_ps": 25550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25640000,
+        "submit_ps": 25630000,
+        "native_complete_ps": 25650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25740000,
+        "submit_ps": 25730000,
+        "native_complete_ps": 25750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25840000,
+        "submit_ps": 25830000,
+        "native_complete_ps": 25850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 25940000,
+        "submit_ps": 25930000,
+        "native_complete_ps": 25950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 26040000,
+        "submit_ps": 26030000,
+        "native_complete_ps": 26050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 26140000,
+        "submit_ps": 26130000,
+        "native_complete_ps": 26150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 26240000,
+        "submit_ps": 26230000,
+        "native_complete_ps": 26250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 26340000,
+        "submit_ps": 26330000,
+        "native_complete_ps": 26350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 26440000,
+        "submit_ps": 26430000,
+        "native_complete_ps": 26450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 26540000,
+        "submit_ps": 26530000,
+        "native_complete_ps": 26550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 26640000,
+        "submit_ps": 26630000,
+        "native_complete_ps": 26650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 26740000,
+        "submit_ps": 26730000,
+        "native_complete_ps": 26750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 26840000,
+        "submit_ps": 26830000,
+        "native_complete_ps": 26850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g2.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 33230000,
+        "native_complete_ps": 33240000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g2.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 34790000,
+        "native_complete_ps": 34800000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g3.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 34850000,
+        "submit_ps": 34840000,
+        "native_complete_ps": 34860000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 34950000,
+        "submit_ps": 34940000,
+        "native_complete_ps": 34960000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35050000,
+        "submit_ps": 35040000,
+        "native_complete_ps": 35060000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35150000,
+        "submit_ps": 35140000,
+        "native_complete_ps": 35160000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35250000,
+        "submit_ps": 35240000,
+        "native_complete_ps": 35260000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35350000,
+        "submit_ps": 35340000,
+        "native_complete_ps": 35360000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35450000,
+        "submit_ps": 35440000,
+        "native_complete_ps": 35460000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35550000,
+        "submit_ps": 35540000,
+        "native_complete_ps": 35560000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35650000,
+        "submit_ps": 35640000,
+        "native_complete_ps": 35660000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35750000,
+        "submit_ps": 35740000,
+        "native_complete_ps": 35760000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35850000,
+        "submit_ps": 35840000,
+        "native_complete_ps": 35860000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 35950000,
+        "submit_ps": 35940000,
+        "native_complete_ps": 35960000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36050000,
+        "submit_ps": 36040000,
+        "native_complete_ps": 36060000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36150000,
+        "submit_ps": 36140000,
+        "native_complete_ps": 36160000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36250000,
+        "submit_ps": 36240000,
+        "native_complete_ps": 36260000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36350000,
+        "submit_ps": 36340000,
+        "native_complete_ps": 36360000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36450000,
+        "submit_ps": 36440000,
+        "native_complete_ps": 36460000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36550000,
+        "submit_ps": 36540000,
+        "native_complete_ps": 36560000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36650000,
+        "submit_ps": 36640000,
+        "native_complete_ps": 36660000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36750000,
+        "submit_ps": 36740000,
+        "native_complete_ps": 36760000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36850000,
+        "submit_ps": 36840000,
+        "native_complete_ps": 36860000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 36950000,
+        "submit_ps": 36940000,
+        "native_complete_ps": 36960000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37050000,
+        "submit_ps": 37040000,
+        "native_complete_ps": 37060000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37150000,
+        "submit_ps": 37140000,
+        "native_complete_ps": 37160000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37250000,
+        "submit_ps": 37240000,
+        "native_complete_ps": 37260000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37350000,
+        "submit_ps": 37340000,
+        "native_complete_ps": 37360000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37450000,
+        "submit_ps": 37440000,
+        "native_complete_ps": 37460000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37550000,
+        "submit_ps": 37540000,
+        "native_complete_ps": 37560000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37650000,
+        "submit_ps": 37640000,
+        "native_complete_ps": 37660000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37750000,
+        "submit_ps": 37740000,
+        "native_complete_ps": 37760000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37850000,
+        "submit_ps": 37840000,
+        "native_complete_ps": 37860000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 37950000,
+        "submit_ps": 37940000,
+        "native_complete_ps": 37960000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g3.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 44340000,
+        "native_complete_ps": 44350000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g3.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 45920000,
+        "native_complete_ps": 45930000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g4.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 45980000,
+        "submit_ps": 45970000,
+        "native_complete_ps": 45990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46080000,
+        "submit_ps": 46070000,
+        "native_complete_ps": 46090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46180000,
+        "submit_ps": 46170000,
+        "native_complete_ps": 46190000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46280000,
+        "submit_ps": 46270000,
+        "native_complete_ps": 46290000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46380000,
+        "submit_ps": 46370000,
+        "native_complete_ps": 46390000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46480000,
+        "submit_ps": 46470000,
+        "native_complete_ps": 46490000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46580000,
+        "submit_ps": 46570000,
+        "native_complete_ps": 46590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46680000,
+        "submit_ps": 46670000,
+        "native_complete_ps": 46690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46780000,
+        "submit_ps": 46770000,
+        "native_complete_ps": 46790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46880000,
+        "submit_ps": 46870000,
+        "native_complete_ps": 46890000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 46980000,
+        "submit_ps": 46970000,
+        "native_complete_ps": 46990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47080000,
+        "submit_ps": 47070000,
+        "native_complete_ps": 47090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47180000,
+        "submit_ps": 47170000,
+        "native_complete_ps": 47190000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47280000,
+        "submit_ps": 47270000,
+        "native_complete_ps": 47290000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47380000,
+        "submit_ps": 47370000,
+        "native_complete_ps": 47390000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47480000,
+        "submit_ps": 47470000,
+        "native_complete_ps": 47490000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47580000,
+        "submit_ps": 47570000,
+        "native_complete_ps": 47590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47680000,
+        "submit_ps": 47670000,
+        "native_complete_ps": 47690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47780000,
+        "submit_ps": 47770000,
+        "native_complete_ps": 47790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47880000,
+        "submit_ps": 47870000,
+        "native_complete_ps": 47890000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 47980000,
+        "submit_ps": 47970000,
+        "native_complete_ps": 47990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48080000,
+        "submit_ps": 48070000,
+        "native_complete_ps": 48090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48180000,
+        "submit_ps": 48170000,
+        "native_complete_ps": 48190000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48280000,
+        "submit_ps": 48270000,
+        "native_complete_ps": 48290000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48380000,
+        "submit_ps": 48370000,
+        "native_complete_ps": 48390000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48480000,
+        "submit_ps": 48470000,
+        "native_complete_ps": 48490000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48580000,
+        "submit_ps": 48570000,
+        "native_complete_ps": 48590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48680000,
+        "submit_ps": 48670000,
+        "native_complete_ps": 48690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48780000,
+        "submit_ps": 48770000,
+        "native_complete_ps": 48790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48880000,
+        "submit_ps": 48870000,
+        "native_complete_ps": 48890000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 48980000,
+        "submit_ps": 48970000,
+        "native_complete_ps": 48990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 49080000,
+        "submit_ps": 49070000,
+        "native_complete_ps": 49090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g4.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 55470000,
+        "native_complete_ps": 55480000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g4.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 57030000,
+        "native_complete_ps": 57040000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g5.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57090000,
+        "submit_ps": 57080000,
+        "native_complete_ps": 57100000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57190000,
+        "submit_ps": 57180000,
+        "native_complete_ps": 57200000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57290000,
+        "submit_ps": 57280000,
+        "native_complete_ps": 57300000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57390000,
+        "submit_ps": 57380000,
+        "native_complete_ps": 57400000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57490000,
+        "submit_ps": 57480000,
+        "native_complete_ps": 57500000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57590000,
+        "submit_ps": 57580000,
+        "native_complete_ps": 57600000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57690000,
+        "submit_ps": 57680000,
+        "native_complete_ps": 57700000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57790000,
+        "submit_ps": 57780000,
+        "native_complete_ps": 57800000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57890000,
+        "submit_ps": 57880000,
+        "native_complete_ps": 57900000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 57990000,
+        "submit_ps": 57980000,
+        "native_complete_ps": 58000000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58090000,
+        "submit_ps": 58080000,
+        "native_complete_ps": 58100000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58190000,
+        "submit_ps": 58180000,
+        "native_complete_ps": 58200000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58290000,
+        "submit_ps": 58280000,
+        "native_complete_ps": 58300000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58390000,
+        "submit_ps": 58380000,
+        "native_complete_ps": 58400000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58490000,
+        "submit_ps": 58480000,
+        "native_complete_ps": 58500000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58590000,
+        "submit_ps": 58580000,
+        "native_complete_ps": 58600000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58690000,
+        "submit_ps": 58680000,
+        "native_complete_ps": 58700000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58790000,
+        "submit_ps": 58780000,
+        "native_complete_ps": 58800000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58890000,
+        "submit_ps": 58880000,
+        "native_complete_ps": 58900000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 58990000,
+        "submit_ps": 58980000,
+        "native_complete_ps": 59000000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59090000,
+        "submit_ps": 59080000,
+        "native_complete_ps": 59100000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59190000,
+        "submit_ps": 59180000,
+        "native_complete_ps": 59200000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59290000,
+        "submit_ps": 59280000,
+        "native_complete_ps": 59300000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59390000,
+        "submit_ps": 59380000,
+        "native_complete_ps": 59400000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59490000,
+        "submit_ps": 59480000,
+        "native_complete_ps": 59500000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59590000,
+        "submit_ps": 59580000,
+        "native_complete_ps": 59600000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59690000,
+        "submit_ps": 59680000,
+        "native_complete_ps": 59700000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59790000,
+        "submit_ps": 59780000,
+        "native_complete_ps": 59800000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59890000,
+        "submit_ps": 59880000,
+        "native_complete_ps": 59900000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 59990000,
+        "submit_ps": 59980000,
+        "native_complete_ps": 60000000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 60090000,
+        "submit_ps": 60080000,
+        "native_complete_ps": 60100000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 60190000,
+        "submit_ps": 60180000,
+        "native_complete_ps": 60200000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g5.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 66580000,
+        "native_complete_ps": 66590000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g5.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 68140000,
+        "native_complete_ps": 68150000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g6.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 68200000,
+        "submit_ps": 68190000,
+        "native_complete_ps": 68210000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 68300000,
+        "submit_ps": 68290000,
+        "native_complete_ps": 68310000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 68400000,
+        "submit_ps": 68390000,
+        "native_complete_ps": 68410000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 68500000,
+        "submit_ps": 68490000,
+        "native_complete_ps": 68510000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 68600000,
+        "submit_ps": 68590000,
+        "native_complete_ps": 68610000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 68700000,
+        "submit_ps": 68690000,
+        "native_complete_ps": 68710000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 68800000,
+        "submit_ps": 68790000,
+        "native_complete_ps": 68810000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 68900000,
+        "submit_ps": 68890000,
+        "native_complete_ps": 68910000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69000000,
+        "submit_ps": 68990000,
+        "native_complete_ps": 69010000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69100000,
+        "submit_ps": 69090000,
+        "native_complete_ps": 69110000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69200000,
+        "submit_ps": 69190000,
+        "native_complete_ps": 69210000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69300000,
+        "submit_ps": 69290000,
+        "native_complete_ps": 69310000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69400000,
+        "submit_ps": 69390000,
+        "native_complete_ps": 69410000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69500000,
+        "submit_ps": 69490000,
+        "native_complete_ps": 69510000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69600000,
+        "submit_ps": 69590000,
+        "native_complete_ps": 69610000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69700000,
+        "submit_ps": 69690000,
+        "native_complete_ps": 69710000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69800000,
+        "submit_ps": 69790000,
+        "native_complete_ps": 69810000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 69900000,
+        "submit_ps": 69890000,
+        "native_complete_ps": 69910000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70000000,
+        "submit_ps": 69990000,
+        "native_complete_ps": 70010000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70100000,
+        "submit_ps": 70090000,
+        "native_complete_ps": 70110000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70200000,
+        "submit_ps": 70190000,
+        "native_complete_ps": 70210000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70300000,
+        "submit_ps": 70290000,
+        "native_complete_ps": 70310000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70400000,
+        "submit_ps": 70390000,
+        "native_complete_ps": 70410000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70500000,
+        "submit_ps": 70490000,
+        "native_complete_ps": 70510000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70600000,
+        "submit_ps": 70590000,
+        "native_complete_ps": 70610000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70700000,
+        "submit_ps": 70690000,
+        "native_complete_ps": 70710000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70800000,
+        "submit_ps": 70790000,
+        "native_complete_ps": 70810000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 70900000,
+        "submit_ps": 70890000,
+        "native_complete_ps": 70910000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 71000000,
+        "submit_ps": 70990000,
+        "native_complete_ps": 71010000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 71100000,
+        "submit_ps": 71090000,
+        "native_complete_ps": 71110000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 71200000,
+        "submit_ps": 71190000,
+        "native_complete_ps": 71210000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 71300000,
+        "submit_ps": 71290000,
+        "native_complete_ps": 71310000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g6.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 77690000,
+        "native_complete_ps": 77700000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g6.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 79270000,
+        "native_complete_ps": 79280000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g7.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 79330000,
+        "submit_ps": 79320000,
+        "native_complete_ps": 79340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 79430000,
+        "submit_ps": 79420000,
+        "native_complete_ps": 79440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 79530000,
+        "submit_ps": 79520000,
+        "native_complete_ps": 79540000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 79630000,
+        "submit_ps": 79620000,
+        "native_complete_ps": 79640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 79730000,
+        "submit_ps": 79720000,
+        "native_complete_ps": 79740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 79830000,
+        "submit_ps": 79820000,
+        "native_complete_ps": 79840000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 79930000,
+        "submit_ps": 79920000,
+        "native_complete_ps": 79940000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80030000,
+        "submit_ps": 80020000,
+        "native_complete_ps": 80040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80130000,
+        "submit_ps": 80120000,
+        "native_complete_ps": 80140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80230000,
+        "submit_ps": 80220000,
+        "native_complete_ps": 80240000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80330000,
+        "submit_ps": 80320000,
+        "native_complete_ps": 80340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80430000,
+        "submit_ps": 80420000,
+        "native_complete_ps": 80440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80530000,
+        "submit_ps": 80520000,
+        "native_complete_ps": 80540000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80630000,
+        "submit_ps": 80620000,
+        "native_complete_ps": 80640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80730000,
+        "submit_ps": 80720000,
+        "native_complete_ps": 80740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80830000,
+        "submit_ps": 80820000,
+        "native_complete_ps": 80840000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 80930000,
+        "submit_ps": 80920000,
+        "native_complete_ps": 80940000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81030000,
+        "submit_ps": 81020000,
+        "native_complete_ps": 81040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81130000,
+        "submit_ps": 81120000,
+        "native_complete_ps": 81140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81230000,
+        "submit_ps": 81220000,
+        "native_complete_ps": 81240000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81330000,
+        "submit_ps": 81320000,
+        "native_complete_ps": 81340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81430000,
+        "submit_ps": 81420000,
+        "native_complete_ps": 81440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81530000,
+        "submit_ps": 81520000,
+        "native_complete_ps": 81540000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81630000,
+        "submit_ps": 81620000,
+        "native_complete_ps": 81640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81730000,
+        "submit_ps": 81720000,
+        "native_complete_ps": 81740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81830000,
+        "submit_ps": 81820000,
+        "native_complete_ps": 81840000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 81930000,
+        "submit_ps": 81920000,
+        "native_complete_ps": 81940000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 82030000,
+        "submit_ps": 82020000,
+        "native_complete_ps": 82040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 82130000,
+        "submit_ps": 82120000,
+        "native_complete_ps": 82140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 82230000,
+        "submit_ps": 82220000,
+        "native_complete_ps": 82240000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 82330000,
+        "submit_ps": 82320000,
+        "native_complete_ps": 82340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 82430000,
+        "submit_ps": 82420000,
+        "native_complete_ps": 82440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g7.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 88820000,
+        "native_complete_ps": 88830000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g7.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 90380000,
+        "native_complete_ps": 90390000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g8.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 90440000,
+        "submit_ps": 90430000,
+        "native_complete_ps": 90450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 90540000,
+        "submit_ps": 90530000,
+        "native_complete_ps": 90550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 90640000,
+        "submit_ps": 90630000,
+        "native_complete_ps": 90650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 90740000,
+        "submit_ps": 90730000,
+        "native_complete_ps": 90750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 90840000,
+        "submit_ps": 90830000,
+        "native_complete_ps": 90850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 90940000,
+        "submit_ps": 90930000,
+        "native_complete_ps": 90950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91040000,
+        "submit_ps": 91030000,
+        "native_complete_ps": 91050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91140000,
+        "submit_ps": 91130000,
+        "native_complete_ps": 91150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91240000,
+        "submit_ps": 91230000,
+        "native_complete_ps": 91250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91340000,
+        "submit_ps": 91330000,
+        "native_complete_ps": 91350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91440000,
+        "submit_ps": 91430000,
+        "native_complete_ps": 91450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91540000,
+        "submit_ps": 91530000,
+        "native_complete_ps": 91550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91640000,
+        "submit_ps": 91630000,
+        "native_complete_ps": 91650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91740000,
+        "submit_ps": 91730000,
+        "native_complete_ps": 91750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91840000,
+        "submit_ps": 91830000,
+        "native_complete_ps": 91850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 91940000,
+        "submit_ps": 91930000,
+        "native_complete_ps": 91950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92040000,
+        "submit_ps": 92030000,
+        "native_complete_ps": 92050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92140000,
+        "submit_ps": 92130000,
+        "native_complete_ps": 92150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92240000,
+        "submit_ps": 92230000,
+        "native_complete_ps": 92250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92340000,
+        "submit_ps": 92330000,
+        "native_complete_ps": 92350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92440000,
+        "submit_ps": 92430000,
+        "native_complete_ps": 92450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92540000,
+        "submit_ps": 92530000,
+        "native_complete_ps": 92550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92640000,
+        "submit_ps": 92630000,
+        "native_complete_ps": 92650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92740000,
+        "submit_ps": 92730000,
+        "native_complete_ps": 92750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92840000,
+        "submit_ps": 92830000,
+        "native_complete_ps": 92850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 92940000,
+        "submit_ps": 92930000,
+        "native_complete_ps": 92950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 93040000,
+        "submit_ps": 93030000,
+        "native_complete_ps": 93050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 93140000,
+        "submit_ps": 93130000,
+        "native_complete_ps": 93150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 93240000,
+        "submit_ps": 93230000,
+        "native_complete_ps": 93250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 93340000,
+        "submit_ps": 93330000,
+        "native_complete_ps": 93350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 93440000,
+        "submit_ps": 93430000,
+        "native_complete_ps": 93450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 93540000,
+        "submit_ps": 93530000,
+        "native_complete_ps": 93550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g8.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 99930000,
+        "native_complete_ps": 99940000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g8.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 101490000,
+        "native_complete_ps": 101500000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g9.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 101550000,
+        "submit_ps": 101540000,
+        "native_complete_ps": 101560000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 101650000,
+        "submit_ps": 101640000,
+        "native_complete_ps": 101660000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 101750000,
+        "submit_ps": 101740000,
+        "native_complete_ps": 101760000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 101850000,
+        "submit_ps": 101840000,
+        "native_complete_ps": 101860000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 101950000,
+        "submit_ps": 101940000,
+        "native_complete_ps": 101960000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102050000,
+        "submit_ps": 102040000,
+        "native_complete_ps": 102060000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102150000,
+        "submit_ps": 102140000,
+        "native_complete_ps": 102160000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102250000,
+        "submit_ps": 102240000,
+        "native_complete_ps": 102260000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102350000,
+        "submit_ps": 102340000,
+        "native_complete_ps": 102360000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102450000,
+        "submit_ps": 102440000,
+        "native_complete_ps": 102460000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102550000,
+        "submit_ps": 102540000,
+        "native_complete_ps": 102560000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102650000,
+        "submit_ps": 102640000,
+        "native_complete_ps": 102660000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102750000,
+        "submit_ps": 102740000,
+        "native_complete_ps": 102760000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102850000,
+        "submit_ps": 102840000,
+        "native_complete_ps": 102860000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 102950000,
+        "submit_ps": 102940000,
+        "native_complete_ps": 102960000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103050000,
+        "submit_ps": 103040000,
+        "native_complete_ps": 103060000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103150000,
+        "submit_ps": 103140000,
+        "native_complete_ps": 103160000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103250000,
+        "submit_ps": 103240000,
+        "native_complete_ps": 103260000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103350000,
+        "submit_ps": 103340000,
+        "native_complete_ps": 103360000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103450000,
+        "submit_ps": 103440000,
+        "native_complete_ps": 103460000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103550000,
+        "submit_ps": 103540000,
+        "native_complete_ps": 103560000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103650000,
+        "submit_ps": 103640000,
+        "native_complete_ps": 103660000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103750000,
+        "submit_ps": 103740000,
+        "native_complete_ps": 103760000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103850000,
+        "submit_ps": 103840000,
+        "native_complete_ps": 103860000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 103950000,
+        "submit_ps": 103940000,
+        "native_complete_ps": 103960000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 104050000,
+        "submit_ps": 104040000,
+        "native_complete_ps": 104060000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 104150000,
+        "submit_ps": 104140000,
+        "native_complete_ps": 104160000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 104250000,
+        "submit_ps": 104240000,
+        "native_complete_ps": 104260000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 104350000,
+        "submit_ps": 104340000,
+        "native_complete_ps": 104360000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 104450000,
+        "submit_ps": 104440000,
+        "native_complete_ps": 104460000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 104550000,
+        "submit_ps": 104540000,
+        "native_complete_ps": 104560000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 104650000,
+        "submit_ps": 104640000,
+        "native_complete_ps": 104660000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g9.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 111040000,
+        "native_complete_ps": 111050000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g9.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 112620000,
+        "native_complete_ps": 112630000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g10.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 112680000,
+        "submit_ps": 112670000,
+        "native_complete_ps": 112690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 112780000,
+        "submit_ps": 112770000,
+        "native_complete_ps": 112790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 112880000,
+        "submit_ps": 112870000,
+        "native_complete_ps": 112890000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 112980000,
+        "submit_ps": 112970000,
+        "native_complete_ps": 112990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113080000,
+        "submit_ps": 113070000,
+        "native_complete_ps": 113090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113180000,
+        "submit_ps": 113170000,
+        "native_complete_ps": 113190000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113280000,
+        "submit_ps": 113270000,
+        "native_complete_ps": 113290000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113380000,
+        "submit_ps": 113370000,
+        "native_complete_ps": 113390000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113480000,
+        "submit_ps": 113470000,
+        "native_complete_ps": 113490000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113580000,
+        "submit_ps": 113570000,
+        "native_complete_ps": 113590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113680000,
+        "submit_ps": 113670000,
+        "native_complete_ps": 113690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113780000,
+        "submit_ps": 113770000,
+        "native_complete_ps": 113790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113880000,
+        "submit_ps": 113870000,
+        "native_complete_ps": 113890000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 113980000,
+        "submit_ps": 113970000,
+        "native_complete_ps": 113990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114080000,
+        "submit_ps": 114070000,
+        "native_complete_ps": 114090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114180000,
+        "submit_ps": 114170000,
+        "native_complete_ps": 114190000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114280000,
+        "submit_ps": 114270000,
+        "native_complete_ps": 114290000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114380000,
+        "submit_ps": 114370000,
+        "native_complete_ps": 114390000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114480000,
+        "submit_ps": 114470000,
+        "native_complete_ps": 114490000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114580000,
+        "submit_ps": 114570000,
+        "native_complete_ps": 114590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114680000,
+        "submit_ps": 114670000,
+        "native_complete_ps": 114690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114780000,
+        "submit_ps": 114770000,
+        "native_complete_ps": 114790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114880000,
+        "submit_ps": 114870000,
+        "native_complete_ps": 114890000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 114980000,
+        "submit_ps": 114970000,
+        "native_complete_ps": 114990000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 115080000,
+        "submit_ps": 115070000,
+        "native_complete_ps": 115090000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 115180000,
+        "submit_ps": 115170000,
+        "native_complete_ps": 115190000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 115280000,
+        "submit_ps": 115270000,
+        "native_complete_ps": 115290000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 115380000,
+        "submit_ps": 115370000,
+        "native_complete_ps": 115390000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 115480000,
+        "submit_ps": 115470000,
+        "native_complete_ps": 115490000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 115580000,
+        "submit_ps": 115570000,
+        "native_complete_ps": 115590000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 115680000,
+        "submit_ps": 115670000,
+        "native_complete_ps": 115690000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 115780000,
+        "submit_ps": 115770000,
+        "native_complete_ps": 115790000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g10.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 122170000,
+        "native_complete_ps": 122180000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g10.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 123730000,
+        "native_complete_ps": 123740000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g11.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 123790000,
+        "submit_ps": 123780000,
+        "native_complete_ps": 123800000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 123890000,
+        "submit_ps": 123880000,
+        "native_complete_ps": 123900000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 123990000,
+        "submit_ps": 123980000,
+        "native_complete_ps": 124000000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124090000,
+        "submit_ps": 124080000,
+        "native_complete_ps": 124100000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124190000,
+        "submit_ps": 124180000,
+        "native_complete_ps": 124200000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124290000,
+        "submit_ps": 124280000,
+        "native_complete_ps": 124300000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124390000,
+        "submit_ps": 124380000,
+        "native_complete_ps": 124400000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124490000,
+        "submit_ps": 124480000,
+        "native_complete_ps": 124500000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124590000,
+        "submit_ps": 124580000,
+        "native_complete_ps": 124600000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124690000,
+        "submit_ps": 124680000,
+        "native_complete_ps": 124700000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124790000,
+        "submit_ps": 124780000,
+        "native_complete_ps": 124800000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124890000,
+        "submit_ps": 124880000,
+        "native_complete_ps": 124900000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 124990000,
+        "submit_ps": 124980000,
+        "native_complete_ps": 125000000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125090000,
+        "submit_ps": 125080000,
+        "native_complete_ps": 125100000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125190000,
+        "submit_ps": 125180000,
+        "native_complete_ps": 125200000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125290000,
+        "submit_ps": 125280000,
+        "native_complete_ps": 125300000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125390000,
+        "submit_ps": 125380000,
+        "native_complete_ps": 125400000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125490000,
+        "submit_ps": 125480000,
+        "native_complete_ps": 125500000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125590000,
+        "submit_ps": 125580000,
+        "native_complete_ps": 125600000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125690000,
+        "submit_ps": 125680000,
+        "native_complete_ps": 125700000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125790000,
+        "submit_ps": 125780000,
+        "native_complete_ps": 125800000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125890000,
+        "submit_ps": 125880000,
+        "native_complete_ps": 125900000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 125990000,
+        "submit_ps": 125980000,
+        "native_complete_ps": 126000000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 126090000,
+        "submit_ps": 126080000,
+        "native_complete_ps": 126100000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 126190000,
+        "submit_ps": 126180000,
+        "native_complete_ps": 126200000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 126290000,
+        "submit_ps": 126280000,
+        "native_complete_ps": 126300000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 126390000,
+        "submit_ps": 126380000,
+        "native_complete_ps": 126400000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 126490000,
+        "submit_ps": 126480000,
+        "native_complete_ps": 126500000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 126590000,
+        "submit_ps": 126580000,
+        "native_complete_ps": 126600000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 126690000,
+        "submit_ps": 126680000,
+        "native_complete_ps": 126700000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 126790000,
+        "submit_ps": 126780000,
+        "native_complete_ps": 126800000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 126890000,
+        "submit_ps": 126880000,
+        "native_complete_ps": 126900000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g11.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 133280000,
+        "native_complete_ps": 133290000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g11.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 134840000,
+        "native_complete_ps": 134850000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g12.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 134900000,
+        "submit_ps": 134890000,
+        "native_complete_ps": 134910000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135000000,
+        "submit_ps": 134990000,
+        "native_complete_ps": 135010000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135100000,
+        "submit_ps": 135090000,
+        "native_complete_ps": 135110000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135200000,
+        "submit_ps": 135190000,
+        "native_complete_ps": 135210000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135300000,
+        "submit_ps": 135290000,
+        "native_complete_ps": 135310000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135400000,
+        "submit_ps": 135390000,
+        "native_complete_ps": 135410000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135500000,
+        "submit_ps": 135490000,
+        "native_complete_ps": 135510000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135600000,
+        "submit_ps": 135590000,
+        "native_complete_ps": 135610000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135700000,
+        "submit_ps": 135690000,
+        "native_complete_ps": 135710000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135800000,
+        "submit_ps": 135790000,
+        "native_complete_ps": 135810000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 135900000,
+        "submit_ps": 135890000,
+        "native_complete_ps": 135910000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136000000,
+        "submit_ps": 135990000,
+        "native_complete_ps": 136010000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136100000,
+        "submit_ps": 136090000,
+        "native_complete_ps": 136110000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136200000,
+        "submit_ps": 136190000,
+        "native_complete_ps": 136210000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136300000,
+        "submit_ps": 136290000,
+        "native_complete_ps": 136310000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136400000,
+        "submit_ps": 136390000,
+        "native_complete_ps": 136410000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136500000,
+        "submit_ps": 136490000,
+        "native_complete_ps": 136510000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136600000,
+        "submit_ps": 136590000,
+        "native_complete_ps": 136610000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136700000,
+        "submit_ps": 136690000,
+        "native_complete_ps": 136710000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136800000,
+        "submit_ps": 136790000,
+        "native_complete_ps": 136810000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 136900000,
+        "submit_ps": 136890000,
+        "native_complete_ps": 136910000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137000000,
+        "submit_ps": 136990000,
+        "native_complete_ps": 137010000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137100000,
+        "submit_ps": 137090000,
+        "native_complete_ps": 137110000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137200000,
+        "submit_ps": 137190000,
+        "native_complete_ps": 137210000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137300000,
+        "submit_ps": 137290000,
+        "native_complete_ps": 137310000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137400000,
+        "submit_ps": 137390000,
+        "native_complete_ps": 137410000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137500000,
+        "submit_ps": 137490000,
+        "native_complete_ps": 137510000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137600000,
+        "submit_ps": 137590000,
+        "native_complete_ps": 137610000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137700000,
+        "submit_ps": 137690000,
+        "native_complete_ps": 137710000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137800000,
+        "submit_ps": 137790000,
+        "native_complete_ps": 137810000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 137900000,
+        "submit_ps": 137890000,
+        "native_complete_ps": 137910000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 138000000,
+        "submit_ps": 137990000,
+        "native_complete_ps": 138010000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g12.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 144390000,
+        "native_complete_ps": 144400000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g12.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 145970000,
+        "native_complete_ps": 145980000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g13.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146030000,
+        "submit_ps": 146020000,
+        "native_complete_ps": 146040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146130000,
+        "submit_ps": 146120000,
+        "native_complete_ps": 146140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146230000,
+        "submit_ps": 146220000,
+        "native_complete_ps": 146240000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146330000,
+        "submit_ps": 146320000,
+        "native_complete_ps": 146340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146430000,
+        "submit_ps": 146420000,
+        "native_complete_ps": 146440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146530000,
+        "submit_ps": 146520000,
+        "native_complete_ps": 146540000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146630000,
+        "submit_ps": 146620000,
+        "native_complete_ps": 146640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146730000,
+        "submit_ps": 146720000,
+        "native_complete_ps": 146740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146830000,
+        "submit_ps": 146820000,
+        "native_complete_ps": 146840000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 146930000,
+        "submit_ps": 146920000,
+        "native_complete_ps": 146940000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147030000,
+        "submit_ps": 147020000,
+        "native_complete_ps": 147040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147130000,
+        "submit_ps": 147120000,
+        "native_complete_ps": 147140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147230000,
+        "submit_ps": 147220000,
+        "native_complete_ps": 147240000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147330000,
+        "submit_ps": 147320000,
+        "native_complete_ps": 147340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147430000,
+        "submit_ps": 147420000,
+        "native_complete_ps": 147440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147530000,
+        "submit_ps": 147520000,
+        "native_complete_ps": 147540000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147630000,
+        "submit_ps": 147620000,
+        "native_complete_ps": 147640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147730000,
+        "submit_ps": 147720000,
+        "native_complete_ps": 147740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147830000,
+        "submit_ps": 147820000,
+        "native_complete_ps": 147840000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 147930000,
+        "submit_ps": 147920000,
+        "native_complete_ps": 147940000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148030000,
+        "submit_ps": 148020000,
+        "native_complete_ps": 148040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148130000,
+        "submit_ps": 148120000,
+        "native_complete_ps": 148140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148230000,
+        "submit_ps": 148220000,
+        "native_complete_ps": 148240000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148330000,
+        "submit_ps": 148320000,
+        "native_complete_ps": 148340000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148430000,
+        "submit_ps": 148420000,
+        "native_complete_ps": 148440000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148530000,
+        "submit_ps": 148520000,
+        "native_complete_ps": 148540000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148630000,
+        "submit_ps": 148620000,
+        "native_complete_ps": 148640000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148730000,
+        "submit_ps": 148720000,
+        "native_complete_ps": 148740000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148830000,
+        "submit_ps": 148820000,
+        "native_complete_ps": 148840000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 148930000,
+        "submit_ps": 148920000,
+        "native_complete_ps": 148940000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 149030000,
+        "submit_ps": 149020000,
+        "native_complete_ps": 149040000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 149130000,
+        "submit_ps": 149120000,
+        "native_complete_ps": 149140000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "x.g13.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 155520000,
+        "native_complete_ps": 155530000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "x.g13.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 156280000,
+        "native_complete_ps": 156290000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "z.g0.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 156340000,
+        "submit_ps": 156330000,
+        "native_complete_ps": 156350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 156440000,
+        "submit_ps": 156430000,
+        "native_complete_ps": 156450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 156540000,
+        "submit_ps": 156530000,
+        "native_complete_ps": 156550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 156640000,
+        "submit_ps": 156630000,
+        "native_complete_ps": 156650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 156740000,
+        "submit_ps": 156730000,
+        "native_complete_ps": 156750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 156840000,
+        "submit_ps": 156830000,
+        "native_complete_ps": 156850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 156940000,
+        "submit_ps": 156930000,
+        "native_complete_ps": 156950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157040000,
+        "submit_ps": 157030000,
+        "native_complete_ps": 157050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157140000,
+        "submit_ps": 157130000,
+        "native_complete_ps": 157150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157240000,
+        "submit_ps": 157230000,
+        "native_complete_ps": 157250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157340000,
+        "submit_ps": 157330000,
+        "native_complete_ps": 157350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157440000,
+        "submit_ps": 157430000,
+        "native_complete_ps": 157450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157540000,
+        "submit_ps": 157530000,
+        "native_complete_ps": 157550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157640000,
+        "submit_ps": 157630000,
+        "native_complete_ps": 157650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157740000,
+        "submit_ps": 157730000,
+        "native_complete_ps": 157750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157840000,
+        "submit_ps": 157830000,
+        "native_complete_ps": 157850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 157940000,
+        "submit_ps": 157930000,
+        "native_complete_ps": 157950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158040000,
+        "submit_ps": 158030000,
+        "native_complete_ps": 158050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158140000,
+        "submit_ps": 158130000,
+        "native_complete_ps": 158150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158240000,
+        "submit_ps": 158230000,
+        "native_complete_ps": 158250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158340000,
+        "submit_ps": 158330000,
+        "native_complete_ps": 158350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158440000,
+        "submit_ps": 158430000,
+        "native_complete_ps": 158450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158540000,
+        "submit_ps": 158530000,
+        "native_complete_ps": 158550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158640000,
+        "submit_ps": 158630000,
+        "native_complete_ps": 158650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158740000,
+        "submit_ps": 158730000,
+        "native_complete_ps": 158750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158840000,
+        "submit_ps": 158830000,
+        "native_complete_ps": 158850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 158940000,
+        "submit_ps": 158930000,
+        "native_complete_ps": 158950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 159040000,
+        "submit_ps": 159030000,
+        "native_complete_ps": 159050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 159140000,
+        "submit_ps": 159130000,
+        "native_complete_ps": 159150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 159240000,
+        "submit_ps": 159230000,
+        "native_complete_ps": 159250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 159340000,
+        "submit_ps": 159330000,
+        "native_complete_ps": 159350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 159440000,
+        "submit_ps": 159430000,
+        "native_complete_ps": 159450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g0.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 160630000,
+        "native_complete_ps": 160640000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "z.g0.native_release"
+      },
+      {
+        "command": 1,
+        "epoch": 1,
+        "submit_ps": 161080000,
+        "native_complete_ps": 161090000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "z.g1.wave0.prepare"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 161140000,
+        "submit_ps": 161130000,
+        "native_complete_ps": 161150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng0"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 161240000,
+        "submit_ps": 161230000,
+        "native_complete_ps": 161250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng1"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 161340000,
+        "submit_ps": 161330000,
+        "native_complete_ps": 161350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng2"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 161440000,
+        "submit_ps": 161430000,
+        "native_complete_ps": 161450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng3"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 161540000,
+        "submit_ps": 161530000,
+        "native_complete_ps": 161550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng4"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 161640000,
+        "submit_ps": 161630000,
+        "native_complete_ps": 161650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng5"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 161740000,
+        "submit_ps": 161730000,
+        "native_complete_ps": 161750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng6"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 161840000,
+        "submit_ps": 161830000,
+        "native_complete_ps": 161850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng7"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 161940000,
+        "submit_ps": 161930000,
+        "native_complete_ps": 161950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng8"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162040000,
+        "submit_ps": 162030000,
+        "native_complete_ps": 162050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng9"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162140000,
+        "submit_ps": 162130000,
+        "native_complete_ps": 162150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng10"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162240000,
+        "submit_ps": 162230000,
+        "native_complete_ps": 162250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng11"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162340000,
+        "submit_ps": 162330000,
+        "native_complete_ps": 162350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng12"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162440000,
+        "submit_ps": 162430000,
+        "native_complete_ps": 162450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng13"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162540000,
+        "submit_ps": 162530000,
+        "native_complete_ps": 162550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng14"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162640000,
+        "submit_ps": 162630000,
+        "native_complete_ps": 162650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng15"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162740000,
+        "submit_ps": 162730000,
+        "native_complete_ps": 162750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng16"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162840000,
+        "submit_ps": 162830000,
+        "native_complete_ps": 162850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng17"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 162940000,
+        "submit_ps": 162930000,
+        "native_complete_ps": 162950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng18"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163040000,
+        "submit_ps": 163030000,
+        "native_complete_ps": 163050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng19"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163140000,
+        "submit_ps": 163130000,
+        "native_complete_ps": 163150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng20"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163240000,
+        "submit_ps": 163230000,
+        "native_complete_ps": 163250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng21"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163340000,
+        "submit_ps": 163330000,
+        "native_complete_ps": 163350000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng22"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163440000,
+        "submit_ps": 163430000,
+        "native_complete_ps": 163450000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng23"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163540000,
+        "submit_ps": 163530000,
+        "native_complete_ps": 163550000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng24"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163640000,
+        "submit_ps": 163630000,
+        "native_complete_ps": 163650000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng25"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163740000,
+        "submit_ps": 163730000,
+        "native_complete_ps": 163750000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng26"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163840000,
+        "submit_ps": 163830000,
+        "native_complete_ps": 163850000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng27"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 163940000,
+        "submit_ps": 163930000,
+        "native_complete_ps": 163950000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng28"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 164040000,
+        "submit_ps": 164030000,
+        "native_complete_ps": 164050000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng29"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 164140000,
+        "submit_ps": 164130000,
+        "native_complete_ps": 164150000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng30"
+      },
+      {
+        "epochs": {
+          "ffn": 1
+        },
+        "valid_ps": 164240000,
+        "submit_ps": 164230000,
+        "native_complete_ps": 164250000,
+        "wait_edges": 2,
+        "kind": "frame",
+        "label": "z.g1.wave0.rng31"
+      },
+      {
+        "command": 3,
+        "epoch": 1,
+        "submit_ps": 165500000,
+        "native_complete_ps": 165510000,
+        "wait_edges": 1,
+        "kind": "command",
+        "label": "z.g1.native_release"
+      }
+    ],
+    "jumped_idle_edges": 15514
+  },
+  "thresholds_sha256": "a58e8fe525f4d2b9f50c0b1a376098ccceeb7ed2aebfdb3aca5159c6cfcdda49",
+  "config": {
+    "samples": 32,
+    "strata": 32,
+    "bins": 4,
+    "tile": 64,
+    "seed": 0,
+    "count_bits": null,
+    "counter_layout": "bitplane",
+    "engines": 8,
+    "weight_slots": 8,
+    "weight_slot_bytes": 4096,
+    "weight_scale_capacity_bytes": 32,
+    "counter_capacity_bytes": 49152,
+    "encoded_capacity_bytes": 256,
+    "partial_capacity_bytes": 65536,
+    "restore_capacity_bytes": 8192,
+    "output_bf16": true,
+    "encode_latency": 7,
+    "restore_latency": 4,
+    "nonlinear_latency": 8,
+    "sc_latency": 1,
+    "rng_latency": 1,
+    "vector_lanes": 16,
+    "cdc_cycles": 3,
+    "random_backend": "native",
+    "seed_word_interval": 100,
+    "seed_startup": 10,
+    "reseed_cycles": 100000000,
+    "native_hold_cycles": 0
+  },
+  "execution_source_sha256": {
+    "contracts.py": "935b0ea4dda435274bebf3531a233866ccd6ebd863d237683da7f0eaf26fb320",
+    "ffn.py": "0bac3a0a3413e68fa4222b7f93b938a130e785132f70b163d3b569d3ec8bd0b6",
+    "kernel.py": "016188efcfd1afd15e5102f104b11a06b60136a8447d6759bc45dfa950cffe51",
+    "memory.py": "fd1afbd91aad5ddcfdd4d8cc54d4b4af36dd3369f5f67981f92c1241c721cb00",
+    "audit/scalar_oracles.py": "f5e34d1eb0be15a23aaea99c3b558ad323af1f3e0e92e5577604e0839330dc52",
+    "audit/verify_real_fixture.py": "3ff9b70e37aacb9052095494e0806aa71a5dca1172204c5db05b18985badc539",
+    "architecture_tlm/cycle_v1/rng_protocol.py": "f15ff7ff05b7d6d09f4954c53ff9c559cf5d9c3894e92a31a52a0245e481060e",
+    "architecture_tlm/random_service/__init__.py": "5e2a51a64840c2c6bc1061a0daeb4ef94befef38394c74da665c0e2a023d9a5c",
+    "architecture_tlm/random_service/model.py": "d32b82e79eec9fdd579835671edf757f34ae68dbf14039075a728ffbd0c7e4f2",
+    "architecture_tlm/random_service/backends.py": "7003510bb575222a4ab32381ad7e4ac440c82f616e56ae4330a08bb9dfa0e70b",
+    "architecture_tlm/random_service/service.py": "924a6b9a2e007f093cf42d3a8bb13f30f6f85db933af1e88d16e344033068571",
+    "architecture_tlm/random_service/shared64_mapping.json": "4ddd07914a976496edf50e4528caaf3251a363b26e4a1dfa2101a7bec2992c39",
+    "architecture_tlm/unified_v6/rng_integrated.py": "22deac9e9a74e6647385500bf05a5297b6ee801ae2752b731ab94cd5b43a7931"
+  },
+  "checks": [
+    {
+      "field": "gate",
+      "values": 70,
+      "bit_equal": true,
+      "max_absolute_difference": 0.0,
+      "actual_sha256": "d6126cdcadeda443b4f2aea609be8e781188a501408e32947354dffc1d67d8f0",
+      "oracle_sha256": "d6126cdcadeda443b4f2aea609be8e781188a501408e32947354dffc1d67d8f0"
+    },
+    {
+      "field": "up",
+      "values": 70,
+      "bit_equal": true,
+      "max_absolute_difference": 0.0,
+      "actual_sha256": "8f621a6f73cfdc22ca89626e772818a2106bb47afac19c655d6905f30d1cd504",
+      "oracle_sha256": "8f621a6f73cfdc22ca89626e772818a2106bb47afac19c655d6905f30d1cd504"
+    },
+    {
+      "field": "z",
+      "values": 70,
+      "bit_equal": true,
+      "max_absolute_difference": 0.0,
+      "actual_sha256": "93ecb9e22e990e2cc8b6848419c185e2ea1fbd96aa8f8a2f4ba77cf628951006",
+      "oracle_sha256": "93ecb9e22e990e2cc8b6848419c185e2ea1fbd96aa8f8a2f4ba77cf628951006"
+    },
+    {
+      "field": "projected",
+      "values": 16,
+      "bit_equal": true,
+      "max_absolute_difference": 0.0,
+      "actual_sha256": "68700265bb6b411ef4490e4881819c5ccde35800416ed10438480701218c8b77",
+      "oracle_sha256": "68700265bb6b411ef4490e4881819c5ccde35800416ed10438480701218c8b77"
+    },
+    {
+      "field": "output",
+      "values": 16,
+      "bit_equal": true,
+      "max_absolute_difference": 0.0,
+      "actual_sha256": "c22ba458dbdbfa1f91b09577f1f3d7958d8d6424c4f236e124bae5e1dab705fd",
+      "oracle_sha256": "c22ba458dbdbfa1f91b09577f1f3d7958d8d6424c4f236e124bae5e1dab705fd"
+    }
+  ],
+  "passed": true,
+  "operations": 4725,
+  "finish_ps": 165725000,
+  "wall_seconds": 10.441954100038856
+}

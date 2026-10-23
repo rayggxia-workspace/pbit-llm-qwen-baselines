@@ -35,7 +35,8 @@ def seal(path,data):
 
 def sources():
     return {str(p.relative_to(ROOT)).replace('\\','/'):digest(p) for p in sorted((ROOT/'experiments').rglob('*'))
-        if p.is_file() and '__pycache__' not in p.parts}
+        if p.is_file() and '__pycache__' not in p.parts and not (
+            p.parent.as_posix().endswith('vendor/frozen/results') and p.name in ('calibration.json','sz_calibration.json'))}
 
 
 def run_case(a,case,identity):

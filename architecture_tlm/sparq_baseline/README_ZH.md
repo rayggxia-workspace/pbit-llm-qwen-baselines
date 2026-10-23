@@ -29,7 +29,7 @@ python -B -m architecture_tlm.sparq_baseline.run --tokens 2048 --layouts dual_k 
 
 默认生成 N=128/512/2048/8192/32768 × 两种布局 × contiguous/spread 两种合成通道，共20项。合成 token 为前缀加必要最近窗口；这是地址布局夹具，不是模型稀疏分布。输出包括源码 SHA、配置、indices SHA 和来源。已有输出拒绝覆盖。
 
-已生成 [20项账本](results/analytic_20261023/LEDGER.json)、[4项显式资源率示例](results/analytic_20261023/CONDITIONAL.json) 和 [验证回执](results/analytic_20261023/VALIDATION.json)：15项CPU测试通过，24项JSON逐项重放一致，4个Python源码SHA逐一核验。下表是64B burst、spread合成通道、capacity=N时的**物理读取量比值**，分母为相同N的dense K/V读取；没有纳入prefill构建，也不是延迟比值。
+已生成 [20项账本](results/analytic_20261023/LEDGER.json)、[4项显式资源率示例](results/analytic_20261023/CONDITIONAL.json) 和 [验证回执](results/analytic_20261023/VALIDATION.json)：15项CPU测试通过，24项JSON逐项重放一致，4个Python源码SHA逐一核验。下表是64B burst、spread合成通道、capacity=N时的**64B事务模型读取量比值**，分母为相同N的dense K/V读取；没有纳入prefill构建，也不是延迟比值。
 
 | N | dual K核心读/dense | 单布局核心读/dense | dual K核心读＋追加 / dense读＋追加 |
 |---:|---:|---:|---:|

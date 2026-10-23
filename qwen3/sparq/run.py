@@ -126,6 +126,13 @@ def preflight(model, ids, documents, tasks, config):
     if checked['scored_logits_sha256'] != fast['scored_logits_sha256'] or sum_counter(fast, 'sparse_groups') <= 0:
         raise RuntimeError('finite-check toggle changed arithmetic or sparse path was bypassed')
     task_smoke = {}
+    memory_smoke={}
+    for mode in ('dense','sparq'):
+        torch.cuda.reset_peak_memory_stats()
+        result=evaluate_ppl(model,ids,mode=mode,config=config,protocol='suffix',context=2048,
+                            suffix_decode=16,suffix_examples=8,batch=8)
+        result['peak_allocated_bytes']=torch.cuda.max_memory_allocated()
+        memory_smoke[mode]=result
     for name, rows in documents.items():
         a = evaluate_tasks(model, rows, mode='native', doc_limit=2, tasks=tasks)
         b = evaluate_tasks(model, rows, mode='dense', doc_limit=2, tasks=tasks)
@@ -134,7 +141,7 @@ def preflight(model, ids, documents, tasks, config):
         c = evaluate_tasks(model, rows, mode='sparq', config=config, doc_limit=2, tasks=tasks)
         task_smoke[name] = dict(native=a, dense=b, sparq=c)
     return dict(passed=True, native=native, dense=dense, strict_sparq=checked,
-                production_sparq=fast, tasks=task_smoke, complete_quality_evaluation=False)
+                production_sparq=fast, memory_smoke=memory_smoke, tasks=task_smoke, complete_quality_evaluation=False)
 
 
 def vectorized_anchor(model, ids, out):
@@ -290,7 +297,11 @@ def main():
             return
         from .benchmark import run_benchmark
         if out.existing('benchmark') is None:
-            out.put('benchmark',run_benchmark(model,ids,config=config,power_gpu_uuid=str(torch.cuda.get_device_properties(0).uuid)))
+            out.put('benchmark',run_benchmark(model,ids,config=config,
+                power_gpu_uuid=str(torch.cuda.get_device_properties(0).uuid),
+                model_provenance=dict(model=ready['model'],revision=ready['revision'],
+                    source_commit=execution['commit'],job=os.environ['SLURM_JOB_ID']),
+                progress=out.progress('benchmark')))
         anchor=vectorized_anchor(model,ids,out)
         ppl=paired_ppl(model,ids,config,out,args.batch,args.ppl_chunk)
         task_results=paired_tasks(model,documents,tasks,config,out,args.task_chunk)

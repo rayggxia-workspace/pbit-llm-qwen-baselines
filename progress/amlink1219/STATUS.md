@@ -1,3 +1,15 @@
+# Issue157：后训练版 Qwen3-4B SparQ 基线（2026-10-23）
+
+负责人 amlink1219；分支 `task/157-sparq-qwen3`，独立目录 `workspace_projects/sq157`；PR以PR147的 `task/144-qwen3-stochastic@357db588` 为依赖，不将其称为已合并。用户明确选择 Qwen/Qwen3-4B 后训练版，另建BF16对照。
+
+已完成：论文v6与官方固定标签的GQA/预算差异审计；SparQ核心、原Qwen3接合、缓存PPL/官方任务计分与断点完整覆盖；双K/选择器成本账本。CPU Slurm2872在TF4.51.3/Torch2.7.1+cu128通过45项、无跳过、CUDA未初始化。后续新增诊断和benchmark测试将另列；尚无完整模型质量或物理PPA结论。
+
+CPU准备2867因ensurepip缺失失败、2868因嵌套.pth未展开缺Torch失败，已保留日志；修复为个人隔离overlay显式连接本人两个既有依赖根。2871正在同一新任务home下载固定revision，不使用其他成员的权重或目录。GPU作业尚未提交。本轮不恢复暂停Issue116/123，不重跑PR147的26项Base后缀。
+
+正式入口 [SparQ](../../qwen3/sparq/README_ZH.md)、[硬件账本](../../architecture_tlm/sparq_baseline/README_ZH.md)；精确恢复与未完成项见 [HANDOFF](../../work/amlink1219/157/HANDOFF.md)。任务准备代码/测试证据先上传，完整WT2、PIQA1838、ARC-Easy2376、HellaSwag10042、GPU速度/板级能量仍待执行；ASIC完整网表/STA/PPA尚缺。Projects权限需回读，不改权限；不自动合并/关闭Issue。
+
+---
+
 # Issue116 已暂停（用户明确要求，2026-10-23）
 
 目标状态`paused`，不标complete、不自动恢复；只做收尾上传和交接。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审/未合并，暂停前已推送3347bd8，最终收尾提交与远端核验见`work/amlink1219/116/PUBLICATION.json`。权威入口：[暂停总结](../../work/amlink1219/116/PAUSE_REPORT_ZH.md)、[HANDOFF](../../work/amlink1219/116/HANDOFF.md)；A–G仅A完成本轮冻结，B/C/D/E/G部分完成，完整新后端F未开始。

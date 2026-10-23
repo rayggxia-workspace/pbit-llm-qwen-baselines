@@ -142,3 +142,5 @@
 ## architecture_tlm 原始制品入库
 
 - 本仓库对 architecture_tlm 有宽范围文本换行规则。新增 PNG 等二进制、保留原字节的生成图或日志前，先用局部 .gitattributes 显式保护其字节（例如 PNG 用 binary、原始 SVG/日志用 -text），再暂存；若此前已经暂存，属性修正后对这些明确路径执行 git add --renormalize，让索引重新读取原件。不能为通过空白检查而重写已签 SHA 的制品。提交后逐项比较 Git blob 与原文件的长度和 SHA-256，避免 CRLF 归一化损坏图片或破坏原回执。
+
+- Before staging an overlay Python environment, record the actual imported dependency paths, not only the base venv path. A .pth entry that points at another site-packages directory does not recursively process that directory's .pth files. Verify the full Torch/Transformers/task-harness import chain in a CPU-only allocation before downloading models or requesting a GPU; keep existing personal environments read-only.

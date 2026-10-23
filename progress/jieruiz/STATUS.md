@@ -1,5 +1,7 @@
 # Issue158：Qwen3-4B非Base替换（2026-10-23）
 
+22:45 CST实际提交：执行e174d91，44源SHA/提取源5合同通过，CPU2869 RUNNING镜像下载，GPU2870 afterok依赖等待；原生CPU2计分+tiny重载已过，随机CPU/GPU门槛未完成。PR160 draft/open未合并，源已推送；最新远端原字节核验见work/jieruiz/158/REMOTE_VERIFY.json。ROOT pbit-qwen3-stochastic-nonbase-20261023-issue158，包SHA7d840ad5f5b09bad8419c73d88b1e23499e02f7f62f90f81ece789c820120f65，不改快照、不重交。无新PPL，旧Base结果不覆盖；新BF16完整两次+13后缀在GPU依赖任务内，完整概率WT2未提交。分工Issue157评论已成功，Projects待权限；未新建定时检查。下一步查2869/2870与HANDOFF，收齐新模型小原件后独立复算，不用Base硬编码验证器。
+
 负责人jieruiz；task/158-qwen3-4b-posttrained；独立tmp/qwen3-4b-posttrained-issue158-20261023；依赖PR147@357db588/base task/144-qwen3-stochastic。用户明确改用Qwen/Qwen3-4B，固定revision1cfa9a7208912126459214e8b04321603b3df60c，hf-mirror，旧Base证据保持。仅换模型，原架构13配置后缀；新完整BF16两次精确重放、TRAIN重新校准、token独立绑定。PPL不加聊天模板/不生成thinking；不使用2507、不做1.7B或完整概率WT2。5本地合同测试、compileall/diff通过，CPU/GPU尚待Slurm。正式qwen3/posttrained，个人新ROOT pbit-qwen3-stochastic-nonbase-20261023-issue158。PR尚未创建/作业尚未提交；冻结后追加ID和SHA。Issue157 SparQ属amlink1219，本任务不接管；Projects待权限。
 
 # Issue144：Qwen3概率架构迁移（2026-10-23）

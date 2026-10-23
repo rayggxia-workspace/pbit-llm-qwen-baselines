@@ -44,3 +44,6 @@ GPU 2878 最近保存的 Slurm 状态 **RUNNING**，ExitCode=0:0，观测文件�
 2. 当前本人 GPU 作业结束并核本人队列后，才可另冻计量源补板级功率。补测关联原质量 identity 和新测量 SHA，不能混写原 `8d60abe4e7c5` 结果。
 3. [EDA_HANDOFF_ZH.md](../../../../architecture_tlm/sparq_baseline/EDA_HANDOFF_ZH.md)已交接并通知 jieruiz；完整 SparQ RTL/STA 尚缺，物理 ASIC 面积、功率、真实延迟为 null。
 4. Projects 与 Zotero 的限制、待办保留在回执，不声称待同步/待入库已完成。Issue116/123 继续暂停，不访问他人 home/工艺库，不上传权重/凭据，不自动合并或重复提交作业。
+
+
+后台延续/补测及故障恢复见[continuation/README_ZH.md](continuation/README_ZH.md)。实际进程存活以本机WATCH状态/PID核验，不据准备文档推断。

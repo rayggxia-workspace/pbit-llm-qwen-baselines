@@ -1,3 +1,11 @@
+# Issue145 P-DNN两层／四层任务准确率（2026-10-23）
+
+负责人amlink1219，`task/145-pdnn-task-accuracy`，独立`workspace_projects/pa145`，base集成`6966739a5223680888bf0315f7bb4f73423a1ae6`。用户指定两层和四层；沿用PIQA1838、ARC-Easy2376、HellaSwag固定1000题、官方lm_eval0.4.8、0-shot，BF16匹配对照，P-DNN N4三seed，计划21个完整case。新代码和协议入口`experiments/pdnn_task_accuracy_20261023/`，恢复入口`work/amlink1219/145/HANDOFF.md`。
+
+CPU Slurm2826已COMPLETED/0:0，核实本人reference_1000四层joint checkpoint可加载；SHA与旧公开joint4不同，不继承旧PPL。四层10/11/12/13；两层为同组10/12子集，明确不是历史6/12模型复测。18项评分机制CPU测试通过，尚未进行真实GPU评分／无新准确率结果。现有本人env-eval-v4与三项同SHA数据可复用，无需安装、训练或下载。接下来CPU源快照预检及GPU真实模型smoke，再执行全量并PR交付。Issue116/123保持暂停，不恢复。
+
+---
+
 # Issue116 已暂停（用户明确要求，2026-10-23）
 
 目标状态`paused`，不标complete、不自动恢复；只做收尾上传和交接。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审/未合并，暂停前已推送3347bd8，最终收尾提交与远端核验见`work/amlink1219/116/PUBLICATION.json`。权威入口：[暂停总结](../../work/amlink1219/116/PAUSE_REPORT_ZH.md)、[HANDOFF](../../work/amlink1219/116/HANDOFF.md)；A–G仅A完成本轮冻结，B/C/D/E/G部分完成，完整新后端F未开始。

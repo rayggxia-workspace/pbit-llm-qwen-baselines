@@ -1,11 +1,27 @@
-# Issue107：8类SS/TT 100MHz PPA任务包（2026-10-23）
+# Issue107：8类SS/TT 100MHz PPA脚本（2026-10-23）
 
-负责人jieruiz，复用task/107-tlm-cycle-digital-rtl、tmp/tlm-digital-issue107-20261022、PR109；base pbit-tlm-attention-details-20261016。源码提交6bc3389de08fba8250a17f0991849a4368898205，KIND0/2/4/5/6/7/8/21，各SS1.08V125C、TT1.2V25C，100MHz，setup uncertainty20%。原RTL23e8d65f保持，新增ppa8目录，不改用户服务器快照。
+负责人jieruiz；当前分支task/107-digital-ppa8-ss-tt，复用tmp/tlm-digital-issue107-20261022。发布前发现PR109/111均已合并，因此合入最新集成e8705765ed3286b225e042378d57e5d010e221ee，保留最新台账原件路径与本页其他任务历史，用新后续PR交付，不向已关闭PR追加。原Issue107保持open。
 
-本地交付ZIP digital_ppa8_ss_tt_100_20261023_v1.zip，2173363B，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4；包内包含RTL/ROM/转换依赖/TB/离线参考向量。最终ZIP解压后96场景/17070输出逐位通过，6流程守卫、Python3.6语法/3.8运行、Tcl角条件/约束/错误传播与Bash语法通过。没有运行DC/VCS/PT，实际工艺任务待用户提交，未知功耗面积仍null。
+脚本执行源6bc3389de08fba8250a17f0991849a4368898205，KIND0/2/4/5/6/7/8/21，各SS1.08V125C、TT1.2V25C，100MHz；RTL23e8d65f未改。包digital_ppa8_ss_tt_100_20261023_v1.zip，2173363B，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出通过，6流程守卫、Python3.6语法/3.8运行、Tcl与Bash检查通过。无DC/VCS/PT实跑；功耗/面积null。中央台账36条/532行，新16工艺配置待运行。
 
-中央台账接续PR111@2b7935f4，仅在本任务副本新增digital-ppa8-20261023-prepared及派生索引，不修改Issue110工作树。原35条保持，现36条/532配置行；新16行是计划不是实测。脚本使用独立只读快照和SHA阶段恢复，建议先smoke(SS/TT KIND21)，通过后remaining14项。默认4CPU/16GB/12h、最多2项并发，无FGP要求。完整说明及回执见work/jieruiz/107/ppa8/。当前本地完成待发布核验，Issue保持open，不自动合并；Projects按read:project权限不足待同步。
+正式目录architecture_tlm/digital_ppa_v1/ppa8，交付/原件SHA在work/jieruiz/107/ppa8/DELIVERY.json。用户先smoke两角KIND21再remaining14项；4CPU/16GB/12h、最多2项并发，分阶段SHA恢复，结果自动小包。当前本地已完成，发布以ppa8/PUBLICATION.json为准；Project看板缺read:project待同步。长期记忆canonical/root本地同步，新增记忆片段远端随后续维护，不宣称其他人的未提交记忆已发布。
 
+# Issue68：10个已结束工作副本回收与恢复复核（2026-10-23）
+
+负责人jieruiz；review/68-cleanup-receipt-20261023；base pbit-tlm-attention-details-20261016@46804fb3；独立稀疏目录tmp/cleanup68-review-receipt-20261023，仅用于回执交付。已实际回收10目录1,182,605,540 B，64独有文件和3增量bundle保留并验证；模型/仿真原件/活跃任务保持。35记录157原件26归档成员SHA通过，无新实验。
+
+成果maintenance/storage_cleanup_20261023_review；本地恢复project_archives/cleanup_20261023/REVIEW_REMOVAL_RECEIPT.json、REVIEW_FINAL_VERIFICATION.json。Issue68实际回执评论6355946207；本报告PR发布/合并以Issue68最新回执为准，当前为提交前冻结。LLM对话继续新增清理范围；本10项不重复执行，不关闭总体Issue68。报告合并后回收本人小型回执目录，原Git refs保留。Projects沿既有read:project限制未同步。
+
+以下保留历史时点：
+
+# Issue55第七轮：8项审核通过、原head集成交付
+
+负责人jieruiz；review/55-pr-round7；base eb317e4f；唯一tmp/pr55-review-round7-20261022。本轮103/105/106/108/109/111/113/114通过，109最终82b17a1。整合109代码测试＋8登记守卫、336query全层重放通过；修正观测/真实源冲突和过时说明，旧台账原哈希在固定归档恢复。正式审核/证据work/jieruiz/55/round7；实际远端合并、源Issue和目录回收以Issue55最终回执为准。无新GPU/Slurm/PPL/RTL/DC/PT；其他来源状态/分支不接管。
+
+以下保留有日期历史：
+
+# Issue96：真实随机服务已接入整机（2026-10-22）
+# Issue104：架构可视化与全面检查
 # Issue107后续：最新TLM的Verilog仿真缺口（2026-10-22）
 
 负责人jieruiz，沿用task/107-tlm-cycle-digital-rtl和原独立checkout/PR109；远端初始aedc08d。原23e8d65f RTL/66功能组及12870输出不改。本次只读核对PR103@b05fb36d、台账PR111@2b7935f4，新增11组硬件表征需求、机器任务JSON和回传模板，无新RTL/EDA/TLM/模型运行。
@@ -15,14 +31,34 @@
 来源/声明核对在work/jieruiz/107/latest_gap/SOURCE_INDEX.json和VALIDATION_FINAL.json：32个源Git字节、路径/位宽/单位、288组逐档整数等价均通过；9626内部断言大部分是循环边界检查，不作为9626电路测试。完整执行验证无新工艺结果、无新模型PPL。新增源码顶层只标拟议，不伪称已提供Verilog。已实际推送同PR109，科学交付e7b5d256ca00a725394c4ee8decf4d562a672f5c，8关键远端blob原字节核验通过；PR109/Issue107已同步，待审未合并，回执latest_gap/PUBLICATION.json。下一步等评审与用户工艺表征；Projects沿read:project不足待同步，不自动合并/关闭。以下旧交付为此前快照。
 
 # Issue107：TLM周期/存储审计与非随机数字RTL
+# Issue110 数字电路仿真统一台账
 
+负责人jieruiz；沿用task/96-unified-tlm、PR103，独立目录tmp/unified-tlm-issue96-20261022；base已合入eb317e4f。代码、40项结果与报告已实际推送，科学交付f3cf9b98f38a3cb47c40cb86669a2f180e637d0d，9个关键远端blob原字节核验通过；PR103已更新、待审未合并，Issue96不关闭。完整回执integrated/PUBLICATION.json，后续metadata提交不改变执行或结果。
+2026-10-22；负责人jieruiz；Issue104；task/104-architecture-inspector；base eb317e4f6fb1b0d8844887401f3275f128ef8a83。独立工作目录 tmp/architecture-inspector-issue104-20261022。交付阶段：科学成果1909c542a1c454a9e219a5482c9b493fa678b340已推送，PR105 ready/open待审、未合并；8关键远端blob原字节核验通过。后续本提交只补回执，不改模型/观测/页面。
 2026-10-22；jieruiz；task/107-tlm-cycle-digital-rtl；base eb317e4f6fb1b0d8844887401f3275f128ef8a83。目录tmp/tlm-digital-issue107-20261022。科学成果7b12fea03bd2596cc206f3f0c32571196688e665已推送，PR109 ready/open待审、未合并，9关键远端blob原字节核验通过；后续只补交付回执。
+2026-10-22实际交付：PR111 ready/open，待审、未合并；科学payload a31e010d08e4afe3292316d476d99b1509d10603 已推送，9关键远端blob字节一致，47元数据Git/本机/固定入口一致。Issue110已同步，Projects GraphQL实际INSUFFICIENT_SCOPES/read:project，待同步。没有新电路或模型实验。后续回执提交只更改状态/索引，不改原件。
 
+FullDecode默认integrated_service，计算/SC/源/种子总线/采样器统一100MHz；SRAM已校准80MHz保留。FFN流式SAVE/RESTORE/RELEASE、Attention真实有限端点输出/种子/预热/回压，原Issue95模型/RTL未改。40/40完整模型情景、93机制/回归和1421归档/模型契约核对通过；12项为S8采样器诊断，不冒充全预算质量。原52项未改，104宽扫描0完成/0失败主动取消并留痕。
+成果 architecture_tlm/inspector/README_ZH.md、model-inspector.html、CHECK_REPORT_ZH.md。76项CPU功能/接口检查通过；52旧封存情景686模型不变量、4新观测16组检查通过；新Qwen24层336query与旧序列化字段严格相同。浏览器五页、模型/模式/上下文/seed/层控制及截图已核，Node语法通过。观察执行124d37d2；没有新PPL/GPU/Slurm/PT/DRAMSys/物理PPA。完整能量/面积仍null。
 52封存条件情景全量周期CSV/JSON、Qwen2K/8K与Llama1/2汇总和阶段明细，报告明确MAC/向量/非线性/SC驻留/随机源/CDC/Link等时序假设，真实访存与局部状态边界。源码23e8d65fbd84cf548ab82a6c9cfe423d37e59ae4，66功能组、12870逐位输出、63活动模式预检通过，29源文件与Git原字节相同；功能latency不是STA。Verilog23类配置含21KIND及SRAM/DMA外围，另有数组。FP32非线性和融合恢复为候选，不自动替换TLM或继承PPL；没有新模型/GPU/Slurm/PT/STA/DRAMSys。
+2026-10-22；jieruiz；task/110-circuit-simulation-registry；基线eb317e4f，PR base pbit-tlm-attention-details-20261016。独立稀疏tmp/circuit-registry-issue110-20261022。本地完成35批次/模块记录、516配置行、117数字原始归档索引；入口digital_circuit_simulation_registry/README_ZH.md，原件地址/源绑定/PVT/范围/限制和实际阶段分开。8守卫测试、157独立文件SHA和26tar成员SHA通过，无新仿真、无大原件移动/复制。根同名目录为同字节阅读镜像；AGENTS/长期记忆新增每次仿真登记规则。推送/PR实际回执见work/jieruiz/110/PUBLICATION.json，未合并前不标任务完成。Projects缺read:project待同步；HANDOFF保留后续登记命令，不重跑已有健康任务。
 
+正式报告architecture_tlm/unified_v6/RNG_INTEGRATION_RESULTS_ZH.md，执行31aa4fa31fbfb7d74629b54811936ac30a41c250；新40项/results/integrated_rng_20261022_v3及manifest。Qwen2K SC/screenPV seed0为198.00316ms，旧接口197.93816ms；仅合成条件TLM，q/256新响应无继承PPL。100MHz原生端点PPA来自任务38322118/中央记录PR111，额外前端/全局种子等仍未知，完整随机/整机能量面积null。无新PPL/训练/GPU/Slurm/RTL/PT/实际DRAMSys。
+首要未闭合：32KiB/波驻留权重并行供给、48KiB局部计数状态、源后端整机连接和格式转换；PR103仍open，仅薄接口。Projects沿实际read:project不足待同步，不影响repo admin/push。主任务保留最小工作树；自己的已完成hooks helper与两轮比较器诊断已逐SHA归档回收，恢复索引在work/jieruiz/104。下一步：等待PR105评审，按检查台逐项落实硬件合同；HANDOFF及PUBLICATION/REMOTE_VERIFY为实际状态入口。
 入口architecture_tlm/digital_ppa_v1/README_ZH.md、CYCLES_MEMORY_AND_RTL_ZH.md、PPA_TASK_ZH.md。113124B源码包在本机digital_ppa_v1_20261022.zip，SHA d8004f0fdf586dc020e99c3d6e6ed3b29050a652a55af037220af898c03aafb2。大波形/编译临时件本地逐SHA归档后回收，见RAW_ARCHIVE。下一步用户55nm库运行STA/DC/PT、按实际实例/latency/II回填新TLM情景；当前完全物理能量/面积仍未知。Projects本轮GraphQL实测见PROJECTS_CHECK，缺read:project则待同步，不影响repo推送。
 
+下一步等待同PR103评审；质量和尚未知PPA后续另补。Projects沿read:project权限不足待同步，架构检查台旧52快照不自动刷新。HANDOFF和integrated/验证目录可恢复；无本任务运行作业。以下旧“仅小接口/未接入”是此前快照。
+
+# Issue96 RNG接口核实补充：小接口连通，整机默认保持
+
+2026-10-22；jieruiz；沿用task/96-unified-tlm及独立目录，接口补充另开PR103待审。原整机PR99在本轮工作期间已合并0575a633，实际head仅a7a4829，不包含本次接口补充。读取最新GitHub集成5dbd9e39，随机源整个Git树/采样器与本地一致。新增rng_frontend.py：K32分层阈值拼接＋64共享、保留exact-one；uniform32按实际原生宽度计帧。赢家/拒绝接TimedSamplerSource，各三seed连通，512路真实26端点和种子总线检查通过；后端/RTL/其他成员STATUS未修改。
+
+冻结36d5e1085e82a982c9e689a467b3b2042ca36f4d，11新＋21整机＋19源目录测试通过，共51，0失败/跳过；无新PPL/PT/GPU/DRAMSys。报告architecture_tlm/unified_v6/RNG_COMPATIBILITY_ZH.md，原件work/jieruiz/96/RNG_INTERFACE_VALIDATION.json。代码/报告/51项回执由PR103交付；最终head及远端字节核验见Issue96回执。PR103待审未合并；下方原99待审文字为历史快照。
+
+结论：能拼，仍需全模型流式消费/统一时钟和累计账本适配、筛选896路容量选择，以及新q/256 sigmoid数值验证。当前未把随机源后端接入FullDecode默认，未改旧52情景；不能混称已完成整机源调度。下一步按报告边界做可选backend，未知PPA不填零；看板read:project待同步。
+以下保留此前历史：
 PR105（Issue104）检查台仍ready/open，headfa4ef7b，未被本任务合并；PR103随机接口仍独立，Issue95/7不接管。以下保留历史：
+以下保留此前任务状态原文：
 
 # Issue55第六轮最终补审PR99 ready
 

@@ -1,5 +1,7 @@
 # Issue107最新交付：8类SS/TT PPA脚本（2026-10-23）
 
+发布前实时检查确认PR109/111已合并；本批改用task/107-digital-ppa8-ss-tt后续分支，仍为Issue107，复用本工作目录。已合入最新集成e8705765ed3286b225e042378d57e5d010e221ee，台账的digital-107-functional旧原件路径采用审核修复版，其他35条逐字节保留。后续PR编号/推送回读见ppa8/PUBLICATION.json。下文关于PR109的描述指本批开始时基线，不能作为当前PR状态。脚本包既定来源SHA不变，不重新生成同名不同字节包。
+
 本轮按用户要求落实8类现成模块KIND0/2/4/5/6/7/8/21，不扩大为随机矩阵/SRAM/整机。脚本源码6bc3389de08fba8250a17f0991849a4368898205，正式architecture_tlm/digital_ppa_v1/ppa8；原RTL23e8d65f无改动。55nm SVT SS1.08V125C、TT1.2V25C；100MHz/10ns、setup2ns、hold0.1ns。2个smoke再14个remaining，或all16，不重复提交活跃任务。每项1次DC、1次VCS编译、12次数值检查、9个PT窗口；三个seed17/43/101，stress只功能，stream/burst/idle用于功耗。
 
 源码包本机根digital_ppa8_ss_tt_100_20261023_v1.zip，2173363B，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。包内全部RTL/ROM/转换依赖和参考向量，不含PDK。最终解压96场景17070输出通过，6流程守卫/Python3.6语法/3.8运行/Tcl/Bash通过。首次本地Icarus正斜杠-B路径导致未启动编译，换Windows原生路径后通过；不是RTL修复。原始记录含失败保留于project_archives/digital_ppa8_20261023/LOCAL_VALIDATION_RAW.tar.gz，SHA ce744dc4c68e96074bf0eb0a84c39fb1807bf0f949a40fe8fae3eafc8b8e21fb。DELIVERY.json记录精确来源/校验。

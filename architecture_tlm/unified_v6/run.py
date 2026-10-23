@@ -29,6 +29,8 @@ def source_record():
     head = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip()
     paths = list((ROOT/'architecture_tlm/unified_v6').rglob('*.py'))
     paths += list((ROOT/'architecture_tlm/unified_v6/configs').glob('*.json'))
+    paths += list((ROOT/'architecture_tlm/random_service').rglob('*.py'))
+    paths += [ROOT/'architecture_tlm/random_service/shared64_mapping.json']
     paths += [ROOT/'architecture_tlm/unified_v6/SOURCE_INDEX.json']
     paths += [ROOT/'architecture_tlm'/p for p in ['parallel_sampler_v5.py',
         'winner_hold_tlm_v5.py','corrected_rejection_tlm_v5.py',
@@ -77,6 +79,9 @@ def compact(model, context, seed, ffn, attention, result):
         SRAM_macro_area_mm2=result['SRAM']['area_mm2'],
         unpriced_action_types=len(result['unpriced_actions']),
         random_stream_storage_bytes=result['random_interface']['random_stream_SRAM_bytes'],
+        rng_backend=result['random_interface']['backend'],
+        rng_calibrated_endpoint_mJ=result['random_interface'].get('calibrated_endpoint_two_state_energy_J',0)*1000,
+        rng_calibrated_endpoint_area_mm2=result['random_interface'].get('calibrated_endpoint_area_mm2',0),
         QK_positions=result['attention_activity']['QK_logical_positions'],
         possible_QK_positions=result['attention_activity']['possible_QK_positions'])
 
@@ -101,6 +106,7 @@ def main(argv=None):
     p.add_argument('--contexts',nargs='+',type=int)
     p.add_argument('--seeds',nargs='+',type=int,default=[0,1,2])
     p.add_argument('--include-winner',action='store_true')
+    p.add_argument('--rng-backend',choices=['integrated_service','local_prng_interface'],default=None)
     a = p.parse_args(argv)
     if a.output.exists():
         raise ValueError('use a new output directory; preserve archived bytes')
@@ -129,6 +135,8 @@ def main(argv=None):
                     cfg.update(context_tokens=context,decode_tokens=a.decode,seed=seed)
                     cfg['ffn'].update(mode=ffn,samples=a.ffn_samples,strata=a.strata,bins=a.bins)
                     cfg['attention'].update(mode=attention,samples=a.samples,trace_file=str(a.trace) if a.trace else None)
+                    if a.rng_backend:cfg['random']['backend']=a.rng_backend
+                    if cfg['random']['backend']=='integrated_service':cfg['random']['clock_hz']=cfg['core_hz']
                     identity='%s_L%d_seed%d_%s_%s'%(model,context,seed,ffn,attention)
                     result=FullDecode(cfg,shape).run()
                     result['execution_commit']=sources['commit']

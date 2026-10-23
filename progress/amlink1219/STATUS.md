@@ -1,3 +1,15 @@
+发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
+
+# Issue98 Prefill专项补充（2026-10-22）
+
+负责人amlink1219；原Issue98负责人rayggxia保持。独立分支task/98-prefill-analysis-amlink1219，PR base pbit-tlm-attention-details-20261016@eb317e4f6fb1b0d8844887401f3275f128ef8a83。独立工作目录为本机visualizations/2026/10/22/01a16312-a5d6-71b0-a2e7-06d7139a3b28/prefill_upload，仅文档暂存和Git对象发布，不切换或覆盖其他checkout。
+
+阶段：报告及文献证据本地整理完成，上传/PR状态以work/amlink1219/98/prefill/PUBLICATION.json的实际远端回执为准。正式入口architecture_tlm/benchmark_protocol_20261022/PREFILL_ANALYSIS_ZH.md。覆盖原16项文献与库内3项补充；核对当前统一TLM明确不含prefill/摘要首次构建/TTFT，建议数字prefill Attention＋概率decode，不改变联合FFN双阶段约定或活动默认。
+
+验证：逐项来源、JSON/矩阵ID、相对链接、UTF-8/LF、SANTA算术与科学制品SHA，实际结果见work/amlink1219/98/prefill/VALIDATION.json。无新模型/PPL/训练/服务器/TLM/RTL/EDA；无运行任务。Projects实时缺read:project，待有权限者同步；PR审核/合并待定，不关闭Issue。恢复先查Issue98、PR106及本分支PR，交接见work/amlink1219/98/prefill/HANDOFF.md。
+
+---
+
 # Issue92 计算成本补充（2026-10-22，当前）
 
 负责人amlink1219，接续Issue92/task/92-pbit-gate-pilot/PR94。新增部署运算账本qwen/results/pbit_gate_cost_20261022/README_ZH.md、COST.json及compute_cost.py。每自由块32连续乘法/40加法/8bit门控/9概率事件、两阶段；原三位置混合F21，层0/12/23候选QK省378/−165/379 MAC，小网第一层新增672乘法，不能称整体节能。含公共特征/动态归一化、GQA并集与固定S的PV边界。9模型形状、2304隐藏态门控等价、6项均值回算及独立只读审阅通过；没有新训练/Slurm/完整PPL/RTL/PPA，原质量结果保持。发布随PR94，待审未合并；上传核验以work/amlink1219/92/compute_cost/PUBLICATION.json实际回执为准。Projects沿同日已验证read:project不足待同步，不自动合并/关闭Issue。

@@ -56,6 +56,35 @@ S²ANTA，ICML 2026，[v2 §3.5 / Table 3](https://arxiv.org/html/2605.01910v2#S
 
 MBA来源：`509_Camera_Ready_Paper.pdf`，§6、Fig.7/8，DOI [10.1145/3770743.3803981](https://doi.org/10.1145/3770743.3803981)，原始文件SHA-256与本机索引在 PAPERS.json；不上传用户PDF。其峰值、端到端和buffer管理消融的收益范围应分开。
 
+### 2.1 逐篇频率与时序条件（2026-10-22补充）
+
+以下回查上述16项工作的原文、表格及已有托管PDF。**计算核心时钟、内存时钟、接口数据率、转换器采样率和一次模拟操作延迟分别记录。** “未找到”指本次核读版本未找到可绑定所述PPA点的统一工作频率；“待核”表示证据尚不足，不等同作者未披露。表中设定值、综合条件、后布局条件和跨节点投影也不混称芯片实测。
+
+| 工作 | 核实到的频率／时序 | 适用范围、证据位置与限制 |
+|---|---|---|
+| OPAL | **统一工作频率未找到** | 核读arXiv v3 §5.2及65nm综合/硬件结果，并对照已有DAC全文；没有据65nm或TOPS/W反推时钟。[原文PDF](https://arxiv.org/pdf/2409.05902v3) |
+| MoNDE | **NDP核心1 GHz** | §4.1/Table 2及§4.3，PDF第5–6页：28nm脉动阵列以1 GHz综合，片上buffer采用同工艺编译器。该值属于MoNDE NDP，不是A100的实测锁频。[原文PDF](https://jaewoong.org/pubs/dac24-monde.pdf#page=5) |
+| UniCAIM | **无统一数字主频；Fig.12(a)示例为Attention计算20 ns＋Top-k筛选2 ns** | v1 §IV-A3，PDF第6页，按图例蓝色为Attention、绿色为Top-k；示例为20%剪枝率、512输入/64输出、64 ADC并行。两段是电路/操作延迟，不能把2 ns倒数写成整机500 MHz，或把20 ns写成50 MHz系统时钟。[原文PDF](https://arxiv.org/pdf/2504.07479v1#page=6) |
+| MBA | **PE阵列0.5 GHz＝500 MHz** | 用户提供全文§6，PDF第5页明确16×16 PE阵列工作频率。该文在7nm下评估，PE的45nm来源成本经DeepScaleTool缩放；500 MHz是该架构评估的PE条件，不是IGZO eDRAM测试芯片或所有SFU/NoC的共同实测频率。[DOI](https://doi.org/10.1145/3770743.3803981) |
+| Kelle | **逻辑加速器1 GHz** | §8开头，PDF第9页：RSA、SFU、接口及控制器RTL设为1 GHz，用45nm NanGate库/DC综合。另有65nm存储模型，不能将逻辑时钟视为所有eDRAM访问均一拍完成。[作者原文PDF](https://saiqianzhang.com/gallery/Kelle_Camera_Ready.pdf#page=9) |
+| AttAcc | **计算单元频率待核；HBM3接口5.2 Gb/s/pin已确认** | §7.1，PDF第10页明确接口速率。本次解析发现部分表格/图形文字编码异常，尚未从原始表格独立确认GEMV/Softmax各自时钟；不将二手数值或接口速率当成本篇已核计算频率。[原文PDF](https://scale.snu.ac.kr/papers/2024-04-Conference-ASPLOS-AttAcc.pdf#page=10) |
+| NeuPIMs | **Table 2的HBM组织频率1 GHz** | v3 §8.1/Table 2，PDF第10页，1 GHz列在HBM Organization一侧。不能不加域标签地写成“NPU和PIM全系统统一1 GHz”；NPU阵列时钟仍需另有直接依据。[原文PDF](https://arxiv.org/pdf/2403.00579v3#page=10) |
+| CENT | **7nm CXL控制器投影频率2.0 GHz；28nm综合关键路径1 ns** | v3 §6在Table 5前明确二者关系。2 GHz属于跨节点投影的CXL控制器，不是整套GDDR6-PIM实测频率。Table 4另列tCCDS=1 ns等存储时序，不能把它们当同一个时钟；GPU基线还存在随阶段变化的动态频率。[原文§6](https://arxiv.org/html/2502.07578v3#S6) |
+| Anda | **285 MHz，0.8 V** | v1 §V-A，PDF第9页：Anda及所比较基线统一该工作频率、峰值吞吐和片上存储；16nm RTL/Genus及网表VCD功耗条件。该值是具体算术架构评估点，不是HBM2接口频率。[原文PDF](https://arxiv.org/pdf/2411.15982v1#page=9) |
+| LLMCompass | **Table I：A100 1410 MHz、MI210 1700 MHz、TPUv3 940 MHz；实测MI210锁1400 MHz** | v1 Table I，PDF第3页，为硬件描述示例。§III-C脚注2，PDF第5页，对MI210测试另设1400 MHz以减小波动；不能把1700 MHz描述参数与1400 MHz实测条件混写成同一个配置。这是建模/校准平台频率，不是LLMCompass自身有一个芯片主频。[原文PDF](https://arxiv.org/pdf/2312.03134v1#page=3) |
+| Splitwise | **本次核读原文未找到明确的测试锁频／运行时钟数值** | 原文使用A100/H100等平台实机profiling与服务仿真；GPU型号、功率预算及降功率配置不等于已披露SM工作频率。保留此项缺口，不用厂商boost频率补成测试条件。[原文PDF](https://www.microsoft.com/en-us/research/wp-content/uploads/2023/12/Splitwise_ISCA24.pdf) |
+| DS-CIM | **整宏工作频率未找到；OR-MAC64局部电路延迟0.4 ns** | v1 §III-B/Fig.3(b)，PDF第3页给出40nm OR-MAC64延迟；§V/Table III没有提供与全部SNG、PRNG、累加和SRAM路径绑定的统一主频。不能把0.4 ns倒数2.5 GHz当成整个宏的已验证频率；T64/T256是流长，也不是MHz。[原文PDF](https://arxiv.org/pdf/2601.06724v1#page=3) |
+| ARTEMIS | **无统一数字主频；每subarray执行64个MAC的操作延迟48 ns** | 原文§II背景讨论，PDF第4页，另在电路与数据路径中按具体动作计时。48 ns包含所述操作序列，不是SC单个随机bit时钟；不能用其倒数20.83 MHz标作整个加速器工作频率。[原文PDF](https://arxiv.org/pdf/2407.12638#page=4) |
+| SCARLET | **系统评估设定5 GHz；O–E转换5 GS/s** | §IV-A，PDF第5页，作者为反映外围约束采用5 GHz，低于所引用OPCM器件18 GHz演示值；O–E转换为5 GS/s。5 GHz是架构模型设定，不是本篇整芯片实测，18 GHz也不能替代该设定。[原文PDF](https://www.bu.edu/peaclab/files/2026/03/SCARLET_CameraReady.pdf#page=5) |
+| HSA | **500 MHz** | v1 Table II及结论，28nm后布局仿真工作点。原文将500 MHz与该HSA实现的性能/功率结果关联；不能拿表内其他方案20–400 MHz等范围当成本方案频率。[原文Table II](https://arxiv.org/html/2507.09010v1#S5.T2) |
+| SANTA / S²ANTA | **v2未找到明确的GPU锁频／运行时钟数值** | §3.4–3.6给出RTX 6000 Ada上的kernel及完整decode测量；GPU型号和计时时间不构成已披露的SM频率。保持“未报告可复核运行频率”，不自动套用产品标称boost值。[原文v2](https://arxiv.org/html/2605.01910v2#S3.SS4) |
+
+MBA的本机复核使用Zotero已有附件`UCGH6PXK/509_Camera_Ready_Paper.pdf`，父条目`U54PLGZE`，SHA-256为`23d1f57ce46566027c75f98c9ea332d904c2547c659cf8903142115c145fdd73`；仅读取，不上传原文。其余本机已有附件也只读复用，没有改动书目、批注或主线程仓库。
+
+对本项目的频率字段，建议至少同时保存`frequency_domain`（数字核心/存储/随机源/ADC等）、`frequency_hz`、`frequency_status`（目标/综合条件/后布局条件/实测/投影/未披露/待核）、源版本及页码；“未披露”和“待核”的数值均保留null。另列`latency_ns`、`sample_rate_sps`、`io_data_rate_bps`，不把它们强行填进主频一列。
+
+**对p-bit和SC尤其要将数字时钟与随机更新／观测服务率分开。** 只有明确“一拍对应哪项动作”、实际启动间隔和相关依赖后，才能用`周期数/频率`换算延迟；不能将预热、spacing、S个观测或T个随机样本直接视作同数目的核心时钟周期。频率变化还需与该工作点的电压、PVT、活动功耗和质量配置一起记录。
+
 已有14篇模型选择审计的样本中，直接命名Llama家族9/14、Llama2 7/14、OPT 6/14，集合有重叠；这说明这些模型便于文献对接，不是全领域流行率。旧审计与新表样本不同，不把分母混合。旧源：本机 `pbit_llm_master_report_20261012/LLM_HARDWARE_BENCHMARK_MODEL_SAMPLE_20261017.json`。
 
 ## 3 “LLM benchmark”至少需要冻结五件事

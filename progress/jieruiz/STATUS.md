@@ -4,7 +4,7 @@
 源8f72deb；23文件直接上传包已完成，20检查/51预览/27PDK哈希/6合成包接口探针通过。
 独立pilot→calibrate冻结→三seed1s长记录及500Hz对照；没有实际Spectre、远端作业或质量/PPA结果。
 中央prepared记录已check/render，root保留其他52条。源码/配置SHA及命令见work/jieruiz/152/HANDOFF.md。
-本地完成，待推送/PR；实际回执以同目录PUBLICATION.json为准，Projects待核实，不自动关闭Issue。
+已推送PR156（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/156），待审未合并；发布84770a1，6关键源文件远端原字节回读通过。实际回执见work/jieruiz/152/PUBLICATION.json。Projects查询缺read:project，待维护者同步；Issue阶段同步成功。不自动关闭Issue。
 
 ## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
 

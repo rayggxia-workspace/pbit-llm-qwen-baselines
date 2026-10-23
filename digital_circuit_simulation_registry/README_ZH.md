@@ -50,3 +50,5 @@ python digital_circuit_simulation_registry/registry.py render
 原件在临时工作目录时，应先按项目存储规则归档，再登记新位置/归档成员和SHA；保留原位置历史。清理checkout前更新台账，不能留下唯一指向已删除目录的地址。本轮没有搬移或删除任何原始结果。
 
 功耗面积单位及边界：标准单元面积、SRAM宏面积、物理核心面积分开；总功耗已含时钟引脚内部功耗时不重复加clock分组；每帧/每结果/每生成字/每消费帧分别计量。`not_run`/`null`表示未知，不表示零。库提取、功能验证、PT、TLM估计和芯片实测不可互相替代。
+
+Issue152长记录准备脚本已推送[PR156](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/156)，待审未合并；physical-rng-long-152-prepared仅记录脚本准备，实际Spectre未运行。

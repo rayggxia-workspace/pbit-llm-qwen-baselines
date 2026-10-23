@@ -36,3 +36,5 @@ Projects尚未写入，需核实权限/维护者同步；不作为本地交付�
 恢复时需按2026-10-23最新FullDecode integrated_service状态更新后再预览，不把旧草稿当最新架构。此轮用户要求优先准备长记录。
 
 发布前集成分支已推进至2f23344948cfd43e9ab7061f77ea6d3f4a2c2527；本分支正常合并该基线。唯一STATUS冲突保留上游原字节并前置本人Issue152进度，未改其他任务源码。BASE_REFRESH.json记录核验。
+
+2026-10-23发布回执：源码8f72deb、科学交付84770a1已推送，PR156 https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/156 待审未合并；6关键源blob远端回读通过。PUBLICATION.json保存实际回执。Issue阶段评论已同步：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/152#issuecomment-6367288400；Projects实际查询缺read:project，待维护者同步。没有远端Spectre提交。

@@ -157,13 +157,27 @@ def _source_identity():
 def evaluate_ppl(model, token_ids, *, mode='dense', config=None, context=2048,
                  stride=1024, protocol='full', suffix_decode=128,
                  suffix_examples=32, batch=4, ffn='none', seed=0,
-                 max_windows=None, capture_logits_hash=False, progress=None):
+                 max_windows=None, segment_start=0, segment_count=None,
+                 capture_logits_hash=False, progress=None):
     """All scored targets run q_len=1; batch only groups compatible windows.
 
     mode='native' is the unchanged cached SDPA gate. mode='dense' is the same
     native operator through the wrapper. max_windows explicitly marks a smoke.
+    segment_start/count select a contiguous interval of the ORIGINAL plan and
+    always mark the result partial. A caller may merge verified window records;
+    every mode must use the same chunk boundaries and batch shapes. Stochastic
+    FFN chunks are rejected until generator-state handoff is implemented.
     """
     _positive(batch, 'batch')
+    if type(segment_start) is not int or segment_start < 0:
+        raise ValueError('segment_start must be nonnegative integer')
+    if segment_count is not None:
+        _positive(segment_count, 'segment_count')
+    sliced = segment_start != 0 or segment_count is not None
+    if sliced and max_windows is not None:
+        raise ValueError('segment slicing and max_windows smoke are mutually exclusive')
+    if sliced and ffn != 'none':
+        raise ValueError('stochastic FFN segments require an explicit RNG-state handoff')
     if protocol not in ('full', 'suffix'):
         raise ValueError('protocol must be full or suffix')
     if token_ids.ndim == 2 and token_ids.shape[0] == 1:
@@ -176,13 +190,21 @@ def evaluate_ppl(model, token_ids, *, mode='dense', config=None, context=2048,
     full_plan = (full_window_plan(len(ids), context, stride) if protocol == 'full' else
                  suffix_plan(len(ids), context, suffix_decode, suffix_examples))
     plan = full_plan
+    if sliced:
+        stop = len(full_plan) if segment_count is None else segment_start + segment_count
+        if segment_start >= len(full_plan) or stop > len(full_plan):
+            raise ValueError('requested segment interval is outside the scoring plan')
+        plan = full_plan[segment_start:stop]
     if max_windows is not None:
         _positive(max_windows, 'max_windows')
         plan = full_plan[:max_windows]
     metadata = plan_metadata(plan, len(ids), protocol)
     metadata['requested_segments'] = len(full_plan)
+    metadata['segment_slice_requested'] = sliced
+    metadata['selected_segment_start'] = plan[0]['segment_id']
+    metadata['selected_segment_count'] = len(plan)
     metadata['smoke_limit'] = max_windows
-    metadata['complete_requested_protocol'] = max_windows is None and len(plan) == len(full_plan)
+    metadata['complete_requested_protocol'] = not sliced and max_windows is None and len(plan) == len(full_plan)
     metadata['every_full_corpus_target_once'] &= metadata['complete_requested_protocol']
     started, records = time.perf_counter(), []
     digest = hashlib.sha256() if capture_logits_hash else None
@@ -225,10 +247,12 @@ def evaluate_ppl(model, token_ids, *, mode='dense', config=None, context=2048,
                 complete=metadata['complete_requested_protocol'],
                 attention_config=audit.get('replacement', {}).get('config'),
                 scoring_parameters=dict(context=context, stride=stride, protocol=protocol,
-                    suffix_decode=suffix_decode, suffix_examples=suffix_examples, batch=batch),
+                    suffix_decode=suffix_decode, suffix_examples=suffix_examples, batch=batch,
+                    segment_start=segment_start, segment_count=segment_count),
                 source_files_sha256=_source_identity(),
                 ffn_config=None if ffn == 'none' else dict(policy='pot4', cycles=32, strata=32, mode='sampled'),
-                scope='full_corpus' if metadata['every_full_corpus_target_once'] else 'suffix_or_smoke',
+                scope=('partial_segments' if sliced else
+                    'full_corpus' if metadata['every_full_corpus_target_once'] else 'suffix_or_smoke'),
                 elapsed_seconds=time.perf_counter() - started,
                 precision='original model/cache dtype; FP32 logits/logsoftmax; FP64 NLL sum',
                 prefill='native dense attention; FFN follows explicit ffn setting', physical_PPA=None)

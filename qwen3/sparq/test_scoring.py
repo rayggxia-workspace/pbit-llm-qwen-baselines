@@ -170,6 +170,29 @@ class ScoringTests(unittest.TestCase):
         self.assertEqual(a['execution_audit']['tokens_per_layer'], b['execution_audit']['tokens_per_layer'])
         self.assertLess(b['execution_audit']['calls']['decode'], a['execution_audit']['calls']['decode'])
 
+    def test_contiguous_segment_resume_preserves_ids_nll_and_exact_coverage(self):
+        m, ids = model(), torch.arange(23) % 19
+        whole = evaluate_ppl(m, ids, mode='native', context=8, stride=4, batch=1)
+        left = evaluate_ppl(m, ids, mode='native', context=8, stride=4, batch=1,
+                            segment_start=0, segment_count=2)
+        right = evaluate_ppl(m, ids, mode='native', context=8, stride=4, batch=1,
+                             segment_start=2)
+        self.assertEqual(left['records'] + right['records'], whole['records'])
+        self.assertEqual(math.fsum([left['nll_sum'], right['nll_sum']]), whole['nll_sum'])
+        self.assertEqual(left['scored_tokens'] + right['scored_tokens'], 22)
+        for result in (left, right):
+            self.assertFalse(result['complete'])
+            self.assertEqual(result['scope'], 'partial_segments')
+            self.assertFalse(result['scoring_plan']['every_full_corpus_target_once'])
+            self.assertEqual(result['scoring_plan']['requested_segments'], len(whole['records']))
+        self.assertEqual(right['records'][0]['segment_id'], 2)
+        with self.assertRaisesRegex(ValueError, 'outside'):
+            evaluate_ppl(m, ids, mode='native', context=8, stride=4, segment_start=99)
+        with self.assertRaisesRegex(ValueError, 'exclusive'):
+            evaluate_ppl(m, ids, mode='native', segment_count=1, max_windows=1)
+        with self.assertRaisesRegex(ValueError, 'RNG-state'):
+            evaluate_ppl(m, ids, mode='native', segment_count=1, ffn='b4_t32')
+
     def test_official_metrics_receive_original_loglikelihood_and_greedy(self):
         calls = []
         task = SimpleNamespace(eval_docs=['doc0', 'doc1'])
@@ -220,6 +243,12 @@ class NativeQwen3Tests(unittest.TestCase):
         self.assertEqual(a['scored_logits_sha256'], b['scored_logits_sha256'])
         self.assertEqual(a['nll_sum'], b['nll_sum'])
         self.assertTrue(all(not hasattr(x.self_attn, '_sparq_owner') for x in m.model.layers))
+        native_chunk = evaluate_ppl(m, ids, mode='native', context=4, stride=2,
+                                   segment_start=1, segment_count=2, capture_logits_hash=True)
+        dense_chunk = evaluate_ppl(m, ids, mode='dense', context=4, stride=2,
+                                  segment_start=1, segment_count=2, capture_logits_hash=True)
+        self.assertEqual(native_chunk['scored_logits_sha256'], dense_chunk['scored_logits_sha256'])
+        self.assertEqual(native_chunk['nll_sum'], dense_chunk['nll_sum'])
 
     def test_native_mc_wrapper_and_b4_t32_opt_in(self):
         m = self.fresh()

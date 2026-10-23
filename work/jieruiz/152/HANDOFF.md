@@ -34,3 +34,5 @@ Projects尚未写入，需核实权限/维护者同步；不作为本地交付�
 
 本会话此前的架构HTML草稿 analog_pbit_20261016/random_architecture_visual_20261022/random-architecture.html 未验收/交付；
 恢复时需按2026-10-23最新FullDecode integrated_service状态更新后再预览，不把旧草稿当最新架构。此轮用户要求优先准备长记录。
+
+发布前集成分支已推进至2f23344948cfd43e9ab7061f77ea6d3f4a2c2527；本分支正常合并该基线。唯一STATUS冲突保留上游原字节并前置本人Issue152进度，未改其他任务源码。BASE_REFRESH.json记录核验。

@@ -15,3 +15,5 @@
 下一步：用户解压，按README先运行A/B M1 smoke，再Slurm提交A/B×SS/TT100MHz的M64 T32 PIPE1四项。VCS逐输出golden必须通过后才进PT。回传四个reports包，核验时序、逐bit活动、缺表/超范围，再比较总面积、每帧能量和关键路径。先验逻辑状态差不是PPA差。本机本任务无运行任务，未向远端提交EDA/Slurm。
 
 统一台账counter-ab-133-functional已登记，PPA四项为NOT_RUN；本地镜像只合并本条，保留其他任务已有记录。看板缺少既有read:project权限，待同步；Issue/PR/STATUS交付不等于看板已写入。不合并PR。
+
+远端核验：b1c1999584b4c74433b02b80bd4bd2bfdd6d37cc的7关键文件原字节一致，见REMOTE_VERIFY.json；Issue评论回执见ISSUE_RECEIPT.json。最终科学包未变。辅助脚本finalize.py/metadata.py/remote.py、validation_*目录和候选源仅本地保留，未上传；所需原始日志/向量已SHA归档，交付包自带可复现生成/验证代码。已回收本任务53个可重建vvp中间文件640147114字节，记录REMOVED_REBUILDABLE_VVP.json。

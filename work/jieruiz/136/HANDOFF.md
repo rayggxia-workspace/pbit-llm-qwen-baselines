@@ -19,3 +19,5 @@
 ## 后续实时进度
 
 CPU2797已通过全部覆盖测试和原生tiny Qwen3保存重载，镜像1.7B权重下载中。GPU数组2798（0=1.7B，1=4B，每项一GPU）已提交，依赖afterok:2797且kill-on-invalid-dep=yes；CPU作业失败不会分配GPU。日志ROOT/logs/evaluate-2798_0.log及_1.log。不要再次提交重复数组。网络直连github.com的git push两次失败（连接重置/超时），改用GitHub API发布完全相同的Git blob/tree/commit，仍核验jieruiz且不force、不合并。API结果以PUSH/PUBLICATION回执为准。
+
+代码已按原SHA发布至官方仓库，PR137 draft/open，未合并。Projects本轮GraphQL确认缺read:project，待有权限成员同步；Issue/PR/个人STATUS已记录真实作业，不将等待下载写成PPL完成。本任务长期记忆条目同步到正式维护阅读源及本机同字节镜像，未覆盖其其他未发布条目。

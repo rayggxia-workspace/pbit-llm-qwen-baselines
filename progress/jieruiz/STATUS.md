@@ -1,6 +1,6 @@
-# Issue136：Qwen3-1.7B/4B Base BF16基线准备（2026-10-23）
+# Issue136：Qwen3-1.7B/4B Base BF16基线已提交（2026-10-23）
 
-负责人jieruiz；task/136-qwen3-bf16；base pbit-tlm-attention-details-20261016@6966739；独立稀疏tmp/qwen3-baseline-issue136-20261023。按用户要求使用hf-mirror固定revision，未修改FFN/Attention。源码968046f已本地提交/上传只读快照，CPU Slurm2797已提交隔离环境/预检/下载；GPU未提交、暂无新PPL。2组计分测试通过，服务器train/test原字节SHA通过。成果qwen3/，交接work/jieruiz/136/HANDOFF.md。下一步CPU通过后两个GPU BF16完整WT2（2048/1024）与结果归档，任务PR发布待完成，Projects权限待核。旧模型/环境/并行任务未改。
+负责人jieruiz；task/136-qwen3-bf16；base pbit-tlm-attention-details-20261016@6966739；独立稀疏tmp/qwen3-baseline-issue136-20261023。按用户要求使用hf-mirror固定revision，未修改FFN/Attention。源码968046f已上传冻结快照；CPU2797已通过隔离环境/计分覆盖/原生Qwen3保存重载，镜像下载中；GPU数组2798已提交依赖afterok2797、暂无新PPL。服务器train/test原字节SHA通过。成果qwen3/，交接work/jieruiz/136/HANDOFF.md。API已按原SHA发布，PR137为draft/open未合并；下一步监测下载和两个GPU BF16完整WT2（2048/1024），归档真实结果后转审。Projects本轮实测缺read:project待同步。旧模型/环境/并行任务未改。
 
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 

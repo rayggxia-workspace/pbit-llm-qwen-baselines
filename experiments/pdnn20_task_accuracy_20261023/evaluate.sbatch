@@ -10,6 +10,7 @@ export OMP_NUM_THREADS=4
 export MKL_NUM_THREADS=4
 export TOKENIZERS_PARALLELISM=false
 export PYTHONOPTIMIZE=0
+export PYTHONDONTWRITEBYTECODE=1
 test "$(id -un)" = Weican_Chen
 test -n "${CUDA_VISIBLE_DEVICES:-}"
 test "$(realpath "$PDNN20_PROJECT")" = /home/Weican_Chen/projects/pbit-pdnn20-task-accuracy-issue151

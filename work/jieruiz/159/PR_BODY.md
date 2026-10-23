@@ -1,5 +1,7 @@
-Qwen3-4B的随机FFN推理模块目前把W8权重存为冻结buffer，不能直接训练；此外PR147使用Base权重，不能用来代表用户指定的Qwen/Qwen3-4B。本PR给出全模型量化/随机感知微调契约、非Base能力保持和分阶段扫描计划。
+面向远程Agent提供可执行的Qwen/Qwen3-4B非Base训练交接：固定源码与模型revision、依赖PR160复用、待实现模块、先导验证、Slurm组织及结果回传模板。新增INT4/INT6，与INT8各执行原完整一套，其余设置保持。
 
-提供动态/固定/可学习静态/混合四类尺度×T8/16/32/64的16计划配置，加3同预算控制；随后扫档数/间距、IID与x/z预算。明确真实共享采样前向、代理梯度、checkpoint随机重放、TRAIN-only校准、W8导出和完整评测。
+主扫描为48随机配置+9控制=57项（每位宽19项，A计划114亿有效训练token）。每项实验36层gate/up/down统一Wb，输入仍A8/共享64；三份BF16为配对重复，不作三种量化结构或三seed。B阶段每位宽最多18、合计54；C/D同样按各位宽原预算。
 
-验证：scan.py清单一致性（19项）、Python语法、launch-ready拒绝守卫、独立源码/方案审阅通过。没有实现训练器、下载权重、运行GPU/Slurm或生成新PPL/PPA。模型revision、许可数据和H200环境待绑定；清单不可直接启动。依赖PR147/PR153仅只读证据，不改其执行快照。关联Issue #159，交付设计供审阅，不自动合并。
+入口：qwen3/training/sc_qat_20261023/REMOTE_AGENT_START_HERE_ZH.md，附REMOTE_ENV/RUN_RESULT模板、SCAN_MANIFEST与原设计依据。PR147/153只读oracle；PR160已有非Base准备，恢复先检查现有任务。
+
+验证：57项唯一任务ID/码界/跨位宽非权重设置一致、JSON与Python语法、未就绪启动拒绝、独立审阅通过。G2独立120步短课程覆盖目标采样及尺度冻结。无本任务训练器、H200/Slurm作业、新PPL/PPA。关联Issue159；通过本PR交付设计，不自动合并。

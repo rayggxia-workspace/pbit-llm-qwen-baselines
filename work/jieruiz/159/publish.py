@@ -85,7 +85,7 @@ if __name__=='__main__':
         result=push();save('PUSH.json',result)
     elif sys.argv[1]=='pr':
         found=api('GET',PREFIX+'/pulls?state=all&head=rayggxia-workspace:'+BRANCH)
-        args=dict(title='Qwen3-4B非Base：全模型W8随机FFN训练与尺度/采样扫描方案',body=(OUT/'PR_BODY.md').read_text(encoding='utf-8'))
+        args=dict(title='Qwen3-4B非Base：W4/W6/W8随机FFN训练与远程Agent执行交接',body=(OUT/'PR_BODY.md').read_text(encoding='utf-8'))
         p=api('PATCH',PREFIX+'/pulls/'+str(found[0]['number']),args) if found else api('POST',PREFIX+'/pulls',dict(**args,head=BRANCH,base='pbit-tlm-attention-details-20261016',draft=False))
         result=dict(number=p['number'],url=p['html_url'],head=p['head']['sha'],state=p['state'],merged=p['merged'])
         save('PUBLICATION.json',result)

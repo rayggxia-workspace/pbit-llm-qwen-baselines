@@ -24,6 +24,10 @@ import time
 import torch
 
 
+_POWER_SCOPE = "GPU board telemetry estimate; includes idle/other work; no idle subtraction"
+_SENSOR_SEMANTICS = "NVML GetPowerUsage: 1s average on Ampere except GA100 and newer; instantaneous on older/GA100"
+
+
 def _uuid_key(value):
     if isinstance(value, bytes):
         value = value.decode("ascii")
@@ -33,11 +37,24 @@ def _uuid_key(value):
     return value if re.fullmatch(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", value) else None
 
 
-def _integrate_power(samples, start, end):
+def _max_sample_gap(samples, start, end):
+    # Include full bracketing intervals: clipping a long missing-data interval
+    # to the phase boundary must not make that gap appear well sampled.
+    return max((right[0] - left[0] for left, right in zip(samples, samples[1:])
+                if right[0] > start and left[0] < end), default=None)
+
+
+def _integrate_power(samples, start, end, *, max_gap_s=None):
     """Trapezoidal integration clipped/interpolated at measured wall boundaries."""
     if (end <= start or len(samples) < 3 or samples[0][0] > start
             or samples[-1][0] < end or not any(start < t < end for t, _ in samples)):
         raise ValueError("insufficient samples bracketing and inside timing window")
+    if max_gap_s is not None:
+        if not math.isfinite(max_gap_s) or max_gap_s <= 0:
+            raise ValueError("max_gap_s must be finite and positive")
+        observed_gap = _max_sample_gap(samples, start, end)
+        if observed_gap is None or observed_gap > max_gap_s:
+            raise ValueError(f"power sample gap {observed_gap}s exceeds allowed {max_gap_s}s")
     energy = 0.0
     for (t0, p0), (t1, p1) in zip(samples, samples[1:]):
         if t1 <= t0 or not all(math.isfinite(x) for x in (t0, t1, p0, p1)) or min(p0, p1) < 0:
@@ -93,20 +110,23 @@ class _PowerWindow:
     def report(self, start, end, unavailable_reason):
         reason = unavailable_reason or self.error
         samples = [[t - start, p] for t, p in self.samples]
+        observed_gap = _max_sample_gap(self.samples, start, end)
+        allowed_gap = max(.25, 5 * self.interval)
         if not reason and end - start < 1.0:
             reason = "phase shorter than conservative 1s NVML averaging bound; raw samples retained"
         if not reason:
             try:
-                joules = _integrate_power(self.samples, start, end)
+                joules = _integrate_power(self.samples, start, end, max_gap_s=allowed_gap)
             except ValueError as error:
                 reason = str(error)
         return dict(power=None if reason else dict(
                         sampled_board_energy_j=joules, average_board_power_w=joules / (end - start)),
                     power_unavailable_reason=reason, power_samples_relative_s_w=samples,
-                    power_scope="GPU board telemetry estimate; includes idle/other work; no idle subtraction",
+                    power_scope=_POWER_SCOPE,
                     power_poll_interval_s=self.interval,
+                    max_sample_gap_s=observed_gap, max_allowed_sample_gap_s=allowed_gap,
                     sensor_update_period_s=None,
-                    sensor_semantics="NVML GetPowerUsage: 1s average on Ampere except GA100 and newer; instantaneous on older/GA100",
+                    sensor_semantics=_SENSOR_SEMANTICS,
                     phase_energy_attribution_validated=False)
 
 
@@ -334,6 +354,15 @@ def run_benchmark(model, token_ids, *, config=None, contexts=(128, 512, 2048),
                     summary[phase]["power"] = ({key: statistics.median(p[key] for p in powers)
                                                  for key in ("sampled_board_energy_j", "average_board_power_w")}
                                                 if all(p is not None for p in powers) else None)
+                    gaps = [r[phase]["max_sample_gap_s"] for r in selected
+                            if r[phase]["max_sample_gap_s"] is not None]
+                    summary[phase].update(power_scope=_POWER_SCOPE,
+                        sensor_semantics=_SENSOR_SEMANTICS, sensor_update_period_s=None,
+                        phase_energy_attribution_validated=False,
+                        max_sample_gap_s=max(gaps, default=None),
+                        max_allowed_sample_gap_s=max(.25, 5 * power_interval_s),
+                        power_unavailable_reasons=sorted({r[phase]["power_unavailable_reason"]
+                            for r in selected if r[phase]["power_unavailable_reason"] is not None}))
                 summaries.append(summary)
     source = {"qwen3/sparq/" + name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
               for name in ("benchmark.py", "adapter.py", "core.py") if Path(__file__).with_name(name).is_file()}
@@ -388,10 +417,27 @@ def _self_test():
             report = sample.report(.1, .5, None)
             self.assertIsNone(report["power"])
             self.assertIn("1s", report["power_unavailable_reason"])
-            sample.samples = [(0., 20.), (1., 20.), (2., 20.)]
+            sample.samples = [(i / 10, 20.) for i in range(21)]
             report = sample.report(.1, 1.9, None)
             self.assertAlmostEqual(report["power"]["sampled_board_energy_j"], 36)
             self.assertFalse(report["phase_energy_attribution_validated"])
+
+        def test_missing_samples_fail_gap_gate(self):
+            # Brackets and an interior sample alone used to accept this hole.
+            sample = _PowerWindow(lambda: 20000, .02)
+            sample.samples = [(0., 20.), (.1, 20.), (5., 20.), (5.1, 20.)]
+            report = sample.report(.05, 5.05, None)
+            self.assertIsNone(report["power"])
+            self.assertIn("exceeds allowed", report["power_unavailable_reason"])
+            self.assertAlmostEqual(report["max_sample_gap_s"], 4.9)
+            self.assertEqual(report["max_allowed_sample_gap_s"], .25)
+            # Boundary-covering gaps remain large even if little overlaps phase.
+            self.assertEqual(_max_sample_gap([(0., 1.), (5., 1.), (5.1, 1.)], 4.9, 5.05), 5.)
+            sample.interval = .1
+            sample.samples = [(i * .4, 20.) for i in range(6)]
+            report = sample.report(.1, 1.9, None)
+            self.assertIsNotNone(report["power"])
+            self.assertEqual(report["max_allowed_sample_gap_s"], .5)
 
         def test_sampler_failure_is_null_and_thread_closes(self):
             def fail():
@@ -448,7 +494,8 @@ def _self_test():
                     return None
                 def phase():
                     return dict(wall_seconds=2., cuda_event_seconds=1.5,
-                                tokens_per_wall_second=3., power=None)
+                                tokens_per_wall_second=3., power=None, max_sample_gap_s=None,
+                                power_unavailable_reason="mock timing; no telemetry")
                 return dict(prefill=phase(), decode=phase(), controller=None)
             module = sys.modules[__name__]
             with patch.object(module, "_check_model", return_value=torch.device("cpu")), \
@@ -460,6 +507,11 @@ def _self_test():
             self.assertEqual([r[-1] for r in result["execution_order"]],
                              ["native", "dense", "sparq", "dense", "sparq", "native"])
             self.assertEqual(len(result["summaries"]), 3)
+            for summary in result["summaries"]:
+                for phase in ("prefill", "decode"):
+                    self.assertFalse(summary[phase]["phase_energy_attribution_validated"])
+                    self.assertIn("1s average", summary[phase]["sensor_semantics"])
+                    self.assertEqual(summary[phase]["max_allowed_sample_gap_s"], .25)
             json.dumps(result, allow_nan=False)
 
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(Helpers))

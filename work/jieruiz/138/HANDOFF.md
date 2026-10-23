@@ -6,6 +6,6 @@
 - 已完成：赢家保持/校正拒绝真实前向、完整轨迹score-function训练、有偏代理显式分离、mask/batch/cap/seed/量化接口、随机活动统计、22测试和6次三seed合成训练；结果及源SHA在results/VALIDATION.json。无新模型PPL/大模型训练/GPU/Slurm/RTL/PPA。
 - 本地解释器：C:/Users/86134/AppData/Local/Programs/Python/Python38/python.exe，Python3.8.1、Torch2.4.1 CPU，复用现有环境无安装。
 - 命令：`python -m experiments.trainable_pbit_attention.validate`；`python -m experiments.trainable_pbit_attention.demo_train --output experiments/trainable_pbit_attention/results/TRAINING_SMOKE.json`。重新运行会刷新本机结果，已封存Git原件勿覆盖后再冒称旧执行。
-- 发布：科学交付准备完成，实际远端commit/PR以同目录PUBLICATION.json为准；不得把PR待审写为合并。本轮不合并/不关闭Issue。
+- 发布：科学交付42beb199157c15e4045345127113f8c1cb5b8106已推送，[PR142](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/142)待审、未合并，14个远端Git blob原字节已核验。PUBLICATION.json/REMOTE_VERIFY.json为此科学交付时点的回执；其后的提交仅更新文档/发布记录。Issue138已同步，不关闭Issue。
 - 待补：CUDA与真实LLM训练集成、梯度方差/内存压力、量化误差、物理随机源联合分布都未验证。cap失败应显式处理；不得直接扔掉失败批次声称无偏。Projects权限沿既有read:project限制，发布时再次检查并记回执。
 - 下一步：审阅采样规则/梯度接口后，用户若要求模型实验，再用匹配BF16和语料SHA、目标层覆盖及Slurm冻结快照；不要因本小例子重复提交历史大评测。

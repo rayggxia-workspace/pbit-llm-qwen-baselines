@@ -3,6 +3,7 @@ import copy
 from contextlib import redirect_stdout
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -59,7 +60,15 @@ class ReadinessGates(unittest.TestCase):
 
 class SavedBaselineGates(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[2])
+        if os.environ.get('SLURM_JOB_ID'):
+            temporary_root = Path(os.environ['TMPDIR']).resolve(strict=True)
+            runner.require(temporary_root.is_relative_to(runner.PROJECT)
+                           and not temporary_root.is_relative_to(runner.REPO)
+                           and temporary_root.stat().st_uid == os.getuid(),
+                           'server tests require personal TMPDIR outside the immutable snapshot')
+        else:
+            temporary_root = Path(__file__).resolve().parents[2]
+        self.temp = tempfile.TemporaryDirectory(dir=temporary_root)
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.docs = [dict(id='task:3', task='task', doc_id=3, context_ids=[1, 2, 3], choices_ids=[[4], [5, 6]])]

@@ -52,3 +52,5 @@ python digital_circuit_simulation_registry/registry.py render
 功耗面积单位及边界：标准单元面积、SRAM宏面积、物理核心面积分开；总功耗已含时钟引脚内部功耗时不重复加clock分组；每帧/每结果/每生成字/每消费帧分别计量。`not_run`/`null`表示未知，不表示零。库提取、功能验证、PT、TLM估计和芯片实测不可互相替代。
 
 Issue95分层随机质量189案例已通过PR134发布（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/134，待审未合并），run `rng-quality-95-20261023` 为DESIGN_PROOF，不能当作新RTL/PPA或熵认证；其他并行记录保持。
+
+Issue152长记录准备脚本见[PR156](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/156)，physical-rng-long-152-prepared仅记录脚本准备，实际Spectre未运行。第九轮合并回执与50条记录核验见work/jieruiz/55/round9/REVIEW_ZH.md及Issue55。

@@ -1,3 +1,14 @@
+## 2026-10-23 第九轮审核与后训练模型要求
+
+用户确认后续用Instruct／后训练版，Base指模型而非Git基线。审核132/134/135/140/148/156通过各自有限交付，54测试及原件核验通过；当前准备发布至TLM集成分支，实际合并以Issue55最终回执为准。137/143/147/149/153/155保留迁移，最新160为符合方向但结果未齐的草稿。历史Base结果不改名继承；main保持fae1298。报告work/jieruiz/55/round9/REVIEW_ZH.md，独立review/55-pr-round9-nonbase；无新GPU／RTL／EDA实验。
+
+## 模型版本选择与审核门禁（用户2026-10-23确认）
+
+- 后续新模型实验及方案验收采用 Instruct／后训练版，不采用 Base 模型；这里的 Base 指模型版本，不是 Git 的 PR base。本要求优先于历史采用 Base 的计划。
+- 核对准确模型 ID、revision、权重和 tokenizer 的 SHA、后训练属性，不能只根据名称是否带 Instruct 判断。按任务记录 chat 模板、特殊 token、thinking 开关及计分协议；原文 teacher-forced PPL 可明确不套聊天模板，不与聊天任务混称。
+- 历史 Base 源码和原始结果保留原标注，不改名为 Instruct，不继承其 PPL 为新模型结果。迁移必须重新建立匹配的未改动参考，遵守模型／文本哈希和相同评估协议要求。
+- 当前未合并的 Base 评测及其依赖保留迁移要求，不作为后续新模型基线验收；通用算法／硬件可按自身边界审核。本规则不授权取消健康作业或自动启动昂贵重跑。
+
 ## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
 
 负责人jieruiz，task/138-trainable-samplers，基线6966739，源码b6e3d034。新增experiments/trainable_pbit_attention；真实Bernoulli提议、均匀仲裁/保持、2^-m全零校正和自适应拒绝；全部轨迹score-function训练，有偏Softmax代理显式分离，量化禁冒称精确梯度。22/22合成数值测试，81条有限赢家轨迹/梯度穷举、三seed分布对照和6个小训练通过；无Qwen/Llama新PPL、CUDA、物理随机源或RTL/PPA。训练源码/配置/结果SHA见results/VALIDATION.json，交接work/jieruiz/138/HANDOFF.md。科学交付42beb199已推送PR142（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/142），14文件远端原字节核验通过；PR待审、未合并，回执PUBLICATION.json/REMOTE_VERIFY.json；未改正式TLM/硬件默认，后续真实LLM集成和梯度方差/内存仍待验证。复用现有本地Torch2.4.1 CPU，无新服务器作业。

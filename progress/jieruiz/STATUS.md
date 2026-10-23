@@ -1,3 +1,9 @@
+## 2026-10-23 第九轮审核与后训练模型要求
+
+用户确认后续用Instruct／后训练版，Base指模型而非Git基线。审核132/134/135/140/148/156通过各自有限交付，54测试及原件核验通过；当前准备发布至TLM集成分支，实际合并以Issue55最终回执为准。137/143/147/149/153/155保留迁移，最新160为符合方向但结果未齐的草稿。历史Base结果不改名继承；main保持fae1298。报告work/jieruiz/55/round9/REVIEW_ZH.md，独立review/55-pr-round9-nonbase；无新GPU／RTL／EDA实验。
+
+负责人jieruiz；Issue55；基线2f233449；目录tmp/pr55-review-round9-20261023。下一步发布合并、回读状态与归档回收。Projects待read:project。
+
 # Issue152 CMOS随机通道秒级记录脚本 / 2026-10-23
 
 负责人jieruiz，task/152-long-channel，base6966739a，目录tmp/long-channel-issue152-20261023。

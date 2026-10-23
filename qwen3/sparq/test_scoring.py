@@ -1,6 +1,7 @@
 """CPU scoring mechanisms plus native-Qwen3 gates when Transformers is installed."""
 import copy
 import importlib.util
+import json
 import math
 from types import SimpleNamespace
 import unittest
@@ -362,14 +363,18 @@ class NativeQwen3Tests(unittest.TestCase):
             native = evaluate_tasks_batched(m, rows, mode='native')
             wrapped = evaluate_tasks_batched(m, rows, mode='dense')
             self.assertEqual(native['documents'], wrapped['documents'])
+            maximum_delta, flips = 0., 0
             for a, b in zip(serial['documents'], native['documents']):
                 for p, q in zip(a['choices'], b['choices']):
                     # Predetermined numeric bound; BF16 batch-shape changes are
                     # measured separately from the strict same-shape wrapper gate.
                     per_token = abs(p['logprob'] - q['logprob']) / p['tokens']
+                    maximum_delta = max(maximum_delta, per_token)
                     self.assertLessEqual(per_token, .02 if dtype == torch.bfloat16 else 2e-5)
-                self.assertEqual(max(range(len(a['choices'])), key=lambda i: a['choices'][i]['logprob']),
-                                 max(range(len(b['choices'])), key=lambda i: b['choices'][i]['logprob']))
+                flips += (max(range(len(a['choices'])), key=lambda i: a['choices'][i]['logprob']) !=
+                          max(range(len(b['choices'])), key=lambda i: b['choices'][i]['logprob']))
+            print(json.dumps(dict(check='tiny_document_batch_shape', mode='native', dtype=str(dtype),
+                                  max_mean_nats_delta=maximum_delta, raw_prediction_flips=flips)), flush=True)
             sparse_config = SparQConfig(r=8, k_total=3, local_total=1)
             sparse_serial = evaluate_tasks(m, rows, mode='sparq', config=sparse_config, choice_batch=1)
             sparse_batched = evaluate_tasks_batched(m, rows, mode='sparq', config=sparse_config)
@@ -377,10 +382,16 @@ class NativeQwen3Tests(unittest.TestCase):
                                    for layer in sparse_batched['execution_audit']['replacement']['layers'].values()), 0)
             self.assertEqual(sparse_serial['execution_audit']['tokens_per_layer'],
                              sparse_batched['execution_audit']['tokens_per_layer'])
+            maximum_delta, flips = 0., 0
             for a, b in zip(sparse_serial['documents'], sparse_batched['documents']):
                 for p, q in zip(a['choices'], b['choices']):
                     difference = abs(p['logprob'] - q['logprob']) / p['tokens']
+                    maximum_delta = max(maximum_delta, difference)
                     self.assertLessEqual(difference, .02 if dtype == torch.bfloat16 else 2e-5)
+                flips += (max(range(len(a['choices'])), key=lambda i: a['choices'][i]['logprob']) !=
+                          max(range(len(b['choices'])), key=lambda i: b['choices'][i]['logprob']))
+            print(json.dumps(dict(check='tiny_document_batch_shape', mode='sparq', dtype=str(dtype),
+                                  max_mean_nats_delta=maximum_delta, raw_prediction_flips=flips)), flush=True)
 
 
 if __name__ == '__main__':

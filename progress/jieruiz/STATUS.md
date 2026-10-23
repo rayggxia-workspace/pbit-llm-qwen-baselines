@@ -1,3 +1,7 @@
+## Issue159 v2已发布（2026-10-23）
+
+远程执行交接与INT4/6/8三套扫描已通过同PR161发布，科学提交12137b19ae6a3e7d862e5785676c200ab6d910fd；19改动文件GitHub原字节回读通过，Issue159范围/进度已同步。PR待审未合并；57项仍是计划，无本任务训练器或GPU结果。完整回执work/jieruiz/159/remote_agent_v2/PUBLICATION.json。入口REMOTE_AGENT_START_HERE_ZH.md可直接交给远程Agent；实现认领与PR160模型/基线复用按该交接执行。其他任务记录保留。
+
 ## Issue159远程执行交接v2：INT4/INT6/INT8（2026-10-23）
 
 用户要求面向远程Agent，并增加INT4/INT6，其他设置不变、工作3倍。正式入口qwen3/training/sc_qat_20261023/REMOTE_AGENT_START_HERE_ZH.md，附环境/逐seed结果JSON模板。每项实验36层gate/up/down统一Wb，三套各19项=57计划（48随机+9控制，A总114亿有效token）；BF16三个是配对重复，不是三位宽结构或三训练seed。输入仍A8、共享64、原尺度/采样/优化器设置保持，跨位宽清单一致性通过。

@@ -1,5 +1,7 @@
 # Issue136：Qwen3-1.7B/4B Base BF16基线已提交（2026-10-23）
 
+19:20 CST更新：2797在1.7B校验后遇4B镜像RemoteDisconnected失败，2798依赖取消；恢复2799只重试4B下载，2801_1依赖其成功。2800_0已完成1.7B，日志PPL8.36733952/299077目标/16.9s，结果及SHA sidecar一致，待本地收取与独立汇总。原源码968046f不变、失败原件保留。用户要求的heartbeat qwen3已启用每10分钟检查，结果验证完成后停用。PR137仍draft/open；详情RECOVERY_20261023.json和HANDOFF顶部。下段为先前提交时点。
+
 负责人jieruiz；task/136-qwen3-bf16；base pbit-tlm-attention-details-20261016@6966739；独立稀疏tmp/qwen3-baseline-issue136-20261023。按用户要求使用hf-mirror固定revision，未修改FFN/Attention。源码968046f已上传冻结快照；CPU2797已通过隔离环境/计分覆盖/原生Qwen3保存重载，镜像下载中；GPU数组2798已提交依赖afterok2797、暂无新PPL。服务器train/test原字节SHA通过。成果qwen3/，交接work/jieruiz/136/HANDOFF.md。API已按原SHA发布，PR137为draft/open未合并；下一步监测下载和两个GPU BF16完整WT2（2048/1024），归档真实结果后转审。Projects本轮实测缺read:project待同步。旧模型/环境/并行任务未改。
 
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）

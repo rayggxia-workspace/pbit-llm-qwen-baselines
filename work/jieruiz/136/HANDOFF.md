@@ -1,5 +1,15 @@
 # Issue136 Qwen3 BF16 基线交接
 
+## 最新状态：2026-10-23 19:20 CST（覆盖下方旧运行记录）
+
+2797于19:13:25 FAILED/1:0：1.7B已下载并校验7文件，4B镜像连接在准备阶段被远端关闭；2798未分配GPU，因DependencyNeverSatisfied自动CANCELLED。原日志/源码保留，没有更改冻结快照。
+
+恢复作业：2799为4B-only CPU下载重试（4CPU/16G/3小时，原prepare.py --index 1，最多3次失败重试、间隔30秒，仍hf-mirror）；2800_0为已经校验的1.7B独立GPU评测，已完成；2801_1为4B GPU评测，依赖afterok2799且kill-on-invalid-dep=yes。不要重交这些任务。新日志为logs/prepare-retry-2799.log、logs/evaluate-2800_0.log、logs/evaluate-2801_1.log。
+
+1.7B日志结果：完整WT2 PPL 8.36733952，299077目标/299078 token、292窗口，评测16.9秒；结果results/Qwen3-1.7B-Base.json的服务器SHA256 c32023b48fdfd30aab715e00ac90a26d905ea2f965e5b63475bcb9b977a15a53，与同目录.sha256.json匹配。尚待收取小型manifest/结果并独立重放计分覆盖后正式结果发布。4B暂无结果，仍下载准备，网络正常时估计20–40分钟，不保证完成时点。
+
+用户要求定时：当前对话heartbeat automation id=qwen3，ACTIVE，每10分钟检查；仅有意义进展/完成/失败时通知，双方结果验证发布后停用；不新增独立任务、不重复健康作业。首次约19:29 CST。定时运行需本机/app保持可用，服务器Slurm独立运行。具体恢复JSON见RECOVERY_20261023.json；PR137继续draft/open，不合并。
+
 - 负责人：jieruiz（API /user 已核实），官方仓库 rayggxia-workspace/pbit-llm-qwen-baselines，有 push/admin 权限。
 - 用户要求：先用镜像在现有服务器建立 Qwen3-1.7B、4B 基线；采用此前讨论的 Base 版本。只做原始BF16，不进行FFN/Attention替换。
 - 分支：task/136-qwen3-bf16；PR base pbit-tlm-attention-details-20261016 @6966739a5223680888bf0315f7bb4f73423a1ae6。

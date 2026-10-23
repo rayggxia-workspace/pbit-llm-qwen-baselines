@@ -1,3 +1,11 @@
+## 23:29 更新：批形状候选未通过，正式任务回退逐题
+
+CPU2875 COMPLETED，51项（含真实TF/BF16）和10项benchmark辅助测试全通过。GPU2876在新PPL batch32显存/稀疏门禁通过后，在跨题batch候选的真实BF16分数门禁失败：最大每目标mean logprob差0.043265106636681594，超过预声明0.02。未开始完整质量/benchmark，未放宽阈值。逐题native/dense原门禁和core oracle没有失败。
+
+原作业FAILED/1:0，1m31s；所有报告、终态、失败日志保留在batch_gate_failure/。最初抛错前未完整保存逐候选差异，不据此武断归因为cache错误。新runner把跨题候选保留为显式诊断并先保存完整差异；**正式MC回退逐题原顺序、choice_batch4**。两模式相同。任务分片256仅影响持久化，不代表跨题同时运行。PPL仍可用已通过显存检查的batch32/chunk32。
+
+下一步只提交新冻结串行文档正式源。此前GPU均已终止；新job必须另记ID、不能重放2876或覆盖原快照。仍无完整PPL/准确率/物理PPA结论。
+
 # Issue157 执行交接
 
 唯一目标 rayggxia-workspace/pbit-llm-qwen-baselines；认证 amlink1219。分支task/157-sparq-qwen3，依赖PR147@357db588。Issue157开放；当前准备发布，不等于PR合并或完整实验结束。

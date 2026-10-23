@@ -27,7 +27,7 @@ Qwen3 的32Q/8KV、head_dim128、hidden2560不能用 hidden/heads 推导投影�
 - WT2 raw test，UTF-8原字节、无BOS、window2048/stride1024。额外运行未修改BF16向量化锚点；因BF16形状差异，主要因果对照为**同缓存、同batch、同分段的原生dense与SparQ**。
 - 每个被计分预测器都以q_len=1经过全部层；dense prefill只包含其之前的token。逐window的目标位置严格覆盖1..N−1一次。PPL每32窗保存，batch32；最后不足32窗按实际计数处理，正式前核batch32峰显存低于28GiB。
 - 官方 `lm_eval==0.4.8` 零样本 likelihood：PIQA validation1838、ARC-Easy test2376、HellaSwag validation10042；每模式14256题。保留官方提示、token边界、acc与acc_norm；不用chat template，不进行thinking生成。
-- 各选项有独立cache，第一答案token也经过替换。共享第一预测器的复用次数显式记录；不填dummy、不静默截断。每256题保存连续分片；片内按完全相同提示长度分组，最多8题/32个真实选项，保持每题独立cache和原ID输出顺序；只有按原ID核验全部分片后才写完整结果。
+- 各选项有独立cache，第一答案token也经过替换。共享第一预测器的复用次数显式记录；不填dummy、不静默截断。每256题保存连续分片，正式评分逐题原顺序、choice_batch4，不跨题混合batch；只有按原ID核验全部分片后才写完整结果。
 - 任务数据助手复用 PR149/Issue145 的官方任务实现，来源 blob `406c1ce07ddc27cf8f0249e6f6f1b9c217728b8a`；本任务扩展为HellaSwag全10042题，不复用旧1000题准确率。
 
 每片结果、源SHA、revision、任务/语料SHA、环境和job均记录。结果和内嵌摘要一次原子写入；未提交 `.tmp` 不参与恢复。更换执行源/配置/模型/输入后不能沿用旧结果目录。每个部分始终区分片段完成与全协议完成。
@@ -53,3 +53,5 @@ GPU基准分别记录prefill/decode、上下文、固定输入、重复轮次及
 文献后台收录状态：SparQ已有去重后的待导入任务和PDF，当前Zotero API未开启；本轮读论文/代码不等于已成功收录，保留可恢复待办，不打开用户窗口。
 
 当前真实模型门禁：GPU2874通过；新批处理正式前另行运行51项CPU及真实BF16批形状门禁。同一形状native/dense要求逐bit相同；serial/batched预声明每目标平均logprob差不超过.02 nats，并报告所有预测/指标翻转。不能把串行基线数值与批处理候选混比。
+
+跨题batch候选在GPU2876上未通过.02 nats/target门禁（实测最大.0432651），正式MC已回退逐题。可选实现只用于诊断，不混入正式结果；CPU小模型测试通过不能覆盖这一真实模型负结果。

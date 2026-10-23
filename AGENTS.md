@@ -146,3 +146,5 @@
 - Before staging an overlay Python environment, record the actual imported dependency paths, not only the base venv path. A .pth entry that points at another site-packages directory does not recursively process that directory's .pth files. Verify the full Torch/Transformers/task-harness import chain in a CPU-only allocation before downloading models or requesting a GPU; keep existing personal environments read-only.
 
 - When a CPU validation step runs inside a GPU Slurm job, hide devices inside the launched task (`srun env CUDA_VISIBLE_DEVICES="" python ...`), since Slurm can overwrite the parent export when creating a step. Require the validator to assert the actual child variable and CUDA initialization state before imports/inference.
+
+- Persist numerical-gate comparison records before rejecting an optimization, including per-case score deltas, prediction changes, source and execution identity. Keep the predeclared gate unchanged and preserve the validated reference path when a batching or precision candidate fails.

@@ -1,3 +1,5 @@
+最新门禁：跨题batch的BF16差异0.0433>预声明0.02，GPU2876已FAILED，完整质量未开始；正式MC回退原逐题/choice_batch4，保留失败证据。PPL batch32显存门禁通过。51项CPU+10项benchmark辅助测试已通过，见Issue157 HANDOFF最新段。
+
 # Issue157：后训练版 Qwen3-4B SparQ 基线（2026-10-23）
 
 最新：已上传[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163)，draft/open/未合并。CPU2871模型/数据完成；GPU2874真实模型门禁通过（1m33s），源4f381292b011，原生dense逐bit一致。完整质量/速度仍待跑；新增同长度多题批处理和PPL batch32将先验证后执行。原始证据work/amlink1219/157/gpu_preflight/。以下首发准备记录为历史快照。

@@ -149,6 +149,7 @@ def preflight(model, ids, documents, tasks, config, batch):
 
 def document_batch_gate(model,documents,tasks,config):
     reports={}
+    failures=[]
     for name,rows in documents.items():
         buckets={}
         for row in rows:buckets.setdefault(len(row['context_ids']),[]).append(row)
@@ -173,12 +174,12 @@ def document_batch_gate(model,documents,tasks,config):
                     maximum=max(maximum,abs(x['logprob']-y['logprob'])/x['tokens'])
                 flips+=max(range(len(a['choices'])),key=lambda i:a['choices'][i]['logprob'])!=max(range(len(b['choices'])),key=lambda i:b['choices'][i]['logprob'])
                 for k in metric_differences:metric_differences[k]+=a['metrics'][k]!=b['metrics'][k]
-            if maximum>.02:
-                raise RuntimeError('BF16 document batching exceeded predeclared .02 nats/target gate: '+str(maximum))
             report['comparisons'][mode]=dict(max_abs_mean_logprob_delta=maximum,raw_prediction_flips=flips,
                 metric_differences=metric_differences,serial=serial,batched=batched)
+            if maximum>.02:
+                failures.append(dict(task=name,mode=mode,maximum=maximum,threshold=.02))
         reports[name]=report
-    return dict(passed=True,bf16_tolerance_nats_per_target=.02,tasks=reports,
+    return dict(passed=not failures,failures=failures,bf16_tolerance_nats_per_target=.02,tasks=reports,
                 interpretation='batching changes BF16 execution shapes; final dense/SparQ share the same batching')
 
 
@@ -255,8 +256,8 @@ def paired_tasks(model, documents, tasks, config, out, chunk):
             for mode in ('dense', 'sparq'):
                 name = f'task_parts/{task_name}_{mode}_{start:05d}'
                 if out.existing(name) is None:
-                    result = evaluate_tasks_batched(model, docs[start:start+chunk], mode=mode, config=config,
-                                            tasks=tasks, document_batch=8, max_choice_rows=32, progress=out.progress(name))
+                    result = evaluate_tasks(model, docs[start:start+chunk], mode=mode, config=config,
+                                            tasks=tasks, choice_batch=4, progress=out.progress(name))
                     result['shard_complete'] = result['complete']
                     result['complete'] = False
                     result['scope'] = 'contiguous_task_shard; only final task summary can claim full completion'
@@ -293,6 +294,8 @@ def main():
     parser.add_argument('--batch',type=int,default=32)
     parser.add_argument('--ppl-chunk',type=int,default=32)
     parser.add_argument('--task-chunk',type=int,default=256)
+    parser.add_argument('--diagnose-document-batching',action='store_true',
+                        help='record optional batching differences; formal tasks always use validated serial-document protocol')
     args=parser.parse_args()
     if not os.environ.get('SLURM_JOB_ID') or not os.environ.get('CUDA_VISIBLE_DEVICES'):
         raise RuntimeError('an explicit GPU Slurm allocation is required')
@@ -316,8 +319,8 @@ def main():
     documents={name:token_documents(task,name,tokenizer) for name,task in tasks.items()}
     identity=dict(model=ready['model'],revision=ready['revision'],ready_sha256=sha(root/'prepared/READY.json'),
         execution=execution,config=asdict(config),seed=0,ppl=dict(context=2048,stride=1024,batch=args.batch,chunk=args.ppl_chunk),
-        tasks=task_identity,task_chunk=args.task_chunk,document_batch=8,max_choice_rows=32,
-        document_bucketing='same context length within contiguous shard; return original id order; no padding',
+        tasks=task_identity,task_chunk=args.task_chunk,document_batch=1,choice_batch=4,
+        document_bucketing='none; serial original-order documents, independent option cache rows',
         task_tokenization_sha256=fingerprint(documents),
         harness=harness_sources(),tokens_sha256=ids_sha256(ids.tolist()),original_ffn=True,
         environment={n:importlib.metadata.version(n) for n in ('torch','transformers','tokenizers','lm_eval','datasets')})
@@ -332,7 +335,7 @@ def main():
             raise ValueError('native Qwen3 shape changed')
         if out.existing('preflight') is None:
             out.put('preflight',preflight(model,ids,documents,tasks,config,args.batch))
-        if out.existing('document_batch_gate') is None:
+        if args.diagnose_document_batching and out.existing('document_batch_gate') is None:
             out.put('document_batch_gate',document_batch_gate(model,documents,tasks,config))
         print('PREFLIGHT_PASSED',flush=True)
         if args.phase=='preflight':

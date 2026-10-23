@@ -1,3 +1,13 @@
+# Issue136：Qwen3-1.7B/4B Base BF16基线已提交（2026-10-23）
+
+最终发布：科学结果60d6947已上传，35远端文件原字节核对和11已提交原件SHA通过；PR137实际ready/open、未合并，Issue136待评审，定时qwen3已实际删除。FINAL_PUBLICATION.json和Issue评论6364341645为回执；不再等待结果或重复提交。
+
+19:50后结果核验：两模型基线完成，1.7B PPL8.3673395166、4B 7.0386116013，均299077目标/292窗口；GPU16.92/32.92秒。源码968046f不变；11服务器原件SHA、模型/数据/配置/源绑定、完整覆盖和NLL重放、10损坏负例通过。报告qwen3/results/bf16_20261023/REPORT_ZH.md，HANDOFF顶部是最新状态；2797失败/2798取消/2799恢复历史保留，无本任务运行GPU。PR137结果发布/待审及停止heartbeat qwen3以FINAL_PUBLICATION.json回执为准，不合并、不重跑、不动其他任务2804/2805。Projects仍缺read:project。下方为历史准备状态。
+
+19:20 CST更新：2797在1.7B校验后遇4B镜像RemoteDisconnected失败，2798依赖取消；恢复2799只重试4B下载，2801_1依赖其成功。2800_0已完成1.7B，日志PPL8.36733952/299077目标/16.9s，结果及SHA sidecar一致，待本地收取与独立汇总。原源码968046f不变、失败原件保留。用户要求的heartbeat qwen3已启用每10分钟检查，结果验证完成后停用。PR137仍draft/open；详情RECOVERY_20261023.json和HANDOFF顶部。下段为先前提交时点。
+
+负责人jieruiz；task/136-qwen3-bf16；base pbit-tlm-attention-details-20261016@6966739；独立稀疏tmp/qwen3-baseline-issue136-20261023。按用户要求使用hf-mirror固定revision，未修改FFN/Attention。源码968046f已上传冻结快照；CPU2797已通过隔离环境/计分覆盖/原生Qwen3保存重载，镜像下载中；GPU数组2798已提交依赖afterok2797、暂无新PPL。服务器train/test原字节SHA通过。成果qwen3/，交接work/jieruiz/136/HANDOFF.md。API已按原SHA发布，PR137为draft/open未合并；下一步监测下载和两个GPU BF16完整WT2（2048/1024），归档真实结果后转审。Projects本轮实测缺read:project待同步。旧模型/环境/并行任务未改。
+
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 
 负责人jieruiz；review/55-pr-round8；base e8705765；独立稀疏目录tmp/pr55-review-round8-20261023。119/120/122/125/126/127/130按限定范围通过，359测试中358通过、1个Windows符号链接测试跳过；原件与GQA发布源码映射复核通过。45条台账/964行是原任务记录并集，无新硬件实验。修复未公开旧commit导致的新检出审计失败；不改旧manifest。116/123保持暂停，不启动全尺寸/GPU/EDA。成果work/jieruiz/55/round8/REVIEW_ZH.md；集成PR发布、实际合并及目录回收以Issue55最终回执为准。待用户工艺环境SS/T32最小PPA；Issue107独立进行，避免重复任务。

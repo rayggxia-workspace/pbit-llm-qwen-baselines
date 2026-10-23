@@ -1,5 +1,9 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-23 Issue107：首轮实际PPA结果
+
+38339971_7/15为KIND21 FP32→BF16的SS/TT100MHz，非全8类。24门级功能场景通过，18PT窗口算出功耗、STA正slack；668成员SHA与交付manifest核验通过。连续总68.82/91.01uW、0.7312/0.9670pJ每完成转换，含边界寄存器；转换核心6.419/8.171uW。PWR-981部分向量映射和2load/1ramp超表范围仍provisional，缺原mapped.v/VCD证明。中央digital-ppa8-38339971-smoke，报告digital_ppa_v1/results/PPA8_SMOKE_38339971_ZH.md。本轮未改EDA脚本/重跑；先复用已有结果诊断，remaining14项未回传。根镜像已保留其他任务新增记录并追加至47条；本分支37条，发布前需整合最新正式台账。GitHub刷新连接异常，远端同步待办。
+
 ## 2026-10-23 Issue107：8类数字模块SS/TT 100MHz脚本包
 
 沿用Issue107；PR109/111已合并，本批使用task/107-digital-ppa8-ss-tt后续分支，正式architecture_tlm/digital_ppa_v1/ppa8，脚本源6bc3389de08fba8250a17f0991849a4368898205，原RTL23e8d65f未改。KIND0/2/4/5/6/7/8/21，各SS1.08V125C及TT1.2V25C，100MHz、setup uncertainty2ns。自包含RTL/ROM/转换/TB/参考向量包在本机根digital_ppa8_ss_tt_100_20261023_v1.zip，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出逐位通过、6流程守卫/Tcl/Python兼容/Bash检查通过；没有本地DC/VCS/PT，没有已测面积功耗。建议smoke两角KIND21后remaining14项，不重复运行健康任务；快照/阶段SHA恢复，结果自动小包。

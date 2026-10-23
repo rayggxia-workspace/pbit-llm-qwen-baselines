@@ -1,3 +1,9 @@
+# Issue107最新结果：38339971 smoke复核（2026-10-23）
+
+原件APR_results/38339971_7_reports.tar.gz与38339971_15_reports.tar.gz；仅KIND21 SS/TT。复核脚本work/jieruiz/107/ppa8/review_smoke.py已运行，668成员SHA、24功能场景、18功耗窗口回算通过；正式报告results/PPA8_SMOKE_38339971_ZH.md（位于architecture_tlm/digital_ppa_v1），中央记录digital-ppa8-38339971-smoke。未修改EDA脚本/原件，保留PWR-981及库表范围告警，缺mapped.v和原VCD逐位证明。下一步从同一远端任务取dc/mapped.v与gate的VCD及PT活动注释报告，复用阶段诊断，不必重复功能和综合；其余14配置本次未回传。旧prepared记录不改。
+
+远端API刷新遇unexpected EOF连接异常，未获得本轮最新Issue/PR状态；身份不是因此变更为其他账号。本轮本地完成，远端上传/Issue同步待网络恢复；不自动关闭Issue107。根台账已有其他任务新增记录，镜像同步必须追加，禁止用本任务旧基线覆盖。
+
 # Issue107最新交付：8类SS/TT PPA脚本（2026-10-23）
 
 交付时Git HTTPS推送失败/超时，后续PR尚未创建。GitHub API身份jieruiz和Issue107状态open已回读。包可独立上传运行；网络恢复后推送本分支并新建后续PR，不复用已合并PR109。最终回执为ppa8/PUBLICATION.json。本机中央台账阅读镜像同步为36条，旧35条保留集成后的审核修复版。

@@ -1,3 +1,9 @@
+# Issue107：38339971首轮结果复核（2026-10-23）
+
+负责人jieruiz，沿用task/107-digital-ppa8-ss-tt和原目录。实际下载仅KIND21 SS/TT两项smoke，24功能场景通过、18功耗窗口有值且STA非负；668成员SHA、源包manifest原字节及逐单元功耗/面积/能量回算通过。PWR-981及2load/1ramp超表范围尚待复核，功耗保留provisional，不写全8类通过。报告architecture_tlm/digital_ppa_v1/results/PPA8_SMOKE_38339971_ZH.md；中央记录digital-ppa8-38339971-smoke。未重跑EDA、未修改仿真脚本。先复用mapped.v/VCD诊断，再考虑remaining14项。GitHub API刷新连接异常，远端同步/PR待办，旧发布阻塞保持。
+
+以下为脚本交付时的历史状态。
+
 # Issue107：8类SS/TT 100MHz PPA脚本（2026-10-23）
 
 最终交付核实：本地包、台账和阅读镜像已就绪；Git HTTPS推送失败/超时，尚未创建后续PR。GitHub API已核实jieruiz及Issue107仍open；具体同步状态见work/jieruiz/107/ppa8/PUBLICATION.json，不把本地完成写成远端完成。用户上传运行不依赖此Git网络问题。

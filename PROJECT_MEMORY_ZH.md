@@ -1,5 +1,7 @@
 ## 2026-10-23 Issue144：Qwen3最新概率架构迁移已启动
 
+2026-10-23 20:54 CST用户要求“请做完全部方案”。继续已冻结两模型各13配置共26项4096目标后缀，不重复健康作业、不扩大为完整WT2；目前日志16/26已完成（1.7B拒绝seed2运行，4B拒绝seed0运行），2828/2829均RUNNING，无错误，未收取的阶段数字不作为正式结果。依据OpenAI Docs官方定时说明通过应用工具实际建立本对话heartbeat id=qwen3，名称“完成Qwen3全部概率方案”，ACTIVE每10分钟，限定收齐26项后核验/汇总/同PR147发布并通知，随后删除定时；无变化保持安静，失败/新权限或范围修改需报告。旧基线同名id曾删除，本次是新建收尾检查。需要本机及桌面应用运行以执行本地SSH/发布，服务器Slurm独立继续。发布源仍8c35145不改，最新科学结果672ad88；此前head5ce00f6的94文件GitHub逐blob原字节通过。
+
 20:33 CST新增已核验FFN-only：两模型3seed齐，1.7B后缀均值7.6669926785、样本std0.0086502594，较7.5900880974为+1.013223827%；4B均值6.3652531446、std0.0029902575，较6.3315746169为+0.531913935%。每配置约156/204秒；都是4096目标后缀且Attention仍原生SDPA，不是完整WT2或联合结果。checkpoints/ffn包SHA53d085047ee27025f2ef42bf04c2ee7c863ae5cb09dcd4eab733c3557af8ab63，38小文件/17签名JSON/8病例执行和覆盖核验通过。2828/2829已转screen-exact+FFN，后续拒绝/赢家待跑；原执行8c不改，不重交任务。55文件启动交付GitHub原字节通过，FFN结果同PR147继续同步。下方20:25首批状态保留为历史。
 
 用户授权两个Base模型迁移最新概率架构并比较PPL。负责人jieruiz；task/144-qwen3-stochastic，[PR147](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/147) draft/open未合并，base task/136-qwen3-bf16@0829b9c（依赖PR137）；原型采样核只读复用Issue141已发布7a286ec。执行源8c35145e0073e48581640cd07c770631412a3f99冻结，CPU2827全部通过；GPU2828=1.7B、2829=4B正在运行，勿重复提交。个人ROOT /home/Hongjie_Zeng/projects/pbit-qwen3-stochastic-20261023-issue144；复用基线venv/权重/原文，不重下载或更改其他任务。

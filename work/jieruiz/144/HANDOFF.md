@@ -1,5 +1,11 @@
 # Issue144 Qwen3概率架构交接
 
+## 最新：2026-10-23 20:54 CST，用户要求完成全部方案
+
+2026-10-23 20:54 CST用户要求“请做完全部方案”。继续已冻结两模型各13配置共26项4096目标后缀，不重复健康作业、不扩大为完整WT2；目前日志16/26已完成（1.7B拒绝seed2运行，4B拒绝seed0运行），2828/2829均RUNNING，无错误，未收取的阶段数字不作为正式结果。依据OpenAI Docs官方定时说明通过应用工具实际建立本对话heartbeat id=qwen3，名称“完成Qwen3全部概率方案”，ACTIVE每10分钟，限定收齐26项后核验/汇总/同PR147发布并通知，随后删除定时；无变化保持安静，失败/新权限或范围修改需报告。旧基线同名id曾删除，本次是新建收尾检查。需要本机及桌面应用运行以执行本地SSH/发布，服务器Slurm独立继续。发布源仍8c35145不改，最新科学结果672ad88；此前head5ce00f6的94文件GitHub逐blob原字节通过。
+
+恢复需完成：每模型bf16_s0、ffn_s0/s1/s2、screen_exact_ffn_s0/s1/s2、rejection128_ffn_s0/s1/s2、winner1024_ffn_s0/s1/s2，加complete.json；validate_results两模型均COMPLETE才算本轮26项完成。后续用新唯一名归档（勿重用start-v1/ffn-v1）；源ROOT/collect_snapshot_v1.py可复用。最终更新报告/参数表/每seed与平均±std/相对BF16增量/实际时间，按目标调用量估算完整WT2预算，不自动启动全量。需补源边界负例及所有原件Git blob核对；*.log被全局ignore，明确git add -f自己的小型归档日志，且保留results/**的-text属性。完成后PR转ready、Issue清单更新但不关闭/不合并，删除heartbeat qwen3并记录实际回执。未失败前不修改源、不另提交作业。
+
 ## 最新：2026-10-23 20:33 CST，双模型FFN三seed已验证
 
 源码审计补充：args中的legacy burn16/spacing4是旧scorer默认字段，新adapter从未将其传入kernels.sample；实际winner burn0/spacing1、rejection无burn，已在sampling_stats.sampler_parameters明确。不要改运行源或原结果字段，报告按真实调用参数。该说明是元数据解释，不是行为变更。

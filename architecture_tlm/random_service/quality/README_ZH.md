@@ -1,5 +1,7 @@
 # 随机源质量随层级变化：可执行首轮诊断
 
+2026-10-23采样间隔纠正：[旧比较器慢速采种复核](results/sampling_review_20261023/REPORT_ZH.txt)。原0.72～0.74只对应0.5us；同一波形10us固定lag为0.027～0.052。旧主链覆盖不足，不能据此否定慢速采种；换种周期不等于物理bit间隔。新增72条后处理记录，原189案例/报告原字节保持。
+
 结果入口：[离线图文报告](results/20261023/REPORT.html)，[逐案例摘要](results/20261023/SUMMARY.json)，[逐层测量](results/20261023/STAGES.json)，[原始结果索引](results/20261023/ARCHIVE_INDEX.json)。用户副本为 `C:/Users/86134/Documents/a_P_BIT/远端上传/rng_quality_20261023.html`。
 
 执行冻结源码本地Git为 `8a862a38cf6e4e46f50e719f8b2b3877db745c75`，上游基线 `6966739a5223680888bf0315f7bb4f73423a1ae6`。SOURCE_MANIFEST.json绑定8个准确执行文件，审阅/报告脚本在执行之后加入，不冒称属于原执行快照。Python3.12.14/NumPy2.3.5执行模型，Python3.8/NumPy1.24.4/matplotlib3.7.5仅生成图文。首次Python3.8后处理的SUMMARY/ARCHIVE_INDEX含CRLF，已签SHA原件按-text保留，不为排版重写；后续构建脚本明确写UTF-8/LF，复跑须使用新输出目录。

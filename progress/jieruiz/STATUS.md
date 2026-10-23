@@ -8,6 +8,11 @@
 ## 2026-10-23 Issue129 两页通俗说明
 
 按用户要求补充功耗面积节省机制、速度控制与剩余验证，面向非专业听众，省略内部结构细节。正式文件 architecture_tlm/memory_savings_20261023/概率计算的能耗面积与速度_两页说明.docx；两页，Word导出及逐页PNG检查通过。原7页报告保留，无新实验，不恢复暂停任务。分支 task/129-two-page-brief，复用 tmp/memory-savings-issue129-20261023；上传/PR以 BRIEF_PUBLICATION.json 为准，合并前不关闭Issue129。
+<!-- ISSUE133_STATUS -->
+## 2026-10-23 Issue133 计数器RTL对照
+
+已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。 40组RTL/13408输出、6流程测试、8台账测试通过；完整64输出本地展开超时待VCS；无工艺PPA。分支task/133-counter-rtl，base6966739；工作目录tmp/counter-rtl-issue133-20261023；代码architecture_tlm/counter_rtl_compare，交接work/jieruiz/133/HANDOFF.md。下一步用户跑A/B SS/TT100MHz四项，回传后比较。Projects待read:project权限，未自动合并。
+<!-- END_ISSUE133_STATUS -->
 
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 

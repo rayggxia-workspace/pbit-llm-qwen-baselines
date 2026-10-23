@@ -1,34 +1,46 @@
 # Issue157 当前执行与交接
 
-更新时间：2026-10-23T23:54:08+08:00。唯一目标 `rayggxia-workspace/pbit-llm-qwen-baselines`；认证 `amlink1219`；分支 `task/157-sparq-qwen3`；[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163) draft/open/未合并，堆叠依赖PR147@357db588。
+更新时间：2026-10-24T00:16:33+08:00。唯一目标 `rayggxia-workspace/pbit-llm-qwen-baselines`；认证 `amlink1219`；分支 `task/157-sparq-qwen3`；[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163) 待审、未自动合并，依赖 PR147@357db588。
 
-## 当前结果
+## 已核验结果
 
-最新独立复核：[REVIEW_ZH.md](../../../../qwen3/sparq/results/8d60abe4e7c5/reviews/checkpoint_001/REVIEW_ZH.md)。结论 `partial_verified`；完整anchor为299077目标、PPL11.537160499310174，执行形状与cached不同；配对完整质量尚未完成时不作全WT2/任务结论。原始完成分片和下载SHA在同目录raw/，每次独立报告保持原快照。源清单内文件已从固定Git提交逐SHA重建并复核；大权重未重新下载。
+最新独立复核：[REVIEW_ZH.md](../../../../qwen3/sparq/results/8d60abe4e7c5/reviews/ppl_complete_20261024/REVIEW_ZH.md)，结论 `partial_verified`。
 
-54次GPU基准已完成：RTX5090、context2048/decode128，dense47.8444、SparQ14.3296 token/s。PyTorch参考代码未实现稀疏HBM kernel，此结果不是ASIC速度。原快照GPU功率null：裸UUID未加GPU-前缀使遥测未启用；修复已另测12项CPU辅助测试，须另冻结测量补充，不能修改运行中原源或把新测量伪装成原8d60结果。
+- cached dense：292/292 窗，299077 个目标；完整 PPL=11.5381534；完整核验=True。
+- cached sparq：292/292 窗，299077 个目标；完整 PPL=10.7979258；完整核验=True。
+- 向量化 BF16 anchor：292/292 窗，PPL=11.5371605，完整核验=True；执行形状与 cached 不同。
+- piqa/dense：0/1838 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
+- piqa/sparq：0/1838 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
+- arc_easy/dense：0/2376 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
+- arc_easy/sparq：0/2376 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
+- hellaswag/dense：0/10042 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
+- hellaswag/sparq：0/10042 题，已验子集 acc=待定, acc_norm=待定；完整核验=False。
 
-## 正在运行
+尚未完整核验：piqa/dense、piqa/sparq、arc_easy/dense、arc_easy/sparq、hellaswag/dense、hellaswag/sparq、最终 SUMMARY。
 
-GPU **2878**、CPU依赖2877已完成。固定执行提交 `8d60abe4e7c5c245c8f5f87b7f66e49e23ae0eea`；模型 `Qwen/Qwen3-4B@1cfa9a7208912126459214e8b04321603b3df60c` 后训练版，原FFN。主机 `Weican_Chen@10.129.164.156:21570`，已核个人根 `/home/Weican_Chen/projects/sparq-qwen3-issue157`。
+GPU benchmark 完整核验=True；NVIDIA GeForce RTX 5090，context2048/decode128：native 47.8418 token/s，dense 47.8444 token/s，sparq 14.3296 token/s。功率：本次已核源码调用方传入裸 UUID，而采样器要求 GPU- 前缀，导致采样未启用；不是另一块 GPU 或 NVML 缺失的证据。。这是原 FFN 的 Python 全模型参考计时，不是优化稀疏 kernel 或 ASIC 速度/能耗。后续计量修复须另冻结、另存补充，不能替换原质量快照。
 
-- 不变源：`source-8d60abe4e7c5`；结果：`results/8d60abe4e7c5`；日志：`logs/full-2878.out`、`.err`。
-- 环境：`env-v2/bin/python`，Torch2.7.1+cu128、TF4.51.3、lm_eval0.4.8；模型10文件、5语料已核SHA。
-- 开始2026-10-23 23:33:19，时限12h。恢复先查`scontrol show job 2878`和本人三台队列；监控断连不等于作业结束，不重放提交。
-- 固定命令：`python -B -m qwen3.sparq.run --root /home/Weican_Chen/projects/sparq-qwen3-issue157 --phase full --batch 32 --ppl-chunk 32 --task-chunk 256 --diagnose-document-batching`，在原source目录内运行；不能在登录节点直接执行。
-- PPL WT2窗口2048/步长1024，292窗，batch32；正式MC逐题/choice_batch4，全PIQA1838、ARC-Easy2376、HellaSwag10042，每256题原子落盘。分片256不是跨题batch。
+## 调度证据和恢复入口
+
+GPU 2878 最近保存的 Slurm 状态 **RUNNING**，ExitCode=0:0，观测文件时间 2026-10-23T16:14:22+00:00。这是保存的调度证据；监控断连或文件缺失不证明作业结束。
+
+固定执行提交 `8d60abe4e7c5c245c8f5f87b7f66e49e23ae0eea`；后训练 `Qwen/Qwen3-4B@1cfa9a7208912126459214e8b04321603b3df60c`，原 FFN。CPU 依赖 2877 历史终态见回执，不能代替当前 GPU 状态。
+
+- 个人远端根 `/home/Weican_Chen/projects/sparq-qwen3-issue157`；不变源 `/home/Weican_Chen/projects/sparq-qwen3-issue157/source-8d60abe4e7c5`；结果 `results/8d60abe4e7c5`；日志 `logs/full-2878.out`、`.err`。
+- 环境 `env-v2/bin/python`，Torch2.7.1+cu128、TF4.51.3、lm_eval0.4.8；模型10文件及语料已登记 SHA。本次只重建并核固定源码，不重新下载权重。
+- 命令 `python -B -m qwen3.sparq.run --root /home/Weican_Chen/projects/sparq-qwen3-issue157 --phase full --batch 32 --ppl-chunk 32 --task-chunk 256 --diagnose-document-batching`，只能在原 Slurm 分配中运行，不能在登录节点直接执行。
+- WT2 2048/1024；正式 MC 逐题/choice_batch4，每256题分片落盘；分片大小不是跨题 batch。
+- 本检查点下载清单为 `reviews/ppl_complete_20261024/TRANSFER.json`；raw/TRANSFER 是可更新的最新下载索引，每版原件按检查点保存。报告、输入哈希、调度终态和日志均按检查点冻结。
 
 ## 验证和负结果
 
-CPU2877最终51项真实TF测试+10项benchmark辅助通过；GPU2874原native/dense logits逐bit相同、检查开关逐bit相同。当前2878 preflight正式门禁通过，batch32峰22.94GB。原跨题batch在2876失败；2878完整候选诊断记录多个任务超.02 nats/target，最大ARC-Easy dense .413066864。正式串行评分不采用该优化；没有放宽门限。独立报告保留所有失败项。
+正式 document_batch=1；preflight passed=True。跨题候选 present=True、passed=False；失败项=[{"task": "piqa", "mode": "dense", "maximum": 0.043265106636681594, "threshold": 0.02}, {"task": "piqa", "mode": "sparq", "maximum": 0.032665827996371424, "threshold": 0.02}, {"task": "arc_easy", "mode": "dense", "maximum": 0.4130668640136719, "threshold": 0.02}, {"task": "arc_easy", "mode": "sparq", "maximum": 0.21209144592285156, "threshold": 0.02}, {"task": "hellaswag", "mode": "dense", "maximum": 0.04170358808955825, "threshold": 0.02}, {"task": "hellaswag", "mode": "sparq", "maximum": 0.02695267952402078, "threshold": 0.02}]。候选失败完整保留；正式逐题/choice_batch4 不采用该优化，不放宽门限。
 
-最初环境失败、GPU门禁失败及各版日志分别在staging_failures/、gpu_preflight/、batch_gate_failure/；历史回执不代替当前作业状态。
+历史 CPU/原生 logits 门禁、环境失败与候选失败回执保留，不把历史调度记录当作当前执行状态。
 
 ## 下一步及边界
 
-1. 保持2878运行；下载完成JSON，核envelope/TRANSFER/source，运行`python -m qwen3.sparq.report <下载目录> --output <新目录> --source-root <原固定源>`，完整SUMMARY和全部目标/题目/正式门禁齐全才标complete。
-2. 当前唯一GPU结束并核三台本人队列后，在新冻结测量源上补GPU板级功率；记录原质量identity和新测量SHA，功率不可用仍置null。
-3. [EDA_HANDOFF_ZH.md](../../../../architecture_tlm/sparq_baseline/EDA_HANDOFF_ZH.md)已上传且[通知@jieruiz](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/157#issuecomment-6368752572)。完整SparQ RTL顶层/库表征/STA尚未实施，ASIC面积功率真实延迟null；不沿用旧FFN物理值。
-4. GitHub Projects只读查询缺read:project；不改账号权限。Zotero后台未运行，复用现有SparQ PDF和待导入/精读补充任务，不声称入库、不打开窗口。
-
-Issue116/123继续暂停，不访问他人home/工艺库，不上传权重/凭据；最多一个GPU任务。源码、日志及中间失败证据均保留，不删除唯一文件。
+1. 继续只读核调度状态并归档新完成分片；没有新观测时不推断作业终态。 只有完整 SUMMARY、全部目标/题目和正式门禁通过才标 complete。
+2. 当前本人 GPU 作业结束并核本人队列后，才可另冻计量源补板级功率。补测关联原质量 identity 和新测量 SHA，不能混写原 `8d60abe4e7c5` 结果。
+3. [EDA_HANDOFF_ZH.md](../../../../architecture_tlm/sparq_baseline/EDA_HANDOFF_ZH.md)已交接并通知 jieruiz；完整 SparQ RTL/STA 尚缺，物理 ASIC 面积、功率、真实延迟为 null。
+4. Projects 与 Zotero 的限制、待办保留在回执，不声称待同步/待入库已完成。Issue116/123 继续暂停，不访问他人 home/工艺库，不上传权重/凭据，不自动合并或重复提交作业。

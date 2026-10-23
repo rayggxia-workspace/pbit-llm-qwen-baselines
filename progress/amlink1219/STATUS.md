@@ -1,16 +1,8 @@
-最新门禁：跨题batch的BF16差异0.0433>预声明0.02，GPU2876已FAILED，完整质量未开始；正式MC回退原逐题/choice_batch4，保留失败证据。PPL batch32显存门禁通过。51项CPU+10项benchmark辅助测试已通过，见Issue157 HANDOFF最新段。
+# Issue157：后训练Qwen3-4B SparQ（2026-10-23T23:54:08+08:00）
 
-# Issue157：后训练版 Qwen3-4B SparQ 基线（2026-10-23）
+[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163) draft/open/未合并；源8d60abe4e7c5，CPU2877完成、GPU2878运行。论文/官方源码差异核对、接合和51项CPU门禁完成；全WT2向量化anchor PPL11.5372，cached配对PPL/三任务仍在执行。54次GPU参考计时完成，2K/decode128 dense47.8444、SparQ14.3296 token/s；不是优化kernel/ASIC结论。功率因UUID格式未采到，已修待独立补测。
 
-最新：已上传[PR163](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/163)，draft/open/未合并。CPU2871模型/数据完成；GPU2874真实模型门禁通过（1m33s），源4f381292b011，原生dense逐bit一致。完整质量/速度仍待跑；新增同长度多题批处理和PPL batch32将先验证后执行。原始证据work/amlink1219/157/gpu_preflight/。以下首发准备记录为历史快照。
-
-负责人 amlink1219；分支 `task/157-sparq-qwen3`，独立目录 `workspace_projects/sq157`；PR以PR147的 `task/144-qwen3-stochastic@357db588` 为依赖，不将其称为已合并。用户明确选择 Qwen/Qwen3-4B 后训练版，另建BF16对照。
-
-已完成：论文v6与官方固定标签的GQA/预算差异审计；SparQ核心、原Qwen3接合、缓存PPL/官方任务计分与断点完整覆盖；双K/选择器成本账本。CPU Slurm2872在TF4.51.3/Torch2.7.1+cu128通过45项、无跳过、CUDA未初始化。后续新增诊断和benchmark测试将另列；尚无完整模型质量或物理PPA结论。
-
-CPU准备2867因ensurepip缺失失败、2868因嵌套.pth未展开缺Torch失败，已保留日志；修复为个人隔离overlay显式连接本人两个既有依赖根。2871正在同一新任务home下载固定revision，不使用其他成员的权重或目录。GPU作业尚未提交。本轮不恢复暂停Issue116/123，不重跑PR147的26项Base后缀。
-
-正式入口 [SparQ](../../qwen3/sparq/README_ZH.md)、[硬件账本](../../architecture_tlm/sparq_baseline/README_ZH.md)；精确恢复与未完成项见 [HANDOFF](../../work/amlink1219/157/HANDOFF.md)。任务准备代码/测试证据先上传，完整WT2、PIQA1838、ARC-Easy2376、HellaSwag10042、GPU速度/板级能量仍待执行；ASIC完整网表/STA/PPA尚缺。Projects权限需回读，不改权限；不自动合并/关闭Issue。
+最新独立核验为`partial_verified`，见[SparQ报告](../../qwen3/sparq/results/8d60abe4e7c5/reviews/checkpoint_001/REVIEW_ZH.md)；[精确交接](../../work/amlink1219/157/HANDOFF.md)。正式MC保持逐题，跨题候选负结果完整保留。STA/PPA已写具体文件并@jieruiz，完整RTL/物理PPA尚缺。Projects缺read:project；原116/123仍暂停。不要重复提交2878或覆盖原源。
 
 ---
 

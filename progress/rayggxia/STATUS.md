@@ -44,3 +44,7 @@ Issue95随机源模型/RTL已由本账号发布PR97，开放待审未合并；�
 PR97已合并（上文旧状态为历史）；当前新增离线架构核对图，源码/数值模型/RTL未改。task/95-rng-architecture-view基于eb317e4f，目标pbit-tlm-attention-details-20261016。12场景372沿由原模型导出；11模块交互及1440/768/390宽度浏览器检查通过，无JS错误。文件architecture_tlm/random_service/architecture-view.html；恢复work/rayggxia/95/VISUALIZATION_HANDOFF.md。已注明PR103小接口与38322118后续布局前PPA边界。待文档PR评审与用户核对，不代表整机已全部换源；Projects同步未核实。本节不改变Issue98记录。
 
 可视化交付PR：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/113，开放待审、未合并；源提交bc8561813c110b62829287661c1303c65a2d14b0。远端HTML已读回与本地逐字符一致。
+
+## 2026-10-23 Issue141后缀16项已核验，完整WT2已启动
+
+2804已全部完成；16唯一配置SHA/identity/config/24层4096目标与NLL回算通过。后缀三seed均值：BF16 10.3715568、FFN-only10.4273772、筛选准确PV10.9703677、旧CTMC128 11.1978127、新校正拒绝128 11.1645223、赢家1024 11.0437051。赢家用了8倍更新预算，不能称同成本优势；以上非完整WT2。完整2805已自动启动，按最多2GPU运行，未收齐，不重交。原件project_archives/qwen_sampler_ppl_issue141_20261023/suffix及服务器对应outputs/7a286ec.../suffix；汇总qwen/results/parallel_sampler_ppl_20261023/SUFFIX_SUMMARY.json，恢复work/rayggxia/141/HANDOFF.md。Git直连回执推送超时后API发布90548ac（与本地b5ef627完全同树）；新后缀增量以PR143实时head为准。执行7a286ec源码未改。

@@ -13,3 +13,5 @@ ZIP：根 `sc_cim_frontend_ppa_20261023_v1.zip`，36990字节，SHA256 `73bee486
 边界：旧计数器已有权重门控；初估只再加SNG和分发层次功耗。无新增概率/权重DFF副本；上游稳定概率/存储保持仍计费。SRAM全并行Q是待实现CIM接口，不宣称普通宏已有该能力。工程目标是初估，不是定制SRAM后布局签核。
 
 发布以 PUBLICATION.json、REMOTE_VERIFY.json、ISSUE_UPDATE.json 为准；创建PR不等于合并，不自动关闭Issue。Projects权限状态以PROJECTS_CHECK.json为准，缺权限时待维护者同步。没有运行中作业，无需启动轮询。
+
+发布更新：PR148（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/148）已推送待审、未合并，科学交付74979fc；29个package manifest对应Git blob已核对。根台账保留其他任务记录，本轮增量后51条，任务base台账46条；合并时应保留union并render。原始临时向量/波形已归档逐成员验证，恢复见RAW_ARCHIVE/WAVE_ARCHIVE/ARCHIVE_VERIFY。

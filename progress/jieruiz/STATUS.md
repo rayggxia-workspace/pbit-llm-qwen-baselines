@@ -1,3 +1,7 @@
+## 2026-10-23 Issue146：PPA批处理v2本地交付
+
+负责人jieruiz，task/146-cim-frontend / PR148，独立目录tmp/cim-frontend-issue146-20261023；继续已有任务，不修改Issue133。v2源包和RUN_BATCH_ZH已完成，11辅助检查、4实际RTL/48波形窗口通过，原RTL/TB不变。修复buffer Tcl插值，增加SS/TT自动选库、8项Slurm、3seed、叶子分类/单位/能量守卫及小报告归档。台账已登记待EDA，不宣称DC/VCS/PT通过；无运行中作业。包根sc_cim_frontend_ppa_20261023_v2.zip，SHA f2ef9036c30adcbccd4a2c2c24543fe27061ff04facb3d6a27948f294b701228。上传/提交以work/jieruiz/146/V2_PUBLICATION.json回执为准，原PUSH.json已有他人变更未触碰。下一步用户先smoke再正式；Projects待同步。
+
 ## 2026-10-23 Issue146：SRAM邻近计算前端
 
 负责人jieruiz，task/146-cim-frontend，base 6966739/pbit-tlm-attention-details-20261016；独立目录tmp/cim-frontend-issue146-20261023。正式architecture_tlm/sc_cim_frontend_20261023，本地RTL/中文说明/PPA脚本/小SRAM探针已完成；27组13620周期、5流程与12波形窗口检查通过。完整N64/M64前端此前三seed×两随机接口通过，独立大门阵列超时保留。无新DC/PT/SPICE/PPA/PPL，源/配置/证据SHA见results和中央cim-frontend-146-functional；用户先M1 smoke再M64工艺。PR148已推送待审、未合并；远端实际状态见work/jieruiz/146/PUBLICATION.json、REMOTE_VERIFY.json；不自动合并，Projects待权限核对。无在运行作业。下一步依RUN_PPA_ZH回传报告；详细交接HANDOFF.md。

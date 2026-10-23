@@ -34,6 +34,33 @@ proc constraints {} {
  if {$::env(CIM_KIND)<2} {set_false_path -from [get_ports rst_n]}
  set_load $::env(LOAD_PF) [all_outputs]
 }
+proc inventory {} {
+ set leaves [get_cells -hierarchical * -filter {is_hierarchical == false}]
+ set f [open inventory.tsv w];puts $f "name\tref\tarea\tcategory"
+ foreach_in_collection c $leaves {
+  set name [get_object_name $c];set ref [get_attribute $c ref_name]
+  if {$ref eq "**logic_0**" || $ref eq "**logic_1**"} {set leaves [remove_from_collection $leaves $c];continue}
+  if {![string match *_9TSVT $ref]} {error "Unmapped/unknown cell $name $ref"}
+  set lc [get_lib_cells -quiet */$ref]
+  if {[sizeof_collection $lc]!=1} {error "Missing/ambiguous cell $ref"}
+  set area [get_attribute $lc area]
+  if {![string is double -strict $area] || $area<=0} {error "Invalid cell area $name"}
+  set group other_logic
+  if {$::env(CIM_KIND)==1 || [string match sng/* $name]} {set group sng_other_logic}
+  if {$::env(CIM_KIND)==2 || [string match gates/* $name]} {set group weight_gate_logic}
+  if {[get_attribute $lc is_sequential]} {
+   set group state_and_control_registers
+   if {[string match *rng_state_reg* $name]} {set group rng_state_registers}
+  }
+  if {[string match *threshold_drive/* $name]} {set group threshold_distribution_buffers}
+  if {[string match *sample_drive/* $name]} {set group sample_distribution_buffers}
+  if {[string match *q_drive/* $name]} {set group q_interface_buffers}
+  puts $f "$name\t$ref\t$area\t$group"
+ }
+ close $f
+ if {[sizeof_collection $leaves]==0} {error "Empty circuit"}
+ return $leaves
+}
 proc timing_reports {tool} {
     capture setup.rpt {report_timing -delay_type max -max_paths 20 -nets -transition_time -capacitance}
     capture hold.rpt {report_timing -delay_type min -max_paths 20}

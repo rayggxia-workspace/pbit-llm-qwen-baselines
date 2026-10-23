@@ -1,0 +1,68 @@
+CIM前端面积/功耗 v2，Issue146，2026-10-23
+
+范围与默认值
+本包包含全部RTL、独立逐周期oracle、testbench、DC/VCS/PT脚本，不含工艺库。
+100MHz；SS=1.08V/125C、TT=1.2V/25C；N64、W8、T32/K32。
+输出负载2fF/bit，输入slew0.1ns；setup uncertainty2ns（周期20%）。
+没有SDF/SPEF/CTS，面积是标准单元面积，不是芯片面积。
+
+四类任务：KIND0=完整SNG+分发+W8AND，KIND1=独立SNG，
+KIND2=分发+W8AND，KIND3=512位SRAM-Q数字缓冲探针（不是SRAM宏）。
+正式0/2使用64x64，1/3使用M1。Q接口探针不能直接代替bitcell驱动稳定性验证。
+完整前端包含本地LFSR；可选external只跑0/1，移除本地随机源，外部随机源不免费。
+
+上传本包至服务器项目根，执行：
+source ~/.bashrc
+BASE=/public3/home/t6s011227/pbit_chimera_pipeline_20260920
+cd "$BASE"
+unzip -o sc_cim_frontend_ppa_20261023_v2.zip
+cd sc_cim_frontend_ppa_20261023_v2
+python3 package.py --verify
+bash flow/submit.sh "$BASE/cim_frontend_runs/smoke_$(date +%Y%m%d_%H%M%S)" smoke
+
+smoke是8个数组子任务（4类xSS/TT），每个N64/M1、seed17；
+全部6种激励仍做功能检查，仅中等活动与idle两个窗口跑PT。
+每项4核32GB、12小时限时、同时最多2项。未使用缺license的VCS FGP。
+DC/PT按可用核数工作，VCS仍普通事件仿真。不承诺多核线性加速。
+
+先查看smoke中每个结果的COMPLETE.json、summary.csv与告警，合格后正式：
+bash flow/submit.sh "$BASE/cim_frontend_runs/full_$(date +%Y%m%d_%H%M%S)" all
+
+正式仍8个子任务，每项只综合/编译一次，3seed=1,17,74565；
+每seed含q=0、q=256、q=128、斜坡、稀疏、随机反压六类active+idle，共36个PT窗口。
+同一行能量包含启动/完成边界，不能简单将总功率乘32拍替代实际窗口。
+KIND2/3不产生逻辑帧，因此每帧/样本能量留空，只报告窗口能量和功率。
+KIND3的权重Q在每个case开始改变、随后保持，反映加载一次/保持，不是每拍SRAM读。
+需要外部随机接口对照时（额外4项，非默认）：
+bash flow/submit.sh "$BASE/cim_frontend_runs/ext_$(date +%Y%m%d_%H%M%S)" external
+
+路径/驱动
+自动查找既有STD_0818/SC9T库，SS/TT必须唯一且PVT核验通过。
+若路径不同：export STD_ROOT=/真实标准单元0.1目录
+或分别export SS_DB=/实际ss.db TT_DB=/实际tt.db STD_MODEL=/实际标准单元.v
+数组任务不要继承单一STD_DB以免混角；使用SS_DB/TT_DB。
+BUF_REF=AUTO从库中找一输入一输出、function=输入、面积最小的非反相BUF，
+保存候选、实际型号及引脚；不是“最优驱动”。可export BUF_REF=真实指定单元。
+显式驱动拓扑综合前后数量核验；不允许用wire或INV冒充。
+驱动超表、slack负值都保留为provisional，不能据此声称100MHz签核。
+2fF负载属于情景。可用LOAD_PF=0.001/0.005做另一次敏感性分析，不能混合统计。
+
+产物
+每个任务目录生成net/、gate/、power/、CONFIG/SOURCE/INPUT_BINDING/COMMANDS.json，
+summary.csv、SUMMARY.json（包括互斥叶子分组的面积/内部/开关/漏电功耗）。
+逐窗口检查X/Z、总线全部位、PT输出/时钟活动和总功耗与叶子功耗之和。
+综合/编译一次，波形压缩后SHA核验。成功或Python异常都生成相邻的*_reports.tar.gz。
+下载这些小报告包和logs/即可；网表、压缩波形留服务器，不用全量下载。
+超时/节点强杀无法执行finally；此时logs/与已完成窗口仍在，可手动：
+python3 flow/collect.py /绝对路径/某个任务结果目录
+仅重算已有功耗报告、不重新仿真：
+python3 flow/summarize.py /绝对路径/某个任务结果目录
+单项重跑可用CIM_ARRAY=0（SS完整）或4（TT完整），每次指定新结果根。
+
+解释边界
+叶子分类保留层次可识别的分发buffer、Qbuffer、RNG寄存器、其他SNG/控制和W8门。
+优化合并的组合逻辑不冒称精确独立比较器/RNG功耗；查看hierarchy和inventory。
+旧计数器已包含权重门，不能把KIND0整项再次相加。独立SNG端口负载与完整前端不同，
+二者功耗相减不是精确门功耗；优先使用完整前端的互斥叶子分组。
+不含SRAM保持/写入、上游概率寄存器、计数器、物理随机源和真实布线成本。
+本地检查不等于工艺软件已通过；DC/STA/VCS/PT正式结果待服务器运行。

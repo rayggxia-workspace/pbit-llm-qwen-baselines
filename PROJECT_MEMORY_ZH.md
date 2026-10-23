@@ -1,3 +1,7 @@
+## 2026-10-23 Issue146：CIM前端PPA批处理v2
+
+继续PR148/task/146-cim-frontend，保持原RTL/TB字节不变，补SS/TT100MHz八项smoke/正式Slurm、三seed、真实buffer自动验证、互斥叶子面积/功耗汇总与失败小包。修复原Tcl `$i(a)` 被当作数组变量的生成错误。11辅助检查、4个实际小RTL与48波形窗口通过，未运行DC/VCS/PT，不能写成已测PPA。包sc_cim_frontend_ppa_20261023_v2.zip，49471B，SHA f2ef9036c30adcbccd4a2c2c24543fe27061ff04facb3d6a27948f294b701228；manifest34d5b2031c141b41d8b8f14096d12539a969c5a1dbeb9027219f70b0d0caf856。台账cim-frontend-146-ppa-v2-prepared；旧v1证据不覆盖，原manifest移到project_archives/cim_frontend_20261023/SOURCE_MANIFEST_V1.json同字节保留。下一步用户依RUN_BATCH_ZH先smoke，回传reports包和logs；源码发布结果见work/jieruiz/146/V2_PUBLICATION.json，未运行服务器任务，Projects待同步。
+
 ## 2026-10-23 Issue146：SRAM邻近SNG/驱动/W8门控
 
 新增architecture_tlm/sc_cim_frontend_20261023，任务task/146-cim-frontend，PR148已推送待审、未合并；科学提交74979fc。N64共享R8、W8固定权重、T32/K32，显式库buffer绑定，不加概率/权重副本寄存器；完整前端、SNG、门控、Q缓冲四种探针。旧计数器已有AND，初估只再加SNG/分发，避免重复；SRAM保持/装载另计，32768并行权重Q仍是CIM接口假设。附DC/VCS/PT流程及真实bitcell加载SPICE模板，无工艺模型。

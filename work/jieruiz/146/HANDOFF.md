@@ -1,5 +1,13 @@
 # Issue146：CIM 前端 RTL/PPA 交接
 
+2026-10-23 v2增量：沿原分支/PR148；原RTL/TB字节完全未改。新增RUN_BATCH_ZH、environment/submit/job/summary/collect/local_smoke/test_delivery，完善run/package与DC/PT分类统计，修复生成buffer的Tcl数组插值错误。版本包根sc_cim_frontend_ppa_20261023_v2.zip，49471B，SHA f2ef9036c30adcbccd4a2c2c24543fe27061ff04facb3d6a27948f294b701228；33源manifest项，SHA34d5b2031c141b41d8b8f14096d12539a969c5a1dbeb9027219f70b0d0caf856。VERIFY_V2.py/V2_VALIDATION.json保留命令和核对记录；11辅助测试、4小RTL/48窗口实际通过，无本轮DC/VCS/PT。Bash只读检查通过。第一次本地Icarus路径格式失败记录保留，第二次v2_local_check2成功。
+
+v1 ZIP与原始证据保留；旧manifest另存project_archives/cim_frontend_20261023/SOURCE_MANIFEST_V1.json，旧台账只更新可恢复地址不改SHA；新台账cim-frontend-146-ppa-v2-prepared。读取根镜像时保留其他任务新增记录。根/canonical备忘录已追加本轮状态。
+
+执行：上传v2 ZIP至BSCC项目根，source ~/.bashrc，unzip -o后进入sc_cim_frontend_ppa_20261023_v2，python3 package.py --verify；bash flow/submit.sh "$BASE/cim_frontend_runs/smoke_$(date +%Y%m%d_%H%M%S)" smoke。4类xSS/TT共8子项，M1/1seed/2PT窗口；正式all使用M64（SNG/Q探针M1）/3seed/36窗口。每项4核32GB12h、最多2并行。下载*_reports.tar.gz及logs，COMPLETE不等于STA签核，保留provisional告警。BUF_REF=AUTO为真实最小面积非反相BUF情景，不代表最优物理驱动。
+
+本地已有修改work/jieruiz/146/PUSH.json未覆盖、不纳入本轮提交。最终源码发布/阻塞见V2_PUBLICATION.json；Projects原read:project限制待有权限维护者同步，不自动合并/关闭Issue。无远端运行任务。
+
 2026-10-23，负责人 jieruiz。目标 workspace `rayggxia-workspace/pbit-llm-qwen-baselines`；分支 `task/146-cim-frontend`，base `pbit-tlm-attention-details-20261016` / `6966739a5223680888bf0315f7bb4f73423a1ae6`。独立 checkout 为 `C:/Users/86134/Documents/a_P_BIT/tmp/cim-frontend-issue146-20261023`。Issue146 已建立并核实；原计数器 Issue133/PR135 只读，head `7f38018b0de2c406a3ae0c9f4eb65eaef4794051`，未修改。
 
 本地完成：`architecture_tlm/sc_cim_frontend_20261023`，包含SNG、驱动、W8原始门控、SRAM-Q数字探针、SPICE待绑定模板、DC/VCS/PT流程、中文说明。最终 compact 27配置/seed、13620周期对照通过；5流程检查、Tcl完整性、12实际小RTL波形窗口×115信号检查通过。较早完整N64/M64前端本地/外部源各3seed通过，但同轮独立大门阵列180秒超时；不冒充全部大配置通过。没有DC/VCS/PT/SPICE/布局、新PPL或服务器任务。

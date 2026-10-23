@@ -1,6 +1,7 @@
 source [file join $::env(PPA_SOURCE) common.tcl]
 source [file join $::env(PPA_SOURCE) generate_buffer_binding.tcl]
 proc main {} {
+ set_host_options -max_cores $::env(EDA_CORES)
  set_app_var target_library [list $::env(STD_DB)]
  set_app_var link_library [list * $::env(STD_DB)]
  read_db $::env(STD_DB)
@@ -36,6 +37,7 @@ proc main {} {
  capture area.rpt {report_area -hierarchy}
  capture references.rpt {report_reference -hierarchy}
  capture check_design.rpt {check_design}
+ inventory
  timing_reports dc
  save_text SYNTH_COMPLETE "Synthesis completed; not post-layout PPA."
 }

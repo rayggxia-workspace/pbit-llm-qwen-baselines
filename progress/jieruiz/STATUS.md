@@ -1,3 +1,9 @@
+# Issue138：可训练采样器接入 main（2026-10-23）
+
+负责人jieruiz；review/138-main-port-20261023；main base35db820；tmp/pr142-main-review-20261023。PR142源bac0e04已审核，main独立移入模块与历史NumPy测试依赖，保留源码/原结果字节。22单测及两方法三seed合成训练复核；无LLM/PPL/硬件实验。成果experiments/trainable_pbit_attention，交接work/jieruiz/138/MAIN_HANDOFF_ZH.md。当前本地审核完成，推送/合并以关联PR回执为准。后续CUDA/模型训练/内存与梯度方差未验收；Projects待权限。无运行任务，合并后回收本目录。
+
+以下保留历史状态：
+
 # jieruiz 项目进度
 
 更新时间：2026-10-16（Asia/Shanghai）。本人身份已通过本机 Git 凭据调用 GitHub `/user` 核实；仓库有写权限。

@@ -4,8 +4,11 @@
 
 ## 已确认
 
+- 实际GPU运行中：Slurm2835、RTX5090、CUDA_VISIBLE_DEVICES=7；源码`f4eb25e53834e06220cbfad670ae03195eba8706`，结果root `/home/Weican_Chen/projects/pbit-pdnn-task-accuracy-issue145/runs/f4eb25e53834_20261023T124307Z`。CPU2834 COMPLETED/0:0；真实GPU9/9 smoke通过。首个完整BF16 PIQA1838 acc70.511425%、acc_norm69.967356%；独立审计已通过，当前1/21不是最终比较。
+- [草稿PR149](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/149)已创建，未合并。执行源之后新增的本地`summarize.py`是独立审计工具，不冒充GPU执行源码；按TASK_DATA记录commit读取冻结Git blobs核验。
+- 失败保留：旧源db2090d4、CPU2832成功、GPU2833 FAILED/1:0，runner回调错读不存在的进度字段，未生成完整case。已修后在全新f4eb25e源快照／run重跑，原快照／partial原件留服务器，日志及终态见本目录failed_attempt1。
 - 用户首轮选两层／四层 decoder FFN，不训练新模型。
-- 新评分器及18项CPU机制测试已完成。独立复核未发现标签泄漏／KV隔离／全局RNG阻断；真实Qwen smoke尚待执行。
+- 新评分器及18项CPU机制测试已完成。独立复核未发现标签泄漏／KV隔离／全局RNG阻断；真实Qwen smoke现已通过。
 - Slurm2826 CPU-only checkpoint检查COMPLETED/0:0。本人服务器现存reference_1000层10/11/12/13 checkpoint，可严格按原896→4864→896双投影加载；精确字节身份见正式配置。
 - 两层为10/12子集，四层为10..13；它们不继承旧6/12及旧joint4报告的PPL。现存文件SHA与旧公开joint4不同，尚不认定为同一权重。
 - 本人env-eval-v4已有lm_eval0.4.8、transformers4.45.2、torch2.7.1+cu128；三项本人parquet数据SHA与Issue59协议一致。没有安装或修改旧环境／数据。
@@ -22,6 +25,12 @@
 
 ## 当前未完成／待同步
 
-CPU源快照预检、GPU smoke和全量准确率尚未执行，尚无新结果；代码尚未发布到PR。完成后取回小型结果／SHA，重新验算官方metrics，生成按任务的三seed均值／标准差／相对BF16百分点差，更新本记录、STATUS和Issue145，并推送任务PR。大权重和数据不提交Git。
+全量21case仍在运行。不得重提任务、修改f4eb25e服务器快照、覆盖run或partial；监控已保存的2835作业身份。终态出现立即保存scontrol状态／ExitCode／allocation与日志。取回已完成case原件以及tokenized固定请求到本地审计目录，逐SHA验证（Git归档排除tokenized和parquet）；运行独立汇总器，默认必须21case齐备：
+
+```text
+python -X utf8 -P experiments/pdnn_task_accuracy_20261023/summarize.py --results <原件根> --output <新审计目录> --source-root <本工作树>
+```
+
+服务器已逐题执行官方process_results并回读复核；本地汇总器验证原件／ID／候选长度／finite分数／二值指标／24层执行和数值聚合，不能写成在本地重跑官方标签计分。完成后生成按任务的三seed均值／标准差／相对BF16百分点差，更新本记录、STATUS和Issue145，并将同一PR149补齐且转为可审。大权重和数据不提交Git。看板权限仍需实际核对，有权限才同步。
 
 此任务不恢复已暂停Issue116/123，不接管其他Attention PPL或Qwen3任务。恢复时重新读Issue145、相关PR和当前集成入口，不能仅依赖本时点快照。

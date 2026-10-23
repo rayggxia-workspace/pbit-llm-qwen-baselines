@@ -2,7 +2,9 @@
 
 负责人amlink1219，`task/145-pdnn-task-accuracy`，独立`workspace_projects/pa145`，base集成`6966739a5223680888bf0315f7bb4f73423a1ae6`。用户指定两层和四层；沿用PIQA1838、ARC-Easy2376、HellaSwag固定1000题、官方lm_eval0.4.8、0-shot，BF16匹配对照，P-DNN N4三seed，计划21个完整case。新代码和协议入口`experiments/pdnn_task_accuracy_20261023/`，恢复入口`work/amlink1219/145/HANDOFF.md`。
 
-CPU Slurm2826已COMPLETED/0:0，核实本人reference_1000四层joint checkpoint可加载；SHA与旧公开joint4不同，不继承旧PPL。四层10/11/12/13；两层为同组10/12子集，明确不是历史6/12模型复测。18项评分机制CPU测试通过，尚未进行真实GPU评分／无新准确率结果。现有本人env-eval-v4与三项同SHA数据可复用，无需安装、训练或下载。接下来CPU源快照预检及GPU真实模型smoke，再执行全量并PR交付。Issue116/123保持暂停，不恢复。
+CPU Slurm2826/2834已COMPLETED/0:0，18机制测试、四权重strict state/type、数据及固定题ID、九项真实GPU smoke均通过。GPU2835在RTX5090运行21case；执行源`f4eb25e53834e06220cbfad670ae03195eba8706`。首个完整新BF16 PIQA1838：acc70.511425%、acc_norm69.967356%，原件SHA/逐题聚合/24层执行覆盖独立核验通过；其余case仍在运行，不作完整比较结论。首次GPU2833因runner进度字段不匹配失败，已修复，旧快照/失败日志/partial保留。
+
+四层10/11/12/13、两层为同组10/12子集，明确不是历史6/12；现存checkpoint SHA与旧公开joint4不同，不继承旧PPL。代码已上传[草稿PR149](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/149)，未合并；首个基线与smoke归档入口`qwen/results/pdnn_task_accuracy_20261023/`。当前无训练或环境安装，Issue116/123保持暂停。待全量21case结束取回核验、汇总、更新同一PR/Issue与状态；Projects沿既有read:project不足待同步。
 
 ---
 

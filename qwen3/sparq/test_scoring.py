@@ -11,6 +11,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from .scoring import evaluate_ppl, evaluate_tasks, full_window_plan, target_positions
+from .adapter import SparQController
 
 
 class ToyAttention(nn.Module):
@@ -221,6 +222,18 @@ class ScoringTests(unittest.TestCase):
             evaluate_tasks(model(), docs() * 2, mode='native')
         with self.assertRaisesRegex(ValueError, 'length'):
             evaluate_tasks(model(), docs(), mode='native', max_length=2)
+
+    def test_logical_counter_vector_preserves_exact_integer_totals_and_schema(self):
+        controller = SparQController('dense')
+        state = {'diagnostics': {}}
+        controller.layers[0] = state
+        for value in (2**40, 3):
+            controller._record(state, dict(candidate_ids=torch.tensor([999]),
+                logical_counts={'groups': torch.tensor(2), 'reads': torch.tensor(value)}))
+        result = controller.stats()['layers']['0']['diagnostics']
+        self.assertEqual(result, {'logical_counts.groups': 4, 'logical_counts.reads': 2**40 + 3})
+        with self.assertRaisesRegex(RuntimeError, 'schema'):
+            controller._record(state, {'logical_counts': {'renamed': torch.tensor(1)}})
 
 
 @unittest.skipUnless(importlib.util.find_spec('transformers'), 'native Qwen3 gates require pinned Transformers 4.51.3')

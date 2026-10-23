@@ -104,16 +104,21 @@ class SparQController:
     @staticmethod
     def _record(state, diagnostics):
         # Aggregate scalar counters on their device; never retain token-level
-        # candidates or copy the full candidate set to the host per query.
-        for key, value in diagnostics['logical_counts'].items():
-            if isinstance(value, torch.Tensor):
-                if value.numel() != 1:
-                    raise RuntimeError('logical counters must be scalars')
-                value = value.detach()
-            elif not isinstance(value, (int, float)) or isinstance(value, bool):
-                raise RuntimeError('logical counters must be numeric')
-            key = 'logical_counts.' + key
-            state['diagnostics'][key] = state['diagnostics'].get(key, 0) + value
+        # candidates or copy the full candidate set to the host per query. One
+        # vector add avoids a separate CUDA launch for every diagnostic field.
+        counts = diagnostics['logical_counts']
+        names = tuple(counts)
+        values = list(counts.values())
+        if not values or any(not isinstance(v, torch.Tensor) or v.numel() != 1
+                             or v.dtype != torch.int64 for v in values):
+            raise RuntimeError('core logical counters must be int64 scalar tensors')
+        vector = torch.stack([v.detach().reshape(()) for v in values])
+        if '_counter_names' not in state:
+            state['_counter_names'], state['_counter_totals'] = names, vector
+        else:
+            if state['_counter_names'] != names:
+                raise RuntimeError('core logical counter schema changed during scoring')
+            state['_counter_totals'].add_(vector)
 
     def stats(self):
         def plain(value):
@@ -122,8 +127,16 @@ class SparQController:
             if isinstance(value, dict):
                 return {str(k): plain(v) for k, v in value.items()}
             return value
+        layers = {}
+        for index, state in self.layers.items():
+            row = {key: value for key, value in state.items() if not key.startswith('_')}
+            if '_counter_totals' in state:
+                numbers = state['_counter_totals'].detach().cpu().tolist()
+                row['diagnostics'] = {'logical_counts.' + key: value
+                                      for key, value in zip(state['_counter_names'], numbers)}
+            layers[str(index)] = row
         return dict(mode=self.mode, config=asdict(self.config) if is_dataclass(self.config) else self.config,
-                    installed_layers=len(self.layers), layers=plain(self.layers),
+                    installed_layers=len(self.layers), layers=plain(layers),
                     scope='all scored single-token queries; native QKV/QK-Norm/RoPE/cache/output projection; native dense prefill',
                     physical_PPA=None)
 

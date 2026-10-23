@@ -1,5 +1,13 @@
 # Issue145 接续记录
 
+## 本次有限后台收尾
+
+本机一次性进程只跟踪Slurm2835，不是周期自动化。源与输入receipt SHA固定；要求PR149仍开放且未合并、固定目标repo/head/base；21case默认完整独立审计通过后才归档、提交、上传同一PR及精确更新本任务验收项。任一输入/helper变更、任务HEAD改变、脏工作区、失败终态、缺case或SHA失败都会停止，保存阶段回执并尝试在Issue145报告；不重提GPU，不创建替代PR，不自动合并／关闭。
+
+该进程未来将写pa145；其他任务应使用独立目录。是否已实际启动以本机`outputs/pdnn_accuracy_20261023/WORKER_STARTED.json`为准，成功／阻塞分别看`WORKER_COMPLETED.json`／`WORKER_BLOCKED.json`与worker stdout/stderr。恢复先查这些文件和PR149，再决定接手；不启动第二份收尾进程。不得根据本记录中的历史1/21或4/21推断当前远端作业状态。
+
+最近本地独立核验4/21：两层10/12 PIQA三seed acc68.662±0.094%、acc_norm68.317±0.354%；较新BF16低1.850／1.650个百分点。快照见正式results下`piqa_two_layer_three_seeds/`，四层和其余任务仍运行。
+
 负责人 amlink1219；任务分支 `task/145-pdnn-task-accuracy`；本机独立工作树 `workspace_projects/pa145`；base `6966739a5223680888bf0315f7bb4f73423a1ae6`。目标 PR base `pbit-tlm-attention-details-20261016`，不自动合并。
 
 ## 已确认

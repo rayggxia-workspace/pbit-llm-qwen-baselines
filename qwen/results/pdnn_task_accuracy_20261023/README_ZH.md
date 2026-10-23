@@ -1,8 +1,10 @@
 # 两层／四层 P-DNN 的任务准确率
 
-Issue145 / PR149，负责人 amlink1219。当前为运行中，**已核验 1/21 个完整 case**；不是最终两层／四层比较结论。
+Issue145 / PR149，负责人 amlink1219。本快照为运行中，**已取回核验 4/21 个完整 case**；不是最终三任务两层／四层比较结论。
 
 首个新 BF16：PIQA validation1838，acc **70.511425%**，acc_norm **69.967356%**，与 Issue59 的缓存评分协议一致。三任务官方数据／prompt／0-shot／选题 ID 已核；18项CPU机制检查、4份真实checkpoint的严格加载，以及9项真实GPU smoke（重放、选项置换、独立BF16缓存参考）均通过。
+
+两层10/12的PIQA三seed已齐：acc **68.662% ± 0.094%**（较BF16 −1.850个百分点），acc_norm **68.317% ± 0.354%**（−1.650个百分点）。±为推理seed的样本标准差，不是题目抽样置信区间。[本阶段完整审计与原件](piqa_two_layer_three_seeds/REPORT_ZH.md)；四层和另外两任务继续运行。
 
 正在 RTX5090 单 GPU Slurm2835 执行 21 个完整 case。执行源码 `f4eb25e53834e06220cbfad670ae03195eba8706`，CPU预检2834 COMPLETED/0:0。首次GPU2833因runner进度回调字段不匹配失败，修复后使用全新源快照与输出目录，旧失败证据保留在 `work/amlink1219/145/failed_attempt1/`。
 

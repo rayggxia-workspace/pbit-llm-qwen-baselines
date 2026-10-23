@@ -1,5 +1,9 @@
 # Issue145 P-DNN两层／四层任务准确率（2026-10-23）
 
+本次有限收尾安排：只跟踪已提交的Slurm2835；完整21case终态成功且独立审计通过后，取回归档并更新同一PR149／Issue145。不会重提GPU、覆盖partial、创建替代PR、自动合并或关闭Issue。该过程占用pa145工作树；其他任务用独立工作树，不编辑此任务HEAD。实际进程启动／完成／阻塞分别以本机`outputs/pdnn_accuracy_20261023/WORKER_STARTED.json`、`WORKER_COMPLETED.json`、`WORKER_BLOCKED.json`为准。
+
+最新已取回核验4/21：两层10/12 PIQA三seed acc68.662±0.094%、acc_norm68.317±0.354%，相对BF16分别−1.850／−1.650个百分点；四层和其他两任务仍运行。正式阶段快照`qwen/results/pdnn_task_accuracy_20261023/piqa_two_layer_three_seeds/`。
+
 负责人amlink1219，`task/145-pdnn-task-accuracy`，独立`workspace_projects/pa145`，base集成`6966739a5223680888bf0315f7bb4f73423a1ae6`。用户指定两层和四层；沿用PIQA1838、ARC-Easy2376、HellaSwag固定1000题、官方lm_eval0.4.8、0-shot，BF16匹配对照，P-DNN N4三seed，计划21个完整case。新代码和协议入口`experiments/pdnn_task_accuracy_20261023/`，恢复入口`work/amlink1219/145/HANDOFF.md`。
 
 CPU Slurm2826/2834已COMPLETED/0:0，18机制测试、四权重strict state/type、数据及固定题ID、九项真实GPU smoke均通过。GPU2835在RTX5090运行21case；执行源`f4eb25e53834e06220cbfad670ae03195eba8706`。首个完整新BF16 PIQA1838：acc70.511425%、acc_norm69.967356%，原件SHA/逐题聚合/24层执行覆盖独立核验通过；其余case仍在运行，不作完整比较结论。首次GPU2833因runner进度字段不匹配失败，已修复，旧快照/失败日志/partial保留。

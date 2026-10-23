@@ -41,9 +41,23 @@ def archive_files(path):
         return files
 
 
-def fixed_git_sources(manifest,root):
+def fixed_git_sources(manifest,root,published_map=None):
     names=list(manifest["files"])
     revisions=[manifest["audit_commit"] if n in manifest["audit_paths"] else manifest["core_commit"] for n in names]
+    if published_map is not None:
+        # Preserve original execution identities. A publication may use different
+        # commit IDs; replacements are valid only with exact per-file bytes and
+        # ancestry in the explicitly selected published head.
+        check(published_map["original_core_commit"]==manifest["core_commit"],"mapped core identity")
+        check(published_map["original_audit_commit"]==manifest["audit_commit"],"mapped audit identity")
+        mappings=published_map["matched_files"]
+        check(set(mappings)==set(names),"published map source closure")
+        revisions=[mappings[n]["commit"] for n in names]
+        check(all(mappings[n]["sha256"]==manifest["files"][n] for n in names),"published map hash binding")
+        for revision in set(revisions):
+            proc=subprocess.run(["git","merge-base","--is-ancestor",revision,published_map["published_ancestor_of"]],
+                cwd=root,env={**os.environ,"GIT_NO_LAZY_FETCH":"1"},capture_output=True)
+            check(proc.returncode==0,"mapped source is not a published ancestor")
     requests="".join(rev+":"+name+"\n" for rev,name in zip(revisions,names)).encode()
     proc=subprocess.run(["git","cat-file","--batch"],input=requests,capture_output=True,cwd=root,
                         env={**os.environ,"GIT_NO_LAZY_FETCH":"1"},check=True)
@@ -73,6 +87,7 @@ def main():
     parser.add_argument("--execution",type=Path,required=True)
     parser.add_argument("--capture",type=Path,required=True)
     parser.add_argument("--artifacts-commit",help="also verify committed archive bytes, independent of checkout attributes")
+    parser.add_argument("--published-source-map",type=Path,help="exact file/hash/ancestor mapping when original execution commits were not published")
     parser.add_argument("--output",type=Path,required=True)
     args=parser.parse_args()
     if args.output.exists(): raise FileExistsError("fresh receipt path required")
@@ -82,7 +97,8 @@ def main():
     check(sha(source_archive.read_bytes())==source["archive_sha256"],"source archive SHA")
     source_files=archive_files(source_archive)
     check({n:sha(b) for n,b in source_files.items()}==source["files"],"all source archive members")
-    fixed_git_sources(source,root)
+    source_map=read(args.published_source_map) if args.published_source_map else None
+    fixed_git_sources(source,root,source_map)
     public_archive=args.execution/"public_receipts.tar.gz"
     archive_receipt=read(args.execution/"PUBLIC_ARCHIVE_RECEIPT.json")
     check(sha(public_archive.read_bytes())==archive_receipt["sha256"],"public archive SHA")
@@ -166,6 +182,8 @@ def main():
         public_archive_files=11,public_members_with_manifest_sha=10,source_archive_sha256=source["archive_sha256"],
         public_archive_sha256=archive_receipt["sha256"],fixture_sha256=fixture_sha,
         source_git_objects_verified=True,core_commit=source["core_commit"],audit_commit=source["audit_commit"],
+        source_binding="exact published ancestor blobs" if source_map else "original execution commits",
+        published_source_map_sha256=sha(args.published_source_map.read_bytes()) if source_map else None,
         artifacts_commit=args.artifacts_commit,committed_archive_bytes_verified=bool(args.artifacts_commit),
         independent_server_cases=6,independent_server_executions=12,independent_server_checks=counters,
         independent_cases=cases,production_cli_cases=cli,

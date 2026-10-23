@@ -1,3 +1,7 @@
+## Issue157 新入口：后训练版 Qwen3-4B SparQ（2026-10-23）
+
+用户确认使用Qwen/Qwen3-4B，不是Base；另建同版本BF16配对。主基线paper-v6-GQA概率求和r32/k_total128/local_total32，不叠加max4、小网络与旧预算修复；纯SparQ使用原FFN和准确候选softmax/PV。官方tag的logits求和/k+1作为明确不同的oracle。入口qwen3/sparq/；硬件账本architecture_tlm/sparq_baseline/。完整质量尚待执行；不得沿用PR147 Base的PPL数值。恢复读取work/amlink1219/157/HANDOFF.md与远端Issue157，不据本节运行快照重复提交作业。Issue116/123暂停保持。
+
 ## 2026-10-23 Issue144：Qwen3最新概率架构迁移已启动
 
 22:00 CST实际发布闭环：科学结果b8cc1daaec9bb46d992fb867dc05c117d1e4bd6f已推PR147，177个GitHub文件逐blob原字节核验和77服务器原件Git blob校验通过；PR147 ready/open未合并，Issue144清单更新、保持open待审。26/26全完成，无在跑作业；应用实际删除heartbeat qwen3，deleteStatus=deleted。回执work/jieruiz/144/FINAL_PUBLICATION.json。下一步PR审阅，完整WT2仍未提交；其他任务条目保留。下方准备发布/运行中为历史。

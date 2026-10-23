@@ -137,20 +137,22 @@ class _NvmlSession:
         if requested_uuid is None:
             return
         expected, actual = _uuid_key(requested_uuid), _uuid_key(device_uuid)
-        if (not isinstance(requested_uuid, str) or not requested_uuid.startswith("GPU-")
-                or expected is None or actual is None or expected != actual):
+        if (not isinstance(requested_uuid, str) or expected is None or actual is None or expected != actual):
             self.reason = "requested GPU UUID does not match torch model device UUID; no index fallback"
             return
+        # Torch exposes a bare UUID on some versions. Normalize only a fully
+        # validated GPU UUID; numeric ordinals/MIG IDs still fail the check above.
+        canonical_uuid = "GPU-" + expected
         try:
             import pynvml
             pynvml.nvmlInit()
             self.module = pynvml
-            handle = pynvml.nvmlDeviceGetHandleByUUID(requested_uuid.encode("ascii"))
+            handle = pynvml.nvmlDeviceGetHandleByUUID(canonical_uuid.encode("ascii"))
             observed = pynvml.nvmlDeviceGetUUID(handle)
             if _uuid_key(observed) != actual:
                 raise ValueError("NVML handle UUID differs from allocated torch device")
             self.reader = lambda: pynvml.nvmlDeviceGetPowerUsage(handle)
-            self.uuid, self.reason = requested_uuid, None
+            self.uuid, self.reason = canonical_uuid, None
         except Exception as error:
             self.reason = f"NVML unavailable: {type(error).__name__}: {error}"
             self.close()
@@ -283,8 +285,9 @@ def run_benchmark(model, token_ids, *, config=None, contexts=(128, 512, 2048),
     First/last decode cache lengths are context+1 / context+decode.
     Full backbone plus last-position LM head runs in BOTH measured phases.
 
-    Power is enabled only for an explicit full GPU UUID matching this torch
-    device's own UUID. No CUDA ordinal -> physical NVML index conversion is used.
+    Power is enabled only for an explicit GPU UUID matching this torch device's
+    own UUID. Bare UUIDs are normalized to GPU-UUID after validation. No CUDA
+    ordinal -> physical NVML index conversion is used; MIG IDs remain rejected.
     This function assumes the caller has a valid scheduler GPU allocation; it
     does not infer ownership from device visibility or submit any job.
     """
@@ -371,6 +374,7 @@ def run_benchmark(model, token_ids, *, config=None, contexts=(128, 512, 2048),
         model_config_commit=getattr(model.config, "_commit_hash", None),
         torch_version=torch.__version__, model_device=str(device), gpu_name=properties.name,
         torch_device_uuid=str(device_uuid) if device_uuid is not None else None,
+        nvml_requested_uuid=str(power_gpu_uuid) if power_gpu_uuid is not None else None,
         nvml_gpu_uuid=telemetry.uuid, nvml_unavailable_reason=telemetry.reason,
         parameter_dtypes=sorted({str(p.dtype) for p in model.parameters()}),
         attention_config=asdict(config) if is_dataclass(config) else config,
@@ -464,6 +468,35 @@ def _self_test():
                 session = _NvmlSession(uid, uid)
             module.nvmlShutdown.assert_called_once()
             self.assertIsNone(session.reader)
+
+        def test_bare_uuid_normalized_and_handle_uuid_rechecked(self):
+            uid = "GPU-12345678-1234-1234-1234-123456789abc"
+            for request in (uid, uid[4:]):
+                module = SimpleNamespace(nvmlInit=Mock(), nvmlShutdown=Mock(),
+                    nvmlDeviceGetHandleByUUID=Mock(return_value="handle"),
+                    nvmlDeviceGetUUID=Mock(return_value=uid.encode()),
+                    nvmlDeviceGetPowerUsage=Mock(return_value=20000))
+                with patch.dict(sys.modules, {"pynvml": module}):
+                    session = _NvmlSession(uid[4:], request)
+                    self.assertIsNone(session.reason)
+                    self.assertEqual(session.uuid, uid)
+                    self.assertEqual(session.reader(), 20000)
+                    module.nvmlDeviceGetHandleByUUID.assert_called_once_with(uid.encode())
+                    session.close()
+                    module.nvmlShutdown.assert_called_once()
+            module.nvmlDeviceGetUUID.return_value = "GPU-aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+            with patch.dict(sys.modules, {"pynvml": module}):
+                session = _NvmlSession(uid[4:], uid[4:])
+            self.assertIsNone(session.reader)
+            self.assertIn("handle UUID differs", session.reason)
+
+        def test_numeric_and_mig_uuid_never_initialize_nvml(self):
+            uid = "GPU-12345678-1234-1234-1234-123456789abc"
+            module = SimpleNamespace(nvmlInit=Mock())
+            with patch.dict(sys.modules, {"pynvml": module}):
+                for request in ("0", 0, "MIG-"+uid, "bad", " "+uid):
+                    self.assertIsNone(_NvmlSession(uid, request).reader)
+            module.nvmlInit.assert_not_called()
 
         def test_measure_failure_stops_sampler(self):
             window = Mock()

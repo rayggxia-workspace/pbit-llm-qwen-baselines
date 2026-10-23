@@ -1,3 +1,7 @@
+# Issue158：Qwen3-4B非Base替换（2026-10-23）
+
+负责人jieruiz；task/158-qwen3-4b-posttrained；独立tmp/qwen3-4b-posttrained-issue158-20261023；依赖PR147@357db588/base task/144-qwen3-stochastic。用户明确改用Qwen/Qwen3-4B，固定revision1cfa9a7208912126459214e8b04321603b3df60c，hf-mirror，旧Base证据保持。仅换模型，原架构13配置后缀；新完整BF16两次精确重放、TRAIN重新校准、token独立绑定。PPL不加聊天模板/不生成thinking；不使用2507、不做1.7B或完整概率WT2。5本地合同测试、compileall/diff通过，CPU/GPU尚待Slurm。正式qwen3/posttrained，个人新ROOT pbit-qwen3-stochastic-nonbase-20261023-issue158。PR尚未创建/作业尚未提交；冻结后追加ID和SHA。Issue157 SparQ属amlink1219，本任务不接管；Projects待权限。
+
 # Issue144：Qwen3概率架构迁移（2026-10-23）
 
 22:00 CST发布闭环：结果b8cc1daa已推送，177个GitHub原字节回读、77提交原件SHA通过；PR147 ready/open、未合并，Issue144清单已更新但未关闭。26项已完成，无在跑作业；本对话heartbeat qwen3已实际删除。最终回执work/jieruiz/144/FINAL_PUBLICATION.json；下一步审阅，不自行跑完整WT2。下方“准备发布/运行中”为历史。

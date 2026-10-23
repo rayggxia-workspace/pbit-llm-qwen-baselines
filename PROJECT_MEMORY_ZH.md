@@ -16,6 +16,9 @@ CPU2778已通过45RTL场景/11667输出/180reset flush，覆盖T16/32/64、BF16/
 恢复入口architecture_tlm/resource_optimization_v1/README_ZH.md、RESULTS_ZH.md、results/analysis_20261023/SUMMARY.json与VALIDATION.json；work/amlink1219/117/HANDOFF.md有精确重汇总/验收命令。208项完整交付通过PR119；PR待审未合并，准确远端head与原字节核验按PUBLICATION.json最终回执。统一台账已按CALIBRATED_ESTIMATE登记（check/render及8项台账测试通过；历史指定镜像路径本机不存在）；Projects缺read:project待补。并行PR120/Issue118已有独立供数/逐档整数局部状态合同，待审且未纳入本轮；后续对接它和Issue116周期后端，不重做、接管或覆盖其范围。
 
 # p-bit LLM 项目长期备忘录
+## 2026-10-23 Issue129 SRAM与DRAM节省报告
+
+新增architecture_tlm/memory_savings_20261023/REPORT_ZH.md及7页Word，8个已封存v6情景复算、20源SHA、64文档/数字检查。W8减半权重不是随机独有收益；Qwen已记账2K/8K外存读写少31.95/35.52%，SRAM读写少29.82/33.49%，未闭合局部保持/计数未包含；条件存储能量不是整机PPA。采样不自动缩小完整KV缓存。PR120的48→5KiB是逻辑状态，PR127加宽读口不减少字节；新周期/完整FFN暂停保持。本轮无新实验，成果通过PR130已推送待审、未合并；Word及来源JSON原字节已核验。来源/回执见Issue129与work/jieruiz/129/PUBLICATION.json，Projects缺read:project待同步。
 
 ## 2026-10-23 Issue107：8类数字模块SS/TT 100MHz脚本包
 

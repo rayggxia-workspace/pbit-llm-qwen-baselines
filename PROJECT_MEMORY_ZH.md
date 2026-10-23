@@ -4,6 +4,13 @@
 ## 2026-10-23 Issue133：FFN精确计数A/B电路
 
 用户要求暂按SRAM全并行，优先比较计数器。architecture_tlm/counter_rtl_compare提供A逐位/符号/档计数＋最终恢复，B每拍整数和＋每档累计；均精确、相同协议，排除权重存储/随机前端/浮点恢复，不改主TLM。40组RTL/13408输出、6流程及8台账测试通过；完整64输出Icarus展开超600秒未完成，待用户VCS，不冒充工艺结果。T32 PIPE1完整帧36周期；6144B/640B只是主计数状态，含流水/输出后10368B/1760B，不是面积能量倍率。ZIP根sc_counter_compare_20261023.zip，SHA3a9b84019b1e41f51f198601a57fd969c7dbbb4de896b1bd4951221b378c94b5；原件project_archives/counter_rtl_20261023/LOCAL_VALIDATION_RAW.tar.gz。四项A/B×SS/TT100MHz工艺待跑，登记counter-ab-133-functional；无新PPL。已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。 本轮无服务器作业，Projects权限待补；详情work/jieruiz/133/HANDOFF.md。保留现有其他任务镜像，未覆盖。
+## 2026-10-23 Issue139：SANTA++ 对照与采样耦合增量
+
+SANTA++已覆盖代表筛选、Gumbel校正、GQA union与packed布局；Issue84/PR85已合并，不重做。Issue9先有sharedUniform Bernoulli分析，约1.4pp合成收益，不能把共享随机数当新发现。本次SANTAPP_GQA_COUPLING_ZH.md推导固定K共同Gumbel的单头分布保留和固定状态下加权union期望不增；投影方差可增4倍反例说明不保证模型质量。建议先低成本对照，再考虑有界suffix/实际字节与完整硬件成本。文档/解析算例经独立审阅，沿PR140交付；无模型/生产代码/EDA，116/123仍暂停。Zotero原件复用，新增设计笔记待写回。详见work/amlink1219/139/santapp_followup/HANDOFF.md。
+
+## 2026-10-23 Issue139：Qwen3-4B GQA候选筛选文献
+
+amlink1219新增architecture_tlm/qwen3_gqa_literature/REPORT_ZH.md。32Q/8KV/d128，每组4Q；建议按KV组候选和物理并集预算比较SparQ式概率汇总、逐头union及SeerAttention-R已训练gate，原模型最终每头QK/归一化独立。mean-Q、概率sum、教师head-max不是同一操作。Seer已评后训练Qwen3-4B，Issue136的4B-Base需独立迁移核验；本轮只有调研，未启动训练/仿真/完整PPL/PPA，116/123暂停保持。12篇PDF与来源已暂存核SHA；Zotero关闭，未入库，恢复见work/amlink1219/139/HANDOFF.md。交付分支task/139-qwen3-gqa-literature，PR状态查实时回执。
 
 ## 2026-10-23 Issue123 完整FFN与STA/PPA交接
 

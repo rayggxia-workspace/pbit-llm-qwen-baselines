@@ -1,3 +1,7 @@
+# Issue150 固定多档尺度（2026-10-23）
+
+负责人jieruiz；task/150-fixed-multiscale；base6966739；独立tmp/fixed-multiscale-issue150-20261023。离线六候选四档取代每token/64路absmax；TRAIN校准/选择/留出隔离，原Attention，固定W8，T32/K32及T64/K64，20项完整替换+BF16。当前源码/测试准备中，尚无Slurm或PPL，PR待创建。交接work/jieruiz/150/HANDOFF.md。无新TLM/RTL/PPA，不改141/144运行源；看板权限待核实。
+
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 
 负责人jieruiz；review/55-pr-round8；base e8705765；独立稀疏目录tmp/pr55-review-round8-20261023。119/120/122/125/126/127/130按限定范围通过，359测试中358通过、1个Windows符号链接测试跳过；原件与GQA发布源码映射复核通过。45条台账/964行是原任务记录并集，无新硬件实验。修复未公开旧commit导致的新检出审计失败；不改旧manifest。116/123保持暂停，不启动全尺寸/GPU/EDA。成果work/jieruiz/55/round8/REVIEW_ZH.md；集成PR发布、实际合并及目录回收以Issue55最终回执为准。待用户工艺环境SS/T32最小PPA；Issue107独立进行，避免重复任务。

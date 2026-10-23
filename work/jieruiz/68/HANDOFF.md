@@ -1,3 +1,11 @@
+# Issue68：10个已结束工作副本回收与恢复复核（2026-10-23）
+
+负责人jieruiz；review/68-cleanup-receipt-20261023；base pbit-tlm-attention-details-20261016@46804fb3；独立稀疏目录tmp/cleanup68-review-receipt-20261023，仅用于回执交付。已实际回收10目录1,182,605,540 B，64独有文件和3增量bundle保留并验证；模型/仿真原件/活跃任务保持。35记录157原件26归档成员SHA通过，无新实验。
+
+成果maintenance/storage_cleanup_20261023_review；本地恢复project_archives/cleanup_20261023/REVIEW_REMOVAL_RECEIPT.json、REVIEW_FINAL_VERIFICATION.json。Issue68实际回执评论6355946207；本报告PR发布/合并以Issue68最新回执为准，当前为提交前冻结。LLM对话继续新增清理范围；本10项不重复执行，不关闭总体Issue68。报告合并后回收本人小型回执目录，原Git refs保留。Projects沿既有read:project限制未同步。
+
+以下保留历史时点：
+
 # Issue68第二轮交接
 
 第二轮实际完成42个已结束任务工作副本回收，逻辑7.377GiB，两轮累计10.510GiB。原分支及42个archive/cleanup-20261019 refs保留；独有440.0文件、补充bundle保留本地project_archives/cleanup_20261019_round2，恢复清单ROUND2_RECOVERY_INDEX。根/仓库AGENTS规则已追加，当前任务稀疏检出maintenance/progress/work；其他成员/活跃任务不动。

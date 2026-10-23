@@ -1,3 +1,21 @@
+## 2026-10-23 Issue144：Qwen3最新概率架构迁移已启动
+
+22:00 CST实际发布闭环：科学结果b8cc1daaec9bb46d992fb867dc05c117d1e4bd6f已推PR147，177个GitHub文件逐blob原字节核验和77服务器原件Git blob校验通过；PR147 ready/open未合并，Issue144清单更新、保持open待审。26/26全完成，无在跑作业；应用实际删除heartbeat qwen3，deleteStatus=deleted。回执work/jieruiz/144/FINAL_PUBLICATION.json。下一步PR审阅，完整WT2仍未提交；其他任务条目保留。下方准备发布/运行中为历史。
+
+
+21:50 CST最终26项已完成并独立核验：BF16/FFN/screen-exact+FFN/rejection128+FFN/winner1024+FFN均值，1.7B=7.590088/7.666993/8.067234/8.249476/8.091915，4B=6.331575/6.365253/6.676899/6.810810/6.700177。随机三seed；全部4096目标后缀，不是完整WT2。FFN增量1.0132%/0.5319%，赢家联合6.6116%/5.8217%，拒绝联合8.6875%/7.5690%；筛选是主要先导退化来源，128与1024不等成本。2828/2829结束、两个complete齐；8c35145执行快照不改，78小原件/37 sidecar/27源码/26病例全层覆盖与NLL复算通过，17篡改负例通过。最终包SHA a3d0df3f043d4a1fee23f9da547d585bcde0f28e9c325d665880fdd5c1a2ace3，checkpoints/complete及REPORT_ZH/SUMMARY。完整26项外推156 GPU小时、两卡固定分模型约3.7天（±30%规划2.6–4.8天），未提交全量。当前准备同PR147最终发布/停表，实际状态见work/jieruiz/144/FINAL_PUBLICATION.json；不合并不关闭Issue，Projects待权限。后加审计不改变运行；legacy burn16/spacing4未消费，实际winner burn0/spacing1。下方运行状态均历史，勿重交任务。
+
+
+2026-10-23 20:54 CST用户要求“请做完全部方案”。继续已冻结两模型各13配置共26项4096目标后缀，不重复健康作业、不扩大为完整WT2；目前日志16/26已完成（1.7B拒绝seed2运行，4B拒绝seed0运行），2828/2829均RUNNING，无错误，未收取的阶段数字不作为正式结果。依据OpenAI Docs官方定时说明通过应用工具实际建立本对话heartbeat id=qwen3，名称“完成Qwen3全部概率方案”，ACTIVE每10分钟，限定收齐26项后核验/汇总/同PR147发布并通知，随后删除定时；无变化保持安静，失败/新权限或范围修改需报告。旧基线同名id曾删除，本次是新建收尾检查。需要本机及桌面应用运行以执行本地SSH/发布，服务器Slurm独立继续。发布源仍8c35145不改，最新科学结果672ad88；此前head5ce00f6的94文件GitHub逐blob原字节通过。
+
+20:33 CST新增已核验FFN-only：两模型3seed齐，1.7B后缀均值7.6669926785、样本std0.0086502594，较7.5900880974为+1.013223827%；4B均值6.3652531446、std0.0029902575，较6.3315746169为+0.531913935%。每配置约156/204秒；都是4096目标后缀且Attention仍原生SDPA，不是完整WT2或联合结果。checkpoints/ffn包SHA53d085047ee27025f2ef42bf04c2ee7c863ae5cb09dcd4eab733c3557af8ab63，38小文件/17签名JSON/8病例执行和覆盖核验通过。2828/2829已转screen-exact+FFN，后续拒绝/赢家待跑；原执行8c不改，不重交任务。55文件启动交付GitHub原字节通过，FFN结果同PR147继续同步。下方20:25首批状态保留为历史。
+
+用户授权两个Base模型迁移最新概率架构并比较PPL。负责人jieruiz；task/144-qwen3-stochastic，[PR147](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/147) draft/open未合并，base task/136-qwen3-bf16@0829b9c（依赖PR137）；原型采样核只读复用Issue141已发布7a286ec。执行源8c35145e0073e48581640cd07c770631412a3f99冻结，CPU2827全部通过；GPU2828=1.7B、2829=4B正在运行，勿重复提交。个人ROOT /home/Hongjie_Zeng/projects/pbit-qwen3-stochastic-20261023-issue144；复用基线venv/权重/原文，不重下载或更改其他任务。
+
+架构：W8/64x64固定权重、B4/T32/K32共享64 A8；max4/64token/8块/首末2强制；Qwen3 TRAIN独立16拟合+16holdout标量bias、temperature1；拒绝128接受样本、赢家1024更新，argmax/burn0/spacing1，理想FP32 Philox数值参考。原生QK-Norm→RoPE/GQA/cache/QKV/Wo保留，4B Q投影4096≠hidden2560已适配。FFN prefill+decode全层替换，Attention仅所有计分单token decode，prefill原生SDPA；不称物理RNG、RTL/PPA或等成本比较。
+
+每模型13配置：BF16一次；FFN-only、screen-exact+FFN、rejection128+FFN、winner1024+FFN各3seed。4096目标后缀/batch2，完整候选WT2未提交。CPU/GPU tiny与两个真实模型SDPA包装bitwise、kernel独立oracle/分布/仲裁/cap检查通过；完整BF16锚点原源码复现精确同NLL。后缀BF16已验证1.7B 7.5900880974、4B 6.3315746169；概率配置运行中，没有最终增量。首批26小原件归档、11sidecar/源码/模型/数据/覆盖验证、8篡改负例通过。正式入口qwen3/stochastic/README_ZH.md、qwen3/results/stochastic_20261023/REPORT_ZH.md、work/jieruiz/144/HANDOFF.md；收取工具/验证器为后加审计，不修改执行快照。恢复检查上述作业日志/results，不按旧基线heartbeat重复跑；旧qwen3定时已删除，此任务未新增定时。Projects缺read:project待同步。
+
 ## 2026-10-23 Issue136：Qwen3 Base 双模型基线已提交
 
 发布闭环：科学结果60d6947已推送PR137，35远端改动文件原字节核验、11提交原件SHA通过；PR现为ready/open、未合并，Issue136仍open待评审。heartbeat qwen3已实际删除，不继续轮询。work/jieruiz/136/FINAL_PUBLICATION.json记录真实回执；请勿按下方历史状态重跑。

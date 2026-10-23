@@ -358,14 +358,17 @@ def score_case(a, config, meta, tasks, documents, variant, scope):
                 variant['samples'], a.home, next(model.parameters()).device)
         torch.cuda.reset_peak_memory_stats(torch.device('cuda:0'))
         by_id = {row['id']: row for row in documents}
+        completed_documents = 0
         def progress(update):
+            nonlocal completed_documents
             with progress_path.open('a', encoding='utf-8', newline='\n') as stream:
                 for item in update['documents']:
                     source = by_id[item['id']]
                     enriched = dict(source, choices=item['choices'])
                     stream.write(json.dumps(dict(id=item['id'], task=task, doc_id=source['doc_id'],
                         choices=item['choices'], metrics=metrics_for(tasks, enriched)), separators=(',', ':')) + '\n')
-            print(json.dumps(dict(event='progress', case=name, completed=update['execution_audit']['completed_documents'],
+            completed_documents += len(update['documents'])
+            print(json.dumps(dict(event='progress', case=name, completed=completed_documents,
                                   elapsed_seconds=update['elapsed_seconds'])), flush=True)
         result = evaluate_tasks(model, documents, case, progress=progress)
         if scope == 'smoke':

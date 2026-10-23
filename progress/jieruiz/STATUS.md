@@ -1,3 +1,5 @@
+2026-10-23：两页说明已推送 PR132（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/132），待审未合并；科学交付125560a，远端Word与正文原字节已核验。详见work/jieruiz/129/BRIEF_PUBLICATION.json。
+
 ## 2026-10-23 Issue129 两页通俗说明
 
 按用户要求补充功耗面积节省机制、速度控制与剩余验证，面向非专业听众，省略内部结构细节。正式文件 architecture_tlm/memory_savings_20261023/概率计算的能耗面积与速度_两页说明.docx；两页，Word导出及逐页PNG检查通过。原7页报告保留，无新实验，不恢复暂停任务。分支 task/129-two-page-brief，复用 tmp/memory-savings-issue129-20261023；上传/PR以 BRIEF_PUBLICATION.json 为准，合并前不关闭Issue129。

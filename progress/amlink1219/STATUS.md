@@ -17,6 +17,20 @@
 ---
 以下为Issue98历史发布回执，与Issue116发布状态分开：
 
+发布回执（Issue121）：科学提交`3e8cb017e71a96aa628b1772810b7fdf12884245`已上传[PR122](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/122)，87项远端Git对象一致，开放待审、未合并。Issue116已回传接合结果；后续元数据提交不改变验证源码。
+
+# 2026-10-23 Issue121：编码恢复与周期后端接合
+
+负责人amlink1219；独立分支task/121-encoding-cycle，基线46804fb。已先核Issue116活跃本地实现，分工登记在#116；本包复用#107算术，参考#118/PR120供数边界，不改116工作树或默认FFN，不重复#117资源搜索。
+
+完成显式两类计数语义、FUSED0恢复、逐输出Resource/Operation适配及有限结果槽RTL。28项软件测试、12组cycle/event重放（1536输出）、27组最终RTL（6861输出/108reset flush）通过，另8项索引测试通过；源码/产物SHA已核。主服务器CPU-only作业2767/2769/2773均完成，未申请GPU，没有本任务运行作业。
+
+入口architecture_tlm/encoding_restore_contract/README_ZH.md；交接work/amlink1219/121/HANDOFF.md。116后端四文件固定本地已提交cd27d980，发布时需复核远端新接口；完整FFN接合、STA/每操作能量/质量仍待补。PPA保持null，未声称全链闭合。极小数舍入差和-128总线反号均有反例，新增模块AGENTS约束维护。
+
+成果已完成，上传/PR状态以work/amlink1219/121/PUBLICATION.json回执及远端ref为准；不自动合并/关闭。Projects实测缺read:project，暂待有权限者同步；仓库上传不受影响。
+
+---
+
 发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
 
 # Issue98 Prefill专项补充（2026-10-22）

@@ -1,3 +1,7 @@
+## 2026-10-23 Issue121 编码/恢复接合阶段
+
+独立入口[编码恢复合同](architecture_tlm/encoding_restore_contract/README_ZH.md)，分支task/121-encoding-cycle；复用107算术，116核心保持原负责人和工作树。两类计数rail含义不可直连，原FUSED0与旧hostfloat恢复在次正规数有反例。28软件测试、12周期重放、27严格协议RTL场景通过；最终CPU-only job2773为6861输出/108复位清空。后台数值适配当前按单活动组、逐输出恢复、有限结果信用运行，条件周期与RTL握手相位分开标注，未替换全FFN默认。完整STA/PPA/PPL仍未知。发布回执见work/amlink1219/121/PUBLICATION.json；116后端公开版本待再次冻结回归，Projects缺read:project。
+
 # p-bit LLM 项目长期备忘录
 
 ## 2026-10-23 Issue107：8类数字模块SS/TT 100MHz脚本包

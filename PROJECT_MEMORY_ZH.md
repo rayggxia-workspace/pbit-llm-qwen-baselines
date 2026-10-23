@@ -1103,3 +1103,12 @@ LLM对话先前独立压缩10网表约2.713GB及回收1个Issue19回执约0.188G
 ## 2026-10-23 Issue55第八轮审核快照
 
 PR119/120/122/125/126/127/130限定阶段成果通过；新#130为存储总结。独立组合359测试注册、358通过、1个Windows符号链接场景跳过；已复核208资源结果、48数据流轨迹及真实GQA公开回执。74份GQA源码有公开同字节祖先映射，修复旧未公开commit复核入口。台账取45记录/964配置行并集，不重复计新实验。详见work/jieruiz/55/round8/REVIEW_ZH.md；实际远端合并以Issue55收尾回执为准。Issue116/123暂停不变；全尺寸2783取消未验收，DC/PT未执行。下一项工艺工作是#125编码恢复SS/T32最小PPA，与Issue107八模块PPA包分开计费。
+
+
+## Issue151 交给权重持有者执行的便携交接（2026-10-23）
+
+用户改为直接发交接包给师弟、由其agent在自己服务器账号提交。新portable_runner动态核本人home/UID/隔离env及Slurm，沿用固定model/tokenizer/三parquet/YAML/Harness/tokenized pins；重新运行3项本机BF16＋PDNN20三任务三seed，总12case。旧Weican专用151 runner和145私有reference保留为历史入口，异地agent不读取/伪造旧路径。正式handoff/START_HERE_ZH.md、AGENTS.md、SERVER_RUN_ZH.md、RETURN_CHECKLIST_ZH.md及build_bundle.py均位于experiments/pdnn20_task_accuracy_20261023/。显式源码/数据包不含模型/checkpoint/env/凭据，Git只保存代码和包索引；接手者用自己身份、个人STATUS/work与独立分支/PR接续Issue151。
+
+本机36机制检查通过（共享22、历史6、便携8），便携CPU模板执行22＋8；真实20层checkpoint strict与GPU仍待持有者，无新20层准确率。CPU strict→6项真实smoke→12full→CPU汇总，不拿旧PPL当本次结果。结果manifest不散列仍在写的Slurm日志，终态后另记SHA。
+
+依赖145已完成：Slurm2835于2026-10-23 22:11:55北京时间COMPLETED/0:0，21case已验证发布，PR149@70cadf3484b8d95019d3d7554d7e003dafc6c526 ready/open未合并；先前“仍运行”仅为历史准备快照。执行前仍重新查最新任务/队列。交接任务PR155待审未合并，不恢复暂停116/123，不代师弟提交GPU。

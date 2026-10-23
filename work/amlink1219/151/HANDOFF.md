@@ -1,5 +1,17 @@
 # Issue151：20层 P-DNN 评测准备交接
 
+## 最新：交给权重持有者自己的agent执行（2026-10-23 22:17北京时间）
+
+用户请求可转发交接包，授权由师弟在其服务器账号提交。正式入口`experiments/pdnn20_task_accuracy_20261023/handoff/START_HERE_ZH.md`；包含agent必读规则、服务器profile/Slurm模板、环境约束、20文件清单、固定公开三parquet、路径无关pin、源码与机制测试、回传清单。不转交账号凭据，模型/20层权重由持有者提供；不必先传到Weican私有目录。
+
+`portable_runner.py`使用实际登录者canonical home/UID和个人隔离环境，须在个人Slurm分配内执行；不使用145私有reference。CPU strict→6项真实GPU smoke→3项fresh BF16＋9项PDNN20→CPU汇总。模型/tokenizer7文件、数据/YAML/Harness、固定tokenized bytes/IDs及20历史SHA/strictstate全部门禁；N4/seed0/1/2及原评分数学不变。接手者维护自己的STATUS/work、独立分支/PR并关联Issue151，不写amlink1219进度、不冒用身份。
+
+本机36项检查通过；其中便携CPU模板执行22＋8项，原151专用6项不在接手者账号执行。尚未在接手者服务器验证环境/真实权重或GPU，当前没有20层新准确率。交接ZIP的构建源commit、逐成员SHA和解压验证见本目录HANDOFF_BUNDLE_INDEX.json（生成后登记）；数据只在本地ZIP，Git仅放代码/文档/小型索引。包在源码外构建，不包含checkpoint/model/env/凭据。活动Slurm日志不计入执行中结果manifest，终态后另记最终SHA。
+
+最新依赖PR149@70cadf3484b8d95019d3d7554d7e003dafc6c526已ready/open，未合并；Slurm2835于22:11:55北京时间COMPLETED/0:0，21case原件/汇总已上传，终态及PR发布已核。下文旧“仍运行”仅是原准备时点记录；接手仍需重新核对全项目队列、任务分工与最新Issue/PR。没有为本次交接新提交GPU，不恢复116/123。
+
+以下为原Weican专用流程历史记录；异地agent不要照抄其路径和账户限制。
+
 负责人amlink1219；独立工作树`workspace_projects/pa20`；分支`task/151-pdnn20-task-accuracy`；依赖PR149发布的`86eb22e1243ec5e215cb98be755bb92fb8f57e31`。本PR以`task/145-pdnn-task-accuracy`为base，只交付20层扩展。145的pa145及本机一次性收尾进程仍单独拥有其目录，不在本任务编辑、切分支或改动冻结helper。
 
 ## 用户最新范围

@@ -1,5 +1,15 @@
 # 20层 P-DNN 的代表任务准确率准备
 
+## 直接交给权重持有者执行（2026-10-23 22:17北京时间）
+
+用户现授权把完整交接包发给师弟，由其agent在自己的服务器账号提交。便携入口为`portable_runner.py`，配套[接手说明](handoff/START_HERE_ZH.md)、[agent规则](handoff/AGENTS.md)、[Slurm执行](handoff/SERVER_RUN_ZH.md)和[结果回传](handoff/RETURN_CHECKLIST_ZH.md)。动态核验接手者自己的UID/canonical home/个人隔离环境，**不读取移交人的145私有目录**；重新计算本机3项BF16＋20层3任务×3seed，共12个完整case。保持原评分数学、模型/tokenizer/数据/harness/逐字节请求pin，先严格CPU后6项真实GPU smoke再全量。
+
+本机36项检查通过（22共享评分＋6原流程＋8便携门禁），便携交付的CPU模板只运行22共享评分＋8便携检查；原6项是历史Weican专用路径检查。真实20层权重仍未在移交人处提供，**未运行真实20层推理**。包包含固定三项公开parquet；ZIP只作本地转交，数据/权重不进Git。可复现构建器`handoff/build_bundle.py`只收集固定commit的显式源码和指定三parquet并逐成员SHA核验，生成到checkout外。
+
+依赖最新PR149现为`70cadf3484b8d95019d3d7554d7e003dafc6c526`、ready/open未合并；Slurm2835于2026-10-23 22:11:55北京时间COMPLETED/0:0，21/21两层/四层及BF16任务完成，已核验上传。不能把下文准备时点的“2835仍运行”当现状；接手仍查最新Issue/队列。
+
+下文保留原Weican本机专用准备流程及Slurm2862证据。异地agent使用上述便携入口，不执行下文硬编码个人路径。
+
 Issue151，负责人amlink1219。用户确认权重应在师弟处，由用户联系获取；本轮交付其余准备，**尚未执行真实20层模型推理，也没有新的20层准确率**。依赖Issue145 / PR149的已发布评分协议；独立分支`task/151-pdnn20-task-accuracy`、本机`workspace_projects/pa20`，PR base为`task/145-pdnn-task-accuracy`。运行中的145作业、工作树和收尾进程保持独立。
 
 服务器准备检查已完成：CPU-only Slurm2862 COMPLETED/0:0，22项评分机制＋6项流程检查全部通过；模型／tokenizer／三项数据／固定请求／harness源及145三个完整新BF16均已匹配。执行源码`ecd9418510565d76585aee71a4c5675dbcbd61e9`。当前唯一外部输入为20份待交接权重，记录状态`awaiting_external_inputs`、`gpu_allowed=false`；未生成PREFLIGHT_READY，未提交20层GPU。原件与终态见任务HANDOFF／preparation目录。

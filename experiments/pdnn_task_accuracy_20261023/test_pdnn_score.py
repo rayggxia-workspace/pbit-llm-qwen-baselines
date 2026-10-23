@@ -2,6 +2,7 @@
 from dataclasses import asdict
 import copy
 import json
+import os
 from pathlib import Path
 import tempfile
 import sys
@@ -307,7 +308,16 @@ class LoaderTests(unittest.TestCase):
     def setUp(self):
         # Use the writable checkout; Windows sandbox TEMP can name a different
         # profile's inaccessible package directory.
-        self.directory = tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[2])
+        temporary_root = Path(__file__).resolve().parents[2]
+        if os.environ.get('SLURM_JOB_ID'):
+            import pwd
+            personal_home = Path(pwd.getpwuid(os.getuid()).pw_dir).resolve(strict=True)
+            temporary_root = Path(os.environ['TMPDIR']).resolve(strict=True)
+            if (not temporary_root.is_relative_to(personal_home)
+                    or temporary_root.is_relative_to(Path(__file__).resolve().parents[2])
+                    or temporary_root.stat().st_uid != os.getuid()):
+                raise PermissionError('server tests need owned personal TMPDIR outside immutable source')
+        self.directory = tempfile.TemporaryDirectory(dir=temporary_root)
         self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)
         self.manifest = []

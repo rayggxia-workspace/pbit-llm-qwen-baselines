@@ -116,6 +116,9 @@ def setup(a):
                 for p in (source, a.model, a.task_data, a.checkpoint_dir)),
             'config must be packaged source; separate run output must be outside all immutable inputs')
     require(re.fullmatch('[0-9a-f]{40}', a.code_commit), 'exact package/execution commit identity required')
+    bundle_manifest = source / 'BUNDLE_MANIFEST.json'
+    require(bundle_manifest.is_file() and read(bundle_manifest)['code_commit'] == a.code_commit,
+            '--code-commit must match the supplied handoff BUNDLE_MANIFEST')
     config = validate_config(read(a.config))
     a.expected_path = own_path(a.config.parent / config['expected_checkpoint_manifest'], home)
     a.expected = validate_expected(read(a.expected_path))
@@ -149,6 +152,11 @@ def sources():
 
 def model_identity(a):
     from experiments.pdnn_task_accuracy_20261023.runner import model_identity as original_identity
+    # Authorize each canonical input before the original byte-hashing helper.
+    for name in set(a.pin['model_files']) | {'special_tokens_map.json', 'added_tokens.json'}:
+        path = a.model / name
+        if path.exists():
+            own_path(path, a.home)
     model = original_identity(a, dict(model_weight_sha256=MODEL_SHA))
     for entry in model['files'].values():
         own_path(entry['path'], a.home)
@@ -479,6 +487,13 @@ def run(a, config):
         score_case(a, config, marker, data, tasks, docs[task], case, 'full')
 
 
+def closed_result_artifacts(output):
+    # Slurm stdout/stderr keep changing until the batch shell exits. Their
+    # terminal hashes must be collected by the caller after job completion.
+    return sorted(p for p in Path(output).rglob('*') if p.is_file()
+                  and p.suffix in ('.json', '.jsonl') and p.name != 'ARTIFACT_MANIFEST.json')
+
+
 def summarize(a, config):
     marker, data, tasks, docs = frozen(a, config)
     verify_smoke(a, config, marker, data, tasks, docs)
@@ -514,9 +529,10 @@ def summarize(a, config):
                      'Historical WT2 PPL is not rerun or assumed.'], cross_task_average=None,
         completed_utc=datetime.now(timezone.utc).isoformat())
     write_new(a.output / 'SUMMARY.json', summary)
-    files = [p for p in a.output.rglob('*') if p.is_file() and p.name != 'ARTIFACT_MANIFEST.json']
+    files = closed_result_artifacts(a.output)
     write_new(a.output / 'ARTIFACT_MANIFEST.json', dict(profile=PROFILE, code_commit=a.code_commit,
-        files={p.relative_to(a.output).as_posix(): artifact(p) for p in sorted(files)}))
+        files={p.relative_to(a.output).as_posix(): artifact(p) for p in files},
+        active_slurm_logs='excluded; record their final hashes separately after the job reaches terminal state'))
     print(json.dumps(dict(event='portable_summary_completed', full_cases=12, tasks=tasks_summary)), flush=True)
 
 

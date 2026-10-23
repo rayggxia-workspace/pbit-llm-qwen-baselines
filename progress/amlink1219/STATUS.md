@@ -312,3 +312,10 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 辅助/交接：work/amlink1219/<Issue>/。本地工作目录及原任务提交见各PUBLICATION.json；旧STATUS可从原提交恢复。
 原始大trace/NPZ留服务器本人/home/Weican_Chen/projects/attention-e01-issue35；Issue37冻结源/原始结果留本人/home/Weican_Chen/projects/attention-compare-issue37。当前没有本轮在运行作业，不重交旧实验。
 下一步：审阅上述PR；继续完整随机Attention PPL、有限字长数字实现、真实随机相关性与同工艺PPA验证，不能由代理成本或局部NMSE宣布优势。
+
+
+## Issue151 服务器执行交接（2026-10-23 22:17北京时间）
+
+用户授权把完整包发给师弟，由其agent在自己的账号/个人目录/Slurm资源提交。已新增portable_runner及path-free固定pin、agent必读文档、Slurm模板、12case流程（本机freshBF16三项＋PDNN20九项）、显式源码/数据ZIP构建器和SHA校验；本机36项检查通过，接手CPU模板执行共享22＋便携8项。源码/权重/模型/tokenizer/数据/官方Harness/请求均冻结，不读145私有目录，不传凭据；真实20层权重及GPU仍待持有者验证，无20层新准确率。交接包索引work/amlink1219/151/HANDOFF_BUNDLE_INDEX.json在构建后补入，正式说明experiments/pdnn20_task_accuracy_20261023/handoff/START_HERE_ZH.md。独立pa20/原任务分支，PR155待审未合并；接手者用自己的progress/work/分支并接续Issue151。看板缺read:project仍待有权限者同步。
+
+最新核验依赖PR149@70cadf3484b8d95019d3d7554d7e003dafc6c526已ready/open未合并；原Slurm2835在22:11:55北京时间COMPLETED/0:0、21/21case已发布，未改其pa145或冻结worker；不把旧“运行中”沿用为当前状态。Issue116/123保持暂停。本交接不提交GPU，任何接手提交前重新查项目队列/Issue。

@@ -111,6 +111,13 @@ class PortableOwnershipGates(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'SHA'):
                 runner.checked(entry, self.home, self.project)
 
+    def test_result_manifest_excludes_still_active_scheduler_logs(self):
+        for name in ('PREFLIGHT_READY.json', 'case.documents.jsonl', 'gpu-10.out', 'gpu-10.err',
+                     'ARTIFACT_MANIFEST.json'):
+            (self.project / name).write_text('{}', encoding='utf-8')
+        self.assertEqual({p.name for p in runner.closed_result_artifacts(self.project)},
+                         {'PREFLIGHT_READY.json', 'case.documents.jsonl'})
+
 
 if __name__ == '__main__':
     unittest.main()

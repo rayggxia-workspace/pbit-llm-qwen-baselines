@@ -1,3 +1,26 @@
+# Issue145 两层／四层 P-DNN 21项完整准确率已交付（2026-10-23）
+
+负责人amlink1219，task/145-pdnn-task-accuracy，PR149。RTX5090单GPU2835 COMPLETED/0:0；CPU2834、18机制检查、9真实GPU smoke与21正式case全部通过，源f4eb25e53834e06220cbfad670ae03195eba8706。完整结果qwen/results/pdnn_task_accuracy_20261023/README_ZH.md与complete_21/，默认21case独立原件／SHA／固定题ID／24层执行／指标聚合审计通过。两层为现存joint4的10/12子集，非历史6/12；四层10..13，现存SHA不同于旧公开joint4，不继承旧PPL。无训练、W8或PPA结论。
+
+任务分支已准备完整结果，通过同一PR149上传、待审、未合并，不自动关闭Issue。最终远端核验以本任务PUBLICATION.json为准；Projects现场缺read:project，未同步看板。旧失败2833与初始1/21快照保留，Issue116/123仍暂停。没有本任务运行中的GPU作业；不得重复提交21case。
+
+
+---
+
+# Issue145 P-DNN两层／四层任务准确率（2026-10-23）
+
+本次有限收尾安排：只跟踪已提交的Slurm2835；完整21case终态成功且独立审计通过后，取回归档并更新同一PR149／Issue145。不会重提GPU、覆盖partial、创建替代PR、自动合并或关闭Issue。该过程占用pa145工作树；其他任务用独立工作树，不编辑此任务HEAD。实际进程启动／完成／阻塞分别以本机`outputs/pdnn_accuracy_20261023/WORKER_STARTED.json`、`WORKER_COMPLETED.json`、`WORKER_BLOCKED.json`为准。
+
+最新已取回核验4/21：两层10/12 PIQA三seed acc68.662±0.094%、acc_norm68.317±0.354%，相对BF16分别−1.850／−1.650个百分点；四层和其他两任务仍运行。正式阶段快照`qwen/results/pdnn_task_accuracy_20261023/piqa_two_layer_three_seeds/`。
+
+负责人amlink1219，`task/145-pdnn-task-accuracy`，独立`workspace_projects/pa145`，base集成`6966739a5223680888bf0315f7bb4f73423a1ae6`。用户指定两层和四层；沿用PIQA1838、ARC-Easy2376、HellaSwag固定1000题、官方lm_eval0.4.8、0-shot，BF16匹配对照，P-DNN N4三seed，计划21个完整case。新代码和协议入口`experiments/pdnn_task_accuracy_20261023/`，恢复入口`work/amlink1219/145/HANDOFF.md`。
+
+CPU Slurm2826/2834已COMPLETED/0:0，18机制测试、四权重strict state/type、数据及固定题ID、九项真实GPU smoke均通过。GPU2835在RTX5090运行21case；执行源`f4eb25e53834e06220cbfad670ae03195eba8706`。首个完整新BF16 PIQA1838：acc70.511425%、acc_norm69.967356%，原件SHA/逐题聚合/24层执行覆盖独立核验通过；其余case仍在运行，不作完整比较结论。首次GPU2833因runner进度字段不匹配失败，已修复，旧快照/失败日志/partial保留。
+
+四层10/11/12/13、两层为同组10/12子集，明确不是历史6/12；现存checkpoint SHA与旧公开joint4不同，不继承旧PPL。代码已上传[草稿PR149](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/149)，未合并；首个基线与smoke归档入口`qwen/results/pdnn_task_accuracy_20261023/`。当前无训练或环境安装，Issue116/123保持暂停。待全量21case结束取回核验、汇总、更新同一PR/Issue与状态；Projects沿既有read:project不足待同步。
+
+---
+
 # Issue116 已暂停（用户明确要求，2026-10-23）
 
 目标状态`paused`，不标complete、不自动恢复；只做收尾上传和交接。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审/未合并，暂停前已推送3347bd8，最终收尾提交与远端核验见`work/amlink1219/116/PUBLICATION.json`。权威入口：[暂停总结](../../work/amlink1219/116/PAUSE_REPORT_ZH.md)、[HANDOFF](../../work/amlink1219/116/HANDOFF.md)；A–G仅A完成本轮冻结，B/C/D/E/G部分完成，完整新后端F未开始。

@@ -1,6 +1,7 @@
 """Offline Issue157 artifact verification/reporting; standard library only.
 
 python -m qwen3.sparq.report RESULTS_DIR --output REPORT_DIR [--source-root SNAPSHOT]
+python -m qwen3.sparq.report SUPPLEMENT_DIR --supplement --source-root BUNDLE --parent-results RESULTS_DIR --output REPORT_DIR
 python -m qwen3.sparq.report --self-test
 
 Only immutable result envelopes count as evidence. progress.jsonl, smoke scores
@@ -33,6 +34,14 @@ BENCHMARK_MODES = ("native", "dense", "sparq")
 BENCHMARK_REPEATS = 3
 BENCHMARK_WARMUP = 1
 BENCHMARK_BATCH = 1
+SUPPLEMENT_SOURCES = {"qwen3/sparq/"+name for name in (
+    "bench_only.py", "benchmark.py", "core.py", "adapter.py", "run.py", "scoring.py", "task_data.py",
+    "batch_scoring.py", "SOURCES.json", "model_identity.json", "test_bench_only.py", "BENCH_ONLY_ZH.md")}
+SUPPLEMENT_SOURCES.add("qwen3/stochastic/vendor/scoring.py")
+UNCHANGED_NUMERICS = {"qwen3/sparq/core.py", "qwen3/sparq/adapter.py", "qwen3/stochastic/vendor/scoring.py"}
+SUPPLEMENT_MODEL_FILES = {"config.json", "generation_config.json", "merges.txt", "model-00001-of-00003.safetensors",
+    "model-00002-of-00003.safetensors", "model-00003-of-00003.safetensors", "model.safetensors.index.json",
+    "tokenizer.json", "tokenizer_config.json", "vocab.json"}
 
 
 class AuditError(ValueError):
@@ -496,14 +505,21 @@ def _verify_power(item):
     _equal_number(power["average_board_power_w"], energy/duration, "sampled average power")
 
 
-def _benchmark(result, identity):
+def _benchmark(result, identity, *, supplement=False):
     if result is None:
         return dict(present=False, verified_complete=False)
     require(result["original_ffn_guard_passed"] is True and result.get("physical_PPA") is None, "benchmark FFN/PPA boundary differs")
     require(result.get("attention_config") == identity["config"], "benchmark config differs from quality identity")
     provenance = result.get("model_provenance", {})
-    require((provenance.get("model"), provenance.get("revision"), provenance.get("source_commit")) ==
-            (MODEL, REVISION, identity["execution"]["commit"]), "benchmark model/source identity differs")
+    execution = identity["measuring_execution"] if supplement else identity["execution"]
+    source_key = "measuring_source_commit" if supplement else "source_commit"
+    require((provenance.get("model"), provenance.get("revision"), provenance.get(source_key)) ==
+            (MODEL, REVISION, execution["commit"]), "benchmark model/source identity differs")
+    if supplement:
+        require(provenance.get("role") == "measurement_supplement" and
+                provenance.get("parent_quality_source_commit") == identity["parent"]["quality_source_commit"] and
+                provenance.get("parent_identity_sha256") == identity["parent"]["identity_sha256"] and
+                provenance.get("job") == identity["job"], "supplement benchmark parent/job provenance differs")
     require(result.get("test") == "qwen3_sparq_real_model_reference_benchmark" and
             _int(result.get("schema"), "benchmark schema") == 1, "unsupported benchmark schema")
     for field, declared in (("contexts", BENCHMARK_CONTEXTS), ("decode_lengths", BENCHMARK_DECODE_LENGTHS),
@@ -579,7 +595,7 @@ def _benchmark(result, identity):
                 ratios.append(dict(context_tokens=c, decode_steps=d,
                     dense_over_sparq_decode_wall=rows["dense"]["decode"]["wall_seconds"]/rows["sparq"]["decode"]["wall_seconds"]))
     power_reason = result.get("nvml_unavailable_reason")
-    files = identity["execution"]["files"]
+    files = execution["files"]
     known_prefix_bug = (files.get("qwen3/sparq/run.py") == "062014149221ee535c542bde5edd78ccc0df1340c8336c19210893a7eb17f484"
         and files.get("qwen3/sparq/benchmark.py") == "914183ca600c60ed5ce62ec031b4a58be64ff2ff923f9e90c0a9c8276f0bcad9"
         and re.fullmatch(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", result.get("torch_device_uuid", ""))
@@ -644,6 +660,223 @@ def review(root, *, source_root=None):
     return result
 
 
+def _verified_envelope(path, identity, files):
+    value = _load(path)
+    require(value.get("experiment") == fingerprint(identity), f"experiment identity mismatch: {path.name}")
+    require(value.get("result_sha256") == fingerprint(value.get("result")), f"result hash mismatch: {path.name}")
+    for record in _walk(value["result"]):
+        for name, checksum in record.get("source_files_sha256", {}).items():
+            require(files.get(name) == checksum, f"result source differs from identity: {name}")
+    return value["result"], dict(file_sha256=sha(path), result_sha256=value["result_sha256"], job=value.get("job"))
+
+
+def _gpu_uuid(value):
+    require(isinstance(value, str), "missing GPU UUID")
+    bare = value[4:] if value.startswith("GPU-") else value
+    require(re.fullmatch(r"[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}", bare), "invalid GPU UUID")
+    return "GPU-"+bare.lower()
+
+
+def review_benchmark_supplement(root, source_root, *, parent_results):
+    """Verify separate measurement artifacts; never inherit quality completion.
+
+    The caller must provide the actual parent IDENTITY bytes and frozen measuring
+    bundle. This checks hashes and consistency, not authorship or checkpoint bytes.
+    Missing completion files return partial; inconsistent present files fail closed.
+    """
+    require(source_root is not None and parent_results is not None, "supplement needs source_root and parent_results")
+    root, source_root, parent_results = (Path(p).resolve(strict=True) for p in (root, source_root, parent_results))
+    require(not root.is_relative_to(parent_results) and not parent_results.is_relative_to(root),
+            "supplement and original quality result directories must be separate")
+    identity_path = _safe_child(root, "IDENTITY.json")
+    identity = _load(identity_path)
+    require(identity.get("kind") == "benchmark_supplement", "not a benchmark supplement identity")
+    require(identity.get("quality_evaluation_performed") is False and
+            identity.get("original_quality_results_inherited") is False and
+            identity.get("task_datasets_revalidated") is False, "supplement claims inherited/new task evaluation")
+    require((identity.get("model"), identity.get("revision"), identity.get("original_ffn")) ==
+            (MODEL, REVISION, True) and identity["original_ffn"] is True, "supplement model/FFN differs")
+    require(_int(identity.get("seed"), "supplement seed") == 0, "supplement seed differs")
+    job = identity.get("job")
+    require(isinstance(job, str) and re.fullmatch(r"[0-9]+", job), "invalid supplement job identity")
+    gpu_uuid = _gpu_uuid(identity.get("gpu_uuid"))
+    schedule = dict(contexts=list(BENCHMARK_CONTEXTS), decode_lengths=list(BENCHMARK_DECODE_LENGTHS),
+        modes=list(BENCHMARK_MODES), warmup=BENCHMARK_WARMUP, repeats=BENCHMARK_REPEATS, power_interval_s=.02)
+    require(fingerprint(identity.get("benchmark_schedule")) == fingerprint(schedule), "supplement schedule differs")
+    execution = identity["measuring_execution"]
+    require(execution == _load(_safe_child(source_root, "EXECUTION.json")), "bundle EXECUTION differs from supplement identity")
+    require(execution.get("repo") == "rayggxia-workspace/pbit-llm-qwen-baselines" and
+            execution.get("purpose") == "benchmark_supplement" and type(execution.get("schema")) is int and
+            execution["schema"] == 1, "invalid supplement source manifest")
+    _hash(execution.get("commit"), "measuring source commit", 40)
+    files = execution["files"]
+    require(set(files) == SUPPLEMENT_SOURCES, "supplement source closure differs")
+    for name, checksum in files.items():
+        _hash(checksum, name)
+        path = _safe_child(source_root, name)
+        require(path.is_file() and sha(path) == checksum, f"supplement source bytes differ: {name}")
+
+    parent_path = _safe_child(parent_results, "IDENTITY.json")
+    parent = _load(parent_path)
+    parent_identity = _identity(parent, None)
+    link = identity["parent"]
+    require(link.get("identity_sha256") == sha(parent_path) and
+            link.get("identity_fingerprint") == fingerprint(parent) and
+            link.get("quality_source_commit") == parent["execution"]["commit"], "parent IDENTITY raw hash/fingerprint/source differs")
+    require(identity["ready_sha256"] == parent["ready_sha256"] and identity["tokens_sha256"] == parent["tokens_sha256"] and
+            identity["environment"] == parent["environment"] and
+            fingerprint(identity["config"]) == fingerprint(parent["config"]) and
+            identity["config"]["validate_finite"] is False and parent.get("seed") == 0,
+            "supplement parent inputs/config/environment differ")
+    for name in UNCHANGED_NUMERICS:
+        require(files[name] == parent["execution"]["files"].get(name), f"supplement numerical dependency changed: {name}")
+    parent_receipts = {}
+    for name in ("preflight", "benchmark"):
+        path = _safe_child(parent_results, name+".json")
+        require(sha(path) == link.get(name+"_artifact_sha256"), f"parent {name} raw hash differs")
+        value, parent_receipts[name] = _verified_envelope(path, parent, parent["execution"]["files"])
+        if name == "preflight":
+            require(value.get("passed") is True, "parent preflight did not pass")
+        else:
+            original_benchmark = value
+            require(value.get("source_files_sha256") == {"qwen3/sparq/"+n:parent["execution"]["files"].get("qwen3/sparq/"+n)
+                for n in ("benchmark.py","adapter.py","core.py")}, "parent benchmark source references differ")
+            _hash(value.get("token_ids_shape_and_le_int64_sha256"), "parent benchmark token/shape fingerprint")
+            _benchmark(value, parent)
+    model_files = identity["verified_model_files"]
+    require(len(model_files) == 10 and {r["name"] for r in model_files} == SUPPLEMENT_MODEL_FILES,
+            "supplement model-file receipt differs")
+    for row in model_files:
+        _int(row["bytes"], "recorded model file bytes", 1)
+        _hash(row["sha256"], "recorded model file")
+    _hash(identity["verified_corpus_sha256"], "recorded corpus")
+
+    artifact_path = _safe_child(root, "benchmark_supplement.json")
+    benchmark, receipts, completed = dict(present=False, verified_complete=False), {}, None
+    power_windows, phase_windows = 0, 0
+    if artifact_path.exists():
+        completed, receipts[artifact_path.name] = _verified_envelope(artifact_path, identity, files)
+        require(receipts[artifact_path.name]["job"] == job, "supplement envelope job differs")
+        require(completed.get("measurement_complete") is True and completed.get("quality_evaluation_complete") is False and
+                completed.get("physical_asic_ppa") is None and completed.get("parent") == link and
+                completed.get("measuring_source_commit") == execution["commit"], "supplement completion scope/source differs")
+        measured = completed["benchmark"]
+        required_hashes = {"qwen3/sparq/"+n:files["qwen3/sparq/"+n] for n in ("benchmark.py","adapter.py","core.py")}
+        require(measured.get("source_files_sha256") == required_hashes, "supplement benchmark source references differ")
+        require(measured.get("token_ids_shape") == original_benchmark["token_ids_shape"] and
+                measured.get("token_ids_shape_and_le_int64_sha256") == original_benchmark["token_ids_shape_and_le_int64_sha256"],
+                "supplement benchmark input token/shape fingerprint differs")
+        require(_gpu_uuid(measured.get("torch_device_uuid")) == gpu_uuid and
+                measured.get("gpu_name") == identity["gpu_name"], "supplement measured GPU differs")
+        require(measured.get("torch_version") == identity["environment"]["torch"] and
+                measured.get("parameter_dtypes") == ["torch.bfloat16"], "supplement measured runtime/dtype differs")
+        benchmark = _benchmark(measured, identity, supplement=True)
+        for row in measured["trials"]:
+            for phase in ("prefill", "decode"):
+                item = row[phase]
+                phase_windows += 1
+                require(item.get("phase_energy_attribution_validated") is False, "supplement overclaims phase power attribution")
+                _equal_number(item["power_poll_interval_s"], schedule["power_interval_s"], "supplement power interval")
+                if item.get("power") is not None:
+                    # Verify even when another repeat's null makes the median null.
+                    require(item.get("power_unavailable_reason") is None, "available power also claims unavailable")
+                    _verify_power(item)
+                    power_windows += 1
+                else:
+                    require(isinstance(item.get("power_unavailable_reason"), str) and item["power_unavailable_reason"],
+                            "null power lacks reason")
+        if measured.get("nvml_gpu_uuid") is not None:
+            require(_gpu_uuid(measured["nvml_gpu_uuid"]) == gpu_uuid, "supplement NVML GPU attribution differs")
+        if power_windows:
+            require(measured.get("nvml_unavailable_reason") is None and measured.get("nvml_gpu_uuid") is not None,
+                    "supplement available power lacks NVML attribution")
+        power_status = "sampled_board_estimates" if power_windows else "unavailable"
+        require(_int(completed.get("power_windows_available"), "power window count") == power_windows and
+                _int(completed.get("total_phase_windows"), "phase window count") == phase_windows == 108 and
+                completed.get("power_status") == power_status, "supplement power coverage/status differs")
+
+    producer_path, sidecar_path = _safe_child(root, "report.json"), _safe_child(root, "report.sha256.json")
+    transfer_hashes, producer_verified = {}, False
+    if producer_path.exists() and sidecar_path.exists():
+        require(completed is not None, "supplement report lacks completed benchmark envelope")
+        sidecar = _load(sidecar_path)
+        require(sidecar.get("file") == "report.json" and sidecar.get("sha256") == sha(producer_path), "supplement report raw hash differs")
+        producer = _load(producer_path)
+        expected_fields = dict(kind="benchmark_supplement_report", measurement_complete=True,
+            quality_evaluation_complete=False, original_quality_results_inherited=False,
+            parent=link, model=MODEL, revision=REVISION, measuring_execution=execution, job=job,
+            gpu_uuid=identity["gpu_uuid"], gpu_name=identity["gpu_name"], environment=identity["environment"],
+            config=identity["config"], schedule=schedule, original_ffn=True,
+            ready_sha256=identity["ready_sha256"], verified_corpus_sha256=identity["verified_corpus_sha256"],
+            verified_model_files=model_files, tokens_sha256=identity["tokens_sha256"],
+            power_status=completed["power_status"], power_windows_available=power_windows,
+            phase_energy_attribution_validated=False, physical_asic_ppa=None,
+            timing_protocol=measured["timing_protocol"], scope=measured["scope"],
+            nvml_gpu_uuid=measured["nvml_gpu_uuid"], nvml_unavailable_reason=measured["nvml_unavailable_reason"],
+            summaries=measured["summaries"], trial_count=54)
+        for name, expected in expected_fields.items():
+            require(fingerprint(producer.get(name)) == fingerprint(expected), f"producer report differs: {name}")
+        transfers = producer.get("transfer_artifacts", {})
+        require({"IDENTITY.json", "INVOCATION.json", "benchmark_supplement.json"} <= set(transfers) <=
+                {"IDENTITY.json", "INVOCATION.json", "benchmark_supplement.json", "progress.jsonl", "FAILED.json"},
+                "supplement transfer manifest missing/unexpected artifacts")
+        for name, record in transfers.items():
+            path = _safe_child(root, name)
+            require(path.is_file() and sha(path) == record["sha256"] and
+                    _int(record["bytes"], "transfer bytes") == path.stat().st_size, f"supplement transfer bytes differ: {name}")
+            transfer_hashes[name] = record
+        require(_load(_safe_child(root, "INVOCATION.json")).get("job") == job, "supplement invocation job differs")
+        producer_verified = True
+    measurement_complete = benchmark["verified_complete"] and producer_verified
+    result = dict(schema=1, kind="benchmark_supplement_review",
+        status="measurement_complete_verified" if measurement_complete else "measurement_partial_verified",
+        measurement_complete=measurement_complete, quality_evaluation_complete=False,
+        original_quality_results_inherited=False, input_root=str(root),
+        identity=dict(model=MODEL, revision=REVISION, original_ffn=True, config=identity["config"],
+            measuring_source_commit=execution["commit"], local_source_bytes_verified=True,
+            registered_source_files=len(files), source_manifest_sha256=sha(source_root/"EXECUTION.json"),
+            model_weight_bytes_rehashed=False, job=job),
+        parent=dict(identity_file_sha256=sha(parent_path), identity_fingerprint=fingerprint(parent),
+            quality_source_commit=parent_identity["source_commit"], artifacts=parent_receipts,
+            preflight_passed=True, quality_completion_not_evaluated=True),
+        integrity=dict(experiment=fingerprint(identity), identity_file_sha256=sha(identity_path),
+            envelopes=receipts, envelope_count=len(receipts), producer_report_verified=producer_verified,
+            producer_report_sha256=sha(producer_path) if producer_verified else None,
+            downloaded_file_hashes_verified=len(transfer_hashes), transfer_artifacts=transfer_hashes),
+        benchmark=benchmark, power_windows_available=power_windows, total_phase_windows=phase_windows,
+        phase_energy_attribution_validated=False, physical_asic_ppa=None,
+        prior_failure_diagnostic_present=_safe_child(root, "FAILED.json").exists(),
+        limitations=["supplement does not evaluate or inherit PPL/task completion",
+            "offline verification rehashes measuring source; model/corpus byte checks are execution receipts, not repeated here",
+            "GPU board sampled estimates are not isolated phase/ASIC power; null windows retain reasons",
+            "hash consistency is not cryptographic authorship proof"], reporter_sha256=sha(__file__))
+    json.dumps(result, allow_nan=False)
+    return result
+
+
+def supplement_markdown(report):
+    bench, identity, parent = report["benchmark"], report["identity"], report["parent"]
+    lines = ["# SparQ / Qwen3-4B：独立 benchmark 补测核验", "",
+        f"测量完整：`{report['measurement_complete']}`；质量评测完整：`False`。本报告不继承或补全原 PPL / 任务结果。",
+        f"测量源码：`{identity['measuring_source_commit']}`，已核 {identity['registered_source_files']} 个实际文件字节；原 FFN 保留。",
+        f"原质量源码：`{parent['quality_source_commit']}`；原 IDENTITY 原始 SHA：`{parent['identity_file_sha256']}`。",
+        f"核验完成 envelope {report['integrity']['envelope_count']} 个；生产报告及传输散列已核：`{report['integrity']['producer_report_verified']}`。", ""]
+    if bench["present"]:
+        lines += [f"GPU：{bench['gpu_name']}，UUID `{bench['gpu_uuid']}`。54 次完整模型 Python 参考运行；不是优化稀疏 kernel。",
+            f"有效功率窗口：{report['power_windows_available']}/{report['total_phase_windows']}；每个非空窗口独立重积分。NVML 原因：{bench['power_unavailable_interpretation']}。", "",
+            "| 上下文 | decode步数 | 模式 | prefill秒 | decode秒 | decode token/s | decode板级估计J |",
+            "|---|---:|---|---:|---:|---:|---:|"]
+        for row in bench["summaries"]:
+            power = row["decode"]["power"]
+            energy = "null" if power is None else f"{power['sampled_board_energy_j']:.6g}"
+            lines.append(f"| {row['context_tokens']} | {row['decode_steps']} | {row['mode']} | {row['prefill']['wall_seconds']:.6g} | {row['decode']['wall_seconds']:.6g} | {row['decode']['tokens_per_wall_second']:.6g} | {energy} |")
+    else:
+        lines.append("完成的 benchmark envelope 尚未下载/生成；progress 不作为完整结果。")
+    lines += ["", "NVML 为板级采样估计，近期 GPU 的传感值为约 1 秒平均；逐 phase 能量归因未验证。ASIC 面积、功率、速度均为 null。",
+        "离线已重算源码和结果散列；模型/语料字节核验来自执行端 receipt，本报告未重新读取大模型权重。", ""]
+    return "\n".join(lines)
+
+
 def markdown(report):
     title = "完整结果已核验" if report["complete"] else "部分结果已核验，完整任务尚未确认"
     identity, integrity = report["identity"], report["integrity"]
@@ -699,6 +932,7 @@ def _self_test():
     import tempfile
     import unittest
     import sys
+    import subprocess
 
     identity = dict(config=dict(r=32,k_total=128,local_total=32,reallocation=False,
         selection="probability_sum",validate_finite=False), ppl=dict(context=2048,stride=1024,batch=32,chunk=1),
@@ -760,6 +994,84 @@ def _self_test():
             contexts=list(BENCHMARK_CONTEXTS),decode_lengths=list(BENCHMARK_DECODE_LENGTHS),modes=list(BENCHMARK_MODES),
             measured_repeats=3,warmup_trials_per_case_mode=1,token_ids_shape=[1,3000],
             gpu_name="CPU fixture only; no GPU measurement",trials=trials,summaries=summaries)
+
+    def supplement_fixture(directory):
+        # Synthetic unit fixture only. No real measurement is rewritten/relabelled.
+        directory = Path(directory)
+        source, parent_root, root = (directory/name for name in ("source","parent","supplement"))
+        for path in (source,parent_root,root):
+            path.mkdir()
+        def save(path, value):
+            path.write_text(json.dumps(value,sort_keys=True,allow_nan=False)+"\n",encoding="utf-8",newline="\n")
+        files = {}
+        for name in SUPPLEMENT_SOURCES:
+            path = source/name
+            path.parent.mkdir(parents=True,exist_ok=True)
+            path.write_bytes(("synthetic non-executable unit source: "+name+"\n").encode())
+            files[name] = sha(path)
+        execution = dict(schema=1,purpose="benchmark_supplement",commit="c"*40,
+            repo="rayggxia-workspace/pbit-llm-qwen-baselines",files=files)
+        save(source/"EXECUTION.json", execution)
+        parent = copy.deepcopy(identity)
+        parent.update(model=MODEL,revision=REVISION,original_ffn=True,seed=0,
+            tasks={n:dict(documents=c,split=s,dataset_sha256=h) for n,(c,s,h) in TASKS.items()},
+            ready_sha256="d"*64,task_tokenization_sha256="e"*64,environment={"torch":"synthetic unit fixture; no model"})
+        parent["execution"].update(repo=execution["repo"],files=copy.deepcopy(files))
+        parent["execution"]["files"]["qwen3/sparq/benchmark.py"] = "1"*64
+        save(parent_root/"IDENTITY.json",parent)
+        original = benchmark_fixture()
+        original.update(source_files_sha256={n:parent["execution"]["files"][n] for n in
+            ("qwen3/sparq/benchmark.py","qwen3/sparq/adapter.py","qwen3/sparq/core.py")},
+            token_ids_shape_and_le_int64_sha256="f"*64)
+        for name,value in (("preflight",dict(passed=True)),("benchmark",original)):
+            save(parent_root/(name+".json"),dict(experiment=fingerprint(parent),result=value,result_sha256=fingerprint(value)))
+        link = dict(identity_sha256=sha(parent_root/"IDENTITY.json"),identity_fingerprint=fingerprint(parent),
+            quality_source_commit=parent["execution"]["commit"],path="/synthetic/parent",
+            benchmark_artifact_sha256=sha(parent_root/"benchmark.json"),preflight_artifact_sha256=sha(parent_root/"preflight.json"))
+        schedule = dict(contexts=list(BENCHMARK_CONTEXTS),decode_lengths=list(BENCHMARK_DECODE_LENGTHS),
+            modes=list(BENCHMARK_MODES),warmup=1,repeats=3,power_interval_s=.02)
+        supplement_identity = dict(kind="benchmark_supplement",parent=link,measuring_execution=execution,
+            ready_sha256=parent["ready_sha256"],model=MODEL,revision=REVISION,
+            verified_model_files=[dict(name=n,bytes=1,sha256="a"*64) for n in sorted(SUPPLEMENT_MODEL_FILES)],
+            verified_corpus_sha256="b"*64,tokens_sha256=parent["tokens_sha256"],config=parent["config"],
+            benchmark_schedule=schedule,original_ffn=True,seed=0,environment=parent["environment"],
+            gpu_name=original["gpu_name"],gpu_uuid="01234567-89ab-cdef-0123-456789abcdef",job="999",
+            original_quality_results_inherited=False,quality_evaluation_performed=False,task_datasets_revalidated=False)
+        measured = copy.deepcopy(original)
+        measured.update(model_provenance=dict(model=MODEL,revision=REVISION,measuring_source_commit=execution["commit"],
+            parent_quality_source_commit=link["quality_source_commit"],parent_identity_sha256=link["identity_sha256"],
+            job="999",role="measurement_supplement"),torch_device_uuid=supplement_identity["gpu_uuid"],
+            nvml_gpu_uuid=None,nvml_unavailable_reason="synthetic unit fixture; no NVML",timing_protocol="unit fixture",
+            torch_version=parent["environment"]["torch"],parameter_dtypes=["torch.bfloat16"],
+            scope="synthetic unit fixture; no real GPU measurement",
+            source_files_sha256={n:files[n] for n in original["source_files_sha256"]})
+        for row in measured["trials"]:
+            for phase in ("prefill","decode"):
+                row[phase].update(phase_energy_attribution_validated=False,power_poll_interval_s=.02,
+                    power_unavailable_reason="synthetic unit fixture; no NVML")
+        completed = dict(measurement_complete=True,quality_evaluation_complete=False,parent=link,
+            measuring_source_commit=execution["commit"],benchmark=measured,power_windows_available=0,
+            total_phase_windows=108,power_status="unavailable",physical_asic_ppa=None)
+        def flush():
+            save(root/"IDENTITY.json",supplement_identity)
+            save(root/"INVOCATION.json",dict(job="999",unit_fixture=True))
+            save(root/"benchmark_supplement.json",dict(experiment=fingerprint(supplement_identity),
+                result=completed,result_sha256=fingerprint(completed),job="999"))
+            producer = {key:supplement_identity[key] for key in ("parent","model","revision","measuring_execution",
+                "job","gpu_uuid","gpu_name","environment","config","original_ffn","verified_model_files","tokens_sha256",
+                "ready_sha256","verified_corpus_sha256")}
+            producer.update(kind="benchmark_supplement_report",measurement_complete=True,quality_evaluation_complete=False,
+                original_quality_results_inherited=False,schedule=schedule,power_status=completed["power_status"],
+                power_windows_available=completed["power_windows_available"],phase_energy_attribution_validated=False,
+                physical_asic_ppa=None,trial_count=len(measured["trials"]),
+                **{k:measured[k] for k in ("timing_protocol","scope","nvml_gpu_uuid","nvml_unavailable_reason","summaries")})
+            producer["transfer_artifacts"] = {n:dict(bytes=(root/n).stat().st_size,sha256=sha(root/n)) for n in
+                ("IDENTITY.json","INVOCATION.json","benchmark_supplement.json")}
+            save(root/"report.json",producer)
+            save(root/"report.sha256.json",dict(file="report.json",sha256=sha(root/"report.json")))
+        flush()
+        return dict(root=root,source=source,parent=parent_root,identity=supplement_identity,
+                    completed=completed,measured=measured,flush=flush,save=save)
 
     class Tests(unittest.TestCase):
         def test_actual_plan_tail_and_denominator(self):
@@ -891,6 +1203,74 @@ def _self_test():
                     with self.assertRaises(AuditError):
                         _benchmark(bad, identity)
 
+        def test_supplement_complete_null_power_never_inherits_quality(self):
+            with tempfile.TemporaryDirectory(prefix="supplement_unit_",dir=Path(__file__).parent) as temp:
+                s = supplement_fixture(temp)
+                got = review_benchmark_supplement(s["root"],s["source"],parent_results=s["parent"])
+                self.assertTrue(got["measurement_complete"])
+                self.assertFalse(got["quality_evaluation_complete"])
+                self.assertEqual(got["benchmark"]["verified_trial_count"],54)
+                self.assertEqual(got["power_windows_available"],0)
+                self.assertEqual(got["identity"]["registered_source_files"],13)
+                self.assertIn("质量评测完整：`False`",supplement_markdown(got))
+                output = Path(temp)/"review"
+                command = [sys.executable,"-m","qwen3.sparq.report",str(s["root"]),"--supplement",
+                    "--source-root",str(s["source"]),"--parent-results",str(s["parent"]),"--output",str(output)]
+                subprocess.run(command,cwd=Path(__file__).resolve().parents[2],capture_output=True,
+                               text=True,encoding="utf-8",check=True)
+                written = _load(output/"REVIEW.json")
+                self.assertTrue(written["measurement_complete"])
+                self.assertFalse(written["quality_evaluation_complete"])
+                self.assertTrue((output/"REVIEW_ZH.md").is_file())
+                (s["root"]/"report.sha256.json").unlink()
+                partial = review_benchmark_supplement(s["root"],s["source"],parent_results=s["parent"])
+                self.assertFalse(partial["measurement_complete"])
+                self.assertFalse(partial["quality_evaluation_complete"])
+                (s["root"]/"benchmark_supplement.json").unlink()
+                (s["root"]/"report.json").unlink()
+                partial = review_benchmark_supplement(s["root"],s["source"],parent_results=s["parent"])
+                self.assertFalse(partial["benchmark"]["present"])
+                self.assertFalse(partial["measurement_complete"])
+
+        def test_supplement_hash_source_parent_scope_and_matrix_fail_closed(self):
+            mutations = (
+                lambda s: (s["source"]/"qwen3/sparq/adapter.py").write_bytes(b"changed source"),
+                lambda s: (s["parent"]/"IDENTITY.json").write_bytes((s["parent"]/"IDENTITY.json").read_bytes()+b" "),
+                lambda s: (s["root"]/"report.json").write_bytes((s["root"]/"report.json").read_bytes()+b" "),
+                lambda s: s["save"](s["root"]/"INVOCATION.json",dict(job="other")),
+                lambda s: (s["completed"].update(quality_evaluation_complete=True),s["flush"]()),
+                lambda s: (s["measured"]["model_provenance"].update(measuring_source_commit="0"*40),s["flush"]()),
+                lambda s: (s["measured"]["trials"].pop(),s["flush"]()),
+                lambda s: (s["identity"]["parent"].update(identity_sha256="0"*64),s["flush"]()),
+                lambda s: (s["measured"].update(token_ids_shape_and_le_int64_sha256="0"*64),s["flush"]()),
+            )
+            for index,mutation in enumerate(mutations):
+                with self.subTest(case=index), tempfile.TemporaryDirectory(prefix="supplement_unit_",dir=Path(__file__).parent) as temp:
+                    s = supplement_fixture(temp)
+                    mutation(s)
+                    with self.assertRaises(AuditError):
+                        review_benchmark_supplement(s["root"],s["source"],parent_results=s["parent"])
+
+        def test_supplement_verifies_power_even_when_summary_is_null(self):
+            with tempfile.TemporaryDirectory(prefix="supplement_unit_",dir=Path(__file__).parent) as temp:
+                s = supplement_fixture(temp)
+                measured = s["measured"]
+                measured.update(nvml_gpu_uuid="GPU-"+s["identity"]["gpu_uuid"],nvml_unavailable_reason=None)
+                item = measured["trials"][0]["decode"]
+                item.update(power=dict(sampled_board_energy_j=40.,average_board_power_w=20.),
+                    power_unavailable_reason=None,
+                    power_samples_relative_s_w=[(i/10,20.) for i in range(-1,22)],
+                    max_sample_gap_s=.1,max_allowed_sample_gap_s=.25)
+                s["completed"].update(power_windows_available=1,power_status="sampled_board_estimates")
+                s["flush"]()
+                got = review_benchmark_supplement(s["root"],s["source"],parent_results=s["parent"])
+                self.assertTrue(got["measurement_complete"])
+                self.assertEqual(got["power_windows_available"],1)
+                self.assertIsNone(got["benchmark"]["summaries"][0]["decode"]["power"])
+                item["power"]["sampled_board_energy_j"] = 4000.
+                s["flush"]()
+                with self.assertRaisesRegex(AuditError,"power integral"):
+                    review_benchmark_supplement(s["root"],s["source"],parent_results=s["parent"])
         def test_tamper_and_cross_experiment_fail(self):
             with tempfile.TemporaryDirectory(prefix="report_test_", dir=Path(__file__).parent) as temp:
                 root = Path(temp)
@@ -932,6 +1312,8 @@ def main():
     parser.add_argument("results", nargs="?")
     parser.add_argument("--output")
     parser.add_argument("--source-root")
+    parser.add_argument("--supplement", action="store_true", help="verify independent benchmark supplement only")
+    parser.add_argument("--parent-results", help="actual original quality result directory for supplement parent raw SHA checks")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
     if args.self_test:
@@ -939,12 +1321,21 @@ def main():
         return
     if not args.results or not args.output:
         parser.error("results and --output are required")
+    if args.supplement and (not args.source_root or not args.parent_results):
+        parser.error("--supplement requires --source-root and --parent-results")
+    if args.parent_results and not args.supplement:
+        parser.error("--parent-results is only valid with --supplement")
     source = Path(args.results).resolve(strict=True)
     destination = Path(args.output).resolve()
     require(not destination.is_relative_to(source), "report output must be outside immutable input results")
-    result = review(source, source_root=args.source_root)
+    if args.supplement:
+        for protected in (args.source_root, args.parent_results):
+            require(not destination.is_relative_to(Path(protected).resolve(strict=True)), "report output must be outside source/parent artifacts")
+        result = review_benchmark_supplement(source, args.source_root, parent_results=args.parent_results)
+    else:
+        result = review(source, source_root=args.source_root)
     outputs = (("REVIEW.json", json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False)+"\n"),
-               ("REVIEW_ZH.md", markdown(result)))
+               ("REVIEW_ZH.md", supplement_markdown(result) if args.supplement else markdown(result)))
     for name, _ in outputs:
         require(not (destination/name).exists(), f"refusing to overwrite prior review: {destination/name}")
     destination.mkdir(parents=True, exist_ok=True)

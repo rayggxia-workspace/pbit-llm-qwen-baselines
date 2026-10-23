@@ -15,3 +15,7 @@
 - 发布：尚未推送/创建PR；Issue https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/136 。Projects权限待核（历史缺read:project），不得声明已同步。模型权重留服务器个人项目；无工艺/凭据上传。
 
 本文件为首轮冻结交接；后续实际作业与发布回执追加于下方。
+
+## 后续实时进度
+
+CPU2797已通过全部覆盖测试和原生tiny Qwen3保存重载，镜像1.7B权重下载中。GPU数组2798（0=1.7B，1=4B，每项一GPU）已提交，依赖afterok:2797且kill-on-invalid-dep=yes；CPU作业失败不会分配GPU。日志ROOT/logs/evaluate-2798_0.log及_1.log。不要再次提交重复数组。网络直连github.com的git push两次失败（连接重置/超时），改用GitHub API发布完全相同的Git blob/tree/commit，仍核验jieruiz且不force、不合并。API结果以PUSH/PUBLICATION回执为准。

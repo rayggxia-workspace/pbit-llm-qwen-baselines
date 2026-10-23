@@ -1,5 +1,7 @@
 ## 2026-10-23 Issue146：PPA批处理v2本地交付
 
+发布回执：源码7b097d194f81042dfd771bf01b38599bacf01aae已推送workspace并核实PR148 head一致，Issue146/PR148评论已同步；账号jieruiz，PR保持open/unmerged，服务器EDA未运行。V2_PUBLICATION.json为实际回执，不代表Projects看板已更新。
+
 负责人jieruiz，task/146-cim-frontend / PR148，独立目录tmp/cim-frontend-issue146-20261023；继续已有任务，不修改Issue133。v2源包和RUN_BATCH_ZH已完成，11辅助检查、4实际RTL/48波形窗口通过，原RTL/TB不变。修复buffer Tcl插值，增加SS/TT自动选库、8项Slurm、3seed、叶子分类/单位/能量守卫及小报告归档。台账已登记待EDA，不宣称DC/VCS/PT通过；无运行中作业。包根sc_cim_frontend_ppa_20261023_v2.zip，SHA f2ef9036c30adcbccd4a2c2c24543fe27061ff04facb3d6a27948f294b701228。上传/提交以work/jieruiz/146/V2_PUBLICATION.json回执为准，原PUSH.json已有他人变更未触碰。下一步用户先smoke再正式；Projects待同步。
 
 ## 2026-10-23 Issue146：SRAM邻近计算前端

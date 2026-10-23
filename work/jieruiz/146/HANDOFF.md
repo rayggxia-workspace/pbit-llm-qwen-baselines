@@ -1,5 +1,7 @@
 # Issue146：CIM 前端 RTL/PPA 交接
 
+v2发布已确认：源码7b097d194f81042dfd771bf01b38599bacf01aae已推送，PR148 head经GitHub API核实一致；Issue146评论6366058954、PR148评论6366059597已发布。PR未合并，无EDA作业。详见V2_PUBLICATION.json。
+
 2026-10-23 v2增量：沿原分支/PR148；原RTL/TB字节完全未改。新增RUN_BATCH_ZH、environment/submit/job/summary/collect/local_smoke/test_delivery，完善run/package与DC/PT分类统计，修复生成buffer的Tcl数组插值错误。版本包根sc_cim_frontend_ppa_20261023_v2.zip，49471B，SHA f2ef9036c30adcbccd4a2c2c24543fe27061ff04facb3d6a27948f294b701228；33源manifest项，SHA34d5b2031c141b41d8b8f14096d12539a969c5a1dbeb9027219f70b0d0caf856。VERIFY_V2.py/V2_VALIDATION.json保留命令和核对记录；11辅助测试、4小RTL/48窗口实际通过，无本轮DC/VCS/PT。Bash只读检查通过。第一次本地Icarus路径格式失败记录保留，第二次v2_local_check2成功。
 
 v1 ZIP与原始证据保留；旧manifest另存project_archives/cim_frontend_20261023/SOURCE_MANIFEST_V1.json，旧台账只更新可恢复地址不改SHA；新台账cim-frontend-146-ppa-v2-prepared。读取根镜像时保留其他任务新增记录。根/canonical备忘录已追加本轮状态。

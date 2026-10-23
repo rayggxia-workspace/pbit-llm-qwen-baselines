@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-23",
+  "server_project": "/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136",
+  "source_snapshot": "snapshots/968046f",
+  "source_commit": "968046f9346258029192983000b4def643667cca",
+  "source_archive_sha256": "a84df4a66a624eac27b9da551ecca5be022265a7fe6f69cda5c32d9aec151053",
+  "cpu_job": {"id": 2797, "script": "prepare.sbatch", "partition": "gpu5090", "gpus": 0, "cpus": 4, "memory": "16G", "time_limit": "06:00:00", "last_observed": "RUNNING; CPU tests passed; 1.7B mirror weight downloading"},
+  "gpu_array": {"id": 2798, "indices": "0-1%2", "models": ["Qwen/Qwen3-1.7B-Base", "Qwen/Qwen3-4B-Base"], "script": "evaluate.sbatch", "dependency": "afterok:2797", "kill_on_invalid_dependency": true, "gpus_each": 1, "cpus_each": 4, "memory_each": "24G", "time_limit_each": "04:00:00", "last_observed": "PENDING (Dependency)"},
+  "result_status": "No full-model PPL yet. Runtime states here are historical snapshots; query Slurm before resuming.",
+  "commands": [
+    "sbatch --parsable --output=logs/prepare-%j.log snapshots/968046f/prepare.sbatch /home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136 /home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/snapshots/968046f",
+    "sbatch --parsable --dependency=afterok:2797 --kill-on-invalid-dep=yes --output=logs/evaluate-%A_%a.log snapshots/968046f/evaluate.sbatch /home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136 /home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/snapshots/968046f"
+  ]
+}

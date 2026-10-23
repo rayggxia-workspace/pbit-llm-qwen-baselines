@@ -1,3 +1,11 @@
+# Issue68：10个已结束工作副本回收与恢复复核（2026-10-23）
+
+负责人jieruiz；review/68-cleanup-receipt-20261023；base pbit-tlm-attention-details-20261016@46804fb3；独立稀疏目录tmp/cleanup68-review-receipt-20261023，仅用于回执交付。已实际回收10目录1,182,605,540 B，64独有文件和3增量bundle保留并验证；模型/仿真原件/活跃任务保持。35记录157原件26归档成员SHA通过，无新实验。
+
+成果maintenance/storage_cleanup_20261023_review；本地恢复project_archives/cleanup_20261023/REVIEW_REMOVAL_RECEIPT.json、REVIEW_FINAL_VERIFICATION.json。Issue68实际回执评论6355946207；本报告PR发布/合并以Issue68最新回执为准，当前为提交前冻结。LLM对话继续新增清理范围；本10项不重复执行，不关闭总体Issue68。报告合并后回收本人小型回执目录，原Git refs保留。Projects沿既有read:project限制未同步。
+
+以下保留历史时点：
+
 # Issue55第七轮：8项审核通过、原head集成交付
 
 负责人jieruiz；review/55-pr-round7；base eb317e4f；唯一tmp/pr55-review-round7-20261022。本轮103/105/106/108/109/111/113/114通过，109最终82b17a1。整合109代码测试＋8登记守卫、336query全层重放通过；修正观测/真实源冲突和过时说明，旧台账原哈希在固定归档恢复。正式审核/证据work/jieruiz/55/round7；实际远端合并、源Issue和目录回收以Issue55最终回执为准。无新GPU/Slurm/PPL/RTL/DC/PT；其他来源状态/分支不接管。

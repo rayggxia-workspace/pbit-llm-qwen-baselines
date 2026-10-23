@@ -1,5 +1,11 @@
 # p-bit LLM 项目长期备忘录
 
+## 2026-10-23 Issue107：8类数字模块SS/TT 100MHz脚本包
+
+沿用task/107/PR109，正式architecture_tlm/digital_ppa_v1/ppa8，脚本源6bc3389de08fba8250a17f0991849a4368898205，原RTL23e8d65f未改。KIND0/2/4/5/6/7/8/21，各SS1.08V125C及TT1.2V25C，100MHz、setup uncertainty2ns。自包含RTL/ROM/转换/TB/参考向量包在本机根digital_ppa8_ss_tt_100_20261023_v1.zip，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出逐位通过、6流程守卫/Tcl/Python兼容/Bash检查通过；没有本地DC/VCS/PT，没有已测面积功耗。建议smoke两角KIND21后remaining14项，不重复运行健康任务；快照/阶段SHA恢复，结果自动小包。
+
+中央台账新增digital-ppa8-20261023-prepared，功能是本地RTL证据，16工艺配置仍not_run；基于PR111@2b7935f4同PR109登记，保留原35条。零延迟门级不含CTS/布线/毛刺，PT时序独立；含边界寄存器，SwiGLU为近似PWL，不继承PPL。KIND4/5按64元素一组、KIND6完整恢复不得再乘64/72；累加采用混合帧，非单独S128能量。原始验证含失败在project_archives/digital_ppa8_20261023/LOCAL_VALIDATION_RAW.tar.gz。上传状态以work/jieruiz/107/ppa8/PUBLICATION.json为准；任务未自动合并，Projects read:project待同步，暂无本任务BSCC作业。本文同步本地canonical与根阅读副本；本条远端随后续记忆维护，不宣称canonical脏改动已发布。
+
 ## 2026-10-22 Issue107：真实RNG接入后的Verilog仿真需求
 
 jieruiz沿用task/107/PR109，未新开复制。对照最新PR103 b05fb36d和中央台账PR111，正式文件architecture_tlm/digital_ppa_v1/LATEST_TLM_RTL_GAPS_ZH.md及同目录机器任务表/回传模板。分已有PPA、现成RTL待工艺、新整合RTL三类，共11组：SC64×64四档T32/计数与权重驻留；BF16/FP32动态分档、恢复/累加/窄化；普通阵列/lm_head；共享比较与q/256前端、完整赢家/拒绝FSM；筛选/CDF/稀疏V；实际SRAM/CDC/DMA；普通非线性；顶层状态/互连。
@@ -59,6 +65,8 @@ jieruiz沿用task/107/PR109，未新开复制。对照最新PR103 b05fb36d和中
 用户指定v1正文和附录核查完成，Zotero原条目/PDF保持，唯一机器note25FR4EFX；24例独立数学校核通过。入口architecture_tlm/research_readings/REMIX_V1_ZH_20261019.md，工作资料work/amlink1219/70/。没有模型复现、训练/PPL/PPA；研究原任务61已关闭，本任务独立交付待审。
 
 ## 0 恢复工作先读这里
+
+> 第七轮最终实际回执（北京时间2026-10-23）：103/105/106/108/109/111/113/114八项均已合并。审核PR115合并0968ccd9；113在收尾补6行元数据的新head be766ba另经原生合并46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d，当前开放PR为0。来源分支未改写。109联合＋8登记守卫、3完整Qwen及整合后336query重放通过；新q/256/PPA/资源搜索仍按各自边界。1966临时文件逐SHA归档11,167,900B（SHA d9ee7b4598ff166cc04b1e8e2796caab973bf0813f89de6682432e6ef66f1383），本人review/helper已实际回收53,149,901B。恢复project_archives/pr_review_issue55_round7_20261022/；共享对象/模型/其他任务保留，台账镜像48文件同字节。Issue55最终回执覆盖合并前pending文字，Source Issues保持原负责人及后续研究。
 
 > 第七轮审核（合并前冻结）：103/105/106/108/109/111/113/114均通过，109补审最新82b17a1。联合109代码＋8登记守卫、40项1421合同、3项完整Qwen及整合后336query重放通过；修正真实源/观测冲突、旧页面状态与临时台账引用。来源head保留；实际合并/回收见Issue55最终回执和work/jieruiz/55/round7。没有新GPU/PPL/RTL/DC/PT。
 
@@ -1037,3 +1045,11 @@ jieruiz，task/107-tlm-cycle-digital-rtl，独立tmp/tlm-digital-issue107-202610
 已纳入37962470/37981139/38015538随机矩阵、SS SRAM/DFF主模块与S0–S5、14组SS/TT宏库提取、CACTI估计单列、38100634 TT/SS Q10 SwiGLU、38322118四随机服务核心×三频率252窗口，以及转换/短流/Issue107功能证据与失败历史。共享p-bit后端独立交叉索引，较新38165794/38215256/38263376归档待完整审核，不能用旧报告断言其未完成。120.8uW旧预算缺直接绑定原件，未冒列为本次确认PPA。
 
 157个可访问独立文件原字节SHA与26个tar成员SHA核对通过，8项登记守卫测试通过，无原件缺失；未重新运行RTL/DC/PT/STA/GPU/PPL，不重放全部VCD。所有已算PPA仍保留前/后布局、时序/X/库表告警等限制；新数字v1没有PPA。未搬移/删除/复制大原始结果。AGENTS新增每次仿真登记规则；新结果同任务PR更新台账/总览，清理目录前更新归档恢复地址。已实际推送科学payload a31e010d，PR111 ready/open待审、未合并，9关键远端blob原字节核验一致；Issue110同步，Projects实际查询缺read:project待同步。回执work/jieruiz/110/PUBLICATION.json；不自动合并。
+
+第七轮最终合并/清理（2026-10-23北京时间）：报告PR115@db17ce0bd46bc2a93ffaf8f487b0241b61833f13已合并0968ccd9，补审最新PR113@be766ba原生合并46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d；八项来源PR全部MERGED。原113科学bc85618已随115进入，追加6行只改交付元数据，没有重复模型/RTL实验。最终科学及文档发布通过正常GitHub门禁，来源refs原样保留。1966文件ZIP逐成员SHA通过，本轮tmp/pr55-review-round7-20261022、tmp/pr55-round7-artifacts已于2026-10-22T16:05:21.9821340Z回收，逻辑53,149,901B；归档11,167,900B、SHA d9ee7b4598ff166cc04b1e8e2796caab973bf0813f89de6682432e6ef66f1383。原登记README在固定registry_recovered_evidence保留原SHA，中央镜像48文件与Git同字节；恢复索引/实际清理/原生回执保留project_archives/pr_review_issue55_round7_20261022。报告发表时备忘录SHA e75d5f416552ae211fe2c087f11229b99f8235943e888053596f9e51aa7a1c5d不变，此条为Issue28原目录的合并后维护增量，不reset其原HEAD或覆盖并发内容。没有新GPU/PPL/RTL/DC/PT作业，未重建已删除定时。
+
+## 2026-10-23 已结束工作副本回收补充（Issue68，审核github对话）
+
+本对话00:19实际移除10个已结束任务副本，逻辑1,182,605,540 B（约1.183 GB），64独有文件/10 ZIP/3增量bundle保留；10:29复核全部原分支和恢复ref、归档SHA/bundle通过，仿真台账157文件/26成员无缺失。正式回执maintenance/storage_cleanup_20261023_review，实际恢复索引project_archives/cleanup_20261023/REVIEW_REMOVAL_RECEIPT.json和REVIEW_FINAL_VERIFICATION.json。部分包位于review_audit_collision_preimages，按最终路径/SHA恢复，不用早期计划重跑删除。并发ZIP重名已恢复对方原SHA，无源文件损失。
+
+LLM对话先前独立压缩10网表约2.713GB及回收1个Issue19回执约0.188GB，均不包含在上述1.183GB；该对话继续新增清理，Issue68保持open。模型、唯一原件、主对象库、进行中任务和其他成员目录保留。恢复先读索引，不因工作目录已移除而重复实验。发布/合并状态查Issue68最新回执；本条随review/68-cleanup-receipt-20261023交付。

@@ -54,7 +54,7 @@ def person(text):
 
 
 def allowed(path):
-    return path.startswith(("qwen3/stochastic/", "work/jieruiz/144/")) or path in ("progress/jieruiz/STATUS.md", "PROJECT_MEMORY_ZH.md")
+    return path.startswith(("qwen3/stochastic/", "qwen3/results/stochastic_20261023/", "work/jieruiz/144/")) or path in ("progress/jieruiz/STATUS.md", "PROJECT_MEMORY_ZH.md")
 
 
 def publish():

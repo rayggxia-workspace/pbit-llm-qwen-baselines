@@ -1,3 +1,11 @@
+## 2026-10-23 Issue144：Qwen3最新概率架构迁移已启动
+
+用户授权两个Base模型迁移最新概率架构并比较PPL。负责人jieruiz；task/144-qwen3-stochastic，[PR147](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/147) draft/open未合并，base task/136-qwen3-bf16@0829b9c（依赖PR137）；原型采样核只读复用Issue141已发布7a286ec。执行源8c35145e0073e48581640cd07c770631412a3f99冻结，CPU2827全部通过；GPU2828=1.7B、2829=4B正在运行，勿重复提交。个人ROOT /home/Hongjie_Zeng/projects/pbit-qwen3-stochastic-20261023-issue144；复用基线venv/权重/原文，不重下载或更改其他任务。
+
+架构：W8/64x64固定权重、B4/T32/K32共享64 A8；max4/64token/8块/首末2强制；Qwen3 TRAIN独立16拟合+16holdout标量bias、temperature1；拒绝128接受样本、赢家1024更新，argmax/burn0/spacing1，理想FP32 Philox数值参考。原生QK-Norm→RoPE/GQA/cache/QKV/Wo保留，4B Q投影4096≠hidden2560已适配。FFN prefill+decode全层替换，Attention仅所有计分单token decode，prefill原生SDPA；不称物理RNG、RTL/PPA或等成本比较。
+
+每模型13配置：BF16一次；FFN-only、screen-exact+FFN、rejection128+FFN、winner1024+FFN各3seed。4096目标后缀/batch2，完整候选WT2未提交。CPU/GPU tiny与两个真实模型SDPA包装bitwise、kernel独立oracle/分布/仲裁/cap检查通过；完整BF16锚点原源码复现精确同NLL。后缀BF16已验证1.7B 7.5900880974、4B 6.3315746169；概率配置运行中，没有最终增量。首批26小原件归档、11sidecar/源码/模型/数据/覆盖验证、8篡改负例通过。正式入口qwen3/stochastic/README_ZH.md、qwen3/results/stochastic_20261023/REPORT_ZH.md、work/jieruiz/144/HANDOFF.md；收取工具/验证器为后加审计，不修改执行快照。恢复检查上述作业日志/results，不按旧基线heartbeat重复跑；旧qwen3定时已删除，此任务未新增定时。Projects缺read:project待同步。
+
 ## 2026-10-23 Issue136：Qwen3 Base 双模型基线已提交
 
 发布闭环：科学结果60d6947已推送PR137，35远端改动文件原字节核验、11提交原件SHA通过；PR现为ready/open、未合并，Issue136仍open待评审。heartbeat qwen3已实际删除，不继续轮询。work/jieruiz/136/FINAL_PUBLICATION.json记录真实回执；请勿按下方历史状态重跑。

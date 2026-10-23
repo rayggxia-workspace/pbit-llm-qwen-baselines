@@ -34,5 +34,5 @@ with zipfile.ZipFile(docx) as z:
 receipt=dict(scope='derived quantities and DOCX layout/text checks, no new hardware/model simulation',checks=len(checks),passed=checks,
     renderer='Microsoft Word native PDF export + packaged render_docx.py rasterization; LibreOffice unavailable',pages=7,
     files=[dict(path=str(p.relative_to(ROOT)).replace('\\','/'),sha256=hashlib.sha256(p.read_bytes()).hexdigest(),bytes=p.stat().st_size) for p in [OUT/'REPORT_ZH.md',OUT/'CALCULATIONS.json',OUT/'SOURCE_INDEX.json',docx]])
-(P/'VALIDATION.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+(P/'VALIDATION.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
 print(json.dumps(dict(checks=len(checks),pages=7,pass_all=True)))

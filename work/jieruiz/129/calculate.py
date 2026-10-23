@@ -58,5 +58,5 @@ out=dict(scope='arithmetic recalculation of archived TLM and explicit capacity f
 assert round(rows[4]['dram_saving_vs_bf16_pct'],2)==31.95
 assert round(rows[7]['dram_saving_vs_bf16_pct'],2)==35.52
 for name,obj in [('CALCULATIONS.json',out),('SOURCE_INDEX.json',dict(base=BASE,sources=idx))]:
-    (OUT/name).write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    (OUT/name).write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
 print(json.dumps(dict(cases=len(rows),source_files=len(idx),models=models),ensure_ascii=False))

@@ -21,3 +21,7 @@ python work/jieruiz/129/verify_report.py
 文档数值验证与成果SHA在VALIDATION.json。本地可用，发布状态以PUBLICATION.json为准；通过新PR交付，不自动合并。看板权限需发布时核实；不以待看板同步冒充仓库未发布。
 
 后续如更新此报告：读取最新Issue129/PR与源PR状态，重算对应封存JSON，重渲染Word并检查每页。当前没有运行中作业，不要重跑昂贵实验。
+
+## 发布与原字节修复回执
+
+PR130已创建，待审未合并；首交付9c1cb50。发布核验发现上层属性强制将docx与归档JSON当text，已对DOCX显式-text并重新提交原字节；本次生成JSON按UTF-8 LF重新生成和记录SHA（非服务器封存实验）；最终头及远端原字节核验见PUBLICATION.json。本地已渲染Word未发生变化。Projects查询实际缺read:project，待看板同步；仓库Issue/PR可正常更新。

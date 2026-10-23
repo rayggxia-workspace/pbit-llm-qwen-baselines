@@ -2,6 +2,8 @@
 
 ## 最终实验状态：2026-10-23 双模型完成并通过独立归档核验
 
+最终交付回执：科学结果head60d6947efccdbaf74bb5d06cb529dde5be5d5a34已推送；35个改动文件从GitHub逐原字节读回通过，11个服务器原件在已提交Git blob中SHA全部匹配。PR137现已ready/open（draft=false），未合并；Issue136验收清单和评论6364341645已同步，保持open待评审。heartbeat qwen3已通过automation工具实际删除，本机定时配置不存在；不会继续周期检查。最终回执FINAL_PUBLICATION.json。此后只需等待评审或用户授权的新随机替换实验。
+
 正式成果qwen3/results/bf16_20261023/REPORT_ZH.md。1.7B PPL8.36733951656172，4B PPL7.038611601266219；两者299077目标/299078token/292窗口，token SHA一致，GPU评测16.9192/32.9219秒。CPU2799完成4B 10文件校验，GPU2800_0和2801_1均有COMPLETE和完整结果；旧2797失败/2798依赖取消日志保留。当前任务没有待跑基线，其他任务2804/2805不属本任务且不触碰。
 
 11个服务器原字节小文件已收取并按SERVER_SHA256SUMS.txt验证；源码/config/model/data绑定、逐窗口覆盖、NLL/PPL重放与10个损坏负例均通过，VALIDATION.json已生成。执行源码仍968046f，未再跑推理、未修改冻结快照。结果SHA分别c32023b48fdfd30aab715e00ac90a26d905ea2f965e5b63475bcb9b977a15a53与39fb5f1dae739f5925836a6b4525733ab31e57a7ba5d72e6380ec88a61606e64。Slurm accounting关闭且旧job已被scontrol清理，不虚报sacct记录。

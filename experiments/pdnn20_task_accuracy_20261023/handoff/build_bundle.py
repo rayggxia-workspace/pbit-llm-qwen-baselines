@@ -19,7 +19,7 @@ SINGLES = [
     'experiments/pdnn_task_accuracy_20261023/pdnn_score.py',
     'experiments/pdnn_task_accuracy_20261023/test_pdnn_score.py',
     'experiments/pdnn_task_accuracy_20261023/runner.py',
-    'experiments/pdnn_task_accuracy_20261023/README_ZH.md',
+    'experiments/pdnn_task_accuracy_20261023/PROTOCOL_ZH.md',
     'experiments/pdnn_ffn/full_path_pdnn_ffn.py',
     'experiments/pdnn_ffn/P_DNN_FFN_DESIGN_ZH.md',
     'experiments/qwen_task_accuracy_20261019/task_data.py',
@@ -40,7 +40,10 @@ def build(a):
     if target.is_relative_to(checkout):
         raise ValueError('archive and staging must remain outside source checkout')
     def git(*args):
-        return subprocess.run([a.git, '-C', str(checkout), *args], check=True, capture_output=True).stdout
+        completed = subprocess.run([a.git, '-C', str(checkout), *args], capture_output=True)
+        if completed.returncode:
+            raise RuntimeError('Git source read failed: ' + completed.stderr.decode('utf-8', errors='replace'))
+        return completed.stdout
     commit = git('rev-parse', 'HEAD').decode().strip()
     if git('status', '--porcelain').strip():
         raise ValueError('commit scoped source changes before building immutable bundle')

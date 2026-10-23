@@ -2,6 +2,8 @@
 
 Issue151，负责人amlink1219。用户确认权重应在师弟处，由用户联系获取；本轮交付其余准备，**尚未执行真实20层模型推理，也没有新的20层准确率**。依赖Issue145 / PR149的已发布评分协议；独立分支`task/151-pdnn20-task-accuracy`、本机`workspace_projects/pa20`，PR base为`task/145-pdnn-task-accuracy`。运行中的145作业、工作树和收尾进程保持独立。
 
+服务器准备检查已完成：CPU-only Slurm2862 COMPLETED/0:0，22项评分机制＋6项流程检查全部通过；模型／tokenizer／三项数据／固定请求／harness源及145三个完整新BF16均已匹配。执行源码`ecd9418510565d76585aee71a4c5675dbcbd61e9`。当前唯一外部输入为20份待交接权重，记录状态`awaiting_external_inputs`、`gpu_allowed=false`；未生成PREFLIGHT_READY，未提交20层GPU。原件与终态见任务HANDOFF／preparation目录。
+
 ## 模型与评测范围
 
 固定原串联bipolar FullPath P-DNN v1的20层联合训练step1000，替换decoder FFN的`[1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]`，保留`[0,2,3,23]`。每层为896→4864→896双投影；入口／隐藏均为±1，权重、读出、残差保持连续BF16。每次平均N=4条完整路径，Attention仍为原SDPA。该模型不是20层独立训练student直接叠加，也不是0/1可学习编码版本；不重训。

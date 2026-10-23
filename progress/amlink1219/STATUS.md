@@ -219,7 +219,7 @@ Issue37依赖Issue36：PR base为task/36-digital-attention-reference；其余PR 
 
 已准备原joint20 step1000的20文件大小／SHA与交接文档，替换1、4–22，保留0/2/3/23；N4、三seed、同PIQA1838／ARC-Easy2376／固定HellaSwag1000，共9候选case，严格复用145三项匹配新BF16。22项CPU机制测试通过=18原2/4回归＋4个20层拓扑／真实tiny strict安装／独立oracle／RNG检查，未把tiny当真实模型。
 
-正式入口`experiments/pdnn20_task_accuracy_20261023/README_ZH.md`及CHECKPOINT_REQUEST_ZH.md；结果状态`qwen/results/pdnn20_task_accuracy_20261023/README_ZH.md`；接续`work/amlink1219/151/HANDOFF.md`。CPU inspect-only仅PREPARATION_ONLY，正式checkpoint／baseline全齐才PREFLIGHT_READY，真实GPU六smoke后SMOKE_READY、9完整case后才汇总。准备阶段服务器CPU预检与PR发布回执待补；权重未提供是实际待办，不重训或借读他人目录。
+正式入口`experiments/pdnn20_task_accuracy_20261023/README_ZH.md`及CHECKPOINT_REQUEST_ZH.md；结果状态`qwen/results/pdnn20_task_accuracy_20261023/README_ZH.md`；接续`work/amlink1219/151/HANDOFF.md`。CPU inspect-only Slurm2862已COMPLETED/0:0，服务器22＋6检查通过、145三个完整新BF16均逐SHA／官方指标回读匹配。执行源ecd9418510565d76585aee71a4c5675dbcbd61e9、87文件快照；原件／终态／远端SHA见151/preparation。当前仅缺20份权重，状态awaiting_external_inputs、gpu_allowed=false，未提交20层GPU。正式checkpoint全齐才PREFLIGHT_READY，真实GPU六smoke后SMOKE_READY、9完整case后才汇总。PR发布状态以本任务PUBLICATION.json实际回执为准；不重训或借读他人目录。
 
 ## PR42 原始交付状态（历史时点）
 

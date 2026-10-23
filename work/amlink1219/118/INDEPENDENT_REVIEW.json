@@ -1,0 +1,25 @@
+{
+  "review_date": "2026-10-23",
+  "reviewer": "independent local_audit agent",
+  "scope": "storage interface model and adversarial tests; root independently inspected integer reconstruction against nr_bin_restore.sv",
+  "findings": [
+    {
+      "issue": "Initial configurable SRAM frequency was not gated by vendor macro minimum cycle/access time.",
+      "resolution": "Default F/SS extracted minimum cycle ceil11062ps and read access ceil9588ps are explicit gates; 100MHz and too-early return are rejected. Library extraction is not labeled STA.",
+      "status": "fixed_before_archived_run"
+    }
+  ],
+  "independent_checks": [
+    "21 storage tests passed in separate worktree, including malformed traces and delayed legal trace",
+    "reread T32 hand calculation 2048 words * 32 samples * 50ns = 3276800ns matches execution",
+    "resident preload6600ns and T32 finish6920ns distinguished from resource-only2080.5ns lower bound",
+    "root independently ran all30 storage+counter tests after integration",
+    "root inspected existing nr_bin_restore FUSED=0: separate integer-bin reconstruction followed by per-bin FP32 conversion/multiply/ordered sum"
+  ],
+  "remaining_blocking_findings": [],
+  "limitations": [
+    "Independent software review is not physical implementation, RTL or STA verification.",
+    "Only one immutable SRAM weight wave; DMA, ping/pong and full FFN omitted explicitly.",
+    "Comparison uses different local holding and response budgets, not same-area optimization."
+  ]
+}

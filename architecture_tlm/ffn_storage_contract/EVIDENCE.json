@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-23",
+  "issue": 118,
+  "base_commit": "46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d",
+  "source_index": "../../work/amlink1219/118/SOURCE_INDEX.json",
+  "rows": [
+    {
+      "id": "ffn_behavioral_b4t32",
+      "source": "architecture_tlm/ffn_stratified_reference/reference.json",
+      "execution_commit": "db27fa3d7ed8eced13513f0cad10061a3cc59a71",
+      "model": "Qwen2.5-0.5B Base",
+      "B": 4, "T": 32, "K": 32,
+      "weights": "fixed symmetric W8",
+      "randomness": "shared64 stratified thresholds; x/z separate; gate/up share x",
+      "quality_scope": "existing FFN-only full WT2; unchanged BF16 Attention; not rerun",
+      "ppl_mean": 11.736131,
+      "bf16_reference_ppl": 11.652735047455899,
+      "rtl_bittrue": false,
+      "full_system_PPA": null,
+      "caution": "reference.json joint_reference.merged=false is a 2026-10-19 historical snapshot, superseded by PR52/PROJECT_MEMORY section12.0; do not use it for live job state"
+    },
+    {
+      "id": "tlm_legacy52",
+      "source": "architecture_tlm/resource_budget_plan_20261022/PLAN_ZH.md",
+      "execution_commit": "fba22b192ab914046e50cc405f6dd473bf30d154",
+      "scope": "52 archived synthetic decode scenarios; no new execution",
+      "randomness": "local_prng_interface",
+      "core_MHz": 100, "sram_MHz": 80,
+      "qwen_2k_seed0_sc_screen_pv_ms": 197.93816,
+      "model_quality": null,
+      "full_system_PPA": null
+    },
+    {
+      "id": "tlm_integrated40",
+      "source": "architecture_tlm/unified_v6/RNG_INTEGRATION_RESULTS_ZH.md",
+      "execution_commit": "31aa4fa31fbfb7d74629b54811936ac30a41c250",
+      "scope": "40 archived synthetic decode scenarios; includes S8 winner/rejection diagnostics; no new execution",
+      "randomness": "integrated_service, actual finite PRNG endpoints",
+      "attention_response": "sigmoid q/256 on drive grid 0.125",
+      "core_MHz": 100, "rng_MHz": 100, "sram_MHz": 80,
+      "qwen_2k_seed0_sc_screen_pv_ms": 198.00316,
+      "model_quality": null,
+      "full_system_PPA": null,
+      "caution": "The quantized response changes sampling; old ideal-source PPL cannot be inherited. The old/new difference includes changed addresses and is not pure protocol overhead."
+    },
+    {
+      "id": "digital107",
+      "source": "architecture_tlm/digital_ppa_v1/LATEST_TLM_RTL_GAPS_ZH.md",
+      "execution_commit": "23e8d65fbd84cf548ab82a6c9cfe423d37e59ae4",
+      "scope": "existing functional encoding/restore and other arithmetic RTL",
+      "functional_groups": 66,
+      "functional_outputs": 12870,
+      "STA": null,
+      "PPA": null,
+      "caution": "A complete restore output replaces the 72-op proxy, not 72 complete restore instances. Fused cross-bin restore changes FP32 rounding."
+    },
+    {
+      "id": "storage_contract118",
+      "source": "architecture_tlm/ffn_storage_contract/README_ZH.md",
+      "scope": "new local software interface schedules and exact integer identities",
+      "target_reference": {"B": 4, "T": 32, "K": 32},
+      "executed_sample_inputs": "synthetic externally supplied frames; no stratified sampler or RNG implementation is simulated",
+      "model_quality": null,
+      "RTL": null, "STA": null, "full_system_PPA": null,
+      "caution": "Not a replacement for Issue116 cycle backend. No v6 defaults or archived outputs changed. Integer equality alone is not a proof of complete FP32/model equivalence."
+    }
+  ],
+  "prohibited_joins": [
+    "legacy52 timing with integrated40 response/energy as one measured configuration",
+    "FFN-only PPL with changed Attention response or fused FP32 recovery",
+    "S8 connectivity timing with S128 or winner-multiplier8 quality",
+    "integer counter-state reduction with total-chip area/energy reduction",
+    "interface-level schedule latency with STA-proven silicon throughput"
+  ],
+  "live_task_boundaries": {
+    "116": "existing cycle execution backend; in progress at inspection",
+    "118": "this bounded storage supply and integer-state execution task",
+    "107": "existing RTL and characterization owner preserved",
+    "112": "merged resource exploration plan; does not itself execute search",
+    "95": "random architecture owner preserved"
+  }
+}

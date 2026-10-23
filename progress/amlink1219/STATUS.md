@@ -37,6 +37,15 @@
 正式入口architecture_tlm/resource_optimization_v1/README_ZH.md、RESULTS_ZH.md、results/analysis_20261023/SUMMARY.json与VALIDATION.json；交接work/amlink1219/117/HANDOFF.md含精确重汇总/验收命令。208项完整交付通过PR119，PR待审未合并，最终远端head/验证见PUBLICATION.json；统一台账已按CALIBRATED_ESTIMATE登记，check/render与8项台账测试通过。历史指定阅读镜像路径本机不存在、未同步。Projects缺read:project待补。不重复Issue116周期后端或PR120/Issue118供数/局部状态合同；后者待审且未纳入本轮。下方历史保留，实时状态以各任务最新回执为准。
 
 ---
+# Issue118 FFN供数与局部状态合同（2026-10-23）
+
+已上传[PR120](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/120)，科学提交`8bea1dfd1db24263a6daea5e6a29de641b23f03c`，48个远端Git文件对象核验一致；Issue118验收清单/结果评论同步。PR待审、未合并。Projects现场返回INSUFFICIENT_SCOPES/read:project，待有权限者同步；仓库发布不受影响。此后仅发布回执/交接元数据不改科学结果。
+
+负责人amlink1219；`task/118-ffn-storage-contract`；base集成46804fb；独立目录`workspace_projects/sf23`，未改cycle23任务工作树。六项供数合同执行、四非法配置、30功能测试、66整数场景888逐档输出通过，源/结果SHA已核。正式入口`architecture_tlm/ffn_storage_contract/README_ZH.md`与研究状态对齐报告；台账`ffn-storage-118-design`，DESIGN_PROOF。
+
+T32保持/串行重读6.92us/3.2768ms，只是不同局部资源的SRAM->消费接口；计数48KiB→5KiB不是PPA收益。无新模型/PPL/RTL/STA/GPU/Slurm，无运行中作业。Issue116周期核心保持独立。任务分支/PR与Projects状态以`work/amlink1219/118/PUBLICATION.json`实际回执为准，不自动合并。接续命令和未验证项见同目录HANDOFF。
+
+以下保留历史进度，旧“未合并”不是2026-10-23实时状态：
 
 发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
 

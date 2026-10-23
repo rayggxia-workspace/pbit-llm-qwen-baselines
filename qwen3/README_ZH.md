@@ -4,6 +4,8 @@
 
 本阶段只建立未修改模型的 BF16 完整 WikiText-2 test 基线。FFN、QK-Norm、GQA、RoPE、Softmax/PV 全部使用 Transformers 原始实现；没有随机计算、校准或训练。后续 FFN/PV/QK/Ising 方案不能提前继承本结果。
 
+2026-10-23已完成：1.7B-Base完整WT2 PPL **8.3673395166**，4B-Base **7.0386116013**，均299077目标、292窗口。GPU评测16.92/32.92秒，下载/加载不计；11个原件SHA与计分覆盖/汇总复核通过。见[正式结果报告](results/bf16_20261023/REPORT_ZH.md)和[验证回执](results/bf16_20261023/VALIDATION.json)。镜像中断/恢复日志完整保留。PR137待审未合并。
+
 | 项目 | 1.7B-Base | 4B-Base |
 |---|---:|---:|
 | layers | 28 | 36 |

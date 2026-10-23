@@ -1,5 +1,7 @@
 ## 2026-10-23 Issue136：Qwen3 Base 双模型基线已提交
 
+最终实验结果已核验：Qwen3-1.7B-Base完整WT2 BF16 PPL8.3673395166、4B-Base 7.0386116013，均299077目标/292窗口且token序列SHA相同；2048/1024、seed0、原生SDPA/FFN不变，GPU评测16.92/32.92秒。源码968046f，11服务器原件SHA、源码/模型/数据/配置绑定、计分覆盖/NLL重算和10损坏负例通过。入口qwen3/results/bf16_20261023/REPORT_ZH.md；PR137结果交付待审，不合并。2797镜像失败/2798取消、2799恢复与2800_0/2801_1成功日志保留，任务没有待跑基线，勿重复提交；定时qwen3目的已完成，停表/发布见work/jieruiz/136/FINAL_PUBLICATION.json。无随机替换、训练或硬件PPA；后续方案仍需匹配控制与至少3seed。以下为历史过程。
+
 19:20 CST更新：原CPU2797完成1.7B校验后遇4B镜像连接中断失败，GPU2798依赖取消。原冻结968046f不变，恢复CPU2799仅重试4B、GPU2801_1依赖其成功；GPU2800_0已完成1.7B完整WT2，日志PPL8.36733952/299077目标/16.9秒，服务器结果SHA与sidecar一致，仍待本地独立重放/正式结果发布。用户要求设置定时，当前对话heartbeat qwen3每10分钟检查，完成或失败通知、全部验证后停用。恢复以work/jieruiz/136/HANDOFF.md顶部及RECOVERY_20261023.json为准，不重交健康任务。下方为旧提交时点。
 
 用户要求先通过镜像在服务器建立Qwen3-1.7B/4B基线，采用Qwen/Qwen3-1.7B-Base和Qwen/Qwen3-4B-Base。任务分支task/136-qwen3-bf16，[PR137](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/137)为draft/open、未合并；代码qwen3/，交接work/jieruiz/136/HANDOFF.md。固定revision与train/test SHA、完整WT2 window2048/stride1024、原始BF16 SDPA、seed0、无chat/BOS/cache；没有FFN/Attention替换。服务器个人项目pbit-qwen3-baseline-20261023-issue136，源码968046f冻结；隔离Transformers4.51.3环境及CPU原生Qwen3/save-reload预检已通过，CPU2797镜像下载中，GPU数组2798依赖其成功后启动。尚无完整模型PPL，恢复不要重复提交/下载。旧模型环境未改；Projects实测缺read:project待同步。后续随机方案另做匹配基线/至少3seed，不把新模型原始PPL当成替换收益。

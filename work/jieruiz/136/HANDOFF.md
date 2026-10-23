@@ -1,5 +1,13 @@
 # Issue136 Qwen3 BF16 基线交接
 
+## 最终实验状态：2026-10-23 双模型完成并通过独立归档核验
+
+正式成果qwen3/results/bf16_20261023/REPORT_ZH.md。1.7B PPL8.36733951656172，4B PPL7.038611601266219；两者299077目标/299078token/292窗口，token SHA一致，GPU评测16.9192/32.9219秒。CPU2799完成4B 10文件校验，GPU2800_0和2801_1均有COMPLETE和完整结果；旧2797失败/2798依赖取消日志保留。当前任务没有待跑基线，其他任务2804/2805不属本任务且不触碰。
+
+11个服务器原字节小文件已收取并按SERVER_SHA256SUMS.txt验证；源码/config/model/data绑定、逐窗口覆盖、NLL/PPL重放与10个损坏负例均通过，VALIDATION.json已生成。执行源码仍968046f，未再跑推理、未修改冻结快照。结果SHA分别c32023b48fdfd30aab715e00ac90a26d905ea2f965e5b63475bcb9b977a15a53与39fb5f1dae739f5925836a6b4525733ab31e57a7ba5d72e6380ec88a61606e64。Slurm accounting关闭且旧job已被scontrol清理，不虚报sacct记录。
+
+后续：同PR137发布结果并转待审，不合并/不关闭Issue；停止已完成目的的qwen3定时检查。权重仍在服务器ROOT/models，Git只含小型原件/索引。PR待审保留本稀疏目录；镜像/任务状态旧文字仅作历史，恢复不得重跑这两个基线。发布与停表实际回执见FINAL_PUBLICATION.json。
+
 ## 最新状态：2026-10-23 19:20 CST（覆盖下方旧运行记录）
 
 2797于19:13:25 FAILED/1:0：1.7B已下载并校验7文件，4B镜像连接在准备阶段被远端关闭；2798未分配GPU，因DependencyNeverSatisfied自动CANCELLED。原日志/源码保留，没有更改冻结快照。

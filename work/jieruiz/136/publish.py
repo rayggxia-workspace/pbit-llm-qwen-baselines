@@ -115,5 +115,25 @@ if __name__ == "__main__":
             checked.append({"path": path, "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()})
         save("REMOTE_VERIFY.json", {"head": head, "verified": checked, "status": "PASS"})
         print(json.dumps({"verified_files": len(checked), "head": head, "status": "PASS"}))
+    elif sys.argv[1] == "finalize":
+        assert api("GET", "/user")["login"] == "jieruiz"
+        pr = api("GET", PREFIX + "/pulls/137")
+        assert pr["state"] == "open" and not pr["merged"]
+        assert pr["head"]["sha"] == git("rev-parse", "HEAD").decode().strip()
+        body = (OUT / "FINAL_PR_BODY.md").read_text(encoding="utf-8")
+        api("PATCH", PREFIX + "/pulls/137", {"body": body})
+        if pr["draft"]:
+            mutation = api("POST", "/graphql", {"query": "mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{isDraft}}}", "variables": {"id": pr["node_id"]}})
+            assert "errors" not in mutation, mutation
+        pr = api("GET", PREFIX + "/pulls/137")
+        assert not pr["draft"] and not pr["merged"]
+        issue = api("GET", PREFIX + "/issues/136")
+        api("PATCH", PREFIX + "/issues/136", {"body": issue["body"].replace("- [ ]", "- [x]")})
+        comment = api("POST", PREFIX + "/issues/136/comments", {"body": "两模型原始BF16完整WT2基线完成并核验：1.7B PPL8.3673395166，4B 7.0386116013；均299077目标/292窗口、2048/1024，同token序列SHA。GPU16.9192/32.9219秒不含下载加载。11服务器原件SHA、源码/model/config/data绑定、完整覆盖与NLL重算及10损坏负例通过。正式报告qwen3/results/bf16_20261023/REPORT_ZH.md；原2797镜像失败和2798取消日志与2799恢复/2800_0、2801_1成功日志均保留。Slurm无accounting，完成job已被清理，证据以完整结果/COMPLETE/原SHA为准。PR137已转ready待审，未合并，Issue保持open等待验收。无随机替换/训练/PPA，Projects仍缺read:project。定时检查目的已完成，按本对话实际工具回执停止。"})
+        save("FINAL_PUBLICATION.json", {"repo": REPO, "branch": BRANCH, "head": pr["head"]["sha"], "pr": 137,
+             "url": pr["html_url"], "draft": pr["draft"], "merged": pr["merged"], "issue": 136,
+             "issue_comment": comment["html_url"], "verified_login": "jieruiz", "experiment_status": "both complete and audited",
+             "automation": "qwen3; deletion recorded by current conversation tool receipt"})
+        print(json.dumps({"pr": 137, "draft": pr["draft"], "merged": pr["merged"], "comment": comment["html_url"]}))
     else:
         raise ValueError(sys.argv[1])

@@ -1,3 +1,7 @@
+## Issue159 实际发布：2026-10-23
+
+Qwen/Qwen3-4B非Base训练设计已推送PR161，科学提交6991c97f9d54c1d9ea17ee2ce87f44d08b6677f4；远端设计文件原字节核验通过，Issue159已同步。PR待审未合并，无GPU训练/新PPL；后续执行需模型revision/数据/训练器/H200环境。19项是计划配置，不是已运行结果。work/jieruiz/159/FINAL_RECEIPT.json为回执；Projects待权限同步。
+
 # Issue159 交接
 
 负责人jieruiz；task/159-qwen3-sc-qat-plan；base pbit-tlm-attention-details-20261016@2f23344948cfd43e9ab7061f77ea6d3f4a2c2527。

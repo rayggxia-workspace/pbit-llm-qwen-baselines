@@ -1,5 +1,9 @@
 # Issue144 Qwen3概率架构交接
 
+## 发布闭环：2026-10-23 22:00 CST
+
+科学结果b8cc1daaec9bb46d992fb867dc05c117d1e4bd6f已发布同PR147，177个GitHub文件逐blob原字节回读通过、77服务器原件提交blob通过。PR147已ready/open未合并，Issue144验收清单已更新但保持open待审。应用实际删除heartbeat qwen3（deleteStatus=deleted），不会再轮询；FINAL_PUBLICATION.json为实际回执。上传曾在只读ref GET断线，核验已上传commit/tree/parent后非强制恢复ref，不重跑、不重传权重。最终回执后续提交仅文档/发布辅助，不改科学原件。当前没有运行或缺失病例；下一步审阅PR，若要完整WT2需新范围/预算确认。canonical长期记忆和根镜像同步，其他条目保留。
+
 ## 最新：2026-10-23 21:50 CST，26/26全部独立核验，准备发布
 
 2828/2829均已结束，两个PILOT_COMPLETE及complete.json齐全；没有重跑、源码8c35145未改。收取ROOT/exports/complete-v1.tar.gz，SHA a3d0df3f043d4a1fee23f9da547d585bcde0f28e9c325d665880fdd5c1a2ace3，本地tmp/qwen3-issue144-complete-v1.tar.gz，原件qwen3/results/stochastic_20261023/checkpoints/complete。78文件、77清单原字节、37 sidecar、27执行源blob、26病例全目标全层覆盖/NLL/PPL/各SHA绑定核验通过，17篡改负例通过；最终SUMMARY.json/REPORT_ZH.md包含三seed与时间、全部参数、legacy burn字段解释、GQA union和完整WT2预算。

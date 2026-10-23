@@ -3,6 +3,7 @@ import base64
 import concurrent.futures
 import datetime
 import hashlib
+import http.client
 import json
 import os
 from pathlib import Path
@@ -37,7 +38,7 @@ def api(method, path, payload=None):
         try:
             with urllib.request.urlopen(request, timeout=45) as response:
                 return json.load(response)
-        except urllib.error.URLError:
+        except (urllib.error.URLError, http.client.RemoteDisconnected, TimeoutError):
             # Only replay idempotent reads; never duplicate a write after an
             # ambiguous response. GitHub TLS occasionally disconnects here.
             if method != 'GET' or attempt == 2:

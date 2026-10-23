@@ -1,5 +1,8 @@
 ## 2026-10-23 Issue144：Qwen3最新概率架构迁移已启动
 
+22:00 CST实际发布闭环：科学结果b8cc1daaec9bb46d992fb867dc05c117d1e4bd6f已推PR147，177个GitHub文件逐blob原字节核验和77服务器原件Git blob校验通过；PR147 ready/open未合并，Issue144清单更新、保持open待审。26/26全完成，无在跑作业；应用实际删除heartbeat qwen3，deleteStatus=deleted。回执work/jieruiz/144/FINAL_PUBLICATION.json。下一步PR审阅，完整WT2仍未提交；其他任务条目保留。下方准备发布/运行中为历史。
+
+
 21:50 CST最终26项已完成并独立核验：BF16/FFN/screen-exact+FFN/rejection128+FFN/winner1024+FFN均值，1.7B=7.590088/7.666993/8.067234/8.249476/8.091915，4B=6.331575/6.365253/6.676899/6.810810/6.700177。随机三seed；全部4096目标后缀，不是完整WT2。FFN增量1.0132%/0.5319%，赢家联合6.6116%/5.8217%，拒绝联合8.6875%/7.5690%；筛选是主要先导退化来源，128与1024不等成本。2828/2829结束、两个complete齐；8c35145执行快照不改，78小原件/37 sidecar/27源码/26病例全层覆盖与NLL复算通过，17篡改负例通过。最终包SHA a3d0df3f043d4a1fee23f9da547d585bcde0f28e9c325d665880fdd5c1a2ace3，checkpoints/complete及REPORT_ZH/SUMMARY。完整26项外推156 GPU小时、两卡固定分模型约3.7天（±30%规划2.6–4.8天），未提交全量。当前准备同PR147最终发布/停表，实际状态见work/jieruiz/144/FINAL_PUBLICATION.json；不合并不关闭Issue，Projects待权限。后加审计不改变运行；legacy burn16/spacing4未消费，实际winner burn0/spacing1。下方运行状态均历史，勿重交任务。
 
 

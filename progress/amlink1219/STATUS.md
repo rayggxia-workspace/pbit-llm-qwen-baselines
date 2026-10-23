@@ -1,3 +1,19 @@
+# Issue139 SANTA++ 后续设计核查（2026-10-23）
+
+负责人amlink1219，继续task/139-qwen3-gqa-literature / PR140，base6966739a。新增SANTAPP_GQA_COUPLING_ZH.md：复用Zotero F6DJ2FX7原PDF及已合并Issue84/PR85，确认Issue9先有sharedUniform、仅约1.4pp合成收益。本次是固定K共同Gumbel延伸：单头分布/条件校正保留、期望加权union不增、联合投影方差反例及硬件边界；三方独立复核。成果通过现有PR交付，待审不自动合并，最终SHA与原字节回读见outputs/santapp_design_20261023/PUBLICATION.json。
+
+已做仅文献/代码核对、推导和精确算例；无生产代码、模型、仿真/STA/PPA，116/123暂停保持，不接管136 Base任务。新增Zotero设计笔记待后台写回，已有条目复用；前次12篇待导入不变。恢复入口work/amlink1219/139/santapp_followup/HANDOFF.md。Projects未同步，沿上次read:project权限限制；原报告/manifest字节保留。
+
+---
+
+# 2026-10-23 Issue139：Qwen3-4B GQA筛选文献调研
+
+负责人amlink1219；task/139-qwen3-gqa-literature；base集成6966739a；独立稀疏目录workspace_projects/gqa_lit23。报告与12篇来源在architecture_tlm/qwen3_gqa_literature/，交接work/amlink1219/139/HANDOFF.md。通过独立任务PR交付，远端提交/PR以最终发布回执为准，不自动合并。
+
+已核32Q/8KV/d128及sum/mean-Q/max-teacher/union区别；SeerAttention-R直接评测后训练Qwen3-4B，不能继承为Base结论；原文与accuracy-only代码分开。独立审阅3处修正；12PDF可解析且SHA核对。Zotero关闭，12篇待导入，未声称入库。无训练/仿真/PPL/PPA/服务器作业；116/123暂停不变，136/137基线任务不接管。Projects以本轮权限回执为准。
+
+---
+
 # Issue116 已暂停（用户明确要求，2026-10-23）
 
 目标状态`paused`，不标complete、不自动恢复；只做收尾上传和交接。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审/未合并，暂停前已推送3347bd8，最终收尾提交与远端核验见`work/amlink1219/116/PUBLICATION.json`。权威入口：[暂停总结](../../work/amlink1219/116/PAUSE_REPORT_ZH.md)、[HANDOFF](../../work/amlink1219/116/HANDOFF.md)；A–G仅A完成本轮冻结，B/C/D/E/G部分完成，完整新后端F未开始。

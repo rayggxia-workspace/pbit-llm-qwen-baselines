@@ -1,8 +1,41 @@
+## 2026-10-23 第九轮审核与后训练模型要求
+
+用户确认后续用Instruct／后训练版，Base指模型而非Git基线。审核132/134/135/140/148/156通过各自有限交付，54测试及原件核验通过；当前准备发布至TLM集成分支，实际合并以Issue55最终回执为准。137/143/147/149/153/155保留迁移，最新160为符合方向但结果未齐的草稿。历史Base结果不改名继承；main保持fae1298。报告work/jieruiz/55/round9/REVIEW_ZH.md，独立review/55-pr-round9-nonbase；无新GPU／RTL／EDA实验。
+
+负责人jieruiz；Issue55；基线2f233449；目录tmp/pr55-review-round9-20261023。下一步发布合并、回读状态与归档回收。Projects待read:project。
+
+# Issue152 CMOS随机通道秒级记录脚本 / 2026-10-23
+
+负责人jieruiz，task/152-long-channel，base6966739a，目录tmp/long-channel-issue152-20261023。
+源8f72deb；23文件直接上传包已完成，20检查/51预览/27PDK哈希/6合成包接口探针通过。
+独立pilot→calibrate冻结→三seed1s长记录及500Hz对照；没有实际Spectre、远端作业或质量/PPA结果。
+中央prepared记录已check/render，root保留其他52条。源码/配置SHA及命令见work/jieruiz/152/HANDOFF.md。
+已推送PR156（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/156），待审未合并；发布84770a1，6关键源文件远端原字节回读通过。实际回执见work/jieruiz/152/PUBLICATION.json。Projects查询缺read:project，待维护者同步；Issue阶段同步成功。不自动关闭Issue。
+
 ## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
 
 负责人jieruiz，task/138-trainable-samplers，基线6966739，源码b6e3d034。新增experiments/trainable_pbit_attention；真实Bernoulli提议、均匀仲裁/保持、2^-m全零校正和自适应拒绝；全部轨迹score-function训练，有偏Softmax代理显式分离，量化禁冒称精确梯度。22/22合成数值测试，81条有限赢家轨迹/梯度穷举、三seed分布对照和6个小训练通过；无Qwen/Llama新PPL、CUDA、物理随机源或RTL/PPA。训练源码/配置/结果SHA见results/VALIDATION.json，交接work/jieruiz/138/HANDOFF.md。科学交付42beb199已推送PR142（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/142），14文件远端原字节核验通过；PR待审、未合并，回执PUBLICATION.json/REMOTE_VERIFY.json；未改正式TLM/硬件默认，后续真实LLM集成和梯度方差/内存仍待验证。复用现有本地Torch2.4.1 CPU，无新服务器作业。
 
 工作目录：tmp/sampler-training-issue138-20261023；PR base pbit-tlm-attention-details-20261016；范围/验证已上传PR142，Issue138已同步；Projects缺read:project，待维护者同步看板。
+2026-10-23：两页说明已推送 PR132（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/132），待审未合并；科学交付125560a，远端Word与正文原字节已核验。详见work/jieruiz/129/BRIEF_PUBLICATION.json。
+
+## 2026-10-23 Issue129 两页通俗说明
+
+按用户要求补充功耗面积节省机制、速度控制与剩余验证，面向非专业听众，省略内部结构细节。正式文件 architecture_tlm/memory_savings_20261023/概率计算的能耗面积与速度_两页说明.docx；两页，Word导出及逐页PNG检查通过。原7页报告保留，无新实验，不恢复暂停任务。分支 task/129-two-page-brief，复用 tmp/memory-savings-issue129-20261023；上传/PR以 BRIEF_PUBLICATION.json 为准，合并前不关闭Issue129。
+<!-- ISSUE133_STATUS -->
+## 2026-10-23 Issue133 计数器RTL对照
+
+已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。 40组RTL/13408输出、6流程测试、8台账测试通过；完整64输出本地展开超时待VCS；无工艺PPA。分支task/133-counter-rtl，base6966739；工作目录tmp/counter-rtl-issue133-20261023；代码architecture_tlm/counter_rtl_compare，交接work/jieruiz/133/HANDOFF.md。下一步用户跑A/B SS/TT100MHz四项，回传后比较。Projects待read:project权限，未自动合并。
+<!-- END_ISSUE133_STATUS -->
+## 2026-10-23 Issue146：PPA批处理v2本地交付
+
+发布回执：源码7b097d194f81042dfd771bf01b38599bacf01aae已推送workspace并核实PR148 head一致，Issue146/PR148评论已同步；账号jieruiz，PR保持open/unmerged，服务器EDA未运行。V2_PUBLICATION.json为实际回执，不代表Projects看板已更新。
+
+负责人jieruiz，task/146-cim-frontend / PR148，独立目录tmp/cim-frontend-issue146-20261023；继续已有任务，不修改Issue133。v2源包和RUN_BATCH_ZH已完成，11辅助检查、4实际RTL/48波形窗口通过，原RTL/TB不变。修复buffer Tcl插值，增加SS/TT自动选库、8项Slurm、3seed、叶子分类/单位/能量守卫及小报告归档。台账已登记待EDA，不宣称DC/VCS/PT通过；无运行中作业。包根sc_cim_frontend_ppa_20261023_v2.zip，SHA f2ef9036c30adcbccd4a2c2c24543fe27061ff04facb3d6a27948f294b701228。上传/提交以work/jieruiz/146/V2_PUBLICATION.json回执为准，原PUSH.json已有他人变更未触碰。下一步用户先smoke再正式；Projects待同步。
+
+## 2026-10-23 Issue146：SRAM邻近计算前端
+
+负责人jieruiz，task/146-cim-frontend，base 6966739/pbit-tlm-attention-details-20261016；独立目录tmp/cim-frontend-issue146-20261023。正式architecture_tlm/sc_cim_frontend_20261023，本地RTL/中文说明/PPA脚本/小SRAM探针已完成；27组13620周期、5流程与12波形窗口检查通过。完整N64/M64前端此前三seed×两随机接口通过，独立大门阵列超时保留。无新DC/PT/SPICE/PPA/PPL，源/配置/证据SHA见results和中央cim-frontend-146-functional；用户先M1 smoke再M64工艺。PR148已推送待审、未合并；远端实际状态见work/jieruiz/146/PUBLICATION.json、REMOTE_VERIFY.json；不自动合并，Projects待权限核对。无在运行作业。下一步依RUN_PPA_ZH回传报告；详细交接HANDOFF.md。
 
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 

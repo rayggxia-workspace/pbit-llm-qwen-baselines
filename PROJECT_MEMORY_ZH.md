@@ -1,6 +1,36 @@
+## 2026-10-23 第九轮审核与后训练模型要求
+
+用户确认后续用Instruct／后训练版，Base指模型而非Git基线。审核132/134/135/140/148/156通过各自有限交付，54测试及原件核验通过；当前准备发布至TLM集成分支，实际合并以Issue55最终回执为准。137/143/147/149/153/155保留迁移，最新160为符合方向但结果未齐的草稿。历史Base结果不改名继承；main保持fae1298。报告work/jieruiz/55/round9/REVIEW_ZH.md，独立review/55-pr-round9-nonbase；无新GPU／RTL／EDA实验。
+
+## 模型版本选择与审核门禁（用户2026-10-23确认）
+
+- 后续新模型实验及方案验收采用 Instruct／后训练版，不采用 Base 模型；这里的 Base 指模型版本，不是 Git 的 PR base。本要求优先于历史采用 Base 的计划。
+- 核对准确模型 ID、revision、权重和 tokenizer 的 SHA、后训练属性，不能只根据名称是否带 Instruct 判断。按任务记录 chat 模板、特殊 token、thinking 开关及计分协议；原文 teacher-forced PPL 可明确不套聊天模板，不与聊天任务混称。
+- 历史 Base 源码和原始结果保留原标注，不改名为 Instruct，不继承其 PPL 为新模型结果。迁移必须重新建立匹配的未改动参考，遵守模型／文本哈希和相同评估协议要求。
+- 当前未合并的 Base 评测及其依赖保留迁移要求，不作为后续新模型基线验收；通用算法／硬件可按自身边界审核。本规则不授权取消健康作业或自动启动昂贵重跑。
+
 ## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
 
 负责人jieruiz，task/138-trainable-samplers，基线6966739，源码b6e3d034。新增experiments/trainable_pbit_attention；真实Bernoulli提议、均匀仲裁/保持、2^-m全零校正和自适应拒绝；全部轨迹score-function训练，有偏Softmax代理显式分离，量化禁冒称精确梯度。22/22合成数值测试，81条有限赢家轨迹/梯度穷举、三seed分布对照和6个小训练通过；无Qwen/Llama新PPL、CUDA、物理随机源或RTL/PPA。训练源码/配置/结果SHA见results/VALIDATION.json，交接work/jieruiz/138/HANDOFF.md。科学交付42beb199已推送PR142（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/142），14文件远端原字节核验通过；PR待审、未合并，回执PUBLICATION.json/REMOTE_VERIFY.json；未改正式TLM/硬件默认，后续真实LLM集成和梯度方差/内存仍待验证。复用现有本地Torch2.4.1 CPU，无新服务器作业。
+## 2026-10-23 Issue133：FFN精确计数A/B电路
+
+用户要求暂按SRAM全并行，优先比较计数器。architecture_tlm/counter_rtl_compare提供A逐位/符号/档计数＋最终恢复，B每拍整数和＋每档累计；均精确、相同协议，排除权重存储/随机前端/浮点恢复，不改主TLM。40组RTL/13408输出、6流程及8台账测试通过；完整64输出Icarus展开超600秒未完成，待用户VCS，不冒充工艺结果。T32 PIPE1完整帧36周期；6144B/640B只是主计数状态，含流水/输出后10368B/1760B，不是面积能量倍率。ZIP根sc_counter_compare_20261023.zip，SHA3a9b84019b1e41f51f198601a57fd969c7dbbb4de896b1bd4951221b378c94b5；原件project_archives/counter_rtl_20261023/LOCAL_VALIDATION_RAW.tar.gz。四项A/B×SS/TT100MHz工艺待跑，登记counter-ab-133-functional；无新PPL。已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。 本轮无服务器作业，Projects权限待补；详情work/jieruiz/133/HANDOFF.md。保留现有其他任务镜像，未覆盖。
+## 2026-10-23 Issue139：SANTA++ 对照与采样耦合增量
+
+SANTA++已覆盖代表筛选、Gumbel校正、GQA union与packed布局；Issue84/PR85已合并，不重做。Issue9先有sharedUniform Bernoulli分析，约1.4pp合成收益，不能把共享随机数当新发现。本次SANTAPP_GQA_COUPLING_ZH.md推导固定K共同Gumbel的单头分布保留和固定状态下加权union期望不增；投影方差可增4倍反例说明不保证模型质量。建议先低成本对照，再考虑有界suffix/实际字节与完整硬件成本。文档/解析算例经独立审阅，沿PR140交付；无模型/生产代码/EDA，116/123仍暂停。Zotero原件复用，新增设计笔记待写回。详见work/amlink1219/139/santapp_followup/HANDOFF.md。
+
+## 2026-10-23 Issue139：Qwen3-4B GQA候选筛选文献
+
+amlink1219新增architecture_tlm/qwen3_gqa_literature/REPORT_ZH.md。32Q/8KV/d128，每组4Q；建议按KV组候选和物理并集预算比较SparQ式概率汇总、逐头union及SeerAttention-R已训练gate，原模型最终每头QK/归一化独立。mean-Q、概率sum、教师head-max不是同一操作。Seer已评后训练Qwen3-4B，Issue136的4B-Base需独立迁移核验；本轮只有调研，未启动训练/仿真/完整PPL/PPA，116/123暂停保持。12篇PDF与来源已暂存核SHA；Zotero关闭，未入库，恢复见work/amlink1219/139/HANDOFF.md。交付分支task/139-qwen3-gqa-literature，PR状态查实时回执。
+## 2026-10-23 Issue146：CIM前端PPA批处理v2
+
+继续PR148/task/146-cim-frontend，保持原RTL/TB字节不变，补SS/TT100MHz八项smoke/正式Slurm、三seed、真实buffer自动验证、互斥叶子面积/功耗汇总与失败小包。修复原Tcl `$i(a)` 被当作数组变量的生成错误。11辅助检查、4个实际小RTL与48波形窗口通过，未运行DC/VCS/PT，不能写成已测PPA。包sc_cim_frontend_ppa_20261023_v2.zip，49471B，SHA f2ef9036c30adcbccd4a2c2c24543fe27061ff04facb3d6a27948f294b701228；manifest34d5b2031c141b41d8b8f14096d12539a969c5a1dbeb9027219f70b0d0caf856。台账cim-frontend-146-ppa-v2-prepared；旧v1证据不覆盖，原manifest移到project_archives/cim_frontend_20261023/SOURCE_MANIFEST_V1.json同字节保留。下一步用户依RUN_BATCH_ZH先smoke，回传reports包和logs；源码发布结果见work/jieruiz/146/V2_PUBLICATION.json，未运行服务器任务，Projects待同步。
+
+## 2026-10-23 Issue146：SRAM邻近SNG/驱动/W8门控
+
+新增architecture_tlm/sc_cim_frontend_20261023，任务task/146-cim-frontend，PR148已推送待审、未合并；科学提交74979fc。N64共享R8、W8固定权重、T32/K32，显式库buffer绑定，不加概率/权重副本寄存器；完整前端、SNG、门控、Q缓冲四种探针。旧计数器已有AND，初估只再加SNG/分发，避免重复；SRAM保持/装载另计，32768并行权重Q仍是CIM接口假设。附DC/VCS/PT流程及真实bitcell加载SPICE模板，无工艺模型。
+
+最终27组13620周期、5流程检查、12窗口×115位活动检查通过；较早N64/M64前端本地/外部源各三seed通过，独立大门阵列Icarus180秒超时保留。无新DC/PT/SPICE/PPA/PPL，包根sc_cim_frontend_ppa_20261023_v1.zip，36990B，SHA73bee486fd7d1f0fff0b3ba6bf915836715ed9496e92902351f86c18c68bda6d。统一台账cim-frontend-146-functional，原件project_archives/cim_frontend_20261023，交接work/jieruiz/146/HANDOFF.md；先用户SS/TT M1 smoke再M64。发布与逐blob核验见PUBLICATION/REMOTE_VERIFY，Projects待权限/维护者同步，无运行作业。保留其他任务镜像记录。
 
 ## 2026-10-23 Issue123 完整FFN与STA/PPA交接
 
@@ -512,6 +542,8 @@ FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700�
 旧3/39、11/39与动态预计完成时间保留为历史，恢复先看本节、Issue59/PR62及交接，不再重复提交已完成39项。仓库上传身份jieruiz已核实admin/push；Projects是否成功同步以最新发布回执为准。当前正式报告PR仍未合并。
 
 ## 6 随机源、p-bit与相关性
+
+2026-10-23用户要求100us同源采样、每seed至少1s有效记录：新Issue152/PR156（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/156），负责人jieruiz，task/152-long-channel，源码8f72debba6ce3b83626be7e1eb892fed8310c634，科学交付84770a1已推送待审、未合并。直接上传`远端上传/long_channel_v1/`（23文件214983B），先`bash submit.sh pilot`。选原buffers_x2旧15MOS+两MOS零外加C核心+5fF，TT25C持续供电；pilot18例检查噪声开关/500Hz精度/实测成本；calibrate27例独立10Hz校准冻结后再做三seed10Hz精度；long为10/500Hz各三条1.02s、固定20ms启动、每条10000原始bit，validation41011/41047/41077不与校准/检查混用。10Hz短记录至少120ms，保留100MHz/2.5ns/noisescale1，10us strobe每十点取100us；不以稀疏电流均值算功耗。保留MID原始判决、VN两类输出/真实时间戳、32/177bit包重复/汉明/位相关和无回退时间戳source适配器。20脚本测试、16模块Python3.6 AST、Bash、27PDK哈希、51预览及6合成包接口探针通过；尚无实际Spectre/远端JobID/长记录质量或PPA。统一台账`physical-rng-long-152-prepared`电路阶段全not_run，不把预览算实验；保留其他记录。入口`analog_pbit_20261016/long_channel_v1_delivery.json`及README，formal为`architecture_tlm/physical_rng_long_channel/`；Projects另待权限/维护者同步，不接管Issue95。
 
 2026-10-22数字随机服务功耗结果38322118已由用户提供：原汇总`远端上传/rng_service_v1_20261022/architecture_tlm/random_service/POWER_RESULTS_38322118_ZH_20261022.txt`。本会话独立复核12归档SHA/同v3源码manifest、7920已下载阶段成员、216门级PASS及252窗口能量算术；未独立重放VCD/网表、未重跑EDA或接管Issue95。100MHz三seed(LFSR/GF64/Bivium/FFN)面积3154.32/14804.64/19331.64/12360.96um2，连续功率162.467/1355.333/1204/639.6uW，1.62467/13.55333/12.04/6.396pJ每生成帧；输出宽度用途不同，FFN为单8bit字共享64比较。SS1.08V125C布局前零延迟活动/PT，CALCULATED_PROVISIONAL；PWR-981/库表外警告、无CTS/SPEF及物理熵源/健康调理/CDC等。100MHz所有已报告配置时序过，300/500未全过；FFN不停钟idle492.3uW约77%active，门控仍待诊断，不能等同已实现收益。证据`analog_pbit_20261016/digital_rng_38322118_review_20261022/`；旧Issue95段落“PPA null”仅指交付时点，不代表现今无结果，正式TLM尚未由本会话回填。数字100MHz不证明模拟源100MHz独立位率。
 
@@ -1099,3 +1131,17 @@ LLM对话先前独立压缩10网表约2.713GB及回收1个Issue19回执约0.188G
 ## 2026-10-23 Issue55第八轮审核快照
 
 PR119/120/122/125/126/127/130限定阶段成果通过；新#130为存储总结。独立组合359测试注册、358通过、1个Windows符号链接场景跳过；已复核208资源结果、48数据流轨迹及真实GQA公开回执。74份GQA源码有公开同字节祖先映射，修复旧未公开commit复核入口。台账取45记录/964配置行并集，不重复计新实验。详见work/jieruiz/55/round8/REVIEW_ZH.md；实际远端合并以Issue55收尾回执为准。Issue116/123暂停不变；全尺寸2783取消未验收，DC/PT未执行。下一项工艺工作是#125编码恢复SS/T32最小PPA，与Issue107八模块PPA包分开计费。
+
+## 2026-10-23 Issue95 分层随机质量首轮
+
+负责人rayggxia；task/95-rng-quality，tmp/rng-quality-issue95-20261023，基线6966739a。复用38237164已有Spectre原始9条轨迹，189案例（两端点各4096帧）与30调理/36抽样诊断完成，9机制测试及1269原件/算术/结构核对通过。质量不是自动逐层改善：旧比较器VN后P1近50%仍有负时间相关；GF64在q128前4路严格xor=0；重复种子使三后端两端点同流。无新Spectre/RTL/PT/LLM/PPL，不认证熵率或最佳换种周期；两个独立电路记录不是同一物理噪声因果链，缺同时多路阵列记录。
+
+入口architecture_tlm/random_service/quality/README_ZH.md及results/20261023/REPORT.html；用户副本远端上传/rng_quality_20261023.html。稳定原件project_archives/rng_quality_20261023，SOURCE_MANIFEST绑定8文件，执行本地8a862a38cf6e4e46f50e719f8b2b3877db745c75。中央run rng-quality-95-20261023为DESIGN_PROOF，PPA未运行；新增record单独同步固定入口，保留其他并行记录，不用旧catalog覆盖。当前本地完成；发布前GitHub连接器出现HTTP传输错误，远端发布状态以work/rayggxia/95/quality/PUBLICATION.json为准。恢复见同目录HANDOFF，不重复实验。
+
+2026-10-23 Issue95发布回执：网络已恢复，分层质量实现/结果已上传PR134（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/134），开放待审未合并；科学交付1f8e1d468792b5af17d337db885b482c189c00f9。完整远端tree与本地c8162a04b3c32bd0d5615108d8dc7b93bdf0b1ee相同，报告读回逐字符一致。旧网络阻塞文字仅为先前时点，无需重复实验。
+
+## 2026-10-23 Issue95：旧比较器采样间隔纠正
+
+用户指出当前应较慢采样，复核确认质量主链硬编码0.5us，不能把旧比较器rho约0.72～0.74泛化为慢速采种质量。复用9条已签SHA波形，72项间隔重分析/216 Pearson交叉核验/9数组SHA通过；10us固定时间lag的两款旧比较器三seed范围0.027～0.052，20us约0.018～0.047。单相位长间隔样本少，不能宣布IID或长间隔更差；P1偏置不会随间隔自动消失。VN原负相关仅属0.5us场景。
+
+RandomNetwork未规定同一物理源采样间隔；SeedWords.interval是调理32bit字间隔，1亿拍换种在100MHz约1s，但不决定包内原始bit间隔。下一轮需显式物理时间戳/同源间隔及调理时序，再贯穿各层。入口architecture_tlm/random_service/quality/results/sampling_review_20261023/REPORT_ZH.txt；用户副本远端上传/rng_sampling_review_20261023.txt。沿用Issue95/PR134/task/95-rng-quality与现有工作目录，不改原189案例、旧报告或正式模型默认，不新增EDA/RTL/PPL/数字实验。台账原run补充后处理索引，不虚增实验数量。补充远端交付状态以work/rayggxia/95/quality/SAMPLING_PUBLICATION.json为准；Projects未同步，PR不自动合并。

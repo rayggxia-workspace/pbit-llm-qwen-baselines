@@ -105,20 +105,15 @@ class SparQController:
     def _record(state, diagnostics):
         # Aggregate scalar counters on their device; never retain token-level
         # candidates or copy the full candidate set to the host per query.
-        for key, value in diagnostics.items():
-            if isinstance(value, (int, float)) and not isinstance(value, bool):
-                state['diagnostics'][key] = state['diagnostics'].get(key, 0) + value
-            elif isinstance(value, torch.Tensor) and value.numel() == 1:
+        for key, value in diagnostics['logical_counts'].items():
+            if isinstance(value, torch.Tensor):
+                if value.numel() != 1:
+                    raise RuntimeError('logical counters must be scalars')
                 value = value.detach()
-                if value.dtype == torch.bool:
-                    value = value.long()
-                state['diagnostics'][key] = state['diagnostics'].get(key, 0) + value
-            elif isinstance(value, dict):
-                for name, number in value.items():
-                    if isinstance(number, (int, float)) or (
-                            isinstance(number, torch.Tensor) and number.numel() == 1):
-                        name = key + '.' + name
-                        state['diagnostics'][name] = state['diagnostics'].get(name, 0) + number
+            elif not isinstance(value, (int, float)) or isinstance(value, bool):
+                raise RuntimeError('logical counters must be numeric')
+            key = 'logical_counts.' + key
+            state['diagnostics'][key] = state['diagnostics'].get(key, 0) + value
 
     def stats(self):
         def plain(value):

@@ -1,5 +1,19 @@
 # Issue133 FFN计数器对照交接
 
+## PPA v2续接（2026-10-23）
+
+沿用本Issue/分支；开工已核验jieruiz、PR135 open/head7f38018与本地一致。
+RTL/TB未改。修正VCD校验位宽被末尾声明覆盖的问题，新增SHA冻结提交、
+4项M1 smoke、数值功耗/面积/每完成帧能量汇总、单元互斥分类和失败回传。
+本机及新包解压9单测通过；Bash语法、Python3.6 AST、Tcl完整性通过。
+新增小RTL A/B共64输出及4个活动/空闲窗口，逐窗口90个输出/时钟bit通过。
+完整M64未重跑，无DC/VCS/PT新结果。旧功能/失败结果保留。
+包sc_counter_ppa100_20261023_v2.zip（含全部RTL/TB），运行入口RUN_PPA_ZH.txt；
+SHA、验证归档、实际发布状态见PPA_V2_DELIVERY.json及后续回执。
+先Slurm提交smoke，回传4包确认后才提交all；不自动依赖提交以免失败悬挂。
+统一台账原record补充v2，不制造新的已测PPA；看板权限待同步。
+本段本地完成，是否已推送以回执为准；下方已推送描述是此前v1。
+
 负责人jieruiz；分支task/133-counter-rtl；独立目录tmp/counter-rtl-issue133-20261023；base6966739a5223680888bf0315f7bb4f73423a1ae6，PR目标pbit-tlm-attention-details-20261016。
 
 已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。

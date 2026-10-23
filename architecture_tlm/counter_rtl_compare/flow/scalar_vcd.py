@@ -3,9 +3,6 @@ import hashlib
 import json
 import re
 
-OUTPUT_WIDTH = {0: 32, 2: 32, 4: 785, 5: 785, 6: 32, 7: 32, 8: 16, 21: 16}
-
-
 def digest(path):
     h = hashlib.sha256()
     with path.open('rb') as f:
@@ -14,7 +11,9 @@ def digest(path):
     return h.hexdigest()
 
 
-def scalarize(src, dst, width):
+def scalarize(src, dst, output_width):
+    if not isinstance(output_width,int) or output_width<=0:
+        raise ValueError('Invalid expected output width')
     scopes, header, codes, names = [], [], {}, {}
     with src.open() as f, dst.open('w') as out:
         for line in f:
@@ -104,7 +103,7 @@ def scalarize(src, dst, width):
             if st['value']=='1':
                 st['ones'] += now-st['time']
         expected = {}
-        wanted = ['clk','out_valid']+['result[{}]'.format(i) for i in range(width)]
+        wanted = ['clk','out_valid']+['result[{}]'.format(i) for i in range(output_width)]
         for name in wanted:
             full = 'tb_counter/dut/'+name
             if full not in names:

@@ -1,0 +1,68 @@
+计数器A/B功耗面积仿真 v2，2026-10-23，Issue133 / PR135
+
+本包包含全部RTL/TB，无需单独上传Verilog。原始zip保留。
+v2未改RTL/TB/数学参考；修正逐位活动校验的位宽覆盖错误，增加提交时
+源码SHA校验及独立快照、Slurm小规模试跑、数值面积/功耗/能量汇总。
+
+1. 条件和边界
+100MHz，N64/M64/W8/BINS4/T32/PIPE1；A/B各SS1.08V125C、TT1.2V25C。
+SS与TT电压不同，不把两者功耗差单独解释为工艺角差异。
+setup uncertainty 2ns、hold uncertainty 0.1ns；零延迟门级活动，STA独立检查。
+含计数/逐拍归约/最终整数恢复、流水和控制/输出寄存器。
+不含SRAM/权重保持电路/PRNG/前端比较器/浮点恢复/PLL/IO/CTS/布线。
+权重是外部并行输入，每帧稳定、帧间可变；外部供数不是免费硬件。
+面积为库叶单元面积之和，不是布局后的核心/芯片面积。
+
+2. 上传与小规模试跑
+把sc_counter_ppa100_20261023_v2.zip上传到服务器工程根，执行：
+
+source ~/.bashrc
+BASE=/public3/home/t6s011227/pbit_chimera_pipeline_20260920
+cd "$BASE"
+unzip -o sc_counter_ppa100_20261023_v2.zip
+cd sc_counter_ppa100_20261023_v2
+python3 package.py --verify
+bash flow/submit.sh "$BASE/counter_runs/smoke_$(date +%Y%m%d_%H%M%S)" smoke
+
+试跑4个数组子任务：A-SS/B-SS/A-TT/B-TT，每项N64/M1、T32、PIPE1。
+保留全部功能向量；功耗只跑mixed、seed17、4帧active及64周期idle两个窗口。
+这是验证工具/库/映射/单位的流程，不用M1乘64替代正式M64结果。
+默认v6_384、4CPU、32GB、12小时，最多2项并行；CPU供DC使用，未启用
+需要VT_FGP_Runtime许可的VCS多核运行。可用CPUS/MEMORY/WALLTIME/PARTITION覆盖。
+库位置不同则显式设置SS_DB、TT_DB、STD_MODEL；包内不提供工艺库。
+
+3. 试跑确认后正式提交
+
+cd "$BASE/sc_counter_ppa100_20261023_v2"
+bash flow/submit.sh "$BASE/counter_runs/formal_$(date +%Y%m%d_%H%M%S)" all
+
+正式4子任务均M64。每项mixed/sparse/dense/zero、seed17/43/101，
+每次8帧连续运行+64周期idle，每项24个PT窗口。A/B合成输入一致。
+不要重复提交同一批。脚本拒绝覆盖已有结果根。
+结果根/source/是冻结快照，之后覆盖上传目录不会改变已提交任务源码。
+
+4. 查看与回传
+日志在指定结果根/logs/<JOB>_<INDEX>.out/err。
+子目录<JOB>_<INDEX>_<A或B>_<ss或tt>/包含：
+  EXECUTION.json、COMMANDS.json：实际配置/库/源码SHA与执行命令。
+  dc/area.rpt、inventory.tsv、setup.rpt/hold.rpt：面积/单元/时序。
+  gate/functional/FUNCTION_PASS：独立整数golden的门级功能检查。
+  power/*：逐bit活动校验、范围/模型检查、层级/单元功耗。
+  SUMMARY.json、summary.csv：面积、内/开关/漏电功耗、每帧能量。
+  FLOW_COMPLETE：流程算完，不等同于STA及所有告警通过。
+  failure.txt：异常；PARTIAL_SUMMARY.json：已算出的窗口。
+退出时生成同级<JOB>_<INDEX>_<A或B>_<ss或tt>_reports.tar.gz，失败也打包。
+库/环境预检失败可能只有logs，因此回传4个reports包及logs目录。
+大VCD/网表留服务器；VCD无损gzip验证后移除本任务的明文副本。
+
+E_frame[pJ]=P_total[uW]*窗口时长[ns]/(1000*完成帧数)。
+idle不产生帧，pJ/frame留空。功耗是整个DUT，不是纯累计寄存器。
+exclusive_groups按实际实例名做互斥归类；优化后无法识别的组合逻辑
+保留other，不臆造逻辑锥归属。层级报告仍保留便于复核。
+时序负slack/活动覆盖不足/库告警均标CALCULATED_PROVISIONAL。
+完整帧36周期不是32周期；状态位数倍率不是实测能量倍率。
+若仅汇总解析失败，保留已有报告，可用python3 flow/summarize.py 结果子目录
+重新解析已通过逐bit活动核验的窗口，不调用DC/VCS/PT，也不伪造FLOW_COMPLETE。
+
+本机没有实际DC/VCS/PT。历史40组RTL验证保留；完整M64本地展开超时，
+仍待服务器VCS验证。统一台账记录为待跑，不预判A/B哪种更优。

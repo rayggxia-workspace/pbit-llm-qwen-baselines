@@ -2,7 +2,7 @@
 
 负责人jieruiz；分支task/133-counter-rtl；独立目录tmp/counter-rtl-issue133-20261023；base6966739a5223680888bf0315f7bb4f73423a1ae6，PR目标pbit-tlm-attention-details-20261016。
 
-本地完成，尚未推送/创建PR。
+已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。
 
 正式实现architecture_tlm/counter_rtl_compare。A逐位/档/符号计数＋末尾有符号恢复；B每拍整数和＋每档累计。SRAM按用户要求全并行外部供权重，内部无额外权重存储，不含随机源/比较器/浮点恢复。本轮未改主TLM或其默认参数。
 

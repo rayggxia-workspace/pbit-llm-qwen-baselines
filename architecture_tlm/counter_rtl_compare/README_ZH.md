@@ -82,3 +82,9 @@ bash flow/submit.sh /your/results/counter_formal_NEW
 如果B面积更小但功耗更高，或时序失败，需要看归约树和宽累计反馈，而不是立即选B。如果A靠更深流水达到频率，额外寄存器和延迟也要计入。**本包的目标是让这项选择由同口径工艺结果决定。**
 
 正式关联Issue133；来源Issue118的整数合同，不修改其冻结证据；Issue107的v2活动映射修复工具在本包冻结复用，具体源SHA见FLOW_PROVENANCE.json。仿真新增记录进入统一digital_circuit_simulation_registry，不另建独立PPA台账。
+
+## 本地实际验证（2026-10-23）
+
+40组RTL测试、13408个逐档整数输出通过独立golden；覆盖N4/M2/T1边界、N64/M1/T16/32/64以及N64/M8/T32，两种计数器、流水开关、连续/间歇/回压/复位。A/B逐帧结果和周期完全一致，6项交付流程检查通过。
+
+完整N64/M64/T32本地Icarus展开超过600秒，未完成，不标成功。正式64输出仍须执行包内VCS门级验证。没有DC/STA/PT结果、没有真实模型活动或PPL。验证明细及工具SHA在results/，原始日志/向量归档索引随Issue133。

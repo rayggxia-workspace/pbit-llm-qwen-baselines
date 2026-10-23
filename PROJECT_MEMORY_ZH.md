@@ -1,3 +1,7 @@
+## 2026-10-23 Issue133：FFN精确计数A/B电路
+
+用户要求暂按SRAM全并行，优先比较计数器。architecture_tlm/counter_rtl_compare提供A逐位/符号/档计数＋最终恢复，B每拍整数和＋每档累计；均精确、相同协议，排除权重存储/随机前端/浮点恢复，不改主TLM。40组RTL/13408输出、6流程及8台账测试通过；完整64输出Icarus展开超600秒未完成，待用户VCS，不冒充工艺结果。T32 PIPE1完整帧36周期；6144B/640B只是主计数状态，含流水/输出后10368B/1760B，不是面积能量倍率。ZIP根sc_counter_compare_20261023.zip，SHA3a9b84019b1e41f51f198601a57fd969c7dbbb4de896b1bd4951221b378c94b5；原件project_archives/counter_rtl_20261023/LOCAL_VALIDATION_RAW.tar.gz。四项A/B×SS/TT100MHz工艺待跑，登记counter-ab-133-functional；无新PPL。本地完成，尚未推送/创建PR。 本轮无服务器作业，Projects权限待补；详情work/jieruiz/133/HANDOFF.md。保留现有其他任务镜像，未覆盖。
+
 ## 2026-10-23 Issue123 完整FFN与STA/PPA交接
 
 Issue116已通过PR126发布正式后端，本任务PR125固定160f46e与PR122@8007d98接合完整gate/up→SiLU/product→z重编码→down→BF16/残差，legacy默认保留。新接口按FP32 x/z、共享64组、逐输出B4恢复、独立跨k加法和有限信用执行。独立提取执行包28项测试通过，原核全payload等价。完整896→4864→896真实fixture已捕获（CPU2777），CPU2783全尺寸T32于03:41按用户要求取消（24:20、CANCELLED/0:15），无完整形状通过结论；2779/2780中断证据保留。候选调度源码/已有小烟测仅归档，不接入默认，不自动继续；停止总结为work/amlink1219/123/STOP_REPORT_ZH.md。

@@ -1,3 +1,9 @@
+<!-- ISSUE133_STATUS -->
+## 2026-10-23 Issue133 计数器RTL对照
+
+本地完成，尚未推送/创建PR。 40组RTL/13408输出、6流程测试、8台账测试通过；完整64输出本地展开超时待VCS；无工艺PPA。分支task/133-counter-rtl，base6966739；工作目录tmp/counter-rtl-issue133-20261023；代码architecture_tlm/counter_rtl_compare，交接work/jieruiz/133/HANDOFF.md。下一步用户跑A/B SS/TT100MHz四项，回传后比较。Projects待read:project权限，未自动合并。
+<!-- END_ISSUE133_STATUS -->
+
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 
 负责人jieruiz；review/55-pr-round8；base e8705765；独立稀疏目录tmp/pr55-review-round8-20261023。119/120/122/125/126/127/130按限定范围通过，359测试中358通过、1个Windows符号链接测试跳过；原件与GQA发布源码映射复核通过。45条台账/964行是原任务记录并集，无新硬件实验。修复未公开旧commit导致的新检出审计失败；不改旧manifest。116/123保持暂停，不启动全尺寸/GPU/EDA。成果work/jieruiz/55/round8/REVIEW_ZH.md；集成PR发布、实际合并及目录回收以Issue55最终回执为准。待用户工艺环境SS/T32最小PPA；Issue107独立进行，避免重复任务。

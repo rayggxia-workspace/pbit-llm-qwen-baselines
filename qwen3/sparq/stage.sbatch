@@ -17,8 +17,13 @@ export PIP_CACHE_DIR="$task_root/cache/pip" HF_HOME="$task_root/cache/hf"
 export TMPDIR="$task_root/tmp"
 mkdir -p "$TMPDIR" "$PIP_CACHE_DIR" "$HF_HOME" "$task_root/prepared"
 base_python=/home/Weican_Chen/projects/apple-sigmoid-7b-eval-20261019/env-eval-v4/bin/python
-test ! -e "$task_root/env-v2"
-"$base_python" -m venv --without-pip "$task_root/env-v2"
-printf '%s\n' /home/Weican_Chen/projects/apple-sigmoid-7b-eval-20261019/env-eval-v4/lib/python3.12/site-packages > "$task_root/env-v2/lib/python3.12/site-packages/personal_base_readonly.pth"
+test "$(realpath -e /home/Weican_Chen/envs/maniskill-stackpyramid-v3.0.1-cu128)" = /home/Weican_Chen/envs/maniskill-stackpyramid-v3.0.1-cu128
+test "$(stat -c %U /home/Weican_Chen/envs/maniskill-stackpyramid-v3.0.1-cu128)" = Weican_Chen
+if [ ! -e "$task_root/env-v2" ]; then
+    "$base_python" -m venv --without-pip "$task_root/env-v2"
+fi
+test "$(realpath -e "$task_root/env-v2")" = "$task_root/env-v2"
+test "$(stat -c %U "$task_root/env-v2")" = Weican_Chen
+printf '%s\n' /home/Weican_Chen/projects/apple-sigmoid-7b-eval-20261019/env-eval-v4/lib/python3.12/site-packages /home/Weican_Chen/envs/maniskill-stackpyramid-v3.0.1-cu128/lib/python3.12/site-packages > "$task_root/env-v2/lib/python3.12/site-packages/personal_base_readonly.pth"
 "$task_root/env-v2/bin/python" -m pip install --no-deps --index-url https://pypi.tuna.tsinghua.edu.cn/simple transformers==4.51.3 tokenizers==0.21.4
-/opt/slurm/21.08.8/bin/srun "$task_root/env-v2/bin/python" -B "$task_root/staging-v2/stage.py" --root "$task_root" --identity "$task_root/staging-v2/HF_MODEL.json"
+/opt/slurm/21.08.8/bin/srun "$task_root/env-v2/bin/python" -B "$task_root/staging-v3/stage.py" --root "$task_root" --identity "$task_root/staging-v3/HF_MODEL.json"

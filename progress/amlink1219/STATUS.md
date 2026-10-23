@@ -1,3 +1,75 @@
+# Issue116 已暂停（用户明确要求，2026-10-23）
+
+目标状态`paused`，不标complete、不自动恢复；只做收尾上传和交接。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审/未合并，暂停前已推送3347bd8，最终收尾提交与远端核验见`work/amlink1219/116/PUBLICATION.json`。权威入口：[暂停总结](../../work/amlink1219/116/PAUSE_REPORT_ZH.md)、[HANDOFF](../../work/amlink1219/116/HANDOFF.md)；A–G仅A完成本轮冻结，B/C/D/E/G部分完成，完整新后端F未开始。
+
+既有68真实裁剪+8合成、真实context64 GQA及81实现/71独审/43旧回归保持原结论；公开ActiveMemory候选的兼容和64/128/256探针另列，不改默认Kernel。2K候选仅建图后按用户指令中止，PID290792/251584/274768已停，无2K成功记录。三名子代理已停止；暂停时本人服务器队列为空，并行2783为CANCELLED/0:15，本任务未取消它。
+
+正式结果、完整v5矩阵、v4失败、源快照、153项既有本地诊断和暂停回执均归档于本分支；私有模型/GQA原始输入留本人服务器并登记SHA。主树无未提交生产代码；其他工作树保留诊断草稿及14项仅换行差异，详见PAUSE_WORKTREE_INVENTORY，不清理/重置。Projects仍缺read:project；GitHub交接按用户要求通知仓库成员`@jieruiz`。只有用户明确恢复后才执行HANDOFF中的后续检查。
+
+---
+
+# Issue116 暂停前验收快照（历史时点）
+
+负责人amlink1219，task/116-cycle-execution，独立workspace_projects/cycle23。FFN/query有限周期核、共享KV的GQA分组、native随机协议、缩小单层、v6桥与交互trace已完成；最终81实现测试、71独立测试、43旧回归通过。Slurm2776 real68+smoke8全通过，矩阵独立核302制品/34trace/98,340操作与4,597真实read hashes。新增真实context64、7query/1KVhead：Slurm2782的5个S32 CLI与6个S16独审配置双模式通过，独审42个case/head共2,688值逐bit相等。协议RTL9case252握手、ONNXim2官方+4场景、PR122固定版本12case兼容复验通过。有限预取死锁、免费union、无界operand响应已修并保留证据；无完整新后端Qwen/Llama/PPL/STA/PPA结论。
+
+入口architecture_tlm/cycle_v1/IMPLEMENTATION_ZH.md，独立审查audit/REVIEW_ZH.md，交接work/amlink1219/116/HANDOFF.md。[PR126](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/126)开放待审、未合并；基础发布ddd2e340的438对象/8原始blob已核，包含GQA的最终发布以PUBLICATION.json的verified_head/对象与SHA回执为准。尚缺真实全维整层、多token/2K/8K、全局容量/随机网络、在线DRAM命令后端和PPA校准，原方案A–G未全部完成。N64/128规模探针显示超线性成本，未启动2K；PR125已在独立工作树接续完整FFN及调度性能工作，不复制未发表实现。旧v6/random_service/历史结果未改，权重/私有fixture留本人存储；并行PR119/120/122/125不覆盖。已在PR125留下正式后端交接；实际STA/PPA交由jieruiz，尚未运行。本任务作业均已完成，GPU仅2759/2781捕获（14秒/9秒），其余CPU-only；5090可用，未切4090。新GQA私有fixture下载被自动审批拒绝，改在服务器验证，仅回传白名单回执。Projects缺read:project待同步，不改权限。
+
+---
+以下为Issue98历史发布回执，与Issue116发布状态分开：
+
+# Issue123 已按用户要求停止（2026-10-23）
+
+task/123-full-ffn-ppa / PR125待审。正式PR126@160f46e＋PR122@8007d98接合已上传d944081；28项冻结包测试、120次独立随机payload复核及45RTL场景通过。完整fixture已捕获。
+
+CPU2783于03:41按用户要求取消，CANCELLED/0:15、24:20，无全尺寸成功summary/trace/数值结论；本任务无运行作业。主机候选源码、已有34测试回执和小烟测已归档，未接入发布runner，未新提交全尺寸作业。
+
+已做/未做/恢复步骤及中间文件索引见work/amlink1219/123/STOP_REPORT_ZH.md。STA/PPA交接文件已上传并@jieruiz，待其实际EDA；PPA/PPL未知。保留必要复现快照，未删除唯一数据；无自动继续。Projects待read:project，不自动合并/关闭。
+
+---
+
+发布回执（Issue121）：科学提交`3e8cb017e71a96aa628b1772810b7fdf12884245`已上传[PR122](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/122)，87项远端Git对象一致，开放待审、未合并。Issue116已回传接合结果；后续元数据提交不改变验证源码。
+
+# 2026-10-23 Issue121：编码恢复与周期后端接合
+
+负责人amlink1219；独立分支task/121-encoding-cycle，基线46804fb。已先核Issue116活跃本地实现，分工登记在#116；本包复用#107算术，参考#118/PR120供数边界，不改116工作树或默认FFN，不重复#117资源搜索。
+
+完成显式两类计数语义、FUSED0恢复、逐输出Resource/Operation适配及有限结果槽RTL。28项软件测试、12组cycle/event重放（1536输出）、27组最终RTL（6861输出/108reset flush）通过，另8项索引测试通过；源码/产物SHA已核。主服务器CPU-only作业2767/2769/2773均完成，未申请GPU，没有本任务运行作业。
+
+入口architecture_tlm/encoding_restore_contract/README_ZH.md；交接work/amlink1219/121/HANDOFF.md。116后端四文件固定本地已提交cd27d980，发布时需复核远端新接口；完整FFN接合、STA/每操作能量/质量仍待补。PPA保持null，未声称全链闭合。极小数舍入差和-128总线反号均有反例，新增模块AGENTS约束维护。
+
+成果已完成，上传/PR状态以work/amlink1219/121/PUBLICATION.json回执及远端ref为准；不自动合并/关闭。Projects实测缺read:project，暂待有权限者同步；仓库上传不受影响。
+# 2026-10-23 Issue117：ASIC资源计划首轮优化
+
+负责人amlink1219；独立workspace_projects/ar117，task/117-asic-resource-optimization；base集成46804fb。接续Issue112规划，本轮208项新完整decode TLM已全部完成：128共同候选粗筛＋64预声明代表点补充＋16vector128跟进，五代表点覆盖四方法/2K8K/三seed。没有剩余运行、待补case或GPU/Slurm任务。71项测试通过（28新增＋43原v6），52＋40旧情景145payload SHA未变；独立verify通过208完整键集合、配置/源/receipt、336query覆盖及容量/相位/资源守恒。
+
+执行提交44dbbbdbc2720963b2b24bf03cdf7582a2d97075、315862412e15695c3fa21e6c573d9e5f3547e70d、b1b4d183678e25f24b7b37c273fcb3f61c37483b；十份执行清单的数值/调度源SHA集合相同。容量only无时延收益，同1MiB映射小幅改善；vector128下SC筛选/PV三seed均值比同配置W8在8K快7.543849%，2K慢4.166733%。结果是合成事务条件估计，未做新PPL/RTL/EDA；完整面积/能量/A0仍null，不能宣称SC普遍更优或完整同面积验收。
+
+正式入口architecture_tlm/resource_optimization_v1/README_ZH.md、RESULTS_ZH.md、results/analysis_20261023/SUMMARY.json与VALIDATION.json；交接work/amlink1219/117/HANDOFF.md含精确重汇总/验收命令。208项完整交付通过PR119，PR待审未合并，最终远端head/验证见PUBLICATION.json；统一台账已按CALIBRATED_ESTIMATE登记，check/render与8项台账测试通过。历史指定阅读镜像路径本机不存在、未同步。Projects缺read:project待补。不重复Issue116周期后端或PR120/Issue118供数/局部状态合同；后者待审且未纳入本轮。下方历史保留，实时状态以各任务最新回执为准。
+
+---
+# Issue118 FFN供数与局部状态合同（2026-10-23）
+
+# Issue116 周期级TLM执行后端（2026-10-23）
+
+已上传[PR120](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/120)，科学提交`8bea1dfd1db24263a6daea5e6a29de641b23f03c`，48个远端Git文件对象核验一致；Issue118验收清单/结果评论同步。PR待审、未合并。Projects现场返回INSUFFICIENT_SCOPES/read:project，待有权限者同步；仓库发布不受影响。此后仅发布回执/交接元数据不改科学结果。
+
+负责人amlink1219；`task/118-ffn-storage-contract`；base集成46804fb；独立目录`workspace_projects/sf23`，未改cycle23任务工作树。六项供数合同执行、四非法配置、30功能测试、66整数场景888逐档输出通过，源/结果SHA已核。正式入口`architecture_tlm/ffn_storage_contract/README_ZH.md`与研究状态对齐报告；台账`ffn-storage-118-design`，DESIGN_PROOF。
+
+T32保持/串行重读6.92us/3.2768ms，只是不同局部资源的SRAM->消费接口；计数48KiB→5KiB不是PPA收益。无新模型/PPL/RTL/STA/GPU/Slurm，无运行中作业。Issue116周期核心保持独立。任务分支/PR与Projects状态以`work/amlink1219/118/PUBLICATION.json`实际回执为准，不自动合并。接续命令和未验证项见同目录HANDOFF。
+
+以下保留历史进度，旧“未合并”不是2026-10-23实时状态：
+
+# Issue124 恢复吞吐与数据流消费实验（2026-10-23）
+
+负责人amlink1219，独立task/124-recovery-dataflow，执行54a9968，基于集成46804fb3。先核Issue116、PR120/122和Issue123/PR125后划分范围；只消费既有合同，完整FFN由123继续，不复制116开发源。
+
+48/48短投影条件仿真、24对同配置SC/W8、20项测试、8项登记守卫通过；独立验证467520操作及15类篡改拒绝。SC221.3625→205.75µs（−7.05%），同配置W8也205.75µs；主瓶颈是部分和接口。读宽128B单独候选206.35µs，增加双槽仅再降0.6µs而需更多保持状态。输入/门限为冻结合成数据，非完整FFN/PPL/STA/PPA。
+
+入口architecture_tlm/ffn_dataflow_optimization/README_ZH.md，原始48gzip、3输入及SHA清单已准备；中央台账新增本任务1条/48行，当前分支36条564行，未合并其他任务登记须集成取并集。交接work/amlink1219/124/HANDOFF.md；结果提交c509772已上传PR127，未合并，回执见PUBLICATION.json。最终PR126已发布116冻结依赖；13份GitHub空缓存重建逐SHA与原20项测试通过，复现阻塞解除，执行源不漂移。Projects实测缺read:project，本机固定阅读镜像路径不存在，二者待同步。不自动合并/关闭Issue，无运行中的本任务作业。
+
+---
+以下为Issue98历史发布回执，与Issue116发布状态分开：
+
 发布回执（2026-10-22）：科学文档提交`84eea461f22eff53f2e9502ada995a22cb7a0cac`已上传任务分支，[PR108](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/108)开放待审，未合并；7项源文件远端原始字节/SHA已核。后续发布元数据提交不改变报告。Projects实测缺read:project，待同步。
 
 # Issue98 Prefill专项补充（2026-10-22）

@@ -1,0 +1,462 @@
+{
+  "buffers": [
+    {
+      "capacity": 32768,
+      "initial": 32768,
+      "name": "ffn.weights",
+      "unit": "token"
+    },
+    {
+      "capacity": 32,
+      "initial": 32,
+      "name": "ffn.scales",
+      "unit": "token"
+    },
+    {
+      "capacity": 49152,
+      "initial": 49152,
+      "name": "ffn.counters",
+      "unit": "token"
+    },
+    {
+      "capacity": 256,
+      "initial": 256,
+      "name": "ffn.encoded",
+      "unit": "token"
+    },
+    {
+      "capacity": 65536,
+      "initial": 65536,
+      "name": "ffn.partials",
+      "unit": "token"
+    },
+    {
+      "capacity": 8192,
+      "initial": 8192,
+      "name": "ffn.restore",
+      "unit": "token"
+    },
+    {
+      "capacity": 1,
+      "initial": 1,
+      "name": "ffn.rng_slot",
+      "unit": "native transaction credit"
+    },
+    {
+      "capacity": 4096,
+      "initial": 4096,
+      "name": "attention.kv",
+      "unit": "byte credit"
+    },
+    {
+      "capacity": 32768,
+      "initial": 32768,
+      "name": "attention.scores",
+      "unit": "byte credit"
+    },
+    {
+      "capacity": 1,
+      "initial": 0,
+      "name": "attention.samples",
+      "unit": "index"
+    },
+    {
+      "capacity": 1,
+      "initial": 1,
+      "name": "attention.rng_slot",
+      "unit": "native transaction credit"
+    },
+    {
+      "capacity": 8192,
+      "initial": 8192,
+      "name": "layer.local",
+      "unit": "byte credit"
+    },
+    {
+      "capacity": 4096,
+      "initial": 4096,
+      "name": "layer.state",
+      "unit": "byte credit"
+    }
+  ],
+  "memory_ports": [
+    {
+      "bank_capacity": 8,
+      "banks": 1,
+      "clock": {
+        "name": "dram",
+        "period_ps": 12500,
+        "phase_ps": 0
+      },
+      "ii_cycles": 1,
+      "latency_by_address": null,
+      "latency_cycles": 4,
+      "line_bytes": 64,
+      "name": "dram",
+      "ports_per_bank": 1,
+      "provenance": "banked timing assumption; not a DRAM command model",
+      "response_ii_cycles": 1,
+      "response_ports": 1,
+      "strict_reads": true,
+      "window": 1
+    },
+    {
+      "bank_capacity": 8,
+      "banks": 1,
+      "clock": {
+        "name": "sram",
+        "period_ps": 12500,
+        "phase_ps": 0
+      },
+      "ii_cycles": 1,
+      "latency_by_address": null,
+      "latency_cycles": 2,
+      "line_bytes": 64,
+      "name": "sram",
+      "ports_per_bank": 1,
+      "provenance": "banked timing assumption; not a DRAM command model",
+      "response_ii_cycles": 1,
+      "response_ports": 1,
+      "strict_reads": true,
+      "window": 1
+    }
+  ],
+  "resources": [
+    {
+      "capacity": 16,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "control",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 2,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 7,
+      "name": "encode",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 2,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 4,
+      "name": "restore",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 2,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 8,
+      "name": "nonlinear",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 4,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 3,
+      "name": "vector",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 2,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 2,
+      "name": "rng",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "sc:0",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "sc:1",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "sc:2",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "sc:3",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "sc:4",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "sc:5",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "sc:6",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "sc:7",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "rng_submit",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "rng_delivery",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 4,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 3,
+      "name": "qk",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 2,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 8,
+      "name": "attention_exp",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 1,
+      "name": "sampler",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 1,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 3,
+      "name": "v_accumulate",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    },
+    {
+      "capacity": 4,
+      "clock": {
+        "name": "core",
+        "period_ps": 10000,
+        "phase_ps": 0
+      },
+      "completion_ports": 1,
+      "ii_cycles": 1,
+      "in_order_completion": true,
+      "instances": 1,
+      "latency_cycles": 3,
+      "name": "digital_matrix",
+      "output_ii_cycles": 1,
+      "provenance": "assumption; not STA calibrated"
+    }
+  ]
+}

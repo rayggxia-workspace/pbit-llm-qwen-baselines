@@ -1,0 +1,7 @@
+{
+  "head": "a9c0031d4b4f45697f6b52144948d6ac084df2f4",
+  "url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/125",
+  "state": "open",
+  "merged": false,
+  "body": "接续 #123 / PR #122。先交付 T16/T32/T64 编码恢复功能基线和可执行 STA/PPA 交接，完整 FFN 接合继续更新本 PR。此 PR 暂叠在 PR122 分支；#116 尚未发布，未复制或提前发布其开发源码。\n\n- CPU-only Slurm2778：45场景，11667输出逐位一致，180reset flush；18项实际源码SHA核验。保留旧27场景的向量，新增restore T16/T64及无参数固定顶层，供门级仿真复用。\n- CPU-only Slurm2777：已捕获Qwen2.5-0.5B真实896→4864→896完整FFN单token输入、权重与残差。41MB派生权重仅保留个人服务器，Git只放捕获代码和hash索引。\n- 按用户安排，实际STA/PPA由jieruiz后续执行：[具体交接文件](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/task/123-full-ffn-ppa/architecture_tlm/encoding_restore_contract/ppa/HANDOFF_JIERUI_ZH.md)。5个固定顶层、DC→门级精确oracle→PT脚本、PVT/单位/时序/活动/恢复门禁和回填模板已准备；12项流程测试通过。实际EDA尚未运行，面积/功率/STA保持null/not_run。\n- sim输入生成5项测试通过，中央索引38记录/600配置行通过schema检查；历史异机原件未在本机复核。\n\n完整FFN接合在独立工作树基于116的已提交快照进行；复用其新restore_rounding，不重复kernel/memory/Attention/RNG/crop任务。验收结果及正式后端发布依赖将继续更新。当前x/z均为FP32接口，BF16编码是独立baseline，不能据此减半当前x访存。以上均非PPL、硅测或时序闭合证据。不自动合并或关闭Issue。\n\n恢复入口：work/amlink1219/123/HANDOFF.md；状态：progress/amlink1219/STATUS.md。\n"
+}

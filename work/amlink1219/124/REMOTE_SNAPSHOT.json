@@ -1,0 +1,45 @@
+{
+  "checked_at": "2026-10-22T18:34:47.121471+00:00",
+  "integration": "46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d",
+  "issues": {
+    "116": {
+      "title": "周期级TLM执行后端：FFN tile与Attention query、资源回压及独立验收",
+      "state": "open",
+      "updated_at": "2026-10-22T18:18:30Z",
+      "body": "Owner: amlink1219. User authorized a three-hour implementation window starting 2026-10-22 17:15 UTC, with correctness prioritized and an independent reviewer.\n\nImplement the local TLM cycle-deepening design on baseline 46804fb3a1c50b29a19a7d0a3da6bb8f8b59af7d. This is a new execution-backend scope, dependent on #95/#96/#104/#107/#110/#112; it does not take ownership of their existing RTL, source models, frozen results or member status files.\n\nAcceptance checklist:\n- [ ] Freeze source/config/input provenance and preserve legacy v6 regression.\n- [ ] Explicit integer clocks, latency/II, finite queues/storage, deterministic arbitration, dependencies and backpressure.\n- [ ] FFN tile chain and Attention query chain with numerical/action conservation and explicit precision/trace provenance.\n- [ ] Cycle-step reference versus event execution equivalence, adversarial resource/clock/buffer/memory tests.\n- [ ] Online memory request acceptance/completion boundary, actual-address K/V accounting, selectable RNG contract; no double timing/energy.\n- [ ] Independent review, reproducible validation and explanatory stall/resource reports.\n- [ ] Assess framework adapter feasibility and record actually executed versus deferred ONNXim/PyTorchSim/RTL/full-model stages.\n- [ ] Publish scoped task branch/PR, STATUS and HANDOFF with remaining limitations.\n\nNon-goals for unsupported completion claims: no inherited PPL for changed numeric interfaces; no claim of STA, physical CDC, full silicon PPA, or framework execution without actual evidence. No automatic merge. Existing 40/52-case evidence remains immutable.",
+      "html_url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/116"
+    },
+    "123": {
+      "title": "完整FFN接合PR122编码恢复：冻结周期后端、数值回归与STA/PPA闭合推进",
+      "state": "open",
+      "updated_at": "2026-10-22T18:18:29Z",
+      "body": "Owner amlink1219。接续用户新要求，将 #121 / PR #122 编码恢复接合到 #116 周期后端并推进完整FFN验证与STA/PPA。已重新核对远端：116暂未发布任务分支/PR，本地6a569409已有input-sign/W8二补码计数修正，原编码钳位/恢复舍入仍不同；不重复116的kernel/memory/Attention/native RNG或其正在跑的crop/reduced-layer验证，不重复117资源搜索，也不接管107原负责人。\n\n范围：独立工作树，最小可选numerical/resource接口；原模式不变；完整gate/up→SiLU/product→z重新编码→down→residual/BF16链，逐输出恢复、部分和和有限容量；先小规模独立oracle回归，再合理范围完整Qwen FFN形状。检查122原RTL+ready/valid包装的真实工具/库/调度可用性；有合规环境则执行实际STA/PPA，否则保留明确阻断、可直接运行且经过功能验证的交付包，不伪造数值。\n\n验收：\n- [ ] 116公开分支/commit核对，明确冻结源与接口；尚未发布时保留补丁和依赖，不能称正式后端已合入。\n- [ ] 完整FFN算术/资源接合与旧模式回归，独立数值参考、动作/状态守恒，实际覆盖形状与不足分别记录。\n- [ ] latency/II/实例数/完整动作单位接合；STA/PPA实际执行状态、库PVT/时序/活动/未知项可审计。\n- [ ] 结果先上传workspace任务PR、中央数字索引、STATUS/HANDOFF、Issue进展；不自动合并。\n\n依赖 #116 #121 #107 #110，参考 #118；不把功能RTL频率当STA，不把局部PPA写成全FFN，不启动模型训练/PPL/GPU任务。\n\n<!-- ffn-contract-integration-20261023 -->",
+      "html_url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/123"
+    },
+    "124": {
+      "title": "恢复吞吐与供数联合优化：有限资源消费实验及同配置W8对照",
+      "state": "open",
+      "updated_at": "2026-10-22T18:25:01Z",
+      "body": "负责人 amlink1219。按用户本轮要求，继续资源方案，重点恢复吞吐/数据流并保持同配置W8对照。\n\n已实时核对：Issue116周期核/FFN链仍在开发；PR120供数/整数状态、PR122编码恢复接口已发布待审，PR119首轮208项结果已交付。新任务作为这些合同的消费与联合配置研究，不修改或复制它们的核心/默认，不接管原任务。\n\n范围：显式有限权重、计数、恢复结果与部分和状态；复用PR120的实际bank/fabric/read-response供数轨迹、PR122的逐输出恢复和原FUSED0算术、116现有Resource/Operation API。短多波投影链扫描恢复实例/输入带宽/下游加法与1/2槽，先验证完整动作/输出/容量/时钟，再做有界配置实验；数字W8在相同存储、时钟、映射及缓冲配置下运行。\n\n验收：\n- [ ] 冻结依赖commit与源SHA、输入/配置与比较协议，标明待审与尚未公开依赖。\n- [ ] 实际供数轨迹、逐输出恢复及独立跨k加法串联，保持有限状态生命周期、身份与100/80MHz相位；非法/不足容量案例拒绝。\n- [ ] cycle/event全轨迹与独立输出/资源审计一致；同配置W8、三seed代表点、正负结果均保留。\n- [ ] 报告子链吞吐与瓶颈，完整模型/PPL/STA/PPA保持未验证；不按子链比值拼成decode加速。\n- [ ] 首批可核验结果上传任务PR，源码/结果/中文报告/台账/STATUS/HANDOFF和Issue同步；不自动合并。\n\n非目标：不重写116内核，不重做120供数或122恢复RTL，不直接更换既有v6/116默认，不继承模型PPL，不启动GPU/Slurm/EDA。未知面积/能量保持null。\n<!-- recovery-dataflow-consumer-20261023 -->\n\n并发范围更新：刚核对新建 #123，其负责完整FFN接合与STA/PPA。本任务只研究短多波投影子链的恢复输入带宽、有限状态/双缓冲与下游吞吐，不实现完整FFN默认接合。保留其分工及待发布依赖状态。\n",
+      "html_url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/124"
+    }
+  },
+  "prs": {
+    "120": {
+      "title": "FFN供数合同与整数状态优化：合法调度、反例和证据对齐",
+      "state": "open",
+      "updated_at": "2026-10-22T17:42:36Z",
+      "merged": false,
+      "html_url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/120",
+      "head": "ecb0f5efb19be8ad72bf7ef0ee0109a3decd5ca5"
+    },
+    "122": {
+      "title": "编码/恢复接合：显式计数语义、逐输出周期资源与有限槽RTL",
+      "state": "open",
+      "updated_at": "2026-10-22T18:13:29Z",
+      "merged": false,
+      "html_url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/122",
+      "head": "8007d98f15676ad316180ee18b5d1b29aa00af95"
+    }
+  }
+}

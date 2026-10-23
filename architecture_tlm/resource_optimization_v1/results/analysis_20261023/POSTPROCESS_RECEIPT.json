@@ -1,0 +1,55 @@
+{
+  "scope": "Final report and figures; simulation receipts unchanged. ANALYSIS_EXECUTION binds summary-generation snapshot separately.",
+  "report_command": "python -X utf8 -m architecture_tlm.resource_optimization_v1.report --summary architecture_tlm/resource_optimization_v1/results/analysis_20261023/SUMMARY.json --output architecture_tlm/resource_optimization_v1/RESULTS_ZH.md",
+  "plot_command": "python -X utf8 -m architecture_tlm.resource_optimization_v1.plot --summary architecture_tlm/resource_optimization_v1/results/analysis_20261023/SUMMARY.json --output ../../outputs/asic_resource_optimization_20261023/final_figures",
+  "plot_delivery": "Six generated PNG/SVG files copied byte-for-byte from final_figures into module figures/.",
+  "execution_head": "19d860794733ef0ddc291706639737cdfe5008d7",
+  "plot_uncommitted_patch_at_execution": "diff --git a/architecture_tlm/resource_optimization_v1/plot.py b/architecture_tlm/resource_optimization_v1/plot.py\nindex 715c818..8f47c1b 100644\n--- a/architecture_tlm/resource_optimization_v1/plot.py\n+++ b/architecture_tlm/resource_optimization_v1/plot.py\n@@ -13,7 +13,7 @@ def main():\n     data=json.loads(a.summary.read_text(encoding='utf-8'));rows=data['rows'];means=data['aggregates'];a.output.mkdir(parents=True,exist_ok=False)\n     methods=['bf16_exact','w8_exact','sc_exact','sc_screen_pv'];labels=['BF16 exact','W8 exact','SC exact','SC screen/PV'];colors=['#6c7a89','#146b9b','#bf6854','#8b4e9f']\n     candidates=['baseline_1m','mapped_1m','vector_128','balanced_2m','wide_4m'];names=['Baseline\\n1 MiB','Mapping\\n1 MiB','Vector 128\\n1 MiB','Balanced\\n2 MiB','Wide\\n4 MiB']\n-    fig,axes=plt.subplots(1,2,figsize=(13,4.6),sharey=True)\n+    fig,axes=plt.subplots(1,2,figsize=(13,5.2),sharey=True)\n     for ax,context in zip(axes,[2048,8192]):\n         for i,method in enumerate(methods):\n             values=[];errs=[]\n@@ -22,8 +22,8 @@ def main():\n                 values.append(row['TPOT_mean_ms']);errs.append(row['TPOT_stdev_ms'] or 0)\n             ax.bar(np.arange(len(candidates))+(i-1.5)*.19,values,.19,yerr=errs,label=labels[i],color=colors[i])\n         ax.set_xticks(range(len(candidates)),names);ax.set_title(f'Qwen, batch 1, context {context}');ax.set_ylabel('Conditional decode time (ms/token)');ax.grid(axis='y',alpha=.2);ax.set_axisbelow(True)\n-    handles,legend=axes[0].get_legend_handles_labels();fig.legend(handles,legend,loc='upper center',ncol=4,frameon=False)\n-    fig.suptitle('Resource configurations: synthetic TLM, not equal total area or quality proof',y=1.04,fontsize=12);fig.tight_layout(rect=(0,.05,1,.93))\n+    handles,legend=axes[0].get_legend_handles_labels();fig.legend(handles,legend,loc='upper center',bbox_to_anchor=(.5,.93),ncol=4,frameon=False)\n+    fig.suptitle('Resource configurations: synthetic TLM, not equal total area or quality proof',y=.995,fontsize=12);fig.tight_layout(rect=(0,.05,1,.85))\n     fig.text(.5,.01,'Bars: mean ± sample SD, n=3 for all five representative configurations',ha='center',fontsize=9)\n     fig.savefig(a.output/'latency.png',dpi=180,bbox_inches='tight');fig.savefig(a.output/'latency.svg',bbox_inches='tight');plt.close(fig)\n     fig,axes=plt.subplots(1,2,figsize=(12,4.3),sharey=True)",
+  "script_files": {
+    "architecture_tlm/resource_optimization_v1/report.py": {
+      "bytes": 10779,
+      "sha256": "62a5190d584fba4e44e27228a23ea482126b56209676d180646e0853a00bcccf"
+    },
+    "architecture_tlm/resource_optimization_v1/plot.py": {
+      "bytes": 4155,
+      "sha256": "0d9d158044c995c10052afc80b194ced9813ea1d6339270a3bf5c51079170f28"
+    }
+  },
+  "input": {
+    "architecture_tlm/resource_optimization_v1/results/analysis_20261023/SUMMARY.json": {
+      "bytes": 1214022,
+      "sha256": "5a13597bd01fa38cad2827419958e8b3e50a69ad417f8d8b0d82d96b477a3da2"
+    }
+  },
+  "outputs": {
+    "architecture_tlm/resource_optimization_v1/RESULTS_ZH.md": {
+      "bytes": 13000,
+      "sha256": "972a0d6a1de1d4fd6de1023f867d3390dd084d451201bafcf72de094b4f53a13"
+    },
+    "architecture_tlm/resource_optimization_v1/figures/bounds.png": {
+      "bytes": 68113,
+      "sha256": "c2832bbd8b080e2bcc9035111ed5ee559c469d9cfadfd3316ab9817319adcdec"
+    },
+    "architecture_tlm/resource_optimization_v1/figures/bounds.svg": {
+      "bytes": 55356,
+      "sha256": "b4c045993b3f7cbe9f51427f4248e6014d8f398cbeed2a13d1de990db431a848"
+    },
+    "architecture_tlm/resource_optimization_v1/figures/latency.png": {
+      "bytes": 100419,
+      "sha256": "1249ea733e5b67280abd2882539ab6d8a1cfad59cb5a7e08bcba8de303d59782"
+    },
+    "architecture_tlm/resource_optimization_v1/figures/latency.svg": {
+      "bytes": 86427,
+      "sha256": "502db49a71be2ebffd558c464e1c9a9f7b8d2752c9685a6bce1824dbdecb6f28"
+    },
+    "architecture_tlm/resource_optimization_v1/figures/partial_area.png": {
+      "bytes": 138122,
+      "sha256": "6f13cd2eb4391d3872aec26cbd0fb7270fd54f2208e81cc8202ba02453f8b325"
+    },
+    "architecture_tlm/resource_optimization_v1/figures/partial_area.svg": {
+      "bytes": 89127,
+      "sha256": "f92867b460dae99770f2b21bb8a606d80e342c6219c5b1d9b0395c981d220ebf"
+    }
+  },
+  "visual_check": "All three final PNGs inspected; latency title/legend overlap repaired in final PNG/SVG."
+}

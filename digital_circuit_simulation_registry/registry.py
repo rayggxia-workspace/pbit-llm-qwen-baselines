@@ -98,8 +98,9 @@ def link(p,label=None):
 
 
 def render():
+    as_of=read(HERE/'catalog.json')['as_of']
     rr=records();lines=['# 数字电路仿真总览','',
-        '更新：'+read(HERE/'catalog.json')['as_of']+'；台账Issue110，各批次归属见记录。先查此表，再打开记录中的原始结果地址。**已计算PPA、功能通过、库提取、估计、失败历史分别列示。**',
+        f'更新：{as_of}；台账维护Issue110，新增任务见各条记录。先查此表，再打开记录中的原始结果地址。**已计算PPA、功能通过、库提取、估计、失败历史分别列示。**',
         '',f'当前 {len(rr)} 条批次/模块记录，{sum(len(r["cases"]) for r in rr)} 行配置/seed/窗口数据；这些行不等于独立实验数。',
         '','| 模块/批次 | 证据 | 功能 | 综合 | STA | 功耗 | 配置行 |','|---|---|---|---|---|---|---:|']
     for r in rr:

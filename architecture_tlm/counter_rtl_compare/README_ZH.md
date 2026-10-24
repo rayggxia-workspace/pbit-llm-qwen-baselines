@@ -92,3 +92,9 @@ bash flow/submit.sh /your/results/counter_formal_NEW
 40组RTL测试、13408个逐档整数输出通过独立golden；覆盖N4/M2/T1边界、N64/M1/T16/32/64以及N64/M8/T32，两种计数器、流水开关、连续/间歇/回压/复位。A/B逐帧结果和周期完全一致，6项交付流程检查通过。
 
 完整N64/M64/T32本地Icarus展开超过600秒，未完成，不标成功。正式64输出仍须执行包内VCS门级验证。没有DC/STA/PT结果、没有真实模型活动或PPL。验证明细及工具SHA在results/，原始日志/向量归档索引随Issue133。
+# v3 本地修订：38356996 波形检查与功耗续跑
+
+本次优先阅读 [RUN_RECOVERY_ZH.txt](RUN_RECOVERY_ZH.txt)。四项旧smoke的DC/VCS已通过，
+本包只需复用其网表/波形进行X/Z连接审计和PT；不修改RTL、不把未知值改成0。
+下面保留原始架构说明和早期验证记录。新PT待用户运行，未发布GitHub。
+

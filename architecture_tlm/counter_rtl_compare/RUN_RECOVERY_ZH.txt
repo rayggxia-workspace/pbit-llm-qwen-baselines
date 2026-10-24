@@ -1,0 +1,76 @@
+计数器A/B smoke 38356996：X/Z审计与PT续跑，v3
+2026-10-23，Issue133 / PR135的本地修订交付。未发布GitHub，未合并。
+
+一、已确认的原因与尚未确认的部分
+
+38356996_0_A_ss / _1_B_ss / _2_A_tt / _3_B_tt均使用counter_ppa_v2。
+四项DC完成、门级功能23帧通过、功耗激励4帧通过；PT尚未运行。
+失败发生于flow/run.py在clip后检查xz_signals，不是VCS计算结果不匹配。
+旧脚本对整个层级VCD一律要求无X/Z，并在保存未知信号名单之前退出。
+DC报告有大量未连接的DesignWare加法器端口；VCD还包含库模型内部变量。
+它们是可疑来源，但本地报告没有原始VCD，不能断言所有X/Z均无害。
+
+v3不会把X/Z改成0，不添加set_case_analysis，不关闭时序检查，不修改RTL。
+每一未知bit的所有VCD别名都通过PT查实际连接：
+  REQUIRED：顶层端口、库叶单元引脚、连接至叶单元/顶层的net，继续失败。
+  UNRESOLVED：无法解释的名字，继续失败。
+  DISCONNECTED：PT确认无连接的层次端口或无叶/顶层连接的net，可排除。
+  MODEL_INTERNAL：位于已链接标准库叶实例之内、但不是其网表引脚的
+                  仿真模型内部变量，可排除。
+只在所有别名都属于后两类时，删除这个bit的VCD声明和事件；保留其余位。
+不会删除网表中的任何单元，也不会扣掉这些单元的面积/漏电/内部功耗。
+有效输出/时钟仍逐bit核验PT的活动率和概率。
+零时间X脉冲也保留在审计中，不按持续时间自动豁免。
+
+二、上传运行：只补PT，不重新跑DC/VCS
+
+上传sc_counter_ppa100_20261023_v3.zip到工程根，再执行：
+
+source ~/.bashrc
+BASE=/public3/home/t6s011227/pbit_chimera_pipeline_20260920
+cd "$BASE"
+unzip -o sc_counter_ppa100_20261023_v3.zip
+cd sc_counter_ppa100_20261023_v3
+grep -qx 'counter_ppa_v3' VERSION.txt
+python3 package.py --verify
+OLD="$BASE/counter_runs/smoke_20261023_180602"
+NEW="$BASE/counter_runs/power_recovery_$(date +%Y%m%d_%H%M%S)"
+bash flow/submit_power_resume.sh "$OLD" "$NEW"
+printf '本次结果根：%s\n' "$NEW"
+
+提交4个数组子任务，最多2项并行；默认每项2CPU/16GB/4小时。
+仅使用pt_shell与Python3.6+，不需要重新调用dc_shell或vcs。
+脚本包包含原RTL/TB，且与旧运行9个冻结RTL/TB/综合源逐SHA核验。
+旧网表/SDC/波形/日志只读；原库按SHA验证；新结果与提交源码快照独立保存。
+旧v2没有保存网表/VCD的原始SHA，因此本次记录恢复时的SHA，不能倒推证明
+它们在原仿真后从未被外部修改。请保留原任务目录，不手工改网表/波形。
+如果缺raw.vcd或raw.vcd.gz会明确停止，不自动重跑或伪造波形。
+
+三、查看和回传
+
+日志：$NEW/logs/<新JOB>_<INDEX>.out 和 .err。
+报告包：$NEW/<新JOB>_0_A_ss_reports.tar.gz 等，共4包。
+请回传这4包和logs；不需要下载大VCD、网表或工艺库。
+
+每个power/mixed_s17_active和idle子目录有：
+  WAVE_CLIP.json：原始窗口基本统计。
+  XZ_AUDIT.json：X/Z逐位别名、首末出现tick、事件次数。
+  xz_classification.tsv：PT的连接分类、理由与证据。
+  XZ_POLICY.json：实际排除/阻止的逐位清单，无静默豁免。
+  activity.vcd：仅在审计通过后生成的逐位活动文件。
+  ACTIVITY_EXPECTED/VERIFIED.json：输出/时钟逐bit映射验证。
+  power.rpt、cells.rpt、hierarchy.rpt：PT功耗结果。
+若有真实未知值会停止，并将上述诊断保存在失败报告包中。
+若PT连接命令/授权失败，XZ_AUDIT.json和xz_requests.txt仍会保留。
+
+FLOW_COMPLETE仅表示流程完成，STA/覆盖/库范围告警仍需单独审查。
+这些仍是N64/M1小规模、SS1.08V125C与TT1.2V25C、100MHz的布局前结果。
+不把M1乘64代替M64，不把TT/SS电压差当作纯工艺角差。
+
+四、后续正式运行（先等此次smoke结果核验）
+
+bash flow/submit.sh "$BASE/counter_runs/formal_v3_$(date +%Y%m%d_%H%M%S)" all
+
+此命令会新跑M64四项DC/VCS/PT，目前不建议与恢复任务同时提交。
+原RUN_PPA_ZH.txt保留v2历史指令与口径；本次恢复优先使用本文件。
+本机只能验证Python/Tcl逻辑与报表，不能宣称新PT结果已通过。

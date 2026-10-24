@@ -1,3 +1,7 @@
+# 2026-10-24 Issue133远端恢复
+
+jieruiz/task/133-counter-rtl，原PR135已合并。v3包导入+v4单位解析修复，27本地测试通过；38372030四项仅PT恢复全部完成，8个窗口报告已下载校验。INCOMPLETE_ACTIVITY及库表范围告警保留，尚非最终无告警PPA；只M1/seed17/mixed4帧，未重跑DC/VCS。记录counter-38372030-power-recovery、work/jieruiz/133/HANDOFF.md；源码包SHA和原件见project_archives/remote_job_audit_20261024。下一步先审覆盖缺口，PR发布以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。
+
 <!-- ISSUE133_STATUS -->
 ### PPA v2本地交付 2026-10-23
 

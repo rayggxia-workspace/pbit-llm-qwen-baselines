@@ -7,6 +7,7 @@ from generate import make
 from wave import clip
 from scalar_vcd import scalarize,verify_pt
 from summarize import window_summary,write_csv
+from xz_audit import prepare_activity
 def sha(p):
     h=hashlib.sha256()
     with p.open('rb') as f:
@@ -37,7 +38,7 @@ def main():
     assert profiles and len(set(profiles))==len(profiles) and set(profiles)<=set(('mixed','sparse','dense','zero'))
     assert seeds and len(set(seeds))==len(seeds)
     manifest=dict(arch=arch,m=m,t=t,pipe=pipe,period_ns=period,corner=env['PPA_CORNER'],
-      release='counter_ppa_v2',profiles=profiles,seeds=seeds,power_frames=power_frames,
+      release='counter_ppa_v3',profiles=profiles,seeds=seeds,power_frames=power_frames,
       package_manifest_sha256=sha(ROOT/'package_manifest.json'),
       sources={str(p.relative_to(ROOT)):sha(p) for p in sorted(ROOT.rglob('*')) if p.is_file() and p.suffix in ('.sv','.py','.tcl','.sh')},
       library=dict(path=env['STD_DB'],sha256=sha(Path(env['STD_DB']))),
@@ -80,9 +81,7 @@ def main():
                 (case/'FUNCTION_PASS').write_text('All frame outputs match independent oracle\n')
                 for label,start,stop in [('active',begin,end),('idle',end,end+64*period)]:
                     pw=out/('power/%s_s%d_%s'%(profile,seed,label));pw.mkdir(parents=True)
-                    meta=clip(case/'raw.vcd',pw/'window.vcd',start,stop)
-                    if meta['xz_signals']:raise RuntimeError('X/Z in power window')
-                    stats=scalarize(pw/'window.vcd',pw/'activity.vcd',m*4*sw)
+                    stats=prepare_activity(case/'raw.vcd',pw,start,stop,m*4*sw,dc,call)
                     (pw/'ACTIVITY_EXPECTED.json').write_text(json.dumps(stats,indent=2)+'\n')
                     call(['pt_shell','-f',ROOT/'flow/pt.tcl'],pw,dict(NET_DIR=str(dc),ACTIVITY_VCD=str(pw/'activity.vcd')))
                     assert (pw/'POWER_CALCULATED').exists()

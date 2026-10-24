@@ -1,3 +1,7 @@
+# 2026-10-24 Counter恢复结果
+
+沿用Issue133/task/133-counter-rtl，jieruiz；PR135已合并，不把旧PR状态当成当前待审。已有v3源码包逐SHA导入本checkout，v4修复Time_unit单位解析；27项本地测试通过。提交38372030四项仅PT恢复，全部COMPLETED/0:0，8窗口已下载并校验。复用38356996原DC/VCS，未重跑RTL。仍有INCOMPLETE_ACTIVITY/check_power/超库表范围告警，暂定PPA不是无告警签核；M1、seed17、mixed4帧，未扩成M64三种子。记录counter-38372030-power-recovery，源码原包sc_counter_ppa100_20261024_v4.zip，SHA b4ba7acac1c937a61cfd6d257ef157f1564e2a83cad084e50aaa9ed09840dbc7。VERSION.txt保留导入v3字样，以EXECUTION release和包SHA识别实际v4。下一步先查未标注对象范围，不直接重复长任务。本机归档project_archives/remote_job_audit_20261024/reports，远端BASE/counter_runs/power_recovery_20261024_v4。发布以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。其他既有untracked辅助文件未纳入提交。
+
 # Issue133 FFN计数器对照交接
 
 ## PPA v2续接（2026-10-23）

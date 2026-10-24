@@ -16,4 +16,3 @@ def diagnose(module,x,key):
         mean_joint_probability=float((gq.abs()/sg*uq.abs()/su*h).mean()),
         g_rms=float(g.square().mean().sqrt()),u_rms=float(u.square().mean().sqrt()),
         mode='explicit extra diagnostic forward; not added to hardware energy estimate')
-

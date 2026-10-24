@@ -89,4 +89,3 @@ def load_warm_weights(model,path,expected_sha):
         for name,p in wanted.items():
             p.data=p.data.float()  # Preserve FP32 master values from yesterday.
             p.copy_(state[name].to(device=p.device,dtype=torch.float32))
-

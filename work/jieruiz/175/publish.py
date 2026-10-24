@@ -19,17 +19,29 @@ prs=g.api('GET',g.PREFIX+'/pulls?state=open&head=rayggxia-workspace:'+g.BRANCH)
 if prs:p=prs[0]
 else:p=g.api('POST',g.PREFIX+'/pulls',dict(title='Swish短流状态机：51组重建与固定W8位平面接口核验',head=g.BRANCH,base='task/173-and-direct-wd',body=body,draft=False))
 result.update(pr=p['html_url'],pr_number=p['number'],state=p['state'],merged=False)
+g.save('PUBLICATION.json',dict(result,verification='pending'))
 paths=g.git('diff','--name-only',g.BASE+'..HEAD').decode().splitlines()
 verified=[]
+tree_cache={}
+def get_tree(sha):
+    if sha not in tree_cache:tree_cache[sha]=g.api('GET',g.PREFIX+'/git/trees/'+sha)['tree']
+    return tree_cache[sha]
+root_tree=g.git('rev-parse','HEAD^{tree}').decode().strip()
 for path in paths:
     b=g.git('show','HEAD:'+path)
-    a=g.api('GET',g.PREFIX+'/contents/'+path+'?ref='+result['head'])
+    tree=root_tree
+    parts=path.split('/')
+    for part in parts:
+        a=next(x for x in get_tree(tree) if x['path']==part)
+        if a['type']=='tree':tree=a['sha']
     assert a['sha']==g.git('rev-parse','HEAD:'+path).decode().strip()
     assert a['size']==len(b)
-    if a.get('content') and len(b)<100000:
-        assert base64.b64decode(a['content'])==b
+    if len(b)<64000:
+        raw=g.api('GET',g.PREFIX+'/git/blobs/'+a['sha'])
+        assert base64.b64decode(raw['content'])==b
     verified.append(dict(path=path,bytes=len(b),sha256=hashlib.sha256(b).hexdigest(),git_blob=a['sha']))
 result['verified_files']=verified
+result['verification']='Git tree exact blob/size all files; raw bytes for files below 64KB'
 try:
     project=g.api('POST','/graphql',{'query':'query { repository(owner:"rayggxia-workspace", name:"pbit-llm-qwen-baselines") { issue(number:175) { projectItems(first:20) { nodes { id project { title } } } } } }'})
     result['project_query']=project

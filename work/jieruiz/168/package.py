@@ -10,6 +10,8 @@ def git(*args):
     return subprocess.check_output(['git', '-C', str(ROOT), *args])
 commit = git('rev-parse', 'HEAD').decode().strip()
 paths = git('ls-tree', '-r', '--name-only', commit, 'qwen3/fixed_scale').decode().splitlines()
+assert all('qwen3/fixed_scale/' + name in paths for name in
+           ('run.py', 'run.sbatch', 'config.json', 'static_core.py', 'test_runner.py', 'test_static_core.py'))
 paths += ['qwen3/baselines/support.py']
 paths += ['qwen3/stochastic/vendor/' + name + '.py' for name in
           ('core', 'range_core', 'shared_counts', 'stratified_core', 'scoring')]

@@ -7,4 +7,5 @@ export PPA_CORNER=$2 SC_M=$3 SC_T=$4 SC_PIPE=$5
 export SC_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export PPA_SOURCE="$SC_ROOT/flow" EDA_CORES="${EDA_CORES:-4}" SC_PERIOD_NS="${SC_PERIOD_NS:-10}"
 source "$PPA_SOURCE/environment.sh"
+"$PYTHON_BIN" "$SC_ROOT/package.py" --verify
 exec "$PYTHON_BIN" "$PPA_SOURCE/run.py" --out "$6"

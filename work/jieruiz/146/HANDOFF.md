@@ -1,3 +1,11 @@
+# 2026-10-24 审核恢复入口（Issue55 / PR166）
+
+PR148已于上一轮合并；本次后续PR166实际已有远端恢复结果，下面旧“无EDA作业／待用户提交”仅为历史。
+
+沿用Issue146/task/146-cim-frontend；jieruiz；PR148已合并。未改功能RTL/工艺模型，新增timescale、DC复用校验、设计层级转储、VCS复合scope规范和直接常量连接核验。11项本地测试通过。原38362415/38362501编译失败；38372031移动到波形门禁后失败；38372265_2已通过SS门阵列两窗口；38372313_3/6/7通过，其余0/1/4/5在threshold[0] PT/VCD翻转率对照失败。现有四项组合预检通过，但含随机源前端未通过，不提交全尺寸重跑。最新提交包sc_cim_frontend_ppa_20261024_v5.zip，SHA8f201450f70ffd955b11851ef24a3aa70d2eb316c933ebc1b6bf29f51e3fab2e。v4未提交，v4a仅两项，所有快照不可改。下一步核对threshold[0]原始/归一化/标量VCD事件与PT，包括delta-cycle，不放宽误差门禁。原件本机project_archives/remote_job_audit_20261024/reports；远端BASE/cim_frontend_runs/smoke_recovery_20261024_v5。台账cim-20261024-recovery。发布以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。PUSH.json先前他人改动保留未纳入。
+
+审核独立复核11辅助测试、961归档成员、8已算出窗口；全部原件保留，含随机源四项仍失败。详见work/jieruiz/55/round10/REVIEW_ZH.md，合并状态以Issue55最终回执为准。
+
 # Issue146：CIM 前端 RTL/PPA 交接
 
 v2发布已确认：源码7b097d194f81042dfd771bf01b38599bacf01aae已推送，PR148 head经GitHub API核实一致；Issue146评论6366058954、PR148评论6366059597已发布。PR未合并，无EDA作业。详见V2_PUBLICATION.json。
@@ -25,3 +33,7 @@ ZIP：根 `sc_cim_frontend_ppa_20261023_v1.zip`，36990字节，SHA256 `73bee486
 发布以 PUBLICATION.json、REMOTE_VERIFY.json、ISSUE_UPDATE.json 为准；创建PR不等于合并，不自动关闭Issue。Projects权限状态以PROJECTS_CHECK.json为准，缺权限时待维护者同步。没有运行中作业，无需启动轮询。
 
 发布更新：PR148（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/148）已推送待审、未合并，科学交付74979fc；29个package manifest对应Git blob已核对。根台账保留其他任务记录，本轮增量后51条，任务base台账46条；合并时应保留union并render。原始临时向量/波形已归档逐成员验证，恢复见RAW_ARCHIVE/WAVE_ARCHIVE/ARCHIVE_VERIFY。
+# 2026-10-24 CIM工艺预检恢复
+
+沿用Issue146/task/146-cim-frontend；jieruiz；PR148已合并。未改功能RTL/工艺模型，新增timescale、DC复用校验、设计层级转储、VCS复合scope规范和直接常量连接核验。11项本地测试通过。原38362415/38362501编译失败；38372031移动到波形门禁后失败；38372265_2已通过SS门阵列两窗口；38372313_3/6/7通过，其余0/1/4/5在threshold[0] PT/VCD翻转率对照失败。现有四项组合预检通过，但含随机源前端未通过，不提交全尺寸重跑。最新提交包sc_cim_frontend_ppa_20261024_v5.zip，SHA8f201450f70ffd955b11851ef24a3aa70d2eb316c933ebc1b6bf29f51e3fab2e。v4未提交，v4a仅两项，所有快照不可改。下一步核对threshold[0]原始/归一化/标量VCD事件与PT，包括delta-cycle，不放宽误差门禁。原件本机project_archives/remote_job_audit_20261024/reports；远端BASE/cim_frontend_runs/smoke_recovery_20261024_v5。台账cim-20261024-recovery。发布以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。PUSH.json先前他人改动保留未纳入。
+

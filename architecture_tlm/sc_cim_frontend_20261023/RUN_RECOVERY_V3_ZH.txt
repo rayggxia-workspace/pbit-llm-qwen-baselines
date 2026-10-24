@@ -1,0 +1,13 @@
+2026-10-24恢复版：VCS补-timescale=1ns/1ps作为无声明模块的默认单位，
+不覆盖厂商已有timescale，不更改RTL/TB算法或时钟周期。
+PT汇总允许Time_unit标签中的下划线，仍严格检查1ns单位。
+
+已完成的DC通过CIM_REUSE_ROOT和CIM_REUSE_JOB只读复用，逐项核对配置、
+RTL/综合脚本、库哈希及完成标记；新目录复制网表并保存恢复来源SHA。
+旧source/结果不改，不重复DC。VCS此前尚未成功，因此重新编译并验证。
+
+先复用smoke_20261023_213955 / 作业38362415做8项SS/TT预检：
+CIM_REUSE_ROOT=/absolute/smoke_root CIM_REUSE_JOB=38362415 bash flow/submit.sh /absolute/new/smoke_root smoke
+
+预检通过后复用full_20261023_214251 / 作业38362501做正式all。
+不把SLURM结束或已有DC通过写成功耗/功能通过；检查COMPLETE.json及review_flags。

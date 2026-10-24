@@ -1,3 +1,7 @@
+## 2026-10-24 第十轮PR审核（发布前冻结）
+
+负责人jieruiz；Issue55；review/55-pr-round10，目录tmp/pr55-review-round10-20261024，base e1b23d77，目标TLM集成分支。161/164/165/166按设计或带限制工艺阶段交付通过；60单测、50原件/2087归档成员、34功耗窗口核验通过，台账56条。161没有训练器/训练结果；digital仍有库表外推，counter活动不全且仅M1，CIM随机源四项翻转率不符失败。163有部分非Base结果但HellaSwag/最终汇总/功耗待补，160仍草稿；六个旧Base PR继续迁移门禁。本地审核已完成、准备推送合并，实际状态以Issue55最终回执为准。main保持fae1298；没有新GPU/EDA作业。报告work/jieruiz/55/round10/REVIEW_ZH.md，归档project_archives/pr_review_issue55_round10_20261024；后续核验发布并回收本轮稀疏副本，其他成员/原始归档不动。Projects未确认写权限，待维护者同步。
+
 ## 2026-10-23 第九轮审核与后训练模型要求
 
 用户确认后续用Instruct／后训练版，Base指模型而非Git基线。审核132/134/135/140/148/156通过各自有限交付，54测试及原件核验通过；当前准备发布至TLM集成分支，实际合并以Issue55最终回执为准。137/143/147/149/153/155保留迁移，最新160为符合方向但结果未齐的草稿。历史Base结果不改名继承；main保持fae1298。报告work/jieruiz/55/round9/REVIEW_ZH.md，独立review/55-pr-round9-nonbase；无新GPU／RTL／EDA实验。
@@ -11,6 +15,25 @@
 独立pilot→calibrate冻结→三seed1s长记录及500Hz对照；没有实际Spectre、远端作业或质量/PPA结果。
 中央prepared记录已check/render，root保留其他52条。源码/配置SHA及命令见work/jieruiz/152/HANDOFF.md。
 已推送PR156（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/156），待审未合并；发布84770a1，6关键源文件远端原字节回读通过。实际回执见work/jieruiz/152/PUBLICATION.json。Projects查询缺read:project，待维护者同步；Issue阶段同步成功。不自动关闭Issue。
+## Issue159 v2已发布（2026-10-23）
+
+远程执行交接与INT4/6/8三套扫描已通过同PR161发布，科学提交12137b19ae6a3e7d862e5785676c200ab6d910fd；19改动文件GitHub原字节回读通过，Issue159范围/进度已同步。PR待审未合并；57项仍是计划，无本任务训练器或GPU结果。完整回执work/jieruiz/159/remote_agent_v2/PUBLICATION.json。入口REMOTE_AGENT_START_HERE_ZH.md可直接交给远程Agent；实现认领与PR160模型/基线复用按该交接执行。其他任务记录保留。
+
+## Issue159远程执行交接v2：INT4/INT6/INT8（2026-10-23）
+
+用户要求面向远程Agent，并增加INT4/INT6，其他设置不变、工作3倍。正式入口qwen3/training/sc_qat_20261023/REMOTE_AGENT_START_HERE_ZH.md，附环境/逐seed结果JSON模板。每项实验36层gate/up/down统一Wb，三套各19项=57计划（48随机+9控制，A总114亿有效token）；BF16三个是配对重复，不是三位宽结构或三训练seed。输入仍A8、共享64、原尺度/采样/优化器设置保持，跨位宽清单一致性通过。
+
+补明确源码/依赖、待实现模块、独立120步G2课程、checkpoint随机重放、位宽/容器区别、Slurm及回传门槛。PR160已有非Base准备，revision1cfa9a7208912126459214e8b04321603b3df60c；依赖读取head98954637，22:45交接的2869/2870状态不当实时队列，恢复先查避免重复。本任务无新训练器/GPU/Slurm/PPL；v2清单/模板/启动拒绝与独立审阅通过。继续同PR161，实际发布见work/jieruiz/159/remote_agent_v2/PUBLICATION.json；不合并不关闭，Projects待权限。
+
+## Issue159 实际发布：2026-10-23
+
+Qwen/Qwen3-4B非Base训练设计已推送PR161，科学提交6991c97f9d54c1d9ea17ee2ce87f44d08b6677f4；远端设计文件原字节核验通过，Issue159已同步。PR待审未合并，无GPU训练/新PPL；后续执行需模型revision/数据/训练器/H200环境。19项是计划配置，不是已运行结果。work/jieruiz/159/FINAL_RECEIPT.json为回执；Projects待权限同步。
+
+## 2026-10-23 Issue159：Qwen3-4B非Base随机FFN训练设计
+
+用户改为Qwen/Qwen3-4B，教师/学生均非Base；PR147 Base后缀结果仅机制参考，不能继承基线。负责人jieruiz，task/159-qwen3-sc-qat-plan。全模型36层FFN W8+真实共享64/分层随机前向、主权重STE训练；动态/固定/可学习静态/固定x动态z，T8/16/32/64共16配置，加3同预算控制。B2/4/8、gap1/2/3后续分阶段；必须区分K=T与IID。
+
+正式方案qwen3/training/sc_qat_20261023/TRAINING_PLAN_ZH.md，SCAN_MANIFEST有19项planned；清单/语法/未就绪拒绝守卫与独立审阅通过。尚无训练器、非Base基线、模型下载或H200/Slurm作业；需绑定revision/数据/环境并验证重算随机重放。上传状态见work/jieruiz/159/PUBLICATION.json及FINAL_RECEIPT，不自动合并。保留其他任务及既有证据。
 
 ## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
 
@@ -22,11 +45,29 @@
 ## 2026-10-23 Issue129 两页通俗说明
 
 按用户要求补充功耗面积节省机制、速度控制与剩余验证，面向非专业听众，省略内部结构细节。正式文件 architecture_tlm/memory_savings_20261023/概率计算的能耗面积与速度_两页说明.docx；两页，Word导出及逐页PNG检查通过。原7页报告保留，无新实验，不恢复暂停任务。分支 task/129-two-page-brief，复用 tmp/memory-savings-issue129-20261023；上传/PR以 BRIEF_PUBLICATION.json 为准，合并前不关闭Issue129。
+# 2026-10-24 Issue133远端恢复
+
+jieruiz/task/133-counter-rtl，原PR135已合并。v3包导入+v4单位解析修复，27本地测试通过；38372030四项仅PT恢复全部完成，8个窗口报告已下载校验。INCOMPLETE_ACTIVITY及库表范围告警保留，尚非最终无告警PPA；只M1/seed17/mixed4帧，未重跑DC/VCS。记录counter-38372030-power-recovery、work/jieruiz/133/HANDOFF.md；源码包SHA和原件见project_archives/remote_job_audit_20261024。下一步先审覆盖缺口，PR发布以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。
+
 <!-- ISSUE133_STATUS -->
+### PPA v2本地交付 2026-10-23
+
+Issue133/task/133-counter-rtl/PR135，base7f38018；同工作目录继续。
+修复波形位宽核验，增加快照、M1试跑、M64四项工艺矩阵和数值汇总。
+9单测及真实小RTL四窗口通过，RTL/TB未改；DC/VCS/PT和完整M64待用户执行。
+包及SHA见work/jieruiz/133/PPA_V2_DELIVERY.json，指令RUN_PPA_ZH.txt。
+本地完成，实际远端发布见后续回执；不自动合并，Projects待权限。
+
+实际：本地7753168；Git push超时，远端PR135仍7f38018。Issue评论6362207999
+已同步本地完成与阻塞，包可直接交用户上传。无新服务器EDA任务。
 ## 2026-10-23 Issue133 计数器RTL对照
 
 已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。 40组RTL/13408输出、6流程测试、8台账测试通过；完整64输出本地展开超时待VCS；无工艺PPA。分支task/133-counter-rtl，base6966739；工作目录tmp/counter-rtl-issue133-20261023；代码architecture_tlm/counter_rtl_compare，交接work/jieruiz/133/HANDOFF.md。下一步用户跑A/B SS/TT100MHz四项，回传后比较。Projects待read:project权限，未自动合并。
 <!-- END_ISSUE133_STATUS -->
+## 2026-10-24 Issue146：远端预检恢复
+
+jieruiz/task/146-cim-frontend，原PR148已合并；本轮后续PR待发布回执。已实际提交38372031/38372265/38372313并取回报告；四个组合预检通过，四个含随机源预检在threshold[0]活动率核验失败，全尺寸未重跑。源码修复11本地测试通过，未改功能RTL。中央记录cim-20261024-recovery，原件project_archives/remote_job_audit_20261024，完整下一步见work/jieruiz/146/HANDOFF.md。保留所有失败，不宣称整体PPA通过；Projects待同步。
+
 ## 2026-10-23 Issue146：PPA批处理v2本地交付
 
 发布回执：源码7b097d194f81042dfd771bf01b38599bacf01aae已推送workspace并核实PR148 head一致，Issue146/PR148评论已同步；账号jieruiz，PR保持open/unmerged，服务器EDA未运行。V2_PUBLICATION.json为实际回执，不代表Projects看板已更新。
@@ -36,6 +77,31 @@
 ## 2026-10-23 Issue146：SRAM邻近计算前端
 
 负责人jieruiz，task/146-cim-frontend，base 6966739/pbit-tlm-attention-details-20261016；独立目录tmp/cim-frontend-issue146-20261023。正式architecture_tlm/sc_cim_frontend_20261023，本地RTL/中文说明/PPA脚本/小SRAM探针已完成；27组13620周期、5流程与12波形窗口检查通过。完整N64/M64前端此前三seed×两随机接口通过，独立大门阵列超时保留。无新DC/PT/SPICE/PPA/PPL，源/配置/证据SHA见results和中央cim-frontend-146-functional；用户先M1 smoke再M64工艺。PR148已推送待审、未合并；远端实际状态见work/jieruiz/146/PUBLICATION.json、REMOTE_VERIFY.json；不自动合并，Projects待权限核对。无在运行作业。下一步依RUN_PPA_ZH回传报告；详细交接HANDOFF.md。
+# 2026-10-24 Issue107远端核查
+
+jieruiz/task/107-digital-ppa8-ss-tt，复用原checkout。KIND21 v2 SS/TT已完成，18窗口覆盖100%，仍有外推告警；38371792剩余14项已补交，index0功耗窗口7位X/Z失败，其他运行/排队中。旧源码/波形未覆盖，未重复KIND21。中央digital-ppa8-20261024-audit及work/jieruiz/107/HANDOFF.md记录后续诊断；原件project_archives/remote_job_audit_20261024，上传/PR以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。
+
+# Issue107：v2逐位活动标注和PT重检包（2026-10-23）
+
+收尾回执：已合入6966739，台账48条，远端原45条逐字节保留。身份jieruiz及Issue107 open已核实，但Git push无进展已中断，Issue评论POST遇EOF结果未确认，尚无后续PR；详见V2_PUBLICATION.json。本地包可独立上传，不宣称远端发布成功。
+
+源码66cb8b3，v2 ZIP已生成（2184127B，SHA067efe07b99ee85f09569198363be8a7a5155ed98e45a8b4ed698f7b05a887a4）。14单测在源码及交付目录通过，Python3.6 AST/Tcl/Bash通过，221项冻结源码/激励与v1一致。所有VCD位/别名保留；PT逐位检查clk/out_valid/有效result翻转率及静态概率，PWR-981未消除则失败；库表9位精度及受影响单元功耗统计保留provisional。只读复用38339971_7/15，执行新PT、不重跑DC/VCS；剩余14项暂等本次检查。无本机PT实跑，v2远端结果待用户提交。交付/登记work/jieruiz/107/ppa8/V2_DELIVERY.json。沙箱外Git只读网络恢复，最新base6966739；发布状态另行核实，不沿用旧网络阻塞作为完成证明。
+
+# Issue107：38339971首轮结果复核（2026-10-23）
+
+负责人jieruiz，沿用task/107-digital-ppa8-ss-tt和原目录。实际下载仅KIND21 SS/TT两项smoke，24功能场景通过、18功耗窗口有值且STA非负；668成员SHA、源包manifest原字节及逐单元功耗/面积/能量回算通过。PWR-981及2load/1ramp超表范围尚待复核，功耗保留provisional，不写全8类通过。报告architecture_tlm/digital_ppa_v1/results/PPA8_SMOKE_38339971_ZH.md；中央记录digital-ppa8-38339971-smoke。未重跑EDA、未修改仿真脚本。先复用mapped.v/VCD诊断，再考虑remaining14项。GitHub API刷新连接异常，远端同步/PR待办，旧发布阻塞保持。
+
+以下为脚本交付时的历史状态。
+
+# Issue107：8类SS/TT 100MHz PPA脚本（2026-10-23）
+
+最终交付核实：本地包、台账和阅读镜像已就绪；Git HTTPS推送失败/超时，尚未创建后续PR。GitHub API已核实jieruiz及Issue107仍open；具体同步状态见work/jieruiz/107/ppa8/PUBLICATION.json，不把本地完成写成远端完成。用户上传运行不依赖此Git网络问题。
+
+负责人jieruiz；当前分支task/107-digital-ppa8-ss-tt，复用tmp/tlm-digital-issue107-20261022。发布前发现PR109/111均已合并，因此合入最新集成e8705765ed3286b225e042378d57e5d010e221ee，保留最新台账原件路径与本页其他任务历史，用新后续PR交付，不向已关闭PR追加。原Issue107保持open。
+
+脚本执行源6bc3389de08fba8250a17f0991849a4368898205，KIND0/2/4/5/6/7/8/21，各SS1.08V125C、TT1.2V25C，100MHz；RTL23e8d65f未改。包digital_ppa8_ss_tt_100_20261023_v1.zip，2173363B，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出通过，6流程守卫、Python3.6语法/3.8运行、Tcl与Bash检查通过。无DC/VCS/PT实跑；功耗/面积null。中央台账36条/532行，新16工艺配置待运行。
+
+正式目录architecture_tlm/digital_ppa_v1/ppa8，交付/原件SHA在work/jieruiz/107/ppa8/DELIVERY.json。用户先smoke两角KIND21再remaining14项；4CPU/16GB/12h、最多2项并发，分阶段SHA恢复，结果自动小包。当前本地已完成，发布以ppa8/PUBLICATION.json为准；Project看板缺read:project待同步。长期记忆canonical/root本地同步，新增记忆片段远端随后续维护，不宣称其他人的未提交记忆已发布。
 
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 

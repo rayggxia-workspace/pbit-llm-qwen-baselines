@@ -46,15 +46,18 @@ proc inventory {} {
         if {[sizeof_collection $lc]!=1} {error "Missing/ambiguous cell $ref"}
         set area [get_attribute $lc area]
         if {![string is double -strict $area] || $area<=0} {error "Invalid area $name"}
-        set group core_logic
+        set group other_combinational
         if {[get_attribute $lc is_sequential]} {
-            set group core_registers
-            if {![string match */* $name]} {
-                set group boundary_control_registers
-                if {[regexp {^(ar|br|u0|u1|exp_r|mean_r)_reg} $name]} {set group boundary_input_registers}
-                if {[regexp {^result_reg} $name]} {set group boundary_output_registers}
-            }
-        } elseif {![string match */* $name]} {set group boundary_logic}
+            set group control_or_other_registers
+            if {[regexp {count_reg} $name]} {set group bitplane_counter_registers}
+            if {[regexp {accumulated_reg} $name]} {set group integer_accumulator_registers}
+            if {[regexp {reduce_pipeline.*data_reg} $name]} {set group reduction_pipeline_registers}
+            if {[regexp {^result_reg} $name]} {set group output_registers}
+        } else {
+            if {[regexp {popcount/} $name]} {set group bitplane_popcount_logic}
+            if {[regexp {restore/} $name]} {set group final_reconstruction_logic}
+            if {[regexp {reduction/} $name]} {set group integer_reduction_logic}
+        }
         puts $f "$name\t$ref\t$area\t$group"
     }
     close $f

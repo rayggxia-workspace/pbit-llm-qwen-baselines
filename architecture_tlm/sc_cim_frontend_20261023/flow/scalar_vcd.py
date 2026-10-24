@@ -115,17 +115,28 @@ def scalarize(src, dst, output_width=None, prefix="tb/full/dut", wanted=None):
                 all_bits_preserved=True, expected_activity=expected)
 
 
-def verify_pt(expected, actual):
+def verify_pt(expected, actual, mapped=None):
     import csv
     with actual.open() as f:
         values = {r['name']: r for r in csv.DictReader(f, delimiter='\t')}
     differences = []
+    constants = {}
+    if mapped is not None:
+        # Only exact literal continuous assignments in the DC-generated top.
+        text = re.sub(r'/\*.*?\*/|//[^\n]*', '', mapped.read_text(), flags=re.S)
+        top = re.search(r'\bmodule\s+cim_probe_mapped\b(.*?)\bendmodule\b', text, re.S)
+        if not top: raise ValueError('Missing mapped top for constant proof')
+        constants = dict(re.findall(r'\bassign\s+([A-Za-z_][A-Za-z0-9_$]*)\s*=\s*1\s*\x27[bB]([01])\s*;',top[1]))
     for name, e in expected['expected_activity'].items():
         a = values.get(name, {})
         try:
             tr, sp = float(a['toggle_rate']), float(a['static_probability'])
         except (KeyError, ValueError):
-            raise ValueError('PT activity unavailable: '+name)
+            if name not in constants or e['toggle_count']!=0 or e['static_probability']!=int(constants[name]):
+                raise ValueError('PT activity unavailable: '+name)
+            differences.append(dict(name=name,source='mapped_literal_constant_and_vcd',
+                                    value=int(constants[name]),mapped_sha256=digest(mapped)))
+            continue
         dt, dp = abs(tr-e['toggle_rate_per_ns']), abs(sp-e['static_probability'])
         # At most one boundary event; no percentage-based allowance for missing activity.
         if dt > 1.01/expected['duration_ns']+1e-8 or dp > 1e-5:

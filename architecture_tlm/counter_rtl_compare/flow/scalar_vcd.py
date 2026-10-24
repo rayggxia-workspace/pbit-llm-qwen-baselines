@@ -3,9 +3,6 @@ import hashlib
 import json
 import re
 
-OUTPUT_WIDTH = {0: 32, 2: 32, 4: 785, 5: 785, 6: 32, 7: 32, 8: 16, 21: 16}
-
-
 def digest(path):
     h = hashlib.sha256()
     with path.open('rb') as f:
@@ -14,7 +11,10 @@ def digest(path):
     return h.hexdigest()
 
 
-def scalarize(src, dst, width):
+def scalarize(src, dst, output_width, excluded_bits=None):
+    if not isinstance(output_width,int) or output_width<=0:
+        raise ValueError('Invalid expected output width')
+    excluded_bits = excluded_bits or {}
     scopes, header, codes, names = [], [], {}, {}
     with src.open() as f, dst.open('w') as out:
         for line in f:
@@ -44,6 +44,8 @@ def scalarize(src, dst, width):
                 if len(indices) != width:
                     raise ValueError('Bad range width')
                 for j, index in enumerate(indices):
+                    if (code, j) in excluded_bits:
+                        continue
                     bitref = ref + ('[{}]'.format(index) if width>1 or m else '')
                     full = '/'.join(scopes+[bitref.lstrip('\\')])
                     if full in names and names[full] != entry['ids'][j]:
@@ -63,7 +65,8 @@ def scalarize(src, dst, width):
             raise ValueError('Missing timescale')
         tick = int(tm[1])*dict(s=1e9, ms=1e6, us=1e3, ns=1, ps=.001, fs=.000001)[tm[2]]
         out.write(h)
-        state = {i: dict(value=None, time=0, ones=0, toggles=0) for c in codes.values() for i in c['ids']}
+        state = {i: dict(value=None, time=0, ones=0, toggles=0)
+                 for code,c in codes.items() for j,i in enumerate(c['ids']) if (code,j) not in excluded_bits}
         now, events = 0, 0
         for line in f:
             s = line.strip()
@@ -86,9 +89,11 @@ def scalarize(src, dst, width):
             if len(value)>c['width'] or re.search('[^01xz]', value):
                 raise ValueError('Bad value width/content')
             value = value.rjust(c['width'], value[0] if value[0] in 'xz' else '0')
-            if re.search('[xz]', value):
-                raise ValueError('X/Z in measured VCD; no waiver')
-            for i, bit in zip(c['ids'], value):
+            for j,(i, bit) in enumerate(zip(c['ids'], value)):
+                if (code,j) in excluded_bits:
+                    continue
+                if bit in 'xz':
+                    raise ValueError('X/Z in retained measured VCD; no waiver')
                 st = state[i]
                 if st['value'] is None and now != 0:
                     raise ValueError('Missing initial state')
@@ -104,7 +109,7 @@ def scalarize(src, dst, width):
             if st['value']=='1':
                 st['ones'] += now-st['time']
         expected = {}
-        wanted = ['clk','out_valid']+['result[{}]'.format(i) for i in range(width)]
+        wanted = ['clk','out_valid']+['result[{}]'.format(i) for i in range(output_width)]
         for name in wanted:
             full = 'tb_counter/dut/'+name
             if full not in names:
@@ -113,7 +118,8 @@ def scalarize(src, dst, width):
             expected[name] = dict(toggle_count=st['toggles'], toggle_rate_per_ns=st['toggles']/(now*tick), static_probability=st['ones']/now)
     return dict(source_sha256=digest(src), scalar_sha256=digest(dst), duration_ns=now*tick,
                 scalar_ids=len(state), declarations=len(names), scalar_events=events, xz_signals=0,
-                all_bits_preserved=True, expected_activity=expected)
+                all_bits_preserved=not bool(excluded_bits), all_retained_bits_preserved=True,
+                excluded_nonfunctional_bits=len(excluded_bits), expected_activity=expected)
 
 
 def verify_pt(expected, actual):

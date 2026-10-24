@@ -46,7 +46,9 @@ module tb;
    .frame_start(frame_start),.frame_ready(frame_ready),.q8(q8),.one(one),.weights(weights),.ext_valid(ext_valid),
    .ext_word(ext_word),.ext_ready(ext_ready),.sample_valid(sample_valid),.sample_ready(sample_ready),
    .sample_bits(sample_bits),.threshold(threshold),.products(products),.done(done));
+`ifndef DESIGN_DUMP
   initial begin if($value$plusargs("VCD=%s",wave))begin $dumpfile(wave);$dumpvars(0,dut);end end
+`endif
  end else if(KIND==1)begin: source
 `ifdef MAPPED
   cim_probe_mapped dut(
@@ -58,7 +60,9 @@ module tb;
    .ext_word(ext_word),.ext_ready(ext_ready),.sample_valid(sample_valid),.sample_ready(sample_ready),
    .sample_bits(sample_bits),.threshold(threshold),.done(done));
   assign products=0;
+`ifndef DESIGN_DUMP
   initial begin if($value$plusargs("VCD=%s",wave))begin $dumpfile(wave);$dumpvars(0,dut);end end
+`endif
  end else if(KIND==2)begin: gates
 `ifdef MAPPED
   cim_probe_mapped dut(
@@ -68,7 +72,9 @@ module tb;
    .bits(input_bits),.weights(weights),.products(products));
   assign {seed_ready,seed_error,frame_ready,ext_ready,sample_valid,done}=0;
   assign sample_bits=input_bits;assign threshold=0;
+`ifndef DESIGN_DUMP
   initial begin if($value$plusargs("VCD=%s",wave))begin $dumpfile(wave);$dumpvars(0,dut);end end
+`endif
  end else begin: qprobe
 `ifdef MAPPED
   cim_probe_mapped dut(
@@ -78,9 +84,19 @@ module tb;
    .sram_q(weights),.local_q(products));
   assign {seed_ready,seed_error,frame_ready,ext_ready,sample_valid,done}=0;
   assign sample_bits=0;assign threshold=0;
+`ifndef DESIGN_DUMP
   initial begin if($value$plusargs("VCD=%s",wave))begin $dumpfile(wave);$dumpvars(0,dut);end end
+`endif
  end
  endgenerate
+`ifdef DESIGN_DUMP
+ initial begin
+  if($value$plusargs("VCD=%s",wave))begin
+   $dumpfile(wave);
+   `include "dump_scopes.svh"
+  end
+ end
+`endif
  initial begin
   if(!$value$plusargs("DIR=%s",dir))$fatal(1,"DIR required");
   if(!$value$plusargs("CYCLES=%d",cycles))$fatal(1,"CYCLES required");

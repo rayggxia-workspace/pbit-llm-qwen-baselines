@@ -1,3 +1,9 @@
+## Issue173：前级64次核验与SiLU状态机调研（2026-10-24）
+
+已核验PR174当前head 0c94a2d8、Issue173与本人jieruiz；五个关键源码与冻结执行8249fad6原字节相同。g/u有限AND实验前级是固定W8、TRAIN固定四档x、共享64随机字、T=K=64分层；后级三流IID，两者不能混称。首层x/g/u给出的是RMS而非均值；gate/up恢复仍FP32参考。文献SMURF(2405.02356v1, ASP-DAC2025)实际测试Swish的64/256比特近似，但没有Qwen验证；候选可直接拟合p*sigmoid(sign*S*p)，保留尺度/符号，与独立u流AND。FSM状态/初始化/相关性必须实际模拟，不能用IID Binomial冒充，也不自动改善同量程的IID采样方差。
+
+详细调研和四档位置/两档空缺分析追加在qwen3/and_direct/MULTISCALE_ZH.md；FSM_RESEARCH_AUDIT.json记录复核。没有新增PPL、训练、RTL/PPA或作业；下一步是状态机微测试与TRAIN选档，尚未执行。沿用Issue173/PR174与现有工作目录，不合并；本节远端发布以该PR提交及Issue回执为准，Projects未同步。
+
 ## Issue173多档发布回执（2026-10-24）
 
 PR174已更新多档结果、ready待审未合并；科学提交a1e81c1d，发布核验head b079f455。42个文件经提交树blob SHA/长度核验，40个另原字节回读；两个大型文件使用内容寻址校验，HTTP中断未导致重复实验。Issue173已同步，MULTISCALE_PUBLICATION.json记录回执。Slurm2886已退出队列，无定时；Projects未同步。

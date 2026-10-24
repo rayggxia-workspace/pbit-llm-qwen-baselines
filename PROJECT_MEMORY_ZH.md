@@ -1,3 +1,15 @@
+## Issue175发布回执（2026-10-24）
+
+Swish FSM独立重建已通过PR176上传、待审未合并；结果提交8d7ce13b，核验提交2f56108b。全部变更文件Git blob/长度核验，小于64KB另原字节回读；51函数配置、8测试，无新模型PPL/训练/RTL/PPA。PUBLICATION.json含准确SHA/Issue评论和校验索引。Projects查询实际因缺read:project权限失败；Issue、STATUS和交接已同步，看板待维护者。Issue173短流封存结果另行汇总，未改其冻结执行。
+
+## Issue175：Swish状态机函数级重建（2026-10-24）
+
+用户要求复现64拍Swish并核验固定权重位平面接口。已独立重建SMURF，冻结ba7ff03d（完整SHA见MANIFEST）；51配置、3seed、P8整数比较及逐拍状态，8项功能/统计测试，有限时长Markov二阶矩与结果SHA交叉核验。正半轴0..1的4状态IID T32/64/128 MAE=.062395/.044052/.031188；32层打乱输入T64=.033992，属于我们变体，排列成本未计，不是论文精确复现。按序分层均值曲线偏差.032165，顺序不可忽略。原论文0.033是MAE，不是相对误差；图9只有0..1。16状态64拍更差.057807，不能用更多状态保证短流效果。
+
+带符号固定S扩展未用真实模型分布；S64负分支P8系数全零，低平均误差不代表保留SiLU。固定W8可保留，但原始位平面不等于单Bernoulli流，进入普通FSM前需带权/符号/尺度合并并形成g幅度码或另研整数流FSM；权重双随机也不免除矩阵求和。建议先保留中间g/u定点统计、FSM输出接独立u流AND再Wd；不存在本次整FFN/PPL/PPA证据。前级64拍后再FSM64拍至少128拍加归约等，不能说全FFN64拍。
+
+负责人jieruiz，Issue175，task/175-smurf-swish，独立稀疏目录tmp/smurf-swish-20261024；base PR174@bec546d4，报告qwen3/results/smurf_swish_20261024/REPORT_ZH.md。发布以work/jieruiz/175/PUBLICATION.json为准，未合并；Projects尚未确认。无新GPU/定时，不修改Issue173 Slurm2891冻结执行；其完成结果需单独按封存SHA汇总，不能从队列消失直接宣称交付。
+
 ## Issue173：短流分层Slurm2891已启动（2026-10-24）
 
 固定执行c44c2edc23a9a66c9e48c7f9cf99300fa34cefb0，Slurm2891_[0-2]均RUNNING、每片27项CPU/CUDA/模型预检通过，三次BF16同为13.566049199388152；概率结果尚未收齐，不能称完整PPL交付。45配置＋3BF16，四档位置三方案、32联合区间(4x2x4)、每区间1/2/4次，总T32/64/128；前级四档共享64 T=K64不变。无FSM实现/训练/PPA。源包SHA46e52b88ed8b0ee7bdecd4f23ce4896a19ecaa1179664974fe194c40c7bca42b，已归档project_archives/qwen3_and_direct_20261024/source-c44c2edc23a9.tar.gz，无额外解压副本。
@@ -42,6 +54,10 @@ Slurm2881五片完成，执行098c7a00db27dded1b7047dc5828871e4b057f70。每片1
 
 负责人jieruiz/task/173-and-direct-wd，目录tmp/qwen3-and-direct-issue173-20261024，PR174依赖PR172，待审未合并。报告qwen3/results/and_direct_20261024/REPORT_ZH.md；归档project_archives/qwen3_and_direct_20261024/sealed-2881.tar.gz，SHA1f87f6f00a9ffda47ca03b0bca0d55d2236e6fe99cacd5c6bf88f9eed4d54309，RECOVERY.json包含源包恢复。无运行任务或新增定时；Projects未同步。结果远端发布以FINAL_PUBLICATION.json为准，勿重交。
 
+## 2026-10-24 用户接受先用8位；三流输出直连Wd证据边界
+
+用户接受先使用Issue171测试的8位接口，并询问训练应采用该接口还是精确FP32，以及三流AND输出直接进入Wd。读取确认：Issue171 core.py先算量化非线性条件均值z，再_stage(z)重新编码/采样；因此其+0.584%不是有限三流AND直连Wd的PPL。旧20261009 FixedFFN确有三流事件计数直接送Wd、无z再采样的分布级模拟，但FP32累加/理想sigmoid，旧0.5B长流结果不能继承给新4B八位短流。建议部署学生训练前向采用八位量化+实际有限三流采样直连Wd，FP32仅教师/诊断；该新路径仍需验证，不表示用户已授权启动新训练或远端已改。幅度8另符号、驱动8含符号、概率8另true-one；符号及SgSu仍需随流处理，删除z重编码后旧z尺度/Tz扫描不能直接沿用。
+
 ## Issue171发布回执（2026-10-24）
 
 PR172已转ready、待审未合并，科学提交7a8b5e6e；23文件远端原字节回读一致，Issue171已同步。28项结果核验完成，Slurm2880已结束；无定时、无待运行任务。原始结果和源码包归档未解压复制，RECOVERY.json记录位置/SHA。Projects未同步。
@@ -56,6 +72,30 @@ Slurm2880已结束，执行71cb58d0；28/28封存documents/sidecar SHA、36层�
 
 负责人jieruiz；task/171-nonlinear-width；目录tmp/qwen3-nonlinear-width-issue171-20261024；base PR169@1d16d8cc，拟PR base task/168-qwen3-fixed-scale，依赖其推理源码。Slurm2880已运行，执行71cb58d0冻结；服务器6项预检通过，28项后缀PPL（16×128目标），36层全部替换。非线性使用有限码/LUT的条件均值，不是有限三流AND采样；矩阵恢复仍为FP32参考。W8单因素扫描及固定四档T64三seed组合；无训练/RTL/PPA。模型/数据复用已验证manifest。成果root与包SHA见SUBMISSION.json。完成后核验complete.json的documents SHA、28唯一配置和层覆盖，勿重复提交。Projects未同步；发布回执待补。
 
+## 2026-10-24 用户确认：功能模拟与TLM共用数制契约
+
+Python可用FP32/FP64作为模拟容器，不能把dtype直接当电路格式；必须模拟定点比较、尺度、舍入/溢出、随机相关性与响应。TLM引用同一契约SHA，对每一步有宏/电路映射及时间/资源/存储/能耗依据；暂无RTL允许定义功能宏、用有来源的条件PPA估计，未知不为零，未定义功能不得理想化。W8/N64/T16/32/64局部同尺度精确计数需18/19/20位；输出可另缩放量化A8（另符号）或signed8，质量未验证。完整跨档/tile位宽另计，不宣称8位累加足够。
+
+接续Issue159/PR170，分支task/159-hardware-forward-contract；正式NUMERIC_BOUNDARIES_ZH.md，18组整数上界/最小位宽校核见work/jieruiz/159/ACCUMULATOR_BOUNDS.json。无新PPL/训练/RTL/PPA，未改完整TLM代码。下一步先定功能宏、8/10/12接口对照再联合质量/代价验收；发布状态见同目录NUMERIC_PUBLICATION.json。Projects未同步，历史证据保留。
+
+## Issue159硬件前向纠错已发布（2026-10-24）
+
+PR170待审未合并；科学提交d519baec0ff016bcf242526141f3bc74311513ba，15文件远端原字节回读一致，Issue159已同步。3项门禁测试通过，无新训练/PPL/RTL/PPA。HARDWARE_PUBLICATION.json记录回执；部署前向尚待实现，远端Agent是否采用须执行任务确认，Projects未同步。
+
+## 2026-10-24 Issue159：硬件前向纠错
+
+用户明确要求从电路出发。确认旧训练清单及近期固定尺度PPL仍使用FP32 g/u、SiLU与乘积；x/z A8不等于非线性量化。任意实数W scale、恢复/跨tile累加亦待统一。已有FP32数字RTL/PPA只证明其自身路径，不能代替随机非线性证据。FP32已降为诊断oracle，部署前向必须先冻结有限位宽/缩放/舍入/随机响应与流相关性契约。训练主权重/优化器/反向可保留浮点。W4/6/8和57项计划保留但不可启动部署验收；3项门禁测试通过，无新训练/PPL/RTL/PPA，无作业取消。
+
+负责人jieruiz，Issue159，分支task/159-hardware-forward-contract，base d6d33995，复用tmp/qwen3-qat-plan-issue159-20261023；旧PR161已合并，新纠错PR见work/jieruiz/159/HARDWARE_PUBLICATION.json。正式审计qwen3/training/sc_qat_20261023/HARDWARE_FORWARD_AUDIT_ZH.md；交接REMOTE_AGENT_START_HERE_ZH.md，必填HARDWARE_CONTRACT.example.json。发布不代表远端Agent已修改训练，需执行任务回传计划/实现SHA；Projects未同步。不修改历史封存证据，不覆盖其他成员。
+
+## 2026-10-24 数字PPA后续修复（Issue107/146）
+
+追加核查：38374869_1也完成12功能场景/9功耗窗口，KIND2 SS100MHz setup=-26.219376ns，hold=0.086982ns，覆盖99.67991%；与index0合计24场景18窗口，2/3仍运行。不改RTL/约束掩盖违例。脚本已上传超算并提交，但本轮GitHub push两次遇超时/连接重置，不能称已发布PR；回读结果及Issue同步以各FOLLOWUP_PUBLICATION.json为准。
+
+用户优先核查近期数字模块，300/400MHz后仿准备暂停。CIM的threshold[0]同时间戳0->1->0造成脚本14次/PT12次；保留raw VCD与计数，另按时间戳最终状态核对，不忽略X和非零宽度脉冲。38374763四个含RNG SS/TT smoke全部完成（8窗口、net coverage100%、STA非负，仍有check_power/库表外推告警）；以前kind2/3不重跑，非M64完整表征。15单测及591bit原报告重放通过。台账cim-38374763-delta-recovery。
+
+数字38371792前几项功能通过，功耗被综合残留X拦住；新dead_bits逐bit用DC无叶端点或内部wire位无引用证明，未知真实连接仍拒绝。20单测及真实10400ns窗口重放通过。v3二次截窗衔接错误保留，v4修复后38374869_0已12功能/9功耗窗口完成，但SS100MHz setup=-11.985239ns是真实时序不达标，不能宣称100MHz可工作；不降uncertainty隐藏。38374869其余项仍运行，38374995 afterany:38371792恢复余下失败项，已通过跳过、无DC检查点阻塞、绝不重做综合。原健康作业/旧KIND21/计数器结果保留。原件与回执project_archives/remote_job_audit_20261024/followup/REPORT_ZH.txt；统一记录digital-ppa8-20261024-xz-recovery。后续读最新队列、Issue107/146与各HANDOFF，不能按此快照重交作业。后续PR发布状态见FOLLOWUP_PUBLICATION.json；不自动合并，Projects待同步。
+
 ## Issue168已发布回执（2026-10-24）
 
 固定四档18项后训练Qwen3-4B后缀PPL已通过PR169发布，科学提交572afbbbc75551ecab1136e5f3391e15c8bfe748；23改动文件GitHub原字节回读一致。PR已转ready、待审未合并，Issue168已同步；没有运行中本任务作业、没有新定时。原件压缩归档与44成员SHA通过后已回收解压副本，RECOVERY.json可恢复。执行679f370f/Slurm2879不变；报告qwen3/results/fixed_scale_20261024/REPORT_ZH.md，回执work/jieruiz/168/PUBLICATION.json。Projects未同步，不能把后缀当完整WT2。
@@ -67,6 +107,72 @@ jieruiz/task/168-qwen3-fixed-scale，PR169；执行679f370fa09199b67052ae6f71c08
 这是batch1向量化32段×128=4096目标后缀，不是完整WT2或旧cached结果。同轮BF16 10.685883；W8-only10.525384、固定mean10.498386；三seed动态32 10.533212±0.018421、固定32 10.551331±0.071962、动态64 10.517682±0.010649、固定64 10.502135±0.028439、固定x32 10.559898±0.015856。固定相对动态32为+0.172%、64为-0.148%；固定seed波动更大，不能声称更优。BF16与替换FP32内部算术不同，下降不单独归因尺度。固定2/8档、W4/W6、任务准确率及联合Attention未测。
 
 报告qwen3/results/fixed_scale_20261024/REPORT_ZH.md，实际固定表CALIBRATION.json；归档project_archives/qwen3_fixed_scale_20261024/sealed-2879.tar.gz，SHA ca09d749353b911aa372b80b3f6aacdebe470bc7bc41be1ee4f2020814135679。19服务器测试及17本地静态测试通过，原冻结快照未改，勿重交。PR169源码已推，结果发布以work/jieruiz/168/PUBLICATION.json为准；未合并/不关闭Issue，Projects未同步。
+
+## 2026-10-24 第十轮审核已合并（Issue55 / PR167）
+
+161/164/165/166通过PR167合并到TLM集成分支，merge d6d33995754fcdcea99286e4ce43f91647aa231a；远端已回读4个来源PR merged，review HEAD dedfd7d346ef7535f45404c7e456c77fed9fef2b，tree 8319d260f64b89a8258b0e974a7cc671485b8e13一致；main仍fae1298。60本地单测、50原件/2087成员SHA、34功耗窗口核验；正式台账56条。161仅训练方案无训练器/新训练；digital外推、counter活动缺口/M1、CIM随机源四项翻转率失败保留。160/163仍draft；六个Base PR继续迁移门禁。没有新GPU/EDA作业，不重复提交既有任务。审核报告work/jieruiz/55/round10/REVIEW_ZH.md；本地审计及恢复索引project_archives/pr_review_issue55_round10_20261024/。原Issue有剩余工作保持开放，Projects待维护者同步；临时review副本核验干净后回收，保留refs/原始证据。
+
+## 2026-10-24 Paracloud任务核查与补交
+
+本机密码SSH已通过DPAPI本地助手工作，交接PARACLOUD_LOGIN_HANDOFF_ZH.txt；只引用helper，不在文档记录凭据。最新EDA核查归档project_archives/remote_job_audit_20261024/REPORT_ZH.txt和DOWNLOAD_INDEX.json；原件逐SHA下载，未重复已有RNG报告。Issue107：数字v2 KIND21 SS/TT活动覆盖100%，仍有外推告警；38371792剩余14项已提交，index0七个CO/SUM X/Z失败，其余运行/排队。Issue133：38372030四项仅PT恢复全部完成、8窗口暂定功耗，未标注覆盖/库表告警未关闭；不重跑DC/VCS。Issue146：38372265_2及38372313_3/6/7四组合预检通过，含随机源四项threshold[0] PT/VCD翻转率不一致，未扩大全尺寸。三个中央run记录名称含20261024/38372030，任务分支/PR实际状态见各work/jieruiz/<Issue>/PUBLICATION_20261024.json；未自动合并。不要再提交已完成组合预检，也不要取消其他成员38371942。原始失败和快照保留。
+
+## Issue159 v2已发布（2026-10-23）
+
+远程执行交接与INT4/6/8三套扫描已通过同PR161发布，科学提交12137b19ae6a3e7d862e5785676c200ab6d910fd；19改动文件GitHub原字节回读通过，Issue159范围/进度已同步。PR待审未合并；57项仍是计划，无本任务训练器或GPU结果。完整回执work/jieruiz/159/remote_agent_v2/PUBLICATION.json。入口REMOTE_AGENT_START_HERE_ZH.md可直接交给远程Agent；实现认领与PR160模型/基线复用按该交接执行。其他任务记录保留。
+
+## Issue159远程执行交接v2：INT4/INT6/INT8（2026-10-23）
+
+用户要求面向远程Agent，并增加INT4/INT6，其他设置不变、工作3倍。正式入口qwen3/training/sc_qat_20261023/REMOTE_AGENT_START_HERE_ZH.md，附环境/逐seed结果JSON模板。每项实验36层gate/up/down统一Wb，三套各19项=57计划（48随机+9控制，A总114亿有效token）；BF16三个是配对重复，不是三位宽结构或三训练seed。输入仍A8、共享64、原尺度/采样/优化器设置保持，跨位宽清单一致性通过。
+
+补明确源码/依赖、待实现模块、独立120步G2课程、checkpoint随机重放、位宽/容器区别、Slurm及回传门槛。PR160已有非Base准备，revision1cfa9a7208912126459214e8b04321603b3df60c；依赖读取head98954637，22:45交接的2869/2870状态不当实时队列，恢复先查避免重复。本任务无新训练器/GPU/Slurm/PPL；v2清单/模板/启动拒绝与独立审阅通过。继续同PR161，实际发布见work/jieruiz/159/remote_agent_v2/PUBLICATION.json；不合并不关闭，Projects待权限。
+
+## 2026-10-23 第九轮最终合并回执及模型版本规则
+
+用户确认后续采用Instruct／后训练模型，Base指模型，不是Git基线。规则已通过PR162进入正式AGENTS与备忘录，并写入本机AGENTS；历史Base证据保留原标注，不继承为新模型结果。
+
+132/134/135/140/148/156六项实际均为merged，汇总PR162合并e1b23d7766303a502934d8b6eb45b9209bbb58b9，目标pbit-tlm-attention-details-20261016。远端完整树df40463e与审核head4acfcd4一致；main仍fae12982e0a92dea1f81648a5eeee148974c4a87。54单测、204来源blob、518硬件归档成员及RNG1269结构/算术与216 Pearson复核通过。无新GPU/PPL/RTL/DC/PT/Spectre实验；脚本准备与已测PPA仍分开。
+
+137/143/147/149/153/155六项保持open并已评论后训练迁移门禁；143仍draft。160为后训练Qwen3-4B草稿、结果未齐；收尾新出现161后训练训练方案，未纳入本轮完整审核，保留后续。未取消健康作业或自动昂贵重跑。Issue55保留后续审核入口，最终状态以远端回执为准。
+
+本轮正式台账50记录/1228配置行通过；本机镜像已有54记录/1264行，包含Issue107三条待合记录、152 APS v2待合记录和133较新记录，逐字节核对各任务正式checkout后保留，避免旧已合版本覆盖并发新工作；不得把这五项混称本轮已合。索引project_archives/pr_review_issue55_round9_20261023/ROOT_REGISTRY_SYNC.json。
+
+本人唯一review目录已确认干净、含ignored检查0额外文件后回收约6.8MB；分支、Git对象、其他作者任务、原实验均保留。恢复project_archives/pr_review_issue55_round9_20261023/RECOVERY.json；报告work/jieruiz/55/round9/REVIEW_ZH.md、回执PR162及Issue55。本机canonical备忘录与根阅读副本同字节追加，保留其他任务全部增量。下方“准备发布／未合并”为历史时点。
+
+## Issue159 实际发布：2026-10-23
+
+Qwen/Qwen3-4B非Base训练设计已推送PR161，科学提交6991c97f9d54c1d9ea17ee2ce87f44d08b6677f4；远端设计文件原字节核验通过，Issue159已同步。PR待审未合并，无GPU训练/新PPL；后续执行需模型revision/数据/训练器/H200环境。19项是计划配置，不是已运行结果。work/jieruiz/159/FINAL_RECEIPT.json为回执；Projects待权限同步。
+
+## 2026-10-23 Issue159：Qwen3-4B非Base随机FFN训练设计
+
+用户改为Qwen/Qwen3-4B，教师/学生均非Base；PR147 Base后缀结果仅机制参考，不能继承基线。负责人jieruiz，task/159-qwen3-sc-qat-plan。全模型36层FFN W8+真实共享64/分层随机前向、主权重STE训练；动态/固定/可学习静态/固定x动态z，T8/16/32/64共16配置，加3同预算控制。B2/4/8、gap1/2/3后续分阶段；必须区分K=T与IID。
+
+正式方案qwen3/training/sc_qat_20261023/TRAINING_PLAN_ZH.md，SCAN_MANIFEST有19项planned；清单/语法/未就绪拒绝守卫与独立审阅通过。尚无训练器、非Base基线、模型下载或H200/Slurm作业；需绑定revision/数据/环境并验证重算随机重放。上传状态见work/jieruiz/159/PUBLICATION.json及FINAL_RECEIPT，不自动合并。保留其他任务及既有证据。
+
+## 2026-10-23 用户新增硬约束：后续采用Instruct或后训练模型
+
+用户在本轮PR审核明确要求“不要用base版本”，并确认指模型版本：后续用Instruct／后训练版，不是Git基线。后续新实验、模型选择及PR审核都执行此要求；检查准确模型ID/revision、tokenizer/chat模板与计分协议，不能只改名称或继承Base结果。历史Base源码与原始结果作为有版本证据保留，不删除、不重标为Instruct；模型迁移须重新建立匹配基线。本轮137/147的Qwen3 Base与149/153的Qwen2.5 Base评测、155依赖的20层准备保留待迁移，不合并；143仍draft且同样涉及Base。通用随机源/电路/分析继续审核。此决策优先于下方历史“采用Base”记录，不取消他人健康作业或自行启动昂贵重跑。
+
+## 2026-10-23 Issue150：FFN固定多档完整PPL
+
+负责人jieruiz，task/150-fixed-multiscale，PR153待审未合并；执行49bc6bd1356413585c99dad6513d25cc34cff090。Slurm2840/2841/2842已产出全部封存结果：21项完整WT2、12候选selection、4holdout，0缺失/无效，299077计分token、24层所有forward输入覆盖通过。固定W8/A8共享64随机分层、原准确attention，非物理IID或RTL性能。无需重跑。
+
+TRAIN独立拟合/选优后冻结d2_h0：每层每64通道x/z各自固定S、S/4、S/16、S/64，无在线absmax/扩档。BF16 11.652735；W8 11.681130；固定mean 11.691441。三seed均值：动态32 11.736131、固定32 11.851810、只固定x32 11.746519、只固定z32 11.838450；动态64 11.693775、固定64 11.736412。全固定64接近原动态32；省前端但采样翻倍，尚不能称能耗更低。主要质量差距在z，未测联合随机attention/跨语料。
+
+正式报告qwen/results/static_multiscale_20261023/REPORT_ZH.md，完整数值SUMMARY；实际表SELECTED。原件83文件9.95MB已压缩为510435B，project_archives/fixed_multiscale_20261023/SEALED_RESULTS_49bc6bd1356413585c99dad6513d25cc34cff090.tar.gz，SHA6829e50ba08f8c25d7611c5aac5eba6b96232df46ad652dc8a35fd06ed7dd13e，逐成员核验；Git只留必要摘要、固定表和RAW_INDEX。服务器ROOT /home/Hongjie_Zeng/projects/pbit-qwen-static-multiscale-20261023-issue150不改，按索引恢复。交接work/jieruiz/150/HANDOFF.md。Projects查询缺read:project待同步；sacct关闭，完成依据签名校验JSON而非sacct。无新RTL/PPA/TLM，不自动合并/关闭Issue。
+
+## 2026-10-23 PR142可训练两采样器已进入main
+
+用户明确要求合入main。赢家保持WinnerHoldAttention与校正拒绝CorrectedRejectionAttention源PR142/bac0e04已审核并合入TLM分支2f233449；经独立main移植PR154，main实际merge fae12982e0a92dea1f81648a5eeee148974c4a87。正式代码experiments/trainable_pbit_attention/，历史NumPy单文件测试依赖一并移入；回读main19个来源文件SHA一致。22/22测试与两方案各3seed共6合成训练复核通过，源码/原结果未变；未做真实LLM训练、PPL、CUDA或物理RNG/RTL/PPA。最新完整TLM和FFN分档/分层仍在集成分支，不能因本次main更新误称全量已合入。Issue138保留；最终回执见PR154及Issue评论。本地归档project_archives/pr142_main_20261023，个人干净review目录回收，来源作者工作树保留；恢复分支review/138-main-port-20261023@9f1c9c0。未合并任务与长期备忘录原增量完整保留。
+
+## 2026-10-23 Issue146：CIM前端PPA批处理v2
+
+继续PR148/task/146-cim-frontend，保持原RTL/TB字节不变，补SS/TT100MHz八项smoke/正式Slurm、三seed、真实buffer自动验证、互斥叶子面积/功耗汇总与失败小包。修复原Tcl `$i(a)` 被当作数组变量的生成错误。11辅助检查、4个实际小RTL与48波形窗口通过，未运行DC/VCS/PT，不能写成已测PPA。包sc_cim_frontend_ppa_20261023_v2.zip，49471B，SHA f2ef9036c30adcbccd4a2c2c24543fe27061ff04facb3d6a27948f294b701228；manifest34d5b2031c141b41d8b8f14096d12539a969c5a1dbeb9027219f70b0d0caf856。台账cim-frontend-146-ppa-v2-prepared；旧v1证据不覆盖，原manifest移到project_archives/cim_frontend_20261023/SOURCE_MANIFEST_V1.json同字节保留。下一步用户依RUN_BATCH_ZH先smoke，回传reports包和logs；源码发布结果见work/jieruiz/146/V2_PUBLICATION.json，未运行服务器任务，Projects待同步。
+
+## 2026-10-23 Issue146：SRAM邻近SNG/驱动/W8门控
+
+新增architecture_tlm/sc_cim_frontend_20261023，任务task/146-cim-frontend，PR148已推送待审、未合并；科学提交74979fc。N64共享R8、W8固定权重、T32/K32，显式库buffer绑定，不加概率/权重副本寄存器；完整前端、SNG、门控、Q缓冲四种探针。旧计数器已有AND，初估只再加SNG/分发，避免重复；SRAM保持/装载另计，32768并行权重Q仍是CIM接口假设。附DC/VCS/PT流程及真实bitcell加载SPICE模板，无工艺模型。
+
+最终27组13620周期、5流程检查、12窗口×115位活动检查通过；较早N64/M64前端本地/外部源各三seed通过，独立大门阵列Icarus180秒超时保留。无新DC/PT/SPICE/PPA/PPL，包根sc_cim_frontend_ppa_20261023_v1.zip，36990B，SHA73bee486fd7d1f0fff0b3ba6bf915836715ed9496e92902351f86c18c68bda6d。统一台账cim-frontend-146-functional，原件project_archives/cim_frontend_20261023，交接work/jieruiz/146/HANDOFF.md；先用户SS/TT M1 smoke再M64。发布与逐blob核验见PUBLICATION/REMOTE_VERIFY，Projects待权限/维护者同步，无运行作业。保留其他任务镜像记录。
 
 ## 2026-10-23 Issue158：切换Qwen3-4B非Base
 
@@ -92,6 +198,10 @@ jieruiz/task/168-qwen3-fixed-scale，PR169；执行679f370fa09199b67052ae6f71c08
 
 每模型13配置：BF16一次；FFN-only、screen-exact+FFN、rejection128+FFN、winner1024+FFN各3seed。4096目标后缀/batch2，完整候选WT2未提交。CPU/GPU tiny与两个真实模型SDPA包装bitwise、kernel独立oracle/分布/仲裁/cap检查通过；完整BF16锚点原源码复现精确同NLL。后缀BF16已验证1.7B 7.5900880974、4B 6.3315746169；概率配置运行中，没有最终增量。首批26小原件归档、11sidecar/源码/模型/数据/覆盖验证、8篡改负例通过。正式入口qwen3/stochastic/README_ZH.md、qwen3/results/stochastic_20261023/REPORT_ZH.md、work/jieruiz/144/HANDOFF.md；收取工具/验证器为后加审计，不修改执行快照。恢复检查上述作业日志/results，不按旧基线heartbeat重复跑；旧qwen3定时已删除，此任务未新增定时。Projects缺read:project待同步。
 
+## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
+
+负责人jieruiz，task/138-trainable-samplers，基线6966739，源码b6e3d034。新增experiments/trainable_pbit_attention；真实Bernoulli提议、均匀仲裁/保持、2^-m全零校正和自适应拒绝；全部轨迹score-function训练，有偏Softmax代理显式分离，量化禁冒称精确梯度。22/22合成数值测试，81条有限赢家轨迹/梯度穷举、三seed分布对照和6个小训练通过；无Qwen/Llama新PPL、CUDA、物理随机源或RTL/PPA。训练源码/配置/结果SHA见results/VALIDATION.json，交接work/jieruiz/138/HANDOFF.md。科学交付42beb199已推送PR142（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/142），14文件远端原字节核验通过；PR待审、未合并，回执PUBLICATION.json/REMOTE_VERIFY.json；未改正式TLM/硬件默认，后续真实LLM集成和梯度方差/内存仍待验证。复用现有本地Torch2.4.1 CPU，无新服务器作业。
+
 ## 2026-10-23 Issue136：Qwen3 Base 双模型基线已提交
 
 发布闭环：科学结果60d6947已推送PR137，35远端改动文件原字节核验、11提交原件SHA通过；PR现为ready/open、未合并，Issue136仍open待评审。heartbeat qwen3已实际删除，不继续轮询。work/jieruiz/136/FINAL_PUBLICATION.json记录真实回执；请勿按下方历史状态重跑。
@@ -102,51 +212,33 @@ jieruiz/task/168-qwen3-fixed-scale，PR169；执行679f370fa09199b67052ae6f71c08
 
 用户要求先通过镜像在服务器建立Qwen3-1.7B/4B基线，采用Qwen/Qwen3-1.7B-Base和Qwen/Qwen3-4B-Base。任务分支task/136-qwen3-bf16，[PR137](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/137)为draft/open、未合并；代码qwen3/，交接work/jieruiz/136/HANDOFF.md。固定revision与train/test SHA、完整WT2 window2048/stride1024、原始BF16 SDPA、seed0、无chat/BOS/cache；没有FFN/Attention替换。服务器个人项目pbit-qwen3-baseline-20261023-issue136，源码968046f冻结；隔离Transformers4.51.3环境及CPU原生Qwen3/save-reload预检已通过，CPU2797镜像下载中，GPU数组2798依赖其成功后启动。尚无完整模型PPL，恢复不要重复提交/下载。旧模型环境未改；Projects实测缺read:project待同步。后续随机方案另做匹配基线/至少3seed，不把新模型原始PPL当成替换收益。
 
-## 2026-10-23 Issue123 完整FFN与STA/PPA交接
+## 2026-10-23 Issue133：计数器PPA v2运行包
 
-Issue116已通过PR126发布正式后端，本任务PR125固定160f46e与PR122@8007d98接合完整gate/up→SiLU/product→z重编码→down→BF16/残差，legacy默认保留。新接口按FP32 x/z、共享64组、逐输出B4恢复、独立跨k加法和有限信用执行。独立提取执行包28项测试通过，原核全payload等价。完整896→4864→896真实fixture已捕获（CPU2777），CPU2783全尺寸T32于03:41按用户要求取消（24:20、CANCELLED/0:15），无完整形状通过结论；2779/2780中断证据保留。候选调度源码/已有小烟测仅归档，不接入默认，不自动继续；停止总结为work/amlink1219/123/STOP_REPORT_ZH.md。
+用户要求对sc_counter_compare_20261023.zip做功耗面积，沿用Issue133/PR135/task/133，不重复建任务。RTL/TB不变；修正scalar VCD输出位宽被后续声明覆盖导致漏核验，补提交源码快照、A/B×SS/TT100MHz的M1 smoke与M64正式四项、数值面积/内开关漏电功耗/完整帧能量与互斥单元分类。源/新解压包9测试、Bash/Python3.6/Tcl检查及小RTL A/B四窗口90bit校验通过；没有DC/VCS/PT或完整M64新结果。zip为根sc_counter_ppa100_20261023_v2.zip，47271B，SHA 84169483a9175f7a12a1a5c5540c237fe85d501826b793b1da300ea56d7aad7f；原始小验证归档project_archives/counter_rtl_20261023/PPA_V2_VALIDATION_RAW.tar.gz。原统一record补索引，仍待跑PPA；先上传跑smoke回传4包。具体指令RUN_PPA_ZH.txt，远端状态以work/jieruiz/133/PPA_V2_DELIVERY.json及后续回执为准，本条不宣称已合并。保留其他任务镜像。
 
-CPU2778已通过45RTL场景/11667输出/180reset flush，覆盖T16/32/64、BF16/FP32、depth1/3/5及3seed。按用户安排已上传 `architecture_tlm/encoding_restore_contract/ppa/HANDOFF_JIERUI_ZH.md` 并在Issue123 @jieruiz，由其执行实际STA/PPA；当前EDA未运行、物理指标null。没有新PPL。源、作业、报告、发布状态在 `work/amlink1219/123/HANDOFF.md`；PR均待审未合并。Issue124短投影优化继续由原任务维护，未重复。
+## 2026-10-23 Issue133：FFN精确计数A/B电路
 
-## 2026-10-23 Issue121 编码/恢复接合阶段
+用户要求暂按SRAM全并行，优先比较计数器。architecture_tlm/counter_rtl_compare提供A逐位/符号/档计数＋最终恢复，B每拍整数和＋每档累计；均精确、相同协议，排除权重存储/随机前端/浮点恢复，不改主TLM。40组RTL/13408输出、6流程及8台账测试通过；完整64输出Icarus展开超600秒未完成，待用户VCS，不冒充工艺结果。T32 PIPE1完整帧36周期；6144B/640B只是主计数状态，含流水/输出后10368B/1760B，不是面积能量倍率。ZIP根sc_counter_compare_20261023.zip，SHA3a9b84019b1e41f51f198601a57fd969c7dbbb4de896b1bd4951221b378c94b5；原件project_archives/counter_rtl_20261023/LOCAL_VALIDATION_RAW.tar.gz。四项A/B×SS/TT100MHz工艺待跑，登记counter-ab-133-functional；无新PPL。已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。 本轮无服务器作业，Projects权限待补；详情work/jieruiz/133/HANDOFF.md。保留现有其他任务镜像，未覆盖。
 
-独立入口[编码恢复合同](architecture_tlm/encoding_restore_contract/README_ZH.md)，分支task/121-encoding-cycle；复用107算术，116核心保持原负责人和工作树。两类计数rail含义不可直连，原FUSED0与旧hostfloat恢复在次正规数有反例。28软件测试、12周期重放、27严格协议RTL场景通过；最终CPU-only job2773为6861输出/108复位清空。后台数值适配当前按单活动组、逐输出恢复、有限结果信用运行，条件周期与RTL握手相位分开标注，未替换全FFN默认。完整STA/PPA/PPL仍未知。发布回执见work/amlink1219/121/PUBLICATION.json；116后端公开版本待再次冻结回归，Projects缺read:project。
-## 2026-10-23 Issue117：资源预算计划的首轮执行
+## 2026-10-23 Issue107：v2只重检PT
 
-用户要求按Issue112方案优化并先上传workspace。在实时集成46804fb上新增resource_optimization_v1（负责人amlink1219），既有103/105/106/108/109/111/113/114已合并，以实时Issue55为准。本轮208项新完整decode TLM已全部完成：128共同候选粗筛＋64预声明代表点补充＋16vector128跟进；五个代表点各四方法/2K8K/三seed，没有仍运行或待补case。71项测试（28新增＋43原v6）及独立208case验收通过，原52＋40封存情景145payload未变。执行提交44dbbbdbc2720963b2b24bf03cdf7582a2d97075、315862412e15695c3fa21e6c573d9e5f3547e70d、b1b4d183678e25f24b7b37c273fcb3f61c37483b，十份执行清单数值/调度源SHA集合相同。
+脚本源66cb8b3，包digital_ppa8_ss_tt_100_20261023_v2.zip（2184127B，SHA067efe07b99ee85f09569198363be8a7a5155ed98e45a8b4ed698f7b05a887a4）。14单测、Python3.6 AST/Tcl/Bash通过，221冻结RTL/向量/综合约束与v1一致。VCD所有位逐一保留并对照PT有效输出活动率，PWR-981仍出现则失败；库范围9位精度及受影响单元功耗占比，不把占比当误差界限，不改负载/slew或豁免。submit_power_recheck.sh只读复用v1/results/38339971_7/15，新目录重做波形转换与18窗口PT，无DC/VCS重跑。本机无真实EDA，本次重检待用户提交。统一台账48条，保留最新集成6966739的45条原字节；身份jieruiz/Issue107 open已实时核验。发布状态见任务V2_PUBLICATION回执，不自动合并。旧结果和包保留。
 
-结果保留正负两面：同映射容量only2/4/8MiB全部无时延收益；同1MiB重新分块仅小幅改善。vector128下SC筛选/PV三seed均值在8K比同配置W8快7.543849%，2K仍慢4.166733%；该补充由seed0结果触发，非盲测质量证明。完整面积/能量/A0未知，无新PPL/GPU/Slurm/RTL/EDA，不能把宏面积散点当完整同面积前沿。下一步优先恢复latency/II、SC权重保持和局部计数物理归属，随后真实驻留与持续在途DRAM调度。
+## 2026-10-23 Issue107：首轮实际PPA结果
 
-恢复入口architecture_tlm/resource_optimization_v1/README_ZH.md、RESULTS_ZH.md、results/analysis_20261023/SUMMARY.json与VALIDATION.json；work/amlink1219/117/HANDOFF.md有精确重汇总/验收命令。208项完整交付通过PR119；PR待审未合并，准确远端head与原字节核验按PUBLICATION.json最终回执。统一台账已按CALIBRATED_ESTIMATE登记（check/render及8项台账测试通过；历史指定镜像路径本机不存在）；Projects缺read:project待补。并行PR120/Issue118已有独立供数/逐档整数局部状态合同，待审且未纳入本轮；后续对接它和Issue116周期后端，不重做、接管或覆盖其范围。
+用户下载38339971_7/15两个reports包，只是KIND21 FP32→BF16 SS/TT100MHz。24门级功能场景通过、18PT窗口算出功耗且STA正slack；668成员SHA、交付manifest原字节、单元功耗/面积/能量回算通过。连续模式总68.82/91.01uW、0.7312/0.9670pJ每完成转换，包含边界寄存器；纯转换核心分类6.419/8.171uW。PWR-981 result[2047:0]部分映射和2load/1ramp超表范围未闭合，标provisional，缺原mapped.v/VCD证明；没有SDF/SPEF/CTS。中央新增digital-ppa8-38339971-smoke，旧prepared保留；报告architecture_tlm/digital_ppa_v1/results/PPA8_SMOKE_38339971_ZH.md。本轮未改EDA脚本或重跑，先复用已有波形诊断后再remaining14项。GitHub刷新连接异常，本地完成、远端同步待办；保留根台账其他任务记录，不用旧基线覆盖。沿用Issue107/task/107-digital-ppa8-ss-tt。
 
-# p-bit LLM 项目长期备忘录
 ## 2026-10-23 Issue129 SRAM与DRAM节省报告
 
 新增architecture_tlm/memory_savings_20261023/REPORT_ZH.md及7页Word，8个已封存v6情景复算、20源SHA、64文档/数字检查。W8减半权重不是随机独有收益；Qwen已记账2K/8K外存读写少31.95/35.52%，SRAM读写少29.82/33.49%，未闭合局部保持/计数未包含；条件存储能量不是整机PPA。采样不自动缩小完整KV缓存。PR120的48→5KiB是逻辑状态，PR127加宽读口不减少字节；新周期/完整FFN暂停保持。本轮无新实验，成果通过PR130已推送待审、未合并；Word及来源JSON原字节已核验。来源/回执见Issue129与work/jieruiz/129/PUBLICATION.json，Projects缺read:project待同步。
 
+# p-bit LLM 项目长期备忘录
+
 ## 2026-10-23 Issue107：8类数字模块SS/TT 100MHz脚本包
 
-沿用task/107/PR109，正式architecture_tlm/digital_ppa_v1/ppa8，脚本源6bc3389de08fba8250a17f0991849a4368898205，原RTL23e8d65f未改。KIND0/2/4/5/6/7/8/21，各SS1.08V125C及TT1.2V25C，100MHz、setup uncertainty2ns。自包含RTL/ROM/转换/TB/参考向量包在本机根digital_ppa8_ss_tt_100_20261023_v1.zip，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出逐位通过、6流程守卫/Tcl/Python兼容/Bash检查通过；没有本地DC/VCS/PT，没有已测面积功耗。建议smoke两角KIND21后remaining14项，不重复运行健康任务；快照/阶段SHA恢复，结果自动小包。
+沿用Issue107；PR109/111已合并，本批使用task/107-digital-ppa8-ss-tt后续分支，正式architecture_tlm/digital_ppa_v1/ppa8，脚本源6bc3389de08fba8250a17f0991849a4368898205，原RTL23e8d65f未改。KIND0/2/4/5/6/7/8/21，各SS1.08V125C及TT1.2V25C，100MHz、setup uncertainty2ns。自包含RTL/ROM/转换/TB/参考向量包在本机根digital_ppa8_ss_tt_100_20261023_v1.zip，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出逐位通过、6流程守卫/Tcl/Python兼容/Bash检查通过；没有本地DC/VCS/PT，没有已测面积功耗。建议smoke两角KIND21后remaining14项，不重复运行健康任务；快照/阶段SHA恢复，结果自动小包。
 
-中央台账新增digital-ppa8-20261023-prepared，功能是本地RTL证据，16工艺配置仍not_run；基于PR111@2b7935f4同PR109登记，保留原35条。零延迟门级不含CTS/布线/毛刺，PT时序独立；含边界寄存器，SwiGLU为近似PWL，不继承PPL。KIND4/5按64元素一组、KIND6完整恢复不得再乘64/72；累加采用混合帧，非单独S128能量。原始验证含失败在project_archives/digital_ppa8_20261023/LOCAL_VALIDATION_RAW.tar.gz。上传状态以work/jieruiz/107/ppa8/PUBLICATION.json为准；任务未自动合并，Projects read:project待同步，暂无本任务BSCC作业。本文同步本地canonical与根阅读副本；本条远端随后续记忆维护，不宣称canonical脏改动已发布。
-## 2026-10-23 Issue118：FFN供数与逐档整数状态合同
-
-已上传PR120（待审、未合并），科学head8bea1dfd，48个远端Git文件对象逐项一致。Issue118已同步；Projects实测缺read:project，待同步。实际回执`work/amlink1219/118/PUBLICATION.json`，后续元数据提交不改变科学结果。
-
-amlink1219，`task/118-ffn-storage-contract`，基线集成46804fb。入口`architecture_tlm/ffn_storage_contract/README_ZH.md`与`RESEARCH_STATUS_ZH.md`；复用107/112，向116提供独立合同，不改其周期核。明确真实随机服务已经整机接入、新q/256接口不能继承旧PPL，旧52/新40分开。
-
-6项T16/32/64保持/重读接口执行、4非法配置拒绝、30功能测试通过；66合成整数场景888逐档输出一致。T32显式32KiB保持/256B响应方案6.92us，零持久权重/16B响应重读3.2768ms；不同局部资源，不是同面积/全FFN加速。8tile计数48KiB→5KiB仅状态量，FP32恢复未改也未执行。F/SS库表周期/访问门槛拒绝100MHz，不冒称新STA。
-
-新结果登记`ffn-storage-118-design`为DESIGN_PROOF；本轮无模型/PPL/GPU/Slurm/RTL/STA/PPA。执行源码与输出SHA、独立审阅、复现/交接在`work/amlink1219/118/`及结果目录。发布状态以该任务PUBLICATION回执为准，不自动合并/关闭Issue；另一台机器的固定台账镜像未同步。后续接合116、表征保持/计数，再进行合法同资源搜索。
-## Issue124 恢复吞吐与数据流消费实验（2026-10-23）
-
-负责人amlink1219，独立task/124-recovery-dataflow，执行54a9968，基于集成46804fb3。先核Issue116、PR120/122和Issue123/PR125后划分范围；只消费既有合同，完整FFN由123继续，不复制116开发源。
-
-48/48短投影条件仿真、24对同配置SC/W8、20项测试、8项登记守卫通过；独立验证467520操作及15类篡改拒绝。SC221.3625→205.75µs（−7.05%），同配置W8也205.75µs；主瓶颈是部分和接口。读宽128B单独候选206.35µs，增加双槽仅再降0.6µs而需更多保持状态。输入/门限为冻结合成数据，非完整FFN/PPL/STA/PPA。
-
-入口architecture_tlm/ffn_dataflow_optimization/README_ZH.md，原始48gzip、3输入及SHA清单已准备；中央台账新增本任务1条/48行，当前分支36条564行，未合并其他任务登记须集成取并集。交接work/amlink1219/124/HANDOFF.md；结果提交c509772已上传PR127，未合并，回执见PUBLICATION.json。最终PR126已发布116冻结依赖；13份GitHub空缓存重建逐SHA与原20项测试通过，复现阻塞解除，执行源不漂移。Projects实测缺read:project，本机固定阅读镜像路径不存在，二者待同步。不自动合并/关闭Issue，无运行中的本任务作业。
-
-
+中央台账新增digital-ppa8-20261023-prepared，功能是本地RTL证据，16工艺配置仍not_run；已合入最新集成e8705765，保留已审核原35条，新记录随本批后续PR登记。零延迟门级不含CTS/布线/毛刺，PT时序独立；含边界寄存器，SwiGLU为近似PWL，不继承PPL。KIND4/5按64元素一组、KIND6完整恢复不得再乘64/72；累加采用混合帧，非单独S128能量。原始验证含失败在project_archives/digital_ppa8_20261023/LOCAL_VALIDATION_RAW.tar.gz。上传状态以work/jieruiz/107/ppa8/PUBLICATION.json为准；任务未自动合并，Projects read:project待同步，暂无本任务BSCC作业。本条同步本地canonical、根阅读副本及本任务分支；不发布canonical中其他未提交改动。当前脚本和台账本地完成，Git推送受网络阻塞，远端状态以回执为准。
 
 ## 2026-10-22 Issue107：真实RNG接入后的Verilog仿真需求
 
@@ -612,6 +704,14 @@ FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700�
 旧3/39、11/39与动态预计完成时间保留为历史，恢复先看本节、Issue59/PR62及交接，不再重复提交已完成39项。仓库上传身份jieruiz已核实admin/push；Projects是否成功同步以最新发布回执为准。当前正式报告PR仍未合并。
 
 ## 6 随机源、p-bit与相关性
+
+2026-10-24已按用户授权用现有Paracloud工具登录/上传并提交测速Job38371942，8核16GB、v6_384、墙钟1:15、计算预算1h；观测2026-10-24T04:49:27.892387Z为RUNNING，m3ca1103，首例classic已真实进入Spectre噪声瞬态，尚无完成记录/加速比。初次远端32测试过但Calibre默认python3 -c破坏引号，未提交；固定本任务STUDY_PYTHON=/usr/bin/python3(3.6.8)，不改全局环境，复测32通过。实际源码f1f93c608b39886ece3484421e9873bbc80d7b30，manifest4d5e031fdc4907fedb25825cdf12f9f651cf3e9b2ad9ba34acd62d8b2246499c；snapshot submissions/longchannel-ilF7Xifb/source不可改，results/38371942_speed，结束自动long_channel_38371942_speed.tar.gz。五模式3ms仅测速，未自动交pilot/calibrate/1s。记录work/jieruiz/152/run_38371942及台账physical-rng-speed-38371942(PARTIAL_FLOW/running)，旧prepared源码归档至project_archives/analog_long_channel_20261024/source；其他dig8作业不碰。GitHub核查仍网络/凭据超时，无本轮推送/PR更新，不把服务器已提交写成GitHub已发布。
+
+2026-10-23 v2发布实际状态：源码be40141仅本地已提交；Git HTTPS两次connection reset，API替代渠道在credential fill超时前即停止，无远端写入。PR156最新核实时仍为v1 b40e94b，未合并；v2本地直接上传目录可用。V2_PUBLICATION.json保留失败证据，待网络恢复后正常推送当前任务分支并更新Issue/PR，不强推。没有远端EDA任务或实测加速比。
+
+2026-10-23用户进一步要求多核及控制耗时：Issue152/PR156新增v2_aps，源码be40141b96e62b67d1bf6b5ee52a9d1fe09aa866，本地已提交待推送。上传远端上传/long_channel_v2_aps（24文件235752B），先bash submit.sh speed。五条3ms测速比较classic和APS1/2/4/8线程；默认8核、pilot4案例×2线程，按测速建议选配置，报告实际线程及投影分批耗时，不承诺17MOS能获得多线程加速。APS pilot另加三seed经典统计对照（21例），calibrate/long继承已通过的求解器/线程；仍为独立校准冻结、三seed1s及500Hz对照。阶段预算speed1h/pilot6h/cal24h/long24h，墙钟另留15min；单例不超过剩余预算，预估超预算不启动长任务。32测试/17模块Python3.6/Bash/27PDK哈希/59预览通过；没有实际Spectre、服务器JobID或加速比。中央physical-rng-long-152-aps-v2-prepared全电路阶段not_run，保留v1记录。入口long_channel_v2_aps_delivery.json及README；Projects权限限制沿用。
+
+2026-10-23用户要求100us同源采样、每seed至少1s有效记录：新Issue152/PR156（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/156），负责人jieruiz，task/152-long-channel，源码8f72debba6ce3b83626be7e1eb892fed8310c634，科学交付84770a1已推送待审、未合并。直接上传`远端上传/long_channel_v1/`（23文件214983B），先`bash submit.sh pilot`。选原buffers_x2旧15MOS+两MOS零外加C核心+5fF，TT25C持续供电；pilot18例检查噪声开关/500Hz精度/实测成本；calibrate27例独立10Hz校准冻结后再做三seed10Hz精度；long为10/500Hz各三条1.02s、固定20ms启动、每条10000原始bit，validation41011/41047/41077不与校准/检查混用。10Hz短记录至少120ms，保留100MHz/2.5ns/noisescale1，10us strobe每十点取100us；不以稀疏电流均值算功耗。保留MID原始判决、VN两类输出/真实时间戳、32/177bit包重复/汉明/位相关和无回退时间戳source适配器。20脚本测试、16模块Python3.6 AST、Bash、27PDK哈希、51预览及6合成包接口探针通过；尚无实际Spectre/远端JobID/长记录质量或PPA。统一台账`physical-rng-long-152-prepared`电路阶段全not_run，不把预览算实验；保留其他记录。入口`analog_pbit_20261016/long_channel_v1_delivery.json`及README，formal为`architecture_tlm/physical_rng_long_channel/`；Projects另待权限/维护者同步，不接管Issue95。
 
 2026-10-22数字随机服务功耗结果38322118已由用户提供：原汇总`远端上传/rng_service_v1_20261022/architecture_tlm/random_service/POWER_RESULTS_38322118_ZH_20261022.txt`。本会话独立复核12归档SHA/同v3源码manifest、7920已下载阶段成员、216门级PASS及252窗口能量算术；未独立重放VCD/网表、未重跑EDA或接管Issue95。100MHz三seed(LFSR/GF64/Bivium/FFN)面积3154.32/14804.64/19331.64/12360.96um2，连续功率162.467/1355.333/1204/639.6uW，1.62467/13.55333/12.04/6.396pJ每生成帧；输出宽度用途不同，FFN为单8bit字共享64比较。SS1.08V125C布局前零延迟活动/PT，CALCULATED_PROVISIONAL；PWR-981/库表外警告、无CTS/SPEF及物理熵源/健康调理/CDC等。100MHz所有已报告配置时序过，300/500未全过；FFN不停钟idle492.3uW约77%active，门控仍待诊断，不能等同已实现收益。证据`analog_pbit_20261016/digital_rng_38322118_review_20261022/`；旧Issue95段落“PPA null”仅指交付时点，不代表现今无结果，正式TLM尚未由本会话回填。数字100MHz不证明模拟源100MHz独立位率。
 
@@ -1196,6 +1296,24 @@ jieruiz，task/107-tlm-cycle-digital-rtl，独立tmp/tlm-digital-issue107-202610
 
 LLM对话先前独立压缩10网表约2.713GB及回收1个Issue19回执约0.188GB，均不包含在上述1.183GB；该对话继续新增清理，Issue68保持open。模型、唯一原件、主对象库、进行中任务和其他成员目录保留。恢复先读索引，不因工作目录已移除而重复实验。发布/合并状态查Issue68最新回执；本条随review/68-cleanup-receipt-20261023交付。
 
-## 2026-10-23 Issue55第八轮审核快照
+清理回执最终发布（2026-10-23 10:32北京时间）：PR128@e97ac1e932674d46f8642dc839555b8a934a927b已正常合并e8705765ed3286b225e042378d57e5d010e221ee，5个报告/索引/本人状态/记忆Git blob与已审head逐字节一致。10目录回收1,182,605,540 B，64独有文件与恢复refs/10 ZIP/3 bundle复核通过；仅用于发布回执的小型tmp/cleanup68-review-receipt-20261023亦已回收354,348 B，无未提交或ignored资料。项目持续清理由LLM对话继续，Issue68仍open；本条为Issue28 canonical合并后维护增量，已发表快照SHA不改。
 
-PR119/120/122/125/126/127/130限定阶段成果通过；新#130为存储总结。独立组合359测试注册、358通过、1个Windows符号链接场景跳过；已复核208资源结果、48数据流轨迹及真实GQA公开回执。74份GQA源码有公开同字节祖先映射，修复旧未公开commit复核入口。台账取45记录/964配置行并集，不重复计新实验。详见work/jieruiz/55/round8/REVIEW_ZH.md；实际远端合并以Issue55收尾回执为准。Issue116/123暂停不变；全尺寸2783取消未验收，DC/PT未执行。下一项工艺工作是#125编码恢复SS/T32最小PPA，与Issue107八模块PPA包分开计费。
+## 2026-10-23 Issue55第八轮最终合并回执
+
+PR119/120/122/125/126/127/130已通过集成PR131实际合并，集成SHA `6966739a5223680888bf0315f7bb4f73423a1ae6`，GitHub逐一返回merged=true（2026-10-23 05:49 UTC）。共359项测试注册、358通过、1项Windows符号链接测试跳过；208资源结果、48数据流轨迹、GQA74源码同字节公开映射和回执、#130存储重算均核验。公开审计旧commit缺失问题已修复，原执行manifest未重写。正式报告 `work/jieruiz/55/round8/REVIEW_ZH.md`。Issue116/123仍暂停/未完成，全尺寸2783取消无成功summary；没有本轮GPU/Slurm/PPL/EDA或新电路run。下一步优先#125 SS/T32编码恢复最小PPA，和Issue107八模块包分开；恢复完整尺寸长跑需用户明确恢复暂停任务。
+
+根台账阅读镜像现与已合并45记录/964行同字节；此前本地未发布的 `digital-ppa8-20261023-prepared` 没有丢弃，仍保留在 `tmp/tlm-digital-issue107-20261022/digital_circuit_simulation_registry/records/`（SHA d6337affa27d757e48a60607a6971576742421f73606b30e9904c2f13612d0ad）及本轮 `project_archives/pr_review_issue55_round8_20261023/REGISTRY_READING_PREIMAGE.zip`。它未包含在PR131中，不把准备包冒充已出PPA；下次Issue107发布应基于最新45记录取并集。本人审阅临时副本归档/回收以同目录CLOSEOUT.json为准，保留共享Git及其他任务。
+
+## 2026-10-23 Issue95 分层随机质量首轮
+
+负责人rayggxia；task/95-rng-quality，tmp/rng-quality-issue95-20261023，基线6966739a。复用38237164已有Spectre原始9条轨迹，189案例（两端点各4096帧）与30调理/36抽样诊断完成，9机制测试及1269原件/算术/结构核对通过。质量不是自动逐层改善：旧比较器VN后P1近50%仍有负时间相关；GF64在q128前4路严格xor=0；重复种子使三后端两端点同流。无新Spectre/RTL/PT/LLM/PPL，不认证熵率或最佳换种周期；两个独立电路记录不是同一物理噪声因果链，缺同时多路阵列记录。
+
+入口architecture_tlm/random_service/quality/README_ZH.md及results/20261023/REPORT.html；用户副本远端上传/rng_quality_20261023.html。稳定原件project_archives/rng_quality_20261023，SOURCE_MANIFEST绑定8文件，执行本地8a862a38cf6e4e46f50e719f8b2b3877db745c75。中央run rng-quality-95-20261023为DESIGN_PROOF，PPA未运行；新增record单独同步固定入口，保留其他并行记录，不用旧catalog覆盖。当前本地完成；发布前GitHub连接器出现HTTP传输错误，远端发布状态以work/rayggxia/95/quality/PUBLICATION.json为准。恢复见同目录HANDOFF，不重复实验。
+
+2026-10-23 Issue95发布回执：网络已恢复，分层质量实现/结果已上传PR134（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/134），开放待审未合并；科学交付1f8e1d468792b5af17d337db885b482c189c00f9。完整远端tree与本地c8162a04b3c32bd0d5615108d8dc7b93bdf0b1ee相同，报告读回逐字符一致。旧网络阻塞文字仅为先前时点，无需重复实验。
+
+## 2026-10-23 Issue95：旧比较器采样间隔纠正
+
+用户指出当前应较慢采样，复核确认质量主链硬编码0.5us，不能把旧比较器rho约0.72～0.74泛化为慢速采种质量。复用9条已签SHA波形，72项间隔重分析/216 Pearson交叉核验/9数组SHA通过；10us固定时间lag的两款旧比较器三seed范围0.027～0.052，20us约0.018～0.047。单相位长间隔样本少，不能宣布IID或长间隔更差；P1偏置不会随间隔自动消失。VN原负相关仅属0.5us场景。
+
+RandomNetwork未规定同一物理源采样间隔；SeedWords.interval是调理32bit字间隔，1亿拍换种在100MHz约1s，但不决定包内原始bit间隔。下一轮需显式物理时间戳/同源间隔及调理时序，再贯穿各层。入口architecture_tlm/random_service/quality/results/sampling_review_20261023/REPORT_ZH.txt；用户副本远端上传/rng_sampling_review_20261023.txt。沿用Issue95/PR134/task/95-rng-quality与现有工作目录，不改原189案例、旧报告或正式模型默认，不新增EDA/RTL/PPL/数字实验。台账原run补充后处理索引，不虚增实验数量。补充远端交付状态以work/rayggxia/95/quality/SAMPLING_PUBLICATION.json为准；Projects未同步，PR不自动合并。

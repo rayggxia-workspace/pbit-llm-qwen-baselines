@@ -1,3 +1,11 @@
+## Issue179 / PR180 已实际合入 main（2026-10-24）
+
+PR180于2026-10-24T14:41:06Z合并，main提交`5273e5d9fdae811a714f1a278fee6e776c5675af`，交付head`0d97e2b5a2c01270568835964b2f4d581133a197`；GitHub父节点/文件树及109个变更blob核验通过。Issue179本轮统一TLM交付完成，后续研究缺口不冒充已验证。
+
+统一入口`python -m architecture_tlm`；流程/宏/数制见`architecture_tlm/unified_v6/FFN_CURRENT_ZH.md`，结果见`RESULTS_CURRENT_ZH.md`。74检查、7组完整36层、8组单FFN敏感性、15组三seed夹具、12封存SHA均通过。实际校正拒绝1152行/147456输出/441346 proposals（平均2.993次），无运行中本任务作业。2K准确Attention/筛选PV/筛选拒绝整机条件时间分别1412.979/1366.264/1585.054 ms/token。
+
+保留未知边界：GU定点编译/舍入、NL独立随机源映射、权重保持宏和代表性STA/PPA；完整面积/能耗null，DRAM本轮link非DRAMSys，不继承PPL。Projects缺read:project，待维护者同步。工作副本回收时以project_archives/latest_ffn_tlm_issue179_20261024/RECOVERY.json恢复；本轮不创建全量副本。其他训练/算法PR未被本任务合并。
+
 ## Issue179：统一TLM最新FFN进入main的交付（2026-10-24）
 
 用户明确要求更新通用整机TLM，使用最新固定尺度、随机非线性直连Wd的FFN，并在独立分支后合入main。本人jieruiz；Issue179/PR180，分支task/179-latest-ffn-tlm-main，独立稀疏目录tmp/latest-ffn-tlm-issue179-20261024。原main fae12982没有TLM，本轮仅导入d6d3399的最小运行/校准闭包，40个导入文件原字节不变；不合并训练PR178或其他研究PR。统一入口python -m architecture_tlm，继续unified_v6，今后不要另复制v7。合并状态以PR180和Issue179最终回执为准。

@@ -1,15 +1,36 @@
-import base64,json,concurrent.futures
+import base64,json,time
 from github import api,push,save,PREFIX,ROOT,git
 assert api('GET','/user')['login']=='jieruiz'
 pr=api('GET',PREFIX+'/pulls/174')
 assert pr['state']=='open' and not pr['merged'] and pr['head']['ref']=='task/173-and-direct-wd'
 receipt=push();head=receipt['head']
 paths=git('diff','--name-only','38de07962a05f39391a778f7b81e2ed389546bf9',head).decode().splitlines()
+def get(path):
+    for attempt in range(3):
+        try:return api('GET',path)
+        except Exception:
+            if attempt==2:raise
+            time.sleep(attempt+1)
+trees={}
+def tree(sha):
+    if sha not in trees:trees[sha]={x['path']:x for x in get(PREFIX+'/git/trees/'+sha)['tree']}
+    return trees[sha]
+root_tree=get(PREFIX+'/git/commits/'+head)['tree']['sha']
 def verify(path):
-    obj=api('GET',PREFIX+'/contents/'+path+'?ref='+head)
-    assert base64.b64decode(obj['content'])==git('show',head+':'+path),path
-    return path
-with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:verified=list(pool.map(verify,paths))
+    data=git('show',head+':'+path)
+    sha=root_tree
+    for component in path.split('/'):
+        entry=tree(sha)[component];sha=entry['sha']
+    assert sha==git('rev-parse',head+':'+path).decode().strip(),path
+    assert entry['size']==len(data) and entry['type']=='blob',path
+    if len(data)<150000:
+        obj=get(PREFIX+'/contents/'+path+'?ref='+head)
+        assert base64.b64decode(obj['content'])==data,path
+        return dict(path=path,verification='raw bytes and committed tree blob SHA')
+    # Avoid repeated truncated HTTP bodies for large JSON. The committed tree
+    # maps this exact path to the already verified content-addressed Git blob.
+    return dict(path=path,verification='committed tree blob SHA and byte length')
+verified=[verify(path) for path in paths]
 body='''Qwen3-4B三流AND直连Wd在单一量程下严重退化；给g/u增加固定二次幂档位后，B8/T256三seed后缀PPL从原单档7735降低至13.906（同轮BF16 13.566）。不恢复z或重新采样，sigmoid按真实g尺度进行整数移位/RNE/饱和，Wd部分和按乘积指数对齐后整数累加。
 
 关联 #173，依赖 #172。旧单档执行098c7a00/Slurm2881和负结果保留；多档执行8249fad6/Slurm2886，45份计分/41唯一配置、36层全前缀与documents SHA通过，每片18项功能验证含CUDA整数一致性。8×128目标后缀，不是完整WT2；无训练/RTL/PPA。
@@ -30,6 +51,7 @@ B8条件均值13.4316；BF16/旧路径/B1均值与前轮逐值相同。首层平
 api('PATCH',PREFIX+'/pulls/174',dict(title='Qwen3-4B：多档g/u与八位AND直连Wd，256次PPL改善至13.91',body=body))
 api('POST',PREFIX+'/issues/173/comments',dict(body='用户授权多档扩展已完成：Slurm2886，执行8249fad6，45份计分/41唯一配置及36层全前缀SHA通过；18项服务器功能验证。B4 T64/256/1024=42.3417/14.4663/13.7139；B8=15.9779/13.9061/13.4698。BF16=13.5660，B8均值=13.4316。固定档位无在线absmax，sigmoid真实尺度整数驱动，Wd同指数部分和移位；无z重编码。新结果提交 '+head+'，见同PR174新multiscale报告。旧负结果保留。未训练、非完整WT2、无新PPA；Projects未同步，Issue保持开放待审。'))
 receipt.update(pr=174,issue=173,verified_blob_count=len(verified),merged=False,ready=True,
-    multiscale_results_verified=True,projects_synced=False)
+    multiscale_results_verified=True,projects_synced=False,file_verification=verified,
+    transfer_note='First two readback attempts had closed/incomplete HTTP bodies; large blobs verified by committed tree identity; no simulation rerun')
 save('MULTISCALE_PUBLICATION.json',receipt)
 print(json.dumps(receipt))

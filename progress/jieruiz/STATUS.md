@@ -982,3 +982,13 @@ GitHub实际操作账号jieruiz；用户明确授权合并。PR47于15:44:54（�
 
 
 发布视图补注：原服务器SUMMARY SHA b95c40...已完整归档，公开SUMMARY视图SHA0b6aa1f2a5f2b44d28ef4eb1351a533f415beb37da3138887182991d8ebca38c，仅将IID/拒绝法MC95字段标不适用及添加派生来源；所有科学数值不变。原始制品见server_summary_originals，转换代码publication_view.py。最终本地14检查通过；服务器仍8核心/4汇总，新增2汇总守卫仅本地。本轮发布状态以最终Issue78回执为准。
+# Issue177：随机非线性训练代码（2026-10-24）
+
+负责人jieruiz，task/177-trainable-and-ffn，PR base task/173-and-direct-wd（b41ee00835b1ae385b2a7c3654df67df26eff3e3）。正式目标rayggxia-workspace/pbit-llm-qwen-baselines；身份已核实。独立sparse目录 C:/Users/86134/Documents/a_P_BIT/tmp/trainable-and-issue177-20261024。
+
+本地已完成训练模块、CE入口、TRAIN校准、精确键名warm start、严格断点恢复及agent交接。只训练FFN三矩阵权重；P8非线性三路AND直连固定Wd，W4/6/8、默认x64/非线性128。首级矩阵尺度恢复仍FP32参考，不宣称整链bittrue。
+
+验证：CPU12通过/1CUDA跳过；Slurm2906共34项通过；两层随机初始化Qwen3 CUDA五步仅FFN权重变化；三seed合成优化完成。原字节SHA在 qwen3/training/stochastic_nonlinear/validation/。执行a3f5a4ac不变。附加DDP2907超时、2908卡在NCCL初始化后已停止，2909使用本机socket进行隔离检查，最终状态待补。
+
+正在发布分支/PR及同步交接。尚无新4B训练/PPL。昨天训练结果未全出，checkpoint和原训练交接待提供；不重交昨天作业。成果入口AGENT_HANDOFF_ZH.md、VALIDATION_ZH.md、work/jieruiz/177/HANDOFF.md。Projects缺read:project待维护者，不自动合并/关闭Issue，无新增定时。下方为依赖任务历史状态。
+

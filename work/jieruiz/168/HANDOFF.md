@@ -1,0 +1,1 @@
+Issue168；jieruiz；task/168-qwen3-fixed-scale，base PR160@989546376f2295990b7712ea553615f0b8d88cb4。独立目录tmp/qwen3-fixed-scale-issue168-20261024。准备18项小型后缀PPL，尚未提交；已核对原2870日志PILOT_COMPLETE，未重交旧任务。源码qwen3/fixed_scale，只有新目录和本人交接/状态改动。模型复用个人issue158只读权重。工作区目标rayggxia-workspace/pbit-llm-qwen-baselines；身份jieruiz。

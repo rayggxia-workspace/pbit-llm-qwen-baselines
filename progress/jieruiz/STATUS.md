@@ -1,3 +1,7 @@
+# Issue168 固定尺度试测
+
+2026-10-24，jieruiz，task/168-qwen3-fixed-scale；PR base task/158-qwen3-4b-posttrained@98954637。源码准备，未运行/未发布，见work/jieruiz/168/HANDOFF.md。
+
 # Issue158：Qwen3-4B非Base替换（2026-10-23）
 
 22:45 CST实际提交：执行e174d91，44源SHA/提取源5合同通过，CPU2869 RUNNING镜像下载，GPU2870 afterok依赖等待；原生CPU2计分+tiny重载已过，随机CPU/GPU门槛未完成。PR160 draft/open未合并，源已推送；最新远端原字节核验见work/jieruiz/158/REMOTE_VERIFY.json。ROOT pbit-qwen3-stochastic-nonbase-20261023-issue158，包SHA7d840ad5f5b09bad8419c73d88b1e23499e02f7f62f90f81ece789c820120f65，不改快照、不重交。无新PPL，旧Base结果不覆盖；新BF16完整两次+13后缀在GPU依赖任务内，完整概率WT2未提交。分工Issue157评论已成功，Projects待权限；未新建定时检查。下一步查2869/2870与HANDOFF，收齐新模型小原件后独立复算，不用Base硬编码验证器。

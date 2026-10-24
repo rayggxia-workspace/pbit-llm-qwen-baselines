@@ -1,3 +1,9 @@
+## 2026-10-24 用户确认：功能模拟与TLM共用数制契约
+
+Python可用FP32/FP64作为模拟容器，不能把dtype直接当电路格式；必须模拟定点比较、尺度、舍入/溢出、随机相关性与响应。TLM引用同一契约SHA，对每一步有宏/电路映射及时间/资源/存储/能耗依据；暂无RTL允许定义功能宏、用有来源的条件PPA估计，未知不为零，未定义功能不得理想化。W8/N64/T16/32/64局部同尺度精确计数需18/19/20位；输出可另缩放量化A8（另符号）或signed8，质量未验证。完整跨档/tile位宽另计，不宣称8位累加足够。
+
+接续Issue159/PR170，分支task/159-hardware-forward-contract；正式NUMERIC_BOUNDARIES_ZH.md，18组整数上界/最小位宽校核见work/jieruiz/159/ACCUMULATOR_BOUNDS.json。无新PPL/训练/RTL/PPA，未改完整TLM代码。下一步先定功能宏、8/10/12接口对照再联合质量/代价验收；发布状态见同目录NUMERIC_PUBLICATION.json。Projects未同步，历史证据保留。
+
 ## Issue159硬件前向纠错已发布（2026-10-24）
 
 PR170待审未合并；科学提交d519baec0ff016bcf242526141f3bc74311513ba，15文件远端原字节回读一致，Issue159已同步。3项门禁测试通过，无新训练/PPL/RTL/PPA。HARDWARE_PUBLICATION.json记录回执；部署前向尚待实现，远端Agent是否采用须执行任务确认，Projects未同步。

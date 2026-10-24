@@ -1,3 +1,7 @@
+## Issue168已发布回执（2026-10-24）
+
+固定四档18项后训练Qwen3-4B后缀PPL已通过PR169发布，科学提交572afbbbc75551ecab1136e5f3391e15c8bfe748；23改动文件GitHub原字节回读一致。PR已转ready、待审未合并，Issue168已同步；没有运行中本任务作业、没有新定时。原件压缩归档与44成员SHA通过后已回收解压副本，RECOVERY.json可恢复。执行679f370f/Slurm2879不变；报告qwen3/results/fixed_scale_20261024/REPORT_ZH.md，回执work/jieruiz/168/PUBLICATION.json。Projects未同步，不能把后缀当完整WT2。
+
 ## Issue168 Qwen3-4B固定四档试测完成（2026-10-24）
 
 jieruiz/task/168-qwen3-fixed-scale，PR169；执行679f370fa09199b67052ae6f71c0811873f4ec7e，Slurm2879已结束、18项封存/原字节SHA/36层覆盖通过。Qwen/Qwen3-4B后训练revision1cfa9a7208912126459214e8b04321603b3df60c；准确Attention，W8/A8共享64、T=K分层；无训练。TRAIN16×512，W8连续+动态32两路径分别覆盖后冻结每层每64通道x/z四档S/S4/S16/S64；测试不在线absmax。

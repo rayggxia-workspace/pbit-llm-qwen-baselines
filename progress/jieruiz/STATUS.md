@@ -1,3 +1,7 @@
+# 2026-10-24 Issue107远端核查
+
+jieruiz/task/107-digital-ppa8-ss-tt，复用原checkout。KIND21 v2 SS/TT已完成，18窗口覆盖100%，仍有外推告警；38371792剩余14项已补交，index0功耗窗口7位X/Z失败，其他运行/排队中。旧源码/波形未覆盖，未重复KIND21。中央digital-ppa8-20261024-audit及work/jieruiz/107/HANDOFF.md记录后续诊断；原件project_archives/remote_job_audit_20261024，上传/PR以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。
+
 # Issue107：v2逐位活动标注和PT重检包（2026-10-23）
 
 收尾回执：已合入6966739，台账48条，远端原45条逐字节保留。身份jieruiz及Issue107 open已核实，但Git push无进展已中断，Issue评论POST遇EOF结果未确认，尚无后续PR；详见V2_PUBLICATION.json。本地包可独立上传，不宣称远端发布成功。

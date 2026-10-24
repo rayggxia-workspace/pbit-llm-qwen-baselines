@@ -1,3 +1,7 @@
+# 2026-10-24 远端核查与补交
+
+沿用Issue107与task/107-digital-ppa8-ss-tt；身份jieruiz。38353729/38353735两次SS/TT预检报告已补下载，后者18窗口覆盖100%、PWR-981消失，但库表外推/check_power告警仍为暂定。两批是重复PT，不算两次独立电路实验。已提交38371792剩余14项；index0在功耗窗口7个算术层级CO/SUM发现X/Z而失败，其他项继续，不取消健康作业。未重交KIND21。下一步取齐14项报告，按连接性证明判断7个X/Z位，不能按名称豁免。新记录digital-ppa8-20261024-audit及REMOTE_AUDIT_20261024.json；本机原件project_archives/remote_job_audit_20261024/reports，报告REPORT_ZH.txt，提交回执digital_remaining_submission.json。远端BASE/digital_ppa8_ss_tt_100_20261023_v2/results。源码无变更，仅登记/任务状态更新；发布状态见PUBLICATION_20261024.json，未自动合并，Projects权限待同步。
+
 # Issue107 v2重检包（2026-10-23）
 
 发布收尾：Git读取/API身份成功，但push无输出中断，评论POST为EOF未知结果；V2_PUBLICATION.json记录。恢复先查远端分支及Issue最新评论，避免重复留言。无本任务本机/服务器运行中作业。

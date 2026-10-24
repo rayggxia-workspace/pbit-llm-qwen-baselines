@@ -1,3 +1,9 @@
+## 2026-10-24 Issue159：硬件前向纠错
+
+用户明确要求从电路出发。确认旧训练清单及近期固定尺度PPL仍使用FP32 g/u、SiLU与乘积；x/z A8不等于非线性量化。任意实数W scale、恢复/跨tile累加亦待统一。已有FP32数字RTL/PPA只证明其自身路径，不能代替随机非线性证据。FP32已降为诊断oracle，部署前向必须先冻结有限位宽/缩放/舍入/随机响应与流相关性契约。训练主权重/优化器/反向可保留浮点。W4/6/8和57项计划保留但不可启动部署验收；3项门禁测试通过，无新训练/PPL/RTL/PPA，无作业取消。
+
+负责人jieruiz，Issue159，分支task/159-hardware-forward-contract，base d6d33995，复用tmp/qwen3-qat-plan-issue159-20261023；旧PR161已合并，新纠错PR见work/jieruiz/159/HARDWARE_PUBLICATION.json。正式审计qwen3/training/sc_qat_20261023/HARDWARE_FORWARD_AUDIT_ZH.md；交接REMOTE_AGENT_START_HERE_ZH.md，必填HARDWARE_CONTRACT.example.json。发布不代表远端Agent已修改训练，需执行任务回传计划/实现SHA；Projects未同步。不修改历史封存证据，不覆盖其他成员。
+
 ## Issue159 v2已发布（2026-10-23）
 
 远程执行交接与INT4/6/8三套扫描已通过同PR161发布，科学提交12137b19ae6a3e7d862e5785676c200ab6d910fd；19改动文件GitHub原字节回读通过，Issue159范围/进度已同步。PR待审未合并；57项仍是计划，无本任务训练器或GPU结果。完整回执work/jieruiz/159/remote_agent_v2/PUBLICATION.json。入口REMOTE_AGENT_START_HERE_ZH.md可直接交给远程Agent；实现认领与PR160模型/基线复用按该交接执行。其他任务记录保留。

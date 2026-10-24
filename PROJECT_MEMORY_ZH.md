@@ -1,3 +1,9 @@
+## 2026-10-24 Issue159：硬件前向纠错
+
+用户明确要求从电路出发。确认旧训练清单及近期固定尺度PPL仍使用FP32 g/u、SiLU与乘积；x/z A8不等于非线性量化。任意实数W scale、恢复/跨tile累加亦待统一。已有FP32数字RTL/PPA只证明其自身路径，不能代替随机非线性证据。FP32已降为诊断oracle，部署前向必须先冻结有限位宽/缩放/舍入/随机响应与流相关性契约。训练主权重/优化器/反向可保留浮点。W4/6/8和57项计划保留但不可启动部署验收；3项门禁测试通过，无新训练/PPL/RTL/PPA，无作业取消。
+
+负责人jieruiz，Issue159，分支task/159-hardware-forward-contract，base d6d33995，复用tmp/qwen3-qat-plan-issue159-20261023；旧PR161已合并，新纠错PR见work/jieruiz/159/HARDWARE_PUBLICATION.json。正式审计qwen3/training/sc_qat_20261023/HARDWARE_FORWARD_AUDIT_ZH.md；交接REMOTE_AGENT_START_HERE_ZH.md，必填HARDWARE_CONTRACT.example.json。发布不代表远端Agent已修改训练，需执行任务回传计划/实现SHA；Projects未同步。不修改历史封存证据，不覆盖其他成员。
+
 ## 2026-10-24 第十轮PR审核（发布前冻结）
 
 负责人jieruiz；Issue55；review/55-pr-round10，目录tmp/pr55-review-round10-20261024，base e1b23d77，目标TLM集成分支。161/164/165/166按设计或带限制工艺阶段交付通过；60单测、50原件/2087归档成员、34功耗窗口核验通过，台账56条。161没有训练器/训练结果；digital仍有库表外推，counter活动不全且仅M1，CIM随机源四项翻转率不符失败。163有部分非Base结果但HellaSwag/最终汇总/功耗待补，160仍草稿；六个旧Base PR继续迁移门禁。本地审核已完成、准备推送合并，实际状态以Issue55最终回执为准。main保持fae1298；没有新GPU/EDA作业。报告work/jieruiz/55/round10/REVIEW_ZH.md，归档project_archives/pr_review_issue55_round10_20261024；后续核验发布并回收本轮稀疏副本，其他成员/原始归档不动。Projects未确认写权限，待维护者同步。

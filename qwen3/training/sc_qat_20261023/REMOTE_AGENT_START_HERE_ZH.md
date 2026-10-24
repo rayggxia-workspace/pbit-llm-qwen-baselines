@@ -1,5 +1,8 @@
 # 给远程 Agent：Qwen3-4B 随机FFN训练执行交接
 
+> **2026-10-24 硬件边界更正，优先于旧版清单。** 旧版把FP32 g/u、SiLU及乘积列为训练前向，这不符合目标电路。它现在只作高精度诊断参考。部署训练必须先落实有限位宽恢复、g/u量化、随机非线性/乘积和尺度对齐；尚未实现，不能启动原57项部署验收扫描。GPU主权重、优化器和反向可保留浮点，前向必须显式执行硬件数值约束。详见 [HARDWARE_FORWARD_AUDIT_ZH.md](HARDWARE_FORWARD_AUDIT_ZH.md)。
+
+
 **这是交给执行方的任务说明。目标是实现训练器、建立新基线、完成先导训练，再按扫描清单运行；不是再写一份研究综述。** 收到本文件后，先核对仓库和环境，按下方阶段推进。已有信息不必反复向用户询问；缺少数据权限或集群访问时，明确记录缺项，继续不受影响的实现和测试。
 
 ## 0. 已确定的任务，不要重新选模型或算法
@@ -39,13 +42,13 @@
 git clone --filter=blob:none --no-checkout \
   https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines.git pbit-qwen3-training
 cd pbit-qwen3-training
-git fetch origin refs/pull/161/head:refs/remotes/origin/plan-161
+git fetch origin refs/heads/task/159-hardware-forward-contract:refs/remotes/origin/hardware-plan-159
 git fetch origin refs/pull/147/head:refs/remotes/origin/reference-147
 git fetch origin refs/pull/153/head:refs/remotes/origin/reference-153
 git fetch origin refs/pull/160/head:refs/remotes/origin/reference-160
 git sparse-checkout init --cone
 git sparse-checkout set qwen3/training/sc_qat_20261023 progress work
-git switch --detach origin/plan-161
+git switch --detach origin/hardware-plan-159
 git rev-parse HEAD
 # 阅读协作规则，认领/建立关联Issue，再用实际Issue编号创建自己的task分支。
 python qwen3/training/sc_qat_20261023/scan.py
@@ -92,15 +95,16 @@ PR147的 `scorer.py` 含 `ModelGuard`、eval、inference_mode；这是冻结推�
 |---|---|
 | `encoding.py` | 输入x或z与ScaleSpec，输出sign、bin_id、selected_scale、q、full_one及梯度代理；支持D/F/L/H、B、d |
 | `sampling.py` | 输入A8概率、T、K、RandomKey，输出联合counts；显式比特流oracle、精确压缩实现、重放测试 |
-| `trainable_ffn.py` | 从原MLP接收三组Parameter；Wb假量化（b=4/6/8）＋x共享采样→g/u→FP32 SiLU乘积→z独立采样→Wd；输出原接口dtype |
+| `trainable_ffn.py` | 从原MLP接收三组Parameter；Wb假量化（b=4/6/8）＋x共享采样→有限位宽g/u→已冻结契约的随机非线性/乘积→z独立采样→Wd；输出原接口dtype |
 | `calibrate.py`、`train.py` | TRAIN-only尺度表、全模型CE＋KD训练、分布式/重算、可恢复checkpoint、统计日志 |
 | `export_eval.py`与测试 | 导出真正Wb+固定表+配置，重载推理前向与评测；覆盖全36层prefill/decode |
 
-### 3.1 不可改变的前向契约
+### 3.1 更正后的部署前向要求（硬件契约尚待实现）
 
 ```text
 x → 64通道组分档 → A8随机计数，gate/up共用同一份计数
-  → Wg_b/Wu_b → FP32 g/u → z = SiLU(g) * u
+  → Wg_b/Wu_b → 有限位宽计数/尺度对齐 → 量化g/u
+  → 按硬件响应及独立性约束采样，实现g·sigmoid(g)·u → 有限位宽z
   → 独立的z分档与随机计数 → Wd_b → BF16输出 → 原残差
 ```
 
@@ -110,9 +114,10 @@ x → 64通道组分档 → A8随机计数，gate/up共用同一份计数
 - B档为 `S/2^(d*i), i=0…B−1`；逐元素选最小可容纳档；超过S时截断；低于最低档仍用最低档。**不重排通道**。
 - K=T：0…255分K区，每区随机抽一次；K=1：自然IID。K须整除256和T。分层不是自然IID；T256/K256是确定完整覆盖，不作为随机优势的证明。
 - T_x和T_z是两个阶段预算；不能把整个FFN称为只花T拍。
-- 第一版FFN数值参考保持FP32计算、BF16边界。不要因autocast自动变为BF16 GEMM而声称严格复现旧参考；提速后端需单列验证。
+- FP32/BF16旧路径仅作oracle，不作为部署学生前向。先填写HARDWARE_CONTRACT.example.json，验证有限位宽标量参考、逐拍参考与压缩后端一致，再做短训。不能只把张量cast到BF16就宣称非线性已量化。
+- T_nonlinear、概率响应精度、流相关性和z重编码必须单列；原T_x/T_z预算不包含新增非线性采样。
 
-**不需要保存T份巨大矩阵。** 固定W、精确累加下，可先保留每条输入的counts，再做一次GEMM；先正确恢复每个输入的符号/尺度。它与相同随机序列的逐拍线性累加在实数算术下等价，浮点归约顺序的差异需设定并记录容差。这不是将噪声改成独立高斯。
+**不需要保存T份巨大矩阵。** 固定W、精确累加下，可先保留每条输入的counts，再做一次GEMM；先正确恢复每个输入的符号/尺度。它仅在实数线性运算下等价。部署后端必须与相同随机序列的有限位宽逐拍参考核对，包括每个饱和、截断、移位和舍入边界；不能仅用FP32容差证明硬件等价。这不是将噪声改成独立高斯。
 
 ### 3.2 可训练参数与梯度
 

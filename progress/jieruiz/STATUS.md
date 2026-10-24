@@ -1,3 +1,7 @@
+## Issue171 Qwen3非线性位宽初筛（2026-10-24）
+
+负责人jieruiz；task/171-nonlinear-width；目录tmp/qwen3-nonlinear-width-issue171-20261024；base PR169@1d16d8cc，拟PR base task/168-qwen3-fixed-scale，依赖其推理源码。Slurm2880已运行，执行71cb58d0冻结；服务器6项预检通过，28项后缀PPL（16×128目标），36层全部替换。非线性使用有限码/LUT的条件均值，不是有限三流AND采样；矩阵恢复仍为FP32参考。W8单因素扫描及固定四档T64三seed组合；无训练/RTL/PPA。模型/数据复用已验证manifest。成果root与包SHA见SUBMISSION.json。完成后核验complete.json的documents SHA、28唯一配置和层覆盖，勿重复提交。Projects未同步；发布回执待补。
+
 ## Issue168已发布回执（2026-10-24）
 
 固定四档18项后训练Qwen3-4B后缀PPL已通过PR169发布，科学提交572afbbbc75551ecab1136e5f3391e15c8bfe748；23改动文件GitHub原字节回读一致。PR已转ready、待审未合并，Issue168已同步；没有运行中本任务作业、没有新定时。原件压缩归档与44成员SHA通过后已回收解压副本，RECOVERY.json可恢复。执行679f370f/Slurm2879不变；报告qwen3/results/fixed_scale_20261024/REPORT_ZH.md，回执work/jieruiz/168/PUBLICATION.json。Projects未同步，不能把后缀当完整WT2。

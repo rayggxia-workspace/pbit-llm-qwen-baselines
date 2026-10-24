@@ -60,6 +60,10 @@ Issue133/task/133-counter-rtl/PR135，base7f38018；同工作目录继续。
 
 已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。 40组RTL/13408输出、6流程测试、8台账测试通过；完整64输出本地展开超时待VCS；无工艺PPA。分支task/133-counter-rtl，base6966739；工作目录tmp/counter-rtl-issue133-20261023；代码architecture_tlm/counter_rtl_compare，交接work/jieruiz/133/HANDOFF.md。下一步用户跑A/B SS/TT100MHz四项，回传后比较。Projects待read:project权限，未自动合并。
 <!-- END_ISSUE133_STATUS -->
+## 2026-10-24 Issue146：远端预检恢复
+
+jieruiz/task/146-cim-frontend，原PR148已合并；本轮后续PR待发布回执。已实际提交38372031/38372265/38372313并取回报告；四个组合预检通过，四个含随机源预检在threshold[0]活动率核验失败，全尺寸未重跑。源码修复11本地测试通过，未改功能RTL。中央记录cim-20261024-recovery，原件project_archives/remote_job_audit_20261024，完整下一步见work/jieruiz/146/HANDOFF.md。保留所有失败，不宣称整体PPA通过；Projects待同步。
+
 ## 2026-10-23 Issue146：PPA批处理v2本地交付
 
 发布回执：源码7b097d194f81042dfd771bf01b38599bacf01aae已推送workspace并核实PR148 head一致，Issue146/PR148评论已同步；账号jieruiz，PR保持open/unmerged，服务器EDA未运行。V2_PUBLICATION.json为实际回执，不代表Projects看板已更新。

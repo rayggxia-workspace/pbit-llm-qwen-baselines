@@ -1,3 +1,13 @@
+# Issue177：随机非线性训练代码（2026-10-24）
+
+负责人jieruiz，task/177-trainable-and-ffn，PR base task/173-and-direct-wd（b41ee00835b1ae385b2a7c3654df67df26eff3e3）。正式目标rayggxia-workspace/pbit-llm-qwen-baselines；身份已核实。独立sparse目录 C:/Users/86134/Documents/a_P_BIT/tmp/trainable-and-issue177-20261024。
+
+本地已完成训练模块、CE入口、TRAIN校准、精确键名warm start、严格断点恢复及agent交接。只训练FFN三矩阵权重；P8非线性三路AND直连固定Wd，W4/6/8、默认x64/非线性128。首级矩阵尺度恢复仍FP32参考，不宣称整链bittrue。
+
+验证：CPU12通过/1CUDA跳过；Slurm2906共34项通过；两层随机初始化Qwen3 CUDA五步仅FFN权重变化；三seed合成优化完成。原字节SHA在 qwen3/training/stochastic_nonlinear/validation/。执行a3f5a4ac不变。附加DDP2907超时；2908仅禁P2P在长初始化后已封存完成，2909本机socket隔离也通过，跨rank权重一致、冻结参数不变。全部作业结束。
+
+已推送PR178，待审未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/178 。最终发布与核验以work/jieruiz/177/PUBLICATION.json为准。尚无新4B训练/PPL；昨天checkpoint和原训练交接待提供，不重交昨天作业。成果入口AGENT_HANDOFF_ZH.md、VALIDATION_ZH.md、work/jieruiz/177/HANDOFF.md。Projects缺read:project待维护者，不自动合并/关闭Issue，无新增定时。下方为依赖任务历史状态。
+
 ## Issue173短流三路AND结果核验完成（2026-10-24）
 
 Slurm2891三片封存完成，48份/46唯一配置、documents/sidecar原字节SHA、36层全前缀、每片27项预检通过。执行c44c2edc不变；同轮BF16及原尺度mean/IID64三seed与旧结果逐值一致。Qwen3-4B后训练、准确Attention、8×128后缀，非完整WT2。前级W8/x固定四档共享64 T=K64；后级4×2×4联合32区间，各1/2/4次。整体减半固定四档[S/2,S/8,S/32,S/128]的mean/IID64/联合32/64/128 PPL为13.4034/27.4020/103.8940/21.8821/15.3647；BF16=13.5660，最佳128仍高13.26%，不能称无损。gate/up恢复仍FP32参考；无训练/PPA。

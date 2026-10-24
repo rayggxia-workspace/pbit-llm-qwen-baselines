@@ -1,3 +1,36 @@
+## Issue177：可训练随机非线性FFN已交付PR178（2026-10-24）
+
+用户要求给远程agent实际训练代码，接续昨天FFN权重，把精确非线性换为随机三流AND。用户确认昨天结果未全出，checkpoint/训练交接未提供；没有重复启动或取消昨天训练。新实现 qwen3/training/stochastic_nonlinear/，默认W8、x固定四档共享64 T=K64、g/u固定四档[S/2,S/8,S/32,S/128] P8＋符号、signed8真实g尺度驱动与P8 LUT、32联合分层AND T128（另有T64）、事件直接固定Wd整数累计/BF16RNE；支持W4/6，需分别校准。只训练gate/up/down共108张量，其余冻结；不采用失败FSM。Wg/Wu恢复仍FP32参考，不宣称整链bittrue。
+
+硬前向保持真实有限随机分布，反向明确有偏STE：Wd梯度用采样z，上游用量化条件均值代理；不会在前向用FP32 SiLU回退或z重新编码。包含TRAIN固定尺度校准、旧权重精确键名导出/接续、严格SHA断点恢复、CE最小入口、随机键与checkpoint重算、远程agent完整说明。昨日checkpoint可作warm start，但要重校准且重新做同轮对照，不继承原PPL。代码不是4B训练已完成，也未证明新PPL。
+
+验证：CPU13项（12过1CUDA跳过），Slurm2906的34项全部通过；tiny两层HF Qwen3 CUDA五步、三seed合成训练完成。DDP2907默认NCCL超时；2908禁P2P在长初始化后已封存完成（中途停止请求不覆盖最终完成证据），2909以本机socket隔离配置也三步通过，权重跨rank一致、冻结参数不变，失败日志保留。不将诊断配置/小模型时间当H200性能。所有作业结束，无新增定时。封存validation/results-2906及ddp-results-2909的documents SHA核验；远端本人projects/pbit-trainable-and-20261024-issue177；a3f5a4ac为单卡执行、4ab8350e为DDP成功执行。无RTL/PPA/full WT2。
+
+本人jieruiz，task/177-trainable-and-ffn，独立sparse tmp/trainable-and-issue177-20261024；Issue177/PR178待审未合并，PR base为依赖PR174的task/173-and-direct-wd。入口AGENT_HANDOFF_ZH.md、VALIDATION_ZH.md、work/jieruiz/177/HANDOFF.md及PUBLICATION.json。Projects缺read:project待维护者同步。下一步由原agent待昨日结果齐全后核对checkpoint/数据SHA，先2步再200步pilot，T128→T64，然后W6/W4，最后同轮BF16与三seed完整PPL。不要把已推送代码写成已完成4B训练。
+
+
+## Issue175模型结果发布回执（2026-10-24）
+
+结果与实现已推送PR176，提交bce0ee906ebb8c22ea3f97742df458fd3271a821，待审未合并；全部变更文件远端Git blob/长度核验，六核心文件原字节回读通过。MODEL_PUBLICATION.json含Issue175评论和准确校验索引。首次逐文件回读网络断开，发布本身成功，后续补齐核验，未重复实验。Issue、STATUS、交接和长期备忘录已同步，Projects缺read:project待维护者。三路短流结果同时已发布PR174，head b41ee008；无本任务运行中作业或新增定时。
+
+## Issue175固定g范围FSM：完整模型试测失败结果（2026-10-24）
+
+Slurm2898/2902八片完成；128份/118唯一配置，13项预检每片通过、documents/sidecar SHA、36层全前缀、1024目标位置和8份BF16一致核验。Qwen3-4B后训练，准确Attention、前级固定W8/x四档共享64 T=K64。后级FSM是逐拍IID随机过程，不是Binomial或均值替代。g固定G=1/2/4/8/16、4或8状态、T64/128，真实尺度进入SiLU拟合目标；无g在线max/选档，u仍TRAIN固定四档。原2894在编译预检失败、模型未启动，旧快照保留，新执行462d4fe1/3ac8bfdb。
+
+BF16=13.566049。实际FSM最佳G8/N4/负输出单位.5/T128 PPL1757.8026；对应FSM期望623.0500，T64期望22906.145。G8/N8/负单位8的精确SiLU表期望13.2860，FSM128期望615.4719、实际1785.7054；G16/N8/.5的精确表期望13.3085。说明固定g数制并非必然失败，但当前小状态链函数拟合严重不足，不只是采样噪声。G1/2/4截断叠加劣化；不能用SMURF正半轴0..1 MAE代替LLM证据。所有结果是8×128后缀，不是完整WT2；无训练/RTL/PPA，gate/up恢复仍FP32参考。T各自有限时长拟合，改变T同时改变系数，不把差异全归采样方差。
+
+报告qwen3/results/smurf_swish_20261024/model/REPORT_ZH.md，SUMMARY/RAW_INDEX含三seed、逐层分布、模型/数据/校准/源码SHA。原件project_archives/smurf_model_20261024/sealed-2898-2902.tar.gz，远端与本地SHAf53c05e9e65d50e0a329bddd0c75380f728c48c2ae8c93a9c8e61b0046e60ba8。无本任务运行中作业或新定时，不重交。建议保留三路AND为当前主线：Issue173最佳联合128=15.3647，仍非无损；FSM另需改变表示/拟合或训练。
+
+本人jieruiz，task/175-smurf-swish，目录tmp/smurf-swish-20261024，Issue175/PR176待审未合并；新结果发布以MODEL_PUBLICATION.json为准。Projects缺read:project待同步。恢复先读最新Issue/PR及本交接，原件可按RAW_INDEX恢复，不修改执行快照，不把条件均值当可部署路径。
+
+## Issue175：固定g数制FSM进入模型试测（2026-10-24）
+
+用户明确要求实际测试FSM以减少g分档。新模块qwen3/smurf_swish/model_*，固定G=8/16、幅度P8＋符号，无在线max或g逐值选档。真实G写进SiLU目标；有限T状态占用拟合，theta0=0、复位0，无预热；逐拍R8输入更新→状态系数比较→独立u比较AND→固定W8 Wd，仅最终整数统计恢复。负输出单位Sf=.5或G另测，不保证可拟合。u沿用TRAIN固定四档，前级x固定四档共享64 T=K64；准确Attention。四组(G,N,Sf)=(8,4,.5)/(8,8,.5)/(16,8,.5)/(8,8,8)，各含BF16及LUT均值/FSM64和128均值/实际64和128，概率三seed，64份后缀计划。IID FSM基线，未混称分层；模型前级恢复仍FP32参考，非整链bittrue/PPA。
+
+Slurm2894四片均在CUDA编译预检失败，模型未启动；uint32随机键类型已修复，新冻结462d4fe168fbb7168a5cd742ec1270f02f6ce466、Slurm2898_[0-3]已提交。源包SHAf50ebe7c4b00a7c599bd86fedb677f9c3eddcf5c7bdc28b369a67759ef12180c，原失败快照保留。当前无封存新模型结果；本机7项通过、3项CUDA待服务器。个人目录pbit-qwen3-smurf-model-20261024-issue175，MODEL_SUBMISSION.json含准确快照/作业/日志，健康任务不重交。无新定时。
+
+负责人jieruiz，task/175-smurf-swish，tmp/smurf-swish-20261024，沿用Issue175/PR176待审未合并；新发布以MODEL_PUBLICATION.json为准，Projects缺read:project待同步。完成时核对complete/documents/sidecar SHA、36层全前缀、同轮BF16和1024目标位置一致，再汇总；不是完整WT2，不用函数MAE冒充PPL。
+
 ## Issue173短流三路AND结果核验完成（2026-10-24）
 
 Slurm2891三片封存完成，48份/46唯一配置、documents/sidecar原字节SHA、36层全前缀、每片27项预检通过。执行c44c2edc不变；同轮BF16及原尺度mean/IID64三seed与旧结果逐值一致。Qwen3-4B后训练、准确Attention、8×128后缀，非完整WT2。前级W8/x固定四档共享64 T=K64；后级4×2×4联合32区间，各1/2/4次。整体减半固定四档[S/2,S/8,S/32,S/128]的mean/IID64/联合32/64/128 PPL为13.4034/27.4020/103.8940/21.8821/15.3647；BF16=13.5660，最佳128仍高13.26%，不能称无损。gate/up恢复仍FP32参考；无训练/PPA。
@@ -710,6 +743,12 @@ FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700�
 旧3/39、11/39与动态预计完成时间保留为历史，恢复先看本节、Issue59/PR62及交接，不再重复提交已完成39项。仓库上传身份jieruiz已核实admin/push；Projects是否成功同步以最新发布回执为准。当前正式报告PR仍未合并。
 
 ## 6 随机源、p-bit与相关性
+
+2026-10-24后续进度查询再次出现认证后open_session超时；有界复查10.406s，命令未发出。38380128最后实际RUNNING观测仍为11:52:46Z，本次没有新进度或重交。SSH问题尚未根治，不能因前轮五次成功宣称永久恢复。用户询问多核/时长：8核用于8独立案例；Spectre对17MOS的2/4/8线程均因规模小退为1线程；pilot6h是计算上限，先前估算3.5897h非实测总耗时。
+
+2026-10-24 SSH复查：原Paramiko4.0.0未改配置即恢复，认证0.312s、命令通道0.484s，hostname/id正常；后续队列查询、提交、回执与SFTP均成功。此前超时发生在认证后open_session，不能归为密码错误或已证实的固定客户端兼容问题；疑似当时网关/后端间歇阻塞，缺服务端日志尚无确定根因。保持严格known_hosts，无凭据重设。确认无既有pilot后按授权提交38380128：8核16GB，APS1×最多8独立案例，6h计算+15min收尾，19:51:35开始，观测2026-10-24T11:52:46.953657Z为RUNNING/m3ca0203；五项DC/工作点/阶跃与无噪声例已完成待审，三噪声探针实际在算。21例整体未完成，不宣称精度门禁通过，未自动提交calibrate/1s。32远端脚本检查与27PDK哈希通过。源码f1f93c608b39886ece3484421e9873bbc80d7b30/manifest4d5e031fdc4907fedb25825cdf12f9f651cf3e9b2ad9ba34acd62d8b2246499c，snapshot submissions/longchannel-nptLk3CH/source不可改；results/38380128_pilot，自动包long_channel_38380128_pilot.tar.gz。回执work/jieruiz/152/run_38380128及统一台账physical-rng-pilot-38380128，四小文件原字节SFTP校验。本轮通过rayggxia连接器只读核实Issue152仍open/jieruiz负责、PR156的v1已合并de7eae90；v2仍仅本地Git/EDA，没有以另一账户推送或改负责人，原任务GitHub写入身份待恢复，后续发布需新的延续PR，不写入已合并PR。
+
+2026-10-24测速38371942已COMPLETED/0:0，总35m04s；原包2,365,132B SHA1abba5d2b88e06b091a615c5f92fa3c0272c128a3698938ad5d5f933fd8c275c及78成员全核，project_archives/analog_long_channel_20261024/results。classic/APS1/2/4/8耗时485.96/406.92/399.80/399.38/398.93s，全部0错误0告警；APS因电路太小关闭多线程，实际均1线程。APS1省16.27%时间，建议8独立APS1案例，而非把单例强开8线程。同seed密集阈值10000点逐bit零差，核心最大差3.96uV、比较器1.11mV，不代表三seed收敛。2ms有效密集P1=51.72%、MID=5.84%，100us实际仅20bit(P1=55%)，不能称1万独立位或P50验收。1.02s线性外推38.43h/条，乘2预算76.86h；即使6条理想并行也不是再除8，24h门禁会阻止长任务。尚无新pilot/calibrate/1s作业。报告architecture_tlm/physical_rng_long_channel/results/38371942/REPORT_ZH.md及REVIEW.json，中央同run更新完成测速/部分流程，旧运行观察保留。GitHub禁交互凭据当前不可用，结果本地提交/远端已完成，不虚报PR同步。
 
 2026-10-24已按用户授权用现有Paracloud工具登录/上传并提交测速Job38371942，8核16GB、v6_384、墙钟1:15、计算预算1h；观测2026-10-24T04:49:27.892387Z为RUNNING，m3ca1103，首例classic已真实进入Spectre噪声瞬态，尚无完成记录/加速比。初次远端32测试过但Calibre默认python3 -c破坏引号，未提交；固定本任务STUDY_PYTHON=/usr/bin/python3(3.6.8)，不改全局环境，复测32通过。实际源码f1f93c608b39886ece3484421e9873bbc80d7b30，manifest4d5e031fdc4907fedb25825cdf12f9f651cf3e9b2ad9ba34acd62d8b2246499c；snapshot submissions/longchannel-ilF7Xifb/source不可改，results/38371942_speed，结束自动long_channel_38371942_speed.tar.gz。五模式3ms仅测速，未自动交pilot/calibrate/1s。记录work/jieruiz/152/run_38371942及台账physical-rng-speed-38371942(PARTIAL_FLOW/running)，旧prepared源码归档至project_archives/analog_long_channel_20261024/source；其他dig8作业不碰。GitHub核查仍网络/凭据超时，无本轮推送/PR更新，不把服务器已提交写成GitHub已发布。
 

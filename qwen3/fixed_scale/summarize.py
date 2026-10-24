@@ -82,7 +82,7 @@ def main():
         provenance_sha256=digest(raw / 'provenance.json'), calibration_sha256=digest(raw / 'calibration.json'),
         target_positions_sha256=plan_hash, groups=groups, records=records)
     out.mkdir(parents=True, exist_ok=True)
-    (out / 'SUMMARY.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    (out / 'SUMMARY.json').write_bytes((json.dumps(result, ensure_ascii=False, indent=2) + '\n').encode('utf-8'))
     lines = ['# Qwen3-4B 后训练版：固定四档尺度小规模PPL', '',
         '18项全部封存并通过SHA、模型版本、4096目标与36层输入覆盖核验。Slurm2879；无训练，Attention保持原准确SDPA。', '',
         '**这是32段×128目标的向量化后缀PPL，不是完整WT2。** batch1；每段2048前缀上下文，所有2175输入都经过所选FFN。不得与旧cached/batch2数值直接相减。', '',
@@ -107,7 +107,7 @@ def main():
         lines.append(f"| {names[label]} | {fractions['x']:.6%} | {fractions['z']:.6%} |")
     lines += ['', '完整各层编码误差/截断能量/档位统计保留在原始结果；SUMMARY.json含汇总、逐seed及代码/配置/数据/目标SHA。原件归档位置见RAW_INDEX.json；固定表CALIBRATION.json保持原字节。',
               '', '执行源码：`' + provenance['source']['commit'] + '`。Issue168 / PR169；后处理与发布提交可能晚于执行，冻结快照未修改。']
-    (out / 'REPORT_ZH.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    (out / 'REPORT_ZH.md').write_bytes(('\n'.join(lines) + '\n').encode('utf-8'))
     print(json.dumps(groups, ensure_ascii=False, indent=2))
 
 

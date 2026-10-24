@@ -1,3 +1,9 @@
+## Issue173：有限三流AND直连Wd（2026-10-24）
+
+负责人jieruiz；branch task/173-and-direct-wd；base PR172@38de0796，依赖task/171-nonlinear-width。独立目录tmp/qwen3-and-direct-issue173-20261024。用户授权模拟非线性随机流直接进入固定W8，在输出端累加；无z重编码。A8+符号/signed8 sigmoid驱动/P8+true-one；独立三流，事件跨Wd输出共享，定点恢复系数16位，输出signed52与整数RNE BF16。gate/up恢复仍FP32参考，不是全链bittrue。
+
+本地9项功能通过，CUDA1项待Slurm；fixed_scale runner因本机缺transformers未运行，服务器必须通过后才启动PPL。计划8段×128目标后缀、全36层，BF16及旧路径/条件均值控制，T64/256/1024/4096各3seed。源码与SHA冻结后Slurm提交，当前未提交。无训练/RTL/PPA，无看板同步权限核验；发布回执待补，不能写成远端完成。
+
 ## Issue171发布回执（2026-10-24）
 
 PR172已转ready、待审未合并，科学提交7a8b5e6e；23文件远端原字节回读一致，Issue171已同步。28项结果核验完成，Slurm2880已结束；无定时、无待运行任务。原始结果和源码包归档未解压复制，RECOVERY.json记录位置/SHA。Projects未同步。

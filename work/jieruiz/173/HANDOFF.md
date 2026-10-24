@@ -1,3 +1,9 @@
+## Issue173短流三路AND结果核验完成（2026-10-24）
+
+Slurm2891三片封存完成，48份/46唯一配置、documents/sidecar原字节SHA、36层全前缀、每片27项预检通过。执行c44c2edc不变；同轮BF16及原尺度mean/IID64三seed与旧结果逐值一致。Qwen3-4B后训练、准确Attention、8×128后缀，非完整WT2。前级W8/x固定四档共享64 T=K64；后级4×2×4联合32区间，各1/2/4次。整体减半固定四档[S/2,S/8,S/32,S/128]的mean/IID64/联合32/64/128 PPL为13.4034/27.4020/103.8940/21.8821/15.3647；BF16=13.5660，最佳128仍高13.26%，不能称无损。gate/up恢复仍FP32参考；无训练/PPA。
+
+报告qwen3/results/and_direct_20261024/short/REPORT_ZH.md及SUMMARY/RAW_INDEX。原件project_archives/qwen3_and_direct_20261024/short-sealed-2891.tar.gz，服务器与本机SHA均e498dc55cfe0dea649f52c3c4635272f32af33d67114b1270328f69ca9587467。不重交、无新增定时。本人jieruiz，task/173-and-direct-wd，沿用Issue173/PR174待审未合并；发布以SHORT_PUBLICATION.json为准，Projects缺read:project待同步。FSM另属Issue175/PR176，不混用结果。
+
 ## Issue173：短流分层Slurm2891已启动（2026-10-24）
 
 固定执行c44c2edc23a9a66c9e48c7f9cf99300fa34cefb0，Slurm2891_[0-2]均RUNNING、每片27项CPU/CUDA/模型预检通过，三次BF16同为13.566049199388152；概率结果尚未收齐，不能称完整PPL交付。45配置＋3BF16，四档位置三方案、32联合区间(4x2x4)、每区间1/2/4次，总T32/64/128；前级四档共享64 T=K64不变。无FSM实现/训练/PPA。源包SHA46e52b88ed8b0ee7bdecd4f23ce4896a19ecaa1179664974fe194c40c7bca42b，已归档project_archives/qwen3_and_direct_20261024/source-c44c2edc23a9.tar.gz，无额外解压副本。

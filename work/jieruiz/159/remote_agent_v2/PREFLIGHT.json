@@ -1,0 +1,46 @@
+{
+  "login": "jieruiz",
+  "integration": "e1b23d7766303a502934d8b6eb45b9209bbb58b9",
+  "prs": {
+    "pr161": {
+      "head": "fbc35f45be65fcb96fd495572f2d5b79fa8b161c",
+      "base": "pbit-tlm-attention-details-20261016",
+      "state": "open",
+      "merged": false
+    },
+    "pr147": {
+      "head": "357db5884726a66d988d75f92447ff8ecf8698e6",
+      "base": "task/136-qwen3-bf16",
+      "state": "open",
+      "merged": false
+    },
+    "pr153": {
+      "head": "c28549b7d19ad3fc1f0b8e961ac5c61ca4ddbfcc",
+      "base": "pbit-tlm-attention-details-20261016",
+      "state": "open",
+      "merged": false
+    },
+    "pr160": {
+      "head": "989546376f2295990b7712ea553615f0b8d88cb4",
+      "base": "task/144-qwen3-stochastic",
+      "state": "open",
+      "merged": false
+    }
+  },
+  "issue": {
+    "state": "open",
+    "title": "Qwen3-4B非Base：W8多档随机FFN全模型训练方案与扫描清单"
+  },
+  "comments": [
+    {
+      "user": "jieruiz",
+      "created": "2026-10-23T14:49:59Z",
+      "body": "方案已通过PR161交付，待审未合并：\nhttps://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/161\n\n- 目标明确为Qwen/Qwen3-4B，教师/学生均非Base；PR147仅历史算子依据。\n- 已完成全模型W8/真实共享采样训练契约、D/F/L/H×T8/16/32/64共16方案＋3控制、后续B/d/IID扫描、非Base能力保持与验收设计。\n- scan.py清单/语法、未就绪启动拒绝守卫及独立审阅通过；远端发布文件逐blob原字节回读通过。\n- 目前是设计交付，没有训练器实现、权重下载、H200/Slurm作业或新PPL。revision/权重与模板SHA、许可训练数据、H200环境在执行前补齐；不会使用Base结果充当新基线。\n- 正式文档qwen3/training/sc_qat_20261023/TRAINING_PLAN_ZH.md；配置SCAN_MANIFEST.json；work/jieruiz/159/HANDOFF.md为恢复入口。\n- 看板未同步（既有read:project权限限制），Issue与PR已同步；不自动合并/关闭。\n"
+    }
+  ],
+  "baseline_issue": {
+    "state": "open",
+    "body": "负责人jieruiz。用户在Issue144的26项Base结果交付后明确改用Qwen/Qwen3-4B，不使用Base。本任务只换4B权重，固定官方revision 1cfa9a7208912126459214e8b04321603b3df60c；通过hf-mirror下载并核验文件。沿用PR147@357db5884726a66d988d75f92447ff8ecf8698e6作为依赖base，旧Base结果/执行快照保持不变。\n\n范围：新个人服务器ROOT和独立task分支；同WT2原文SHA，原生BF16完整2048/1024基线及再次精确重放；匹配4096目标后缀BF16一次，FFN-only、screen-exact+FFN、rejection128+FFN、winner1024+FFN各seed0/1/2，共13项。概率架构仍是原W8/B4/T32/K32共享64、max4/64token/8块/逐头TRAIN校准、理想FP32 Philox。原文teacher-forced PPL不加聊天模板，不生成thinking，不把Base的PPL或校准移植成新模型基线。\n\n与amlink1219的Issue157分工：本任务仅新模型准备、原架构与匹配基线，不实现SparQ、不跑ARC-E/HellaSwag/PIQA，不接管其作业。新权重和结果manifest将提供只读路径/固定SHA供依赖任务核对，禁止双方覆盖。另行在Issue157记录接口。\n\n验收：\n- [ ] 固定官方revision、镜像文件SHA及token/data/config/source绑定\n- [ ] CPU/GPU适配门槛和完整BF16两次匹配\n- [ ] 13项后缀、三seed统计、全层覆盖及独立校验\n- [ ] 同任务PR/STATUS/HANDOFF/长期记忆同步\n\n非目标：切换到2507型号、重做1.7B、替换为Issue150固定幅度FFN、全量概率候选、训练/物理RNG/RTL/PPA、合并PR。所有运行通过Slurm，最多1GPU；旧环境/权重不改，只有新目标模型允许镜像下载。Projects此前缺read:project，待有权限成员同步。\n\n实际部署：执行提交e174d91cfcdb318da6481884bbf17ff37c1e3797，44源码/本地与提取快照5合同通过、17发布文件远端原字节通过；CPU2869镜像下载（原生CPU覆盖/保存重载已过），GPU2870 afterok2869依赖，最多1GPU。PR160 draft/open未合并，尚无新PPL，不能沿用Base基线。ROOT /home/Hongjie_Zeng/projects/pbit-qwen3-stochastic-nonbase-20261023-issue158。与Issue157分工评论6367526124。未创建新定时检查；恢复先读work/jieruiz/158/HANDOFF.md及实际队列，不重交健康作业。\n"
+  },
+  "baseline_comments": []
+}

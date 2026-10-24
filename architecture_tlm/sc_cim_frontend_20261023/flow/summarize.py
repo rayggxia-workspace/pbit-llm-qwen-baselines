@@ -52,7 +52,7 @@ def leaf_rows(path):
 
 
 def check_time_unit(text):
-    m = re.search(r'^\s*Time\s*Units?\s*[:=]\s*('+NUM+r')\s*(\w+)\s*$', text, re.I|re.M)
+    m = re.search(r'^\s*Time[ _]*Units?\s*[:=]\s*('+NUM+r')\s*(\w+)\s*$', text, re.I|re.M)
     factors = dict(s=1., second=1., seconds=1., ns=1e-9, ps=1e-12, us=1e-6)
     if not m or m[2].lower() not in factors or not math.isclose(float(m[1])*factors[m[2].lower()],1e-9,rel_tol=1e-9,abs_tol=0):
         raise ValueError('Activity/slack parser requires a 1ns library; inspect units.rpt')

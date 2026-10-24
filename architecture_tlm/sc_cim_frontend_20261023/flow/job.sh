@@ -6,6 +6,9 @@ index=${SLURM_ARRAY_TASK_ID:?}; corner=ss; kind=$((index % 4)); m=64
 export EDA_CORES=${SLURM_CPUS_PER_TASK:-4}
 export CIM_SEEDS=${CIM_SEEDS:-1,17,74565}
 export CIM_SMOKE=0
+if [[ -n ${CIM_REUSE_ROOT:-} ]]; then
+ export CIM_REUSE_RUN="$CIM_REUSE_ROOT/${CIM_REUSE_JOB:?}_${index}_kind${kind}_${corner}"
+fi
 if [[ $kind == 1 || $kind == 3 ]]; then m=1; fi
 if [[ $CIM_MODE == smoke ]]; then m=1; export CIM_SEEDS=17 CIM_SMOKE=1; fi
 if [[ $CIM_MODE == external ]]; then

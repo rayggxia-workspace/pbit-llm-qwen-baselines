@@ -27,6 +27,9 @@ class DeliveryTests(unittest.TestCase):
   text='Dynamic Power Units = 1mW (derived from V,C,T units)\nLeakage Power Units = 1nW\nCell Internal Power = 2\nNet Switching Power = 3\nCell Leakage Power = 1000\nTotal Power = 5.001\n'
   v,s=power_totals(text);self.assertAlmostEqual(v[3],.005001)
   check_time_unit('Time Unit : 1e-09 Second\n')
+  check_time_unit('Time_unit : 1e-09 Second\n')
+  check_time_unit('Time_Unit : 1000ps\n')
+  with self.assertRaises(ValueError):check_time_unit('Time_unit : 1e-12 Second\n')
   with self.assertRaises(ValueError):check_time_unit('Time Unit : 1ps\n')
   with self.assertRaises(ValueError):power_totals(text.replace('5.001','100'))
 

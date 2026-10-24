@@ -1,3 +1,7 @@
+## Issue173 g/u多档扩展准备（2026-10-24）
+
+用户授权接续同Issue/PR174，新增B2/B4/B8固定范围幅度编码、sigmoid整数真实尺度恢复、Wd同指数部分和移位后合并。旧执行与结果不改。5项新本地检查通过，CUDA1项待Slurm；新增45份后缀PPL计划，非训练。下一步冻结并提交multiscale.sbatch，执行/作业ID以MULTISCALE_SUBMISSION.json为准，未有回执前不得重复声称远端已运行。
+
 ## Issue173发布回执（2026-10-24）
 
 PR174已转ready、待审未合并；结果提交898ba797，23个文件远端原字节核验一致，Issue173已同步。Slurm2881已退出队列，五片封存核验完成；无定时/健康任务遗留。FINAL_PUBLICATION.json记录回执，Projects未同步。

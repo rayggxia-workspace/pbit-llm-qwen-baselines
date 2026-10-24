@@ -41,7 +41,21 @@ Qwen/Qwen3-4B非Base训练设计已推送PR161，科学提交6991c97f9d54c1d9ea1
 ## 2026-10-23 Issue129 两页通俗说明
 
 按用户要求补充功耗面积节省机制、速度控制与剩余验证，面向非专业听众，省略内部结构细节。正式文件 architecture_tlm/memory_savings_20261023/概率计算的能耗面积与速度_两页说明.docx；两页，Word导出及逐页PNG检查通过。原7页报告保留，无新实验，不恢复暂停任务。分支 task/129-two-page-brief，复用 tmp/memory-savings-issue129-20261023；上传/PR以 BRIEF_PUBLICATION.json 为准，合并前不关闭Issue129。
+# 2026-10-24 Issue133远端恢复
+
+jieruiz/task/133-counter-rtl，原PR135已合并。v3包导入+v4单位解析修复，27本地测试通过；38372030四项仅PT恢复全部完成，8个窗口报告已下载校验。INCOMPLETE_ACTIVITY及库表范围告警保留，尚非最终无告警PPA；只M1/seed17/mixed4帧，未重跑DC/VCS。记录counter-38372030-power-recovery、work/jieruiz/133/HANDOFF.md；源码包SHA和原件见project_archives/remote_job_audit_20261024。下一步先审覆盖缺口，PR发布以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。
+
 <!-- ISSUE133_STATUS -->
+### PPA v2本地交付 2026-10-23
+
+Issue133/task/133-counter-rtl/PR135，base7f38018；同工作目录继续。
+修复波形位宽核验，增加快照、M1试跑、M64四项工艺矩阵和数值汇总。
+9单测及真实小RTL四窗口通过，RTL/TB未改；DC/VCS/PT和完整M64待用户执行。
+包及SHA见work/jieruiz/133/PPA_V2_DELIVERY.json，指令RUN_PPA_ZH.txt。
+本地完成，实际远端发布见后续回执；不自动合并，Projects待权限。
+
+实际：本地7753168；Git push超时，远端PR135仍7f38018。Issue评论6362207999
+已同步本地完成与阻塞，包可直接交用户上传。无新服务器EDA任务。
 ## 2026-10-23 Issue133 计数器RTL对照
 
 已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。 40组RTL/13408输出、6流程测试、8台账测试通过；完整64输出本地展开超时待VCS；无工艺PPA。分支task/133-counter-rtl，base6966739；工作目录tmp/counter-rtl-issue133-20261023；代码architecture_tlm/counter_rtl_compare，交接work/jieruiz/133/HANDOFF.md。下一步用户跑A/B SS/TT100MHz四项，回传后比较。Projects待read:project权限，未自动合并。

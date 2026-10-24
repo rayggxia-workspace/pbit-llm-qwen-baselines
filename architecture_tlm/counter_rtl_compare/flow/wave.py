@@ -1,5 +1,6 @@
 """Bounded-memory VCD window extraction, with exact duration and X/Z audit."""
 import re
+import gzip
 
 
 def clip(src, dst, start_ns, end_ns):
@@ -7,7 +8,8 @@ def clip(src, dst, start_ns, end_ns):
     variable_scopes, unknown = set(), set()
     header = []
     events = 0
-    with src.open() as f, dst.open('w') as out:
+    opener = gzip.open if src.suffix == '.gz' else open
+    with opener(str(src), 'rt') as f, dst.open('w') as out:
         for line in f:
             header.append(line)
             a = line.split()

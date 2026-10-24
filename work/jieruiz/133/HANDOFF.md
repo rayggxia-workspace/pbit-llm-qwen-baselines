@@ -1,4 +1,27 @@
+# 2026-10-24 Counter恢复结果
+
+沿用Issue133/task/133-counter-rtl，jieruiz；PR135已合并，不把旧PR状态当成当前待审。已有v3源码包逐SHA导入本checkout，v4修复Time_unit单位解析；27项本地测试通过。提交38372030四项仅PT恢复，全部COMPLETED/0:0，8窗口已下载并校验。复用38356996原DC/VCS，未重跑RTL。仍有INCOMPLETE_ACTIVITY/check_power/超库表范围告警，暂定PPA不是无告警签核；M1、seed17、mixed4帧，未扩成M64三种子。记录counter-38372030-power-recovery，源码原包sc_counter_ppa100_20261024_v4.zip，SHA b4ba7acac1c937a61cfd6d257ef157f1564e2a83cad084e50aaa9ed09840dbc7。VERSION.txt保留导入v3字样，以EXECUTION release和包SHA识别实际v4。下一步先查未标注对象范围，不直接重复长任务。本机归档project_archives/remote_job_audit_20261024/reports，远端BASE/counter_runs/power_recovery_20261024_v4。发布以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。其他既有untracked辅助文件未纳入提交。
+
 # Issue133 FFN计数器对照交接
+
+## PPA v2续接（2026-10-23）
+
+沿用本Issue/分支；开工已核验jieruiz、PR135 open/head7f38018与本地一致。
+RTL/TB未改。修正VCD校验位宽被末尾声明覆盖的问题，新增SHA冻结提交、
+4项M1 smoke、数值功耗/面积/每完成帧能量汇总、单元互斥分类和失败回传。
+本机及新包解压9单测通过；Bash语法、Python3.6 AST、Tcl完整性通过。
+新增小RTL A/B共64输出及4个活动/空闲窗口，逐窗口90个输出/时钟bit通过。
+完整M64未重跑，无DC/VCS/PT新结果。旧功能/失败结果保留。
+包sc_counter_ppa100_20261023_v2.zip（含全部RTL/TB），运行入口RUN_PPA_ZH.txt；
+SHA、验证归档、实际发布状态见PPA_V2_DELIVERY.json及后续回执。
+先Slurm提交smoke，回传4包确认后才提交all；不自动依赖提交以免失败悬挂。
+统一台账原record补充v2，不制造新的已测PPA；看板权限待同步。
+本段本地完成，是否已推送以回执为准；下方已推送描述是此前v1。
+
+实际回执：013859d/7753168本地提交；HTTPS push因low-speed超时失败。
+PR135远端已回读仍7f38018，open未合并；Issue评论6362207999已同步阻塞。
+最终包47271B，SHA84169483a9175f7a12a1a5c5540c237fe85d501826b793b1da300ea56d7aad7f。
+新manifest为UTF-8 LF；最终包31文件校验与解压后9测试通过。网络恢复后推送本分支。
 
 负责人jieruiz；分支task/133-counter-rtl；独立目录tmp/counter-rtl-issue133-20261023；base6966739a5223680888bf0315f7bb4f73423a1ae6，PR目标pbit-tlm-attention-details-20261016。
 

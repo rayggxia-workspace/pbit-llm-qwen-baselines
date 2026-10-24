@@ -31,6 +31,10 @@ Qwen/Qwen3-4B非Base训练设计已推送PR161，科学提交6991c97f9d54c1d9ea1
 ## 2026-10-23 Issue138：可训练赢家保持/校正拒绝模块
 
 负责人jieruiz，task/138-trainable-samplers，基线6966739，源码b6e3d034。新增experiments/trainable_pbit_attention；真实Bernoulli提议、均匀仲裁/保持、2^-m全零校正和自适应拒绝；全部轨迹score-function训练，有偏Softmax代理显式分离，量化禁冒称精确梯度。22/22合成数值测试，81条有限赢家轨迹/梯度穷举、三seed分布对照和6个小训练通过；无Qwen/Llama新PPL、CUDA、物理随机源或RTL/PPA。训练源码/配置/结果SHA见results/VALIDATION.json，交接work/jieruiz/138/HANDOFF.md。科学交付42beb199已推送PR142（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/142），14文件远端原字节核验通过；PR待审、未合并，回执PUBLICATION.json/REMOTE_VERIFY.json；未改正式TLM/硬件默认，后续真实LLM集成和梯度方差/内存仍待验证。复用现有本地Torch2.4.1 CPU，无新服务器作业。
+## 2026-10-23 Issue133：计数器PPA v2运行包
+
+用户要求对sc_counter_compare_20261023.zip做功耗面积，沿用Issue133/PR135/task/133，不重复建任务。RTL/TB不变；修正scalar VCD输出位宽被后续声明覆盖导致漏核验，补提交源码快照、A/B×SS/TT100MHz的M1 smoke与M64正式四项、数值面积/内开关漏电功耗/完整帧能量与互斥单元分类。源/新解压包9测试、Bash/Python3.6/Tcl检查及小RTL A/B四窗口90bit校验通过；没有DC/VCS/PT或完整M64新结果。zip为根sc_counter_ppa100_20261023_v2.zip，47271B，SHA 84169483a9175f7a12a1a5c5540c237fe85d501826b793b1da300ea56d7aad7f；原始小验证归档project_archives/counter_rtl_20261023/PPA_V2_VALIDATION_RAW.tar.gz。原统一record补索引，仍待跑PPA；先上传跑smoke回传4包。具体指令RUN_PPA_ZH.txt，远端状态以work/jieruiz/133/PPA_V2_DELIVERY.json及后续回执为准，本条不宣称已合并。保留其他任务镜像。
+
 ## 2026-10-23 Issue133：FFN精确计数A/B电路
 
 用户要求暂按SRAM全并行，优先比较计数器。architecture_tlm/counter_rtl_compare提供A逐位/符号/档计数＋最终恢复，B每拍整数和＋每档累计；均精确、相同协议，排除权重存储/随机前端/浮点恢复，不改主TLM。40组RTL/13408输出、6流程及8台账测试通过；完整64输出Icarus展开超600秒未完成，待用户VCS，不冒充工艺结果。T32 PIPE1完整帧36周期；6144B/640B只是主计数状态，含流水/输出后10368B/1760B，不是面积能量倍率。ZIP根sc_counter_compare_20261023.zip，SHA3a9b84019b1e41f51f198601a57fd969c7dbbb4de896b1bd4951221b378c94b5；原件project_archives/counter_rtl_20261023/LOCAL_VALIDATION_RAW.tar.gz。四项A/B×SS/TT100MHz工艺待跑，登记counter-ab-133-functional；无新PPL。已推送，[PR135](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/135)待审、未合并。 本轮无服务器作业，Projects权限待补；详情work/jieruiz/133/HANDOFF.md。保留现有其他任务镜像，未覆盖。

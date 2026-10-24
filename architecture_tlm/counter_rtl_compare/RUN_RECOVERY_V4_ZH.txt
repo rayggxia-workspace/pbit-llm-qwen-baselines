@@ -1,0 +1,12 @@
+2026-10-24 v4：只修正PT报告Time_unit标签解析，不改RTL、TB、库或功耗窗口。
+输入：counter_runs/smoke_20261023_180602，作业38356996的四份已完成DC/VCS结果。
+v3作业38363839首个PT窗口已得到功耗，但因Time_unit标签含下划线而误拒绝1ns。
+本版仍拒绝非1ns时间单位，不放宽X/Z、时序或活动验证门槛。
+
+复用原网表和波形，不运行DC/VCS；在全新结果目录补做PT活动/空闲窗口。
+保留旧失败结果，不修改原执行快照。运行前检查队列，避免重复任务。
+
+bash flow/submit_power_resume.sh /absolute/old/smoke_root /absolute/new/result_root
+
+完成后应存在FLOW_COMPLETE、SUMMARY.json、每窗口活动验证及结果归档。
+有功耗数值不等于STA无违例；保留SUMMARY中的review_flags。

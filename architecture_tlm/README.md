@@ -8,7 +8,7 @@ python -m architecture_tlm --model qwen3_4b --ffn bf16 --attention exact --outpu
 python -m architecture_tlm --model qwen --ffn-profile legacy --ffn-samples 32 --strata 32 --output output/legacy01
 ```
 
-Python 3.10+，标准库即可。正式运行前提交执行源码；输出目录必须不存在。`--config`可提供完整配置，`--rng-backend`默认为已接入的实际随机服务。大型场景可能需数分钟CPU时间。
+Python 3.10+，标准库即可。正式运行前提交执行源码；输出目录必须不存在。`--config`可提供完整配置，`--rng-backend`默认为已接入的实际随机服务。实际端点逐事件执行的大型场景可能需数十分钟或更久的CPU时间；这与输出中的硬件时间不是同一指标。
 
 - [最新 FFN 的完整流程、宏周期与证据边界](unified_v6/FFN_CURRENT_ZH.md)
 - [执行结果与验证](unified_v6/RESULTS_CURRENT_ZH.md)

@@ -5,6 +5,12 @@
 - Keep a same-byte reading copy at the local `a_P_BIT/PROJECT_MEMORY_ZH.md` when working in that workspace. Do not rely on chat history or claim inaccessible future conversations automatically remember the project. If the file cannot be read, report the missing project context before repeating expensive experiments.
 - This section implements the user's 2026-10-18 request for durable cross-session project memory, Issue #28. All existing reproducibility and collaboration rules below remain in force.
 
+# 当前完整TLM入口（2026-10-24，Issue179 / PR180）
+
+- 本版通过PR180向main交付完整TLM最小运行依赖，统一入口为`python -m architecture_tlm`、说明为`architecture_tlm/README.md`；继续维护`unified_v6`，不另建平行整机版本。下方旧集成分支索引属于历史。
+- 最新FFN固定W8、x固定四档T64/K64、g/u P8与真实signed8 sigmoid驱动、联合32格AND直连Wd、7桶整数累加。GU定点恢复与训练FP32参考的数值等价尚未验证，不继承PPL。
+- 原Attention与实际Issue95随机服务保持；新NL独立随机消费为有限宏接口，不能混称全部随机端点已实际接合。完整PPA未知；DRAM本轮link估计与DRAMSys执行须区分。
+
 # Experiment reproducibility
 
 - Before comparing a new coding or architecture against recorded results, verify model revision and train/test text SHA-256, then rerun the unchanged BF16 reference in the experiment environment.

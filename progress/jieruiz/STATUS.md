@@ -1,3 +1,14 @@
+# 当前统一TLM交付：Issue179 / PR180（2026-10-24）
+
+负责人：jieruiz；仓库rayggxia-workspace/pbit-llm-qwen-baselines。
+分支task/179-latest-ffn-tlm-main，base main；本地tmp/latest-ffn-tlm-issue179-20261024。
+完整入口architecture_tlm/README.md，最新FFN和已保留的Attention/随机/存储接口在unified_v6。执行提交3a9ddfb1，原件results/current_ffn_20261024_v2；同目录报告及work/jieruiz/179/HANDOFF.md给出复现和边界。
+已完成74项检查、7组完整36层、8组单FFN敏感性及15组三seed夹具，12份封存SHA核验通过；全部本地执行结束，无运行中任务。本任务通过PR180交付；合并状态以PR和Issue179最终回执为准。用户已授权验证通过后合并main。没有修改训练作业；没有新GPU、Slurm、RTL/PT、PPL或DRAMSys结果。完整结果见RESULTS_CURRENT_ZH.md，完整PPA未知。Projects缺read:project，待维护者同步。
+后续：GU整数恢复数值对齐、新NL独立随机端口实际接合、权重保持及4/7桶宏STA/PPA；保留统一入口，不另建整机版本。
+
+---
+以下为此前main中的历史状态，不能替代最新Issue/PR：
+
 # Issue138：可训练采样器接入 main（2026-10-23）
 
 负责人jieruiz；review/138-main-port-20261023；main base35db820；tmp/pr142-main-review-20261023。PR142源bac0e04已审核，main独立移入模块与历史NumPy测试依赖，保留源码/原结果字节。22单测及两方法三seed合成训练复核；无LLM/PPL/硬件实验。成果experiments/trainable_pbit_attention，交接work/jieruiz/138/MAIN_HANDOFF_ZH.md。当前本地审核完成，推送/合并以关联PR回执为准。后续CUDA/模型训练/内存与梯度方差未验收；Projects待权限。无运行任务，合并后回收本目录。

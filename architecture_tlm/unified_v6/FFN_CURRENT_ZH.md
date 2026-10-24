@@ -77,6 +77,20 @@ Attention和x入口继续使用原 `IntegratedRandomService`：有限端点、se
 
 ## 已有PPA如何使用
 
+### 对应电路入口
+
+以下链接固定到导入版本；“候选”表示可参考结构，不代表它已经实现本版全部数制/接口。
+
+| 本版功能 | 已有电路入口 | 本版状态 |
+|---|---|---|
+| 加权归约后时间累加 | [sc_counter_b.sv](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/d6d33995754fcdcea99286e4ce43f91647aa231a/architecture_tlm/counter_rtl_compare/rtl/sc_counter_b.sv) | 4桶小实例有功能与暂定PPA；7桶/M64/短流新组合为宏 |
+| W8比特门控 | [cim_w8_gate.sv](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/d6d33995754fcdcea99286e4ce43f91647aa231a/architecture_tlm/sc_cim_frontend_20261023/rtl/cim_w8_gate.sv) | 已有小规模门控数据；权重保持、扇出及阵列接合为宏 |
+| 固定尺度编码 | [er_pot_encoder_rv.sv](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/d6d33995754fcdcea99286e4ce43f91647aa231a/architecture_tlm/encoding_restore_contract/rtl/er_pot_encoder_rv.sv) | 旧动态PoT编码是结构参考；最新固定表及宽整数g/u输入为宏 |
+| 分档恢复 | [er_bin_restore_rv.sv](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/d6d33995754fcdcea99286e4ce43f91647aa231a/architecture_tlm/encoding_restore_contract/rtl/er_bin_restore_rv.sv) | 不把旧浮点恢复价格直接套到q16/64位新恢复 |
+| signed8、P8 ROM、三路AND、7指数和 | 原子移位/比较/ROM/AND可综合 | 整个组合暂无同边界STA/PPA，显式宏 |
+| 64位整数→BF16 | LZC/guard-sticky/RNE结构 | 暂无本边界结果；已有FP32→BF16只作参考 |
+| 全宽权重驻留 | 普通SRAM读写已有校准 | 新保持/存内访问/驱动接口独立宏，不声称普通单端SRAM天然全并行 |
+
 现有数据保留为证据锚点，不能因“已有类似模块”就直接填写完整阵列功耗：
 
 - `counter-38372030-power-recovery`：N64/M1/T32/PIPE1，SS版本B面积48034.8µm²、233.532pJ/帧；存在INCOMPLETE_ACTIVITY告警。未覆盖本版M64/T64/128和7桶Wd。

@@ -8,7 +8,8 @@ from scipy.special import expit
 from scipy.optimize import lsq_linear
 from .core import propagate
 
-CASES=((8,4,.5),(8,8,.5),(16,8,.5),(8,8,8.))
+CASES=((8,4,.5),(8,8,.5),(16,8,.5),(8,8,8.),
+       (1,4,1.),(2,4,.5),(4,4,.5),(4,8,4.))
 
 def occupancy(q,states,cycles):
     p=np.asarray(q,dtype=float)/256
@@ -19,7 +20,7 @@ def occupancy(q,states,cycles):
     return total/cycles
 
 def build(G,states,Sneg,cycles):
-    if cycles not in (64,128) or G not in (8,16) or states not in (4,8):
+    if cycles not in (64,128) or G not in (1,2,4,8,16) or states not in (4,8):
         raise ValueError('outside frozen pilot grid')
     q=np.arange(256);a=occupancy(q,states,cycles)
     lut=[];coeff=[];mean=[];errors=[]

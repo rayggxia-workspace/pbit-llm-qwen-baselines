@@ -55,6 +55,31 @@ Qwen/Qwen3-4B非Base训练设计已推送PR161，科学提交6991c97f9d54c1d9ea1
 ## 2026-10-23 Issue146：SRAM邻近计算前端
 
 负责人jieruiz，task/146-cim-frontend，base 6966739/pbit-tlm-attention-details-20261016；独立目录tmp/cim-frontend-issue146-20261023。正式architecture_tlm/sc_cim_frontend_20261023，本地RTL/中文说明/PPA脚本/小SRAM探针已完成；27组13620周期、5流程与12波形窗口检查通过。完整N64/M64前端此前三seed×两随机接口通过，独立大门阵列超时保留。无新DC/PT/SPICE/PPA/PPL，源/配置/证据SHA见results和中央cim-frontend-146-functional；用户先M1 smoke再M64工艺。PR148已推送待审、未合并；远端实际状态见work/jieruiz/146/PUBLICATION.json、REMOTE_VERIFY.json；不自动合并，Projects待权限核对。无在运行作业。下一步依RUN_PPA_ZH回传报告；详细交接HANDOFF.md。
+# 2026-10-24 Issue107远端核查
+
+jieruiz/task/107-digital-ppa8-ss-tt，复用原checkout。KIND21 v2 SS/TT已完成，18窗口覆盖100%，仍有外推告警；38371792剩余14项已补交，index0功耗窗口7位X/Z失败，其他运行/排队中。旧源码/波形未覆盖，未重复KIND21。中央digital-ppa8-20261024-audit及work/jieruiz/107/HANDOFF.md记录后续诊断；原件project_archives/remote_job_audit_20261024，上传/PR以PUBLICATION_20261024.json为准，未自动合并，Projects待同步。
+
+# Issue107：v2逐位活动标注和PT重检包（2026-10-23）
+
+收尾回执：已合入6966739，台账48条，远端原45条逐字节保留。身份jieruiz及Issue107 open已核实，但Git push无进展已中断，Issue评论POST遇EOF结果未确认，尚无后续PR；详见V2_PUBLICATION.json。本地包可独立上传，不宣称远端发布成功。
+
+源码66cb8b3，v2 ZIP已生成（2184127B，SHA067efe07b99ee85f09569198363be8a7a5155ed98e45a8b4ed698f7b05a887a4）。14单测在源码及交付目录通过，Python3.6 AST/Tcl/Bash通过，221项冻结源码/激励与v1一致。所有VCD位/别名保留；PT逐位检查clk/out_valid/有效result翻转率及静态概率，PWR-981未消除则失败；库表9位精度及受影响单元功耗统计保留provisional。只读复用38339971_7/15，执行新PT、不重跑DC/VCS；剩余14项暂等本次检查。无本机PT实跑，v2远端结果待用户提交。交付/登记work/jieruiz/107/ppa8/V2_DELIVERY.json。沙箱外Git只读网络恢复，最新base6966739；发布状态另行核实，不沿用旧网络阻塞作为完成证明。
+
+# Issue107：38339971首轮结果复核（2026-10-23）
+
+负责人jieruiz，沿用task/107-digital-ppa8-ss-tt和原目录。实际下载仅KIND21 SS/TT两项smoke，24功能场景通过、18功耗窗口有值且STA非负；668成员SHA、源包manifest原字节及逐单元功耗/面积/能量回算通过。PWR-981及2load/1ramp超表范围尚待复核，功耗保留provisional，不写全8类通过。报告architecture_tlm/digital_ppa_v1/results/PPA8_SMOKE_38339971_ZH.md；中央记录digital-ppa8-38339971-smoke。未重跑EDA、未修改仿真脚本。先复用mapped.v/VCD诊断，再考虑remaining14项。GitHub API刷新连接异常，远端同步/PR待办，旧发布阻塞保持。
+
+以下为脚本交付时的历史状态。
+
+# Issue107：8类SS/TT 100MHz PPA脚本（2026-10-23）
+
+最终交付核实：本地包、台账和阅读镜像已就绪；Git HTTPS推送失败/超时，尚未创建后续PR。GitHub API已核实jieruiz及Issue107仍open；具体同步状态见work/jieruiz/107/ppa8/PUBLICATION.json，不把本地完成写成远端完成。用户上传运行不依赖此Git网络问题。
+
+负责人jieruiz；当前分支task/107-digital-ppa8-ss-tt，复用tmp/tlm-digital-issue107-20261022。发布前发现PR109/111均已合并，因此合入最新集成e8705765ed3286b225e042378d57e5d010e221ee，保留最新台账原件路径与本页其他任务历史，用新后续PR交付，不向已关闭PR追加。原Issue107保持open。
+
+脚本执行源6bc3389de08fba8250a17f0991849a4368898205，KIND0/2/4/5/6/7/8/21，各SS1.08V125C、TT1.2V25C，100MHz；RTL23e8d65f未改。包digital_ppa8_ss_tt_100_20261023_v1.zip，2173363B，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出通过，6流程守卫、Python3.6语法/3.8运行、Tcl与Bash检查通过。无DC/VCS/PT实跑；功耗/面积null。中央台账36条/532行，新16工艺配置待运行。
+
+正式目录architecture_tlm/digital_ppa_v1/ppa8，交付/原件SHA在work/jieruiz/107/ppa8/DELIVERY.json。用户先smoke两角KIND21再remaining14项；4CPU/16GB/12h、最多2项并发，分阶段SHA恢复，结果自动小包。当前本地已完成，发布以ppa8/PUBLICATION.json为准；Project看板缺read:project待同步。长期记忆canonical/root本地同步，新增记忆片段远端随后续维护，不宣称其他人的未提交记忆已发布。
 
 # Issue55第八轮：七项阶段成果审核通过（2026-10-23）
 

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "id": "digital-ppa8-20261023-v2-recheck-prepared",
+  "name": "数字PPA v2逐位活动标注及只重跑PT修正版（待远端验证）",
+  "family": "转换/FFN/Attention数字算术",
+  "registered_on": "2026-10-23",
+  "owner": "jieruiz",
+  "issue": 107,
+  "evidence_level": "PARTIAL_FLOW",
+  "status": "prepared_pending_remote_recheck",
+  "stages": {
+    "functional": "not_run",
+    "synthesis": "not_run",
+    "sta": "not_run",
+    "power": "not_run",
+    "postlayout": "not_run"
+  },
+  "boundary": "包含原8类RTL/参考向量；本次先复用38339971_7/15的DC/VCS，仅重做KIND21 SS/TT波形逐位转换、PT与活动绑定核对",
+  "conditions": {
+    "node_nm": 55,
+    "corner": [
+      "SS",
+      "TT"
+    ],
+    "voltage_V": [
+      1.08,
+      1.2
+    ],
+    "temperature_C": [
+      125,
+      25
+    ],
+    "clock_MHz": 100,
+    "seeds": [
+      17,
+      43,
+      101
+    ],
+    "sdf": false,
+    "spef": false,
+    "cts": false
+  },
+  "source": {
+    "git_commit": "66cb8b3c60bb21a392ccfa040ad7361972de98b2",
+    "source_manifest_sha256": "d3fde10986b7f8cf53221a686f70d0a7a5bae37e501681138e97e65b36c2ec9e",
+    "binding": "221项RTL/转换依赖/向量/综合约束/原TB及剪窗源码与v1原字节一致；v1结果另见digital-ppa8-38339971-smoke"
+  },
+  "artifacts": [
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/digital_ppa8_ss_tt_100_20261023_v2.zip",
+      "role": "self_contained_source_package",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "067efe07b99ee85f09569198363be8a7a5155ed98e45a8b4ed698f7b05a887a4",
+      "bytes": 2184127
+    }
+  ],
+  "cases": [
+    {
+      "kind": 21,
+      "corner": "SS",
+      "parent_job": "38339971_7",
+      "status": "pending_remote_recheck"
+    },
+    {
+      "kind": 21,
+      "corner": "TT",
+      "parent_job": "38339971_15",
+      "status": "pending_remote_recheck"
+    }
+  ],
+  "local_validation": {
+    "unit_tests": 14,
+    "source_and_packaged_tests": "PASS",
+    "frozen_source_files_identical": 221,
+    "python36_ast": "PASS",
+    "tcl_control_mock": "PASS",
+    "bash_syntax": "PASS",
+    "eda_execution": "NOT_RUN"
+  },
+  "limitations": [
+    "本机未运行真实PT，逐位声明及属性读取的最终工具兼容性由远端重检验收；错误不会自动忽略。",
+    "超库范围不会靠改负载/改slew或关闭告警消除。报告受影响单元全部功耗占比，不把占比当误差上限。",
+    "原报告包不能代替网表和VCD；远端必须保留完整v1结果目录；代码和库变化时拒绝复用。"
+  ],
+  "next_action": "上传v2 ZIP到项目根，调用submit_power_recheck.sh并传入v1/results/38339971前缀；下载两份新reports包后再决定remaining14项。"
+}

@@ -50,6 +50,9 @@ amlink1219新增architecture_tlm/qwen3_gqa_literature/REPORT_ZH.md。32Q/8KV/d12
 新增architecture_tlm/sc_cim_frontend_20261023，任务task/146-cim-frontend，PR148已推送待审、未合并；科学提交74979fc。N64共享R8、W8固定权重、T32/K32，显式库buffer绑定，不加概率/权重副本寄存器；完整前端、SNG、门控、Q缓冲四种探针。旧计数器已有AND，初估只再加SNG/分发，避免重复；SRAM保持/装载另计，32768并行权重Q仍是CIM接口假设。附DC/VCS/PT流程及真实bitcell加载SPICE模板，无工艺模型。
 
 最终27组13620周期、5流程检查、12窗口×115位活动检查通过；较早N64/M64前端本地/外部源各三seed通过，独立大门阵列Icarus180秒超时保留。无新DC/PT/SPICE/PPA/PPL，包根sc_cim_frontend_ppa_20261023_v1.zip，36990B，SHA73bee486fd7d1f0fff0b3ba6bf915836715ed9496e92902351f86c18c68bda6d。统一台账cim-frontend-146-functional，原件project_archives/cim_frontend_20261023，交接work/jieruiz/146/HANDOFF.md；先用户SS/TT M1 smoke再M64。发布与逐blob核验见PUBLICATION/REMOTE_VERIFY，Projects待权限/维护者同步，无运行作业。保留其他任务镜像记录。
+## 2026-10-23 Issue107：v2只重检PT
+
+脚本源66cb8b3，包digital_ppa8_ss_tt_100_20261023_v2.zip（2184127B，SHA067efe07b99ee85f09569198363be8a7a5155ed98e45a8b4ed698f7b05a887a4）。14单测、Python3.6 AST/Tcl/Bash通过，221冻结RTL/向量/综合约束与v1一致。VCD所有位逐一保留并对照PT有效输出活动率，PWR-981仍出现则失败；库范围9位精度及受影响单元功耗占比，不把占比当误差界限，不改负载/slew或豁免。submit_power_recheck.sh只读复用v1/results/38339971_7/15，新目录重做波形转换与18窗口PT，无DC/VCS重跑。本机无真实EDA，本次重检待用户提交。统一台账48条，保留最新集成6966739的45条原字节；身份jieruiz/Issue107 open已实时核验。发布状态见任务V2_PUBLICATION回执，不自动合并。旧结果和包保留。
 
 ## 2026-10-23 Issue123 完整FFN与STA/PPA交接
 
@@ -73,11 +76,16 @@ CPU2778已通过45RTL场景/11667输出/180reset flush，覆盖T16/32/64、BF16/
 
 新增architecture_tlm/memory_savings_20261023/REPORT_ZH.md及7页Word，8个已封存v6情景复算、20源SHA、64文档/数字检查。W8减半权重不是随机独有收益；Qwen已记账2K/8K外存读写少31.95/35.52%，SRAM读写少29.82/33.49%，未闭合局部保持/计数未包含；条件存储能量不是整机PPA。采样不自动缩小完整KV缓存。PR120的48→5KiB是逻辑状态，PR127加宽读口不减少字节；新周期/完整FFN暂停保持。本轮无新实验，成果通过PR130已推送待审、未合并；Word及来源JSON原字节已核验。来源/回执见Issue129与work/jieruiz/129/PUBLICATION.json，Projects缺read:project待同步。
 
+## 2026-10-23 Issue107：首轮实际PPA结果
+
+38339971_7/15为KIND21 FP32→BF16的SS/TT100MHz，非全8类。24门级功能场景通过，18PT窗口算出功耗、STA正slack；668成员SHA与交付manifest核验通过。连续总68.82/91.01uW、0.7312/0.9670pJ每完成转换，含边界寄存器；转换核心6.419/8.171uW。PWR-981部分向量映射和2load/1ramp超表范围仍provisional，缺原mapped.v/VCD证明。中央digital-ppa8-38339971-smoke，报告digital_ppa_v1/results/PPA8_SMOKE_38339971_ZH.md。本轮未改EDA脚本/重跑；先复用已有结果诊断，remaining14项未回传。根镜像已保留其他任务新增记录并追加至47条；本分支37条，发布前需整合最新正式台账。GitHub刷新连接异常，远端同步待办。
+
 ## 2026-10-23 Issue107：8类数字模块SS/TT 100MHz脚本包
 
-沿用task/107/PR109，正式architecture_tlm/digital_ppa_v1/ppa8，脚本源6bc3389de08fba8250a17f0991849a4368898205，原RTL23e8d65f未改。KIND0/2/4/5/6/7/8/21，各SS1.08V125C及TT1.2V25C，100MHz、setup uncertainty2ns。自包含RTL/ROM/转换/TB/参考向量包在本机根digital_ppa8_ss_tt_100_20261023_v1.zip，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出逐位通过、6流程守卫/Tcl/Python兼容/Bash检查通过；没有本地DC/VCS/PT，没有已测面积功耗。建议smoke两角KIND21后remaining14项，不重复运行健康任务；快照/阶段SHA恢复，结果自动小包。
+沿用Issue107；PR109/111已合并，本批使用task/107-digital-ppa8-ss-tt后续分支，正式architecture_tlm/digital_ppa_v1/ppa8，脚本源6bc3389de08fba8250a17f0991849a4368898205，原RTL23e8d65f未改。KIND0/2/4/5/6/7/8/21，各SS1.08V125C及TT1.2V25C，100MHz、setup uncertainty2ns。自包含RTL/ROM/转换/TB/参考向量包在本机根digital_ppa8_ss_tt_100_20261023_v1.zip，SHA ace9d1657e67f2db6ab8064c59fce071247fe9fdf768e6fd4044fe44eeea39d4。最终解压96场景17070输出逐位通过、6流程守卫/Tcl/Python兼容/Bash检查通过；没有本地DC/VCS/PT，没有已测面积功耗。建议smoke两角KIND21后remaining14项，不重复运行健康任务；快照/阶段SHA恢复，结果自动小包。
 
-中央台账新增digital-ppa8-20261023-prepared，功能是本地RTL证据，16工艺配置仍not_run；基于PR111@2b7935f4同PR109登记，保留原35条。零延迟门级不含CTS/布线/毛刺，PT时序独立；含边界寄存器，SwiGLU为近似PWL，不继承PPL。KIND4/5按64元素一组、KIND6完整恢复不得再乘64/72；累加采用混合帧，非单独S128能量。原始验证含失败在project_archives/digital_ppa8_20261023/LOCAL_VALIDATION_RAW.tar.gz。上传状态以work/jieruiz/107/ppa8/PUBLICATION.json为准；任务未自动合并，Projects read:project待同步，暂无本任务BSCC作业。本文同步本地canonical与根阅读副本；本条远端随后续记忆维护，不宣称canonical脏改动已发布。
+中央台账新增digital-ppa8-20261023-prepared，功能是本地RTL证据，16工艺配置仍not_run；已合入最新集成e8705765，保留已审核原35条，新记录随本批后续PR登记。零延迟门级不含CTS/布线/毛刺，PT时序独立；含边界寄存器，SwiGLU为近似PWL，不继承PPL。KIND4/5按64元素一组、KIND6完整恢复不得再乘64/72；累加采用混合帧，非单独S128能量。原始验证含失败在project_archives/digital_ppa8_20261023/LOCAL_VALIDATION_RAW.tar.gz。上传状态以work/jieruiz/107/ppa8/PUBLICATION.json为准；任务未自动合并，Projects read:project待同步，暂无本任务BSCC作业。本条同步本地canonical、根阅读副本及本任务分支；不发布canonical中其他未提交改动。当前脚本和台账本地完成，Git推送受网络阻塞，远端状态以回执为准。
+
 ## 2026-10-23 Issue118：FFN供数与逐档整数状态合同
 
 已上传PR120（待审、未合并），科学head8bea1dfd，48个远端Git文件对象逐项一致。Issue118已同步；Projects实测缺read:project，待同步。实际回执`work/amlink1219/118/PUBLICATION.json`，后续元数据提交不改变科学结果。

@@ -4,7 +4,7 @@
 
 本地已完成训练模块、CE入口、TRAIN校准、精确键名warm start、严格断点恢复及agent交接。只训练FFN三矩阵权重；P8非线性三路AND直连固定Wd，W4/6/8、默认x64/非线性128。首级矩阵尺度恢复仍FP32参考，不宣称整链bittrue。
 
-验证：CPU12通过/1CUDA跳过；Slurm2906共34项通过；两层随机初始化Qwen3 CUDA五步仅FFN权重变化；三seed合成优化完成。原字节SHA在 qwen3/training/stochastic_nonlinear/validation/。执行a3f5a4ac不变。附加DDP2907超时、2908初始化挂起后停止；2909本机socket隔离后三步通过，跨rank权重一致、冻结参数不变。全部作业结束。
+验证：CPU12通过/1CUDA跳过；Slurm2906共34项通过；两层随机初始化Qwen3 CUDA五步仅FFN权重变化；三seed合成优化完成。原字节SHA在 qwen3/training/stochastic_nonlinear/validation/。执行a3f5a4ac不变。附加DDP2907超时；2908仅禁P2P在长初始化后已封存完成，2909本机socket隔离也通过，跨rank权重一致、冻结参数不变。全部作业结束。
 
 已推送PR178，待审未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/178 。最终发布与核验以work/jieruiz/177/PUBLICATION.json为准。尚无新4B训练/PPL；昨天checkpoint和原训练交接待提供，不重交昨天作业。成果入口AGENT_HANDOFF_ZH.md、VALIDATION_ZH.md、work/jieruiz/177/HANDOFF.md。Projects缺read:project待维护者，不自动合并/关闭Issue，无新增定时。下方为依赖任务历史状态。
 

@@ -16,6 +16,6 @@ CUDA合成独立输入的MSE（16个固定评估噪声键平均）：seed0 0.015
 
 执行快照 `a3f5a4ac092f1543aef2c5137a61446092e94f7a`，归档SHA-256 `46199b02b5e70311553d7c36f76b0ede83eaa92b5e7544bd4a15846c07442560`。远端个人目录 `/home/Hongjie_Zeng/projects/pbit-trainable-and-20261024-issue177/`，源码 `snapshot-a3f5a4ac`，结果 `results-2906`。本地同字节封存 `validation/results-2906/`，COMPLETED.json记录5个documents和源码SHA，已逐项核验；原件不做换行美化。
 
-两卡环境诊断：2907使用默认NCCL，5分钟超时；2908仅禁用P2P仍卡在DDP初始广播前，由本任务停止。2909在相同执行源码 `4ab8350e` 上增加本机socket隔离配置后完成：`NCCL_SOCKET_IFNAME=lo NCCL_IB_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_P2P_DISABLE=1`。日志和COMPLETED.json在validation/ddp-results-2909，失败日志也保留。多项环境设置一起改变，**不能确定是哪一项修复，更不能推断H200也需要这些设置**。NCCL参数含义参考[NVIDIA官方说明](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html)，这些是诊断工作绕行，不作为生产最优配置。
+两卡环境诊断：2907使用默认NCCL，5分钟超时。2908仅禁用P2P，起初长时间停在DDP初始广播前；随后**已完成并封存3步**。中途发出了停止请求，但最终读取到20:21:20的COMPLETED.json且documents SHA全部吻合，应以完成文件为准，不能沿用“初始化等待=失败”的临时判断；Slurm历史查询已不可用，不虚报其最终调度状态。2909在相同执行源码 `4ab8350e` 上增加本机socket隔离配置后也完成：`NCCL_SOCKET_IFNAME=lo NCCL_IB_DISABLE=1 NCCL_SHM_DISABLE=1 NCCL_P2P_DISABLE=1`；两次权重一致检查通过，三个loss逐值相同。封存JSON在validation/ddp-results-2908和2909，原始NCCL调试日志按DDP_RAW_LOG_INDEX.json在个人共享目录读取。不能把初始化长等待归因到确定的硬件故障，也不能推断H200需要这些开关。NCCL参数含义参考[NVIDIA官方说明](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html)，它们是诊断配置，不作为生产最优配置。
 
 之后只增加诊断函数、DDP诊断和文档；核心前向/反向未变。DDP验证单独记录，不与34项单卡通过混称。没有RTL/PT/PPA、4B训练、H200吞吐或完整WT2验证。运行中作业为零，无新定时。

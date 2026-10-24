@@ -58,7 +58,7 @@ def build():
                             full_one_bypass=True, probability_denominator=256)
             cases.append(case)
     return {
-        "schema": "sc_qat_design_v2", "created_date": "2026-10-23",
+        "schema": "sc_qat_design_v3_hardware_gate", "created_date": "2026-10-23",
         "weight_bits_sweep": list(WEIGHT_BITS), "workload_multiplier": 3,
         "bf16_controls_note": "Three matched repeats with identical settings; not three bit-width structures or training seeds.",
         "weight_quantization": {"symmetric_qmax": "2**(bits-1)-1", "tile": [64,64],
@@ -69,7 +69,10 @@ def build():
                   "layers": 36, "hidden": 2560, "ffn_width": 9728,
                   "weight_sha_manifest": None, "chat_template_sha256": None},
         "not_execution_config": True,
-        "required_before_launch": ["pinned_model_revision_and_artifact_sha",
+        "required_before_launch": ["hardware_forward_contract_and_sha",
+            "finite_width_g_u_and_stochastic_nonlinearity_verified",
+            "integer_alignment_overflow_rounding_and_stream_replay_verified",
+            "pinned_model_revision_and_artifact_sha",
             "licensed_train_calibration_validation_data_manifest",
             "trainable_ffn_forward_and_gradient_validation", "legal_scale_exponent_bounds_from_calibration",
             "H200_Slurm_partition_personal_root_and_environment_lock",
@@ -101,7 +104,11 @@ def build():
             "calibration_split": "TRAIN_only_x_z_separate_Wb_only_and_dynamic_student_paths_per_weight_bits",
             "calibration_observer_disabled_on_holdout_and_test": True,
             "scale_exponent_bounds": None,
-            "initial_ffn_numeric_backend": "PR147_FP32_oracle_BF16_boundary",
+            "initial_ffn_numeric_backend": "unimplemented_hardware_constrained_forward",
+            "diagnostic_reference_only": "PR147_FP32_oracle_BF16_boundary",
+            "hardware_contract_sha256": None,
+            "hardware_forward_validated": False,
+            "nonlinear_sampling_budget": None,
         },
         "stage_G2_smoke": {"total_optimizer_steps": 120, "per_weight_bits": list(WEIGHT_BITS),
                            "scale_modes": ["D", "F", "L"], "target_samples": 32,
@@ -205,7 +212,7 @@ def main():
     result["manifest_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
     print(json.dumps(result, ensure_ascii=False, indent=2))
     if args.require_launch_ready:
-        raise SystemExit("Design only; trainer, verified model artifacts, data and Slurm binding are not ready.")
+        raise SystemExit("Design only; hardware forward contract, quantized g/u, stochastic nonlinearity, trainer, model/data and Slurm binding are not ready.")
 
 
 if __name__ == "__main__":

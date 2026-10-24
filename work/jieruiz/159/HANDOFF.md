@@ -1,3 +1,19 @@
+## 2026-10-24 用户确认：功能模拟与TLM共用数制契约
+
+Python可用FP32/FP64作为模拟容器，不能把dtype直接当电路格式；必须模拟定点比较、尺度、舍入/溢出、随机相关性与响应。TLM引用同一契约SHA，对每一步有宏/电路映射及时间/资源/存储/能耗依据；暂无RTL允许定义功能宏、用有来源的条件PPA估计，未知不为零，未定义功能不得理想化。W8/N64/T16/32/64局部同尺度精确计数需18/19/20位；输出可另缩放量化A8（另符号）或signed8，质量未验证。完整跨档/tile位宽另计，不宣称8位累加足够。
+
+接续Issue159/PR170，分支task/159-hardware-forward-contract；正式NUMERIC_BOUNDARIES_ZH.md，18组整数上界/最小位宽校核见work/jieruiz/159/ACCUMULATOR_BOUNDS.json。无新PPL/训练/RTL/PPA，未改完整TLM代码。下一步先定功能宏、8/10/12接口对照再联合质量/代价验收；发布状态见同目录NUMERIC_PUBLICATION.json。Projects未同步，历史证据保留。
+
+## Issue159硬件前向纠错已发布（2026-10-24）
+
+PR170待审未合并；科学提交d519baec0ff016bcf242526141f3bc74311513ba，15文件远端原字节回读一致，Issue159已同步。3项门禁测试通过，无新训练/PPL/RTL/PPA。HARDWARE_PUBLICATION.json记录回执；部署前向尚待实现，远端Agent是否采用须执行任务确认，Projects未同步。
+
+## 2026-10-24 Issue159：硬件前向纠错
+
+用户明确要求从电路出发。确认旧训练清单及近期固定尺度PPL仍使用FP32 g/u、SiLU与乘积；x/z A8不等于非线性量化。任意实数W scale、恢复/跨tile累加亦待统一。已有FP32数字RTL/PPA只证明其自身路径，不能代替随机非线性证据。FP32已降为诊断oracle，部署前向必须先冻结有限位宽/缩放/舍入/随机响应与流相关性契约。训练主权重/优化器/反向可保留浮点。W4/6/8和57项计划保留但不可启动部署验收；3项门禁测试通过，无新训练/PPL/RTL/PPA，无作业取消。
+
+负责人jieruiz，Issue159，分支task/159-hardware-forward-contract，base d6d33995，复用tmp/qwen3-qat-plan-issue159-20261023；旧PR161已合并，新纠错PR见work/jieruiz/159/HARDWARE_PUBLICATION.json。正式审计qwen3/training/sc_qat_20261023/HARDWARE_FORWARD_AUDIT_ZH.md；交接REMOTE_AGENT_START_HERE_ZH.md，必填HARDWARE_CONTRACT.example.json。发布不代表远端Agent已修改训练，需执行任务回传计划/实现SHA；Projects未同步。不修改历史封存证据，不覆盖其他成员。
+
 ## Issue159 v2已发布（2026-10-23）
 
 远程执行交接与INT4/6/8三套扫描已通过同PR161发布，科学提交12137b19ae6a3e7d862e5785676c200ab6d910fd；19改动文件GitHub原字节回读通过，Issue159范围/进度已同步。PR待审未合并；57项仍是计划，无本任务训练器或GPU结果。完整回执work/jieruiz/159/remote_agent_v2/PUBLICATION.json。入口REMOTE_AGENT_START_HERE_ZH.md可直接交给远程Agent；实现认领与PR160模型/基线复用按该交接执行。其他任务记录保留。

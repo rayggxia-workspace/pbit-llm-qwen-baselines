@@ -103,7 +103,7 @@ for step, batch in enumerate(loader):
 
 上下文键包含seed/optimizer step/microbatch/rank/layer/stage；重算同一前向时复用相同随机样本，新microbatch换键。启用激活检查点时用 `use_reentrant=False`。不要跨microbatch挂起反向再修改模块的key；流水线并行需要另写每microbatch独立上下文。禁止TF32；硬路径内部禁用autocast，不要 `.bfloat16()` 整体覆盖已经安装的FP32 master。
 
-多卡可用 `torchrun --nproc_per_node=... -m ...train` 的DDP入口，各rank随机键独立；当前是正确性参考，没有fused算子或通信/内存最优化。**先测实际step时间和峰值显存，再决定10张H200如何分配**。FSDP/ZeRO、异步流水线、torch.compile尚未验证，不能直接宣称兼容。DDP固定相同world size才能严格断点续训。
+多卡可用 `torchrun --nproc_per_node=... -m ...train` 的DDP入口，各rank随机键独立；当前是正确性参考，没有fused算子或通信/内存最优化。两卡小Qwen3/checkpoint组合已验证，服务器默认NCCL曾阻塞，socket隔离后通过，详见VALIDATION_ZH.md。**先在H200正常通信配置下测试，再测step时间和峰值显存，决定10张H200如何分配**；不要直接继承5090诊断用的禁用开关。FSDP/ZeRO、异步流水线、torch.compile尚未验证，不能直接宣称兼容。DDP固定相同world size才能严格断点续训。
 
 保存：每50步及最后保存FFN master、固定尺度/LUT、optimizer、next step、配置与provenance，附文件SHA。`--resume`指向本格式checkpoint，`--steps`是总目标步数，输出用新目录；配置、数据、代码提交、世界大小变化会拒绝恢复。不要把单纯warm start和严格resume混称。
 

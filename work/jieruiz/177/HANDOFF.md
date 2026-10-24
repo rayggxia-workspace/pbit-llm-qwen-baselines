@@ -10,6 +10,6 @@
 
 验证：CPU13项（12过1跳过），Slurm2906的34项全部通过；tiny HF Qwen3 CUDA5步和3seed合成训练完成。validation/results-2906/COMPLETED.json的documents已验证；执行a3f5a4ac及归档SHA见VALIDATION_ZH.md。完整源包/结果保留本人远端 pbit-trainable-and-20261024-issue177，不改冻结快照。DDP2907/2908是本任务附加小模型通信诊断，状态另见验证记录，不是4B实验。
 
-发布遵守任务PR，不自动合并或关闭Issue。Projects缺read:project权限，待维护者同步；Issue/STATUS/HANDOFF仍应完成。准备发布时重新核对Issue177、PR174；PRE_PUBLICATION_CHECK.json记录身份及依赖。无新的定时任务。
+发布PR178：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/178 ，待审未合并。Projects缺read:project权限，待维护者同步。PRE_PUBLICATION_CHECK.json记录身份及依赖。DDP2907超时、2908手动停止初始化挂起；2909在socket隔离环境完成3步，跨rank参数一致、冻结参数不变；封存documents SHA已核验，失败原件保留。所有本任务作业已结束，无新的定时任务。最终准确发布SHA和核验以PUBLICATION.json为准。
 
 下一步：先读本PR最终回执和验证记录。待昨天checkpoint完成后由原agent提供SHA/导出，按交接重新校准，在H200上先2步确认，再200步pilot；同轮原始BF16/旧精确非线性/未再训练随机前向对照，最后三seed完整PPL，不能复用旧后缀PPL作为完整模型结果。

@@ -1,3 +1,9 @@
+## Issue173：固定四档与32联合分层短流准备（2026-10-24）
+
+用户明确固定S不能随输入变化，要求非线性分层、采样不超过128；可32层每层重复。新增original=[S,S/4,S/16,S/64]、lower_half=[S/2,S/8,S/32,S/128]、lower_floor=[S,S/4,S/16,S/128]三固定四档。前级x/Wg/Wu保持固定四档W8共享64 T=K64。后级为4(g)*2(sigmoid)*4(u)=32联合等体积区间，各取1/2/4次，总32/64/128；不是每支各32段，同序边际分层会偏置乘积。7类边界Binomial严格压缩、Wd直连及整数移位路径不变。状态机仅调研，未实现。
+
+22项CPU功能通过，3项CUDA与缺本地Transformers的runner留Slurm预检；45三seed配置＋3BF16后缀计划。正式qwen3/and_direct/short_core.py、short_run.py、SHORT_STREAM_ZH.md。待冻结上传与Slurm提交，作业ID/准确执行和实际进度以work/jieruiz/173/SHORT_SUBMISSION.json为准，未有回执不得宣称已运行。沿用Issue173/PR174、本人jieruiz及现有目录；无训练/PPA，不改旧快照，不合并，Projects未同步。
+
 ## Issue173：前级64次核验与SiLU状态机调研（2026-10-24）
 
 已核验PR174当前head 0c94a2d8、Issue173与本人jieruiz；五个关键源码与冻结执行8249fad6原字节相同。g/u有限AND实验前级是固定W8、TRAIN固定四档x、共享64随机字、T=K=64分层；后级三流IID，两者不能混称。首层x/g/u给出的是RMS而非均值；gate/up恢复仍FP32参考。文献SMURF(2405.02356v1, ASP-DAC2025)实际测试Swish的64/256比特近似，但没有Qwen验证；候选可直接拟合p*sigmoid(sign*S*p)，保留尺度/符号，与独立u流AND。FSM状态/初始化/相关性必须实际模拟，不能用IID Binomial冒充，也不自动改善同量程的IID采样方差。

@@ -1,3 +1,9 @@
+## Issue173：短流分层Slurm2891已启动（2026-10-24）
+
+固定执行c44c2edc23a9a66c9e48c7f9cf99300fa34cefb0，Slurm2891_[0-2]均RUNNING、每片27项CPU/CUDA/模型预检通过，三次BF16同为13.566049199388152；概率结果尚未收齐，不能称完整PPL交付。45配置＋3BF16，四档位置三方案、32联合区间(4x2x4)、每区间1/2/4次，总T32/64/128；前级四档共享64 T=K64不变。无FSM实现/训练/PPA。源包SHA46e52b88ed8b0ee7bdecd4f23ce4896a19ecaa1179664974fe194c40c7bca42b，已归档project_archives/qwen3_and_direct_20261024/source-c44c2edc23a9.tar.gz，无额外解压副本。
+
+服务器个人ROOT pbit-qwen3-and-short-20261024-issue173，snapshot-c44c2edc不可变；SHORT_SUBMISSION.json含回执，SHORT_RECOVERY.json可恢复。不重交健康任务，不建立未请求的定时；完成后仅依据complete.json/documents/sidecar SHA核验48物理/46唯一结果、36层全前缀，并对original均值/IID64三seed与原Slurm2886做同值复核。交付仍Issue173/PR174待审未合并，Projects未同步。
+
 ## Issue173：固定四档与32联合分层短流准备（2026-10-24）
 
 用户明确固定S不能随输入变化，要求非线性分层、采样不超过128；可32层每层重复。新增original=[S,S/4,S/16,S/64]、lower_half=[S/2,S/8,S/32,S/128]、lower_floor=[S,S/4,S/16,S/128]三固定四档。前级x/Wg/Wu保持固定四档W8共享64 T=K64。后级为4(g)*2(sigmoid)*4(u)=32联合等体积区间，各取1/2/4次，总32/64/128；不是每支各32段，同序边际分层会偏置乘积。7类边界Binomial严格压缩、Wd直连及整数移位路径不变。状态机仅调研，未实现。

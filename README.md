@@ -1,3 +1,7 @@
+# Current complete-model TLM (2026-10-24)
+
+Canonical entry: [architecture_tlm](architecture_tlm/README.md). Fixed-scale W8 FFN with stochastic nonlinearity directly into Wd; existing Attention and memory interfaces. Read the macro/numerical limitations. Historical experiments below remain historical.
+
 > Workspace 协作入口：[AGENTS.md](AGENTS.md)。任务通过 Issue、独立分支和 PR 交付；个人进度见 `progress/<GitHub用户名>/STATUS.md`。
 
 # p-bit LLM: Qwen2.5-0.5B baselines

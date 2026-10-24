@@ -17,9 +17,10 @@ def _fsm(Q,U,SIGN,THETA,OUT,TRACE,N:tl.constexpr,STATES:tl.constexpr,T:tl.conste
     for t in range(T):
         # Each stream has a separate Philox key; clock*lane offset is unique.
         offset=i.to(tl.uint32)+t*N
-        rg=tl.randint(SEED,offset).to(tl.uint32)&255
-        rh=tl.randint(SEED^0x5a17c9e3,offset).to(tl.uint32)&255
-        ru=tl.randint(SEED^0xc83d2197,offset).to(tl.uint32)&255
+        key=SEED.to(tl.uint32)
+        rg=tl.randint(key,offset).to(tl.uint32)&255
+        rh=tl.randint(key^tl.full((),0x5a17c9e3,tl.uint32),offset).to(tl.uint32)&255
+        ru=tl.randint(key^tl.full((),0xc83d2197,tl.uint32),offset).to(tl.uint32)&255
         state=tl.minimum(tl.maximum(state+tl.where(rg<q,1,-1),0),STATES-1)
         theta=tl.load(THETA+neg*STATES+state,valid,0).to(tl.int32)
         event=(rh<theta)&(ru<u);count+=event.to(tl.int32)

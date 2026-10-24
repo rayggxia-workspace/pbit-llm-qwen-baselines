@@ -1,3 +1,5 @@
+已合并：PR180 → main，2026-10-24T14:41:06Z，提交5273e5d9fdae811a714f1a278fee6e776c5675af。全部验证与远端blob核验完成，无本任务运行中作业；Projects待权限。准确回执见work/jieruiz/179/MERGE_VERIFIED.json。
+
 # 当前统一TLM交付：Issue179 / PR180（2026-10-24）
 
 负责人：jieruiz；仓库rayggxia-workspace/pbit-llm-qwen-baselines。

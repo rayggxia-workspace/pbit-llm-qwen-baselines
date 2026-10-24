@@ -24,7 +24,7 @@ def defaults():
         counter_pipeline_bits_per_lane=512, wide_bits=64, coefficient_bits=16,
         rng_nl=dict(words_per_cycle=192, response_latency=2, stream_II=2,
             command_cycles=2, state_bits_per_endpoint=177, words_per_endpoint=20,
-            seed_word_bits=32, seed_word_interval_cycles=100, warmup_cycles=1152,
+            seed_word_bits=32, seed_word_interval_cycles=100, warmup_cycles=5,
             reseed_interval_cycles=100000000),
         numeric_status='GU fixed-point coefficient/rounding macro pending bit-exact validation; no inherited PPL')
 

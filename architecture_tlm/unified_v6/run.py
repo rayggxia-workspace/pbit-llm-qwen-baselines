@@ -37,6 +37,7 @@ def source_record():
         'attention_reference_v3.py','screen_ising_tlm_v4.py',
         'sram_cacti_calibration_v1.py','cacti_memory.py','dramsys_backend.py',
         'llama7b/runtime/results/sram_calibration_v1_20261016/calibration.json']]
+    paths = sorted(set(paths+list((ROOT/'architecture_tlm').glob('*.py'))))
     files = {}
     for p in sorted(paths):
         rel = p.relative_to(ROOT).as_posix()
@@ -157,7 +158,8 @@ def main(argv=None):
     write(a.output/'SUMMARY.json',dict(scope='new synthetic conditional TLM, not PPL/PT/GPU',rows=rows,
         metrics_warning='priced subtotal coverage differs across methods; NEVER compare it as total energy',
         context='total causal length includes current query; prior context-1 KV tokens pre-exist',
-        quality_warning='FFN B4/T32/K32 numerical evidence exists; new parallel samplers have local QKV evidence only, no inherited combined PPL'))
+        quality_warning=('latest GU integer-restoration macro is NOT numerically validated; no inherited PPL'
+            if a.ffn_profile=='latest' else 'legacy schedule reference; no inherited combined model PPL')))
     manifest={str(p.relative_to(a.output)).replace('\\','/'):
         dict(bytes=p.stat().st_size,sha256=sha(p)) for p in sorted(a.output.rglob('*')) if p.is_file()}
     write(a.output/'ARTIFACT_MANIFEST.json',manifest)

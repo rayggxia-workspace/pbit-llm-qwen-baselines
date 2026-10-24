@@ -708,7 +708,8 @@ class FullDecode:
             limitations=['regular arithmetic timing is configured, not calibrated whole-core timing',
                 'SC B4/short-stream counter/scale-restoration power and area not characterized',
                 'stationary weight tile interface is an unverified macro contract, not free DFF replacement',
-                'FFN input-group-major full gu/SwiGLU/down barriers; not claimed optimal channel pipeline',
+                ('FFN input-group-major gu/encoding/AND-direct-down barriers; not optimality claim'
+                 if self.latest_ffn else 'FFN input-group-major gu/SwiGLU/down barriers; not optimality claim'),
                 'one KV group at a time; no head/group parallelism inferred from array size',
                 ('actual finite Issue95 backend with q/256 response; complete random PPA still incomplete'
                  if self.integrated_rng else 'local source interface assumes enough lanes; backend pending'),

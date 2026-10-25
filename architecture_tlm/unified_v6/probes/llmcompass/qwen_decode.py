@@ -130,7 +130,7 @@ def run(case, cfg, length, output):
 
     # Qwen-only operators absent from upstream. These are transparent
     # performance macros with counts, not claims of calibrated device cycles.
-    # 4 vector ops/element for RMSNorm includes sum-square/mean/scale/gamma;
+    # 5 vector ops/element for RMSNorm: square, sum, mean, scale, gamma;
     # inverse square root is counted separately once per normalized row.
     def macro(name, elements, vector_ops, special_ops, io_bytes, repeat, gpu_launch=0):
         c = dev.compute_module
@@ -145,17 +145,21 @@ def run(case, cfg, length, output):
                          logical_io_bytes=io_bytes*repeat, mac=0, operator_seconds=t, service_seconds=t*repeat,
                          launch_seconds=gpu_launch*repeat if gpu else 0, macro_compute_seconds=compute,
                          macro_io_seconds=io, calibrated=False))
-    macro('rmsnorm_block', d, 4*d, 1, 6*d, 2*n, 45e-6)
-    macro('qk_head_norm', (h+kv)*hd, 4*(h+kv)*hd, h+kv, 6*(h+kv)*hd, n, 45e-6)
+    macro('rmsnorm_block', d, 5*d, 1, 6*d, 2*n, 45e-6)
+    macro('qk_head_norm', (h+kv)*hd, 5*(h+kv)*hd, h+kv, 6*(h+kv)*hd, n, 45e-6)
     macro('rope', (h+kv)*hd, 3*(h+kv)*hd, 0, 8*(h+kv)*hd, n, 21e-6)
     macro('attention_scale', h*length, h*length, 0, 4*h*length, n, 21e-6)
     macro('residual_add', d, d, 0, 6*d, 2*n, 21e-6)
     macro('swiglu', f, 5*f, f, 6*f, n, 45e-6)
-    macro('final_rmsnorm', d, 4*d, 1, 6*d, 1, 45e-6)
+    macro('final_rmsnorm', d, 5*d, 1, 6*d, 1, 45e-6)
     # Cache is already allocated: append new token only, no copy-concat of
     # the entire historical KV on each step. L includes the current token.
     macro('kv_append', 2*kv*hd, 0, 0, 2*kv*hd*2, n)
     macro('embedding_lookup', d, 0, 0, 2*d, 1)
+    # Match the TLM's endpoint: greedy token selection after logits. Upstream
+    # matmul still models two-byte output; the 4-byte scan is an explicit
+    # conservative endpoint macro, not a change to native partial-sum costs.
+    macro('greedy_selection', s['vocab_size'], s['vocab_size'], 0, 4*s['vocab_size'], 1, 21e-6)
     assert sum(r['mac'] for r in rows) == inv['total_mac']
     native = sum(r['service_seconds'] for r in rows if r['category'] != 'explicit_Qwen_macro')
     extras = sum(r['service_seconds'] for r in rows if r['category'] == 'explicit_Qwen_macro')

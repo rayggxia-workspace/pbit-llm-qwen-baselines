@@ -1,3 +1,29 @@
+## 2026-10-25 Issue95 / PR188 全路相关性增量已发布
+
+新增18物理播种长流＋18同形状IID对照已上传PR188，远端科学提交2fa6e67a216b9e59e96918f66f3dcc852a12a2c8；tree2649f52c96b7a6048d466437fa4c67ca462c21bd与本地317b1fe7逐文件相同。此前225例保留。报告与CSV已在远端上传/目录交付；中央run rng-correlation-95-20261025，分支58/root66记录check通过，180份CSV矩阵对源NPZ一致。PR开放待审，未合并，不关闭Issue95；Projects待有权限维护者同步。准确发布/恢复入口work/rayggxia/95/correlation_20261025/PUBLICATION.json及RECOVERY_INDEX.json。三个物理noise seed非空间通道，1s周期换种未触发，GF64联合结构问题仍保留。
+
+## 2026-10-25 Issue95：全路时间／空间相关长流已完成
+
+用户要求具体数据，接续同PR188/分支task/95-ideal-quality-20261025、tmp/rng-ideal-quality-issue95-20261025。执行源2dd9ec33fa321174f3891b0cd684bc5aac4b589a，7执行文件及本机C++二进制SHA冻结。已有三条Spectre理想阈值序列各20k/1us，raw/VN两路径、三后端、两个实例；18物理播种案例+18同形状PCG64统计对照，每路连续131072帧，100MHz约1.31072ms。只按需消费启动种子前缀，不把全20k都说成驱动输出；默认1s换种未触发。没有同时物理阵列通道，物理空间相关留空，不能把三个noise seed充作空间lane。
+
+R8、五阈值q4/13/64/128/192、8个bitplane测全部路；时间lag1..128/256/512/1024，R8/阈值空间lag0/1/2/4/8/16/32/64/128，bitplane空间仅同拍。两个实例分别1/64/20lane，区分实例内与实例间；504组观测、3024峰值记录、17124432相关系数，具体路号/lag及短窗T8..128方差/MSE全部保留。
+
+q128/raw三个seed总体max|rho|：LFSR时间.010121/同拍跨实例.003200/错拍.006666；GF64时间.012355/同拍.010972/错拍.013372；Bivium时间.010807/同拍.009977/错拍.012212。不同测试对数不可据max直接排名；同形状IID对照已实跑。GF64四路XOR仍恒0，稀疏命中约.69而IID约.370780；Bivium对应q13接近.377306参考。物理种子改善不消除固定联合结构。
+
+5新增单测、22524运行时核验、6122归档/矩阵审计通过；18案例前4096帧逐字对上轮Python原件，C++中段/尾段/状态另验证。1440/390浏览器和下载链接检查通过。新报告远端上传/rng_correlation_20261025.html；完整CSV包rng_correlation_20261025_tables.zip（63284726B）；原始流/矩阵/JSON在project_archives/rng_correlation_20261025。中央run rng-correlation-95-20261025，仅DESIGN_PROOF，PPA未知。恢复work/rayggxia/95/correlation_20261025/HANDOFF.md，实际远端增量发布见PUBLICATION.json。不改旧225例、Issue184/152模拟任务；无新Spectre/RTL/EDA/LLM；Projects待权限同步。
+
+## 2026-10-25 Issue95 / PR188 已发布
+
+理想读出分层质量已通过 PR188 发布并待审，未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/188 。科学提交413e786fd1a8d08c1825f1886a3000929aff5bc0；完整tree 38b2634008ef6db09b53a7e9872df0faf7ad60bd与本地一致，报告远端读回逐字符一致。225案例与验证结果不变；新增台账与根镜像已同步且保留并行记录。恢复见work/rayggxia/95/ideal_quality_20261025/PUBLICATION.json。Issue95保持开放，Projects待有权限维护者同步。
+
+## 2026-10-25 Issue95：理想读出20k的定时分层质量
+
+用户同意等待实际比较器数据时，先用三条理想阈值读出做基线。task/95-ideal-quality-20261025，tmp/rng-ideal-quality-issue95-20261025，base d6d33995754fcdcea99286e4ce43f91647aa231a；执行本地提交 bdbab3e38ff56e267783af9ac327dbba67a0e169，冻结5文件SHA。已有ideal_and_old_20000_v1三seed32003/32009/32027，各20000bit、1us，仍带旧比较器负载；无新Spectre。216主例+9重复种子对照全完成，每端点4096帧；四个固定5000bit冷启动段，不是12独立物理轨迹，也不触发默认1e8拍/1s周期换种。
+
+理想原始rho1 −0.0037～0.0101，V128为1.208～1.596，不能凭lag1认定IID。VN理想保留约25%；旧比较器VN保留约12%，仍负rho1 −0.236～−0.187。分发逐bit保持，仅截断包末尾；LFSR每端32状态bit，Bivium192总线bit→177状态bit/15丢弃。理想直通双端首次请求63.03us/383.08us，VN为213.03～275.03us/1461.08～1617.08us。GF64前四路q128 XOR恒0，理想直通q4恰一路命中0.685～0.706，对比IID约0.371；Bivium q13约0.362～0.396，对比约0.377。较好种子不消除固定联合关系，PRNG不增加物理熵。
+
+6单测、8956项可复现审计、独立只读复核及1280/390浏览器检查通过。归档project_archives/rng_ideal_quality_20261025（225NPZ、完整JSON、执行bundle、源码zip）；中央run rng-ideal-quality-95-20261025，仅DESIGN_PROOF/PPA未知。报告architecture_tlm/random_service/quality/results/ideal_20261025/REPORT.html，本机远端上传/rng_ideal_quality_20261025.html。HANDOFF/PUBLICATION位于work/rayggxia/95/ideal_quality_20261025；发布状态以回执为准，未自动合并/关闭Issue95。当前在仿真的物理任务Issue184/PR185及他人Issue152只读未改；Projects待有权限者同步。
+
 ## 2026-10-24 第十轮PR审核（发布前冻结）
 
 负责人jieruiz；Issue55；review/55-pr-round10，目录tmp/pr55-review-round10-20261024，base e1b23d77，目标TLM集成分支。161/164/165/166按设计或带限制工艺阶段交付通过；60单测、50原件/2087归档成员、34功耗窗口核验通过，台账56条。161没有训练器/训练结果；digital仍有库表外推，counter活动不全且仅M1，CIM随机源四项翻转率不符失败。163有部分非Base结果但HellaSwag/最终汇总/功耗待补，160仍草稿；六个旧Base PR继续迁移门禁。本地审核已完成、准备推送合并，实际状态以Issue55最终回执为准。main保持fae1298；没有新GPU/EDA作业。报告work/jieruiz/55/round10/REVIEW_ZH.md，归档project_archives/pr_review_issue55_round10_20261024；后续核验发布并回收本轮稀疏副本，其他成员/原始归档不动。Projects未确认写权限，待维护者同步。

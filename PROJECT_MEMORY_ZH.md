@@ -1,5 +1,7 @@
 ## 2026-10-25 Issue186 / PR190：HBM真实闭环25项
 
+HBM发布确认：PR190已推送科学head 092fe9e8dea2deae9ec943f744f8a144bbc334c1，报告/汇总/配置/审计GitHub原字节已回读核验；未合并，准确回执work/jieruiz/186/HBM_PUBLICATION.json。
+
 用户要求将DDR换高带宽DRAM再看时间；同独立目录tmp/mature-scheduling-issue186-20261025，无新副本。实现mature_hbm2_narrow/wide/pipelined，默认DDR仍保留；标准公开HBM2时序扩8通道/16GiB/理论256GBs，内核100MHz、8MiB64GBs SRAM、8×64/R8及采样数不变。e7505ee4/Slurm3019+3020完成17项；43b7b1ff/3037+3038完成8项；全部36层/SHA封存，104回归和36微基准通过，旧DDR每段时延/能量相同。
 
 最终2K/batch1 ms/token：BF16599.340→402.629（少32.8%）；W8数字426.364→333.664（少21.7%）；随机FFN R8准确503.639→438.038（少13.0%）；SC筛选PV三seed474.154→407.167（少14.1%）。实得连续读：DDR27.59、HBM旧64B28.65、256B112.10、流水响应185.79GB/s。旧1ps END_RESP被上游取整再加下一响应1ns，产生2ns节奏；新profile显式0额外接受延迟，上游仍1ns一响应，不改旧源。桥128pending但Arbiter有效64，峰65含等待；PV批量随max_pending32→128、字节和样本不变。HBM功率电流0占位，明确禁用能量，完整PPA仍null。

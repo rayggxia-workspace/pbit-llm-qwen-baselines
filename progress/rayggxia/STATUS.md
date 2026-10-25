@@ -4,6 +4,7 @@
 
 ## Issue187：LLM架构模拟器与PPA证据综述
 
+- 2026-10-25追加：用户询问功能与工艺库如何确定周期，以及是否引入HLS。新增HLS_LATENCY_ZH.md，核查HSA/FSGen/SpAtten/Anda/HLSTransform和官方工具资料；只读PR190@ee21c0ce9a14662aad98abbda8277f8af37365b8。建议局部ASIC HLS试点桶恢复/宽位累加；不是已经运行或确定采用HLS。发布状态见work/rayggxia/187/HLS_PUBLICATION.json（生成后）；无新模型、RTL或EDA实验。
 - 分支：task/187-simulator-survey；PR base：main@5273e5d9fdae811a714f1a278fee6e776c5675af。
 - 工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/simulator-survey-issue187-20261025，最小稀疏worktree。
 - 当前阶段：[PR189](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/189)已发布、开放待审未合并；源提交725a8e69f4f02d331f33b67e3ff1810b22f07585，11个源文件远端读回一致，远端tree与本地index一致；发布回执见work/rayggxia/187/PUBLICATION.json。

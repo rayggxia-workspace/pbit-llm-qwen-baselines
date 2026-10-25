@@ -2,6 +2,12 @@
 
 负责人rayggxia；日期2026-10-25。任务为只读文献调研及正式研究文档发布，无新硬件/模型实验。
 
+## HLS专题追加（2026-10-25）
+
+用户询问功能＋工艺库如何确定周期、论文是否需要HLS。沿用本Issue/PR189，新增architecture_tlm/simulator_survey_20261025/HLS_LATENCY_ZH.md与HLS_SOURCES.json；不扩大至实现。核对5篇论文及工具官方资料，明确HLS、Chisel/SpinalHDL、手写RTL三路线，Latency/II/时钟与反压区别。只读PR190@ee21c0ce的ffn_latest/config及MATURE_SCHEDULING，引用其最新结果替代旧“186实施中”的时点，不改其他任务文件。
+
+建议优先做桶归约/系数恢复/宽位累加的ASIC HLS小试点，同时闭合数值语义与数字基线。Catapult/Stratus许可和服务器环境未核实；本机PATH未找到命令不能推断服务器没有。本轮无HLS/RTL/EDA、TLM运行、模型质量实验；仅文档/引用/当前源码SHA及参数复算检查。实际发布回执见HLS_PUBLICATION.json，维护备忘录见HLS_MEMORY_SYNC.json。下一步等用户的实施指令与PR审核，不能据建议自动提交昂贵EDA作业。
+
 ## 基线和成果
 
 - 仓库rayggxia-workspace/pbit-llm-qwen-baselines；分支task/187-simulator-survey；main基线5273e5d9fdae811a714f1a278fee6e776c5675af，tree bdf5aca1429971b4e2db0f4625769e11c2f37580。

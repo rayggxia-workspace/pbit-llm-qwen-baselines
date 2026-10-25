@@ -28,6 +28,9 @@ def main():
  if 'locality' in case:
   from architecture_tlm.unified_v6.ffn_locality import configure
   configure(c,**case['locality'])
+ if 'resource_profile' in case:
+  from architecture_tlm.unified_v6.resource_sweep import apply as apply_resources
+  c=apply_resources(c,case['resource_profile'],case['shared_prefill'])
  execution=dict(case=case,source=source,config_sha256=hashlib.sha256(json.dumps(c,sort_keys=True).encode()).hexdigest(),matrix_sha256=digest(a.matrix),bridge_sha256=digest(pathlib.Path(a.bridge)),python=platform.python_version(),platform=platform.platform(),executable=sys.executable,argv=sys.argv,slurm_job=os.environ.get('SLURM_JOB_ID'),slurm_array=os.environ.get('SLURM_ARRAY_JOB_ID'),slurm_index=os.environ.get('SLURM_ARRAY_TASK_ID'),quality_evaluation=False)
  write(a.output/'EXECUTION.json',execution);d=None;start=time.monotonic()
  try:

@@ -161,6 +161,8 @@ class FullDecode:
         policy=c.get('schedule_policy','legacy')
         if policy not in ('legacy','shared_tiles'):raise ValueError('unknown schedule policy')
         self.tile_pipeline=TilePipeline(self) if policy=='shared_tiles' else None
+        if c.get('digital_shared_prefill',False) and (policy!='shared_tiles' or f['mode']!='bf16'):
+            raise ValueError('digital shared prefill currently validated for full BF16 reference only')
         self.digital_activation_peak=0;self.digital_partial_peak=0
         if c.get('digital_w8_restore','legacy_row') not in ('legacy_row','block64'):
             raise ValueError('unknown W8 scale restoration contract')
@@ -307,9 +309,9 @@ class FullDecode:
     def matrix_shared(self,t,name):
         """Digital operator on the same DMA-ticket lifecycle used by SC.
 
-        Local operands have explicit bounded capacity. Next DMA is issued at
-        current compute start; its shared-SRAM fill waits until retirement.
-        Thus FIFO SRAM scheduling cannot push current output behind future fill.
+        Local operands have explicit bounded capacity. Default next shared fill
+        waits for retirement. Optional prefill orders it against the current
+        epilogue by readiness; one local operand bank is retained in both modes.
         """
         info=self.matrix_info[name];inp,out=info['inp'],info['out']
         row_bytes=inp*info['width'];chunk=self.c.get('digital_weight_chunk_bytes',self.c['weight_chunk_bytes'])
@@ -345,9 +347,17 @@ class FullDecode:
             if info['width']==1:t=self.digital_w8_restore(t,n,inp)
             output_width=4 if info['width']==1 or name=='lm_head' else 2
             if output_width==2:t=self.vec(t,'matrix_FP32_to_BF16',n,energy_unit='FP32_to_BF16')
+            prefill=self.c.get('digital_shared_prefill',False) and nxt<out and self.c['double_buffer']
+            # FIFO SRAM: schedule next fill first only when it is ready before
+            # this output epilogue. Otherwise finish the epilogue (including
+            # lm_head argmax) first. No fictitious calendar insertion/rewind.
+            if prefill and ticket['dma_done_ns']<=t:
+                pipe.prefill(ticket['dma_done_ns'],ticket)
             address=self.matrix_output+(0 if name=='lm_head' else first*output_width)
             t=self.mem.transfer(t,address,n*output_width,True,'matrix_result')
             if name=='lm_head':t=self.vec(t,'stream_argmax',n,read=n*4,read_address=self.matrix_output)
+            if prefill and pipe.staged is None:
+                pipe.prefill(t,ticket)
             pipe.retire(current_ticket,t)
             if nxt<out and not self.c['double_buffer']:
                 ticket=pipe.issue(t,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
@@ -754,7 +764,7 @@ class FullDecode:
             token_times.append(t-begin)
         if abs(self.s.end()-t)>1e-6:
             raise AssertionError('unretired asynchronous resource at token end')
-        if self.tile_pipeline is not None and (self.tile_pipeline.pending is not None or self.tile_pipeline.active is not None):
+        if self.tile_pipeline is not None and (self.tile_pipeline.pending is not None or self.tile_pipeline.active is not None or self.tile_pipeline.staged is not None):
             raise AssertionError('unretired tile at token end')
         random_report=self.rng.finish(t) if self.integrated_rng else self.rng.report()
         dram = self.dram.finish(t)

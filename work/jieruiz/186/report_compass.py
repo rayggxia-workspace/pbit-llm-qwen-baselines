@@ -51,7 +51,7 @@ def main():
         ('FFN两个入口矩阵',['gate_proj','up_proj'],['FFN_gate_up']),
         ('FFN输出矩阵',['down_proj'],['FFN_down']),
         ('词表投影及选词',['lm_head','greedy_selection'],['lm_head_and_argmax']),
-        ('QK＋Softmax＋PV',['qk','softmax','pv'],['attention_core'])]
+        ('Attention核心（边界仍有差异）',['qk','softmax','pv','attention_scale'],['attention_core'])]
     for label,names,tp in groups:
         phase_rows.append(dict(label=label,a100_ms=total(a,names),small_native_ms=total(cases['small_native_hbm186'],names),
              small_fabric_ms=total(small,names),tlm_ms=sum(tlm['phase_ns'][k] for k in tp)/1e6))
@@ -82,9 +82,9 @@ def main():
 {table}
 | 我们当前TLM：数字BF16＋HBM | {audit['tlm_ms']:.3f} | 不含GPU软件启动 |
 
-A100的服务时间为{a['service_seconds']*1000:.3f}ms；其中原生LLMCompass矩阵和Softmax占{a['native_seconds']*1000:.3f}ms，新增Qwen向量宏占{a['explicit_macro_seconds']*1000:.3f}ms。软件开销另列：原生类别旧版launch共{a['native_legacy_launch_seconds']*1000:.3f}ms，Qwen新增算子的借用launch代理共{a['extra_macro_launch_proxy_seconds']*1000:.3f}ms。**这两个时间口径不是置信区间；{a['with_legacy_launch_seconds']*1000:.3f}ms不是A100实测或现代融合内核的准确预测。** 实际CUDA Graph、融合和运行时会改变启动开销。
+A100的服务时间为{a['service_seconds']*1000:.3f}ms；其中原生LLMCompass矩阵和Softmax占{a['native_seconds']*1000:.3f}ms，新增Qwen向量宏占{a['explicit_macro_seconds']*1000:.3f}ms。软件开销另列：原生类别旧版launch共{a['native_legacy_launch_seconds']*1000:.3f}ms，Qwen新增算子的借用launch代理共{a['extra_macro_launch_proxy_seconds']*1000:.3f}ms。**这两个时间口径不是置信区间；{a['with_legacy_launch_seconds']*1000:.3f}ms不是A100实测或现代融合内核的准确预测。** 实际CUDA Graph、融合和运行时会改变启动开销。仅8.044544GB矩阵权重除以2039GB/s就约3.945ms，4.162ms紧贴理想流式带宽下界，应作为理想算子服务预测看待。
 
-“小算力”统一配置100MHz、512 MAC/拍、64向量FLOP/拍、8MiB共享SRAM和64GB/s共享接口。两者只能称名义资源匹配：LLMCompass仍采用自己的局部阵列/映射，普通Softmax在向量核上执行。外存用带宽模型，未调用DRAMSys。
+“小算力”统一配置100MHz、512 MAC/拍、64向量FLOP/拍、8MiB共享SRAM和64GB/s共享接口。两者只能称名义资源匹配：LLMCompass仍采用自己的局部阵列/映射，普通Softmax在向量核上执行。外存用带宽模型，未调用DRAMSys。小配置仍有上游192KiB/core局部SRAM，而当前TLM数字操作数缓冲为64KiB（另有其他缓冲）；共享容量都为8MiB不代表完整存储层次相同。
 
 ## 2. 模拟器真正运行了什么
 
@@ -119,6 +119,8 @@ A100的服务时间为{a['service_seconds']*1000:.3f}ms；其中原生LLMCompass
 | 部分（全部36层汇总） | 官方A100 ms | 小配置原生 ms | 补SRAM限制 ms | 我们TLM ms |
 |---|---:|---:|---:|---:|
 {phases}
+
+这些行用于定位数量级差异，不是逐阶段同边界校验：LLMCompass列将attention_scale并入核心，而TLM还包括KV搬运、描述符及其他控制；部分和位宽和本地容量也不同。
 
 当前TLM在每个矩阵tile依次做共享SRAM填充、读取、MAC、输出；下一DMA可覆盖当前计算，但下一共享SRAM填充要等前tile退休。仅密集权重搬运251.392ms＋密集MAC78.560ms约329.952ms，还没算启动、格式转换和Attention。因此有明确的重叠优化空间，不能称已经充分流水。
 

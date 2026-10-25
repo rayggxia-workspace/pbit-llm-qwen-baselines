@@ -1,3 +1,5 @@
+发布确认（2026-10-25T11:27:01.963799+00:00）：本轮LLMCompass代码/五配置结果/报告已推送并回读原字节，科学head 1bfaa067013853f1eee8ea9239ca77a050e28353；PR190开放待审、未合并，Issue186已同步。准确回执work/jieruiz/186/COMPASS_PUBLICATION.json。
+
 ## 2026-10-25 Issue186：LLMCompass独立数字时延核对
 
 本地已完成，发布回执见任务work/jieruiz/186/COMPASS_PUBLICATION.json；PR190不自动合并。上游2e015fd2、执行3b06f295/Slurm3052五配置completed，5合同×5通过、真实GQA/Softmax tile和源码/配置/结果SHA核验，初轮3047保留。Qwen3-4B后训练形状36层/D2560/F9728/32Q8KV/head_dim128，B1/2K总上下文/单decode含lm_head和选词，无权重/PPL/GPU/PPA。

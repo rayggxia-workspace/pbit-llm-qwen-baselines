@@ -1,3 +1,5 @@
+2026-10-25追加全路长流：[精确时间／空间相关报告](results/correlation_20261025/REPORT.html)，[逐层数据](results/correlation_20261025/LAYERS.json)，[504组精确峰值CSV](results/correlation_20261025/PEAKS.csv)，[完整CSV／原始矩阵索引](results/correlation_20261025/ARCHIVE_INDEX.json)。18物理播种+18同形状IID对照，每路131072帧；全部lane而非仅第一路，明确同实例／跨实例／错拍。细节及复现见该目录README_ZH.md。原225例不改。
+
 2026-10-25 新基线：[理想读出20k的定时分层报告](results/ideal_20261025/REPORT.html)，[逐案例摘要](results/ideal_20261025/SUMMARY.json)，[输入/配置/归档索引](results/ideal_20261025/ARCHIVE_INDEX.json)。225案例、6单测、8956项核验通过；1us原始时序、四个固定冷启动窗口、不触发默认1s周期换种。执行源/输入分别按SHA冻结。理想输入不消除GF64的固定联合相关；无新模拟电路、RTL、PPA或LLM实验。旧189案例按原协议保留。
 
 复现新协议（输出目录必须全新，Python>=3.10 + NumPy；绘图另需matplotlib）：

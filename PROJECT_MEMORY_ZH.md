@@ -1,3 +1,9 @@
+## 2026-10-25 Issue186：LLMCompass独立数字时延核对
+
+本地已完成，发布回执见任务work/jieruiz/186/COMPASS_PUBLICATION.json；PR190不自动合并。上游2e015fd2、执行3b06f295/Slurm3052五配置completed，5合同×5通过、真实GQA/Softmax tile和源码/配置/结果SHA核验，初轮3047保留。Qwen3-4B后训练形状36层/D2560/F9728/32Q8KV/head_dim128，B1/2K总上下文/单decode含lm_head和选词，无权重/PPL/GPU/PPA。
+
+A100模型服务4.162ms（旧软件启动代理20.989ms，非实测）；小型100MHz/512MAC/64GBs名义资源原生178.006ms，补GEMV漏掉的共享SRAM吞吐限制350.977ms；当前TLM402.629ms。MAC下界90.356ms、SRAM下界261.020ms，当前下一shared fill等待前tile retire，明显保守。上游M1是解析分支而非tile，其他算子/位宽不同，所以差额不是纯调度收益。优先修正数字参考流水/资源档位，不能直接用A100与小ASIC差异贬低概率方案。正式报告architecture_tlm/unified_v6/LLMCOMPASS_COMPARISON_ZH.md、结果results/llmcompass_20261025/final、记录本O12；当前默认未改，远端原件pbit-scheduling-issue186-20261025/compass_2e015fd2/run_3b06f295。恢复先核Issue/PR/交接，不重复健康任务。
+
 ## 2026-10-25 Issue186 / PR190：HBM真实闭环25项
 
 HBM发布确认：PR190已推送科学head 092fe9e8dea2deae9ec943f744f8a144bbc334c1，报告/汇总/配置/审计GitHub原字节已回读核验；未合并，准确回执work/jieruiz/186/HBM_PUBLICATION.json。

@@ -8,7 +8,7 @@
 
 上一轮试验是“跨输入块的部分和本地驻留＋128阵列组织”。入口：[详细结果](unified_v6/FFN_LOCALITY_ZH.md)、[13项完整对照](unified_v6/results/locality_20261025/COMPARISON.csv)。默认路径保留原实现，候选通过配置显式启用。
 
-最新增量为O11：[HBM整机结果](unified_v6/HBM_RESULTS_ZH.md)。HBM profile显式启用，旧DDR默认保持，不覆盖原结果。
+最新增量为O12：[LLMCompass独立时延核对](unified_v6/LLMCOMPASS_COMPARISON_ZH.md)。O11的[HBM整机结果](unified_v6/HBM_RESULTS_ZH.md)保留。新比较不修改现有TLM默认，也不把原生GEMV的解析分支称为周期精确整机。
 
 ## 已有改进总览
 
@@ -25,6 +25,7 @@
 | O09 | 多个K64块在本地累加，R8/R16/全K后再写共享SRAM | 首轮`b1df81d2`；修正跨窗口预取后`829559dce8f3d97c38768dc4d8df9b32b2ccf200`；`ffn_locality.py`；[结果](unified_v6/FFN_LOCALITY_ZH.md) | 部分和流量显著减少；增加本地累加、输入码窗口、随机检查点与端口。保持每K64恢复和累加次序。首轮丢失窗口边界预取的负面结果保留，面积仍为容量/结构代理 |
 | O10 | 128×128用四个64×64象限构成，保持K64算法，比较同计算单元和同阵列数量 | 同O09；2×128对8×64、8×128对8×64；源供给1组/2组分开 | 不能把4倍计算单元称为同面积；不把尺寸128当成T128；时序需计源供给、尾波、恢复带宽和权重搬运 |
 | O11 | 将DDR4换为HBM2，区分64B旧入口、256B入口与1ns流水响应，保持核心/SRAM/采样不变 | 执行e7505ee4/43b7b1ff；[25项完整结果](unified_v6/HBM_RESULTS_ZH.md)、[合同](unified_v6/HBM_TIMING_ZH.md) | BF16 599.340→402.629ms，W8 426.364→333.664，SC R8 503.639→438.038，SC筛选PV474.154→407.167。HBM无有效功耗参数；FFN主体几乎不变，KV单通道热点保留，不称最优HBM实现 |
+| O12 | 采用公开LLMCompass，区分主流硬件资源与当前小配置；核查GEMV省略的片上搬运和保守串行调度 | 执行3b06f295、Slurm3052；[报告](unified_v6/LLMCOMPASS_COMPARISON_ZH.md)、results/llmcompass_20261025/final | A100服务4.162ms（旧launch代理20.989）；小配置178.006ms、补共享SRAM限制350.977ms，当前TLM402.629ms。名义资源匹配，不是同拓扑；QK/PV/Softmax实现也不同，差额不能当纯调度收益。无新GPU/PPA/PPL |
 
 O01—O08为本次核对的已有机制索引，**不是本次重新完成全部算法/RTL/PT验证**。缺少匹配的当前质量记录时保持待验证，具体历史版本和失败记录以PROJECT_MEMORY与各manifest为准。
 

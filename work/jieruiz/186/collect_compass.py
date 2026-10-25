@@ -62,7 +62,7 @@ print(json.dumps({'files':files,'states':states,'upstream_original_files_unchang
     else:status='incomplete'
     report=dict(status=status,states=payload['states'],source_commit=sub['source']['commit'],remote=remote,
                 upstream_original_files_unchanged=payload['upstream_original_files_unchanged'],files=index)
-    (DEST/'COLLECTION.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+    (DEST/'COLLECTION.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8',newline='\n')
     print(json.dumps({k:v for k,v in report.items() if k!='files'},indent=2))
     if status!='completed':sys.exit(2)
 

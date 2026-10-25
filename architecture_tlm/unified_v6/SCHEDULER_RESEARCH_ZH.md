@@ -1,5 +1,7 @@
 # 成熟模拟器调度借鉴与历史工作核对
 
+2026-10-25后续实跑：LLMCompass官方固定源码的Qwen3-4B完整算子图适配已完成，见[五配置对照](LLMCOMPASS_COMPARISON_ZH.md)。投影走其原生GEMV解析分支，GQA QK/PV与Softmax走原生tile映射，Qwen专有向量过程用明确宏补齐；不是完整周期精确Qwen移植。下方“LLMCompass仅借鉴”的内容描述早一轮共同调度实现，现由此新增实跑证据补充。
+
 Issue186，2026-10-25。固定 revision 见 `SCHEDULER_SOURCES.json`。正确名称是 ONNXim；ONNXsim 是另一个图简化工具。本轮不接管 #116/#123 用户暂停的工作。新出现的 #187 由 rayggxia 负责广泛论文证据矩阵，与本任务实现和运行范围分开。
 
 ## 采用什么、没有采用什么

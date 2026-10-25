@@ -1,0 +1,106 @@
+{
+  "status": "passed",
+  "cases": 5,
+  "source_commit": "3b06f29595e2d58fc92a701666236d8f83955c6e",
+  "upstream_commit": "2e015fd2ee750e6cad8d7152df52551e5b41ef20",
+  "native_and_tlm_mac_equal": 4626251776,
+  "matched_context_including_current": 2048,
+  "tlm_result_sha256": "e085ecff4a01c2c4585f0967c36ca8a798c5f203271c72c34cd7b5f284e11822",
+  "raw_tlm_result_sha256": "6c88c7d4ca0ce017b69f24252e5e0b4422dd2166821c53e894ff7d62f018df2b",
+  "tlm_ms": 402.62913,
+  "sram_rw_bytes": 16705296768,
+  "dram_bytes": 8347078656,
+  "lower_bounds_ms": {
+    "mac": 90.35648,
+    "sram": 261.020262
+  },
+  "phase_rows": [
+    {
+      "label": "Q/K/V投影",
+      "a100_ms": 0.5558888710152036,
+      "small_native_ms": 11.0592,
+      "small_fabric_ms": 35.420544,
+      "tlm_ms": 48.97072223920021
+    },
+    {
+      "label": "O投影",
+      "a100_ms": 0.37050218342324676,
+      "small_native_ms": 7.3728,
+      "small_fabric_ms": 23.607936,
+      "tlm_ms": 32.502006739200205
+    },
+    {
+      "label": "FFN两个入口矩阵",
+      "a100_ms": 1.7596367788131437,
+      "small_native_ms": 35.0208,
+      "small_fabric_ms": 112.12185600000001,
+      "tlm_ms": 155.03279723920016
+    },
+    {
+      "label": "FFN输出矩阵",
+      "a100_ms": 0.8798183894065719,
+      "small_native_ms": 17.5104,
+      "small_fabric_ms": 56.060928000000004,
+      "tlm_ms": 77.68220823920021
+    },
+    {
+      "label": "词表投影及选词",
+      "a100_ms": 0.3819661873467386,
+      "small_native_ms": 7.62054,
+      "small_fabric_ms": 24.343156,
+      "tlm_ms": 34.0456
+    },
+    {
+      "label": "QK＋Softmax＋PV",
+      "a100_ms": 0.20637957446808514,
+      "small_native_ms": 98.15184,
+      "small_fabric_ms": 98.15184,
+      "tlm_ms": 53.53318650000004
+    }
+  ],
+  "rows": [
+    {
+      "case": "a100_native",
+      "label": "LLMCompass：官方A100",
+      "service_ms": 4.162283543080149,
+      "with_legacy_launch_ms": 20.98928354308015,
+      "native_ms": 4.153893924639737,
+      "macro_ms": 0.008389618440411967
+    },
+    {
+      "case": "small_native_hbm256",
+      "label": "LLMCompass：小算力＋256GB/s HBM",
+      "service_ms": 177.808094,
+      "with_legacy_launch_ms": 177.808094,
+      "native_ms": 176.51384000000002,
+      "macro_ms": 1.2942539999999998
+    },
+    {
+      "case": "small_native_hbm186",
+      "label": "LLMCompass：小算力＋186GB/s HBM",
+      "service_ms": 178.006094,
+      "with_legacy_launch_ms": 178.006094,
+      "native_ms": 176.71184,
+      "macro_ms": 1.2942539999999998
+    },
+    {
+      "case": "small_fabric32",
+      "label": "上项＋显式共享SRAM流量上限",
+      "service_ms": 350.976774,
+      "with_legacy_launch_ms": 350.976774,
+      "native_ms": 349.68252,
+      "macro_ms": 1.2942539999999998
+    },
+    {
+      "case": "small_native_ddr",
+      "label": "LLMCompass：小算力＋双通道DDR4",
+      "service_ms": 371.382518576,
+      "with_legacy_launch_ms": 371.382518576,
+      "native_ms": 370.07728896000003,
+      "macro_ms": 1.3052296159999999
+    }
+  ],
+  "unit_tests": "5 per final array task, 25 pass; native grouped tile/Softmax actual execution verified",
+  "limitations": "same shape/count and nominal resources; NOT identical topology, SRAM path, arithmetic width or Softmax unit",
+  "gpu_or_rtl_run": false
+}

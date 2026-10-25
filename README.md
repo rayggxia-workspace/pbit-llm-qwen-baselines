@@ -1,4 +1,6 @@
-# Current complete-model TLM (2026-10-24)
+# Current complete-model TLM (2026-10-25, PR183 / PR190)
+
+正式主线为 **main**。当前[基线与配置选择](architecture_tlm/BASELINE_ZH.md)区分默认DDR4共同调度、HBM对照和资源扩容候选；沿用同一个 `python -m architecture_tlm` 入口。条件时延基线不等于完整模型质量或芯片PPA验收。
 
 Canonical entry: [architecture_tlm](architecture_tlm/README.md). Fixed-scale W8 FFN with stochastic nonlinearity directly into Wd; existing Attention and memory interfaces. Read the macro/numerical limitations. Historical experiments below remain historical.
 

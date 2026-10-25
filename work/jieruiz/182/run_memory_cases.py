@@ -35,7 +35,7 @@ def main():
  if a.output.exists():raise ValueError('immutable run directory already exists')
  a.output.mkdir(parents=True)
  profile,E,ffn,attn,db=CASES[a.case];c,m=load('qwen3_4b')
- c.update(context_tokens=2048,seed=0,double_buffer=db)
+ c.update(context_tokens=2048,seed=0,double_buffer=db,digital_weight_chunk_bytes=65536)
  c['ffn'].update(mode=ffn,engines=E,local_weight_bytes=E*4096)
  c['weight_chunk_bytes']=max(65536,E*4096)
  c['attention']['mode']=attn

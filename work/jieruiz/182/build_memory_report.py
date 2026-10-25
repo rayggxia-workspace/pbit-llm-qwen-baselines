@@ -7,7 +7,7 @@ base=['legacy_link','ddr4_old','ddr4_wide','balanced_e8','cross_group_e8','cross
 if any(k not in by for k in base):raise ValueError('final comparison not complete')
 labels={'legacy_link':'旧Link、旧SRAM/调度','prefetch_link':'旧Link，仅组内预取','sram64_link':'旧Link，仅SRAM加宽','ddr4_old':'标准DDR4，旧SRAM/调度','ddr4_wide':'标准DDR4，仅SRAM加宽','balanced_e8':'标准DDR4＋加宽＋仅组内预取，8阵列','balanced_e16':'仅组内预取，16阵列','balanced_e32':'仅组内预取，32阵列','balanced_e64':'仅组内预取，64阵列','balanced_single':'8阵列、全局关闭双缓冲重叠','cross_group_e8':'完整跨组预取，8阵列','cross_group_e16':'完整跨组预取，16阵列','cross_group_e32':'完整跨组预取，32阵列','cross_group_e64':'完整跨组预取，64阵列','balanced_bf16':'同存储BF16数字参考','balanced_w8':'同存储W8数字参考','balanced_screen_pv':'SC＋筛选/PV','balanced_screen_rejection':'SC＋筛选/校正拒绝'}
 lines=['# 标准DRAM、分层SRAM与阵列规模：完整TLM结果','',
-'全部为Qwen3-4B后训练版形状、36层、batch1、2K上下文、一个decode token；SC FFN采用W8、x四档T64/K64、随机非线性T64。时间是模拟硬件时间，非运行模拟器的CPU墙钟。数字参考保留原非线性；本轮没有模型权重/语料输入，不是PPL或同质量芯片性能验证。','',
+'全部为Qwen3-4B后训练版形状、36层、batch1、2K上下文、一个decode token；SC FFN采用W8、x四档T64/K64、随机非线性T64。时间是模拟硬件时间，非运行模拟器的CPU墙钟。主对照固定准确Attention以隔离存储/FFN变化；筛选/PV和筛选/拒绝另列三seed结果。数字参考保留原非线性；本轮没有模型权重/语料输入，不是PPL或同质量芯片性能验证。','',
 '## 一眼看懂主要变化','',
 '| 配置 | 模拟ms/token | 核心周期（100MHz） | DRAM core J/token |','|---|---:|---:|---:|']
 def table(keys):

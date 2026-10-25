@@ -45,7 +45,7 @@ for name in ('Core.cc','Sram.cc','SystolicWS.cc','SystolicOS.cc'):
  assert (root/'src'/name).read_bytes()==(root/'original/src'/name).read_bytes()
 manifest={'upstream':'8599bee46b311fb267ac34b0677ad7db3d8a8ccd','downloaded':records,'implementation_unchanged':['Core.cc','Sram.cc','SystolicWS.cc','SystolicOS.cc'],'header_adapters':list(patches),'files':{str(p.relative_to(root)):{'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size} for p in root.rglob('*') if p.is_file()}}
 (root/'SOURCE.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
-cmd=['g++','-std=c++20','-O2','-Isrc','-Ideps/spdlog/include','-Ideps/json/include','-Ideps/robin/include','probe.cc','src/Core.cc','src/Sram.cc','src/SystolicWS.cc','src/SystolicOS.cc','-o','probe','-pthread']
+cmd=['g++','-std=c++20','-O2','-DFMT_HEADER_ONLY','-Isrc','-Ideps/spdlog/include','-Ideps/json/include','-Ideps/robin/include','probe.cc','src/Core.cc','src/Sram.cc','src/SystolicWS.cc','src/SystolicOS.cc','-o','probe','-pthread']
 (root/'COMMAND.json').write_text(json.dumps({'compile':cmd,'compiler':subprocess.check_output(['g++','--version']).decode()},indent=2)+'\n',encoding='utf-8',newline='\n')
 with (root/'build.out').open('wb') as log:subprocess.run(cmd,cwd=root,stdout=log,stderr=subprocess.STDOUT,check=True)
 with (root/'run.out').open('wb') as log:subprocess.run([str(root/'probe'),str(root/'RESULT.json')],cwd=root,stdout=log,stderr=subprocess.STDOUT,check=True)

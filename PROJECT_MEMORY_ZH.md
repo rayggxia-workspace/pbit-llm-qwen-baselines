@@ -1,6 +1,15 @@
 ## 2026-10-25 第十一轮：PR190转为main共同调度基线（发布前）
 
 负责人jieruiz，Issue55；review/55-pr190-main，目录tmp/pr55-review-round11-20261025，main基线5273e5d9。190@008b0227及依赖183@0341b4ac、历史回执181@8f401be4审核通过有限交付，准备进入main，实际合并以Issue55最终回执为准。110测试、18小形状重放、688执行源码blob、246本地制品SHA与六组汇总核验通过；440个远端原件条目本轮未重下载。默认mature_ddr4、HBM显式对照、R8/128/大MAC宽SRAM作为候选；正式入口architecture_tlm/BASELINE_ZH.md。没有改科学代码/默认资源，没有新GPU/全模型DRAMSys/RTL/PT。旧TLM分支改为历史追溯，后续主线面向main；完整PPA/真实质量仍未知。报告work/jieruiz/55/round11/REVIEW_ZH.md，归档project_archives/pr_review_issue55_round11_20261025；其余17项分流未宣称完整审核。下一步精确head合并、回读验证、镜像同步及审阅副本回收；Projects待维护者同步。
+发布确认（2026-10-25T12:50:42.665685+00:00）：ASIC文献与剩余瓶颈报告已推送bd283248并回读SHA核验；Issue186/PR190已更新、未合并；准确回执work/jieruiz/186/ASIC_COMPARISON_PUBLICATION.json。
+
+## 2026-10-25 Issue186：ASIC文献与剩余时延归因
+
+2026-10-25T12:48:53.666246+00:00。本轮仅一手论文核查＋既有3058结果派生，未新跑TLM/PPL/RTL或改默认。报告architecture_tlm/unified_v6/ASIC_PAPER_COMPARISON_ZH.md，输入SHA/计算见work/jieruiz/186/ASIC_COMPARISON_DERIVATION.json；发布状态见ASIC_COMPARISON_PUBLICATION.json，同PR190不自动合并。
+
+ASIC可用TB/s片上SRAM：SN40L为分布式520MiB/1040PMU、数百TB/s局部聚合，HBM约2TB/s/socket；Groq作者报告220MiB/88slice显式编译调度，未把无法完整打开的产品brief的80TB/s用于定量证据。AttAcc多HBM堆栈、NeuPIMs TP4起步/B64–512吞吐不能当单芯片B1；OPAL报告70B约1.98s/token但外存等口径不足；DS-CIM是40nm宏后布局+LLM误差注入，未给整机TPOT，不把TOPS/W当J/token。
+
+当前8192MAC/拍，SRAM512→1024GBs只使125.505→107.639ms，少14.24%；密集91.111→73.972，attention33.614→32.893。外存8.347GB/token÷256GBs下界32.606ms，即使片上无限快也不能变成A100模型4.162ms。A100预测约94.8%来自忽略L2约束的M1 GEMV快捷路径，主要依赖2039GBs外存；不能把它快主要归因7.22TBs L2。剩余还含单消费者/偏晚DMA、131万span生成忙13.115ms、跨描述符屏障及KV通道热点。忙碌时间重叠不能相加。下一步优先入口/异步多tile/本地双缓冲/KV分布及匹配目标HBM，数字和概率共享优化；未量化这些未实现项能各省多少。
 
 发布确认（2026-10-25T12:17:21.681310+00:00）：16项资源/调度结果已推送并回读字节，科学提交59f8b146，远端head 277636732f5498a97036a659bfdefe3193e42fe4；PR190待审未合并、Issue186已同步；准确回执work/jieruiz/186/RESOURCE_PUBLICATION.json。
 

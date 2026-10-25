@@ -1,3 +1,7 @@
+# 当前Issue186：成熟调度接入探索
+
+负责人jieruiz；task/186-mature-scheduling；依赖PR183/0341b4ac，进行中未发布。根目录tmp/mature-scheduling-issue186-20261025，交接work/jieruiz/186/HANDOFF.md。普通数字与SC共同tile、SG及上游调度探针正在实现。
+
 # Issue182 / PR183：标准内存与跨组权重预取
 
 更新时间：2026-10-25T04:15:19.874160+00:00；负责人jieruiz；正式仓库rayggxia-workspace/pbit-llm-qwen-baselines。

@@ -45,7 +45,8 @@ class AddressSpace:
 class DRAMSysExternal:
     def __init__(self,cfg,energy,traffic,address_space):
         self.cfg=cfg;self.energy=energy;self.traffic=traffic
-        self.layout=address_space;self.counter=0;self.final=None
+        self.layout=address_space;self.counter=0;self.final=None;self.last_done_ns=0.
+        self.features=set()
         self.service_ns=0.;self.max_service_ns=0.;self.stalls=0
         self.diagnostic={}
         executable=Path(cfg['bridge_executable']).resolve()
@@ -60,6 +61,7 @@ class DRAMSysExternal:
         if ready.get('status')!='ready':raise RuntimeError(f'DRAMSys not ready: {ready}')
         if self.layout.total_bytes>ready['memory_bytes']:raise ValueError('model exceeds DRAM capacity')
         self.capacity=ready['memory_bytes']
+        self.features=set(ready.get('features',[]))
 
     def _read(self):
         while True:
@@ -74,24 +76,55 @@ class DRAMSysExternal:
                 continue
             return json.loads(line)
 
-    def access(self,ready,size,kind,write,address=None):
-        if address is None:raise ValueError('DRAMSys requests require actual addresses')
-        if address%64:raise ValueError('unaligned DRAM address')
-        n=math.ceil(size/64)*64
+    def _exchange(self,ready,kind,write,logical,physical,payload):
+        if not math.isfinite(ready) or ready < 0:
+            raise ValueError('invalid DMA ready time')
+        if self.cfg.get('strict_time_order',False) and ready+1e-6 < self.last_done_ns:
+            raise ValueError('DRAMSys actor cannot insert a request before previous completion')
         self.counter+=1
-        request=dict(op='access',id=self.counter,ready_ns=ready,address=address,bytes=n,write=write)
+        request=dict(id=self.counter,ready_ns=ready,write=write,**payload)
         self.process.stdin.write(json.dumps(request)+'\n');self.process.stdin.flush()
         response=self._read()
         if response.get('id')!=self.counter:raise RuntimeError('DRAM response ID mismatch')
         done=response['done_ns']
-        if done<ready:raise RuntimeError('DRAM completion preceded issue')
+        if not math.isfinite(done) or done<max(ready,self.last_done_ns):
+            raise RuntimeError('DRAM completion preceded issue or actor time')
+        if 'burst_count' in response and response['burst_count']!=physical//64:
+            raise RuntimeError('DRAM burst conservation failure')
+        self.last_done_ns=done
         direction='write' if write else 'read'
-        self.traffic[f'external_{kind}_{direction}_logical_bytes']+=size
-        self.traffic[f'external_{kind}_{direction}_burst_bytes']+=n
+        self.traffic[f'external_{kind}_{direction}_logical_bytes']+=logical
+        self.traffic[f'external_{kind}_{direction}_burst_bytes']+=physical
         self.traffic[f'external_{kind}_{direction}_requests']+=1
         self.service_ns+=done-ready;self.max_service_ns=max(self.max_service_ns,done-ready)
-        self.trace.write(json.dumps({**request,'kind':kind,'logical_bytes':size,**response})+'\n')
+        self.trace.write(json.dumps({**request,'kind':kind,'logical_bytes':logical,**response})+'\n')
         return done
+
+    def access(self,ready,size,kind,write,address=None):
+        if address is None:raise ValueError('DRAMSys requests require actual addresses')
+        if address<0 or address%64 or size<=0:raise ValueError('invalid DRAM address/size')
+        n=math.ceil(size/64)*64
+        if address+n>self.capacity:raise ValueError('DMA exceeds DRAM capacity')
+        return self._exchange(ready,kind,write,size,n,dict(op='access',address=address,bytes=n))
+
+    def access_sg(self,ready,ranges,kind,write):
+        """One bounded descriptor, rolling burst credit across noncontiguous spans.
+
+        Spans are already sorted, deduplicated and burst-aligned by the caller.
+        This does not create concurrent macro DMAs: the descriptor still drains.
+        """
+        if 'scatter_gather_v1' not in self.features:
+            raise ValueError('bridge lacks scatter_gather_v1; no silent serialized fallback')
+        limit=self.cfg.get('sg_max_spans',256)
+        if not 1<=limit<=256 or not 1<=len(ranges)<=limit:
+            raise ValueError('scatter descriptor capacity exceeded')
+        end=-1;payload=[];physical=0
+        for address,size in ranges:
+            if address<0 or size<=0 or address%64 or size%64 or address<end or address+size>self.capacity:
+                raise ValueError('scatter ranges must be sorted, disjoint, aligned and in bounds')
+            end=address+size;physical+=size
+            payload.append(dict(address=address,bytes=size))
+        return self._exchange(ready,kind,write,physical,physical,dict(op='access_sg',ranges=payload))
 
     def finish(self,end_ns):
         self.process.stdin.write(json.dumps(dict(op='finish',end_ns=end_ns))+'\n')
@@ -107,6 +140,7 @@ class DRAMSysExternal:
         self.diagnostic=dict(backend='DRAMSys 5.6.0 / SystemC3 / DRAMPower6.3.1',
             coupling='closed-loop nonblocking TLM bursts, DMA-level barrier',
             macro_requests=self.counter,capacity_bytes=self.capacity,
+            bridge_features=sorted(self.features),last_done_ns=self.last_done_ns,
             configuration_sha256=self.config_hash,address_regions=self.layout.regions,
             service_ms=self.service_ns/1e6,max_DMA_latency_ns=self.max_service_ns,
             **self.final)

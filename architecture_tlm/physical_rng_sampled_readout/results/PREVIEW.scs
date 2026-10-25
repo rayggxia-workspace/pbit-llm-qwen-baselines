@@ -1,0 +1,46 @@
+simulator lang=spectre insensitive=yes
+include "/remote-only/model/spectre/icsprout_55llulp1225_v1p1_spe.lib" section=tt_mos
+simulatorOptions options temp=25 reltol=1e-5 vabstol=1e-7 iabstol=1e-16 gmin=1e-15
+VDD (vdd 0) vsource dc=1.2
+VGN (gn 0) vsource dc=0.3
+VGP (gp 0) vsource dc=0.8998115919357365
+XN (out gn 0 0) nm1p2_svt_lp w=1u l=1u nf=1 mr=1 prelayout=1
+XP (out gp vdd vdd) pm1p2_svt_lp w=1u l=1u nf=1 mr=1 prelayout=1
+// Normal current bias; no output current starvation, no behavioral gain.
+VDC (vdc 0) vsource dc=1.2
+IBIAS (vdc nbias) isource dc=2e-05
+XBIAS (nbias nbias 0 0) nm1p2_svt_lp w=2u l=0.12u nf=1 mr=1 prelayout=1
+XTAIL (tail nbias 0 0) nm1p2_svt_lp w=2u l=0.12u nf=1 mr=1 prelayout=1
+XIP (mirror out tail 0) nm1p2_lvt_lp w=0.5u l=0.12u nf=1 mr=1 prelayout=1
+XIN (sense ref tail 0) nm1p2_lvt_lp w=0.5u l=0.12u nf=1 mr=1 prelayout=1
+XLP (mirror mirror vdc vdc) pm1p2_svt_lp w=2u l=0.18u nf=1 mr=1 prelayout=1
+XLM (sense mirror vdc vdc) pm1p2_svt_lp w=2u l=0.18u nf=1 mr=1 prelayout=1
+XB1N (inv sense 0 0) nm1p2_svt_lp w=0.5u l=0.12u nf=1 mr=1 prelayout=1
+XB1P (inv sense vdc vdc) pm1p2_svt_lp w=1u l=0.12u nf=1 mr=1 prelayout=1
+XB2N (bit inv 0 0) nm1p2_svt_lp w=1u l=0.12u nf=1 mr=1 prelayout=1
+XB2P (bit inv vdc vdc) pm1p2_svt_lp w=2u l=0.12u nf=1 mr=1 prelayout=1
+Cbit (bit 0) capacitor c=5e-15
+VREF (ref 0) vsource dc=0.604745
+// Real MOS only. Ideal finite-edge two-phase clocks are external testbench stimuli.
+VL (vl 0) vsource dc=1.2
+XLINN (x track bit 0) nm1p2_svt_lp w=0.5u l=0.12u nf=1 mr=1 prelayout=1
+XLINP (x trackb bit vl) pm1p2_svt_lp w=1u l=0.12u nf=1 mr=1 prelayout=1
+XLFBN (x hold xi 0) nm1p2_svt_lp w=0.5u l=0.12u nf=1 mr=1 prelayout=1
+XLFBP (x holdb xi vl) pm1p2_svt_lp w=1u l=0.12u nf=1 mr=1 prelayout=1
+XL1N (qb x 0 0) nm1p2_svt_lp w=0.5u l=0.12u nf=1 mr=1 prelayout=1
+XL1P (qb x vl vl) pm1p2_svt_lp w=1u l=0.12u nf=1 mr=1 prelayout=1
+XL2N (xi qb 0 0) nm1p2_svt_lp w=0.5u l=0.12u nf=1 mr=1 prelayout=1
+XL2P (xi qb vl vl) pm1p2_svt_lp w=1u l=0.12u nf=1 mr=1 prelayout=1
+XL3N (ob xi 0 0) nm1p2_svt_lp w=0.5u l=0.12u nf=1 mr=1 prelayout=1
+XL3P (ob xi vl vl) pm1p2_svt_lp w=1u l=0.12u nf=1 mr=1 prelayout=1
+XL4N (q ob 0 0) nm1p2_svt_lp w=1u l=0.12u nf=1 mr=1 prelayout=1
+XL4P (q ob vl vl) pm1p2_svt_lp w=2u l=0.12u nf=1 mr=1 prelayout=1
+XLRST (x reset 0 0) nm1p2_svt_lp w=1u l=0.12u nf=1 mr=1 prelayout=1
+CQ (q 0) capacitor c=5e-15
+VTRACK (track 0) vsource type=pulse val0=0 val1=1.2 delay=8.495e-07 rise=1e-09 fall=1e-09 width=9.9e-08 period=1e-06
+VTRACKB (trackb 0) vsource type=pulse val0=1.2 val1=0 delay=8.495e-07 rise=1e-09 fall=1e-09 width=9.9e-08 period=1e-06
+VHOLD (hold 0) vsource type=pulse val0=1.2 val1=0 delay=8.474999999999999e-07 rise=1e-09 fall=1e-09 width=1.03e-07 period=1e-06
+VHOLDB (holdb 0) vsource type=pulse val0=0 val1=1.2 delay=8.474999999999999e-07 rise=1e-09 fall=1e-09 width=1.03e-07 period=1e-06
+VRESET (reset 0) vsource type=pulse val0=1.2 val1=0 delay=1e-07 rise=1e-09 fall=1e-09 width=100 period=200
+save out bit q qb track
+tranSample tran stop=0.0220001 maxstep=2.5e-09 strobeperiod=5e-08 strobeoutput=strobeonly method=trap noisefmin=500 noisefmax=100000000 noiseseed=68003 noisescale=1

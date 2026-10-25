@@ -1,9 +1,25 @@
-# Issue193交接（实现冻结，验证进行中）
+# Issue193第一轮校准包交接
 
-负责人jieruiz；task/193-ffn-calibration-stage1；base main d83eeb1fc6b89a3dff51b5b62bf79acf665c7166。独立目录tmp/ffn-calibration-issue193-20261025。正式范围architecture_tlm/ffn_calibration_stage1；不改PR192/TLM默认、旧RTL或PPL。
+负责人jieruiz；分支task/193-ffn-calibration-stage1；base main d83eeb1fc6b89a3dff51b5b62bf79acf665c7166。独立目录tmp/ffn-calibration-issue193-20261025。源码冻结提交55c607dc4f21fe6cbf1355db4b949b4396cd977f已推送；本次结果提交和PR状态以PUBLICATION.json为准。Issue193保持开放，不自动合并。
 
-已实现：精确计数、4/7档整数恢复、64位饱和累加、单帧chain、9 fixed tops、独立integer/TB、Slurm→VCS→DC→可选PT-STA脚本。29流程单测通过，暂无许可EDA或远端作业。
+## 已完成
 
-本地最终9case Icarus验证进行中：C:/Users/86134/AppData/Local/Temp/ffn193_final_functional。预检M8/B7/T128超过240s软件超时，已保留preflight_timeout.json，正式runner上限900s；M1三seed/M8一seed，全部仍包含多个极值和回压帧，非PPL统计。
+- 正式目录architecture_tlm/ffn_calibration_stage1，4RTL模块、9固定top、独立整数oracle/TB、VCS/Icarus入口、DC/可选PT-STA及Slurm脚本。
+- 最终9case功能通过、9 fixed top含SYNTHESIS展开通过、29流程单测通过。M1计数核3seed，M8扩展1seed；每个counter运行9完整帧并包含极值/回压/复位。不是PPL误差试验。
+- counter末采样后6拍out_valid；restore 4/7档握手8/10拍；acc1拍；完整链frame接受至最终握手80/146拍。同步reset正常计时，无false/multicycle豁免。
+- 240s Icarus宽通道超时已封存，900s上限正式运行9case通过（总墙钟约530秒）；软件仿真速度不代表电路时序失败。
+- 没有运行许可VCS/DC/PT、没有Slurm作业、没有55nm PPA；100MHz仅目标。coeff/rshift的真实模型编译、质量闭环、SRAM/PRNG/比较器/非线性/BF16仍在边界外。
 
-下一步：读取summary结果，封存小回执/源码manifest，中央台账仅新增record，不从旧维护分支整目录覆盖main。写最终验证、ZIP、推送PR，更新Issue193/STATUS和备忘录。不自动合并。Projects缺read:project待同步。
+## 成果与哈希
+
+ZIP：C:\Users\86134\Documents\a_P_BIT\ffn_calibration_stage1_20261025.zip，110224 bytes，SHA256 `51d2f5a5052ba8f45299d2447a07dcf161b8e4ddf4998b910215549f0ec7ab81`。
+证据小归档：C:\Users\86134\Documents\a_P_BIT\project_archives\ffn_calibration_stage1_issue193_20261025\validation_evidence.tar.gz，SHA256 `201714aa8b41011a28a218972be190e8155bc536d1a5cf27b30dfedea15985b2`。
+源码、配置和各测试哈希见SOURCE_MANIFEST.json及results/local_validation/final/summary.json。独立计数矩阵有部分已停止的重复验证，原件独立标注，未算作完整矩阵。
+
+## 台账
+
+新增ffn-stage1-193-rtl-20261025；root联合阅读索引67→68，原67条逐SHA不变，check/render通过。main尚无完整registry实现；本PR只增此record，不能带入其他未合并的67条。正式56条台账在pbit-tlm-attention-details-20261016 d6d3399，后续集成需将新record加入该目录catalog/render。REGISTRY_CHECK.json记录边界，不把根68条都说成远端已合。Projects无read:project待同步。
+
+## 下一步
+
+用户按RUN_FIRST_ZH.md设置55nm SS库和许可环境，先用submit_smoke.sh提交2小case。读取RESULT.json/setup/hold关键路径后决定改流水线；不要用工具退出码或RTL周期替代STA。时序确定后再定义活动窗口提取PT功耗。当前不重跑PPL，不改PR192或TLM默认。

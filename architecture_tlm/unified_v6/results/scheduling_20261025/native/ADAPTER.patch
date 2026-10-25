@@ -1,0 +1,47 @@
+--- original/src/Core.h
++++ src/Core.h
+@@ -4,7 +4,7 @@
+ #include <memory>
+ #include <vector>
+ 
+-#include "Dram.h"
++#include "Common.h"
+ #include "SimulationConfig.h"
+ #include "Sram.h"
+ #include "Stat.h"
+--- original/src/Common.h
++++ src/Common.h
+@@ -16,9 +16,6 @@
+ #include "Stat.h"
+ #include "helper/HelperFunctions.h"
+ #include "nlohmann/json.hpp"
+-#include "onnx/defs/schema.h"
+-#include "onnx/onnx-operators_pb.h"
+-#include "onnx/onnx_pb.h"
+ 
+ #define SPAD_BASE 0x10000000
+ #define ACCUM_SPAD_BASE 0x20000000
+--- original/src/SystolicWS.h
++++ src/SystolicWS.h
+@@ -11,5 +11,5 @@
+   virtual cycle_type get_inst_compute_cycles(std::unique_ptr<Instruction>& inst) override;
+   uint32_t _stat_systolic_inst_issue_count = 0;
+   uint32_t _stat_systolic_preload_issue_count = 0;
+-  cycle_type get_vector_compute_cycles(std::unique_ptr<Instruction>& inst);
++  virtual cycle_type get_vector_compute_cycles(std::unique_ptr<Instruction>& inst);
+ };--- original/src/helper/HelperFunctions.h
++++ src/helper/HelperFunctions.h
+@@ -1,10 +1,4 @@
+-#ifndef HELPER_FUNCTIONS_H
+-#define HELPER_FUNCTIONS_H
+-
+-#define MIN(x, y) (((x) > (y)) ? (y) : (x))
+-#define MIN3(x, y, z) MIN(MIN(x, y), z)
+-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+-#define GB * 1024 * 1024 * 1024
+-#define MHz * 1000 * 1000
+-
+-#endif+#pragma once
++#include <algorithm>
++#define MAX(a,b) ((a)>(b)?(a):(b))
++#define MIN(a,b) ((a)<(b)?(a):(b))

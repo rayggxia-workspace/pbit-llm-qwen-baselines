@@ -1,18 +1,22 @@
-# Issue186 共同调度探索（2026-10-25T05:33:14.297869+00:00）
+# Issue186 / PR190：成熟调度共同模型交付
 
-负责人 jieruiz；分支 `task/186-mature-scheduling`，依赖 PR183 / `0341b4ac`，拟 PR base `task/182-memory-hierarchy`，不自动合并。
+更新：2026-10-25T06:33:00.231770+00:00；负责人jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
+分支task/186-mature-scheduling，独立目录tmp/mature-scheduling-issue186-20261025；依赖PR183@0341b4ac，PR190的base=task/182-memory-hierarchy。代码与结果本地完成；最终远端状态以PUBLICATION.json/PR190为准，不自动合并。
 
-- 已实现：共同有限 tile 生命周期、数字本地 operand 容量、SG DMA、严格 DRAM actor 单向时间；旧103项回归通过。
-- 实际验证：SG gate2938；真实DRAMSys十项联调2942完成并核SHA。2941的小fixture候选预算失败保留，修正后未改变生产默认8块。
-- 运行中：Slurm2943，31个完整36层Qwen3-4B合成decode/2K或8K对照，20并发CPU，不占GPU。冻结执行 `bab9721d629df643e4096f5111a0a4ac5722ed3e`；远端 `/home/Hongjie_Zeng/projects/pbit-scheduling-issue186-20261025/full_bab9721d/`。
-- 尚未完成：完整结果核验、最新ONNXim原生probe、最终报告/发布；不要把提交作业写成结果完成。
-- 不涉及PPL/训练/新RTL/PT；数字吞吐、互连和未标定宏PPA仍保留边界。只读旧116/123暂停工作。
-- #187由rayggxia维护论文证据矩阵，范围独立。项目看板缺read:project，待同步。
-- 下一步：读取HANDOFF和最新Issue186，按封存manifest与SHA收集完成项，不修改运行中source、不重复健康作业。
+已完成：共同有限tile/slot/响应生命周期、数字本地状态与K64 W8恢复、SG实际DRAM、默认mature_ddr4。110回归；真实DRAM10小整机＋8SG；原生ONNXim25情景和官方39/47，ASan/UBSan结果SHA一致且stderr零；独立CMake重新构建DRAM桥8项结果一致。45完整Qwen3-4B/36层/2K或8K decode合成事务按completed MANIFEST/配置/源码/结果SHA核验，主概率三seed。
 
-# 当前Issue186：成熟调度接入探索
+主要ms/token：2K BF16准确599.340、W8准确426.364、SC准确509.471、W8筛选PV396.842、SC筛选PV479.976、SC校正拒绝700.421；8K依次756.072/582.989/666.099/419.557/502.691，未测8K拒绝。同Attention的W8更快，不能将联合加速归因SC FFN。数字tile、SG和SC阵列有限扫描，64容量候选62合法；4MiB/64bank只作结构性建议，不冒称完整重跑。
 
-负责人jieruiz；task/186-mature-scheduling；依赖PR183/0341b4ac，进行中未发布。根目录tmp/mature-scheduling-issue186-20261025，交接work/jieruiz/186/HANDOFF.md。普通数字与SC共同tile、SG及上游调度探针正在实现。
+本轮Slurm2938/2942/2943/2976/2984/2986/2987/2993/2994已封存完成；失败2941（小fixture预算）、2983（下载）、2985（fmt链接）原件保留。无GPU/PPL/训练/新RTL/PT；源快照未改、未碰其他任务。大trace/构建在个人远端pbit-scheduling-issue186-20261025，Git小汇总/索引。23个本任务重复输入/缓存已逐SHA确认远端后回收2,936,618B，见CLEANUP_COMPLETED/ATTEMPTS_AND_RECOVERY。
+
+成果：architecture_tlm/unified_v6/MATURE_SCHEDULING_ZH.md、SCHEDULER_RESEARCH_ZH.md；results/scheduling_20261025/COMPARISON.csv/AGGREGATE.json/FINAL_AUDIT.json；原生和DRAM桥接可执行源码在probes/。HANDOFF见work/jieruiz/186。
+
+限制：MAC512/拍、片上接口、GU定点恢复、NL独立随机供给和部分PPA仍宏假设；全芯片能耗/面积null。DRAM负ACT未截零、不反馈时序；core J仅诊断。不是完整ONNXim Qwen移植、全局最优或全芯片周期精确。Projects缺read:project待同步；Issue187/PR189其他成员调研只读。
+
+下一步：先复核PR190最后head及依赖PR183；验收前不关闭Issue186。优先做计数/系数状态双缓冲和恢复流水线，给数字参考相同优化机会；质量与RTL/PPA另闭环。没有本任务待完成仿真或需重复提交的健康作业。
+
+---
+历史状态：
 
 # Issue182 / PR183：标准内存与跨组权重预取
 

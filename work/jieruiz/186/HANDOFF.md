@@ -1,6 +1,6 @@
 # Issue186 / PR190：部分和局部驻留与128阵列对照
 
-更新2026-10-25T08:40:00.103148+00:00；负责人jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines；分支task/186-mature-scheduling；独立目录tmp/mature-scheduling-issue186-20261025；base仍task/182-memory-hierarchy@0341b4ac。核心代码和24项结果已经推送7714f509a4622daed9e352859101b88673b055c2，PR190开放待审、未合并。最终远端回执见LOCALITY_PUBLICATION.json；本段及补充文档随随后提交同步。
+更新2026-10-25T08:40:00.103148+00:00；负责人jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines；分支task/186-mature-scheduling；独立目录tmp/mature-scheduling-issue186-20261025；base仍task/182-memory-hierarchy@0341b4ac。核心代码和24项结果已经推送7714f509a4622daed9e352859101b88673b055c2，PR190开放待审、未合并。最终远端回执见LOCALITY_PUBLICATION.json；补充说明和本交接已随9fed8c65上传。
 
 本轮原始13项Slurm2995/源b1df81d2，修复跨窗口预取后11项Slurm3008/源829559dc；全部completed且原RESULT、EXECUTION、汇总SHA核验。首轮结果保留，原45项不改。两条源快照只改局部驻留实现及测试；控制0/1没有重跑不变路径。101项unified_v6测试通过；24项最终交付审计通过。没有GPU/PPL、新RTL/PT或真实模型载荷。
 

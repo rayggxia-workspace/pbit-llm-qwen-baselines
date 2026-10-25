@@ -39,7 +39,7 @@ def main():
   assert old['interval_ns']==new['interval_ns'],('DDR changed',pattern)
   assert old['energy']==new['energy'],('DDR energy changed',pattern)
   rows.extend([old,new])
-  for profile in ('mature_hbm2_narrow','mature_hbm2_wide'):
+  for profile in ('mature_hbm2_narrow','mature_hbm2_wide','mature_hbm2_pipelined'):
    rows.append(one(a.output/(profile+'_'+pattern),profile,a.bridge,pattern))
  write(a.output/'RESULTS.json',dict(status='completed',rows=rows,ddr_exact_regression=True,scope='actual DRAMSys timing; HBM energy not calibrated'))
  print(json.dumps([dict(profile=r['profile'],pattern=r['pattern'],GBs=r['effective_GBs']) for r in rows]),flush=True)

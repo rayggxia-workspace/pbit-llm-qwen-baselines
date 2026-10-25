@@ -7,7 +7,7 @@ class HBMContracts(unittest.TestCase):
   c,_=load('qwen3_4b')
   with tempfile.NamedTemporaryFile() as exe:
    d=apply(c,'mature_ddr4',exe.name,'unused')
-   for mode in ('narrow','wide'):
+   for mode in ('narrow','wide','pipelined'):
     h=apply(c,'mature_hbm2_'+mode,exe.name,'unused')
     self.assertEqual({k:v for k,v in d.items() if k not in ('dram','memory_profile')},{k:v for k,v in h.items() if k not in ('dram','memory_profile')})
     self.assertTrue(h['dram']['timing_only'])

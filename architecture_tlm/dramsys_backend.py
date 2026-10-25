@@ -56,7 +56,9 @@ class DRAMSysExternal:
         self.log=output.with_suffix('.bridge.log').open('w')
         self.trace=gzip.open(output.with_suffix('.requests.jsonl.gz'),'wt',encoding='utf-8')
         command=[str(executable),str(config),str(cfg.get('max_pending',32))]
-        if cfg.get('host_request_bytes',64)!=64:command.append(str(cfg['host_request_bytes']))
+        if cfg.get('host_request_bytes',64)!=64 or 'response_accept_delay_ps' in cfg:
+            command.append(str(cfg.get('host_request_bytes',64)))
+        if 'response_accept_delay_ps' in cfg:command.append(str(cfg['response_accept_delay_ps']))
         self.process=subprocess.Popen(command,
             stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.log,text=True,bufsize=1)
         ready=self._read()

@@ -21,8 +21,8 @@ public:
     tlm_utils::simple_initiator_socket<Initiator> socket{"socket"};
     SC_HAS_PROCESS(Initiator);
     Initiator(sc_core::sc_module_name name,std::ostream& output,
-              std::uint64_t capacity,unsigned maxPending,unsigned hostBytes=64):
-        sc_module(name),out(output),capacity(capacity),limit(maxPending),hostBytes(hostBytes),
+              std::uint64_t capacity,unsigned maxPending,unsigned hostBytes=64,unsigned acceptDelayPs=1):
+        sc_module(name),out(output),capacity(capacity),limit(maxPending),hostBytes(hostBytes),acceptDelayPs(acceptDelayPs),
         peq(this,&Initiator::phase),mm(false) {
         socket.register_nb_transport_bw(this,&Initiator::backward);
         SC_THREAD(run);
@@ -33,7 +33,7 @@ public:
 private:
     std::ostream& out;
     std::uint64_t capacity;
-    unsigned limit,hostBytes,pending=0;
+    unsigned limit,hostBytes,acceptDelayPs,pending=0;
     bool requestBusy=false;
     sc_core::sc_event endRequest,completed;
     tlm_utils::peq_with_cb_and_phase<Initiator> peq;
@@ -50,7 +50,7 @@ private:
             if(p.is_response_error()) SC_REPORT_FATAL("bridge","memory response error");
             --pending;
             tlm::tlm_phase finish=tlm::END_RESP;
-            auto delay=sc_core::sc_time::from_value(1);
+            auto delay=sc_core::sc_time(acceptDelayPs,sc_core::SC_PS);
             socket->nb_transport_fw(p,finish,delay);
             p.release();completed.notify(sc_core::SC_ZERO_TIME);
         } else SC_REPORT_FATAL("bridge","unexpected backward phase");
@@ -179,7 +179,7 @@ void powerAt(sc_core::sc_object* obj,std::uint64_t cycle,json& energy) {
 
 int sc_main(int argc,char** argv) {
     try {
-        if(argc!=3 && argc!=4) throw std::runtime_error("usage: bridge configuration.json max_pending [host_request_bytes]");
+        if(argc<3 || argc>5) throw std::runtime_error("usage: bridge configuration.json max_pending [host_request_bytes [response_accept_delay_ps]]");
         sc_core::sc_set_time_resolution(1,sc_core::SC_PS);
         std::ostream output(std::cout.rdbuf());
         std::cout.rdbuf(std::cerr.rdbuf()); // upstream logs never pollute JSON protocol
@@ -187,9 +187,11 @@ int sc_main(int argc,char** argv) {
         DRAMSys::DRAMSys dram("dram",config);
         auto limit=std::stoul(argv[2]);
         if(!limit) throw std::runtime_error("max_pending must be positive");
-        auto hostBytes=argc==4?std::stoul(argv[3]):64;
+        auto hostBytes=argc>=4?std::stoul(argv[3]):64;
         if(hostBytes!=64 && hostBytes!=256) throw std::runtime_error("host_request_bytes must be 64 or 256");
-        Initiator initiator("dma",output,dram.memorySize(),limit,hostBytes);
+        auto acceptDelayPs=argc==5?std::stoul(argv[4]):1;
+        if(acceptDelayPs>1) throw std::runtime_error("response accept delay must be 0 or 1 ps");
+        Initiator initiator("dma",output,dram.memorySize(),limit,hostBytes,acceptDelayPs);
         initiator.socket.bind(dram.tSocket);
         sc_core::sc_start();
         json stats,energy;
@@ -199,7 +201,7 @@ int sc_main(int argc,char** argv) {
         output<<json({{"status","finished"},{"stats",stats},{"power_at_system_end",energy},
             {"end_ns",sc_core::sc_time_stamp().to_seconds()*1e9},{"dram_end_cycle",cycle},
             {"burst_count",initiator.bursts},{"host_transactions",initiator.hostTransactions},
-            {"host_request_bytes",hostBytes},{"host_unit_bytes",64},{"read_bursts",initiator.readBursts},
+            {"host_request_bytes",hostBytes},{"response_accept_delay_ps",acceptDelayPs},{"host_unit_bytes",64},{"read_bursts",initiator.readBursts},
             {"write_bursts",initiator.writeBursts},{"peak_pending",initiator.peakPending}}).dump()<<std::endl;
         return 0;
     } catch(const std::exception& e) {std::cerr<<e.what()<<std::endl;return 1;}

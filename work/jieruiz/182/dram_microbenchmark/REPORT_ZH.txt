@@ -1,0 +1,52 @@
+Issue182 实际 DRAMSys 运行环境与连续 DMA 烟测（2026-10-25）
+
+已经完成：Slurm 2911 的 8/8 合成连续读取情景，所有 bridge 子进程退出码0，read/total burst数守恒，27份远端输出逐SHA通过。34,081字节小型证据包下载后27份索引文件再次逐SHA通过。原始请求trace仍在远端。
+原失败2910为启动脚本模板误替换SLURM_JOB_ID，未运行DRAMSys；其冻结源码和失败日志保留，2911采用新的v2源码目录，不覆盖旧快照。
+Slurm accounting未启用；不把sacct空结果当完成。8项bridge.log均未匹配warning/error/fatal/violation/negative关键字。
+
+可复用环境：
+SSH配置 C:/Users/86134/.ssh/lab-server-ai.ssh_config，别名lab-server-ai；实际身份Hongjie_Zeng已核实，不包含认证内容。
+Slurm绝对入口 /opt/slurm/21.08.8/bin/sbatch 与 squeue。
+现有真实后端为DRAMSys5.6.0/SystemC3.0.2/DRAMPower6.3.1，DRAMSys上游9f15aaf1fe6f05ff16a2e521a20a96f3bfe29d52。
+本轮二进制 /home/Hongjie_Zeng/projects/pbit-pv-stream-v6-20261016/build/pbit_dram_bridge_sg_v6_audit
+SHA256 900e8257e255a01c59ed1770f8fda5901163003e0c8f21636baefc2cb662c868
+源码bridge_sg_v6_audit.cpp SHA256 28006085f2073386698441abff51f56b58278b0beb72e6636e5a2792a0ed13dd。
+ldd无缺失依赖，实际动态库SHA见RUNTIME_PROVENANCE.json。不要只复制该小二进制后忽略其原目录动态库依赖。
+
+配置：
+双通道、每通道2rank、每rank8个x8的4Gb器件，共16GiB；DDR4-1866，tCK=1.072ns，64B burst。与历史2channel/1rank的8GiB配置分开标注。
+出处git 84c131951b9ce69a52778e8725d62a21ab9cc40f:architecture_tlm/llama7b/dram/configs。
+Staggered文件SHA256 838b04a4d7049381e832d33673406ba91ca1e415648ad5714931b829c35d2d3e。
+NoPowerDown文件SHA256 ddbdd1aee7f20d5e3eaf12d73b7e300894ad3ab5cc50ae2a8aa5fd121b2fa419。
+原配置精确复制到 /home/Hongjie_Zeng/projects/pbit-memory-issue182-20261025/benchmark_db6603db5688_v2/source/。
+Micron RevA x8 DDR4-1866电流限值profile仅为厂家资料支持的core-current情景；VDD/VPP被修正、旧iBeta覆盖移除。它不是芯片典型实测功耗，I/O/PHY/控制器/板级电源仍未校准，不能把interface_J和core_J之和称为完整DRAM实测。
+
+实际结果（Staggered，除最后一行）：
+请求形状                         模拟GB/s   CPU仿真墙钟s    core J
+单个32KiB                         28.54077     0.004317      0.0000057480
+单个64KiB                         29.18106     0.010659      0.0000094428
+单个128KiB                        27.66885     0.021145      0.0000173452
+32KiB每DMA，总64MiB               26.83457     8.517565      0.0079697860
+64KiB每DMA，总64MiB               27.11394     8.263111      0.0079312462
+128KiB每DMA，总64MiB              27.39354     8.268329      0.0078865229
+单DMA连续512MiB                   27.59354    66.763876      0.0628284678
+NoPowerDown单DMA连续64MiB          27.58873     8.351609      0.0090583931
+
+所有case max_pending=peak_pending=32；bridge DMA前端每1ns发一个64B请求，真正非阻塞4相TLM；每宏DMA仍排空，下一宏DMA才提交。每情景一个长驻进程，未按burst启动进程。尾部统一额外计1000ns用于完整终止视窗，因此单个小请求的每字节能量不能代表稳态流。
+不同请求形状和power policy并非严格成对政策消融，不据本表宣称NoPD相对Staggered净能量差。
+
+全模型运行预算：
+长流实测123107～126898 bursts/墙钟秒，88,000,000个64B burst投影693.47～714.82秒，即11.56～11.91分钟；512MiB依据为700.38秒，NoPD64MiB依据为700.89秒。5.6e9字节依据为约689.53～710.76秒。88M burst=5.632e9B，与“约5.6GB”分别列明。
+这是从实际DRAMSys长流耗时得到的执行预算，不是完整Qwen36层已经完成。真实模型的地址形状、计算空档/refresh事件、Python调度和并发CPU负载会改变耗时；为完整情景保留时限余量。
+
+接口与接入：
+现有DRAMSysExternal可直接用audit桥。ready保留status/memory_bytes（新增features可忽略）；access返回id/start_ns/done_ns/burst_count；finish保留power_at_system_end及逐通道core_J/interface_J/total_J、stats、burst_count/read_bursts/write_bursts/peak_pending。audit增加的bank/rank统计不破坏ABI。
+本轮连续DMA预取无需改bridge接口，Python侧在单case中保持一个DRAMSysExternal实例。若以后要跨DMA保持outstanding，则必须新增submit/advance或completion队列协议，同时保持全局单调模拟时间；单纯增大max_pending或SG ranges不能移除现有每DMA排空屏障。本轮不做该变化。
+
+成果位置：
+远端 /home/Hongjie_Zeng/projects/pbit-memory-issue182-20261025/benchmark_db6603db5688_v2/results/2911/
+本机此目录evidence/benchmark_db6603db5688_v2/results/2911/summary.json与manifest.json。
+源脚本SHA256 db6603db56880ca0f483552c1f6824113ff095b8d84e937bf5accf857fee420c。
+2911 source_manifest SHA256 450a8d4fb6fbe9c9825b732cde2e63010a6e6e4fd21b1dfceb7df4bf0ad2fb06。
+SMALL_EVIDENCE.tar.gz SHA256 faadb85655428151752e92afb9c3547400a6b89030ce891302e6786e49400e3b。
+本机LOCAL_DOWNLOAD_VERIFY.json记录包与27文件验证；SMALL_EVIDENCE_INDEX.json记录每项源路径、大小和SHA；VERIFICATION.json记录投影与sacct限制。用于正式PR时保留小型索引/汇总，原始request traces继续引用远端路径和SHA。

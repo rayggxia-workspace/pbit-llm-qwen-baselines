@@ -243,7 +243,10 @@ class FullDecode:
         inp, out = info['inp'], info['out']
         # Row-complete chunks keep streaming output/argmax bounded.
         row_bytes = inp*info['width']
-        rows = max(1, self.c['weight_chunk_bytes']//row_bytes)
+        digital_chunk=self.c.get('digital_weight_chunk_bytes',self.c['weight_chunk_bytes'])
+        if digital_chunk<row_bytes or digital_chunk>self.c['weight_chunk_bytes']:
+            raise ValueError('digital matrix row chunk outside staging slot')
+        rows = max(1, digital_chunk//row_bytes)
         input_width = 4 if name.endswith('/down') and info['width']==1 else 2
         input_base = self.z if name.endswith('/down') else self.activation
         t = self.mem.transfer(t, input_base, inp*input_width, False, 'matrix_activation')

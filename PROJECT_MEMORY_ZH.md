@@ -1,3 +1,33 @@
+## Issue182：标准DRAM、SRAM接口和跨组预取（2026-10-25）
+
+接续用户质疑阵列过小/分批过多与访存设置。正式仓库rayggxia-workspace/pbit-llm-qwen-baselines，Issue182/PR183，task/182-memory-hierarchy，main基线5273e5d9；实现与验证完成，PR待审未合并，不接管其他成员#118/#117或暂停#116/#123。
+
+统一unified_v6采用实际DRAMSys Micron DDR4-1866双64bit通道、双rank16GiB，理论29.851GB/s、长DMA实测模拟吞吐约27.59GB/s。旧Link16GB/s每32突发排空实际约9.85GB/s，不能再作为优化硬件性能。SRAM仍8MiB/128个55nmSS80MHz宏，16→64bank、公共读写16→64GB/s、本地接收256→1024B/corecycle；后两项是接口设计假设，尚无STA/PPA。
+
+SC权重4KiB/tile，每层FFN71.25MiB，有限容量分批正常；8/16/32/64阵列2280/1216/704/352波每层，所有配置656640tiles/36层且权重payload相同。单份本地权重＋显式一波DMA暂存；旧首轮只跨输出波预取，使E64 Wd单波组无法预取，baf0aab1进一步跨输入组而不覆盖编码/权重/系数状态。最终8/16/32/64为516.97928/468.98478/462.11397/438.47604ms/token，旧Link1412.97926ms、同DDR4旧SRAM1091.74616ms。数字W8参考432.19629ms仍为512MAC/拍宏假设；不是同面积最佳ASIC。完整结果与两轮边界见architecture_tlm/unified_v6/RESULTS_MEMORY_ZH.md。
+
+93tests、18独立小形状、8DRAM微基准、4tiny门禁及22完整36层case核验完成（19真实DRAMSys，PV/校正拒绝各3seed）；Slurm2913/2925/2931均已结束。无训练/PPL/RTL/PT新增。源码0855/7e44/fe3f/baf四版本分开封存；原大trace位于/home/Hongjie_Zeng/projects/pbit-memory-issue182-20261025/，Git仅小JSON/SHA索引。交接work/jieruiz/182/HANDOFF.md，最小待审目录tmp/memory-hierarchy-issue182-20261025。
+
+功耗审计发现core-current上限组合在DRAMPower6.3.1产生负ACT增量，首轮E8合计−1.38109mJ（总core的0.0934%，不是总误差界），实际源码/命令数复算吻合；不反馈时序，能量仍是未校准模型输出，不改零。完整芯片能耗/面积null；新接口/CDC/本地权重/DMA缓存PPA、数字参考优化及算法质量未闭合。Projects缺read:project待同步；没有宣称全局最优。
+
+## Issue179 时间/token审计：不能把保守搬运合同当优化后性能（2026-10-24）
+
+用户质疑1.4秒/token后，检查确认8个SC阵列同波并行，全部36层GU/Wd阵列合计77.976ms；并非串行8倍。整机普通MAC38.862ms，DRAM busy581.491ms，单SRAM fabric busy764.926ms。权重5.355GB/token，全部DRAM5.663GB，SRAM读写12.002GB；16GB/s单fabric仅流量下界750.126ms。
+
+关键保守合同：DRAM每32×64B窗口排空，80ns延迟＋128ns数据，标称16GB/s变有效9.846GB/s；权重DRAM整块完成→SRAM整块写→整块读至阵列，没有同块流式流水；最新FFN下一波预取只在阵列结束后开始，未与采样重叠。local_weight_program与SRAM consume是重叠资源，不能再相加171ms。不得把这些时序当已优化ASIC预期。
+
+同Qwen3-4B/2K/同资源，旧SC1596.708→新1412.979ms，改善11.5%；历史Qwen2.5-0.5B oldSC201.722ms不能横比4B。应先实现并验证滚动DMA、流式填充/消费、双缓冲及bank通路；若保持12GB单16GB/s片存通路不变，不能声称优化后降至几十ms。还须同W8数字控制，隔离量化减少权重流量的收益。本次仅审计封存结果，未修改调度/重跑/产生新性能结果。
+
+PR180已实际合入main5273e5d9。额外回执PR181已推送、未合并：自动审批拒绝额外默认分支合并，理由为超出原明确授权且非必要；没有绕过。Issue179已同步实际交付，Projects仍待权限。当前最小工作目录暂留以供待审PR恢复；merge回执/后续审计的本地增量需在后续授权中同步。
+
+## Issue179 / PR180 已实际合入 main（2026-10-24）
+
+PR180于2026-10-24T14:41:06Z合并，main提交`5273e5d9fdae811a714f1a278fee6e776c5675af`，交付head`0d97e2b5a2c01270568835964b2f4d581133a197`；GitHub父节点/文件树及109个变更blob核验通过。Issue179本轮统一TLM交付完成，后续研究缺口不冒充已验证。
+
+统一入口`python -m architecture_tlm`；流程/宏/数制见`architecture_tlm/unified_v6/FFN_CURRENT_ZH.md`，结果见`RESULTS_CURRENT_ZH.md`。74检查、7组完整36层、8组单FFN敏感性、15组三seed夹具、12封存SHA均通过。实际校正拒绝1152行/147456输出/441346 proposals（平均2.993次），无运行中本任务作业。2K准确Attention/筛选PV/筛选拒绝整机条件时间分别1412.979/1366.264/1585.054 ms/token。
+
+保留未知边界：GU定点编译/舍入、NL独立随机源映射、权重保持宏和代表性STA/PPA；完整面积/能耗null，DRAM本轮link非DRAMSys，不继承PPL。Projects缺read:project，待维护者同步。工作副本回收时以project_archives/latest_ffn_tlm_issue179_20261024/RECOVERY.json恢复；本轮不创建全量副本。其他训练/算法PR未被本任务合并。
+
 ## Issue179：统一TLM最新FFN进入main的交付（2026-10-24）
 
 用户明确要求更新通用整机TLM，使用最新固定尺度、随机非线性直连Wd的FFN，并在独立分支后合入main。本人jieruiz；Issue179/PR180，分支task/179-latest-ffn-tlm-main，独立稀疏目录tmp/latest-ffn-tlm-issue179-20261024。原main fae12982没有TLM，本轮仅导入d6d3399的最小运行/校准闭包，40个导入文件原字节不变；不合并训练PR178或其他研究PR。统一入口python -m architecture_tlm，继续unified_v6，今后不要另复制v7。合并状态以PR180和Issue179最终回执为准。
@@ -758,6 +788,16 @@ FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700�
 旧3/39、11/39与动态预计完成时间保留为历史，恢复先看本节、Issue59/PR62及交接，不再重复提交已完成39项。仓库上传身份jieruiz已核实admin/push；Projects是否成功同步以最新发布回执为准。当前正式报告PR仍未合并。
 
 ## 6 随机源、p-bit与相关性
+
+2026-10-25发布回执：Issue184/PR185已实际发布为draft/open，未合并；科学提交97ec6f12df651fc11cfa497521fe0b465cf7823a，完整tree9600d63c40808cc2236dd1a06def8fc3686ffc10与本地f7e6110bfae671b09e75d6dca7d020fbff3d85bb一致，5份关键源文件远端逐字符读回一致。实际执行源仍01d63b66，提交后快照未改。04:06:57Z观察38387635仍RUNNING，29案例已结束；首条precision_fine_seed63003为3ms总/2ms有效，实际1us采样2000次，密集输出P1=0.5109、MID=0.0068，耗时877.6s；尚无新比较器独立校准冻结或每seed2万次最终验收，不能把该短记录当正式结果。旧3seed各2万次逐位文件已在ideal_and_old_20000_v1。Projects工具未暴露，待维护者同步。Issue152接口已留言，原负责人/分支/STATUS未改。
+
+2026-10-25新Issue184由本轮已核实rayggxia负责，独立task/184-normal-readout@d6d33995，tmp/normal-readout-issue184-20261025，不接管152/jieruiz旧任务。已把38380128三seed各20000次1us理想/旧比较器逐位CSV及单列TXT导出到analog_pbit_20261016/ideal_and_old_20000_v1，11文件SHA通过；旧MID分别1089/1145/1115，全部保留。真实源原本接旧比较器，理想判决不是完全裸核心或实际数字读出，500Hz短记录不证明IID/慢漂移。新normal_readout_v1复用未实测10MOS无输出限流拓扑，1.2V、SVT/LVT输入、10/20uA，输入反型及饱和裕量实测门禁；源01d63b66aa5653dffb4d116e1b1d5f9c951b1571，manifest743bbec6b48ee440773623698c5de423d21756ad721edc4ee1411b7082d8ec82；24文件逐个SFTP上传，无新源码压缩包，8本地/8远端测试、17Python3.6 AST、Bash和27PDK哈希通过。实际Slurm38387635已RUNNING，m3ca1003，03:54:35Z观察；8CPU16GB、APS1最多8案例、6h+15m，snapshot normal-JMJc0ox0/source不可改。4候选中SVT20u尾管VDS-VDSAT=-12.6162mV拒绝，另3正常；确定性策略选LVT20u，输入overdrive189.9/193.3mV、gm/Id11.98/11.86；1mV连接核心阶跃最坏3.5ns、10mV1.5ns，采样分辨0.5ns；不等于独立随机位率。短精度、独立cal62003/9/17冻结及新val64007/13/33每条22ms总/20ms有效/1us/2万位仍待执行结果，numeric63003/17/29与cal/val分离，fmin500Hz，本轮不自动1s/10Hz长任务或精确能耗。结果根/public3/home/t6s011227/analog_pbit_20261016/normal_readout_v1/results/38387635，结束自动normal_readout_38387635.tar.gz/.sha256。台账新增派生索引（cases空、不算新实验）与真实新run，拒绝项保留。PR实际发布以work/rayggxia/184/PUBLICATION.json为准，不虚报合并。
+
+2026-10-25同轮派生补充：已有20ms记录固定起始相位按1us抽取，理想0.6V阈值每seed已有20000样本。三个seed的P1分别50.175%、50.80%、49.59%，lag1分别.00694、-.00371、.01008；但seed32003的lag10达到.02260，不能只看lag1就宣布独立。这是源模型的探索性证据，不是实际比较器电路产生的数字位，也不覆盖未测10Hz或慢漂移。
+
+2026-10-25用户提出重评固定1s，目标是选足够低相关间隔后取1～4万次。已对38380128三个基准20ms波形做新派生分析，非新仿真：真实bitρ(1/5/10/20/100us)约.497–.511/.042–.057/.017–.040/.018–.035/.014–.031；核心电压1us仅.0052–.0076，理想0.6V阈值bit1us约.0029–.0051，仅未实现读出诊断。提示比较器动态/噪声值得优先检查，100us不是已证实的必需间隔；短记录残余相关不能定位慢记忆根因。建议开发候选10us/对照20us，独立校准冻结后新三seed首轮10us×1万=100ms有效+20ms启动，500Hz成本外推5.3h/seed；4万为400ms有效约18.5h。当前尚未确认新间隔或修改旧源码/协议，未提交新任务；真实bit中间电平约5.6%仍为独立读出问题。1万/4万白噪声单lag参考±.0196/±.0098不等于有相关过程CI或独立证明。计数先区分原始与VN后：公平IID VN约4原始出1位，实际需测；1万/4万原始位只够52/208个6×32bit的177bit状态包。10Hz总时长至少100ms，短记录不能覆盖更慢漂移；不同seed不拼接连续。报告results/38380128/SAMPLING_PLAN_ZH.md和SAMPLING_INTERVAL_ANALYSIS.json，中央同run追加派生索引、不增实验数。
+
+2026-10-25已复核38380128：COMPLETED/0:0，21例0错误0告警，实际3h54m27s、累计CPU13h54m04s；8核独立案例并行。77,507,647B原包SHA c02d6ad9e148b143b906c6b3f87c151c9ce8e05e53fe26683dfaf29d4404134c及216成员、24嵌入源码文件全核，16噪声PSF重新计数/电平/sigma/100us相关一致。noise_audit、500Hz步长/带宽与APS/classic短程工程门禁全过，PILOT_PASS允许后续独立校准；不等于P50/读出/熵合格。基准三seed核心sigma12.33–12.39mV，密集P1=45.819/48.3905/47.2275%，MID=5.6405/5.582/5.5935%；真正100us对齐每seed仅200位，P1=49.5/46.5/51.5%，MID13/8/15，lag1约.0553/.1118/.0444，不能用密集20万点声称独立位数。历史Vref608.527348mV未独立10Hz冻结；调整Vref不保证修复MID。匹配100MHz/2.5ns当前基准外推1.02s单条45.04h、乘2约90.08h；六条理想并行仍约45h，校准+10Hz精度调度外推44.85h，均未实测10Hz。旧门禁用最慢200MHz速率并再加精度系数，给155/182h，96h提交会被阻断；本轮没有修改源码或绕过门禁。没有新校准/1s作业，不重交完成pilot。报告architecture_tlm/physical_rng_long_channel/results/38380128/REPORT_ZH.md与REVIEW.json；原包project_archives/analog_long_channel_20261024/results，中央同run更新完成短程检查，保留原运行回执。Issue152仍open/jieruiz负责；PR156仅v1已合并de7eae90。rayggxia连接器仅只读，v2/本轮结果本地Git尚未发布延续PR，未以另一身份写入。
 
 2026-10-24后续进度查询再次出现认证后open_session超时；有界复查10.406s，命令未发出。38380128最后实际RUNNING观测仍为11:52:46Z，本次没有新进度或重交。SSH问题尚未根治，不能因前轮五次成功宣称永久恢复。用户询问多核/时长：8核用于8独立案例；Spectre对17MOS的2/4/8线程均因规模小退为1线程；pilot6h是计算上限，先前估算3.5897h非实测总耗时。
 

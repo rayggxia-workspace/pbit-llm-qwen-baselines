@@ -20,7 +20,7 @@ def defaults():
         accumulate_lanes=32, accumulate_latency=2,
         bf16_lanes=16, bf16_latency=3,
         local_weight_bytes=8*4096, local_weight_load_bytes_per_cycle=256,
-        weight_feed='resident_macro',
+        weight_feed='resident_macro', weight_schedule='legacy', prefetch_across_input_groups=False,
         counter_pipeline_bits_per_lane=512, wide_bits=64, coefficient_bits=16,
         rng_nl=dict(words_per_cycle=192, response_latency=2, stream_II=2,
             command_cycles=2, state_bits_per_endpoint=177, words_per_endpoint=20,
@@ -56,6 +56,8 @@ def validate(f, h, hidden, chunk):
     if wave>chunk:raise ValueError('weight wave exceeds ping/pong slot')
     if f['weight_feed']=='resident_macro' and f['local_weight_bytes']<wave:
         raise ValueError('parallel tile contract requires full-wave local weight capacity')
+    if f.get('weight_schedule','legacy') not in ('legacy','dma_prefetch'):
+        raise ValueError('unknown weight schedule')
     # Guard uses maximum allowed alignment, coeff and all input channels.
     gu_bound=h*64*127*((1<<16)-1)*(1<<6)
     down_bound=hidden*f['nonlinear_samples']*127*((1<<16)-1)*(1<<14)
@@ -144,8 +146,12 @@ class LatestFFN:
         self.o=o;self.f=o.c['ffn'];self.rng=JointRandomMacro(o)
         f=self.f;T=max(64,f['nonlinear_samples'])
         # Per-bin signed sum of weighted bit-plane compression, then time add.
+        self.pipeline=Counter();self.wave_records=[];self.wave_serial=0
+        self.slot_generation=[0,0];self.pending_ticket=None;self.last_restore=0.
         self.counter_bits=signed_width(64*127*T)
         self.local=dict(weight_hold_bytes=f['local_weight_bytes'] if f['weight_feed']=='resident_macro' else 0,
+            dma_prefetch_buffer_bytes=(min(f['engines'],max(2*o.F//64,o.h//64))*4096
+                if f.get('weight_schedule')=='dma_prefetch' else 0),
             weight_response_buffer_bytes=2*o.c['sram']['banks']*o.c['sram']['word_bytes'],
             tile_coefficient_and_exponent_bits=f['engines']*32,
             output_group_exponent_bits=16*(2*o.F//64+o.h//64),
@@ -195,9 +201,62 @@ class LatestFFN:
         loaded=o.mem.transfer(loaded,o.ffn_coefficient_scratch,n*4,False,'weight_scales')
         return loaded,slot
 
+    def prefetch_wave(self,ready,name,k,j,n):
+        """One bounded DMA-completion buffer. SRAM fill is deliberately deferred.
+
+        This conservative macro overlaps DRAM with the preceding compute, but
+        does not pretend that returned data can wait without physical storage.
+        No second local full-width weight macro is assumed.
+        """
+        if self.pending_ticket is not None:
+            raise ValueError('prefetch queue full: consume the outstanding wave first')
+        o=self.o;info=o.matrix_info[name];groups=info['out']//64
+        slot=o.slot_serial%2;o.slot_serial+=1
+        ready=max(ready,o.slot_free[slot]);self.slot_generation[slot]+=1
+        self.wave_serial+=1
+        loaded=o.dram.tensor(ready,name,(k*groups+j)*4096,n*4096)
+        ticket=dict(wave_id=self.wave_serial,name=name,k=k,j=j,n=n,slot=slot,
+            generation=self.slot_generation[slot],issue_ns=ready,dram_done_ns=loaded)
+        self.pending_ticket=ticket
+        self.pipeline['waves']+=1;self.pipeline['prefetch_bytes']+=n*4096
+        o.e.action('SC_DMA_response_buffer_write_byte',n*4096,'weight_interface')
+        return ticket
+
+    def load_prefetched_wave(self,ready,ticket):
+        if self.pending_ticket is not ticket:
+            raise ValueError('stale or unowned weight ticket')
+        o=self.o;name=ticket['name'];n=ticket['n'];slot=ticket['slot']
+        info=o.matrix_info[name];groups=info['out']//64
+        if ticket['generation']!=self.slot_generation[slot]:raise ValueError('stale slot generation')
+        loaded=max(ready,ticket['dram_done_ns'],o.slot_free[slot],self.last_restore)
+        loaded=o.mem.transfer(loaded,o.slots[slot],n*4096,True,'weight_fill')
+        ticket['fill_done_ns']=loaded
+        o.e.action('SC_DMA_response_buffer_read_byte',n*4096,'weight_interface')
+        self.pending_ticket=None
+        if self.f['weight_feed']=='resident_macro':
+            bw=min(o.c['sram']['fabric_GBs'],o.c['sram']['banks']*o.c['sram']['word_bytes']*o.c['sram']['clock_hz']/1e9)
+            if self.f['local_weight_load_bytes_per_cycle']/o.period < bw:
+                raise ValueError('local weight receiver slower than SRAM: explicit throttling backend required')
+            resources=['sram_fabric','sc_weight_local_port']+['sram_bank:'+str(b) for b in range(o.c['sram']['banks'])]
+            start=max([loaded]+[o.s.free[r] for r in resources])
+            done=o.mem.transfer(start,o.slots[slot],n*4096,False,'weight_consume')
+            duration=max(done-start,ceildiv(n*4096,self.f['local_weight_load_bytes_per_cycle'])*o.period)+o.period
+            loaded=o.s.reserve('SC_local_weight_program',start,duration,('sc_weight_local_port',),o.period,
+                bytes=n*4096,wave_id=ticket['wave_id'],slot=slot,generation=ticket['generation'])
+            ticket['program_start_ns']=start;ticket['program_done_ns']=loaded
+            o.e.action('SC_local_weight_program_byte',n*4096,'weight_interface')
+        # Single coefficient storage is only reused after previous restoration.
+        loaded=o.dram.tensor(loaded,name,info['bytes']+(ticket['k']*groups+ticket['j'])*4,n*4,kind='weight_scales')
+        loaded=o.mem.transfer(loaded,o.ffn_coefficient_scratch,n*4,True,'weight_scales')
+        loaded=o.mem.transfer(loaded,o.ffn_coefficient_scratch,n*4,False,'weight_scales')
+        ticket['coeff_done_ns']=loaded
+        return loaded,slot
+
     def array(self,t,name,n,T,B,slot,nl=False):
         o=self.o;f=self.f
         resources=['sc:'+str(i) for i in range(n)]
+        if f.get('weight_schedule')=='dma_prefetch' and f['weight_feed']=='resident_macro':
+            resources.append('sc_weight_local_port')
         t=max([t]+[o.s.free[r] for r in resources])
         ii=f['sample_II_cycles'];front=0
         if nl:
@@ -244,6 +303,44 @@ class LatestFFN:
             t=self.macro(t,'SC_cross_tile_add64',values,f['accumulate_lanes'],f['accumulate_latency'])
         t=o.mem.transfer(t,addr,size,True,'SC_wide_partial')
         o.metadata['wide_partial_values']+=values
+        self.last_restore=t
+        return t
+
+    def prefetched_group(self,t,name,k,groups,E,frame,nl=False):
+        o=self.o;f=self.f
+        ticket=self.pending_ticket
+        if ticket is None:ticket=self.prefetch_wave(t,name,k,0,min(E,groups))
+        elif (ticket['name'],ticket['k'],ticket['j'])!=(name,k,0):
+            raise ValueError('prefetch belongs to another input group')
+        for j in range(0,groups,E):
+            n=min(E,groups-j);current=ticket
+            loaded,slot=self.load_prefetched_wave(t,current)
+            begin=max(t,loaded)
+            if nl:begin=self.rng.setup(begin,frame,j>0)
+            elif o.integrated_rng:begin=o.rng.prepare_ffn(begin,frame,j>0)
+            else:begin=o.rng.request('ffn',begin,64,2,1,'shared64_stratified',frame,replay=j>0)
+            current['array_start_ns']=begin
+            end=self.array(begin,'AND_direct_Wd' if nl else 'gate_up',n,
+                f['nonlinear_samples'] if nl else 64,7 if nl else 4,slot,nl=nl)
+            current['array_done_ns']=end
+            # Only DRAM is submitted early: no future SRAM reservation can
+            # push current restoration out of a usable gap in the FIFO model.
+            if o.c['double_buffer']:
+                if j+E<groups:
+                    ticket=self.prefetch_wave(begin,name,k,j+E,min(E,groups-j-E))
+                    self.pipeline['prefetch_during_previous_array']+=int(ticket['issue_ns']<end)
+                elif f.get('prefetch_across_input_groups',False) and k+1<o.matrix_info[name]['inp']//64:
+                    # Weight addresses do not depend on the next input code.
+                    # Keep only a DMA ticket: neither its coefficients nor its
+                    # local weights may overwrite this group's live state.
+                    self.prefetch_wave(begin,name,k+1,0,min(E,groups))
+                    self.pipeline['cross_input_group_prefetches']+=1
+                    self.pipeline['prefetch_during_previous_array']+=int(self.pending_ticket['issue_ns']<end)
+            t=self.restore(end,n,7 if nl else 4,k,j)
+            current['restore_done_ns']=t
+            if len(self.wave_records)<o.c['trace_event_limit']:self.wave_records.append(dict(current))
+            if j+E<groups and not o.c['double_buffer']:
+                ticket=self.prefetch_wave(t,name,k,j+E,min(E,groups-j-E))
         return t
 
     def gate_up(self,t,layer):
@@ -257,6 +354,10 @@ class LatestFFN:
             t=o.mem.transfer(t,o.encoded,128,True,'SC_x_code')
             t=o.mem.transfer(t,o.encoded,128,False,'SC_x_code_to_local')
             frame=('latest_gu',layer,k,o.frame);o.frame+=1;prefetch=t
+            if f.get('weight_schedule')=='dma_prefetch':
+                t=self.prefetched_group(t,name,k,groups,E,frame)
+                if o.integrated_rng:t=o.rng.release_ffn(t)
+                continue
             for j in range(0,groups,E):
                 n=min(E,groups-j);loaded,slot=self.load_wave(prefetch,name,k,j,n)
                 begin=max(t,loaded)
@@ -290,6 +391,10 @@ class LatestFFN:
         for k in range(o.F//64):
             t=o.mem.transfer(t,o.z+k*256,256,False,'SC_joint_codes_to_local')
             frame=('latest_down',layer,k,o.frame);o.frame+=1;prefetch=t
+            if f.get('weight_schedule')=='dma_prefetch':
+                t=self.prefetched_group(t,name,k,groups,E,frame,nl=True)
+                t=self.rng.release(t)
+                continue
             for j in range(0,groups,E):
                 n=min(E,groups-j);loaded,slot=self.load_wave(prefetch,name,k,j,n)
                 begin=self.rng.setup(max(t,loaded),frame,j>0)
@@ -310,6 +415,10 @@ class LatestFFN:
         return dict(contract='fixed4_and_direct',numerical_status=self.f['numeric_status'],
             integer_bound_condition='offline compiler must fold tile scales into unsigned16 coefficient and output-group common exponent; compiler/rounding equivalence pending',
             local_state=self.local,nonlinear_random=self.rng.report(),
+            weight_pipeline=dict(schedule=self.f.get('weight_schedule','legacy'),counts=dict(self.pipeline),
+                records=self.wave_records,pending=self.pending_ticket is not None,
+                overlap='next DMA only, optionally across input groups; SRAM fill/program after previous restore; one local weight bank',
+                buffer='one explicit full-wave DMA response macro; unknown PPA'),
             unknown_macro_ppa=['fixed4 encoders','GU fixed-point restore/rounding','signed8 field/ROM',
                 'weighted compressor and 4/7 bucket counters','local weight interface','direct AND fanout',
                 'coefficient multiplier / wide accumulators / BF16 RNE','nonlinear local RNG'],

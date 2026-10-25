@@ -25,7 +25,10 @@ if (r/'summary.json').exists():
   row=dict(case=c['case'],status=c['status'],error=c.get('check_error'),elapsed_s=c.get('simulator_elapsed_s'))
   if (r/c['case']/'bias_diagnostics.json').exists():row['bias']=json.loads((r/c['case']/'bias_diagnostics.json').read_text())['devices']
   if c['setting']['kind']=='step' and c.get('metrics'):row['step']=c['metrics']
+  if c['setting']['kind']=='noise' and c.get('metrics'):
+   row['noise']=dict(P1=c['metrics']['p1'],MID=c['metrics']['midrail_fraction'],actual_samples=c['metrics']['actual_sample_bits'])
   obs['cases'].append(row)
+obs['active_case_folders']=[p.name for p in r.iterdir() if p.is_dir() and (p/'command.json').exists() and not (p/'status.json').exists()] if r.exists() else []
 for kind in ['out','err']:
  path=root/('logs/study-38387635.'+kind)
  if path.exists():obs['log_'+kind+'_tail']='\n'.join(path.read_text(errors='replace').splitlines()[-15:])
@@ -37,5 +40,6 @@ obs=json.loads(proc.stdout)
 a.out.write_text(json.dumps(obs,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
 print(obs['sacct']);print('SUMMARY',obs.get('summary_status'),'CASES',len(obs['cases']))
 for c in obs['cases']:
- print(json.dumps(c,ensure_ascii=False))
-print('DETAILS',json.dumps(obs.get('details',{}),ensure_ascii=False));print('ERR',obs.get('log_err_tail',''))
+ if c.get('noise') or c['status']=='FAILED_CHECK':print(json.dumps(c,ensure_ascii=False))
+print('ACTIVE',obs['active_case_folders'])
+print('SELECTED',json.dumps(obs.get('details',{}).get('selected'),ensure_ascii=False));print('ERR',obs.get('log_err_tail',''))

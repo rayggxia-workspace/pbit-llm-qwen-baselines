@@ -1,0 +1,138 @@
+[
+  {
+    "tag": "initial",
+    "commit": "3445921193b7495f69ff3728de95e37d664fc2a9",
+    "path": "architecture_tlm/configs/system_decode_default.json",
+    "blob_sha256": "56b7aca7fbd30db7e94a399b4f2e7cc09a00bbc610c739a670d96a677d9ffa84",
+    "selected_lines": [
+      {
+        "line": 2,
+        "text": "  \"description\": \"Parametric batch1 steady decode; all coefficients replaceable; not measured full-chip results\","
+      },
+      {
+        "line": 5,
+        "text": "  \"frequency_hz\": 100000000,"
+      },
+      {
+        "line": 8,
+        "text": "  \"tile_inputs\": 64,"
+      },
+      {
+        "line": 9,
+        "text": "  \"tile_outputs\": 64,"
+      },
+      {
+        "line": 14,
+        "text": "    \"cache_MiB\": 16,"
+      },
+      {
+        "line": 16,
+        "text": "    \"load_bandwidth_GBs\": 64,"
+      },
+      {
+        "line": 24,
+        "text": "    \"local_resident_bits_per_tile\": 36864,"
+      },
+      {
+        "line": 29,
+        "text": "    \"bandwidth_GBs\": 64,"
+      },
+      {
+        "line": 36,
+        "text": "    \"bandwidth_GBs\": 32,"
+      },
+      {
+        "line": 39,
+        "text": "    \"read_pJ_per_byte\": 64,"
+      },
+      {
+        "line": 40,
+        "text": "    \"write_pJ_per_byte\": 64,"
+      },
+      {
+        "line": 44,
+        "text": "    \"macs_per_cycle\": 512,"
+      },
+      {
+        "line": 45,
+        "text": "    \"vector_ops_per_cycle\": 64,"
+      },
+      {
+        "line": 46,
+        "text": "    \"nonlinear_ops_per_cycle\": 16,"
+      },
+      {
+        "line": 60,
+        "text": "    \"raw_bits_per_source_cycle\": 16,"
+      }
+    ]
+  },
+  {
+    "tag": "mature",
+    "commit": "0855eab497659964a594c91c5358b4729f4e5476",
+    "path": "architecture_tlm/unified_v6/memory_profiles.py",
+    "blob_sha256": "78e93e2e3216f3106281599fd222e4e41be0e04a31843bf32a284d1ffd5c578e",
+    "selected_lines": [
+      {
+        "line": 4,
+        "text": "never a fallback. SRAM re-banking retains the same macro count/capacity/PVT."
+      },
+      {
+        "line": 12,
+        "text": "PROFILES=('legacy','sram64','prefetch','ddr4','balanced_ddr4')"
+      },
+      {
+        "line": 18,
+        "text": "    if profile in ('sram64','balanced_ddr4'):"
+      },
+      {
+        "line": 19,
+        "text": "        c['sram'].update(capacity_bytes=8*1024**2,banks=64,fabric_GBs=64.)"
+      },
+      {
+        "line": 29,
+        "text": "            configuration=str(DRAM_CONFIG),output_prefix=str(output_prefix),burst_bytes=64,max_pending=32,"
+      },
+      {
+        "line": 30,
+        "text": "            standard='Micron 4Gb DDR4-1866 x8; 2 channels x 2 ranks; 16GiB',"
+      },
+      {
+        "line": 31,
+        "text": "            theoretical_pin_bandwidth_GBs=2*8*2/1.072,"
+      },
+      {
+        "line": 33,
+        "text": "    c['cost_policy']['memory_hierarchy']='DRAM -> shared banked SRAM ping/pong -> full-width local SC weight macro -> counters; no entire-layer residency assumption'"
+      }
+    ]
+  },
+  {
+    "tag": "v6",
+    "commit": "4e0d26b5e13f8912f9ac067367c12887c2f88761",
+    "path": "architecture_tlm/unified_v6/config.py",
+    "blob_sha256": "b0b50fec8f1442b481bebba625446a3dae5c11c222654cf0d3d579ee5582d348",
+    "selected_lines": [
+      {
+        "line": 1,
+        "text": "\"\"\"Explicit v6 assumptions. Price values are scenario parameters, not new PPA.\"\"\""
+      },
+      {
+        "line": 13,
+        "text": "    cfg = dict(core_hz=100000000, context_tokens=2048, decode_tokens=1, seed=0,"
+      },
+      {
+        "line": 14,
+        "text": "        macs_per_cycle=512, mac_startup_cycles=2, vector_lanes=64,"
+      },
+      {
+        "line": 32,
+        "text": "            banks=16, word_bytes=16, macro_depth=4096, corner='SS',"
+      },
+      {
+        "line": 33,
+        "text": "            clock_hz=80000000, fabric_GBs=16., cdc_ns=20.,"
+      }
+    ]
+  }
+]

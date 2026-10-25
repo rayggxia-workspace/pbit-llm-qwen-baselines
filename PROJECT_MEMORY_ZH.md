@@ -1,3 +1,7 @@
+## 2026-10-25 Issue95 / PR188 已发布
+
+理想读出分层质量已通过 PR188 发布并待审，未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/188 。科学提交413e786fd1a8d08c1825f1886a3000929aff5bc0；完整tree 38b2634008ef6db09b53a7e9872df0faf7ad60bd与本地一致，报告远端读回逐字符一致。225案例与验证结果不变；新增台账与根镜像已同步且保留并行记录。恢复见work/rayggxia/95/ideal_quality_20261025/PUBLICATION.json。Issue95保持开放，Projects待有权限维护者同步。
+
 ## 2026-10-25 Issue95：理想读出20k的定时分层质量
 
 用户同意等待实际比较器数据时，先用三条理想阈值读出做基线。task/95-ideal-quality-20261025，tmp/rng-ideal-quality-issue95-20261025，base d6d33995754fcdcea99286e4ce43f91647aa231a；执行本地提交 bdbab3e38ff56e267783af9ac327dbba67a0e169，冻结5文件SHA。已有ideal_and_old_20000_v1三seed32003/32009/32027，各20000bit、1us，仍带旧比较器负载；无新Spectre。216主例+9重复种子对照全完成，每端点4096帧；四个固定5000bit冷启动段，不是12独立物理轨迹，也不触发默认1e8拍/1s周期换种。

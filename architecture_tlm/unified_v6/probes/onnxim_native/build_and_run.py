@@ -4,6 +4,11 @@ BASE='https://raw.githubusercontent.com/PSAL-POSTECH/ONNXim/8599bee46b311fb267ac
 root=pathlib.Path(sys.argv[1]).resolve();root.mkdir(exist_ok=False);records={}
 def sha(b):return hashlib.sha256(b).hexdigest()
 def get(url):
+ cache=pathlib.Path(__file__).with_name('download_cache')
+ cached=cache/(hashlib.sha256(url.encode()).hexdigest()+'.bin')
+ if cached.exists():
+  index=json.loads((cache/'INDEX.json').read_text());record=next(x for x in index if x['url']==url)
+  b=cached.read_bytes();assert sha(b)==record['sha256'];return b
  for i in range(3):
   try:
    with urllib.request.urlopen(url,timeout=45) as r:return r.read()

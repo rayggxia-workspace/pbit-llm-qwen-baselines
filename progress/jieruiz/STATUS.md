@@ -1,4 +1,15 @@
-当前Issue182：正在实现与验证标准DRAM/分层SRAM/权重预取，分支task/182-memory-hierarchy，base main5273e5d9；未上传/未合并。交接work/jieruiz/182/HANDOFF.md。
+# Issue182 / PR183：标准内存与跨组权重预取
+
+更新时间：2026-10-25T04:15:19.874160+00:00；负责人jieruiz；正式仓库rayggxia-workspace/pbit-llm-qwen-baselines。
+分支task/182-memory-hierarchy，PR183→main5273e5d9；独立目录tmp/memory-hierarchy-issue182-20261025。
+当前：实现与本轮验证已完成，通过同一PR183交付、待审未合并。未自动合并，Issue182仍开；实际上传HEAD见PR及work/jieruiz/182的发布回执。
+93项机制/回归、18个独立小形状全事件审计、8个真实DRAMSys小基准、4个tiny桥接门禁通过。22个完整36层case完成，其中19个实际DRAMSys，PV/校正拒绝分别3seed；不是PPL/训练/RTL/PT。Slurm2913/2925/2931全部完成并核验，不需要重跑。
+跨组预取baf0aab1的8/16/32/64阵列为516.97928/468.98478/462.11397/438.47604ms/token。保留首轮仅组内预取负面边界；数值见architecture_tlm/unified_v6/RESULTS_MEMORY_ZH.md。
+DRAM为标准Micron DDR4-1866双通道双rank16GiB、真实DRAMSys。SRAM8MiB/128宏不变，64bank/64GBs接口为未STA验证假设；全芯片PPA未知。DRAMPower负ACT分项保留，功耗是未校准模型输出，不反馈时序。
+Projects缺read:project，待维护者同步；未触碰其他成员/暂停任务。后续验收：接口/CDC/本地权重和响应缓存PPA、改善数字W8宏参考、同质量算法验证；详见work/jieruiz/182/HANDOFF.md。
+
+---
+以下为原main历史状态，不代替最新PR：
 
 # 当前统一TLM交付：Issue179 / PR180（2026-10-24）
 

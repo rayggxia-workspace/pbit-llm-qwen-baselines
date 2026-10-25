@@ -10,12 +10,16 @@
 | DRAM峰值 | 人为设16GB/s | tCK=1.072ns，双沿，合计29.851GB/s；实际由时序/调度/刷新决定 |
 | SRAM容量/工艺 | 8MiB、55nm SS、80MHz | 同8MiB、同128个4096×128宏、同SS/80MHz |
 | SRAM组织 | 16个并行bank，每bank串深8宏 | 64个并行bank，每bank串深2宏 |
-| SRAM公共fabric | 读写合计16GB/s | 读写合计64GB/s；bank端峰值81.92GB/s |
+| SRAM公共fabric | 读写合计16GB/s | 读写合计64GB/s接口假设；bank端峰值81.92GB/s |
 | 本地权重接收 | 256B/100MHz周期＝25.6GB/s | 1024B/周期＝102.4GB/s，足以接收64GB/s |
-| 权重生命周期 | 下一波读权重在当前阵列结束之后 | 当前阵列开始时，发下一波DRAM读；上一波恢复完成后再fill/program |
+| 权重生命周期 | 下一波读权重在当前阵列结束之后 | 当前阵列开始时，跨输出波及输入组预取下一波DRAM；上一波恢复后再fill/program |
 | DMA响应暂存 | 旧路径隐含在阻塞DMA边界 | 新SC路径显式一波容量；8引擎时32KiB，读写成本标为待表征 |
 | 本地全宽权重 | 8×4KiB＝32KiB | 8引擎默认仍32KiB；没有免费增加第二份全宽阵列 |
-| 数值/算法 | x四档、64分层采样；GU定点宏、三路AND直连Wd；原Attention/随机服务 | 保持相同数值、采样、Attention和随机源合同 |
+| 数值/算法 | x四档、64分层采样；GU定点宏、三路AND直连Wd；原Attention/随机服务 | 保持相同数制、采样规则、Attention和随机源合同；时序变化可改变随机序列，不保证逐位输出相同 |
+
+同8MiB只指共享SRAM，不含SC本地权重和新增响应缓存；不是同总存储或同面积比较。64GB/s fabric、1024B/核心周期接收及CDC尚无完整STA/布线依据。
+
+这里的同容量比较针对原本为8MiB的Qwen3-4B；`balanced_ddr4`对于其它模型形状也显式采用8MiB，不能称相对旧Qwen的1MiB默认同容量。
 
 64bank不是64个双端口：每bank仍按已有1RW宏约束，读写共同争用64GB/s。两个ping/pong地址都交织在全部bank，不把不同地址误算成独立通路。容量更大不会自动缓存更多权重；本版按真实分配和流量收费。
 
@@ -33,7 +37,7 @@ flowchart LR
   C --> S
 ```
 
-这里只把下一波DRAM读取与当前计算重叠。SRAM fill、local program、系数装载仍等待上一波恢复；没有声称把全部访存都隐藏。这样可避免FIFO资源模型提前预约未来fill、反而阻塞当前restore的问题。DMA响应缓存是有限宏：要求可按DRAM返回速率写入、按SRAM传输速率读出；两个方向不同时占有本波，额外时延暂按流式接口包含在DMA/fill内，PPA尚未标定。更细的beat级跨DMA重排、流式写入和银行仲裁是后续改进。
+这里只把下一波DRAM读取与当前计算重叠，包含同输入组内的下一输出波，以及输入组结束时下一组的首波。跨组改进来自baf0aab1；第一轮7e44b6a4仅跨输出波，结果分开保留。下一组编码与状态更新仍遵守依赖。SRAM fill、local program、系数装载仍等待上一波恢复；没有声称把全部访存都隐藏。这样可避免FIFO资源模型提前预约未来fill、反而阻塞当前restore的问题。DMA响应缓存是有限宏：要求可按DRAM返回速率写入、按SRAM传输速率读出；两个方向不同时占有本波，额外时延暂按流式接口包含在DMA/fill内，PPA尚未标定。更细的beat级跨DMA重排、流式写入和银行仲裁是后续改进。
 
 ## 阵列是不是太小，为什么分批
 
@@ -63,9 +67,13 @@ DS-CIM还通过多个输入向量共享权重获得吞吐。当前batch1 decode�
 
 ## DRAM模型与功耗口径
 
-配置原字节来源为仓库84c13195的 `architecture_tlm/llama7b/dram/configs/ddr4_2ch_2rank_NoPowerDown_core_limits.json`。本版保存相同文件和PROVENANCE，采用Open-page/FR-FCFS、32个bridge outstanding突发，DRAMSys内部按实际bank/row/refresh时序工作。一个DMA内部滚动补充请求；不再人为每32突发排空，但宏DMA之间仍有完成屏障。
+配置原字节来源为仓库84c13195的 `architecture_tlm/llama7b/dram/configs/ddr4_2ch_2rank_NoPowerDown_core_limits.json`。本版保存相同文件和PROVENANCE，采用Open-page/FR-FCFS、32个bridge outstanding突发，DRAMSys内部按实际bank/row/refresh时序工作。外部requester以1ns间隔尝试提交burst，由真实控制器回压；它是独立内存请求侧，不是100MHz核心每拍只能传64B。核心提交宏描述符，后续由DMA控制器展开。一个DMA内部滚动补充请求；不再人为每32突发排空，但宏DMA之间仍有完成屏障。
 
 使用DRAMSys5.6/SystemC3/DRAMPower6.3.1既有audit bridge。功耗来自修正的Micron core-current限值配置，VDDQ=0是**I/O/PHY未计**，不是I/O无功耗；控制器、PHY和板级外围不在DRAMPower core边界。没有把原64pJ/B＋50mW代理单价叠加到真实DRAMPower结果。
+
+16GiB双rank沿用已有Llama兼容标准，方便统一覆盖BF16/更长上下文；不是Qwen3-4B/2K的最小所需容量。若只面向该单一场景，可另测8GiB单rank，降低未使用rank的后台功耗；不能把这一收益混入本轮固定16GiB对照。
+
+本轮进一步审计发现core-current上限组合在DRAMPower6.3.1中产生小负ACT分项（首轮8阵列总−1.38109mJ，约core总量0.0934%）。源码公式与命令计数复算一致，能量只在时序执行后统计，因此不影响TPOT。它说明功耗参数尚未完全校准；原值保留，不静默截零，不把该比例当作总误差上界。
 
 NoPowerDown先作为统一可复现标准。低功耗策略可以另做同配置对照，本轮不把低功耗收益揉入调度收益。
 
@@ -80,6 +88,6 @@ python -m architecture_tlm --memory-profile legacy --attention exact --output ou
 
 缺少真实DRAMSys可执行文件时，新profile明确报错，不静默回退Link。源代码和官方配置在执行前冻结；远端Slurm仅用CPU。旧结果原件不覆盖。
 
-结果见本目录 `RESULTS_MEMORY_ZH.md`（执行完后填写）与 `work/jieruiz/182/HANDOFF.md`。目前已通过72项机制/回归：权重不覆盖、>=3次槽复用、预取重叠、单/双缓冲工作量相同、容量/端口负例、数字分块独立。真实DRAMSys小基准已完成，全模型正在接续执行。
+结果见本目录 `RESULTS_MEMORY_ZH.md` 与 `work/jieruiz/182/HANDOFF.md`。baf0aab1通过93项机制/回归（包含原随机服务19项），另有18个独立小形状全事件审计：权重不覆盖、跨组/尾波和单波组预取、关闭重叠、容量/端口负例、数字分块独立。8个真实DRAMSys吞吐基准、前后两轮各2个tiny集成门禁通过。全模型结果按各执行SHA独立封存。
 
 已知边界：SRAM内部宏面积与动态能量有库依据，加宽接口/CDC/布线、DMA响应buffer、本地全宽权重宏、新FFN计数/恢复与随机非线性仍有未标定PPA。因此完整芯片面积/能耗保持unknown；本次不提供新PPL，不声称全局最优或全芯片周期精确。

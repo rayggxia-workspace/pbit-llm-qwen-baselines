@@ -1,0 +1,52 @@
+Issue182 负 ACT 分项只读代数审计
+
+实际构建来源由 bridge 的 CMakeCache.txt 和 DRAMPower.dir/DependInfo.cmake 定位至：
+/home/Hongjie_Zeng/projects/pbit-dramsys-20261014/vendor/deps/drampower/DRAMPower-6.3.1/
+未修改配置、源码、已提交快照；未重建、未运行模型/仿真、未提交作业。
+
+公式（远端执行来源文件，按原文件一基行号）：
+core_calculation_DDR4.cpp L25-26：E_ACT = V * (I_theta - I_1) * tRAS * N_ACT。
+L69：I_rho = rho * (I3N - I2N) + I2N。
+L70：I_theta = [I0 * (tRP + tRAS) - I_beta * tRP] / tRAS。
+L71：I_1 = [I3N + (B-1) * I_rho] / B。
+L56-87：分别累加 VDD、VPP，逐rank、device、bank计费；统计仅代表每rank的一个device，因此8 devices乘数不可遗漏。
+该文件 SHA256 b9b38a2d88281248c549c702a0bdf181712d9d160b687a663d3324ab079d5752。
+
+MemSpecDDR4.cpp L102-103：iBeta_vdd/vpp未提供时分别回退idd0/ipp0。
+L105-112：factRho未提供时默认1；本轮配置显式factRho=1。
+该文件 SHA256 5cdd644e5d655616e9b212f2e68d29884e2b46266e11c92dd5692632632dbbb7。
+
+本轮配置 SHA256 ddbdd1aee7f20d5e3eaf12d73b7e300894ad3ab5cc50ae2a8aa5fd121b2fa419。
+没有iBeta字段；rho=1令I_1=I3N，而iBeta=I0令I_theta=I0。
+tRAS=32*1.072ns=34.304ns，B=16，每rank 8 devices。
+每device每ACT的VDD分项：1.2V*(58-61)mA*34.304ns = -123.4944pJ。
+每device每ACT的VPP分项：2.5V*(4-3)mA*34.304ns = +85.76pJ。
+合计 -37.7344pJ/device/ACT，乘8devices为 -301.8752pJ/rank ACT。
+
+E8 ch0 ACT计数2287681，代数结果-0.00069059415941120 J；原件-0.0006905941594111985 J。
+E8 ch1 ACT计数2287354，代数结果-0.00069049544622080 J；原件-0.0006904954462207977 J。
+残差分别约-1.41e-18、-2.28e-18 J，属于浮点计算次序差异。
+总ACT=-0.0013810896056319962 J，core总1.4785414832238466 J，ACT/core=-0.0934089182686059%。
+
+解释及交付口径：
+这是当前电流参数组与默认iBeta假设导出的背景扣除增量为负；并非真实器件激活能够产生能量，也不是bridge漏乘device或汇总数值差错。
+应保留原件并将core能量标为“指定core_limits和DRAMPower分解下的条件模型输出，含负ACT增量，未完成物理校准”。
+该0.0934%仅说明此负分项相对core总量的大小，不能当作整套能量估计误差界。
+不能静默截零、替换iBeta/IDD值或改写已记录结果。若以后校准，需独立版本配置、参数证据和新计价结果。
+完整物理能量继续null；interface示例阻抗/vddq=0及未计PHY/controller边界仍另行保留。
+
+时序影响：
+bridge_sg_v6_audit.cpp L188先完成sc_start，L192才调用powerAt；L123-125从统计调用core/interface能量；L131原样导出ACT。
+DDR4.cpp L49-51的calcCoreEnergyStats是const统计→能量函数。
+因此该负ACT分解不反馈本次DRAM时序/TPOT；这不等于整机TLM时序或物理PPA已校准。
+bridge源码SHA256 28006085f2073386698441abff51f56b58278b0beb72e6636e5a2792a0ed13dd。
+本次只读重散列bridge二进制900e8257e255a01c59ed1770f8fda5901163003e0c8f21636baefc2cb662c868、libDRAMPower.so 33cc1cc40c4969cd3582beb40a7443c49249ea653938efffdb27c2835263f456，均与运行回执一致。
+
+证据：ACT_SOURCE_READONLY_EVIDENCE.json保存源码原文、来源路径、大小/SHA及构建依赖记录；其SHA256 e29db83262a2cbc93ec2e9af02e31e73846510a3f85baeaadb8c2aa4fa300952。
+ACT_ALGEBRA_READONLY_AUDIT.json保存逐域代数及计数复算；其SHA256 b69e95afb3052a9f256bab84bf14eb502e4c0e116bed84e86cf44cfed69dc23a。
+ACT_SOURCE_*.txt为相应源码原字节阅读副本，已核对重编码SHA与远端一致。
+
+官方公开源可交叉核对同一公式（公开master页面，不能代替上述冻结执行源码SHA）：
+https://github.com/tukl-msd/DRAMPower/blob/master/src/DRAMPower/DRAMPower/standards/ddr4/core_calculation_DDR4.cpp
+https://github.com/tukl-msd/DRAMPower/blob/master/src/DRAMPower/DRAMPower/memspec/MemSpecDDR4.cpp
+浏览工具未能抓取v6.3.1 tag下两源文件，因此本审计不声称已完成远端执行源与官方tag的逐字节同一性核验。

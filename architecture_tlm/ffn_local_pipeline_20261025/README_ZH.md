@@ -1,6 +1,6 @@
 # FFN本地双缓冲：分清调度、带宽和计算瓶颈
 
-Issue186；独立分支 `task/186-local-pipeline`；基于main `d83eeb1f`。新代码全部放在本目录；`unified_v6` 原实现、默认配置、历史结果不改。
+[Issue186](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/186) / [PR192](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/192)（待审、未合并）；独立分支 `task/186-local-pipeline`；基于main `d83eeb1f`。新代码全部放在本目录；`unified_v6` 原实现、默认配置、历史结果不改。
 
 **本轮问题不是“每拍都从SRAM重新读权重”，而是装载下一批权重、计算和恢复被串行连接。新方案让下一批权重提前装好。** 单层因果对照已显示：同样的阵列和采样数，FFN约7.52→4.97ms；之后单独翻倍SRAM带宽，仅再降低约3.5%。完整36层结果、每项配置和源SHA见 [自动汇总](RESULTS_ZH.md)。
 

@@ -1,5 +1,7 @@
 ## 2026-10-25 Issue186：有限双本地bank完整TLM
 
+发布确认：本轮已上传 [PR192](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/192)，待审、未合并；Issue186已同步；13项结果已完成。准确head与原字节核验见work/jieruiz/186/PIPELINE_PUBLICATION.json。
+
 独立分支task/186-local-pipeline、目录tmp/ffn-local-pipeline-issue186-20261025，新正式目录architecture_tlm/ffn_local_pipeline_20261025；基线main d83eeb1f，PR190已合并。Slurm3074的13项已completed/封存SHA核验：3完整36层＋10单层扫描，执行6f73ef65；44合同/回归通过。旧版407.142620ms逐数复现；双bank315.236180、加shared权重bypass307.049120ms/token；FFN268.576→176.680→168.488ms。主对照100MHz/8×64阵列/R8/W8/B4/GU64/NL64/HBM/8MiB64GBs不变，新增32KiB权重＋32B系数bank，不复制计数/计算/恢复。
 
 已明确旧瓶颈含装载串行屏障。改后单层4.966ms：SRAM翻倍再少3.5%，恢复/累加扩4倍少11.6%，阵列翻倍少20.5%；B1每权重有效乘积仍1，64次是本地随机事件。shared版本字节不变，bypass每token少5.015GiB共享读写；SRAM内部动态25.532→13.131mJ，仅已标定局部能量，整机PPA未知，HBM电流占位禁用能耗。真实随机端点/GU数值闭环/PPL/物理双bank接口仍待验证。成熟模拟器参考和16波时间线在新目录。原件个人服务器pbit-scheduling-issue186-20261025/pipeline_6f73ef65；本地只留小摘要与manifest，不复制大轨迹。

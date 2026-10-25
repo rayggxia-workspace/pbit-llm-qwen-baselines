@@ -2,7 +2,7 @@
 import base64,gzip,hashlib,json,pathlib,subprocess,sys
 R=pathlib.Path(__file__).resolve().parents[3];W=R/'work/jieruiz/186'
 pipeline='--pipeline' in sys.argv
-s=json.loads((W/('HBM_PIPELINE_SUBMISSION.json' if pipeline else 'HBM_SUBMISSION.json')).read_text())
+s=json.loads((W/('HBM_PIPELINE_SUBMISSION.json' if pipeline else 'HBM_SUBMISSION.json')).read_text(encoding='utf-8'))
 script=r'''import base64,gzip,hashlib,json,pathlib,sys
 r=pathlib.Path(REMOTE);files={};done=[];failed=[];pending=[]
 def sha(p):
@@ -13,11 +13,13 @@ def sha(p):
 def keep(p):files[p.relative_to(r).as_posix()]=base64.b64encode(p.read_bytes()).decode()
 for i in range(CASE_COUNT):
  p=r/'results'/('case_'+str(i));mf=p/'MANIFEST.json'
- if (p/'FAILURE.json').exists():failed.append(json.loads((p/'FAILURE.json').read_text()));keep(p/'FAILURE.json')
+ if (p/'FAILURE.json').exists():failed.append(json.loads((p/'FAILURE.json').read_text(encoding='utf-8')));keep(p/'FAILURE.json')
  if not mf.exists():
   if not (p/'FAILURE.json').exists():pending.append(i)
   continue
- m=json.loads(mf.read_text());assert m['status']=='completed'
+ m=json.loads(mf.read_text(encoding='utf-8'));assert m['status']=='completed'
+ raw=json.loads((p/'RESULT.json').read_text(encoding='utf-8'));layers=sorted({x['layer'] for x in raw['phases'] if x.get('layer') is not None})
+ assert layers==list(range(36)),('missing layers',layers)
  for name,meta in m['files'].items():assert sha(p/name)==meta['sha256'],str(p/name)
  for name in ['MANIFEST.json','RESULT_SUMMARY.json','EXECUTION.json']:keep(p/name)
  done.append(dict(index=i,case=m['case'],manifest_sha256=sha(mf)))

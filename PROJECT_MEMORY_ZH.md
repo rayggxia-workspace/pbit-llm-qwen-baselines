@@ -1,3 +1,13 @@
+## 2026-10-25 Issue186 / PR190：HBM真实闭环25项
+
+用户要求将DDR换高带宽DRAM再看时间；同独立目录tmp/mature-scheduling-issue186-20261025，无新副本。实现mature_hbm2_narrow/wide/pipelined，默认DDR仍保留；标准公开HBM2时序扩8通道/16GiB/理论256GBs，内核100MHz、8MiB64GBs SRAM、8×64/R8及采样数不变。e7505ee4/Slurm3019+3020完成17项；43b7b1ff/3037+3038完成8项；全部36层/SHA封存，104回归和36微基准通过，旧DDR每段时延/能量相同。
+
+最终2K/batch1 ms/token：BF16599.340→402.629（少32.8%）；W8数字426.364→333.664（少21.7%）；随机FFN R8准确503.639→438.038（少13.0%）；SC筛选PV三seed474.154→407.167（少14.1%）。实得连续读：DDR27.59、HBM旧64B28.65、256B112.10、流水响应185.79GB/s。旧1ps END_RESP被上游取整再加下一响应1ns，产生2ns节奏；新profile显式0额外接受延迟，上游仍1ns一响应，不改旧源。桥128pending但Arbiter有效64，峰65含等待；PV批量随max_pending32→128、字节和样本不变。HBM功率电流0占位，明确禁用能量，完整PPA仍null。
+
+FFN主体约267ms几乎不变，原预取已覆盖外存等待；投影/词表获益最大。KV token步长2048B，channel bits8..10使固定kv落同通道，当前逐kv串行；HBM注意力不一定更快。未来可独立测XOR通道映射[[8,11],[9,12],[10,13]]，本轮未运行，不称最优。无新PPL/RTL/PT，不将当前GU整数宏继承旧算法质量。
+
+成果unified_v6/HBM_RESULTS_ZH.md、HBM_TIMING_ZH.md、results/hbm_20261025，记录本O11；发布回执work/jieruiz/186/HBM_PUBLICATION.json，PR190未合并/Issue186开放，Projects缺权限待同步。原件个人远端pbit-scheduling-issue186-20261025/hbm_e7505ee4和hbm_43b7b1ff，全部任务结束勿重跑。恢复先核最新STATUS/HANDOFF/Issue/PR，再collect_hbm两模式和analyze_hbm --require-complete。
+
 ## 2026-10-25 Issue186 / PR190：局部部分和与128阵列，24项完成
 
 接续用户“借鉴已有SC部分和优化、比较128尺寸并建立论文记录本”。继续同分支/独立目录，核心结果已推送7714f509a4622daed9e352859101b88673b055c2，PR190待审未合并，依赖PR183仍开放。101项统一TLM测试、Slurm2995首轮13项＋3008跨窗口预取修正11项，全36层Qwen3-4B后训练形状/2K/准确Attention/completed原件SHA核验；源b1df81d2/829559dc冻结，不覆盖旧45项。原生随机/数字控制未改，新增随机检查点银行为有界宏，未当作Issue95真实端点。

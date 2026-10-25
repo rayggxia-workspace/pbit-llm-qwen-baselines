@@ -2,6 +2,8 @@
 
 Issue186 / [PR190](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/190)，2026-10-25。依赖PR183；本报告是可复现的架构探索，PR不自动合并。
 
+2026-10-25补充：[HBM完整25项对照](HBM_RESULTS_ZH.md)已完成；旧DDR表保留原协议，不被新结果覆盖。
+
 ## 先看结论
 
 **可以借鉴成熟模拟器的存储调度来搭建我们自己的模型，且本轮已经实现并运行。** 保留统一 `unified_v6`，让数字矩阵和随机FFN使用共同的有限预取、存储槽和释放规则，Attention的稀疏地址进入真实DRAMSys队列。没有把整个Qwen伪装成已经在ONNXim原生执行。

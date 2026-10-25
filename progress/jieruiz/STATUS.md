@@ -1,88 +1,9 @@
-# Issue186 / PR190：部分和局部驻留与128阵列对照
+# Issue186 / PR190：HBM完整25项已核验
 
-更新2026-10-25T08:40:00.103148+00:00；负责人jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines；分支task/186-mature-scheduling；独立目录tmp/mature-scheduling-issue186-20261025；base仍task/182-memory-hierarchy@0341b4ac。核心代码和24项结果已经推送7714f509a4622daed9e352859101b88673b055c2，PR190开放待审、未合并。最终远端回执见LOCALITY_PUBLICATION.json；补充说明和本交接已随9fed8c65上传。
+更新2026-10-25T10:44:17.130922+00:00；负责人jieruiz；分支task/186-mature-scheduling；目录tmp/mature-scheduling-issue186-20261025；base task/182-memory-hierarchy，PR190待审未合并。
 
-本轮原始13项Slurm2995/源b1df81d2，修复跨窗口预取后11项Slurm3008/源829559dc；全部completed且原RESULT、EXECUTION、汇总SHA核验。首轮结果保留，原45项不改。两条源快照只改局部驻留实现及测试；控制0/1没有重跑不变路径。101项unified_v6测试通过；24项最终交付审计通过。没有GPU/PPL、新RTL/PT或真实模型载荷。
+本地实现和25项全部completed/SHA/36层验证：e7505ee4的Slurm3019/3020（17项），43b7b1ff的3037/3038（8项）。104回归，36微基准；旧DDR四模式逐段时间/能量不变。2K ms/token：BF16 599.340→402.629；W8 426.364→333.664；SC R8准确503.639→438.038；SC R8筛选PV三seed474.154→407.167。核心100MHz、共享8MiB/64GBs SRAM、随机采样不变。HBM16GiB理论256GB/s、实际连续读185.786；新增256B主机事务/有效64admitted，PV32→128分批。源快照不可改。
 
-最终2K单token ms：原8×64=509.471；8×64/R8=503.639；R16/全K相同；16×64/R8=453.289；2×128/R8双组源=506.931、单组581.392；8×128/R8双组=434.075；8×128全K双组=432.817；同轮W8数字426.364。部分和每层17.6445→2.0586MiB，R8减少88.33%；数学/权重总量未变。扩到8×128增加4倍计算/权重位置，不是同面积收益。
+成果architecture_tlm/unified_v6/HBM_RESULTS_ZH.md、HBM_TIMING_ZH.md、results/hbm_20261025、记录本O11；work/jieruiz/186/HBM_DELIVERY_AUDIT.json。原始RESULT/trace保留个人远端pbit-scheduling-issue186-20261025/hbm_e7505ee4和hbm_43b7b1ff；无运行中本任务，无GPU/PPL/RTL/PT。HBM占位电流禁用，总物理能量/面积null，不比较不完整小计。GU数值宏/普通算术吞吐未签核。FFN主体约267ms不随HBM显著变快；KV同组单通道热点尚在，可另测XOR映射，未宣称已优化。
 
-成果：architecture_tlm/unified_v6/FFN_LOCALITY_ZH.md、results/locality_20261025/（含window_prefetch）、ARCHITECTURE_OPTIMIZATION_LOG_ZH.md及EVIDENCE索引。默认实现保留，configure()显式启用候选；新增多检查点源是有限宏，未映射Issue95真实端点；完整面积/能量null。SRAM/DRAM/Attention保持原合同。看板缺read:project，待有权限维护者同步。
-
-恢复：先核Issue186/PR190与依赖PR183；collect_locality.py与--prefetch核原件；analyze_locality.py --stage1与无参数、make_locality_report.py、verify_locality_delivery.py重建和核验。原始远端两个locality_<commit8>/source不可修改。无需重跑健康任务。下一步优先R8本地bank/检查点端口RTL/STA/PT与GU编译器/真实模型质量闭环；不自动合并或切换默认。
-
----
-历史记录：
-
-# Issue186 / PR190：成熟调度共同模型交付
-
-更新：2026-10-25T06:33:00.231770+00:00；负责人jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
-分支task/186-mature-scheduling，独立目录tmp/mature-scheduling-issue186-20261025；依赖PR183@0341b4ac，PR190的base=task/182-memory-hierarchy。代码与45项结果已上传，科学head49fb2358；PR190已转ready，待审未合并，远端树/核心字节核验通过。最终元数据head以PUBLICATION.json/PR190为准，不自动合并。
-
-已完成：共同有限tile/slot/响应生命周期、数字本地状态与K64 W8恢复、SG实际DRAM、默认mature_ddr4。110回归；真实DRAM10小整机＋8SG；原生ONNXim25情景和官方39/47，ASan/UBSan结果SHA一致且stderr零；独立CMake重新构建DRAM桥8项结果一致。45完整Qwen3-4B/36层/2K或8K decode合成事务按completed MANIFEST/配置/源码/结果SHA核验，主概率三seed。
-
-主要ms/token：2K BF16准确599.340、W8准确426.364、SC准确509.471、W8筛选PV396.842、SC筛选PV479.976、SC校正拒绝700.421；8K依次756.072/582.989/666.099/419.557/502.691，未测8K拒绝。同Attention的W8更快，不能将联合加速归因SC FFN。数字tile、SG和SC阵列有限扫描，64容量候选62合法；4MiB/64bank只作结构性建议，不冒称完整重跑。
-
-本轮Slurm2938/2942/2943/2976/2984/2986/2987/2993/2994已封存完成；失败2941（小fixture预算）、2983（下载）、2985（fmt链接）原件保留。无GPU/PPL/训练/新RTL/PT；源快照未改、未碰其他任务。大trace/构建在个人远端pbit-scheduling-issue186-20261025，Git小汇总/索引。23个本任务重复输入/缓存已逐SHA确认远端后回收2,936,618B，见CLEANUP_COMPLETED/ATTEMPTS_AND_RECOVERY。
-
-成果：architecture_tlm/unified_v6/MATURE_SCHEDULING_ZH.md、SCHEDULER_RESEARCH_ZH.md；results/scheduling_20261025/COMPARISON.csv/AGGREGATE.json/FINAL_AUDIT.json；原生和DRAM桥接可执行源码在probes/。HANDOFF见work/jieruiz/186。
-
-限制：MAC512/拍、片上接口、GU定点恢复、NL独立随机供给和部分PPA仍宏假设；全芯片能耗/面积null。DRAM负ACT未截零、不反馈时序；core J仅诊断。不是完整ONNXim Qwen移植、全局最优或全芯片周期精确。Projects缺read:project待同步；Issue187/PR189其他成员调研只读。
-
-下一步：先复核PR190最后head及依赖PR183；验收前不关闭Issue186。优先做计数/系数状态双缓冲和恢复流水线，给数字参考相同优化机会；质量与RTL/PPA另闭环。没有本任务待完成仿真或需重复提交的健康作业。
-
----
-历史状态：
-
-# Issue182 / PR183：标准内存与跨组权重预取
-
-更新时间：2026-10-25T04:15:19.874160+00:00；负责人jieruiz；正式仓库rayggxia-workspace/pbit-llm-qwen-baselines。
-分支task/182-memory-hierarchy，PR183→main5273e5d9；独立目录tmp/memory-hierarchy-issue182-20261025。
-当前：实现与本轮验证已完成，通过同一PR183交付、待审未合并。未自动合并，Issue182仍开；实际上传HEAD见PR及work/jieruiz/182的发布回执。
-93项机制/回归、18个独立小形状全事件审计、8个真实DRAMSys小基准、4个tiny桥接门禁通过。22个完整36层case完成，其中19个实际DRAMSys，PV/校正拒绝分别3seed；不是PPL/训练/RTL/PT。Slurm2913/2925/2931全部完成并核验，不需要重跑。
-跨组预取baf0aab1的8/16/32/64阵列为516.97928/468.98478/462.11397/438.47604ms/token。保留首轮仅组内预取负面边界；数值见architecture_tlm/unified_v6/RESULTS_MEMORY_ZH.md。
-DRAM为标准Micron DDR4-1866双通道双rank16GiB、真实DRAMSys。SRAM8MiB/128宏不变，64bank/64GBs接口为未STA验证假设；全芯片PPA未知。DRAMPower负ACT分项保留，功耗是未校准模型输出，不反馈时序。
-Projects缺read:project，待维护者同步；未触碰其他成员/暂停任务。后续验收：接口/CDC/本地权重和响应缓存PPA、改善数字W8宏参考、同质量算法验证；详见work/jieruiz/182/HANDOFF.md。
-
----
-以下为原main历史状态，不代替最新PR：
-
-# 当前统一TLM交付：Issue179 / PR180（2026-10-24）
-
-负责人：jieruiz；仓库rayggxia-workspace/pbit-llm-qwen-baselines。
-分支task/179-latest-ffn-tlm-main，base main；本地tmp/latest-ffn-tlm-issue179-20261024。
-完整入口architecture_tlm/README.md，最新FFN和已保留的Attention/随机/存储接口在unified_v6。执行提交3a9ddfb1，原件results/current_ffn_20261024_v2；同目录报告及work/jieruiz/179/HANDOFF.md给出复现和边界。
-已完成74项检查、7组完整36层、8组单FFN敏感性及15组三seed夹具，12份封存SHA核验通过；全部本地执行结束，无运行中任务。本任务通过PR180交付；合并状态以PR和Issue179最终回执为准。用户已授权验证通过后合并main。没有修改训练作业；没有新GPU、Slurm、RTL/PT、PPL或DRAMSys结果。完整结果见RESULTS_CURRENT_ZH.md，完整PPA未知。Projects缺read:project，待维护者同步。
-后续：GU整数恢复数值对齐、新NL独立随机端口实际接合、权重保持及4/7桶宏STA/PPA；保留统一入口，不另建整机版本。
-
----
-以下为此前main中的历史状态，不能替代最新Issue/PR：
-
-# Issue138：可训练采样器接入 main（2026-10-23）
-
-负责人jieruiz；review/138-main-port-20261023；main base35db820；tmp/pr142-main-review-20261023。PR142源bac0e04已审核，main独立移入模块与历史NumPy测试依赖，保留源码/原结果字节。22单测及两方法三seed合成训练复核；无LLM/PPL/硬件实验。成果experiments/trainable_pbit_attention，交接work/jieruiz/138/MAIN_HANDOFF_ZH.md。当前本地审核完成，推送/合并以关联PR回执为准。后续CUDA/模型训练/内存与梯度方差未验收；Projects待权限。无运行任务，合并后回收本目录。
-
-以下保留历史状态：
-
-# jieruiz 项目进度
-
-更新时间：2026-10-16（Asia/Shanghai）。本人身份已通过本机 Git 凭据调用 GitHub `/user` 核实；仓库有写权限。
-
-| 项目 | 状态 |
-|---|---|
-| 当前任务 | [Issue #1：workspace 协作规则](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/issues/1)，负责人 @jieruiz |
-| 目标仓库 | `rayggxia-workspace/pbit-llm-qwen-baselines`；旧个人 origin 不作为本任务发布目标 |
-| 分支 / PR | `collab/issue-1-governance`；[PR #2](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/2) → main |
-| 基线 | workspace/main `8068bfbb71d892ef8b0850dea391aa612739aa4f` |
-| 独立目录 | 本机 `a_P_BIT/tmp/collab-issue-1-20261016/`；不修改现有实验 worktree |
-| 当前阶段 | 协作规则/模板已验证并推送，PR #2 已创建待审；未合并 |
-| 正式规则 | [AGENTS.md](../../AGENTS.md)；保留历史英文复现规则 |
-| 实际验证 | 9个文件范围检查、26个相对链接、历史规则逐字保留、README 原字节保留、git diff --check、8项文件SHA-256核验通过；未运行模型/硬件实验 |
-| 验证与交接 | [HANDOFF.md](../../work/jieruiz/1/HANDOFF.md)、[manifest.json](../../work/jieruiz/1/manifest.json) |
-| 阻塞 / 待同步 | Projects v2 缺少 `read:project` 权限，无法读取/更新看板；Issue/PR 可同步 |
-
-## 项目状态边界与后续
-
-- 已核实的最新已发布 TLM 快照：`pbit-tlm-attention-details-20261016`，提交 `9608c0d06cf8b421cbbd348aca4fc84c5990aae7`；读取其 `architecture_tlm/WORKSPACE_LATEST_ZH.md` 与发布验证。它尚未合入 main。
-- 已查看成员 amlink1219 的 `codex/tlm-attention-alignment-20261014` 评审和 `codex/ten-layer-calibration` 规则；前者针对历史 TLM 基线，不能将其中“尚未实现 attention”直接套给后续 v3/v4。
-- 本地工作区另有 PV stream v6 和能耗审计资料，不属于本次协作规则 PR，不能因为本 PR 已上传而视为这些代码/结果已发布。后续如需发布，先建独立任务 Issue，核对版本、依赖和证据后交付。
-- 下一步：接续 PR #2 的审阅意见；有 Projects 权限后补看板同步。待 PR 合入并确认验收后再关闭 Issue #1。本次未合并 PR。
+本轮发布状态以HBM_PUBLICATION.json为准；尚未生成回执时仅本地完成。保持Issue186开放，PR不自动合并。看板缺read:project，待有权限成员同步。恢复先核远端Issue/PR、collect_hbm.py及--pipeline，analyze_hbm.py --require-complete，再report_hbm.py；勿重跑健康/已完成任务。

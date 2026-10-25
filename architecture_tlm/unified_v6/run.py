@@ -15,6 +15,7 @@ if __package__ in (None, ''):
 from .config import load
 from .model import FullDecode, MODES
 from .core import sha
+from .memory_profiles import apply as memory_profile,PROFILES
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -28,7 +29,7 @@ def write(path, value):
 def source_record():
     head = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip()
     paths = list((ROOT/'architecture_tlm/unified_v6').rglob('*.py'))
-    paths += list((ROOT/'architecture_tlm/unified_v6/configs').glob('*.json'))
+    paths += list((ROOT/'architecture_tlm/unified_v6/configs').rglob('*.json'))
     paths += list((ROOT/'architecture_tlm/random_service').rglob('*.py'))
     paths += [ROOT/'architecture_tlm/random_service/shared64_mapping.json']
     paths += [ROOT/'architecture_tlm/unified_v6/SOURCE_INDEX.json']
@@ -102,6 +103,8 @@ def main(argv=None):
     p.add_argument('--strata',type=int)
     p.add_argument('--bins',type=int,default=4)
     p.add_argument('--trace',type=Path)
+    p.add_argument('--memory-profile',choices=PROFILES,default='balanced_ddr4')
+    p.add_argument('--dram-bridge',type=Path)
     p.add_argument('--config',type=Path,help='complete v6 config JSON override')
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--suite',action='store_true',help='same-resource five/six-method comparison')
@@ -144,6 +147,7 @@ def main(argv=None):
                     if a.rng_backend:cfg['random']['backend']=a.rng_backend
                     if cfg['random']['backend']=='integrated_service':cfg['random']['clock_hz']=cfg['core_hz']
                     identity='%s_L%d_seed%d_%s_%s'%(model,context,seed,ffn,attention)
+                    cfg=memory_profile(cfg,a.memory_profile,a.dram_bridge,a.output/identity/'dram')
                     result=FullDecode(cfg,shape).run()
                     result['execution_commit']=sources['commit']
                     result['config_sha256']=hashlib.sha256(json.dumps(cfg,sort_keys=True,separators=(',',':')).encode()).hexdigest()

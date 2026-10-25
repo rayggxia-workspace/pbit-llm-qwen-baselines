@@ -1,3 +1,5 @@
+当前Issue182：正在实现与验证标准DRAM/分层SRAM/权重预取，分支task/182-memory-hierarchy，base main5273e5d9；未上传/未合并。交接work/jieruiz/182/HANDOFF.md。
+
 # 当前统一TLM交付：Issue179 / PR180（2026-10-24）
 
 负责人：jieruiz；仓库rayggxia-workspace/pbit-llm-qwen-baselines。

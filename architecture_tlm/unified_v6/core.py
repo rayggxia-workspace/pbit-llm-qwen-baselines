@@ -212,6 +212,10 @@ This retains conflicts but does not implement an optimized bank arbiter.
         self.e.energy['SRAM_leakage'] += leak
         return dict(traffic=dict(self.traffic), calibrated_macro=self.spec,
             banks=self.c['banks'], macros=self.macros, configured_bytes=self.capacity,
+            word_bytes=self.word,clock_hz=self.c['clock_hz'],
+            bank_peak_GBs=self.c['banks']*self.word*self.c['clock_hz']/1e9,
+            fabric_combined_read_write_GBs=self.c['fabric_GBs'],
+            macros_per_bank=self.macros//self.c['banks'],
             physical_bytes=self.physical_capacity, area_mm2=self.macros*self.spec['area_mm2'],
             leakage_J=leak, scheduling='blocking descriptor per addressed banks + shared fabric',
             exclusions=['wrapper/mux/CTS', 'verified CDC implementation', 'optimized bank interleaving'])
@@ -284,6 +288,7 @@ class DRAM:
         self.traffic[kind+'_logical_bytes'] += logical
         self.traffic[kind+'_physical_bytes'] += len(addresses)*burst
         self.traffic[kind+'_bursts'] += len(addresses)
+        self.traffic['DMA_descriptors'] += 1
         self.e.action('dram_write' if write else 'dram_read', len(addresses)*burst,
             'DRAM_dynamic', 0 if self.bridge else None)
         t = ready
@@ -296,12 +301,14 @@ class DRAM:
                     runs[-1][1] += burst
                 else:
                     runs.append([a, burst])
+            self.traffic['DRAMSys_contiguous_requests'] += len(runs)
             for address, size in runs:
                 issued = max(t, self.s.free['dram_dma'])
                 done = self.bridge.access(issued, size, kind, write, address=address)
                 t = self.s.reserve('dram_'+kind, issued, done-issued, ('dram_dma',), bytes=size)
         else:
             for start in range(0, len(addresses), self.c['max_pending']):
+                self.traffic['legacy_link_drain_windows'] += 1
                 n = min(self.c['max_pending'], len(addresses)-start)
                 issued = max(t, self.s.free['dram_dma'])
                 duration = self.c['latency_ns'] + n*burst/self.c['bandwidth_GBs']

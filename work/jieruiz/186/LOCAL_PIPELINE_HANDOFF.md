@@ -1,5 +1,7 @@
 # Issue186 本地权重双bank续作（2026-10-25）
 
+科学交付HEAD `22432ffffa9f3af600a9288be5d9212bd68f2e98`；PR192，45个远端blob原字节核验通过；后续提交仅同步发布回执。
+
 负责人jieruiz；task/186-local-pipeline；base main d83eeb1fc6b89a3dff51b5b62bf79acf665c7166；目录tmp/ffn-local-pipeline-issue186-20261025。原PR190已合并，新PR发布回执见work/jieruiz/186/PIPELINE_PUBLICATION.json；已上传PR192（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/192），待审、未合并；不自动合并。
 
 13/13 CPU Slurm3074 completed，3完整36层＋10单层，执行6f73ef65，SHA/工作量/流量守恒通过；44项相关测试通过。407.143→315.236→307.049ms/token（原/双bank/再bypass）；FFN 268.576→176.680→168.488ms；旧结果逐数复现。新目录architecture_tlm/ffn_local_pipeline_20261025，记录本O14。没有新PPL/RTL/PT或完整物理PPA；SRAM已知内部动态不能当整机能量；HBM能耗未知。原件远端pipeline_6f73ef65，健康完成任务不重跑。Projects缺read:project待同步。下一步审核有限双bank接口与计数结果/恢复流水，不混淆硬件扩容和调度。

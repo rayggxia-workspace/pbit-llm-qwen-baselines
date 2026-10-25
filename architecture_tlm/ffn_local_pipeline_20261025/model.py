@@ -20,6 +20,9 @@ class LocalPipelineFFN(LocalityFFN):
         self.opt=owner.c.get('local_pipeline',{})
         self.overlap=self.opt.get('overlap',True)
         self.bypass=self.opt.get('weight_bypass',False)
+        c=owner.c['sram'];supply=min(c['fabric_GBs'],c['banks']*c['word_bytes']*c['clock_hz']/1e9)
+        if not self.bypass and self.f['local_weight_load_bytes_per_cycle']/owner.period<supply:
+            raise ValueError('shared receiver requires explicit SRAM throttling; no implicit FIFO')
         self.bank_tickets=[None,None];self.bank_generation=[0,0]
         self.response_ticket=None;self.serial=0;self.active_bank=None;self.receipts=[];self.stats=Counter()
         self.order_hash=hashlib.sha256();self.logical_frames=hashlib.sha256()

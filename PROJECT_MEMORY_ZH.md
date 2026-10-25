@@ -1,3 +1,11 @@
+## 2026-10-25 Issue186：有限双本地bank完整TLM
+
+独立分支task/186-local-pipeline、目录tmp/ffn-local-pipeline-issue186-20261025，新正式目录architecture_tlm/ffn_local_pipeline_20261025；基线main d83eeb1f，PR190已合并。Slurm3074的13项已completed/封存SHA核验：3完整36层＋10单层扫描，执行6f73ef65；44合同/回归通过。旧版407.142620ms逐数复现；双bank315.236180、加shared权重bypass307.049120ms/token；FFN268.576→176.680→168.488ms。主对照100MHz/8×64阵列/R8/W8/B4/GU64/NL64/HBM/8MiB64GBs不变，新增32KiB权重＋32B系数bank，不复制计数/计算/恢复。
+
+已明确旧瓶颈含装载串行屏障。改后单层4.966ms：SRAM翻倍再少3.5%，恢复/累加扩4倍少11.6%，阵列翻倍少20.5%；B1每权重有效乘积仍1，64次是本地随机事件。shared版本字节不变，bypass每token少5.015GiB共享读写；SRAM内部动态25.532→13.131mJ，仅已标定局部能量，整机PPA未知，HBM电流占位禁用能耗。真实随机端点/GU数值闭环/PPL/物理双bank接口仍待验证。成熟模拟器参考和16波时间线在新目录。原件个人服务器pbit-scheduling-issue186-20261025/pipeline_6f73ef65；本地只留小摘要与manifest，不复制大轨迹。
+
+交付状态以work/jieruiz/186/PIPELINE_PUBLICATION.json为准；Issue186保留开放，不自动合并新PR。恢复先核PR、STATUS和LOCAL_PIPELINE_HANDOFF，13项已完成，不要重跑。Projects无read:project待同步。
+
 ## 2026-10-25 第十一轮实际合并回执
 
 PR183已合入main（a73a75ce0566f5fff0b8c38fcb03d04961885f76），PR190最终审核291c437a已合入main（f8a861487170c2cd65bc9ecb95eb3e4f72b863be）。旧008b0227之后的七文件增量仅文献与派生分析，输入SHA和派生文档重现通过，执行代码/配置/原结果未变；110回归与18小形状测试无需重复冒充新实验。正式入口architecture_tlm/BASELINE_ZH.md；默认DDR4、HBM显式对照、R8/128/资源扩容候选分开。PR181历史回执与本轮审核/入口文档将由review/55-pr190-main交付main，最终文档PR及SHA见Issue55。后续质量用Instruct/后训练模型；真实质量、GU数值闭环、物理PPA未验收。其余17PR仍待完整审核。

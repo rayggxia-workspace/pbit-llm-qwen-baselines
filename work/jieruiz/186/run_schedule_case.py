@@ -21,7 +21,7 @@ def main():
  c.update(context_tokens=case['context'],seed=case['seed'],digital_weight_chunk_bytes=chunk,weight_chunk_bytes=max(chunk,E*4096))
  c['ffn'].update(mode=case['ffn'],engines=E,local_weight_bytes=E*4096)
  c['attention']['mode']=case['attention']
- policy=case['policy'];c=apply(c,'balanced_ddr4' if policy=='legacy' else 'mature_ddr4',a.bridge,a.output/'dram')
+ policy=case['policy'];c=apply(c,case.get('memory_profile','balanced_ddr4' if policy=='legacy' else 'mature_ddr4'),a.bridge,a.output/'dram')
  if policy=='shared_serial':c['dram']['scatter_gather']=False
  if policy=='legacy_sg':c['schedule_policy']='legacy'
  if 'sg_max_spans' in case:c['dram']['sg_max_spans']=case['sg_max_spans']
@@ -39,7 +39,7 @@ def main():
   keys=['model','config','metrics','phase_ns','resource_busy_ns','attention_activity','FFN_activity','actions','energy_J','unpriced_actions','SRAM','execution_commit','case','wall_seconds','numerical_status','tile_pipeline','tile_pipelines','digital_operand_contract']
   summary={k:r[k] for k in keys if k in r}
   summary['DRAM']={k:v for k,v in r['DRAM'].items() if k!='details'}
-  detail=r['DRAM']['details'];summary['DRAM']['details']={k:detail[k] for k in ['status','burst_count','macro_requests','capacity_bytes','configuration_sha256','service_ms','max_DMA_latency_ns','power_at_system_end','bridge_features','last_done_ns'] if k in detail}
+  detail=r['DRAM']['details'];summary['DRAM']['details']={k:detail[k] for k in ['status','burst_count','macro_requests','capacity_bytes','configuration_sha256','service_ms','max_DMA_latency_ns','power_at_system_end','bridge_features','last_done_ns','host_transactions','host_request_bytes','energy_valid','energy_boundary','stats'] if k in detail}
   summary['FFN_contract']=dict(r['FFN_contract'])
   if 'weight_pipeline' in summary['FFN_contract']:
    summary['FFN_contract']['weight_pipeline']={k:v for k,v in summary['FFN_contract']['weight_pipeline'].items() if k not in ('events','tickets','trace')}

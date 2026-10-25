@@ -55,7 +55,9 @@ class DRAMSysExternal:
         output=Path(cfg['output_prefix']);output.parent.mkdir(parents=True,exist_ok=True)
         self.log=output.with_suffix('.bridge.log').open('w')
         self.trace=gzip.open(output.with_suffix('.requests.jsonl.gz'),'wt',encoding='utf-8')
-        self.process=subprocess.Popen([str(executable),str(config),str(cfg.get('max_pending',32))],
+        command=[str(executable),str(config),str(cfg.get('max_pending',32))]
+        if cfg.get('host_request_bytes',64)!=64:command.append(str(cfg['host_request_bytes']))
+        self.process=subprocess.Popen(command,
             stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.log,text=True,bufsize=1)
         ready=self._read()
         if ready.get('status')!='ready':raise RuntimeError(f'DRAMSys not ready: {ready}')
@@ -134,12 +136,17 @@ class DRAMSysExternal:
         if code or self.final.get('status')!='finished':raise RuntimeError('DRAMSys failed finalization')
         self.trace.close();self.log.close();self.process.stdin.close();self.process.stdout.close()
         e=self.final['power_at_system_end']
-        if not e:raise RuntimeError('DRAMPower produced no energy')
-        self.energy['external_DRAMPower_core']=sum(v['core_J'] for v in e.values())
-        self.energy['external_DRAMPower_interface']=sum(v['interface_J'] for v in e.values())
+        if self.cfg.get('timing_only',False):
+            if e:raise RuntimeError('timing-only profile unexpectedly enabled energy accounting')
+        else:
+            if not e:raise RuntimeError('DRAMPower produced no energy')
+            self.energy['external_DRAMPower_core']=sum(v['core_J'] for v in e.values())
+            self.energy['external_DRAMPower_interface']=sum(v['interface_J'] for v in e.values())
         self.diagnostic=dict(backend='DRAMSys 5.6.0 / SystemC3 / DRAMPower6.3.1',
             coupling='closed-loop nonblocking TLM bursts, DMA-level barrier',
             macro_requests=self.counter,capacity_bytes=self.capacity,
+            energy_valid=not self.cfg.get('timing_only',False),
+            energy_boundary=self.cfg.get('power_boundary','configured DRAMPower'),
             bridge_features=sorted(self.features),last_done_ns=self.last_done_ns,
             configuration_sha256=self.config_hash,address_regions=self.layout.regions,
             service_ms=self.service_ns/1e6,max_DMA_latency_ns=self.max_service_ns,

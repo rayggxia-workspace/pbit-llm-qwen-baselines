@@ -758,6 +758,8 @@ class FullDecode:
             raise AssertionError('unretired tile at token end')
         random_report=self.rng.finish(t) if self.integrated_rng else self.rng.report()
         dram = self.dram.finish(t)
+        if c.get('dram',{}).get('timing_only',False):
+            self.e.action('uncalibrated_HBM_system_ns',t,'external_memory')
         memory = self.mem.report(t)
         for state in ('digital_idle_ns','sc_idle_ns','control_interconnect_ns'):
             self.e.action(state,t,'standby')

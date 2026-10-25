@@ -35,7 +35,7 @@ def main():
     row_names={'a100_native':'LLMCompass：官方A100',
        'small_native_hbm256':'LLMCompass：小算力＋256GB/s HBM',
        'small_native_hbm186':'LLMCompass：小算力＋186GB/s HBM',
-       'small_fabric32':'上项＋显式共享SRAM流量上限',
+       'small_fabric32':'上项：GEMV有效供数≤32GB/s敏感性',
        'small_native_ddr':'LLMCompass：小算力＋双通道DDR4'}
     rows=[dict(case=k,label=row_names[k],service_ms=v['service_seconds']*1000,
                with_legacy_launch_ms=v['with_legacy_launch_seconds']*1000,
@@ -112,7 +112,7 @@ A100的服务时间为{a['service_seconds']*1000:.3f}ms；其中原生LLMCompass
 
 当前每token需{ext/1e9:.3f}GB外存流量、{sram/1e9:.3f}GB共享SRAM读写。仅MAC理想下界{audit['lower_bounds_ms']['mac']:.3f}ms；仅SRAM裸传输下界{audit['lower_bounds_ms']['sram']:.3f}ms。忙碌时间可能重叠，不能把这两个下界直接相加。
 
-最重的是稠密权重8.044544GB经过“写入共享SRAM→读到本地操作数单元”两次，64GB/s接口仅这两步就需251.392ms。LLMCompass的M1快捷分支没有这条路径，因此原生小配置约178ms显得过于乐观。我们另加“权重有效吞吐≤64/2=32GB/s”的敏感性情景，结果约351ms；这是显式适配的上限约束，**不是声称上游已模拟了相同bank和端口**。
+最重的是稠密权重8.044544GB经过“写入共享SRAM→读到本地操作数单元”两次，64GB/s接口仅这两步就需251.392ms。LLMCompass的M1快捷分支没有这条路径，因此原生小配置约178ms显得过于乐观。我们另加“权重有效吞吐≤64/2=32GB/s”的敏感性情景，结果约351ms；代码只把GEMV的有效io.bandwidth限制为32GB/s，这是供数敏感性情景；**没有模拟相同共享总线竞争、bank、端口或双缓冲，也不是403ms可以直接降到351ms的证明**。
 
 ## 4. 逐算子对比，避免把所有差额叫调度收益
 
@@ -122,7 +122,7 @@ A100的服务时间为{a['service_seconds']*1000:.3f}ms；其中原生LLMCompass
 
 当前TLM在每个矩阵tile依次做共享SRAM填充、读取、MAC、输出；下一DMA可覆盖当前计算，但下一共享SRAM填充要等前tile退休。仅密集权重搬运251.392ms＋密集MAC78.560ms约329.952ms，还没算启动、格式转换和Attention。因此有明确的重叠优化空间，不能称已经充分流水。
 
-与此同时，LLMCompass小配置的QK/PV约55ms、Softmax约43ms；它的小型脉动阵列利用率及向量exp模型与我们专用512MAC/拍、16路非线性宏不同。当前TLM的Attention核心约53.5ms反而更快。**351与403ms的净差不是纯调度差，也不能作为可兑现的节省。** 应优先对照密集投影的相同搬运路径，再隔离注意力算子实现。
+与此同时，LLMCompass小配置的QK/PV约55ms、Softmax约43ms；它的小型脉动阵列利用率及向量exp模型与我们专用512MAC/拍、16路非线性宏不同。这里Softmax每元素使用上游3×35+7=112 FLOP：6.4GFLOP/s下光算术就41.288ms，加tile/IO后42.795ms。35是A100向量exp代理外推，不能称小ASIC必须的代价。当前TLM的专用宏给出Attention核心约53.5ms，也没有因此得到RTL时序验证。**351与403ms的净差不是纯调度差，也不能作为可兑现的节省。** 应优先对照密集投影的相同搬运路径，再隔离注意力算子实现。
 
 ## 5. 下一步应如何修正比较
 

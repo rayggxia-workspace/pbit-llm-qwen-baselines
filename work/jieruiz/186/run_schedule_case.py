@@ -25,6 +25,9 @@ def main():
  if policy=='shared_serial':c['dram']['scatter_gather']=False
  if policy=='legacy_sg':c['schedule_policy']='legacy'
  if 'sg_max_spans' in case:c['dram']['sg_max_spans']=case['sg_max_spans']
+ if 'locality' in case:
+  from architecture_tlm.unified_v6.ffn_locality import configure
+  configure(c,**case['locality'])
  execution=dict(case=case,source=source,config_sha256=hashlib.sha256(json.dumps(c,sort_keys=True).encode()).hexdigest(),matrix_sha256=digest(a.matrix),bridge_sha256=digest(pathlib.Path(a.bridge)),python=platform.python_version(),platform=platform.platform(),executable=sys.executable,argv=sys.argv,slurm_job=os.environ.get('SLURM_JOB_ID'),slurm_array=os.environ.get('SLURM_ARRAY_JOB_ID'),slurm_index=os.environ.get('SLURM_ARRAY_TASK_ID'),quality_evaluation=False)
  write(a.output/'EXECUTION.json',execution);d=None;start=time.monotonic()
  try:

@@ -118,7 +118,10 @@ class FullDecode:
         self.z = self.arena.allocate('nonlinear_P8_sign_exponent_codes' if self.latest_ffn else 'SwiGLU_z_FP32', max(65536, self.F*4))
         if self.latest_ffn:
             self.fixed_scale_table=self.arena.allocate('frozen_FFN_scale_tables',4*(self.h//64)+8*(self.F//64))
-            self.ffn_coefficient_scratch=self.arena.allocate('FFN_tile_coefficients',f['engines']*4)
+            quadrants=(f.get('locality',{}).get('tile',64)//64)**2
+            self.ffn_coefficient_scratch=self.arena.allocate('FFN_tile_coefficients',f['engines']*4*quadrants)
+            if f.get('locality'):
+                self.locality_x_codes=self.arena.allocate('locality_full_x_codes',self.h*2)
         self.residual = self.arena.allocate('live_BF16_residual', self.h*2)
         self.encoded = self.arena.allocate('one_shared_encoded_input_group', 64*2)
         L = c['context_tokens']+c['decode_tokens']
@@ -150,7 +153,7 @@ class FullDecode:
         if c['random'].get('backend','local_prng_interface') not in ('local_prng_interface','integrated_service'):
             raise ValueError('unknown random backend')
         self.rng = (IntegratedRandomService(c['random'],self.s,self.e,self.period,
-                    ffn=f['mode'],mode=mode,group=self.group,context=c['context_tokens']+c['decode_tokens']-1,
+                    ffn='locality_macro' if f.get('locality') else f['mode'],mode=mode,group=self.group,context=c['context_tokens']+c['decode_tokens']-1,
                     candidates=self.row_capacity,seed=c['seed'])
                     if self.integrated_rng else LocalRandomService(c['random'], self.s, self.e, self.period))
         self.layout = self.make_layout()
@@ -177,7 +180,11 @@ class FullDecode:
         self.attn_stats = Counter()
         self.frame = 0
         self.metadata = Counter()
-        self.ffn_latest=LatestFFN(self) if self.latest_ffn else None
+        if self.latest_ffn and f.get('locality'):
+            from .ffn_locality import LocalityFFN
+            self.ffn_latest=LocalityFFN(self)
+        else:
+            self.ffn_latest=LatestFFN(self) if self.latest_ffn else None
 
     def make_layout(self):
         a = AddressMap()

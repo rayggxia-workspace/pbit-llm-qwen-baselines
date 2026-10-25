@@ -20,8 +20,8 @@
 
 ## 发布与下一步
 
-发布回执写PUBLICATION.json。只提交本任务的正式目录、本人STATUS和work/rayggxia/187显式文件。远端Git网络CLI不可用（getaddrinfo线程错误），采用已核验rayggxia GitHub连接器创建Git对象/任务分支/PR；不改变历史origin，不尝试其他身份。
+PR189已发布、开放待审未合并；源提交725a8e69f4f02d331f33b67e3ff1810b22f07585；11个源文件逐字远端读回，tree 1a7095817a1df079838b8b778f8104af69c95755与本地一致。回执见PUBLICATION.json。只提交本任务显式文件。远端Git网络CLI不可用（getaddrinfo线程错误），采用已核验rayggxia连接器创建Git对象/分支/PR；未改变历史origin。通过SOURCE_COMMIT.json恢复精确commit字节，经Git SHA验证后导入本地，未生成不同历史。
 
 PR待审不关闭Issue，不自动合并。下一步按审阅意见补来源或需求；若要实现建议，接续Issue186或另立独立可验收任务，不在本文档PR混入代码。Projects权限/写入未核实，待同步。
 
-长期备忘录唯一维护目录已有未提交更新，禁止覆盖。本任务只在确认根镜像字节一致后追加简短入口并同步；其维护提交仍归Issue28。交付后保留此最小待审worktree，不创建额外全量副本。
+长期备忘录唯一维护目录已有未提交更新，已在确认根镜像字节一致后只追加本任务入口并同步；旧字节保留，前后SHA见MEMORY_SYNC.json，其维护提交仍归Issue28。交付后保留此最小待审worktree，不创建额外全量副本。3个ignored核表PNG总量很小，原用户PDF仍在原路径，清理本工作副本时可重新渲染。

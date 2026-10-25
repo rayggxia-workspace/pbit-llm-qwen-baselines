@@ -1,7 +1,7 @@
 # Issue186 / PR190：成熟调度共同模型交付
 
 更新：2026-10-25T06:33:00.231770+00:00；负责人jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。
-分支task/186-mature-scheduling，独立目录tmp/mature-scheduling-issue186-20261025；依赖PR183@0341b4ac，PR190的base=task/182-memory-hierarchy。代码与结果本地完成；最终远端状态以PUBLICATION.json/PR190为准，不自动合并。
+分支task/186-mature-scheduling，独立目录tmp/mature-scheduling-issue186-20261025；依赖PR183@0341b4ac，PR190的base=task/182-memory-hierarchy。代码与45项结果已上传，科学head49fb2358；PR190已转ready，待审未合并，远端树/核心字节核验通过。最终元数据head以PUBLICATION.json/PR190为准，不自动合并。
 
 已完成：共同有限tile/slot/响应生命周期、数字本地状态与K64 W8恢复、SG实际DRAM、默认mature_ddr4。110回归；真实DRAM10小整机＋8SG；原生ONNXim25情景和官方39/47，ASan/UBSan结果SHA一致且stderr零；独立CMake重新构建DRAM桥8项结果一致。45完整Qwen3-4B/36层/2K或8K decode合成事务按completed MANIFEST/配置/源码/结果SHA核验，主概率三seed。
 

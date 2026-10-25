@@ -1,3 +1,39 @@
+## Issue186：共同成熟调度与45项数字/概率对照（2026-10-25）
+
+用户要求借鉴ONNXim/其他论文成熟调度并对比数字与当前概率算子。本人jieruiz，task/186-mature-scheduling，独立稀疏目录tmp/mature-scheduling-issue186-20261025，依赖PR183@0341b4ac。PR190已推送转ready、待审未合并，base task/182-memory-hierarchy；科学结果head49fb2358b4cc823fcc8510f7fda829c8a7c5b318。实际树/4核心文件原字节回读已核验；最终元数据head以PR/回执为准。Issue186开放待验收，Projects缺read:project待同步，不接管#187/PR189或暂停的116/123。
+
+共同模型继续unified_v6：一个有界DMA响应、两共享SRAM槽、一个active operand；下一DMA覆盖本计算，下一SRAM填充/权重编程仍待退役。数字与SC共用所有权/slot generation/有限容量，实际DRAMSys SG最多256span、32burst滚动；默认入口mature_ddr4。数字W8纠正每K64独立scale/归约和FP32 partial buffer，7项另源重跑，旧乐观结果保留。标准DDR4-1866双通道双rank16GiB；100MHz core、8MiB64bank/64GBs SRAM；MAC512/拍等仍宏假设，不是同面积最优ASIC或GPU。
+
+45项完整36层Qwen3-4B后训练形状、batch1单步decode封存：31原矩阵bab9721d/2943、7修正W8 6b0df70b/2976、8K BF16/2984、6同Attention消融6b0df70b/2987；主概率3seed。ms/token：2K BF16准确599.340、W8准确426.364、SC准确509.471、W8筛选PV396.842、SC筛选PV479.976、SC校正拒绝700.421；8K依次756.072/582.989/666.099/419.557/502.691，未测8K拒绝。相同PV下SC比W8慢20.9%/19.8%，不能把Attention收益归于随机FFN。SC桶归约/系数恢复/跨tile宽累加约78.5ms资源忙时，仍需有限流水优化；各busy可重叠不可总相加。
+
+有限数字tile/SG/SC阵列扫描，扩大硬件非同面积；64静态容量候选62合法。4MiB64bank是当前地址/端口不变的结构性容量候选，宏面积约19.98mm²对8MiB39.96，但未重跑4MiB整机、不是整芯片面积/最优结论。实际DRAM/共享SRAM流量和子能量有表；DRAMPower负ACT原值保留、时序不受影响，I/O/PHY和多项算子PPA未知；完整能耗/面积null。
+
+110回归、真实DRAM十小整机/八SG、原生ONNXim8599bee二十五情景及WS39/47通过；Core/WS/Sram原实现字节保留，SC为显式忙时hook。ASan/UBSan2994结果SHA一致且stderr零；原生网络超时2983、fmt链接2985、小fixture预算2941失败保留。实际SG C++/CMake补入probes/dramsys_bridge，并独立重建2993八项与旧程序一致。原生probe是合成有限内存/无数值payload，不是全Qwen原生ONNXim执行。本轮没有新PPL/训练/GPU/RTL/PT；当前GU整数编译、NL独立源和PPA仍有宏边界。
+
+报告architecture_tlm/unified_v6/MATURE_SCHEDULING_ZH.md；调研SCHEDULER_RESEARCH_ZH.md；results/scheduling_20261025有COMPARISON.csv/AGGREGATE/FINAL_AUDIT与45项SHA。work/jieruiz/186/HANDOFF.md、PUBLICATION.json和本人STATUS可恢复。远端原件/home/Hongjie_Zeng/projects/pbit-scheduling-issue186-20261025/，全部本任务Slurm已结束，勿重交。23个本任务重复包/缓存逐SHA确认远端后清理2,936,618B，恢复ATTEMPTS_AND_RECOVERY.json。下一步优先恢复/累加流水线及数值/RTL闭环；未自动合并/关闭Issue。
+
+## 2026-10-25 Issue95 / PR188 已发布
+
+## 2026-10-25 Issue187：LLM模拟器/PPA证据调研，PR189待审
+
+- 用户要求全面调查论文的模拟器、自建模型、ASIC/XPU对象、工艺/频率、结果与可信度，明确p-bit LLM投稿所需系统仿真。33个代表性论文/工具条目、67个来源URL已形成结构化矩阵；不是会议全量普查。
+- 正式成果：分支task/187-simulator-survey的architecture_tlm/simulator_survey_20261025/{README_ZH.md,EVIDENCE.md,EVIDENCE.json,EVIDENCE.csv,REQUIREMENTS_ZH.md,SOURCES.json}；PR189：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/189，开放待审未合并。源提交725a8e69f4f02d331f33b67e3ff1810b22f07585；base main5273e5d9。
+- 本地最小目录：C:/Users/86134/Documents/a_P_BIT/tmp/simulator-survey-issue187-20261025；本人进度progress/rayggxia/STATUS.md、交接work/rayggxia/187/HANDOFF.md。来源指纹和发布回执在该任务目录；用户PDF没有上传。
+- 推荐保留unified_v6+既有ZigZag+DRAMSys/DRAMPower，补模块RTL/PVT成本、有限随机流/读出/转换/CDC、独立时序核验与真实Instruct质量闭环。PyTorchSim用于未来编译/ISA需要；ONNXim用于匹配探针，不将局部0.23%误差当LLM整系统保证。
+- 只读引用PR183@0341b4ac、Issue186；未重写调度，不接管其他任务。PR183时间是给定配置的单步decode；全机PPA仍未知，DRAM负ACT分项不能当整体误差界限。文献建议不是会议统一规则或已批准质量阈值。
+- 已做文档/来源/JSON-CSV/链接/UTF-8-LF/SHA与公式检查，三路线转录和综合建议复核；11个源文件远端读回一致，remote tree与本地index一致。无新模型/PPL/TLM/RTL/EDA实验，未重跑论文artifact；Projects权限/同步未核实。待PR审核验收，未自动关闭Issue或合并。
+
+
+理想读出分层质量已通过 PR188 发布并待审，未合并：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/188 。科学提交413e786fd1a8d08c1825f1886a3000929aff5bc0；完整tree 38b2634008ef6db09b53a7e9872df0faf7ad60bd与本地一致，报告远端读回逐字符一致。225案例与验证结果不变；新增台账与根镜像已同步且保留并行记录。恢复见work/rayggxia/95/ideal_quality_20261025/PUBLICATION.json。Issue95保持开放，Projects待有权限维护者同步。
+
+## 2026-10-25 Issue95：理想读出20k的定时分层质量
+
+用户同意等待实际比较器数据时，先用三条理想阈值读出做基线。task/95-ideal-quality-20261025，tmp/rng-ideal-quality-issue95-20261025，base d6d33995754fcdcea99286e4ce43f91647aa231a；执行本地提交 bdbab3e38ff56e267783af9ac327dbba67a0e169，冻结5文件SHA。已有ideal_and_old_20000_v1三seed32003/32009/32027，各20000bit、1us，仍带旧比较器负载；无新Spectre。216主例+9重复种子对照全完成，每端点4096帧；四个固定5000bit冷启动段，不是12独立物理轨迹，也不触发默认1e8拍/1s周期换种。
+
+理想原始rho1 −0.0037～0.0101，V128为1.208～1.596，不能凭lag1认定IID。VN理想保留约25%；旧比较器VN保留约12%，仍负rho1 −0.236～−0.187。分发逐bit保持，仅截断包末尾；LFSR每端32状态bit，Bivium192总线bit→177状态bit/15丢弃。理想直通双端首次请求63.03us/383.08us，VN为213.03～275.03us/1461.08～1617.08us。GF64前四路q128 XOR恒0，理想直通q4恰一路命中0.685～0.706，对比IID约0.371；Bivium q13约0.362～0.396，对比约0.377。较好种子不消除固定联合关系，PRNG不增加物理熵。
+
+6单测、8956项可复现审计、独立只读复核及1280/390浏览器检查通过。归档project_archives/rng_ideal_quality_20261025（225NPZ、完整JSON、执行bundle、源码zip）；中央run rng-ideal-quality-95-20261025，仅DESIGN_PROOF/PPA未知。报告architecture_tlm/random_service/quality/results/ideal_20261025/REPORT.html，本机远端上传/rng_ideal_quality_20261025.html。HANDOFF/PUBLICATION位于work/rayggxia/95/ideal_quality_20261025；发布状态以回执为准，未自动合并/关闭Issue95。当前在仿真的物理任务Issue184/PR185及他人Issue152只读未改；Projects待有权限者同步。
+
 ## Issue182：标准DRAM、SRAM接口和跨组预取（2026-10-25）
 
 接续用户质疑阵列过小/分批过多与访存设置。正式仓库rayggxia-workspace/pbit-llm-qwen-baselines，Issue182/PR183，task/182-memory-hierarchy，main基线5273e5d9；实现与验证完成，PR待审未合并，不接管其他成员#118/#117或暂停#116/#123。

@@ -1,3 +1,31 @@
+## 2026-10-25 Issue186 / PR190：局部部分和与128阵列，24项完成
+
+接续用户“借鉴已有SC部分和优化、比较128尺寸并建立论文记录本”。继续同分支/独立目录，核心结果已推送7714f509a4622daed9e352859101b88673b055c2，PR190待审未合并，依赖PR183仍开放。101项统一TLM测试、Slurm2995首轮13项＋3008跨窗口预取修正11项，全36层Qwen3-4B后训练形状/2K/准确Attention/completed原件SHA核验；源b1df81d2/829559dc冻结，不覆盖旧45项。原生随机/数字控制未改，新增随机检查点银行为有界宏，未当作Issue95真实端点。
+
+原8×64 509.471ms，R8局部保留503.639ms（整机时间少1.14%），R16/全K相同。R8部分和17.6445→2.0586MiB/层（少88.33%），新增4KiB宽部分和＋2KiB码窗口＋约1.76KiB起点银行；共享SRAM仍8MiB。16×64/R8 453.289ms；同计算位置的2×128/R8双组源506.931、单组581.392；8×128/R8双组434.075ms（少14.8%）但计算/权重位置4倍、响应和暂存更大；全K432.817ms；数字W8参考426.364ms仍更快。权重总搬运/尺度恢复未减少，不能按部分和字节比例报整机提速/净节能。面积只结构位数，完整PPA/新PPL均未知。
+
+记录本architecture_tlm/ARCHITECTURE_OPTIMIZATION_LOG_ZH.md和EVIDENCE索引持续维护；详细结果unified_v6/FFN_LOCALITY_ZH.md及results/locality_20261025/。保存首轮缺跨窗口预取的负结果，并保留旧无ICG缓存增加能耗的电路证据。默认路径不变。恢复work/jieruiz/186/HANDOFF和LOCALITY_PUBLICATION；原始远端/home/Hongjie_Zeng/projects/pbit-scheduling-issue186-20261025/locality_b1df81d2与locality_829559dc。无GPU/PPL/RTL/PT，新实验全结束；看板缺权限待同步，验收前不关闭Issue186，不自动合并。
+
+## 2026-10-25 Issue187：HLS与模块周期数专题
+
+接续用户“给定功能和工艺库如何确定几拍”的问题，新增PR189分支architecture_tlm/simulator_survey_20261025/HLS_LATENCY_ZH.md及HLS_SOURCES.json。核查HSA的ASIC Catapult后布局流程、FSGen DAC2026的Chisel生成、SpAtten/Anda的RTL路线及FPGA HLSTransform边界；HLS不是投稿必选项。建议先对桶归约/系数恢复/宽位累加做局部ASIC HLS试点，保留unified_v6。Latency、II、STA和供给/反压分别验证，工艺库不唯一决定拍数。
+
+只读PR190@ee21c0ce；当前restore L6/II1等仍宏合同，不当实测。GU数值等价、物理随机源独立性/供给、SRAM端口/CDC不能由HLS自动解决；数字参考也应同资源校准。本轮没有HLS/RTL/EDA/TLM/模型新实验，服务器HLS许可未核实。12个来源条目、3个源码/报告版本校验及文档检查通过。PR189待审未合并，回执work/rayggxia/187/HLS_PUBLICATION.json；用户尚未要求开始实施试点。
+
+## 2026-10-25 Issue95 / PR188 全路相关性增量已发布
+
+新增18物理播种长流＋18同形状IID对照已上传PR188，远端科学提交2fa6e67a216b9e59e96918f66f3dcc852a12a2c8；tree2649f52c96b7a6048d466437fa4c67ca462c21bd与本地317b1fe7逐文件相同。此前225例保留。报告与CSV已在远端上传/目录交付；中央run rng-correlation-95-20261025，分支58/root66记录check通过，180份CSV矩阵对源NPZ一致。PR开放待审，未合并，不关闭Issue95；Projects待有权限维护者同步。准确发布/恢复入口work/rayggxia/95/correlation_20261025/PUBLICATION.json及RECOVERY_INDEX.json。三个物理noise seed非空间通道，1s周期换种未触发，GF64联合结构问题仍保留。
+
+## 2026-10-25 Issue95：全路时间／空间相关长流已完成
+
+用户要求具体数据，接续同PR188/分支task/95-ideal-quality-20261025、tmp/rng-ideal-quality-issue95-20261025。执行源2dd9ec33fa321174f3891b0cd684bc5aac4b589a，7执行文件及本机C++二进制SHA冻结。已有三条Spectre理想阈值序列各20k/1us，raw/VN两路径、三后端、两个实例；18物理播种案例+18同形状PCG64统计对照，每路连续131072帧，100MHz约1.31072ms。只按需消费启动种子前缀，不把全20k都说成驱动输出；默认1s换种未触发。没有同时物理阵列通道，物理空间相关留空，不能把三个noise seed充作空间lane。
+
+R8、五阈值q4/13/64/128/192、8个bitplane测全部路；时间lag1..128/256/512/1024，R8/阈值空间lag0/1/2/4/8/16/32/64/128，bitplane空间仅同拍。两个实例分别1/64/20lane，区分实例内与实例间；504组观测、3024峰值记录、17124432相关系数，具体路号/lag及短窗T8..128方差/MSE全部保留。
+
+q128/raw三个seed总体max|rho|：LFSR时间.010121/同拍跨实例.003200/错拍.006666；GF64时间.012355/同拍.010972/错拍.013372；Bivium时间.010807/同拍.009977/错拍.012212。不同测试对数不可据max直接排名；同形状IID对照已实跑。GF64四路XOR仍恒0，稀疏命中约.69而IID约.370780；Bivium对应q13接近.377306参考。物理种子改善不消除固定联合结构。
+
+5新增单测、22524运行时核验、6122归档/矩阵审计通过；18案例前4096帧逐字对上轮Python原件，C++中段/尾段/状态另验证。1440/390浏览器和下载链接检查通过。新报告远端上传/rng_correlation_20261025.html；完整CSV包rng_correlation_20261025_tables.zip（63284726B）；原始流/矩阵/JSON在project_archives/rng_correlation_20261025。中央run rng-correlation-95-20261025，仅DESIGN_PROOF，PPA未知。恢复work/rayggxia/95/correlation_20261025/HANDOFF.md，实际远端增量发布见PUBLICATION.json。不改旧225例、Issue184/152模拟任务；无新Spectre/RTL/EDA/LLM；Projects待权限同步。
+
 ## Issue186：共同成熟调度与45项数字/概率对照（2026-10-25）
 
 用户要求借鉴ONNXim/其他论文成熟调度并对比数字与当前概率算子。本人jieruiz，task/186-mature-scheduling，独立稀疏目录tmp/mature-scheduling-issue186-20261025，依赖PR183@0341b4ac。PR190已推送转ready、待审未合并，base task/182-memory-hierarchy；科学结果head49fb2358b4cc823fcc8510f7fda829c8a7c5b318。实际树/4核心文件原字节回读已核验；最终元数据head以PR/回执为准。Issue186开放待验收，Projects缺read:project待同步，不接管#187/PR189或暂停的116/123。
@@ -824,6 +852,8 @@ FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700�
 旧3/39、11/39与动态预计完成时间保留为历史，恢复先看本节、Issue59/PR62及交接，不再重复提交已完成39项。仓库上传身份jieruiz已核实admin/push；Projects是否成功同步以最新发布回执为准。当前正式报告PR仍未合并。
 
 ## 6 随机源、p-bit与相关性
+
+2026-10-25 07:24:42Z只读复查：38387635仍RUNNING，8CPU，已运行3:33:05；28物理检查、9短精度、18校准案例共55条已结束，保留原SVT20u OP失败。预设SHORT_SCREEN_PASS，独立校准参考已冻结0.604745V（SHA c9d2358bf5f400c9d4c40059d29a6210ce47bde61e7c60fb6b0dd2a3d3c8c8fe），验证64007/64013/64033正在并行，已保存到19.7283/19.6519/19.7186ms，总22ms，物理时间进度89.3%～89.7%。按实际运行速度外推剩余约11分钟加收集打包，非保证；最终每seed20000次统计尚未完成，不能用校准/部分波形代替。未改快照、未取消或重交。此次本地状态原件OBSERVATION_38387635_4.json、PROGRESS_38387635_5.json保留，最终结果归同PR185追加。
 
 2026-10-25发布回执：Issue184/PR185已实际发布为draft/open，未合并；科学提交97ec6f12df651fc11cfa497521fe0b465cf7823a，完整tree9600d63c40808cc2236dd1a06def8fc3686ffc10与本地f7e6110bfae671b09e75d6dca7d020fbff3d85bb一致，5份关键源文件远端逐字符读回一致。实际执行源仍01d63b66，提交后快照未改。04:06:57Z观察38387635仍RUNNING，29案例已结束；首条precision_fine_seed63003为3ms总/2ms有效，实际1us采样2000次，密集输出P1=0.5109、MID=0.0068，耗时877.6s；尚无新比较器独立校准冻结或每seed2万次最终验收，不能把该短记录当正式结果。旧3seed各2万次逐位文件已在ideal_and_old_20000_v1。Projects工具未暴露，待维护者同步。Issue152接口已留言，原负责人/分支/STATUS未改。
 

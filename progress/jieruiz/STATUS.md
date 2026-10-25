@@ -1,3 +1,18 @@
+# Issue186 / PR190：部分和局部驻留与128阵列对照
+
+更新2026-10-25T08:40:00.103148+00:00；负责人jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines；分支task/186-mature-scheduling；独立目录tmp/mature-scheduling-issue186-20261025；base仍task/182-memory-hierarchy@0341b4ac。核心代码和24项结果已经推送7714f509a4622daed9e352859101b88673b055c2，PR190开放待审、未合并。最终远端回执见LOCALITY_PUBLICATION.json；本段及补充文档随随后提交同步。
+
+本轮原始13项Slurm2995/源b1df81d2，修复跨窗口预取后11项Slurm3008/源829559dc；全部completed且原RESULT、EXECUTION、汇总SHA核验。首轮结果保留，原45项不改。两条源快照只改局部驻留实现及测试；控制0/1没有重跑不变路径。101项unified_v6测试通过；24项最终交付审计通过。没有GPU/PPL、新RTL/PT或真实模型载荷。
+
+最终2K单token ms：原8×64=509.471；8×64/R8=503.639；R16/全K相同；16×64/R8=453.289；2×128/R8双组源=506.931、单组581.392；8×128/R8双组=434.075；8×128全K双组=432.817；同轮W8数字426.364。部分和每层17.6445→2.0586MiB，R8减少88.33%；数学/权重总量未变。扩到8×128增加4倍计算/权重位置，不是同面积收益。
+
+成果：architecture_tlm/unified_v6/FFN_LOCALITY_ZH.md、results/locality_20261025/（含window_prefetch）、ARCHITECTURE_OPTIMIZATION_LOG_ZH.md及EVIDENCE索引。默认实现保留，configure()显式启用候选；新增多检查点源是有限宏，未映射Issue95真实端点；完整面积/能量null。SRAM/DRAM/Attention保持原合同。看板缺read:project，待有权限维护者同步。
+
+恢复：先核Issue186/PR190与依赖PR183；collect_locality.py与--prefetch核原件；analyze_locality.py --stage1与无参数、make_locality_report.py、verify_locality_delivery.py重建和核验。原始远端两个locality_<commit8>/source不可修改。无需重跑健康任务。下一步优先R8本地bank/检查点端口RTL/STA/PT与GU编译器/真实模型质量闭环；不自动合并或切换默认。
+
+---
+历史记录：
+
 # Issue186 / PR190：成熟调度共同模型交付
 
 更新：2026-10-25T06:33:00.231770+00:00；负责人jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines。

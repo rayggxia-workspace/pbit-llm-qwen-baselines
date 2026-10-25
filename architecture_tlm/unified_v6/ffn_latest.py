@@ -20,7 +20,7 @@ def defaults():
         accumulate_lanes=32, accumulate_latency=2,
         bf16_lanes=16, bf16_latency=3,
         local_weight_bytes=8*4096, local_weight_load_bytes_per_cycle=256,
-        weight_feed='resident_macro', weight_schedule='legacy',
+        weight_feed='resident_macro', weight_schedule='legacy', prefetch_across_input_groups=False,
         counter_pipeline_bits_per_lane=512, wide_bits=64, coefficient_bits=16,
         rng_nl=dict(words_per_cycle=192, response_latency=2, stream_II=2,
             command_cycles=2, state_bits_per_endpoint=177, words_per_endpoint=20,
@@ -308,7 +308,10 @@ class LatestFFN:
 
     def prefetched_group(self,t,name,k,groups,E,frame,nl=False):
         o=self.o;f=self.f
-        ticket=self.prefetch_wave(t,name,k,0,min(E,groups))
+        ticket=self.pending_ticket
+        if ticket is None:ticket=self.prefetch_wave(t,name,k,0,min(E,groups))
+        elif (ticket['name'],ticket['k'],ticket['j'])!=(name,k,0):
+            raise ValueError('prefetch belongs to another input group')
         for j in range(0,groups,E):
             n=min(E,groups-j);current=ticket
             loaded,slot=self.load_prefetched_wave(t,current)
@@ -322,9 +325,17 @@ class LatestFFN:
             current['array_done_ns']=end
             # Only DRAM is submitted early: no future SRAM reservation can
             # push current restoration out of a usable gap in the FIFO model.
-            if j+E<groups and o.c['double_buffer']:
-                ticket=self.prefetch_wave(begin,name,k,j+E,min(E,groups-j-E))
-                self.pipeline['prefetch_during_previous_array']+=int(ticket['issue_ns']<end)
+            if o.c['double_buffer']:
+                if j+E<groups:
+                    ticket=self.prefetch_wave(begin,name,k,j+E,min(E,groups-j-E))
+                    self.pipeline['prefetch_during_previous_array']+=int(ticket['issue_ns']<end)
+                elif f.get('prefetch_across_input_groups',False) and k+1<o.matrix_info[name]['inp']//64:
+                    # Weight addresses do not depend on the next input code.
+                    # Keep only a DMA ticket: neither its coefficients nor its
+                    # local weights may overwrite this group's live state.
+                    self.prefetch_wave(begin,name,k+1,0,min(E,groups))
+                    self.pipeline['cross_input_group_prefetches']+=1
+                    self.pipeline['prefetch_during_previous_array']+=int(self.pending_ticket['issue_ns']<end)
             t=self.restore(end,n,7 if nl else 4,k,j)
             current['restore_done_ns']=t
             if len(self.wave_records)<o.c['trace_event_limit']:self.wave_records.append(dict(current))
@@ -406,7 +417,7 @@ class LatestFFN:
             local_state=self.local,nonlinear_random=self.rng.report(),
             weight_pipeline=dict(schedule=self.f.get('weight_schedule','legacy'),counts=dict(self.pipeline),
                 records=self.wave_records,pending=self.pending_ticket is not None,
-                overlap='next DMA only; SRAM fill/program after previous restore; one local weight bank',
+                overlap='next DMA only, optionally across input groups; SRAM fill/program after previous restore; one local weight bank',
                 buffer='one explicit full-wave DMA response macro; unknown PPA'),
             unknown_macro_ppa=['fixed4 encoders','GU fixed-point restore/rounding','signed8 field/ROM',
                 'weighted compressor and 4/7 bucket counters','local weight interface','direct AND fanout',

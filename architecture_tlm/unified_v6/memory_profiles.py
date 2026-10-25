@@ -20,6 +20,7 @@ def apply(config,profile,bridge=None,output_prefix=None):
         c['ffn']['local_weight_load_bytes_per_cycle']=1024
     if profile in ('prefetch','balanced_ddr4'):
         c['ffn']['weight_schedule']='dma_prefetch'
+        c['ffn']['prefetch_across_input_groups']=True
     if profile in ('ddr4','balanced_ddr4'):
         executable=bridge or os.environ.get('PBIT_DRAMSYS_BRIDGE')
         if not executable or not Path(executable).is_file():

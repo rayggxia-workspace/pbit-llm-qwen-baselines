@@ -9,6 +9,10 @@ from architecture_tlm.unified_v6.run import write
 
 # profile, engines, FFN, Attention, double_buffer. Algorithm remains T64.
 CASES={
+ 'cross_group_e8':('balanced_ddr4',8,'sc','exact',True),
+ 'cross_group_e16':('balanced_ddr4',16,'sc','exact',True),
+ 'cross_group_e32':('balanced_ddr4',32,'sc','exact',True),
+ 'cross_group_e64':('balanced_ddr4',64,'sc','exact',True),
  'legacy_link':('legacy',8,'sc','exact',True),
  'prefetch_link':('prefetch',8,'sc','exact',True),
  'sram64_link':('sram64',8,'sc','exact',True),

@@ -308,5 +308,29 @@ class InvalidConfigurations(unittest.TestCase):
             FullDecode(cfg, shape)
 
 
+class CrossInputGroupPrefetch(unittest.TestCase):
+    def test_single_output_wave_still_prefetches_next_input_group(self):
+        c,m=tiny();m.update(hidden_size=192,intermediate_size=320,vocab_size=384)
+        c['attention']['mode']='exact';c['ffn'].update(defaults());c['ffn'].update(engines=16,local_weight_bytes=65536,weight_schedule='dma_prefetch')
+        c['weight_chunk_bytes']=65536
+        a=FullDecode(c,m).run();c['ffn']['prefetch_across_input_groups']=True;b=FullDecode(c,m).run()
+        self.assertLess(b['metrics']['elapsed_ns'],a['metrics']['elapsed_ns'])
+        self.assertEqual(a['DRAM']['traffic'],b['DRAM']['traffic'])
+        self.assertEqual(a['FFN_activity'],b['FFN_activity'])
+        self.assertEqual(a['SRAM']['traffic'],b['SRAM']['traffic'])
+        self.assertEqual(b['FFN_contract']['weight_pipeline']['counts']['cross_input_group_prefetches'],6)
+        self.assertFalse(b['FFN_contract']['weight_pipeline']['pending'])
+        rec=b['FFN_contract']['weight_pipeline']['records']
+        for x,y in zip(rec,rec[1:]):
+            self.assertGreaterEqual(y['program_start_ns'],x['restore_done_ns'])
+            if x['name']==y['name']:self.assertLess(y['issue_ns'],x['array_done_ns'])
+    def test_no_cross_group_prefetch_when_single_buffer(self):
+        c,m=tiny();m.update(hidden_size=192,intermediate_size=320,vocab_size=384)
+        c['double_buffer']=False;c['attention']['mode']='exact';c['ffn'].update(defaults())
+        c['ffn'].update(engines=2,weight_schedule='dma_prefetch',prefetch_across_input_groups=True)
+        r=FullDecode(c,m).run()
+        self.assertEqual(r['FFN_contract']['weight_pipeline']['counts'].get('cross_input_group_prefetches',0),0)
+        self.assertFalse(r['FFN_contract']['weight_pipeline']['pending'])
+
 if __name__ == '__main__':
     unittest.main()

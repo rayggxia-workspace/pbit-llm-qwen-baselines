@@ -14,6 +14,8 @@ python -m architecture_tlm --memory-profile legacy --model qwen --ffn-profile le
 Python 3.10+，标准库即可。正式运行前提交执行源码；输出目录必须不存在。`--config`可提供完整配置，`--rng-backend`默认为已接入的实际随机服务。实际端点逐事件执行的大型场景可能需数十分钟或更久的CPU时间；这与输出中的硬件时间不是同一指标。
 
 - [成熟调度探索、完整对照与复现入口](unified_v6/MATURE_SCHEDULING_ZH.md)
+- [架构优化记录本：机制、版本、证据与负面结果](ARCHITECTURE_OPTIMIZATION_LOG_ZH.md)
+- [可选FFN本地部分和、64/128阵列的完整对照](unified_v6/FFN_LOCALITY_ZH.md)
 - [最新 FFN 的完整流程、宏周期与证据边界](unified_v6/FFN_CURRENT_ZH.md)
 - [执行结果与验证](unified_v6/RESULTS_CURRENT_ZH.md)
 - [配置及默认宏参数](unified_v6/ffn_latest.py)

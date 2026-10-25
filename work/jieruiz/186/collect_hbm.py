@@ -30,7 +30,7 @@ b=subprocess.check_output(['ssh','-F','C:/Users/86134/.ssh/lab-server-ai.ssh_con
 d=json.loads(gzip.decompress(b));out=R/'architecture_tlm/unified_v6/results/hbm_20261025';out=out/'pipelined' if pipeline else out;out.mkdir(parents=True,exist_ok=True)
 for rel,encoded in d.pop('files').items():
  p=pathlib.PurePosixPath(rel);assert not p.is_absolute() and '..' not in p.parts
- dest=out.joinpath(*p.parts);dest.parent.mkdir(parents=True,exist_ok=True);data=base64.b64decode(encoded)
+ dest=out.joinpath(*p.parts) if rel!='build.py' else out/'BUILD_SCRIPT.txt';dest.parent.mkdir(parents=True,exist_ok=True);data=base64.b64decode(encoded)
  if dest.exists():assert dest.read_bytes()==data,'immutable bytes changed'
  else:dest.write_bytes(data)
 (W/('HBM_PIPELINE_COLLECTION.json' if pipeline else 'HBM_COLLECTION.json')).write_text(json.dumps(d,indent=2)+'\n',encoding='utf-8',newline='\n')

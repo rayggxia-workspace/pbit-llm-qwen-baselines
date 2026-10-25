@@ -1,3 +1,5 @@
+已发布 [PR194](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/194)，待审、未合并。PUBLICATION.json是PR创建时的精确回执；后续文档同步提交不改变封存源码55c607dc和ZIP。
+
 # Issue193第一轮校准包交接
 
 负责人jieruiz；分支task/193-ffn-calibration-stage1；base main d83eeb1fc6b89a3dff51b5b62bf79acf665c7166。独立目录tmp/ffn-calibration-issue193-20261025。源码冻结提交55c607dc4f21fe6cbf1355db4b949b4396cd977f已推送；本次结果提交和PR状态以PUBLICATION.json为准。Issue193保持开放，不自动合并。

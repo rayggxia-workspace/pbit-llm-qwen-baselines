@@ -1,3 +1,5 @@
+已发布 [PR194](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/194)，待审、未合并。PUBLICATION.json是PR创建时的精确回执；后续文档同步提交不改变封存源码55c607dc和ZIP。
+
 # jieruiz当前进度
 
 2026-10-25；负责人jieruiz；Issue193；分支task/193-ffn-calibration-stage1；base main d83eeb1f；目录tmp/ffn-calibration-issue193-20261025。第一轮55nm计数/整数恢复校准包本地完成，源码55c607dc已推送；结果PR交付状态以work/jieruiz/193/PUBLICATION.json为准。

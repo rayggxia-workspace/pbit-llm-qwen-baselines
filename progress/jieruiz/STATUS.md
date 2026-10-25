@@ -1,3 +1,7 @@
+## 2026-10-25 第十一轮实际合并回执
+
+PR183已合入main（a73a75ce0566f5fff0b8c38fcb03d04961885f76），PR190最终审核291c437a已合入main（f8a861487170c2cd65bc9ecb95eb3e4f72b863be）。旧008b0227之后的七文件增量仅文献与派生分析，输入SHA和派生文档重现通过，执行代码/配置/原结果未变；110回归与18小形状测试无需重复冒充新实验。正式入口architecture_tlm/BASELINE_ZH.md；默认DDR4、HBM显式对照、R8/128/资源扩容候选分开。PR181历史回执与本轮审核/入口文档将由review/55-pr190-main交付main，最终文档PR及SHA见Issue55。后续质量用Instruct/后训练模型；真实质量、GU数值闭环、物理PPA未验收。其余17PR仍待完整审核。
+
 ## 2026-10-25 第十一轮：PR190转为main共同调度基线（发布前）
 已合并：PR180 → main，2026-10-24T14:41:06Z，提交5273e5d9fdae811a714f1a278fee6e776c5675af。全部验证与远端blob核验完成，无本任务运行中作业；Projects待权限。准确回执见work/jieruiz/179/MERGE_VERIFIED.json。
 

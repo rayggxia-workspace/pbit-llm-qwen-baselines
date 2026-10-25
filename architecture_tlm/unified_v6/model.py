@@ -777,7 +777,7 @@ class FullDecode:
             SRAM={**memory,'layout':self.arena.regions,'reserved_peak_bytes':self.arena.peak},
             DRAM=dram,attention_activity=dict(self.attn_stats),row_receipts=self.attn_rows,
             FFN_activity=dict(self.metadata),input_provenance=self.source.provenance,
-            FFN_contract=self.ffn_latest.report() if self.latest_ffn else {'contract':'legacy_FP32_SwiGLU'},
+            FFN_contract=self.ffn_latest.report() if self.latest_ffn else {'contract': ('digital_BF16_or_W8_FP32_SwiGLU' if self.c['ffn']['mode'] in ('bf16','w8') else 'legacy_SC_FP32_SwiGLU'), 'mode': self.c['ffn']['mode'], 'W8_restoration': self.c.get('digital_w8_restore') if self.c['ffn']['mode']=='w8' else None},
             sampler_local_state={name:dict(buffer_bits=s.buffer_bits,biased_lanes=s.biased_capacity,
                 fair_lanes=s.fair_capacity) for name,s in self.samplers.items() if name==c['attention']['mode']},
             tile_pipeline=self.tile_pipeline.report() if self.tile_pipeline is not None else {'contract':'legacy'},

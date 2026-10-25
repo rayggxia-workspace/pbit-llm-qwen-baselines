@@ -268,6 +268,10 @@ class DRAM:
         self.c, self.layout, self.s, self.e = cfg, layout, scheduler, ledger
         self.traffic = Counter()
         self.bridge = None
+        self.sg = bool(cfg.get('scatter_gather',False))
+        self.sg_max_spans = cfg.get('sg_max_spans',256)
+        if not 1 <= self.sg_max_spans <= 256:raise ValueError('invalid SG capacity')
+        if cfg.get('descriptor_span_ns',0) < 0:raise ValueError('negative descriptor delay')
         self.bridge_energy, self.bridge_traffic = defaultdict(float), defaultdict(int)
         if cfg['backend'] == 'dramsys':
             from dramsys_backend import DRAMSysExternal
@@ -301,11 +305,25 @@ class DRAM:
                     runs[-1][1] += burst
                 else:
                     runs.append([a, burst])
-            self.traffic['DRAMSys_contiguous_requests'] += len(runs)
-            for address, size in runs:
+            self.traffic['DRAMSys_address_spans'] += len(runs)
+            self.e.action('DMA_descriptor_span',len(runs),'DMA_controller')
+            # Same descriptor-generation cost on digital and SC paths. New
+            # policy defaults to one core cycle/span; legacy defaults remain 0.
+            t = self.s.reserve('dma_descriptor',t,len(runs)*self.c.get('descriptor_span_ns',0),
+                               ('dma_descriptor',),spans=len(runs))
+            groups = [runs[i:i+self.sg_max_spans] for i in range(0,len(runs),self.sg_max_spans)] if self.sg else [[r] for r in runs]
+            for group in groups:
                 issued = max(t, self.s.free['dram_dma'])
-                done = self.bridge.access(issued, size, kind, write, address=address)
-                t = self.s.reserve('dram_'+kind, issued, done-issued, ('dram_dma',), bytes=size)
+                size = sum(n for _,n in group)
+                if self.sg:
+                    self.traffic['DRAMSys_scatter_requests'] += 1
+                    self.traffic['SG_max_live_spans'] = max(self.traffic['SG_max_live_spans'],len(group))
+                    self.e.action('DMA_descriptor_batch',1,'DMA_controller')
+                    done = self.bridge.access_sg(issued,group,kind,write)
+                else:
+                    self.traffic['DRAMSys_contiguous_requests'] += 1
+                    done = self.bridge.access(issued,size,kind,write,address=group[0][0])
+                t = self.s.reserve('dram_'+kind,issued,done-issued,('dram_dma',),bytes=size,spans=len(group),scatter_gather=self.sg)
         else:
             for start in range(0, len(addresses), self.c['max_pending']):
                 self.traffic['legacy_link_drain_windows'] += 1
@@ -324,7 +342,12 @@ class DRAM:
             result = self.bridge.finish(end)
             for k, v in self.bridge_energy.items():
                 self.e.energy[k] += v
-            return dict(backend='dramsys', traffic=dict(self.traffic), details=result)
+            return dict(backend='dramsys', traffic=dict(self.traffic), details=result,
+                scatter_gather=self.sg,sg_max_spans=self.sg_max_spans,
+                descriptor_storage_bytes=self.sg_max_spans*16 if self.sg else 16,
+                descriptor_span_ns=self.c.get('descriptor_span_ns',0),
+                controller_PPA='unknown; descriptor generation/fetch and storage are not free',
+                scheduling='one macro DMA actor; bounded rolling credit within descriptor; no async cross-descriptor claim')
         self.e.action('dram_background_ns', end, 'DRAM_background')
         return dict(backend='link_estimate_NOT_DRAMSys', traffic=dict(self.traffic),
             max_pending=self.c['max_pending'], queue_policy='bounded windows; DMA barriers',

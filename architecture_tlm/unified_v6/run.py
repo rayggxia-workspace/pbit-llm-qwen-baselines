@@ -103,7 +103,7 @@ def main(argv=None):
     p.add_argument('--strata',type=int)
     p.add_argument('--bins',type=int,default=4)
     p.add_argument('--trace',type=Path)
-    p.add_argument('--memory-profile',choices=PROFILES,default='balanced_ddr4')
+    p.add_argument('--memory-profile',choices=PROFILES,default='mature_ddr4')
     p.add_argument('--dram-bridge',type=Path)
     p.add_argument('--config',type=Path,help='complete v6 config JSON override')
     p.add_argument('--output',type=Path,required=True)

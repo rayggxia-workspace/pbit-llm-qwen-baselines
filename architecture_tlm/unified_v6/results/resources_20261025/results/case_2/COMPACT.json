@@ -1,0 +1,803 @@
+{
+  "model": {
+    "architectures": [
+      "Qwen3ForCausalLM"
+    ],
+    "vocab_size": 151936,
+    "hidden_size": 2560,
+    "intermediate_size": 9728,
+    "num_hidden_layers": 36,
+    "num_attention_heads": 32,
+    "num_key_value_heads": 8,
+    "head_dim": 128,
+    "attention_bias": false,
+    "max_position_embeddings": 40960,
+    "tie_word_embeddings": true,
+    "model_type": "qwen3",
+    "qk_norm": true
+  },
+  "config": {
+    "core_hz": 100000000,
+    "context_tokens": 2048,
+    "decode_tokens": 1,
+    "seed": 0,
+    "macs_per_cycle": 512,
+    "mac_startup_cycles": 2,
+    "vector_lanes": 64,
+    "digital_w8_restore": "block64",
+    "nonlinear_lanes": 16,
+    "weight_chunk_bytes": 65536,
+    "double_buffer": true,
+    "trace_event_limit": 80,
+    "row_receipt_limit": 16,
+    "ffn": {
+      "mode": "bf16",
+      "bins": 4,
+      "samples": 64,
+      "strata": 64,
+      "engines": 8,
+      "startup_cycles": 1,
+      "sample_II_cycles": 1,
+      "drain_cycles": 8,
+      "algorithm": "fixed4_and_direct",
+      "nonlinear_samples": 64,
+      "joint_strata": [
+        4,
+        2,
+        4
+      ],
+      "weight_bits": 8,
+      "x_scale_offsets": [
+        0,
+        2,
+        4,
+        6
+      ],
+      "gu_scale_offsets": [
+        1,
+        3,
+        5,
+        7
+      ],
+      "encoder_lanes": 64,
+      "encoder_latency": 3,
+      "encoder_II": 1,
+      "field_lanes": 64,
+      "field_latency": 2,
+      "lut_lanes": 16,
+      "lut_latency": 1,
+      "restore_lanes": 16,
+      "restore_latency": 6,
+      "restore_II": 1,
+      "accumulate_lanes": 32,
+      "accumulate_latency": 2,
+      "bf16_lanes": 16,
+      "bf16_latency": 3,
+      "local_weight_bytes": 32768,
+      "local_weight_load_bytes_per_cycle": 1024,
+      "weight_feed": "resident_macro",
+      "weight_schedule": "dma_prefetch",
+      "prefetch_across_input_groups": true,
+      "counter_pipeline_bits_per_lane": 512,
+      "wide_bits": 64,
+      "coefficient_bits": 16,
+      "rng_nl": {
+        "words_per_cycle": 192,
+        "response_latency": 2,
+        "stream_II": 2,
+        "command_cycles": 2,
+        "state_bits_per_endpoint": 177,
+        "words_per_endpoint": 20,
+        "seed_word_bits": 32,
+        "seed_word_interval_cycles": 100,
+        "warmup_cycles": 5,
+        "reseed_interval_cycles": 100000000
+      },
+      "numeric_status": "GU fixed-point coefficient/rounding macro pending bit-exact validation; no inherited PPL"
+    },
+    "attention": {
+      "mode": "exact",
+      "tile_tokens": 128,
+      "samples": null,
+      "sample_ratio": 0.0625,
+      "minimum_samples": 1,
+      "winner_update_multiplier": 8,
+      "candidate_blocks": 8,
+      "selection": "fixed_budget",
+      "selector_bias": -1.5,
+      "selector_temperature": 1.0,
+      "synthetic_logit_std": 1.5,
+      "trace_file": null,
+      "selector_calibration": null,
+      "serial_burn": 16,
+      "serial_spacing": 4,
+      "serial_cycles_per_attempt": 6
+    },
+    "random": {
+      "backend": "integrated_service",
+      "clock_hz": 100000000,
+      "reseed_cycles": 100000000,
+      "seed_word_interval_cycles": 100,
+      "seed_startup_cycles": 10,
+      "sigmoid_step": 0.125,
+      "lut_lanes": 16,
+      "config_lanes": 64,
+      "cpu_fast": true,
+      "startup_cycles": 1,
+      "frame_cycles": 1,
+      "restore_cycles": 1
+    },
+    "sampler_v5": {
+      "drive_bits": 32,
+      "drive_step": null,
+      "max_proposals_per_sample": 128,
+      "offset_update_mode": "per_candidate",
+      "source_command_cycles": 1,
+      "source_settle_cycles": 2,
+      "source_capture_cycles": 1,
+      "source_min_interval_cycles": 1,
+      "tree_levels_per_cycle": 2,
+      "burn_updates": 0,
+      "record_events": false,
+      "energy_pJ": {},
+      "idle_W": null,
+      "area": {}
+    },
+    "sram": {
+      "capacity_bytes": 8388608,
+      "banks": 64,
+      "word_bytes": 16,
+      "macro_depth": 256,
+      "corner": "SS",
+      "clock_hz": 80000000,
+      "fabric_GBs": 64.0,
+      "cdc_ns": 20.0,
+      "calibration": "llama7b/runtime/results/sram_calibration_v1_20261016/calibration.json"
+    },
+    "dram": {
+      "backend": "dramsys",
+      "bridge_executable": "/home/Hongjie_Zeng/projects/pbit-scheduling-issue186-20261025/hbm_43b7b1ff/build/pbit_hbm_bridge",
+      "configuration": "/home/Hongjie_Zeng/projects/pbit-scheduling-issue186-20261025/resource_b01058f7/source/architecture_tlm/unified_v6/configs/dramsys/hbm2_8ch_16GiB_timing.json",
+      "output_prefix": "/home/Hongjie_Zeng/projects/pbit-scheduling-issue186-20261025/resource_b01058f7/results/case_2/dram",
+      "burst_bytes": 64,
+      "max_pending": 128,
+      "standard": "DRAMSys HBM2 example timings; 8 channels x 2 pseudochannels; 16GiB",
+      "theoretical_pin_bandwidth_GBs": 256.0,
+      "power_boundary": "unknown: upstream HBM2 currents are zero placeholders; PowerAnalysis disabled",
+      "scatter_gather": true,
+      "sg_max_spans": 256,
+      "descriptor_span_ns": 10.0,
+      "strict_time_order": true,
+      "host_request_bytes": 256,
+      "timing_only": true,
+      "frontend_contract": "zero extra sink acceptance latency; upstream keeps >=1ns between responses",
+      "frontend_response_capacity_bytes": 32768,
+      "response_accept_delay_ps": 0,
+      "controller_admission_limit": 64
+    },
+    "prices_pJ": {
+      "bf16_mac": 2.0,
+      "fp32_mac": null,
+      "vector_op": 1.0,
+      "nonlinear_op": 10.0,
+      "dram_read": 64.0,
+      "dram_write": 64.0,
+      "dram_background_ns": 50.0,
+      "FP32_to_BF16": null,
+      "weight_scale_op": null,
+      "SC_encode_op": null,
+      "SC_restore_op": null,
+      "digital_idle_ns": null,
+      "sc_idle_ns": null,
+      "control_interconnect_ns": null,
+      "rng_seed": null,
+      "rng_frame": null,
+      "rng_restore": null,
+      "rng_uniform_bit": null,
+      "rng_biased_response": null,
+      "selector_compare": null,
+      "budget_compare_exchange": null,
+      "candidate_compact": null,
+      "V_selection_add": 0.0
+    },
+    "cost_policy": {
+      "full_physical_PPA": "unknown",
+      "measured_anchor": "55nm SS SRAM macro internal energy/area/timing table",
+      "conditional_prices": "legacy digital 2pJ BF16 MAC,1pJ vector,10pJ nonlinear; DRAM64pJ/B,50mW background",
+      "null_prices": "uncharacterized components, NOT zero energy",
+      "V_selection_add": "activity alias only: energy already in vector_op; do not price twice",
+      "SC_restore": "counts signed bit-plane reconstruction/bin alignment/W scale application; no duplicate conversion fee",
+      "SRAM": "internal energy only; do not overlap with a whole-memory measured price",
+      "memory_hierarchy": "DRAM -> shared banked SRAM ping/pong -> full-width local SC weight macro -> counters; no entire-layer residency assumption"
+    },
+    "model_record": {
+      "model": "qwen3_4b",
+      "model_id": "Qwen/Qwen3-4B",
+      "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+      "source_sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-4B/blob/1cfa9a7208912126459214e8b04321603b3df60c/config.json",
+      "posttrained": true,
+      "scope": "architecture shape only; no new weight/data/PPL run",
+      "shape": {
+        "architectures": [
+          "Qwen3ForCausalLM"
+        ],
+        "vocab_size": 151936,
+        "hidden_size": 2560,
+        "intermediate_size": 9728,
+        "num_hidden_layers": 36,
+        "num_attention_heads": 32,
+        "num_key_value_heads": 8,
+        "head_dim": 128,
+        "attention_bias": false,
+        "max_position_embeddings": 40960,
+        "tie_word_embeddings": true,
+        "model_type": "qwen3",
+        "qk_norm": true
+      }
+    },
+    "digital_weight_chunk_bytes": 65536,
+    "memory_profile": "mature_hbm2_pipelined",
+    "schedule_policy": "shared_tiles",
+    "digital_shared_prefill": false,
+    "digital_operand_bytes": 65536,
+    "resource_experiment": {
+      "profile": "c512_m64",
+      "shared_prefill": false,
+      "boundary": "same data/layout/clock/capacity; MAC target and bank/fabric resources vary independently",
+      "local_operand_bytes": 65536,
+      "local_operand_banks": 1,
+      "shared_slots": 2,
+      "macro": "E256x128",
+      "topology_PPA": "unknown: bank mux, wiring, clock tree, local feed and MAC array not signed off",
+      "prefill_policy": "ready-before-epilogue fill first; otherwise epilogue priority; single local consumer"
+    }
+  },
+  "metrics": {
+    "TPOT_ms": 400.4389,
+    "token_ms": [
+      400.4389
+    ],
+    "tokens_per_second": 2.49725988159492,
+    "elapsed_ns": 400438900.0,
+    "priced_subtotal_mJ_per_token": 27.593441692212156,
+    "full_physical_energy_J": null,
+    "full_physical_area_mm2": null,
+    "quality_reference_ppl": null
+  },
+  "phase_ns": {
+    "embedding": 115.0,
+    "attention_norm": 80239.00000008196,
+    "QKV_projection": 48658659.41599974,
+    "QK_head_norm": 158422.5000001192,
+    "RoPE_bias_KV_append": 102164.5,
+    "attention_core": 53531851.000000134,
+    "O_projection": 32363643.91599971,
+    "residual_and_ffn_norm": 108915.5840002899,
+    "FFN_gate_up": 154083159.4159997,
+    "FFN_SwiGLU": 363192.08400028944,
+    "FFN_down": 77247270.41599971,
+    "ffn_residual": 29178.08400028944,
+    "final_norm": 2011.0,
+    "lm_head_and_argmax": 33691950.0,
+    "other_explicit_memory": 18128.083999931812
+  },
+  "resource_busy_ns": {
+    "dma_descriptor": 13115440.0,
+    "dram_dma": 76046768.08356312,
+    "sram_fabric": 269720413.0255681,
+    "vector": 6594590.0,
+    "mac": 93175800.0
+  },
+  "attention_activity": {
+    "possible_QK_positions": 2359296,
+    "possible_K_group_positions": 589824,
+    "possible_V_group_positions": 589824,
+    "QK_logical_positions": 2359296,
+    "K_unique_group_positions": 589824,
+    "V_unique_group_positions": 589824
+  },
+  "FFN_activity": {},
+  "actions": {
+    "dram_read": 8346931200,
+    "DMA_descriptor_span": 1311544,
+    "DMA_descriptor_batch": 136504,
+    "sram_write": 522082552,
+    "sram_read": 521998496,
+    "vector_op": 22522752,
+    "nonlinear_op": 2730601,
+    "digital_local_activation_write_byte": 1369088,
+    "digital_DMA_response_buffer_write_byte": 8044544000,
+    "digital_DMA_response_buffer_read_byte": 8044544000,
+    "digital_local_operand_write_byte": 8044544000,
+    "bf16_mac": 4324261888,
+    "digital_local_operand_read_byte": 8044544000,
+    "digital_local_activation_read_byte": 8044544000,
+    "FP32_to_BF16": 1105920,
+    "dram_write": 147456,
+    "fp32_mac": 301989888,
+    "rng_calibrated_endpoint_energy_pJ": 0.0,
+    "rng_FFN_shared64_compare": 0,
+    "rng_stratum_counter_update": 0,
+    "rng_sigmoid_lut_lookup": 0,
+    "rng_threshold_config_bit": 0,
+    "rng_seed_bus_beat": 0,
+    "uncalibrated_HBM_system_ns": 400438900.0,
+    "digital_idle_ns": 400438900.0,
+    "sc_idle_ns": 400438900.0,
+    "control_interconnect_ns": 400438900.0
+  },
+  "energy_J": {
+    "DRAM_dynamic": 0.0,
+    "SRAM_internal": 0.012535714498384785,
+    "digital": 0.008698352538011692,
+    "SRAM_leakage": 0.00635937465581568
+  },
+  "unpriced_actions": {
+    "DMA_descriptor_span": 1311544,
+    "DMA_descriptor_batch": 136504,
+    "digital_local_activation_write_byte": 1369088,
+    "digital_DMA_response_buffer_write_byte": 8044544000,
+    "digital_DMA_response_buffer_read_byte": 8044544000,
+    "digital_local_operand_write_byte": 8044544000,
+    "digital_local_operand_read_byte": 8044544000,
+    "digital_local_activation_read_byte": 8044544000,
+    "FP32_to_BF16": 1105920,
+    "fp32_mac": 301989888,
+    "uncalibrated_HBM_system_ns": 400438900.0,
+    "digital_idle_ns": 400438900.0,
+    "sc_idle_ns": 400438900.0,
+    "control_interconnect_ns": 400438900.0
+  },
+  "SRAM": {
+    "traffic": {
+      "write_logical_bytes": 8352275968,
+      "write_physical_bytes": 8353320832,
+      "write_words": 522082552,
+      "read_logical_bytes": 8351975936,
+      "read_physical_bytes": 8351975936,
+      "read_words": 521998496
+    },
+    "calibrated_macro": {
+      "area_mm2": 0.03322622205,
+      "read_internal_pJ": 10.0527,
+      "write_internal_pJ": 13.9599,
+      "ce_off_leakage_W": 7.7544e-06,
+      "ce_on_leakage_W": 7.773516e-06,
+      "read_access_ns": 2.8767,
+      "write_access_ns": 2.831,
+      "read_cycle_ns": 3.468,
+      "write_cycle_ns": 3.4271,
+      "source": "exact_vendor_library",
+      "id": "E",
+      "corner": "SS",
+      "energy_boundary": "macro internal dynamic; Q load/clock tree/wrapper excluded",
+      "Q_hold": "not newly verified",
+      "slew_ns": 0.1,
+      "Q_load_pF": 0.02,
+      "requested_clock_hz": 80000000,
+      "period_only_eligible": true,
+      "minimum_cycle_ns": 3.468,
+      "clock_note": "period screening only; no interface STA guarantee"
+    },
+    "banks": 64,
+    "macros": 2048,
+    "configured_bytes": 8388608,
+    "word_bytes": 16,
+    "clock_hz": 80000000,
+    "bank_peak_GBs": 81.92,
+    "fabric_combined_read_write_GBs": 64.0,
+    "macros_per_bank": 32,
+    "physical_bytes": 8388608,
+    "area_mm2": 68.0473027584,
+    "leakage_J": 0.00635937465581568,
+    "scheduling": "blocking descriptor per addressed banks + shared fabric",
+    "exclusions": [
+      "wrapper/mux/CTS",
+      "verified CDC implementation",
+      "optimized bank interleaving"
+    ],
+    "layout": {
+      "weight_ping": {
+        "address": 0,
+        "bytes": 65536
+      },
+      "weight_pong": {
+        "address": 65536,
+        "bytes": 65536
+      },
+      "normalized_activation_and_attention_output": {
+        "address": 131072,
+        "bytes": 65536
+      },
+      "matrix_output_and_wide_partials": {
+        "address": 196608,
+        "bytes": 77824
+      },
+      "SwiGLU_z_FP32": {
+        "address": 274432,
+        "bytes": 65536
+      },
+      "live_BF16_residual": {
+        "address": 339968,
+        "bytes": 5120
+      },
+      "one_shared_encoded_input_group": {
+        "address": 345088,
+        "bytes": 128
+      },
+      "one_KV_group_summary": {
+        "address": 345216,
+        "bytes": 66048
+      },
+      "one_KV_group_logits": {
+        "address": 411264,
+        "bytes": 16
+      },
+      "candidate_maps": {
+        "address": 411328,
+        "bytes": 16
+      },
+      "one_head_histogram": {
+        "address": 411392,
+        "bytes": 16
+      },
+      "sampler_output_indices_word_stride": {
+        "address": 411456,
+        "bytes": 16
+      },
+      "GQA_sorted_V_worklists": {
+        "address": 411520,
+        "bytes": 16
+      },
+      "K_V_tile": {
+        "address": 411584,
+        "bytes": 65536
+      }
+    },
+    "reserved_peak_bytes": 477120
+  },
+  "execution_commit": "b01058f7e2143e81a602644d3d796768a8d008b5",
+  "case": {
+    "name": "c512_m64_dma_only",
+    "resource_profile": "c512_m64",
+    "shared_prefill": false,
+    "policy": "shared_sg",
+    "memory_profile": "mature_hbm2_pipelined",
+    "ffn": "bf16",
+    "attention": "exact",
+    "context": 2048,
+    "seed": 0
+  },
+  "wall_seconds": 1215.879636081867,
+  "tile_pipeline": {
+    "contract": "one response ticket, two shared slots, one active operand tile; DMA-only overlap",
+    "shared_response_capacity_bytes": 65536,
+    "full_area_mm2": null,
+    "full_energy_J": null,
+    "digital": {
+      "counts": {
+        "issued": 131750,
+        "bytes": 8044544000,
+        "max_pending": 1,
+        "filled": 131750,
+        "issue_during_previous_compute": 131605,
+        "retired": 131750
+      },
+      "pending": false,
+      "active": false,
+      "staged": false,
+      "response_capacity_bytes": 65536,
+      "operand_capacity_bytes": 65536,
+      "records_truncated": true
+    },
+    "sc": {
+      "counts": {},
+      "pending": false,
+      "active": false,
+      "staged": false,
+      "response_capacity_bytes": 65536,
+      "operand_capacity_bytes": 32768,
+      "records_truncated": false
+    }
+  },
+  "digital_operand_contract": {
+    "schedule": "shared_tiles",
+    "operand_capacity_bytes": 65536,
+    "activation_peak_bytes": 19456,
+    "W8_restore": "block64",
+    "FP32_block_partial_peak_bytes": 0,
+    "partial_write_bytes_per_cycle": 32,
+    "partial_read_bytes_per_cycle": 256,
+    "block_boundary": "K64 partial output supported continuously; no extra per-block startup assumed",
+    "local_weight_read_bytes_per_cycle": 1024,
+    "timing": "local operand throughput absorbed in configured MAC rate; not STA calibrated",
+    "area_mm2": null,
+    "energy_J": null
+  },
+  "DRAM": {
+    "backend": "dramsys",
+    "traffic": {
+      "embedding_logical_bytes": 5120,
+      "embedding_physical_bytes": 5120,
+      "embedding_bursts": 80,
+      "DMA_descriptors": 136504,
+      "DRAMSys_address_spans": 1311544,
+      "DRAMSys_scatter_requests": 136504,
+      "SG_max_live_spans": 256,
+      "norm_weights_logical_bytes": 392192,
+      "norm_weights_physical_bytes": 392192,
+      "norm_weights_bursts": 6128,
+      "weights_logical_bytes": 8044544000,
+      "weights_physical_bytes": 8044544000,
+      "weights_bursts": 125696000,
+      "KV_append_logical_bytes": 147456,
+      "KV_append_physical_bytes": 147456,
+      "KV_append_bursts": 2304,
+      "KV_fused_logical_bytes": 301989888,
+      "KV_fused_physical_bytes": 301989888,
+      "KV_fused_bursts": 4718592
+    },
+    "scatter_gather": true,
+    "sg_max_spans": 256,
+    "descriptor_storage_bytes": 4096,
+    "descriptor_span_ns": 10.0,
+    "controller_PPA": "unknown; descriptor generation/fetch and storage are not free",
+    "scheduling": "one macro DMA actor; bounded rolling credit within descriptor; no async cross-descriptor claim",
+    "details": {
+      "status": "finished",
+      "burst_count": 130423104,
+      "macro_requests": 136504,
+      "capacity_bytes": 17179869184,
+      "configuration_sha256": "9c53030f67a378a00916a470410a9bdb070db44cfbf1beafbe875983910851c0",
+      "service_ms": 76.04676808356312,
+      "max_DMA_latency_ns": 3762.0,
+      "power_at_system_end": null,
+      "bridge_features": [
+        "aligned_coalescing_v1",
+        "scatter_gather_v1"
+      ],
+      "last_done_ns": 400437404.99999994,
+      "host_transactions": 32605776,
+      "host_request_bytes": 256,
+      "response_accept_delay_ps": 0,
+      "energy_valid": false,
+      "energy_boundary": "unknown: upstream HBM2 currents are zero placeholders; PowerAnalysis disabled",
+      "stats": {
+        "dram": {
+          "arbiter": {
+            "AverageBandwidthPerChannel": [
+              502817883.0777929,
+              505664040.1319652,
+              509822037.7690579,
+              506077666.28067356,
+              502690023.37185526,
+              493151050.01037616,
+              500244067.19726783,
+              498894508.00109583
+            ],
+            "AverageBandwidthPerThread": [
+              20844824656.146046
+            ],
+            "NumberOfRequestsPerThread": [
+              32605776
+            ]
+          },
+          "controller0": {
+            "AverageAccessesPerActivate": 4.913215854716084,
+            "AverageAccessesPerReadWriteSwitch": 446657.4246575342,
+            "AverageBandwidth": 2605620343.078557,
+            "AverageBandwidthWithoutIdle": 17118474942.8022,
+            "AverageUtilization": 0.08142563572120491,
+            "AverageUtilizationWithoutIdle": 0.5349523419625688,
+            "MaximumTheoreticalBandwidth": 31999999999.999996,
+            "NumberOfReadRequests": 4075677,
+            "NumberOfRequests": 4075749,
+            "NumberOfWriteRequests": 72,
+            "pc0": {
+              "AverageBandwidth": 1302810171.5392785,
+              "AverageUtilization": 0.08142563572120491
+            },
+            "pc1": {
+              "AverageBandwidth": 1302810171.5392785,
+              "AverageUtilization": 0.08142563572120491
+            }
+          },
+          "controller1": {
+            "AverageAccessesPerActivate": 4.911418953960595,
+            "AverageAccessesPerReadWriteSwitch": 446657.4246575342,
+            "AverageBandwidth": 2605620343.078557,
+            "AverageBandwidthWithoutIdle": 17108977192.687157,
+            "AverageUtilization": 0.08142563572120491,
+            "AverageUtilizationWithoutIdle": 0.5346555372714736,
+            "MaximumTheoreticalBandwidth": 31999999999.999996,
+            "NumberOfReadRequests": 4075677,
+            "NumberOfRequests": 4075749,
+            "NumberOfWriteRequests": 72,
+            "pc0": {
+              "AverageBandwidth": 1302810171.5392785,
+              "AverageUtilization": 0.08142563572120491
+            },
+            "pc1": {
+              "AverageBandwidth": 1302810171.5392785,
+              "AverageUtilization": 0.08142563572120491
+            }
+          },
+          "controller2": {
+            "AverageAccessesPerActivate": 4.911584944257237,
+            "AverageAccessesPerReadWriteSwitch": 446653.4794520548,
+            "AverageBandwidth": 2605597328.3314877,
+            "AverageBandwidthWithoutIdle": 17110565045.613272,
+            "AverageUtilization": 0.081424916510359,
+            "AverageUtilizationWithoutIdle": 0.5347051576754148,
+            "MaximumTheoreticalBandwidth": 31999999999.999996,
+            "NumberOfReadRequests": 4075641,
+            "NumberOfRequests": 4075713,
+            "NumberOfWriteRequests": 72,
+            "pc0": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            },
+            "pc1": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            }
+          },
+          "controller3": {
+            "AverageAccessesPerActivate": 4.91171072373297,
+            "AverageAccessesPerReadWriteSwitch": 446653.4794520548,
+            "AverageBandwidth": 2605597328.3314877,
+            "AverageBandwidthWithoutIdle": 17108529546.617027,
+            "AverageUtilization": 0.081424916510359,
+            "AverageUtilizationWithoutIdle": 0.5346415483317822,
+            "MaximumTheoreticalBandwidth": 31999999999.999996,
+            "NumberOfReadRequests": 4075641,
+            "NumberOfRequests": 4075713,
+            "NumberOfWriteRequests": 72,
+            "pc0": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            },
+            "pc1": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            }
+          },
+          "controller4": {
+            "AverageAccessesPerActivate": 4.911510219501581,
+            "AverageAccessesPerReadWriteSwitch": 446653.4794520548,
+            "AverageBandwidth": 2605597328.3314877,
+            "AverageBandwidthWithoutIdle": 17111143659.017113,
+            "AverageUtilization": 0.081424916510359,
+            "AverageUtilizationWithoutIdle": 0.5347232393442849,
+            "MaximumTheoreticalBandwidth": 31999999999.999996,
+            "NumberOfReadRequests": 4075641,
+            "NumberOfRequests": 4075713,
+            "NumberOfWriteRequests": 72,
+            "pc0": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            },
+            "pc1": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            }
+          },
+          "controller5": {
+            "AverageAccessesPerActivate": 4.911840209334328,
+            "AverageAccessesPerReadWriteSwitch": 446653.4794520548,
+            "AverageBandwidth": 2605597328.3314877,
+            "AverageBandwidthWithoutIdle": 17103892774.467854,
+            "AverageUtilization": 0.081424916510359,
+            "AverageUtilizationWithoutIdle": 0.5344966492021205,
+            "MaximumTheoreticalBandwidth": 31999999999.999996,
+            "NumberOfReadRequests": 4075641,
+            "NumberOfRequests": 4075713,
+            "NumberOfWriteRequests": 72,
+            "pc0": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            },
+            "pc1": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            }
+          },
+          "controller6": {
+            "AverageAccessesPerActivate": 4.911290497502006,
+            "AverageAccessesPerReadWriteSwitch": 446653.4794520548,
+            "AverageBandwidth": 2605597328.3314877,
+            "AverageBandwidthWithoutIdle": 17100828494.43679,
+            "AverageUtilization": 0.081424916510359,
+            "AverageUtilizationWithoutIdle": 0.5344008904511498,
+            "MaximumTheoreticalBandwidth": 31999999999.999996,
+            "NumberOfReadRequests": 4075641,
+            "NumberOfRequests": 4075713,
+            "NumberOfWriteRequests": 72,
+            "pc0": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            },
+            "pc1": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            }
+          },
+          "controller7": {
+            "AverageAccessesPerActivate": 4.911736620307081,
+            "AverageAccessesPerReadWriteSwitch": 446653.4794520548,
+            "AverageBandwidth": 2605597328.3314877,
+            "AverageBandwidthWithoutIdle": 17106011865.416416,
+            "AverageUtilization": 0.081424916510359,
+            "AverageUtilizationWithoutIdle": 0.5345628707942631,
+            "MaximumTheoreticalBandwidth": 31999999999.999996,
+            "NumberOfReadRequests": 4075641,
+            "NumberOfRequests": 4075713,
+            "NumberOfWriteRequests": 72,
+            "pc0": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            },
+            "pc1": {
+              "AverageBandwidth": 1302798664.1657438,
+              "AverageUtilization": 0.081424916510359
+            }
+          }
+        }
+      }
+    }
+  },
+  "FFN_contract": {
+    "contract": "digital_BF16_or_W8_FP32_SwiGLU",
+    "mode": "bf16",
+    "W8_restoration": null
+  },
+  "raw_result_sha256": "d08cd6f294e017a12857be38227462685c49066a837e631dc122910ff9d2eec6",
+  "scope": "derived timing/activity summary; synthetic decode, no PPL or measured PPA",
+  "evidence": {
+    "remote_result": "/home/Hongjie_Zeng/projects/pbit-scheduling-issue186-20261025/resource_b01058f7/results/case_2/RESULT.json",
+    "raw_sha256": "d08cd6f294e017a12857be38227462685c49066a837e631dc122910ff9d2eec6",
+    "remote_summary_sha256": "ed6e0bcc249f1e52dfd20878fd5957de1a55ad59e8ba26fb6aad930f36c0fdd2",
+    "manifest_sha256": "65433a44dcfee693acaad102d95ba29845f264db14c003f096b2f16aa04034ec",
+    "layers": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "derived": true,
+    "omitted": "bounded ticket records and per-bank busy list only"
+  }
+}

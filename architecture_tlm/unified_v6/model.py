@@ -23,6 +23,7 @@ from sram_cacti_calibration_v1 import macro_lookup
 from .core import Ledger, Scheduler, Arena, SRAM, DRAM, AddressMap, LocalRandomService, ceildiv, sha
 from .rng_integrated import IntegratedRandomService, selector_parameters
 from .ffn_latest import LatestFFN, validate as validate_latest
+from .tile_pipeline import TilePipeline
 
 
 MODES = ('exact', 'pv', 'screen_exact', 'screen_pv', 'screen_rejection', 'screen_winner', 'screen_serial_ising')
@@ -117,7 +118,10 @@ class FullDecode:
         self.z = self.arena.allocate('nonlinear_P8_sign_exponent_codes' if self.latest_ffn else 'SwiGLU_z_FP32', max(65536, self.F*4))
         if self.latest_ffn:
             self.fixed_scale_table=self.arena.allocate('frozen_FFN_scale_tables',4*(self.h//64)+8*(self.F//64))
-            self.ffn_coefficient_scratch=self.arena.allocate('FFN_tile_coefficients',f['engines']*4)
+            quadrants=(f.get('locality',{}).get('tile',64)//64)**2
+            self.ffn_coefficient_scratch=self.arena.allocate('FFN_tile_coefficients',f['engines']*4*quadrants)
+            if f.get('locality'):
+                self.locality_x_codes=self.arena.allocate('locality_full_x_codes',self.h*2)
         self.residual = self.arena.allocate('live_BF16_residual', self.h*2)
         self.encoded = self.arena.allocate('one_shared_encoded_input_group', 64*2)
         L = c['context_tokens']+c['decode_tokens']
@@ -149,11 +153,19 @@ class FullDecode:
         if c['random'].get('backend','local_prng_interface') not in ('local_prng_interface','integrated_service'):
             raise ValueError('unknown random backend')
         self.rng = (IntegratedRandomService(c['random'],self.s,self.e,self.period,
-                    ffn=f['mode'],mode=mode,group=self.group,context=c['context_tokens']+c['decode_tokens']-1,
+                    ffn='locality_macro' if f.get('locality') else f['mode'],mode=mode,group=self.group,context=c['context_tokens']+c['decode_tokens']-1,
                     candidates=self.row_capacity,seed=c['seed'])
                     if self.integrated_rng else LocalRandomService(c['random'], self.s, self.e, self.period))
         self.layout = self.make_layout()
         self.dram = DRAM(c['dram'], self.layout, self.s, self.e)
+        policy=c.get('schedule_policy','legacy')
+        if policy not in ('legacy','shared_tiles'):raise ValueError('unknown schedule policy')
+        self.tile_pipeline=TilePipeline(self) if policy=='shared_tiles' else None
+        if c.get('digital_shared_prefill',False) and (policy!='shared_tiles' or f['mode']!='bf16'):
+            raise ValueError('digital shared prefill currently validated for full BF16 reference only')
+        self.digital_activation_peak=0;self.digital_partial_peak=0
+        if c.get('digital_w8_restore','legacy_row') not in ('legacy_row','block64'):
+            raise ValueError('unknown W8 scale restoration contract')
         a = c['attention']
         tc = dict(seed=c['seed'], fixture_logit_std=a['synthetic_logit_std'],
             selector_bias=a['selector_bias'], selector_temperature=a['selector_temperature'],
@@ -170,7 +182,11 @@ class FullDecode:
         self.attn_stats = Counter()
         self.frame = 0
         self.metadata = Counter()
-        self.ffn_latest=LatestFFN(self) if self.latest_ffn else None
+        if self.latest_ffn and f.get('locality'):
+            from .ffn_locality import LocalityFFN
+            self.ffn_latest=LocalityFFN(self)
+        else:
+            self.ffn_latest=LatestFFN(self) if self.latest_ffn else None
 
     def make_layout(self):
         a = AddressMap()
@@ -238,7 +254,21 @@ class FullDecode:
         t = self.mem.transfer(t, self.slots[slot], size, False, 'weight_consume')
         return t, slot
 
+    def digital_w8_restore(self,t,n,inp):
+        if self.c.get('digital_w8_restore','legacy_row')=='legacy_row':
+            return self.vec(t,'W8_scale_apply',n,energy_unit='weight_scale_op')
+        # Every K64 x O64 weight block has an independent scale. A single
+        # post-dot scale is not equivalent. MAC emits separate FP32 partials;
+        # local buffer writes are absorbed in the explicit macro output rate.
+        groups=ceildiv(inp,64);values=n*groups
+        self.digital_partial_peak=max(self.digital_partial_peak,values*4)
+        self.e.action('digital_block_partial_write_byte',values*4,'digital_local_storage')
+        self.e.action('digital_block_partial_read_byte',values*4,'digital_local_storage')
+        t=self.vec(t,'W8_block_scale_apply',values,energy_unit='weight_scale_op')
+        return self.vec(t,'W8_block_reduce_FP32',n*(groups-1))
+
     def matrix(self, t, name):
+        if self.tile_pipeline is not None:return self.matrix_shared(t,name)
         info = self.matrix_info[name]
         inp, out = info['inp'], info['out']
         # Row-complete chunks keep streaming output/argmax bounded.
@@ -265,7 +295,7 @@ class FullDecode:
             current = self.mac(start, 'matrix_'+name.split('/')[-1], inp*n)
             self.slot_free[slot] = current
             if info['width'] == 1:
-                current = self.vec(current, 'W8_scale_apply', n, energy_unit='weight_scale_op')
+                current = self.digital_w8_restore(current,n,inp)
             output_width = 4 if info['width']==1 or name=='lm_head' else 2
             if output_width==2:
                 current = self.vec(current, 'matrix_FP32_to_BF16', n, energy_unit='FP32_to_BF16')
@@ -275,6 +305,64 @@ class FullDecode:
                 current = self.vec(current, 'stream_argmax', n, read=n*4, read_address=self.matrix_output)
             prefetch = start if self.c['double_buffer'] else current
         return current
+
+    def matrix_shared(self,t,name):
+        """Digital operator on the same DMA-ticket lifecycle used by SC.
+
+        Local operands have explicit bounded capacity. Default next shared fill
+        waits for retirement. Optional prefill orders it against the current
+        epilogue by readiness; one local operand bank is retained in both modes.
+        """
+        info=self.matrix_info[name];inp,out=info['inp'],info['out']
+        row_bytes=inp*info['width'];chunk=self.c.get('digital_weight_chunk_bytes',self.c['weight_chunk_bytes'])
+        if chunk<row_bytes or chunk>self.c['weight_chunk_bytes']:
+            raise ValueError('digital matrix row chunk outside staging slot')
+        rows=chunk//row_bytes;pipe=self.tile_pipeline
+        input_width=4 if name.endswith('/down') and info['width']==1 else 2
+        input_base=self.z if name.endswith('/down') else self.activation
+        t=self.mem.transfer(t,input_base,inp*input_width,False,'matrix_activation')
+        self.digital_activation_peak=max(self.digital_activation_peak,inp*input_width)
+        self.e.action('digital_local_activation_write_byte',inp*input_width,'digital_local_storage')
+        first=0;n=min(rows,out)
+        ticket=pipe.issue(t,name,0,n*row_bytes,'digital',first=0,n=n)
+        while first<out:
+            current_ticket=ticket;n=current_ticket['n']
+            loaded,slot=pipe.fill(t,current_ticket)
+            loaded=self.mem.transfer(loaded,self.slots[slot],n*row_bytes,False,'weight_consume')
+            self.e.action('digital_local_operand_write_byte',n*row_bytes,'digital_local_storage')
+            if info['width']==1:
+                scale_first=(first//64)*ceildiv(inp,64)*4
+                count=(ceildiv(first+n,64)-first//64)*ceildiv(inp,64)*4
+                loaded=self.dram.tensor(loaded,name,info['bytes']+scale_first,count,kind='weight_scales')
+                loaded=self.mem.transfer(loaded,self.slots[slot],count,True,'weight_scales')
+                loaded=self.mem.transfer(loaded,self.slots[slot],count,False,'weight_scales')
+            start=max(t,loaded,self.s.free['mac']);end=self.mac(start,'matrix_'+name.split('/')[-1],inp*n)
+            pipe.compute(current_ticket,start,end)
+            self.e.action('digital_local_operand_read_byte',n*row_bytes,'digital_local_storage')
+            self.e.action('digital_local_activation_read_byte',inp*n*input_width,'digital_local_storage')
+            nxt=first+n
+            if nxt<out and self.c['double_buffer']:
+                ticket=pipe.issue(start,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
+            t=end
+            if info['width']==1:t=self.digital_w8_restore(t,n,inp)
+            output_width=4 if info['width']==1 or name=='lm_head' else 2
+            if output_width==2:t=self.vec(t,'matrix_FP32_to_BF16',n,energy_unit='FP32_to_BF16')
+            prefill=self.c.get('digital_shared_prefill',False) and nxt<out and self.c['double_buffer']
+            # FIFO SRAM: schedule next fill first only when it is ready before
+            # this output epilogue. Otherwise finish the epilogue (including
+            # lm_head argmax) first. No fictitious calendar insertion/rewind.
+            if prefill and ticket['dma_done_ns']<=t:
+                pipe.prefill(ticket['dma_done_ns'],ticket)
+            address=self.matrix_output+(0 if name=='lm_head' else first*output_width)
+            t=self.mem.transfer(t,address,n*output_width,True,'matrix_result')
+            if name=='lm_head':t=self.vec(t,'stream_argmax',n,read=n*4,read_address=self.matrix_output)
+            if prefill and pipe.staged is None:
+                pipe.prefill(t,ticket)
+            pipe.retire(current_ticket,t)
+            if nxt<out and not self.c['double_buffer']:
+                ticket=pipe.issue(t,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
+            first=nxt
+        return t
 
     def matrix_sc(self, t, name):
         info = self.matrix_info[name]
@@ -676,8 +764,12 @@ class FullDecode:
             token_times.append(t-begin)
         if abs(self.s.end()-t)>1e-6:
             raise AssertionError('unretired asynchronous resource at token end')
+        if self.tile_pipeline is not None and (self.tile_pipeline.pending is not None or self.tile_pipeline.active is not None or self.tile_pipeline.staged is not None):
+            raise AssertionError('unretired tile at token end')
         random_report=self.rng.finish(t) if self.integrated_rng else self.rng.report()
         dram = self.dram.finish(t)
+        if c.get('dram',{}).get('timing_only',False):
+            self.e.action('uncalibrated_HBM_system_ns',t,'external_memory')
         memory = self.mem.report(t)
         for state in ('digital_idle_ns','sc_idle_ns','control_interconnect_ns'):
             self.e.action(state,t,'standby')
@@ -704,9 +796,21 @@ class FullDecode:
             SRAM={**memory,'layout':self.arena.regions,'reserved_peak_bytes':self.arena.peak},
             DRAM=dram,attention_activity=dict(self.attn_stats),row_receipts=self.attn_rows,
             FFN_activity=dict(self.metadata),input_provenance=self.source.provenance,
-            FFN_contract=self.ffn_latest.report() if self.latest_ffn else {'contract':'legacy_FP32_SwiGLU'},
+            FFN_contract=self.ffn_latest.report() if self.latest_ffn else {'contract': ('digital_BF16_or_W8_FP32_SwiGLU' if self.c['ffn']['mode'] in ('bf16','w8') else 'legacy_SC_FP32_SwiGLU'), 'mode': self.c['ffn']['mode'], 'W8_restoration': self.c.get('digital_w8_restore') if self.c['ffn']['mode']=='w8' else None},
             sampler_local_state={name:dict(buffer_bits=s.buffer_bits,biased_lanes=s.biased_capacity,
                 fair_lanes=s.fair_capacity) for name,s in self.samplers.items() if name==c['attention']['mode']},
+            tile_pipeline=self.tile_pipeline.report() if self.tile_pipeline is not None else {'contract':'legacy'},
+            digital_operand_contract=dict(schedule=c.get('schedule_policy','legacy'),
+                operand_capacity_bytes=self.tile_pipeline.digital_capacity if self.tile_pipeline else None,
+                activation_peak_bytes=self.digital_activation_peak if self.tile_pipeline else None,
+                W8_restore=c.get('digital_w8_restore','legacy_row'),
+                FP32_block_partial_peak_bytes=self.digital_partial_peak,
+                partial_write_bytes_per_cycle=ceildiv(c['macs_per_cycle'],64)*4,
+                partial_read_bytes_per_cycle=c['vector_lanes']*4,
+                block_boundary='K64 partial output supported continuously; no extra per-block startup assumed',
+                local_weight_read_bytes_per_cycle=c['macs_per_cycle']*2,
+                timing='local operand throughput absorbed in configured MAC rate; not STA calibrated',
+                area_mm2=None,energy_J=None),
             calibration_sha256=self.calibration_sha,
             limitations=['regular arithmetic timing is configured, not calibrated whole-core timing',
                 'SC B4/short-stream counter/scale-restoration power and area not characterized',

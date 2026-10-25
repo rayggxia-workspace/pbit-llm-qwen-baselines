@@ -2,6 +2,8 @@
 
 Canonical entry: [architecture_tlm](architecture_tlm/README.md). Fixed-scale W8 FFN with stochastic nonlinearity directly into Wd; existing Attention and memory interfaces. Read the macro/numerical limitations. Historical experiments below remain historical.
 
+Architecture changes and paper evidence: [架构优化记录本](architecture_tlm/ARCHITECTURE_OPTIMIZATION_LOG_ZH.md). Latest optional experiment: [FFN本地部分和与128阵列](architecture_tlm/unified_v6/FFN_LOCALITY_ZH.md), with full timing/traffic controls and explicit unmeasured area boundaries.
+
 > Workspace 协作入口：[AGENTS.md](AGENTS.md)。任务通过 Issue、独立分支和 PR 交付；个人进度见 `progress/<GitHub用户名>/STATUS.md`。
 
 # p-bit LLM: Qwen2.5-0.5B baselines

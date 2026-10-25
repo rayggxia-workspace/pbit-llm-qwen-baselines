@@ -211,15 +211,19 @@ class LatestFFN:
         if self.pending_ticket is not None:
             raise ValueError('prefetch queue full: consume the outstanding wave first')
         o=self.o;info=o.matrix_info[name];groups=info['out']//64
-        slot=o.slot_serial%2;o.slot_serial+=1
-        ready=max(ready,o.slot_free[slot]);self.slot_generation[slot]+=1
-        self.wave_serial+=1
-        loaded=o.dram.tensor(ready,name,(k*groups+j)*4096,n*4096)
-        ticket=dict(wave_id=self.wave_serial,name=name,k=k,j=j,n=n,slot=slot,
-            generation=self.slot_generation[slot],issue_ns=ready,dram_done_ns=loaded)
+        if o.tile_pipeline is not None:
+            ticket=o.tile_pipeline.issue(ready,name,(k*groups+j)*4096,n*4096,'sc',k=k,j=j,n=n)
+            slot=ticket['slot'];self.slot_generation[slot]=ticket['generation']
+        else:
+            slot=o.slot_serial%2;o.slot_serial+=1
+            ready=max(ready,o.slot_free[slot]);self.slot_generation[slot]+=1
+            self.wave_serial+=1
+            loaded=o.dram.tensor(ready,name,(k*groups+j)*4096,n*4096)
+            ticket=dict(wave_id=self.wave_serial,name=name,k=k,j=j,n=n,slot=slot,
+                generation=self.slot_generation[slot],issue_ns=ready,dram_done_ns=loaded)
         self.pending_ticket=ticket
         self.pipeline['waves']+=1;self.pipeline['prefetch_bytes']+=n*4096
-        o.e.action('SC_DMA_response_buffer_write_byte',n*4096,'weight_interface')
+        if o.tile_pipeline is None:o.e.action('SC_DMA_response_buffer_write_byte',n*4096,'weight_interface')
         return ticket
 
     def load_prefetched_wave(self,ready,ticket):
@@ -228,10 +232,13 @@ class LatestFFN:
         o=self.o;name=ticket['name'];n=ticket['n'];slot=ticket['slot']
         info=o.matrix_info[name];groups=info['out']//64
         if ticket['generation']!=self.slot_generation[slot]:raise ValueError('stale slot generation')
-        loaded=max(ready,ticket['dram_done_ns'],o.slot_free[slot],self.last_restore)
-        loaded=o.mem.transfer(loaded,o.slots[slot],n*4096,True,'weight_fill')
-        ticket['fill_done_ns']=loaded
-        o.e.action('SC_DMA_response_buffer_read_byte',n*4096,'weight_interface')
+        if o.tile_pipeline is not None:
+            loaded,slot=o.tile_pipeline.fill(max(ready,self.last_restore),ticket)
+        else:
+            loaded=max(ready,ticket['dram_done_ns'],o.slot_free[slot],self.last_restore)
+            loaded=o.mem.transfer(loaded,o.slots[slot],n*4096,True,'weight_fill')
+            ticket['fill_done_ns']=loaded
+            o.e.action('SC_DMA_response_buffer_read_byte',n*4096,'weight_interface')
         self.pending_ticket=None
         if self.f['weight_feed']=='resident_macro':
             bw=min(o.c['sram']['fabric_GBs'],o.c['sram']['banks']*o.c['sram']['word_bytes']*o.c['sram']['clock_hz']/1e9)
@@ -323,6 +330,7 @@ class LatestFFN:
             end=self.array(begin,'AND_direct_Wd' if nl else 'gate_up',n,
                 f['nonlinear_samples'] if nl else 64,7 if nl else 4,slot,nl=nl)
             current['array_done_ns']=end
+            if o.tile_pipeline is not None:o.tile_pipeline.compute(current,begin,end)
             # Only DRAM is submitted early: no future SRAM reservation can
             # push current restoration out of a usable gap in the FIFO model.
             if o.c['double_buffer']:
@@ -338,6 +346,7 @@ class LatestFFN:
                     self.pipeline['prefetch_during_previous_array']+=int(self.pending_ticket['issue_ns']<end)
             t=self.restore(end,n,7 if nl else 4,k,j)
             current['restore_done_ns']=t
+            if o.tile_pipeline is not None:o.tile_pipeline.retire(current,t)
             if len(self.wave_records)<o.c['trace_event_limit']:self.wave_records.append(dict(current))
             if j+E<groups and not o.c['double_buffer']:
                 ticket=self.prefetch_wave(t,name,k,j+E,min(E,groups-j-E))

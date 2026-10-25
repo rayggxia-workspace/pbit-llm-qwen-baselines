@@ -155,3 +155,8 @@
 - 核对准确模型 ID、revision、权重和 tokenizer 的 SHA、后训练属性，不能只根据名称是否带 Instruct 判断。按任务记录 chat 模板、特殊 token、thinking 开关及计分协议；原文 teacher-forced PPL 可明确不套聊天模板，不与聊天任务混称。
 - 历史 Base 源码和原始结果保留原标注，不改名为 Instruct，不继承其 PPL 为新模型结果。迁移必须重新建立匹配的未改动参考，遵守模型／文本哈希和相同评估协议要求。
 - 当前未合并的 Base 评测及其依赖保留迁移要求，不作为后续新模型基线验收；通用算法／硬件可按自身边界审核。本规则不授权取消健康作业或自动启动昂贵重跑。
+
+## 架构优化记录本（用户2026-10-25要求，Issue186）
+
+- 后续FFN/Attention/随机源/存储调度改进，持续维护 `architecture_tlm/ARCHITECTURE_OPTIMIZATION_LOG_ZH.md` 的机制与证据索引；保留对照、代码/配置版本、额外资源、时间/流量/质量、负面结果和未完成边界，便于论文消融。
+- 本记录本不替代 `digital_circuit_simulation_registry/` 的数字仿真run台账，不复制波形/大结果，不把TLM结构位数换称实测面积。每个新增结果仍遵循原Issue、PR、STATUS、HANDOFF和SHA规则。

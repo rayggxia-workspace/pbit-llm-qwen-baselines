@@ -23,6 +23,7 @@ from sram_cacti_calibration_v1 import macro_lookup
 from .core import Ledger, Scheduler, Arena, SRAM, DRAM, AddressMap, LocalRandomService, ceildiv, sha
 from .rng_integrated import IntegratedRandomService, selector_parameters
 from .ffn_latest import LatestFFN, validate as validate_latest
+from .tile_pipeline import TilePipeline
 
 
 MODES = ('exact', 'pv', 'screen_exact', 'screen_pv', 'screen_rejection', 'screen_winner', 'screen_serial_ising')
@@ -154,6 +155,10 @@ class FullDecode:
                     if self.integrated_rng else LocalRandomService(c['random'], self.s, self.e, self.period))
         self.layout = self.make_layout()
         self.dram = DRAM(c['dram'], self.layout, self.s, self.e)
+        policy=c.get('schedule_policy','legacy')
+        if policy not in ('legacy','shared_tiles'):raise ValueError('unknown schedule policy')
+        self.tile_pipeline=TilePipeline(self) if policy=='shared_tiles' else None
+        self.digital_activation_peak=0
         a = c['attention']
         tc = dict(seed=c['seed'], fixture_logit_std=a['synthetic_logit_std'],
             selector_bias=a['selector_bias'], selector_temperature=a['selector_temperature'],
@@ -239,6 +244,7 @@ class FullDecode:
         return t, slot
 
     def matrix(self, t, name):
+        if self.tile_pipeline is not None:return self.matrix_shared(t,name)
         info = self.matrix_info[name]
         inp, out = info['inp'], info['out']
         # Row-complete chunks keep streaming output/argmax bounded.
@@ -275,6 +281,56 @@ class FullDecode:
                 current = self.vec(current, 'stream_argmax', n, read=n*4, read_address=self.matrix_output)
             prefetch = start if self.c['double_buffer'] else current
         return current
+
+    def matrix_shared(self,t,name):
+        """Digital operator on the same DMA-ticket lifecycle used by SC.
+
+        Local operands have explicit bounded capacity. Next DMA is issued at
+        current compute start; its shared-SRAM fill waits until retirement.
+        Thus FIFO SRAM scheduling cannot push current output behind future fill.
+        """
+        info=self.matrix_info[name];inp,out=info['inp'],info['out']
+        row_bytes=inp*info['width'];chunk=self.c.get('digital_weight_chunk_bytes',self.c['weight_chunk_bytes'])
+        if chunk<row_bytes or chunk>self.c['weight_chunk_bytes']:
+            raise ValueError('digital matrix row chunk outside staging slot')
+        rows=chunk//row_bytes;pipe=self.tile_pipeline
+        input_width=4 if name.endswith('/down') and info['width']==1 else 2
+        input_base=self.z if name.endswith('/down') else self.activation
+        t=self.mem.transfer(t,input_base,inp*input_width,False,'matrix_activation')
+        self.digital_activation_peak=max(self.digital_activation_peak,inp*input_width)
+        self.e.action('digital_local_activation_write_byte',inp*input_width,'digital_local_storage')
+        first=0;n=min(rows,out)
+        ticket=pipe.issue(t,name,0,n*row_bytes,'digital',first=0,n=n)
+        while first<out:
+            current_ticket=ticket;n=current_ticket['n']
+            loaded,slot=pipe.fill(t,current_ticket)
+            loaded=self.mem.transfer(loaded,self.slots[slot],n*row_bytes,False,'weight_consume')
+            self.e.action('digital_local_operand_write_byte',n*row_bytes,'digital_local_storage')
+            if info['width']==1:
+                scale_first=(first//64)*ceildiv(inp,64)*4
+                count=(ceildiv(first+n,64)-first//64)*ceildiv(inp,64)*4
+                loaded=self.dram.tensor(loaded,name,info['bytes']+scale_first,count,kind='weight_scales')
+                loaded=self.mem.transfer(loaded,self.slots[slot],count,True,'weight_scales')
+                loaded=self.mem.transfer(loaded,self.slots[slot],count,False,'weight_scales')
+            start=max(t,loaded,self.s.free['mac']);end=self.mac(start,'matrix_'+name.split('/')[-1],inp*n)
+            pipe.compute(current_ticket,start,end)
+            self.e.action('digital_local_operand_read_byte',n*row_bytes,'digital_local_storage')
+            self.e.action('digital_local_activation_read_byte',inp*n*input_width,'digital_local_storage')
+            nxt=first+n
+            if nxt<out and self.c['double_buffer']:
+                ticket=pipe.issue(start,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
+            t=end
+            if info['width']==1:t=self.vec(t,'W8_scale_apply',n,energy_unit='weight_scale_op')
+            output_width=4 if info['width']==1 or name=='lm_head' else 2
+            if output_width==2:t=self.vec(t,'matrix_FP32_to_BF16',n,energy_unit='FP32_to_BF16')
+            address=self.matrix_output+(0 if name=='lm_head' else first*output_width)
+            t=self.mem.transfer(t,address,n*output_width,True,'matrix_result')
+            if name=='lm_head':t=self.vec(t,'stream_argmax',n,read=n*4,read_address=self.matrix_output)
+            pipe.retire(current_ticket,t)
+            if nxt<out and not self.c['double_buffer']:
+                ticket=pipe.issue(t,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
+            first=nxt
+        return t
 
     def matrix_sc(self, t, name):
         info = self.matrix_info[name]
@@ -676,6 +732,8 @@ class FullDecode:
             token_times.append(t-begin)
         if abs(self.s.end()-t)>1e-6:
             raise AssertionError('unretired asynchronous resource at token end')
+        if self.tile_pipeline is not None and (self.tile_pipeline.pending is not None or self.tile_pipeline.active is not None):
+            raise AssertionError('unretired tile at token end')
         random_report=self.rng.finish(t) if self.integrated_rng else self.rng.report()
         dram = self.dram.finish(t)
         memory = self.mem.report(t)
@@ -707,6 +765,13 @@ class FullDecode:
             FFN_contract=self.ffn_latest.report() if self.latest_ffn else {'contract':'legacy_FP32_SwiGLU'},
             sampler_local_state={name:dict(buffer_bits=s.buffer_bits,biased_lanes=s.biased_capacity,
                 fair_lanes=s.fair_capacity) for name,s in self.samplers.items() if name==c['attention']['mode']},
+            tile_pipeline=self.tile_pipeline.report() if self.tile_pipeline is not None else {'contract':'legacy'},
+            digital_operand_contract=dict(schedule=c.get('schedule_policy','legacy'),
+                operand_capacity_bytes=self.tile_pipeline.digital_capacity if self.tile_pipeline else None,
+                activation_peak_bytes=self.digital_activation_peak if self.tile_pipeline else None,
+                local_weight_read_bytes_per_cycle=c['macs_per_cycle']*2,
+                timing='local operand throughput absorbed in configured MAC rate; not STA calibrated',
+                area_mm2=None,energy_J=None),
             calibration_sha256=self.calibration_sha,
             limitations=['regular arithmetic timing is configured, not calibrated whole-core timing',
                 'SC B4/short-stream counter/scale-restoration power and area not characterized',

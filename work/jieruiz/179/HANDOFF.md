@@ -1,3 +1,5 @@
+实际交付完成：PR180已合入main，merge5273e5d9fdae811a714f1a278fee6e776c5675af；head0d97e2b5a2c01270568835964b2f4d581133a197。无运行中本任务进程；以下合并前条件文字由本行及MERGE_VERIFIED回执更新。
+
 # Issue179 / PR180 交接
 
 负责人jieruiz；目标rayggxia-workspace/pbit-llm-qwen-baselines；分支task/179-latest-ffn-tlm-main；PR base main。用户明确允许本轮验证后合入main。原main fae12982e0a92dea1f81648a5eeee148974c4a87；依赖导入d6d33995754fcdcea99286e4ce43f91647aa231a；最新算法参考216f2b9939e9984f140290c98edb05db3aad5c0f，但没有合并训练PR178。

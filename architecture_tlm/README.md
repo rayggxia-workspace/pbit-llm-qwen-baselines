@@ -1,5 +1,7 @@
 # 完整 LLM TLM：统一入口
 
+**当前正式基线：main 上的 PR183 / PR190。** 先读[基线与配置选择](BASELINE_ZH.md)：默认 `mature_ddr4`，HBM、局部部分和和资源扩容分别作为显式对照/候选。旧TLM集成分支用于历史追溯，后续修改面向main；实现仍为 `unified_v6`。
+
 本目录的默认执行入口是 **`python -m architecture_tlm`**，实现继续维护在 `unified_v6/`，不另建 v7。Issue179 将原集成分支的必要运行代码整理到 main，并接入固定四档、三路 AND 直连 Wd 的 FFN。
 
 推荐存储配置已更新为标准DDR4＋64bank SRAM＋共同tile生命周期＋有界SG/权重预取；说明见[存储层次与批次分析](unified_v6/MEMORY_HIERARCHY_ZH.md)。需要现有DRAMSys bridge，缺失时明确报错，不回退简化模型。

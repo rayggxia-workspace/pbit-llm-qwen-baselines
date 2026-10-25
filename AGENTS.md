@@ -7,6 +7,8 @@
 
 # 当前完整TLM入口（2026-10-24，Issue179 / PR180）
 
+- 2026-10-25审核更新：PR183/PR190作为main上的共同调度条件时延基线，正式入口见`architecture_tlm/BASELINE_ZH.md`。后续主线PR默认面向main；旧`pbit-tlm-attention-details-20261016`为历史追溯，不再作为自动合并目标。默认mature_ddr4，HBM/R8/128阵列/资源扩容按显式配置分别验收，不把候选最短时间或未校准PPA当默认成果。
+
 - 本版通过PR180向main交付完整TLM最小运行依赖，统一入口为`python -m architecture_tlm`、说明为`architecture_tlm/README.md`；继续维护`unified_v6`，不另建平行整机版本。下方旧集成分支索引属于历史。
 - 最新FFN固定W8、x固定四档T64/K64、g/u P8与真实signed8 sigmoid驱动、联合32格AND直连Wd、7桶整数累加。GU定点恢复与训练FP32参考的数值等价尚未验证，不继承PPL。
 - 原Attention与实际Issue95随机服务保持；新NL独立随机消费为有限宏接口，不能混称全部随机端点已实际接合。完整PPA未知；DRAM本轮link估计与DRAMSys执行须区分。

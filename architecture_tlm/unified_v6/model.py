@@ -158,7 +158,9 @@ class FullDecode:
         policy=c.get('schedule_policy','legacy')
         if policy not in ('legacy','shared_tiles'):raise ValueError('unknown schedule policy')
         self.tile_pipeline=TilePipeline(self) if policy=='shared_tiles' else None
-        self.digital_activation_peak=0
+        self.digital_activation_peak=0;self.digital_partial_peak=0
+        if c.get('digital_w8_restore','legacy_row') not in ('legacy_row','block64'):
+            raise ValueError('unknown W8 scale restoration contract')
         a = c['attention']
         tc = dict(seed=c['seed'], fixture_logit_std=a['synthetic_logit_std'],
             selector_bias=a['selector_bias'], selector_temperature=a['selector_temperature'],
@@ -243,6 +245,19 @@ class FullDecode:
         t = self.mem.transfer(t, self.slots[slot], size, False, 'weight_consume')
         return t, slot
 
+    def digital_w8_restore(self,t,n,inp):
+        if self.c.get('digital_w8_restore','legacy_row')=='legacy_row':
+            return self.vec(t,'W8_scale_apply',n,energy_unit='weight_scale_op')
+        # Every K64 x O64 weight block has an independent scale. A single
+        # post-dot scale is not equivalent. MAC emits separate FP32 partials;
+        # local buffer writes are absorbed in the explicit macro output rate.
+        groups=ceildiv(inp,64);values=n*groups
+        self.digital_partial_peak=max(self.digital_partial_peak,values*4)
+        self.e.action('digital_block_partial_write_byte',values*4,'digital_local_storage')
+        self.e.action('digital_block_partial_read_byte',values*4,'digital_local_storage')
+        t=self.vec(t,'W8_block_scale_apply',values,energy_unit='weight_scale_op')
+        return self.vec(t,'W8_block_reduce_FP32',n*(groups-1))
+
     def matrix(self, t, name):
         if self.tile_pipeline is not None:return self.matrix_shared(t,name)
         info = self.matrix_info[name]
@@ -271,7 +286,7 @@ class FullDecode:
             current = self.mac(start, 'matrix_'+name.split('/')[-1], inp*n)
             self.slot_free[slot] = current
             if info['width'] == 1:
-                current = self.vec(current, 'W8_scale_apply', n, energy_unit='weight_scale_op')
+                current = self.digital_w8_restore(current,n,inp)
             output_width = 4 if info['width']==1 or name=='lm_head' else 2
             if output_width==2:
                 current = self.vec(current, 'matrix_FP32_to_BF16', n, energy_unit='FP32_to_BF16')
@@ -320,7 +335,7 @@ class FullDecode:
             if nxt<out and self.c['double_buffer']:
                 ticket=pipe.issue(start,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
             t=end
-            if info['width']==1:t=self.vec(t,'W8_scale_apply',n,energy_unit='weight_scale_op')
+            if info['width']==1:t=self.digital_w8_restore(t,n,inp)
             output_width=4 if info['width']==1 or name=='lm_head' else 2
             if output_width==2:t=self.vec(t,'matrix_FP32_to_BF16',n,energy_unit='FP32_to_BF16')
             address=self.matrix_output+(0 if name=='lm_head' else first*output_width)
@@ -769,6 +784,11 @@ class FullDecode:
             digital_operand_contract=dict(schedule=c.get('schedule_policy','legacy'),
                 operand_capacity_bytes=self.tile_pipeline.digital_capacity if self.tile_pipeline else None,
                 activation_peak_bytes=self.digital_activation_peak if self.tile_pipeline else None,
+                W8_restore=c.get('digital_w8_restore','legacy_row'),
+                FP32_block_partial_peak_bytes=self.digital_partial_peak,
+                partial_write_bytes_per_cycle=ceildiv(c['macs_per_cycle'],64)*4,
+                partial_read_bytes_per_cycle=c['vector_lanes']*4,
+                block_boundary='K64 partial output supported continuously; no extra per-block startup assumed',
                 local_weight_read_bytes_per_cycle=c['macs_per_cycle']*2,
                 timing='local operand throughput absorbed in configured MAC rate; not STA calibrated',
                 area_mm2=None,energy_J=None),

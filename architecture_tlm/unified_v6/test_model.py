@@ -82,7 +82,7 @@ class FullGraph(unittest.TestCase):
         c,m=self.case('w8','exact');c['weight_chunk_bytes']=2048
         r=FullDecode(c,m).run()
         self.assertGreater(r['DRAM']['traffic']['weight_scales_physical_bytes'],0)
-        self.assertEqual(r['actions']['weight_scale_op'],2*m['intermediate_size']+m['hidden_size'])
+        self.assertEqual(r['actions']['weight_scale_op'],2*m['intermediate_size']*((m['hidden_size']+63)//64)+m['hidden_size']*((m['intermediate_size']+63)//64))
 
     def test_all_modes_have_all_decoder_phases(self):
         for mode in MODES:

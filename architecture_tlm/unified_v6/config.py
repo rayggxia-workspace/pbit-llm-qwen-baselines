@@ -12,6 +12,7 @@ def load(model='qwen', legacy=False):
     shape = model_record['shape']
     cfg = dict(core_hz=100000000, context_tokens=2048, decode_tokens=1, seed=0,
         macs_per_cycle=512, mac_startup_cycles=2, vector_lanes=64,
+        digital_w8_restore='block64',
         nonlinear_lanes=16, weight_chunk_bytes=65536, double_buffer=True,
         trace_event_limit=80, row_receipt_limit=16,
         ffn=dict(mode='sc', bins=4, samples=32, strata=32, engines=8,

@@ -5,7 +5,7 @@ from architecture_tlm.unified_v6.run import source_record
 
 def main():
  work=root/'work/jieruiz/186';record=source_record();head=record['commit']
- for rel in ['work/jieruiz/186/run_schedule_case.py','work/jieruiz/186/RUN_MATRIX.json']:
+ for rel in ['work/jieruiz/186/run_schedule_case.py','work/jieruiz/186/RUN_MATRIX.json','work/jieruiz/186/W8_CORRECTED_MATRIX.json']:
   p=root/rel;data=p.read_bytes();assert subprocess.check_output(['git','show',head+':'+rel],cwd=root)==data
   record['files'][rel]={'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)}
  record['scope']='frozen Issue186 synthetic full-model schedule; no model weights or test corpus'

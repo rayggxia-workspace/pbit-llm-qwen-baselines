@@ -1,3 +1,14 @@
+2026-10-25 新基线：[理想读出20k的定时分层报告](results/ideal_20261025/REPORT.html)，[逐案例摘要](results/ideal_20261025/SUMMARY.json)，[输入/配置/归档索引](results/ideal_20261025/ARCHIVE_INDEX.json)。225案例、6单测、8956项核验通过；1us原始时序、四个固定冷启动窗口、不触发默认1s周期换种。执行源/输入分别按SHA冻结。理想输入不消除GF64的固定联合相关；无新模拟电路、RTL、PPA或LLM实验。旧189案例按原协议保留。
+
+复现新协议（输出目录必须全新，Python>=3.10 + NumPy；绘图另需matplotlib）：
+
+```powershell
+python -m unittest architecture_tlm.random_service.quality.test_ideal_readout -v
+python -m architecture_tlm.random_service.quality.ideal_readout --input <ideal_and_old_20000_v1目录> --out <新结果目录> --raw-out <新NPZ目录>
+python -m architecture_tlm.random_service.quality.audit_ideal <新结果目录>
+python architecture_tlm/random_service/quality/report_ideal.py <新结果目录>
+```
+
 # 随机源质量随层级变化：可执行首轮诊断
 
 2026-10-23采样间隔纠正：[旧比较器慢速采种复核](results/sampling_review_20261023/REPORT_ZH.txt)。原0.72～0.74只对应0.5us；同一波形10us固定lag为0.027～0.052。旧主链覆盖不足，不能据此否定慢速采种；换种周期不等于物理bit间隔。新增72条后处理记录，原189案例/报告原字节保持。

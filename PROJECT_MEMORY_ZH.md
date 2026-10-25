@@ -1,3 +1,11 @@
+## 2026-10-25 Issue95：理想读出20k的定时分层质量
+
+用户同意等待实际比较器数据时，先用三条理想阈值读出做基线。task/95-ideal-quality-20261025，tmp/rng-ideal-quality-issue95-20261025，base d6d33995754fcdcea99286e4ce43f91647aa231a；执行本地提交 bdbab3e38ff56e267783af9ac327dbba67a0e169，冻结5文件SHA。已有ideal_and_old_20000_v1三seed32003/32009/32027，各20000bit、1us，仍带旧比较器负载；无新Spectre。216主例+9重复种子对照全完成，每端点4096帧；四个固定5000bit冷启动段，不是12独立物理轨迹，也不触发默认1e8拍/1s周期换种。
+
+理想原始rho1 −0.0037～0.0101，V128为1.208～1.596，不能凭lag1认定IID。VN理想保留约25%；旧比较器VN保留约12%，仍负rho1 −0.236～−0.187。分发逐bit保持，仅截断包末尾；LFSR每端32状态bit，Bivium192总线bit→177状态bit/15丢弃。理想直通双端首次请求63.03us/383.08us，VN为213.03～275.03us/1461.08～1617.08us。GF64前四路q128 XOR恒0，理想直通q4恰一路命中0.685～0.706，对比IID约0.371；Bivium q13约0.362～0.396，对比约0.377。较好种子不消除固定联合关系，PRNG不增加物理熵。
+
+6单测、8956项可复现审计、独立只读复核及1280/390浏览器检查通过。归档project_archives/rng_ideal_quality_20261025（225NPZ、完整JSON、执行bundle、源码zip）；中央run rng-ideal-quality-95-20261025，仅DESIGN_PROOF/PPA未知。报告architecture_tlm/random_service/quality/results/ideal_20261025/REPORT.html，本机远端上传/rng_ideal_quality_20261025.html。HANDOFF/PUBLICATION位于work/rayggxia/95/ideal_quality_20261025；发布状态以回执为准，未自动合并/关闭Issue95。当前在仿真的物理任务Issue184/PR185及他人Issue152只读未改；Projects待有权限者同步。
+
 ## 2026-10-24 第十轮PR审核（发布前冻结）
 
 负责人jieruiz；Issue55；review/55-pr-round10，目录tmp/pr55-review-round10-20261024，base e1b23d77，目标TLM集成分支。161/164/165/166按设计或带限制工艺阶段交付通过；60单测、50原件/2087归档成员、34功耗窗口核验通过，台账56条。161没有训练器/训练结果；digital仍有库表外推，counter活动不全且仅M1，CIM随机源四项翻转率不符失败。163有部分非Base结果但HellaSwag/最终汇总/功耗待补，160仍草稿；六个旧Base PR继续迁移门禁。本地审核已完成、准备推送合并，实际状态以Issue55最终回执为准。main保持fae1298；没有新GPU/EDA作业。报告work/jieruiz/55/round10/REVIEW_ZH.md，归档project_archives/pr_review_issue55_round10_20261024；后续核验发布并回收本轮稀疏副本，其他成员/原始归档不动。Projects未确认写权限，待维护者同步。

@@ -54,3 +54,5 @@ python digital_circuit_simulation_registry/registry.py render
 Issue95分层随机质量189案例已通过PR134发布（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/134，待审未合并），run `rng-quality-95-20261023` 为DESIGN_PROOF，不能当作新RTL/PPA或熵认证；其他并行记录保持。
 
 Issue152长记录准备脚本见[PR156](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/156)，physical-rng-long-152-prepared仅记录脚本准备，实际Spectre未运行。第九轮合并回执与50条记录核验见work/jieruiz/55/round9/REVIEW_ZH.md及Issue55。
+
+2026-10-25 Issue95新增 `rng-ideal-quality-95-20261025`：理想/旧比较器20k定时回放225例、6测试/8956核验；DESIGN_PROOF，无新RTL/PPA。归档和限制见对应record；并行记录保持，不能整目录覆盖其他任务增量。

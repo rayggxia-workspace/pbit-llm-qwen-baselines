@@ -1,3 +1,7 @@
+## 2026-10-25 Issue95 / PR188 全路相关性增量已发布
+
+新增18物理播种长流＋18同形状IID对照已上传PR188，远端科学提交2fa6e67a216b9e59e96918f66f3dcc852a12a2c8；tree2649f52c96b7a6048d466437fa4c67ca462c21bd与本地317b1fe7逐文件相同。此前225例保留。报告与CSV已在远端上传/目录交付；中央run rng-correlation-95-20261025，分支58/root66记录check通过，180份CSV矩阵对源NPZ一致。PR开放待审，未合并，不关闭Issue95；Projects待有权限维护者同步。准确发布/恢复入口work/rayggxia/95/correlation_20261025/PUBLICATION.json及RECOVERY_INDEX.json。三个物理noise seed非空间通道，1s周期换种未触发，GF64联合结构问题仍保留。
+
 ## 2026-10-25 Issue95：全路时间／空间相关长流已完成
 
 用户要求具体数据，接续同PR188/分支task/95-ideal-quality-20261025、tmp/rng-ideal-quality-issue95-20261025。执行源2dd9ec33fa321174f3891b0cd684bc5aac4b589a，7执行文件及本机C++二进制SHA冻结。已有三条Spectre理想阈值序列各20k/1us，raw/VN两路径、三后端、两个实例；18物理播种案例+18同形状PCG64统计对照，每路连续131072帧，100MHz约1.31072ms。只按需消费启动种子前缀，不把全20k都说成驱动输出；默认1s换种未触发。没有同时物理阵列通道，物理空间相关留空，不能把三个noise seed充作空间lane。

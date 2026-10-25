@@ -1,3 +1,15 @@
+# Issue186 共同调度探索（2026-10-25T05:33:14.297869+00:00）
+
+负责人 jieruiz；分支 `task/186-mature-scheduling`，依赖 PR183 / `0341b4ac`，拟 PR base `task/182-memory-hierarchy`，不自动合并。
+
+- 已实现：共同有限 tile 生命周期、数字本地 operand 容量、SG DMA、严格 DRAM actor 单向时间；旧103项回归通过。
+- 实际验证：SG gate2938；真实DRAMSys十项联调2942完成并核SHA。2941的小fixture候选预算失败保留，修正后未改变生产默认8块。
+- 运行中：Slurm2943，31个完整36层Qwen3-4B合成decode/2K或8K对照，20并发CPU，不占GPU。冻结执行 `bab9721d629df643e4096f5111a0a4ac5722ed3e`；远端 `/home/Hongjie_Zeng/projects/pbit-scheduling-issue186-20261025/full_bab9721d/`。
+- 尚未完成：完整结果核验、最新ONNXim原生probe、最终报告/发布；不要把提交作业写成结果完成。
+- 不涉及PPL/训练/新RTL/PT；数字吞吐、互连和未标定宏PPA仍保留边界。只读旧116/123暂停工作。
+- #187由rayggxia维护论文证据矩阵，范围独立。项目看板缺read:project，待同步。
+- 下一步：读取HANDOFF和最新Issue186，按封存manifest与SHA收集完成项，不修改运行中source、不重复健康作业。
+
 # 当前Issue186：成熟调度接入探索
 
 负责人jieruiz；task/186-mature-scheduling；依赖PR183/0341b4ac，进行中未发布。根目录tmp/mature-scheduling-issue186-20261025，交接work/jieruiz/186/HANDOFF.md。普通数字与SC共同tile、SG及上游调度探针正在实现。

@@ -139,6 +139,7 @@ class LocalityFFN(LatestFFN):
         # Offline retiled layout follows this schedule. Every logical K64/O64
         # weight block is fetched exactly once, with its own scale coefficient.
         offset=coef_offset=0
+        ticket=None
         for kw in range(0,K,R):
             stop=min(K,kw+R)
             t=o.mem.transfer(t,code_base+kw*code_bytes,(stop-kw)*code_bytes,False,'locality_code_window')
@@ -149,7 +150,6 @@ class LocalityFFN(LatestFFN):
                 for k in range(kw,stop,self.q):
                     kg=min(self.q,stop-k);size=n*kg*64;lt=n//64*kg
                     jobs.append((j,n,k,kg,offset,size,coef_offset,lt));offset+=size;coef_offset+=lt*4
-            ticket=None
             for index,(j,n,k,kg,off,size,co,lt) in enumerate(jobs):
                 if k==kw:
                     if kw:
@@ -164,6 +164,13 @@ class LocalityFFN(LatestFFN):
                 if index+1<len(jobs):
                     jj,nn,kk,kkg,oo,ss,cc,ll=jobs[index+1]
                     next_ticket=self.issue(start,name,oo,ss,dict(k=kk,j=jj,n=nn))
+                elif stop<K:
+                    # Weight addresses do not depend on loading the next code
+                    # window. Preserve PR183/190 cross-group DMA overlap.
+                    nn=min(width,O);kkg=min(self.q,K-stop)
+                    next_ticket=self.issue(start,name,offset,nn*kkg*64,
+                        dict(k=stop,j=0,n=nn))
+                    self.locality_counts['cross_window_prefetches']+=1
                 t=end
                 # Preserve per-K64 restoration and ascending K rounding order.
                 for g in range(kg):
@@ -200,6 +207,7 @@ class LocalityFFN(LatestFFN):
     def report(self):
         result=super().report()
         result.update(locality_config=self.c,locality_counts=dict(self.locality_counts),
+            cross_window_prefetch=True,
             random_candidate_status='bounded context-bank macro; not actual Issue95 FFN endpoint execution',
             retile_status='offline K64 blocks reordered; coefficients remain per original K64/O64 block',
             numerical_status='local integer reduction order validated separately; full GU compiler and PPL remain pending')

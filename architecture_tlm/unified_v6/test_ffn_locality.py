@@ -101,4 +101,9 @@ class LocalityContracts(unittest.TestCase):
         c,m=case();c['ffn']['locality']['tile']=128;c['ffn']['locality']['retain_k64_groups']=3
         with self.assertRaises(ValueError):FullDecode(c,m)
 
+    def test_prefetch_crosses_every_window_boundary(self):
+        c,m=case(retain=2);r=FullDecode(c,m).run()
+        self.assertEqual(stats(r)['cross_window_prefetches'],(4//2-1)+(8//2-1))
+        self.assertFalse(r['tile_pipeline']['sc']['pending'])
+
 if __name__=='__main__':unittest.main()

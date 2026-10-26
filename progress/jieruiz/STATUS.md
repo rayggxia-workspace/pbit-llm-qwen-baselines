@@ -1,3 +1,5 @@
+发布确认（2026-10-27）：计数器/真实门控/数字校准清单已推送PR192并回读原字节，提交623f0236dfa68853e16e7ae8a6155a0d8fa9b70b；Issue186/193已同步，PR仍待审、未合并。没有新RTL/ICG/PT或数字校准结果。回执work/jieruiz/186/COUNTER_PLAN_PUBLICATION.json。
+
 # 2026-10-27 计数器/门控/数字校准清单：本地完成
 
 本人Git认证jieruiz；task/186-local-pipeline，PR192 base main d83eeb1f，任务目录tmp/ffn-local-pipeline-issue186-20261025。仍open/unmerged；具体上传回执见work/jieruiz/186/COUNTER_PLAN_PUBLICATION.json。

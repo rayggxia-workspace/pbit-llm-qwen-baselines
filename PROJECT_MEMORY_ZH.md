@@ -1,3 +1,5 @@
+发布确认（2026-10-27）：计数器/真实门控/数字校准清单已推送PR192并回读原字节，提交623f0236dfa68853e16e7ae8a6155a0d8fa9b70b；Issue186/193已同步，PR仍待审、未合并。没有新RTL/ICG/PT或数字校准结果。回执work/jieruiz/186/COUNTER_PLAN_PUBLICATION.json。
+
 ## 2026-10-27 用户确认：计数器重构、真实门控、数字校准为下一优先级
 
 负责人jieruiz；Issue186/PR192保存总体清单，接续Issue193/133计数器和Issue107数字校准；不重复任务。本轮只审计/整数验证/记忆归档，没有新RTL、真实ICG、PT或校准完成。报告architecture_tlm/clock500_resource_20261026/COUNTER_GATING_DIGITAL_TODO_ZH.md与COUNTER_DERIVATION.json。

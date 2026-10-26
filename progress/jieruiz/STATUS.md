@@ -1,3 +1,5 @@
+发布确认（2026-10-26）：500MHz/门控科学结果已推送并远端head/tree/报告原字节核验，科学提交efbcbd44ad325435e0bf73282d95b0ff2156a434；PR192开放待审、未合并。回执work/jieruiz/186/CLOCK500_PUBLICATION.json；Issue186已同步，Projects待权限。
+
 ## 2026-10-26 Issue186 / PR192：500MHz扩资源与门控完整12项
 
 负责人jieruiz；task/186-local-pipeline，base main d83eeb1f；本地tmp/ffn-local-pipeline-issue186-20261025。CPU Slurm3124全部12项completed，执行64e0cf8a、后处理4ca97270；110统一回归＋32机制/PPA测试、36层、原件SHA、动作流量/门控寿命守恒通过。没有新PPL/RTL/PT/500MHz STA；不自动合并PR。

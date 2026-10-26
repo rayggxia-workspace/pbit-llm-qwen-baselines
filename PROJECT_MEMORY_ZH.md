@@ -1,3 +1,12 @@
+## 2026-10-27 用户确认：计数器重构、真实门控、数字校准为下一优先级
+
+负责人jieruiz；Issue186/PR192保存总体清单，接续Issue193/133计数器和Issue107数字校准；不重复任务。本轮只审计/整数验证/记忆归档，没有新RTL、真实ICG、PT或校准完成。报告architecture_tlm/clock500_resource_20261026/COUNTER_GATING_DIGITAL_TODO_ZH.md与COUNTER_DERIVATION.json。
+旧N64/B7/2048输出的六级全寄存树=8,945,664bit，最终累计301,056bit，29.7倍；面积209.803mm²是旧B7/M8宏复制。TLM旧512bit/lane少报8.53倍，但PPA已用实际宏，不能再放大面积。主候选提前按固定2幂档移位、合并为单树单累计：六级流水2,826,240bit；若STA允许仅2/4/6级寄存则970,752bit，累计67,584bit。只是在现restore公共coeff/RNE合同下的精确结构推导，不是新面积/功率结果；500MHz移位MUX/宽反馈和少流水尚未验证。
+门控仍只有TLM idle8/wake1与80%可消除idle动态假设；待真实库ICG、排空/唤醒/回压/测试及分态PT。数字仍为2pJ/MAC、向量1pJ、非线性10pJ代理；待BF16/FP32 lane+小tile、转换、exp/recip/rsqrt/LUT、RMS/RoPE/PV短链表征。旧不满足时序的数字核不可充当500MHz校准。新记录不改原12项TLM、9配置STA和18功耗窗口，不重跑已完成任务。
+还未闭合：500MHz全链路、CIM接口/CTS、宽累加功率、FFN实际随机前端计价、Ising完整开销、HBM真实能量、GU定点恢复/模型质量。当前500MHz配置是screen_pv，没有Ising。详细验收逐项在清单内，完成后同任务登记数字台账、更新TLM/STATUS/HANDOFF。发布状态见work/jieruiz/186/COUNTER_PLAN_PUBLICATION.json；无回执时仅本地完成，不自动合并。
+
+---
+
 发布确认（2026-10-26）：500MHz/门控科学结果已推送并远端head/tree/报告原字节核验，科学提交efbcbd44ad325435e0bf73282d95b0ff2156a434；PR192开放待审、未合并。回执work/jieruiz/186/CLOCK500_PUBLICATION.json；Issue186已同步，Projects待权限。
 
 ## 2026-10-26 Issue186 / PR192：500MHz扩资源与门控完整12项

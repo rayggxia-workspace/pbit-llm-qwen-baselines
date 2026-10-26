@@ -1,3 +1,12 @@
+# 2026-10-27 计数器/门控/数字校准清单：本地完成
+
+本人Git认证jieruiz；task/186-local-pipeline，PR192 base main d83eeb1f，任务目录tmp/ffn-local-pipeline-issue186-20261025。仍open/unmerged；具体上传回执见work/jieruiz/186/COUNTER_PLAN_PUBLICATION.json。
+本次改动仅设计审计、派生脚本/结果、任务清单与记忆。144个合成事件帧整数等价通过；不属于RTL验证，没有新PPA/PPL/提交作业。待办与合同见architecture_tlm/clock500_resource_20261026/COUNTER_GATING_DIGITAL_TODO_ZH.md。
+下一步接续Issue193实现合并档位归约候选、验证真实ICG，接续数字校准；500MHz需新STA。当前只记录计划，不能勾成已做。PR/Issue发布后同步，Projects依既有缺read:project待维护者操作。
+记忆同步注意：根阅读副本在本轮开始已含其他任务较新的记录，历史字节与本分支不同；本轮新增段逐字一致，保留所有原记录。未把其他任务的未公开内容推入PR192，完整镜像归并仍待专门维护；不得为追求字节一致覆盖较新记录。
+
+---
+
 发布确认（2026-10-26）：500MHz/门控科学结果已推送并远端head/tree/报告原字节核验，科学提交efbcbd44ad325435e0bf73282d95b0ff2156a434；PR192开放待审、未合并。回执work/jieruiz/186/CLOCK500_PUBLICATION.json；Issue186已同步，Projects待权限。
 
 ## 2026-10-26 Issue186 / PR192：500MHz扩资源与门控完整12项

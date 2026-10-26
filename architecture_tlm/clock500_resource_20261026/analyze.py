@@ -25,15 +25,15 @@ def main():
   for k,v in gate['resources'].items():
    assert abs(v['clock_on_ns']+v['off_ns']-gate['lifetime_ns'])<.001
   pp=estimate(r,usage_from_tlm(r),anchors)
-  pp['analysis_commit']=subprocess.check_output(['git','rev-parse','HEAD'],cwd=D.parents[1]).decode().strip()
+  pp['analysis_commit']=subprocess.check_output(['git','log','-1','--format=%H','--','architecture_tlm/clock500_resource_20261026/analyze.py','architecture_tlm/clock500_resource_20261026/ppa.py','architecture_tlm/clock500_resource_20261026/PPA_ANCHORS.json'],cwd=D.parents[1]).decode().strip()
   pp['execution_commit']=r['execution_commit']
   pp['source_sha256']={'RESULT_SUMMARY.json':sha(f/'RESULT_SUMMARY.json'),'PPA_ANCHORS.json':sha(D/'PPA_ANCHORS.json'),'ppa.py':sha(D/'ppa.py')}
   save(f/'PPA_ESTIMATE.json',pp)
   ffntime=sum(r['phase_ns'].get(k,0) for k in ('FFN_gate_up','FFN_nonlinear_encoding','FFN_AND_direct_down','ffn_output_conversion'))/1e6
   rows.append(dict(index=i,name=c['name'],TPOT_ms=r['metrics']['TPOT_ms'],core_cycles=r['metrics']['elapsed_ns']*.5,
    FFN_ms=ffntime,phase_ms={k:v/1e6 for k,v in r['phase_ns'].items()},
-   DRAM_bytes=sum(v for k,v in r['DRAM']['traffic'].items() if k in ('read_physical_bytes','write_physical_bytes')),
-   SRAM_bytes=sum(v for k,v in r['SRAM']['traffic'].items() if k in ('read_physical_bytes','write_physical_bytes')),
+   DRAM_bytes=sum(v for k,v in r['DRAM']['traffic'].items() if k.endswith('_physical_bytes')),
+   SRAM_bytes=sum(v for k,v in r['SRAM']['traffic'].items() if k.endswith('_physical_bytes')),
    priced_energy_J=pp['priced_subtotal_J'],priced_average_W=pp['priced_subtotal_average_W'],
    area_subtotal_mm2=pp['known_area_subtotal_mm2'],full_physical_power_W=None,full_physical_area_mm2=None,
    gate=pp['counter_restore_only_clock_gating'],module_PPA=pp['modules'],stage_busy_ms={k:v/1e6 for k,v in r['stage_busy_ns'].items()},

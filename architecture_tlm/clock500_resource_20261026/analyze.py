@@ -49,7 +49,14 @@ def main():
   assert ra['attention_activity']==rb['attention_activity']
   assert a['DRAM_bytes']==b['DRAM_bytes'] and a['SRAM_bytes']==b['SRAM_bytes']
  old=D.parent/'ffn_local_pipeline_20261025/results/case_2/RESULT_SUMMARY.json'
- result=dict(scope='12 sealed CPU TLM runs, 36 layers, B1 decode2K; known PPA subtotal is NOT whole chip',old_anchor={'TPOT_ms':read(old)['metrics']['TPOT_ms'],'sha256':sha(old)},rows=rows,inputs=inputs)
+ prior=read(old)
+ prior['clock_gating']={'enabled':False,'resources':{k:{'clock_on_ns':prior['metrics']['elapsed_ns'],'busy_ns':v} for k,v in prior['resource_busy_ns'].items()}}
+ prior['random_interface']={'calibrated_endpoint_two_state_energy_J':prior['energy_J']['RNG_endpoint_calibrated']}
+ old_ppa=estimate(prior,usage_from_tlm(prior),anchors)
+ old_ppa['scope']='Derived old100MHz/NL64 nongated anchor, same maximum B7-capable counter proxy; no new TLM run, RNG energy imported from original ledger, endpoint area absent from old summary.'
+ old_ppa['summary_sha256']=sha(old)
+ save(D/'OLD100_PPA_ESTIMATE.json',old_ppa)
+ result=dict(scope='12 sealed CPU TLM runs, 36 layers, B1 decode2K; known PPA subtotal is NOT whole chip',old_anchor={'TPOT_ms':read(old)['metrics']['TPOT_ms'],'sha256':sha(old),'derived_priced_J':old_ppa['priced_subtotal_J'],'derived_priced_W':old_ppa['priced_subtotal_average_W'],'area_subtotal_mm2':old_ppa['known_area_subtotal_mm2']},rows=rows,inputs=inputs)
  save(D/'COMPARISON.json',result)
  print(json.dumps([dict(name=r['name'],ms=r['TPOT_ms'],W=r['priced_average_W'],mm2=r['area_subtotal_mm2']) for r in rows]))
 if __name__=='__main__':main()

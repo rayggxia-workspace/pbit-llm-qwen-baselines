@@ -1,3 +1,13 @@
+## 2026-10-26 Issue186 / PR192：500MHz扩资源与门控完整12项
+
+负责人jieruiz；task/186-local-pipeline，base main d83eeb1f；本地tmp/ffn-local-pipeline-issue186-20261025。CPU Slurm3124全部12项completed，执行64e0cf8a、后处理4ca97270；110统一回归＋32机制/PPA测试、36层、原件SHA、动作流量/门控寿命守恒通过。没有新PPL/RTL/PT/500MHz STA；不自动合并PR。
+500MHz只提频157.595ms；再单独扩计算143.956、单独扩SRAM76.750、两者并扩NL64=63.134ms。GU64/NL128三seed：不门控64.411ms，门控64.526ms(+0.178%)；同存储普通BF16准确110.012→110.157ms。主候选32×64×64 SC、2048MAC/拍、桶256/恢复64/累加128、8MiB E宏512bank/512GBs，SRAM仍80MHz/HBM固定时序；注意力本轮仍screen_pv，未重跑Ising。
+门控保留状态、idle8拍关闭/请求1拍唤醒，存储/随机/配置总线除外。新Issue193计数M1=一个输出，32阵列2048输出；B7/M8面积复制后counter209.803mm²，已知单元+宏小计279.637mm²，不是全片面积。100MHz动态/泄漏拆分，500MHz外推，默认关钟时段80%idle动态可消除：已计价27.34→8.41W，1.761→0.543J/token；ICG/CTS/HBM/数字阵列idle及面积/本地CIM等未知。旧100MHz/NL64未门控约0.476J/1.55W/93mm²仅工程预算；提速不自动减少能量，且新旧采样数不同。完整PPA null。
+成果architecture_tlm/clock500_resource_20261026/RESULTS_ZH.md、COMPARISON.json、PPA_ANCHORS.json；记录本O15；回执work/jieruiz/186/CLOCK500_{SUBMISSION,COLLECTION,VALIDATION}.json。功耗原件POWER_RESULT SHA7e554296…10d59已关联统一台账power-recovery，现73条schema通过，无重复run。
+发布状态以CLOCK500_PUBLICATION.json为准；该文件生成并远端回读前只算本地完成。Projects缺read:project待维护者同步。恢复先核Issue/PR/HANDOFF，不重跑健康/完成任务，未价成本不能当零；下一步实现并测500MHz流水线/ICG，优化巨大计数结构与HBM供数。
+
+---
+
 # 2026-10-26 Issue186 / PR192：500MHz扩资源与门控（运行准备）
 负责人jieruiz；分支task/186-local-pipeline；base d83eeb1f；目录tmp/ffn-local-pipeline-issue186-20261025。
 已完成显式500MHz profile、32SC/2048MAC/512GBs SRAM、可选门控和RNG每动作参考能量保持；37项测试通过。即将冻结源码并提交CPU Slurm，尚无新完整结果。无新PPL/RTL/PT/500MHz STA，不自动合并PR。

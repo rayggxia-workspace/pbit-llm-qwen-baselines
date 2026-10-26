@@ -16,3 +16,5 @@ Issue186 / PR192；统一模型仍为 unified_v6。本目录增加显式实验 p
 
 运行：python -m architecture_tlm.clock500_resource_20261026.run_case INDEX --matrix ... --manifest ... --bridge ... --output ...
 提交/采集：work/jieruiz/186/submit_clock500.py、collect_clock500.py。源SHA提交后冻结；只接受completed且原件SHA一致的结果。
+
+完整12项已完成：[结果与模块PPA](RESULTS_ZH.md)、[机器可读对照](COMPARISON.json)、[周期与假设](CYCLES_AND_UNCERTAINTY_ZH.md)。

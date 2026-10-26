@@ -62,3 +62,10 @@ Issue186，分支task/186-local-pipeline，独立目录tmp/ffn-local-pipeline-is
 新目录[ffn_local_pipeline_20261025](ffn_local_pipeline_20261025/README_ZH.md)。下一权重/系数预取到第二本地bank，同输出窗口内装载覆盖计算/恢复；跨窗口保留SRAM优先次序；SC阵列、计数和恢复仍单套。不改主默认；增加32KiB权重＋32B系数及选择端口，不当免费CIM。W8/B4/GU64/NL64/R8、100MHz、8MiB64bank64GBs、HBM时序不变；128另列。
 
 完整decode407.143→315.236ms（少22.57%），bypass307.049（少24.58%）；FFN268.576→176.680→168.488ms。单层双bank4.966ms，SRAM翻倍再少3.5%，恢复/累加4倍少11.6%，阵列翻倍少20.5%，全K驻留少6.5%，NL128增19.6%。权重有效复用B1仍1，64是随机事件；原共享流量未变，bypass少5.015GiB/token，SRAM内部动态25.532→13.131mJ；整机PPA未知，HBM能量禁用。主瓶颈从串行装载转向采样/恢复，不能再把全部延迟称带宽限制。完整结果、时间线、SHA及成熟模拟器对照见新目录；真实GU数值/PPL/物理bank时序未验收。发布与PR状态见work/jieruiz/186/PIPELINE_PUBLICATION.json；未授权自动合并，Projects待权限。
+
+## O15（2026-10-26）：500MHz资源档位与保留状态时钟门控
+
+用户授权先保持原算子拍数/II，扫描计算与SRAM并行，加入成熟时钟门控。12完整36层CPU Slurm3124（执行64e0cf8a）完成，110+32测试/SHA/动作与物理流量守恒。307.049ms旧锚→仅核心500MHz157.595→扩SRAM76.750→同时扩计算NL64=63.134ms；NL128三seed64.411，门控64.526（+0.178%）。数字参考110.012→110.157ms。
+门控排空后idle8拍关，请求1拍恢复，内存/随机源保持；SRAM80MHz和HBM时序不跟核心加速。32SC、2048MAC/拍、512bank/512GBs、有限本地双bank256KiB，输出并行和后处理同步×4；不是同面积对照。旧计算预算来源与未实现吞吐详见新目录CYCLES_AND_UNCERTAINTY_ZH.md。
+新100MHz计数PPA按正确M1输出粒度回填，B7/M8×256约209.803mm²；已计价面积小计279.637mm²。500MHz条件门控80%情景小计27.34→8.41W，1.761→0.543J/token，未测ICG/500MHz/B7活动；完整物理PPA保持null。旧100MHz/NL64预算约0.476J不能被隐去，提速不保证每token省能。主候选仍screen_pv，未新测Ising。
+证据architecture_tlm/clock500_resource_20261026/RESULTS_ZH.md及COMPARISON/PPA_ANCHORS；功耗原件/台账SHA、CPU封存与验证见work/jieruiz/186/CLOCK500_*。下一步优化计数面积、实现500MHz流水线/门控，补HBM与本地存储成本。

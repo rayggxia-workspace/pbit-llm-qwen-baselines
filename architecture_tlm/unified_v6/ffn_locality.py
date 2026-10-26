@@ -174,7 +174,7 @@ class LocalityFFN(LatestFFN):
                 t=end
                 # Preserve per-K64 restoration and ascending K rounding order.
                 for g in range(kg):
-                    t=self.macro(t,'SC_bucket_shift_reduce',n*B,64,3)
+                    t=self.macro(t,'SC_bucket_shift_reduce',n*B,f.get('bucket_reduce_lanes',64),3)
                     t=self.macro(t,'SC_coefficient16_restore',n,f['restore_lanes'],f['restore_latency'])
                     t=o.s.reserve('locality_accumulator_update',t,
                         batch_cycles(n,f['accumulate_lanes'],f['accumulate_latency'])*o.period,

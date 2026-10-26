@@ -1,3 +1,10 @@
+# 2026-10-26 Issue186 / PR192：500MHz扩资源与门控（运行准备）
+负责人jieruiz；分支task/186-local-pipeline；base d83eeb1f；目录tmp/ffn-local-pipeline-issue186-20261025。
+已完成显式500MHz profile、32SC/2048MAC/512GBs SRAM、可选门控和RNG每动作参考能量保持；37项测试通过。即将冻结源码并提交CPU Slurm，尚无新完整结果。无新PPL/RTL/PT/500MHz STA，不自动合并PR。
+成果architecture_tlm/clock500_resource_20261026；回执work/jieruiz/186/CLOCK500_SUBMISSION.json存在且确认后才视为已提交。看板缺read:project待同步。
+
+---
+
 # Issue186 本地权重双bank续作（2026-10-25）
 
 科学交付HEAD `22432ffffa9f3af600a9288be5d9212bd68f2e98`；PR192，45个远端blob原字节核验通过；后续提交仅同步发布回执。

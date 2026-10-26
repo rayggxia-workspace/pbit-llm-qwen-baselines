@@ -83,11 +83,11 @@ def bitplane_reference(weights, codes, thresholds, bins):
 
 
 class FullDecode:
-    def __init__(self, config, shape):
+    def __init__(self, config, shape, scheduler=None):
         self.c, self.m = copy.deepcopy(config), copy.deepcopy(shape)
         c, m = self.c, self.m
         self.period = 1e9/c['core_hz']
-        self.s, self.e = Scheduler(c['trace_event_limit']), Ledger(c['prices_pJ'])
+        self.s, self.e = (scheduler if scheduler is not None else Scheduler(c['trace_event_limit'])), Ledger(c['prices_pJ'])
         if c['attention']['mode'] not in MODES or c['ffn']['mode'] not in ('bf16', 'w8', 'sc'):
             raise ValueError('unknown operator mode')
         f = c['ffn']

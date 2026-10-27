@@ -83,7 +83,7 @@ def bitplane_reference(weights, codes, thresholds, bins):
 
 
 class FullDecode:
-    def __init__(self, config, shape, scheduler=None):
+    def __init__(self, config, shape, scheduler=None, memory_factory=None):
         self.c, self.m = copy.deepcopy(config), copy.deepcopy(shape)
         c, m = self.c, self.m
         self.period = 1e9/c['core_hz']
@@ -107,7 +107,7 @@ class FullDecode:
         calibration_path = TLM/c['sram']['calibration']
         calibration = json.loads(calibration_path.read_text(encoding='utf-8'))
         spec = macro_lookup(calibration, c['sram']['macro_depth'], c['sram']['word_bytes']*8, c['sram']['corner'], c['sram']['clock_hz'])
-        self.mem = SRAM(c['sram'], spec, self.s, self.e)
+        self.mem = (SRAM if memory_factory is None else memory_factory)(c['sram'], spec, self.s, self.e)
         self.calibration_sha = sha(calibration_path)
         self.arena = Arena(c['sram']['capacity_bytes'])
         chunk = c['weight_chunk_bytes']

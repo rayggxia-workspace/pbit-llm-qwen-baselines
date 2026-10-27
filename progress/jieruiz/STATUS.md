@@ -1,3 +1,13 @@
+## 2026-10-27 Issue186：共享SRAM分slice原型
+
+用户要求带宽约束落到具体端口/链路，接续task/186-local-pipeline/PR192，复用tmp/ffn-local-pipeline-issue186-20261025。核实shared sram_fabric全局锁＋所有bank整描述符锁/CDC是限制，本地CIM/寄存器已绕过。新sliced_sram_20261027可选factory，默认不改；4×128bank、每bank80MHz16B单端口、4×128GB/s读写合计链路，原8MiB和512GB/s保持。
+
+legacy/分slice描述符/有限beat三对照；beat双credit每slice2×2KiB，新增16KiB payload FIFO显式列为未价硬件成本，无无限缓冲。bank12.5ns发起周期、access延迟与网络/CDC20ns分开，credit按实际在途区间预约，可回填早到空隙。相同bank/link/endpoint排队，不做免费全双工或重排/广播。Ising sink未拆beat，配置明确不支持。
+
+42测试（新增10）已通过，含算术/实际字节/能量/状态守恒和无重叠。下一步冻结6个一层Qwen3-4B全形状/词表实际DRAMSys SC/BF16公平对照；不是36层TPOT，无完成数字时不报加速。执行以SRAM_SLICE_SOURCE/SUBMISSION/COLLECTION为准，不重复旧任务。资料和来源README_ZH.md；不自动合并，Projects待权限。
+
+---
+
 发布确认（2026-10-27T09:40:24.289300+00:00）：功耗重算已上传PR192，科学提交4278dfed5ea5f2d97a53ea66521da366026ed602，6个关键远端文件原字节一致；Issue186已同步，待审未合并。回执work/jieruiz/186/ENERGY_RECALIBRATION_PUBLICATION.json。无新TLM/EDA/PPL，Projects待权限。
 
 ## 2026-10-27 Issue186：最新随机版能耗重算（发布状态见回执）

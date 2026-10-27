@@ -1,3 +1,15 @@
+# 2026-10-27 新PPA汇总（Issue110）
+
+jieruiz；task/110-ppa-summary-20261027；base main d83eeb1f；复用tmp/circuit-registry-issue110-20261022；旧PR111已合并，旧任务分支2b7935f4保留。本次新PR发布状态见PPA_SUMMARY_PUBLICATION.json，不能用旧111回执代表本次完成。
+
+16原始报告归档SHA重算228正式窗口（150＋78），两条run已有，更新矩阵complete，不增重复run；78条schema通过，其他记录不变。04汇总、76模式与228窗口CSV已生成，X4超表负结果和smoke保留。已从服务器只读收齐，无新仿真/训练/PPL，无本任务运行作业。
+
+主入口digital_circuit_simulation_registry/04_最新功耗面积汇总.md；REGISTRY_UPDATE/PPA_SUMMARY_VALIDATION记录验证。正式PR仅目标两个record与汇总，根其余78聚合/private pending历史不混入main。根00/01/02/03和归档表已更新；汇总文件与本机固定入口同字节。当前TLM参数没有自动替换；后续按边界选择活动/idle/泄漏和调用次数，500MHz、大负载和完整采样反馈另表征。
+
+下一步审核本次表/PR，再按任务回填TLM；不重跑已完成EDAs，不编辑95/193别人的工作目录或STATUS。Projects待维护者同步，不自动合并。
+
+---
+
 ## 2026-10-25 第十一轮实际合并回执
 
 PR183已合入main（a73a75ce0566f5fff0b8c38fcb03d04961885f76），PR190最终审核291c437a已合入main（f8a861487170c2cd65bc9ecb95eb3e4f72b863be）。旧008b0227之后的七文件增量仅文献与派生分析，输入SHA和派生文档重现通过，执行代码/配置/原结果未变；110回归与18小形状测试无需重复冒充新实验。正式入口architecture_tlm/BASELINE_ZH.md；默认DDR4、HBM显式对照、R8/128/资源扩容候选分开。PR181历史回执与本轮审核/入口文档将由review/55-pr190-main交付main，最终文档PR及SHA见Issue55。后续质量用Instruct/后训练模型；真实质量、GU数值闭环、物理PPA未验收。其余17PR仍待完整审核。

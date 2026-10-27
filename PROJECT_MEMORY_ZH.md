@@ -1,3 +1,15 @@
+## 2026-10-27 Issue110：新PPA统一汇总，正式228窗口已收齐
+
+用户要求整理8位核/ICG/计数/数字功耗面积并更新文件夹。接续Issue110，jieruiz，task/110-ppa-summary-20261027，main d83eeb1f；复用干净tmp/circuit-registry-issue110-20261022，保留旧已合PR111分支/提交，不新建全量副本。正式8位38427136为10PVT设计/150窗口，现场只读确认38427740无门控四设计＋38428144 X8两设计也已calculated共78窗口；共228，16份原始报告归档逐SHA并重算三seed均值，全物理引脚/叶100%/STA非负/门控检查通过，保留库表与check_power告警。
+
+SS100均值：8位LT37.44um²/1.728333uW；q25639.60/1.845667；组合LUT343.80/8.045333；寄存LUT464.04/16.783333；融合端405.36/11.376667。六级counter g0/g2面积34268.40/34280.28，continuous1210/1277.667uW，idle638.9/53.96；三级g0/g2面积27194.04/27205.92，continuous677.567/703.867，idle254.7/42.07。三级较六级面积少20.64%、连续功率少44%；门控idle分别少91.55%/83.48%，连续开销+5.59%/+3.88%。X4负载超表仍负结果，正式采用X8、单元11.88um²。
+
+新FP32add8951.04um²、588.833uW/326.533idle、5.888333pJ/add，L7/II1、SS100 setup+.634521；非融合BF16/FP32MAC20523.6um²、1330.667uW/837.633idle、13.306667pJ/MAC，L14/独立II1、setup+.607954。数字仍CE无ICG；不将100MHz推为500，复用整服务价格不重复加比较器/LUT。本轮未自动改TLM价表或时序，无新仿真。
+
+固定入口digital_circuit_simulation_registry/04_最新功耗面积汇总.md；summaries/20261027含16设计/76模式价格/228窗口CSV/源SHA。更新既有calibration-v2-193-icg100-20261027为正式矩阵完成，保留原smoke/X4；rng-pbit8-ppa95-38427136不重复建run，root仍78条。00/01/02/03及归档索引已更新，其他record SHA不变。此次PR只带目标两条record和汇总，不把未公开的完整聚合历史复制到main。发布以work/jieruiz/110/PPA_SUMMARY_PUBLICATION.json为准；Projects待权限，Issue110保持open等待验收，不自动合并。
+
+---
+
 ## 2026-10-25 第十一轮实际合并回执
 
 PR183已合入main（a73a75ce0566f5fff0b8c38fcb03d04961885f76），PR190最终审核291c437a已合入main（f8a861487170c2cd65bc9ecb95eb3e4f72b863be）。旧008b0227之后的七文件增量仅文献与派生分析，输入SHA和派生文档重现通过，执行代码/配置/原结果未变；110回归与18小形状测试无需重复冒充新实验。正式入口architecture_tlm/BASELINE_ZH.md；默认DDR4、HBM显式对照、R8/128/资源扩容候选分开。PR181历史回执与本轮审核/入口文档将由review/55-pr190-main交付main，最终文档PR及SHA见Issue55。后续质量用Instruct/后训练模型；真实质量、GU数值闭环、物理PPA未验收。其余17PR仍待完整审核。

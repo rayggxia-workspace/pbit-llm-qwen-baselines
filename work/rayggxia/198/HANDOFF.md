@@ -1,3 +1,5 @@
+已发布：草稿PR199（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/199），科学提交5fad0fc32f5284560c38c03f4fe28657f936f553；7关键文件远端逐字回读、完整Git tree和本地相同SHA导入通过。Issue198评论6443236705；待审未合并，广泛验收仍开放。PUBLICATION.json为准确回执。
+
 # Issue198交接
 
 2026-10-27，rayggxia。用户指定两份Attention资料后，本轮完成第一阶段可运行代码与功能仿真。任务更广泛的验收保持open；准确发布状态见PUBLICATION.json，不能用本文件的本地完成冒充已合并。

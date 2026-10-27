@@ -20,6 +20,7 @@ class LocalPipelineFFN(LocalityFFN):
         self.opt=owner.c.get('local_pipeline',{})
         self.overlap=self.opt.get('overlap',True)
         self.bypass=self.opt.get('weight_bypass',False)
+        self.cross_window_program=self.opt.get('cross_window_program',False)
         c=owner.c['sram'];supply=min(c['fabric_GBs'],c['banks']*c['word_bytes']*c['clock_hz']/1e9)
         if not self.bypass and self.f['local_weight_load_bytes_per_cycle']/owner.period<supply:
             raise ValueError('shared receiver requires explicit SRAM throttling; no implicit FIFO')
@@ -165,9 +166,10 @@ class LocalPipelineFFN(LocalityFFN):
             next_ticket=None
             if index+1<len(jobs):
                 nxt=jobs[index+1];next_ticket=self.issue_local(start,name,nxt)
-                if self.overlap and nxt[0]==kw and nxt[2]==j:
+                if self.overlap and ((nxt[0]==kw and nxt[2]==j) or self.cross_window_program):
                     self.program(start,next_ticket)
                     self.stats['early_programs']+=1
+                    if nxt[0]!=kw or nxt[2]!=j:self.stats['cross_window_early_programs']+=1
                     self.stats['program_compute_overlap_ns']+=max(0.,min(end,next_ticket['program_done_ns'])-max(start,next_ticket['program_start_ns']))
                 else:self.stats['boundary_or_disabled_deferred_programs']+=1
             t=end
@@ -200,7 +202,7 @@ class LocalPipelineFFN(LocalityFFN):
             bank_capacity_bytes=self.bank_capacity,coefficient_bank_bytes=self.coef_capacity,
             max_weight_response_bytes=self.bank_capacity,max_coefficient_response_bytes=self.coef_capacity,
             logical_job_order_sha256=self.order_hash.hexdigest(),logical_frame_order_sha256=self.logical_frames.hexdigest(),
-            contract='two local weight/coefficient banks; one SC/counter/restore pipeline; preprogram only within output window; boundary SRAM priority preserved',
+            contract=('two local weight/coefficient banks; one SC/counter/restore pipeline; next inactive bank may preprogram across output/input windows' if self.cross_window_program else 'two local weight/coefficient banks; one SC/counter/restore pipeline; preprogram only within output window; boundary SRAM priority preserved'),
             energy_J=None,area_mm2=None,actual_endpoint_executed=False,
             seed_note='same logical frame sequence; wall-clock reseed epoch may differ, no bitwise endpoint equivalence claim')
         return r

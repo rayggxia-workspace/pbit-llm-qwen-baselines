@@ -161,8 +161,8 @@ class FullDecode:
         policy=c.get('schedule_policy','legacy')
         if policy not in ('legacy','shared_tiles'):raise ValueError('unknown schedule policy')
         self.tile_pipeline=TilePipeline(self) if policy=='shared_tiles' else None
-        if c.get('digital_shared_prefill',False) and (policy!='shared_tiles' or f['mode']!='bf16'):
-            raise ValueError('digital shared prefill currently validated for full BF16 reference only')
+        if c.get('digital_shared_prefill',False) and (policy!='shared_tiles' or f['mode']=='w8'):
+            raise ValueError('digital shared prefill requires BF16 matrix operands: BF16 reference or SC FFN with BF16 ordinary projections')
         self.digital_activation_peak=0;self.digital_partial_peak=0
         if c.get('digital_w8_restore','legacy_row') not in ('legacy_row','block64'):
             raise ValueError('unknown W8 scale restoration contract')

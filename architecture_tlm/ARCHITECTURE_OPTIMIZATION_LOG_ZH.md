@@ -79,3 +79,11 @@ Issue186/PR192；[最终报告](scheduling_v2_20261027/FINAL_RESULTS_ZH.md)。Qw
 组合三seed平均64.411267→57.445385ms/token，少10.81%；seed0 FFN25.4916→25.2070ms，普通投影/lm_head29.8444→23.1709ms。主收益属于普通部分供数，不能归为随机乘法本身10.8%提升。同seed动作/采样/帧顺序/物理字节/数据状态相同；控制PPA和完整能量待校准。
 
 负面结果和第一轮未删除。剩余：单macro DMA及批间排空、SRAM整描述符占用、SC恢复串行、旧数字L/II；下一步数字基线同样优化后再做公平比较。Git只留小汇总和manifest，原件在个人服务器；两个输入包唯一归档和恢复SHA见SCHEDULE_PACKAGE_ARCHIVE。上传与PR状态查work/jieruiz/186/SCHEDULE_V2_PUBLICATION.json。
+
+## O17 既有电路价格回填和随机版能耗重算（2026-10-27）
+
+沿Issue186/PR192，对O16封存动作重新计价，不改调度、不启动新TLM/PPL/EDA。主入口[ppa_recalibration_20261027/RESULTS_ZH.md](ppa_recalibration_20261027/RESULTS_ZH.md)。采用新三级合并计数/真实X8 ICG、单MAC/FP32加、既有PRNG/共享64/CIM前端和SRAM库表。按物理输出通道、实际动作和状态计，去除旧七桶复制/重复归约收费，保留公共恢复代理。
+
+三seed57.4454ms/token：已覆盖片上新计数CE12.7864W，计数真实ICG/数字CE10.0280W，数字门控90%空闲动态情景2.5162W（0.14454J/token）；数字工作时钟/漏电保留。旧64pJ/B+50mW外存仅粗预算另6.1661W，总候选8.6823W非HBM/整片已测。共享/局部/响应SRAM与PRNG已计，B7和500MHz仍外推。关键待补：计算/门控集成500MHz、CIM并行外围和互连、匹配HBM能量；Ising当前不启用。
+
+6份completed输入SHA、4份结果×3情景全表重建、8会计守卫通过。源价格及SHA见ANCHORS.json；统计RESULTS.json/MODULES.csv。新数字价格揭示CE-only大阵列idle占比，不能将旧2pJ动作代理与新全寿命功耗直接比较。没有新增电路run，统一台账05为派生索引。

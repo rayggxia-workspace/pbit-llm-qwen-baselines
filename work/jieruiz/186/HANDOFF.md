@@ -1,3 +1,15 @@
+## 2026-10-27 Issue186：最新随机版能耗重算（发布状态见回执）
+
+复用task/186-local-pipeline/PR192与tmp/ffn-local-pipeline-issue186-20261025；用户要求用已返回PPA重算并只列关键校准缺口。新增architecture_tlm/ppa_recalibration_20261027后处理，原TLM时序/源/封存结果不改。三seed57.4454ms、32SC/2048MAC、GU64NL128、8MiB512bank；Attention为screen_pv准确Softmax，未启用Ising。
+
+PR197新三级合并计数/B4实测按B7 RTL位数1.36947外推；真实X8计数门控、单MAC/FP32加、既有PRNG和SRAM已映射，数字单元idle不再遗漏，漏电不随频率乘5。共享/局部/响应SRAM各按物理动作分别计，随机流不存SRAM；10 NL端点已含200比较器覆盖192路，不叠收费。旧恢复作公共系数/舍入代理，不额外叠七桶归约。
+
+片上已覆盖12.7864W/0.73452J（新计数CE），10.0280W/0.57606J（计数实测ICG、数字CE）；数字候选消除90%空闲动态、保留工作时钟和漏电后2.5162W/0.14454J。数字门控尚未真实阵列校准，500MHz均固定V能量/拍外推。旧64pJ/B+50mW仅HBM粗预算另6.1661W，候选8.6823W/0.49876J不是全片已测。HBM桥仅时序、零占位电流未被误当0W；完整已校准总值仍null。已计价面积192.7mm²，非物理整片。
+
+PRNG/SRAM已有数据，不重跑本体。关键缺项三类：B7计数/公共恢复/宽部分和及数字门控500MHz集成；CIM全并行读出+阵列互连/CTS；有效HBM能量。Ising反馈仅可选路线缺项，当前不收费。6输入MANIFEST/SHA、8会计守卫通过，无新EDA/PPL/TLM时序。统一台账05_随机版功耗重算.md为索引，不重复新增电路run。发布以work/jieruiz/186/ENERGY_RECALIBRATION_PUBLICATION.json为准；Projects待既有权限，PR不自动合并。
+
+---
+
 发布确认（2026-10-27）：调度11项完整结果已上传PR192，提交f8292c87415f26d5473c5a98830e5ae6632a434c并回读4个关键blob原字节一致；Issue186已同步，待审未合并。无本任务运行作业，准确回执work/jieruiz/186/SCHEDULE_V2_PUBLICATION.json。
 
 # 2026-10-27 调度两轮已完成

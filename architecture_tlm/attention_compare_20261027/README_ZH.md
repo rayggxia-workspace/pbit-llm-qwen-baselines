@@ -64,3 +64,8 @@ Icarus10.1在Windows沙箱内WinError623，已通过自动审批在沙箱外完�
 精确输入/源码/文献入口见work/rayggxia/198/INPUTS.json。原始逐case结果、事件、比特轨迹与编译日志在RAW_ARCHIVE.json指向的本地ZIP，逐成员SHA已核；Git保留小型汇总和manifest。后续优先绑定RTL时序与源接口、用后训练真实QKV验证质量，再扩GQA和D1/存储/成本。
 
 统一台账本任务仅新增attention-rejection-198-20261027。main尚无完整registry工具，聚合check/render在本人辅助目录进行，并增量同步根阅读镜像；依赖PR197不混入本PR。Projects权限未核实/待维护者同步。发布回执见PUBLICATION.json；PR待审不关闭Issue。
+
+
+## 2026-10-27 完整反馈与仲裁电路v2
+
+新增[专门报告](control_v2/README_ZH.md)：124RTL项、3门级回放、8个55nm库映射面积。这是控制边界的新证据，STA/PT/完整Attention能耗仍未知；上述v1冻结结果保持原标注。

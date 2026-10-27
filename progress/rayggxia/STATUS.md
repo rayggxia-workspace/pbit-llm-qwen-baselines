@@ -1,3 +1,5 @@
+2026-10-27 控制v2本地完成，上传状态见CONTROL_PUBLICATION.json（尚未生成即未确认发布）。完整赢家/拒绝反馈仲裁RTL、8固定PPA top、独立oracle/数学检查、DC/PT脚本在control_v2。124RTL项422800拍及3个cap64零延迟门级1920拍通过，8个55nm SS映射0.018058–0.056112mm²；STA/功耗未跑，不把TB100MHz当时序通过。源码/原字节/公开包/台账/记忆同步见CONTROL_*。保留G16融合/两级及G32候选待STA；源供给/完整V链/后训练QKV/GQA/D1仍待补。无运行中GPU/Slurm/许可EDA作业；PR199草稿、未合并。
+
 已发布：草稿PR199（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/199），科学提交5fad0fc32f5284560c38c03f4fe28657f936f553；7关键文件远端逐字回读、完整Git tree和本地相同SHA导入通过。Issue198评论6443236705；待审未合并，广泛验收仍开放。PUBLICATION.json为准确回执。
 
 # rayggxia 当前Attention任务
@@ -12,3 +14,5 @@
 - 上传与PR状态以本任务PUBLICATION.json和最新远端为准；待审不自动合并/关闭。Projects权限未核实，待维护者同步。
 - 尚未完成：RTL时序绑定PR88源/配置合同；D1成熟整数/ITA移植、赢家RTL及完整V链、GQA调度、后训练真实QKV/BF16匹配、代表STA/PT与同质量PPA。首轮不会接管186/95/193或恢复暂停116/123。
 - 下一步：按HANDOFF的可执行入口继续；复用本目录，不重复历史GPU或健康作业。此分支main无既有rayggxia STATUS，其他任务状态留原分支只读，未覆盖其他成员。
+
+控制v2原始目录已逐SHA归档后回收，释放629349369字节；保留最终小汇总与PPA源bundle。重现report.py需从CONTROL_RAW_ARCHIVE.json所指ZIP恢复对应results成员；逐成员SHA必须一致。CONTROL_CLEANUP.json记录范围，未删除其他任务/共享库。

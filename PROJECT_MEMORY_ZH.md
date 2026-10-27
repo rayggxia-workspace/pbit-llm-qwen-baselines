@@ -1,3 +1,5 @@
+发布确认（2026-10-27T10:42:13.295877+00:00）：SRAM分slice原型/八项完整对照已上传PR192，提交9109164faf256d82b4fe2541fc1ac78b493f7bae，6远端文件与16原摘要/执行字节核验通过；Issue186已同步，待审未合并。无本任务运行作业，回执work/jieruiz/186/SRAM_SLICE_PUBLICATION.json。无新PPA/36层加速结论，Projects待权限。
+
 ## 2026-10-27 Issue186：分slice SRAM八项完成，accept较旧慢约1.1%～1.2%
 
 三执行18dd259a/3169 SC三项、2adacf79/3175 BF16三项、5d543eb9/3178 accept两项全部completed/封存SHA核验；当前无本任务运行作业，不重跑。原BF16配置失败三项及cycle_end保守策略结果保留。45检查（新13）通过，8项逐数保持within算法算术、DRAM/SRAM物理字节、FFN/Attention工作和实际RNG输出SHA，16原摘要/执行字节同MANIFEST。

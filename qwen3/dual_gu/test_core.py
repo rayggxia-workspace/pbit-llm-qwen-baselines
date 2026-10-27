@@ -71,7 +71,7 @@ class CUDA(unittest.TestCase):
             enc=dict(probability=q.cuda().float()/256,scale=scales.cuda(),sign=sign.cuda())
             # Replay the SAME A counts and uniform quantiles, independent of
             # device RNG algorithms. Then test real RNG path separately.
-            with patch('qwen3.dual_gu.core.input_cells',return_value=(c.cuda(),pre.cuda())):
+            with patch('qwen3.dual_gu.kernel.input_cells',return_value=(c.cuda(),pre.cuda())):
                 y=project(enc,w.cuda(),torch.ones(1,1,device='cuda'),256,law,torch.Generator(device='cuda'),torch.Generator(device='cuda'),replay=u.cuda())
             torch.testing.assert_close(y.cpu().double(),expected,rtol=0,atol=0)
             z=project(enc,w.cuda(),torch.ones(1,1,device='cuda'),256,law,torch.Generator(device='cuda').manual_seed(1),torch.Generator(device='cuda').manual_seed(9))

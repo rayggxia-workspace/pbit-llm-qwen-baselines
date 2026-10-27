@@ -23,7 +23,7 @@ def main():
     tok=AutoTokenizer.from_pretrained(prep['local_path'],local_files_only=True)
     ids=tok(pathlib.Path(data['wiki.test.raw']['path']).read_bytes().decode('utf-8'),return_tensors='pt',add_special_tokens=False).input_ids[0]
     assert ids_sha256(ids.tolist())==prep['test_token_ids_sha256_le_int64']
-    out=root/'results'/('pilot' if a.pilot else 'main')/('shard'+str(a.shard));out.mkdir(parents=True,exist_ok=False)
+    out=root/'results'/src['commit'][:12]/('pilot' if a.pilot else 'main')/('shard'+str(a.shard));out.mkdir(parents=True,exist_ok=False)
     provenance=dict(source=src,config_sha256=sha256(HERE/'config.json'),effective_config=c,model=prep['model'],prepared_sha256=sha256(prep_path),data=data,
         fixed_xz_sha256=c['fixed_xz_calibration_sha256'],fixed_gu_sha256=c['fixed_gu_calibration_sha256'],slurm=os.environ['SLURM_JOB_ID'],shard=a.shard,
         torch=torch.__version__,gpu=torch.cuda.get_device_name(),command=sys.argv,

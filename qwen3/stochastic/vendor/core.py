@@ -23,17 +23,11 @@ WEIGHT_LEVEL = 127.0
 
 
 def quantize_int8(weight, group=GROUP):
-    """Per-64x64 symmetric INT8; returns code, decoded weight and tile scale."""
-    rows, cols = weight.shape
-    if rows % group or cols % group:
-        raise ValueError(f"weight shape {tuple(weight.shape)} is not divisible by {group}")
-    tiles = weight.float().reshape(rows // group, group, cols // group, group).permute(0, 2, 1, 3)
-    scales = tiles.abs().amax((-1, -2)).clamp_min(1e-20) / WEIGHT_LEVEL
-    codes = (tiles / scales[:, :, None, None]).round().clamp(-127, 127).to(torch.int16)
-    codes = codes.permute(0, 2, 1, 3).reshape(rows, cols).contiguous()
-    expanded = scales.repeat_interleave(group, 0).repeat_interleave(group, 1)
-    decoded = codes.float() * expanded
-    return codes, decoded.contiguous(), scales.contiguous()
+    """Offline frozen PoT64 W8; not the historical arbitrary tile-scale format."""
+    if group != 64:
+        raise ValueError('PoT64 requires 64x64 tiles')
+    from qwen3.weight_quantization.pot64 import quantize
+    return quantize(weight, bits=8)
 
 
 def encode_fixed(value, scale, bits):

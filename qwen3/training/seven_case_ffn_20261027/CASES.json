@@ -1,0 +1,171 @@
+{
+  "schema": "qwen3-ffn-seven-case-plan-v1",
+  "kind": "training_design_not_executable_runner_config",
+  "executable": false,
+  "issue": 159,
+  "dependency_issue": 177,
+  "dependency_pr": 178,
+  "model": {
+    "id": "Qwen/Qwen3-4B",
+    "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "posttrained": true,
+    "layers": 36,
+    "hidden": 2560,
+    "intermediate": 9728
+  },
+  "baseline": "B0",
+  "factor_names": [
+    "weight_bits",
+    "weight_scale_sharing",
+    "samples"
+  ],
+  "common": {
+    "weight_format": "signed-pow2-tile64-frozen-v1",
+    "weight_tile": [
+      64,
+      64
+    ],
+    "weight_scales_power_of_two": true,
+    "weight_scales_frozen_during_training_and_inference": true,
+    "weight_bits_include_sign": true,
+    "weight_scale_initializer": "cover-max ceil power-of-two on common parent at reference W8",
+    "width_ablation_preserves_fullscale_power": true,
+    "weight_lsb_rule": "k_b = k8 + 8 - b",
+    "activation_scales": "same TRAIN-calibrated fixed four-bin x/g/u tables across all cases",
+    "probability_bits": 8,
+    "input_sharing": 64,
+    "input_sampler": "IID shared-R8 exact joint law",
+    "nonlinear_sampler": "IID three independent axes per channel",
+    "sample_count_controls": [
+      "input_samples",
+      "nonlinear_samples"
+    ],
+    "down_uses_same_and_events": true,
+    "no_z_reencoding": true,
+    "or_grouping": false,
+    "stochastic_weights": false,
+    "attention": "original accurate BF16 reference",
+    "trainable_scope": "full_model",
+    "teacher": "frozen original BF16",
+    "loss": {
+      "ce": 1.0,
+      "kl": 0.5,
+      "temperature": 1.0
+    },
+    "effective_supervised_tokens_per_step": 131072,
+    "max_tokens_per_case": 100000000,
+    "training_seed": 0,
+    "deployment_seeds": [
+      101,
+      102,
+      103
+    ],
+    "curriculum": [
+      {
+        "start_token": 0,
+        "end_token": 10000000,
+        "mode": "encoded_conditional_mean"
+      },
+      {
+        "start_token": 10000000,
+        "end_token": 25000000,
+        "samples": 128
+      },
+      {
+        "start_token": 25000000,
+        "end_token": 40000000,
+        "samples": 64
+      },
+      {
+        "start_token": 40000000,
+        "end_token": 100000000,
+        "samples": "case_target"
+      }
+    ],
+    "evaluation": {
+      "primary": "full_WT2_sliding_window_PPL",
+      "window": 2048,
+      "stride": 1024,
+      "teacher_forced_raw_text": true,
+      "chat_template": false,
+      "target_forward_checkpoints_M": [
+        0,
+        10,
+        25,
+        40,
+        60,
+        80,
+        100
+      ]
+    }
+  },
+  "cases": [
+    {
+      "id": "B0",
+      "weight_bits": 8,
+      "weight_scale_sharing": "tile64",
+      "samples": 32,
+      "changed_factor": null
+    },
+    {
+      "id": "W6",
+      "weight_bits": 6,
+      "weight_scale_sharing": "tile64",
+      "samples": 32,
+      "changed_factor": "weight_bits"
+    },
+    {
+      "id": "W10",
+      "weight_bits": 10,
+      "weight_scale_sharing": "tile64",
+      "samples": 32,
+      "changed_factor": "weight_bits"
+    },
+    {
+      "id": "S1",
+      "weight_bits": 8,
+      "weight_scale_sharing": "all_ffn",
+      "samples": 32,
+      "changed_factor": "weight_scale_sharing"
+    },
+    {
+      "id": "S3",
+      "weight_bits": 8,
+      "weight_scale_sharing": "projection_role",
+      "samples": 32,
+      "changed_factor": "weight_scale_sharing"
+    },
+    {
+      "id": "T16",
+      "weight_bits": 8,
+      "weight_scale_sharing": "tile64",
+      "samples": 16,
+      "changed_factor": "samples"
+    },
+    {
+      "id": "T64",
+      "weight_bits": 8,
+      "weight_scale_sharing": "tile64",
+      "samples": 64,
+      "changed_factor": "samples"
+    }
+  ],
+  "readiness": {
+    "plan": true,
+    "common_pot_quantizer_and_offline_scale_maps": true,
+    "seven_case_full_model_iid_runner": false,
+    "model_scale_statistics_completed": false,
+    "real_model_ppl_completed": false,
+    "remote_jobs_submitted": false
+  },
+  "shared_prefix": {
+    "cases": [
+      "B0",
+      "T16",
+      "T64"
+    ],
+    "tokens": 40000000,
+    "requires_explicit_fork_record": true,
+    "unique_training_tokens_if_all_cases_reach_100M": 620000000
+  }
+}

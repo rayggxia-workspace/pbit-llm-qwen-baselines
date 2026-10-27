@@ -121,7 +121,7 @@ class TestTraining(unittest.TestCase):
             optimizer.step()
         step(m,opt,0)
         # Explicit task-local checkpoint storage (also safe on shared servers).
-        parent=Path(__file__).resolve().parents[3]/'work/jieruiz/177'
+        parent=Path(__file__).resolve().parents[3]/'work/rayggxia/177'
         parent.mkdir(parents=True,exist_ok=True)
         with tempfile.TemporaryDirectory(dir=str(parent)) as tmp:
             path=Path(tmp)/'c.pt';save(path,m,opt,1,cfg,provenance,1)
@@ -158,7 +158,7 @@ class TestTraining(unittest.TestCase):
         from .checkpoint import load_warm_weights,sha256
         m=nn.Module();m.model=nn.Module();layer=nn.Module();layer.mlp=original().bfloat16()
         m.model.layers=nn.ModuleList([layer]);state={n:torch.randn_like(p.float()) for n,p in m.named_parameters()}
-        parent=Path(__file__).resolve().parents[3]/'work/jieruiz/177';parent.mkdir(parents=True,exist_ok=True)
+        parent=Path(__file__).resolve().parents[3]/'work/rayggxia/177';parent.mkdir(parents=True,exist_ok=True)
         with tempfile.TemporaryDirectory(dir=str(parent)) as tmp:
             path=Path(tmp)/'warm.pt';torch.save(state,path);load_warm_weights(m,path,sha256(path))
         for n,p in m.named_parameters():self.assertTrue(torch.equal(p,state[n]));self.assertEqual(p.dtype,torch.float32)

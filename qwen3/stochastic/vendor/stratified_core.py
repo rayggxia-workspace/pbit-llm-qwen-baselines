@@ -254,7 +254,7 @@ class StratifiedFFN(nn.Module):
                       stratum_width=256 // self.strata,
                       sharing=64, scale_bin_count=POLICY_BINS[self.policy],
                       scale_bin_exponent_step=0 if self.policy == 'dynamic64' else 2,
-                      weight_encoding='fixed symmetric INT8, historical 64x64 tile',
+                      weight_encoding='fixed symmetric INT8, frozen power-of-two 64x64 tile',
                       weight_stochastic=False, weight_probability_reencoded=False,
                       gu_weight_reencode_nmse=0., down_weight_reencode_nmse=0.,
                       backend='exact joint shared-R8 counts; FP32 linear reduction',

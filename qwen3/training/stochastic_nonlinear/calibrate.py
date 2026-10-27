@@ -7,6 +7,7 @@ This is explicit offline calibration, not online dynamic scale adaptation.
 import torch
 from torch.nn import functional as F
 from .core import Config,NoiseKey,quantize
+from qwen3.weight_quantization.pot64 import FORMAT,choose_exponents
 from qwen3.fixed_scale.static_core import _encode_static_validated
 from qwen3.stochastic.vendor.stratified_core import stratified_counts
 
@@ -38,6 +39,13 @@ def collect(model,batches,provenance,config=Config(),seed=0):
         handles=[]
         tables={str(i):dict(x=(_pot(s['xmax'])[:,None]*torch.tensor(
             [1.,.25,.0625,.015625],device=device)).tolist()) for i,s in enumerate(stats)}
+        for i, layer in enumerate(layers):
+            module = layer.mlp
+            tables[str(i)]['weight_exponents'] = {
+                name: choose_exponents(weight, config.weight_bits).tolist()
+                for name, weight in (
+                    ('gu', torch.cat((module.gate_proj.weight,module.up_proj.weight),0)),
+                    ('down', module.down_proj.weight))}
         current=[0]
         for i,layer in enumerate(layers):
             def hook(module,args,i=i):
@@ -46,7 +54,8 @@ def collect(model,batches,provenance,config=Config(),seed=0):
                     enc=_encode_static_validated(x,table)
                     c=stratified_counts(enc['probability'],64,64,
                         NoiseKey(seed,0,current[0]).generator(device,i,'calibration'),64)
-                    _,w,_=quantize(torch.cat((module.gate_proj.weight,module.up_proj.weight),0),config.weight_bits)
+                    _,w,_=quantize(torch.cat((module.gate_proj.weight,module.up_proj.weight),0),config.weight_bits,
+                        torch.tensor(tables[str(i)]['weight_exponents']['gu'],device=device,dtype=torch.int8))
                     g,u=(F.linear(enc['sign']*enc['scale']*c,w)/64).chunk(2,-1)
                     maximum(i,'g',g);maximum(i,'u',u)
             handles.append(layer.mlp.register_forward_pre_hook(hook))
@@ -57,7 +66,8 @@ def collect(model,batches,provenance,config=Config(),seed=0):
     finally:
         for h in handles:h.remove()
         model.train(was_training)
-    return dict(format='fixed-four-and-training-v1',layers=tables,provenance=provenance,
+    return dict(format='fixed-four-and-training-pot64-v2',weight_format=FORMAT,
+        layers=tables,provenance=provenance,
         weight_bits=config.weight_bits,input_samples=64,input_strata=64,seed=seed,
         method='x reference trajectory; g/u sampled-input quantized-projection reference trajectory',
         note='g/u top S=ceilPow2(TRAIN max); lower_half maximum S/2 intentionally allows clipping')

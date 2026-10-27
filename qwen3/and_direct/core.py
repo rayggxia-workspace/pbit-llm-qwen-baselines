@@ -35,12 +35,26 @@ def count_events(codes,samples,generator):
     return counts.to(torch.int64),probability
 
 def coefficient_table(lsb,g_top,u_top):
+    """Exact dyadic restore table; coefficients are powers of two, not multipliers.
+
+    Reserve one leading coefficient bit so an exact maximum never saturates
+    from 65536 to 65535. Wider than 15 exponent steps needs another accumulator
+    contract and is rejected rather than silently rounded to zero.
+    """
     c=lsb.double()*(g_top.double()*u_top.double()).unsqueeze(0)
+    mantissa, exponent=torch.frexp(c)
+    if not bool((mantissa==.5).all()):
+        raise ValueError('PoT64 restore requires power-of-two weight and activation scales')
     maximum=c.amax(-1)
-    m,e=torch.frexp(maximum);e-=(m==.5).to(e.dtype)
+    _,e=torch.frexp(maximum)
     top=torch.ldexp(torch.ones_like(maximum),e)
-    q=(c/top[:,None]*(2**COEFFICIENT_BITS)).round().clamp(0,2**COEFFICIENT_BITS-1).long()
+    q=torch.ldexp(c,COEFFICIENT_BITS-e[:,None]).round().long()
+    if bool(((q<1)|(q>=2**COEFFICIENT_BITS)).any()):
+        raise ValueError('PoT restore exponent spread exceeds the 16-bit coefficient contract')
+    if not bool(((q & (q-1))==0).all()):
+        raise AssertionError('PoT restore coefficient lost its dyadic value')
     return q,e.long(),c
+
 
 def output_counts(signed_counts,weight_codes,coeff,samples,group_batch=4):
     """Exact integer reference using bounded FP32 partial GEMMs, then int64.

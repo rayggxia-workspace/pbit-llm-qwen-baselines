@@ -1,3 +1,5 @@
+发布确认（2026-10-27T08:32:15.276444+00:00）：[PR197](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/197)已推送待审、未合并；payload cb2cca56a1c0a0227555be89ee215c337391729a，15份远端文件原字节回读一致，Issue110已同步，Projects待权限。本机固定汇总与目标run同步；本轮无新EDA或TLM改动。回执work/jieruiz/110/PPA_SUMMARY_PUBLICATION.json。
+
 # 2026-10-27 新PPA汇总（Issue110）
 
 jieruiz；task/110-ppa-summary-20261027；base main d83eeb1f；复用tmp/circuit-registry-issue110-20261022；旧PR111已合并，旧任务分支2b7935f4保留。本次新PR发布状态见PPA_SUMMARY_PUBLICATION.json，不能用旧111回执代表本次完成。

@@ -1,3 +1,5 @@
+发布确认（2026-10-27T08:32:15.276444+00:00）：[PR197](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/197)已推送待审、未合并；payload cb2cca56a1c0a0227555be89ee215c337391729a，15份远端文件原字节回读一致，Issue110已同步，Projects待权限。本机固定汇总与目标run同步；本轮无新EDA或TLM改动。回执work/jieruiz/110/PPA_SUMMARY_PUBLICATION.json。
+
 ## 2026-10-27 Issue110：新PPA统一汇总，正式228窗口已收齐
 
 用户要求整理8位核/ICG/计数/数字功耗面积并更新文件夹。接续Issue110，jieruiz，task/110-ppa-summary-20261027，main d83eeb1f；复用干净tmp/circuit-registry-issue110-20261022，保留旧已合PR111分支/提交，不新建全量副本。正式8位38427136为10PVT设计/150窗口，现场只读确认38427740无门控四设计＋38428144 X8两设计也已calculated共78窗口；共228，16份原始报告归档逐SHA并重算三seed均值，全物理引脚/叶100%/STA非负/门控检查通过，保留库表与check_power告警。

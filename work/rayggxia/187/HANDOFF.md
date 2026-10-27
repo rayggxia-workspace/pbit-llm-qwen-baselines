@@ -1,5 +1,13 @@
 # Issue187交接
 
+## 2026-10-27 保守调度审计追加
+
+用户要求将当前保守调度整理为文件并核查论文惯例。沿用本Issue/PR189，不修改Issue186的实现。只读PR192@556462dc5db37582310302ed8b916d717b4d6ceb与其12项500MHz条件结果；报告CONSERVATIVE_SCHEDULING_AUDIT_ZH.md已本地完成，上传以CONSERVATIVE_PUBLICATION.json为准。
+
+执行：python -B work/rayggxia/187/check_conservative.py --source-root C:/Users/86134/Documents/a_P_BIT/tmp/ffn-local-pipeline-issue186-20261025。产物CONSERVATIVE_CHECK.json记录8源码SHA、12结果/派生配置SHA、两任务预约微例与报告SHA。微例是软件Scheduler验证，不是新数字/PPA run；无全模型重跑。原33条证据及旧HLS验证不改。
+
+结论：FIFO预约、宏DMA排空、SRAM整描述符占用、数字预填充关闭和SC跨窗口限制值得隔离验证；数字/SC优化不对称；保守PPA与乐观假设并存，不能称整体上界。不概括“大部分模拟器不保守”。下一步实现仍由Issue186接续，保持容量/依赖/响应/计费守恒。
+
 负责人rayggxia；日期2026-10-25。任务为只读文献调研及正式研究文档发布，无新硬件/模型实验。
 
 ## HLS专题追加（2026-10-25）

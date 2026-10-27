@@ -34,7 +34,7 @@ def load_ffn_state(model,state):
             incoming=state[name][key]
             if incoming.shape!=value.shape or incoming.dtype!=value.dtype:
                 raise ValueError('checkpoint shape/dtype mismatch: '+name+'.'+key)
-            if key in ('x_scales','g_top','u_top','lut') and not torch.equal(incoming.cpu(),value.cpu()):
+            if key in ('x_scales','g_top','u_top','lut','gu_weight_exponents','down_weight_exponents') and not torch.equal(incoming.cpu(),value.cpu()):
                 raise ValueError('checkpoint calibration mismatch: '+name+'.'+key)
     for name,m in modules.items():m.load_state_dict(state[name],strict=True)
 
@@ -42,7 +42,7 @@ def load_ffn_state(model,state):
 def save(path,model,optimizer,next_step,config,provenance,seed,world_size=1):
     path=Path(path)
     if path.exists():raise FileExistsError('immutable checkpoint already exists: '+str(path))
-    payload=dict(format='stochastic-nonlinear-ffn-v1',ffn=ffn_state(model),
+    payload=dict(format='stochastic-nonlinear-ffn-pot64-v2',ffn=ffn_state(model),
         optimizer=optimizer.state_dict(),next_step=int(next_step),config=asdict(config),
         provenance=provenance,provenance_sha256=fingerprint(provenance),seed=int(seed),
         world_size=int(world_size),trainable_names=trainable_names(model),
@@ -59,7 +59,7 @@ def restore(path,model,optimizer,config,provenance,seed,world_size=1):
     expected=path.with_suffix(path.suffix+'.sha256').read_text(encoding='ascii').strip()
     if sha256(path)!=expected:raise ValueError('checkpoint SHA-256 mismatch')
     obj=torch.load(path,map_location='cpu',weights_only=True)
-    checks=dict(format='stochastic-nonlinear-ffn-v1',config=asdict(config),
+    checks=dict(format='stochastic-nonlinear-ffn-pot64-v2',config=asdict(config),
         provenance_sha256=fingerprint(provenance),seed=int(seed),world_size=int(world_size),
         trainable_names=trainable_names(model))
     for key,value in checks.items():

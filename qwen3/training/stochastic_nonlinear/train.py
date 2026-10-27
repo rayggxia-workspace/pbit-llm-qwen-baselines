@@ -108,7 +108,7 @@ def main():
         print(json.dumps(dict(path=str(target),sha256=sha256(target))),flush=True)
         return
     cal=json.loads(Path(m['calibration']['path']).read_text(encoding='utf-8'))
-    if cal['format']!='fixed-four-and-training-v1' or cal['provenance']!=source or cal['weight_bits']!=cfg.weight_bits:
+    if cal['format']!='fixed-four-and-training-pot64-v2' or cal.get('weight_format')!=cfg.weight_format or cal['provenance']!=source or cal['weight_bits']!=cfg.weight_bits:
         raise ValueError('calibration belongs to another checkpoint/data/weight format')
     names=install(model,cal,cfg)
     if a.gradient_checkpointing:

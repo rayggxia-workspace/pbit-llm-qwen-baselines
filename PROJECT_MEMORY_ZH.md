@@ -1362,3 +1362,12 @@ PR119/120/122/125/126/127/130已通过集成PR131实际合并，集成SHA `69667
 用户指出当前应较慢采样，复核确认质量主链硬编码0.5us，不能把旧比较器rho约0.72～0.74泛化为慢速采种质量。复用9条已签SHA波形，72项间隔重分析/216 Pearson交叉核验/9数组SHA通过；10us固定时间lag的两款旧比较器三seed范围0.027～0.052，20us约0.018～0.047。单相位长间隔样本少，不能宣布IID或长间隔更差；P1偏置不会随间隔自动消失。VN原负相关仅属0.5us场景。
 
 RandomNetwork未规定同一物理源采样间隔；SeedWords.interval是调理32bit字间隔，1亿拍换种在100MHz约1s，但不决定包内原始bit间隔。下一轮需显式物理时间戳/同源间隔及调理时序，再贯穿各层。入口architecture_tlm/random_service/quality/results/sampling_review_20261023/REPORT_ZH.txt；用户副本远端上传/rng_sampling_review_20261023.txt。沿用Issue95/PR134/task/95-rng-quality与现有工作目录，不改原189案例、旧报告或正式模型默认，不新增EDA/RTL/PPL/数字实验。台账原run补充后处理索引，不虚增实验数量。补充远端交付状态以work/rayggxia/95/quality/SAMPLING_PUBLICATION.json为准；Projects未同步，PR不自动合并。
+
+
+## 2026-10-27 Issue159：用户最终七组FFN单因素训练定义
+
+发布负责人rayggxia，仅接续训练计划/PoT参考，原Issue159/177负责人jieruiz及正在运行的训练不接管。七组为B0 W8/tile64-PoT/T32；W6/W10；S1全部FFN一个尺度/S3按gate-up-down三尺度；T16/T64。每组只改变一因素，不做27组。所有权重尺度是冻结二次幂；输入四档及随机非线性固定共同协议。
+
+计划qwen3/training/seven_case_ffn_20261027/REMOTE_AGENT_PLAN_ZH.md、CASES.json、FILE_INDEX.json；共同量化qwen3/weight_quantization/pot64.py和离线scale_maps.py。W6/W10保持B0二进制范围，k_b=k8+8-b；计划T显式控制输入和AND两阶段，IID共享64输入/独立三轴AND，不把32格joint32直接套到T16。现有PR178参考仍FFN-only、输入64/joint32，需要执行Agent接入全模型CE+0.5KL和可变两段T，不宣称已实现七组整模型runner。
+
+初版条件均值/128/64/目标T课程沿0-10/10-25/25-40/40-100M；B0/T16/T64的相同40M前缀可在合法分叉后共享，7组100M名义700M、唯一训练约620M，不把复用前缀计成额外独立训练。正式执行先核900活跃GPU小时剩余预算。当前仅52 CPU测试48过4CUDA跳过、七组/13文件引用检查；无新训练/PPL/PPA/Slurm。分支task/159-seven-case-pot64-plan、base task/177-trainable-and-ffn@216f2b9939e9984f140290c98edb05db3aad5c0f；发布/PR/哈希回读见work/rayggxia/159/PLAN_PUBLICATION.json。

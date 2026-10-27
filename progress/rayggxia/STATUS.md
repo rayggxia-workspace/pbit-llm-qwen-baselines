@@ -1,3 +1,15 @@
+## 2026-10-27：Issue159七组单因素训练交接（rayggxia）
+
+用户确认：B0=W8/tile64-PoT/T32；W6/W10只改位宽；S1/S3只改共享粒度；T16/T64只改采样，共七组，不做27种组合。三种共享方式都冻结二次幂尺度。定义文件qwen3/training/seven_case_ffn_20261027/REMOTE_AGENT_PLAN_ZH.md及CASES.json；PoT量化、冻结指数、S1/S3离线映射和W10参考一并提供。
+
+分支task/159-seven-case-pot64-plan；依赖PR178@216f2b9939e9984f140290c98edb05db3aad5c0f，目标PR base task/177-trainable-and-ffn。范围仅新计划/参考组件，不接管jieruiz原任务或主线程存储调度。七组全模型IID训练器仍需远端Agent接入；原参考输入64/joint32和FFN-only不当作已完成的七组runner。
+
+实际验证：七组单因素/13文件引用检查；52项CPU组件测试48通过4CUDA跳过；没有提交GPU/Slurm、没有新4B PPL/训练或RTL/PPA。任务发布及逐文件回读以work/rayggxia/159/PLAN_PUBLICATION.json为准；创建PR不等于合并。Projects待有权限的界面/维护者同步，未在本侧同步本机根长期备忘录镜像。
+
+下一步：执行Agent核对最新Issue159/177和运行快照，在独立执行分支补全共同T与全模型CE/KL接入、整数数值边界、2步GPU门禁及吞吐预算，再按七组清单运行；保留当前健康作业和冻结源码。不得复用旧PPL冒充新PoT权重。
+
+---
+
 # rayggxia 当前任务
 
 ## Issue112 资源预算与片上存储探索计划

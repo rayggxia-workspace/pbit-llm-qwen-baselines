@@ -18,6 +18,8 @@ from qwen3.and_direct.short_core import encode_fixed, joint_counts, POLICIES
 from qwen3.and_direct.multiscale_core import sigmoid_field, shifted_output
 from qwen3.and_direct.core import coefficient_table, finish_bf16
 from qwen3.nonlinear_width.core import make_lut
+from qwen3.weight_quantization.pot64 import (FORMAT as WEIGHT_FORMAT,
+    choose_exponents, validate_exponents, quantize as _quantize_pot64)
 
 
 @dataclass(frozen=True)
@@ -27,10 +29,13 @@ class Config:
     input_strata: int = 64
     nonlinear_samples: int = 128
     policy: str = 'lower_half'
+    weight_format: str = WEIGHT_FORMAT
 
     def __post_init__(self):
-        if self.weight_bits not in (4, 6, 8):
-            raise ValueError('weight_bits must be 4, 6 or 8')
+        if self.weight_bits not in (4, 6, 8, 9, 10):
+            raise ValueError('weight_bits must be 4, 6, 8, 9 or 10')
+        if self.weight_format != WEIGHT_FORMAT:
+            raise ValueError('this version requires frozen PoT64 weights')
         if (self.input_samples, self.input_strata) != (64, 64):
             raise ValueError('this implementation freezes input T=K=64')
         if self.nonlinear_samples not in (32, 64, 128):
@@ -68,17 +73,9 @@ def attach(hard, proxy):
     return _Attach.apply(hard.detach(), proxy)
 
 
-def quantize(weight, bits):
-    rows, cols = weight.shape
-    if rows % 64 or cols % 64:
-        raise ValueError('64 x 64 weight tiles required')
-    tiles = weight.detach().float().reshape(rows//64, 64, cols//64, 64).permute(0,2,1,3)
-    limit = 2**(bits-1)-1
-    lsb = tiles.abs().amax((-1,-2)).clamp_min(1e-20) / limit
-    codes = (tiles / lsb[...,None,None]).round().clamp(-limit,limit).to(torch.int16)
-    codes = codes.permute(0,2,1,3).reshape(rows,cols)
-    decoded = codes.float()*lsb.repeat_interleave(64,0).repeat_interleave(64,1)
-    return codes, decoded, lsb
+def quantize(weight, bits, exponents=None):
+    """Same PoT64 weight rule in calibration, hard training and inference."""
+    return _quantize_pot64(weight, bits, exponents)
 
 
 def _top(value, groups, device):
@@ -100,8 +97,8 @@ def hard_forward(x, wg, wu, wd, module, key):
         enc = _encode_static_validated(x.float(), module.x_scales)
         counts_x = stratified_counts(enc['probability'], cfg.input_samples,
             cfg.input_strata, key.generator(x.device, module.layer, 'input'), 64)
-        _, gu_dq, _ = quantize(torch.cat((wg,wu),0), cfg.weight_bits)
-        dc, _, dl = quantize(wd, cfg.weight_bits)
+        _, gu_dq, _ = quantize(torch.cat((wg,wu),0), cfg.weight_bits, module.gu_weight_exponents)
+        dc, _, dl = quantize(wd, cfg.weight_bits, module.down_weight_exponents)
         # Preserve the inference oracle's operation order (divide after GEMM).
         g, u = (F.linear(enc['sign']*enc['scale']*counts_x, gu_dq)/cfg.input_samples).chunk(2,-1)
         gc, gs, ge, gshift = encode_fixed(g, module.g_top, module.offsets)
@@ -189,6 +186,12 @@ class TrainableFFN(nn.Module):
         self.register_buffer('g_top',_top(tables['g'],width//64,device))
         self.register_buffer('u_top',_top(tables['u'],width//64,device))
         self.register_buffer('lut',make_lut(8,8).to(device))
+        frozen = tables.get('weight_exponents')
+        gu = torch.cat((self.gate_proj.weight, self.up_proj.weight), 0)
+        for name, weight in (('gu', gu), ('down', self.down_proj.weight)):
+            exponent = (choose_exponents(weight, config.weight_bits) if frozen is None
+                        else validate_exponents(weight, frozen[name]))
+            self.register_buffer(name + '_weight_exponents', exponent)
         self.noise_key = None
 
     def forward(self,x):
@@ -245,7 +248,9 @@ def noise_context(model,key):
 
 
 def contract(config):
-    return dict(config=asdict(config),input_rng='R8 shared64, T=K=64',
+    return dict(config=asdict(config),weight_format=WEIGHT_FORMAT,
+        weight_tile=[64,64],weight_exponents='frozen offline signed8; no runtime max',
+        input_rng='R8 shared64, T=K=64',
         nonlinear_rng='32 Cartesian cells (4,2,4), independent lanes and axes',
         hard_forward='P8 g/u, signed8 field, frozen P8 LUT, AND counts, integer Wd, BF16 RNE',
         backward='biased STE; sampled-z Wd gradient; conditional-mean upstream gradient',

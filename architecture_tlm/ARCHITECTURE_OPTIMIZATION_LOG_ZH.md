@@ -91,3 +91,6 @@ Issue186/PR192；[最终报告](scheduling_v2_20261027/FINAL_RESULTS_ZH.md)。Qw
 ## O18 分slice SRAM端口/链路（2026-10-27）
 
 共享sram_fabric与整bank描述符锁改为可选bank/端点/link后端，原8MiB/512bank/512GBs保持，新增16KiB有限FIFO明确未价。45验证和六项真实形状一层DRAMSys对照已完成，原配置失败/修复保留。只去global锁未加速；cycle_end更慢，accept策略另两项3178待收。入口[sliced_sram_20261027](sliced_sram_20261027/README_ZH.md)，结果与精确状态查RESULTS_ZH/COMPARISON、SRAM_SLICE_*。不改默认、不是36层TPOT，不将TLM当PPA，旧功耗不能免费套新互连。
+
+
+O18完成补注：8/8封存及45检查通过，无运行项。accept策略SC8.322292ms（旧8.229026，+1.13%），BF16 8.936880（旧8.831064，+1.20%）。单层＋全词表、seed0，不是完整36层。显式模型用于定位真实端口冲突，未创造总带宽/加速；旧集中模型同时有悲观锁与理想化流水，不视为性能上界。新FIFO/互连/CDC PPA待补，旧主线默认/功耗仍保留原口径。

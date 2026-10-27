@@ -1,3 +1,15 @@
+## 2026-10-27 Issue186：分slice SRAM八项完成，accept较旧慢约1.1%～1.2%
+
+三执行18dd259a/3169 SC三项、2adacf79/3175 BF16三项、5d543eb9/3178 accept两项全部completed/封存SHA核验；当前无本任务运行作业，不重跑。原BF16配置失败三项及cycle_end保守策略结果保留。45检查（新13）通过，8项逐数保持within算法算术、DRAM/SRAM物理字节、FFN/Attention工作和实际RNG输出SHA，16原摘要/执行字节同MANIFEST。
+
+单Qwen3-4B decoder层＋完整151936词表、seed0，500MHz目标、原8MiB512bank80MHz/总512GBs，新增16KiB有限link FIFO明确未价；不是36层TPOT/新PPA。SC旧8.229026ms、分slice描述符8.280314、beat-cycle_end8.481780、写入接受即归还credit8.322292（对旧+1.1334%）；BF16旧8.831064、描述符8.897864、cycle_end9.125730、accept8.936880（+1.1982%）。accept比保守cycle_end快约1.88%/2.07%，bank仍占完整12.5ns周期。FastCalendar软件优化500预约与旧逐事件相等。没有为了提速暗增总带宽或漏掉R/W冲突。
+
+结论：需要显式端口/链路以正确定位瓶颈，旧模型不是单向悲观上界；只分区/去global锁不会自动加速，旧模型也有理想化流水。旧全36层5.7008GB SRAM下界11.134ms、fabric忙15.284ms，总57.421ms不能全归因SRAM锁。沿主TLM可选memory_factory新后端，旧默认保留；下一步若验收新后端再做完整36层/公平两侧及NoC/FIFO/CDC成本，不拿本轮单层×36或旧2.52W冒充新整机。
+
+结果sliced_sram_20261027/RESULTS_ZH.md、COMPARISON.json，复核collect_sram_slices.py各后缀再analyze_sram_slices.py不带--partial，已8/8。精确输入/配置/原件/源SHA和唯一源码包归档均在SRAM_SLICE_*；Ising sink尚未映射，当前后端明确拒绝，待独立接入。O18、统一台账06已更新。发布见SRAM_SLICE_PUBLICATION.json；PR192待审未合并、Projects待权限。
+
+---
+
 ## 2026-10-27 Issue186：分slice SRAM端口模型，六项完成/accept两项待收
 
 task/186-local-pipeline/PR192；tmp/ffn-local-pipeline-issue186-20261025。用户指出全局SRAM串行模型过粗，已查Gemmini/Eyeriss v2/ONNXim一手资料。沿主unified_v6增加可选memory_factory，默认旧路径保留；新后端sliced_sram_20261027，4×128bank、80MHz16B单端口，4×128GB/s共享读写链路＋DMA/矩阵/向量端点，总8MiB/512GBs不变，额外16KiB双credit FIFO明确未价。bank周期/access/CDC与链路资源拆开，不锁全局fabric。原FFN本地CIM和寄存器已绕过shared fabric，不称全部片上访存原来都串行。

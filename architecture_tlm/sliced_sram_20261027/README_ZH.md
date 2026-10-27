@@ -1,3 +1,5 @@
+**完整对照已核验8/8，见[RESULTS_ZH.md](RESULTS_ZH.md)。SC/BF16的accept方案较旧集中模型慢约1.13%/1.20%；这是一个decoder层＋全词表、seed0，不是36层TPOT。**
+
 # 分簇共享SRAM端口/链路TLM
 
 Issue186 / PR192，2026-10-27，沿用unified_v6，新增可选memory_factory，不改默认SRAM与历史封存结果。

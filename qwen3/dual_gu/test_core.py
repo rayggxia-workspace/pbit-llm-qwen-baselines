@@ -62,7 +62,7 @@ class CUDA(unittest.TestCase):
         q=torch.tensor([0,1,31,64,127,128,254,256]*8,dtype=torch.int16).repeat(2,1)
         w=(torch.arange(64*64).reshape(64,64)%255-127).to(torch.int8)
         gen=torch.Generator().manual_seed(21);u=torch.rand(2,64,64,generator=gen,dtype=torch.float64)
-        scales=torch.tensor([1.,.25,.0625,.015625]*16).repeat(2,1);sign=torch.where(torch.arange(64)%2,1.,-1.).repeat(2,1)
+        scales=torch.tensor([1.,.25,.0625,.015625]*16).repeat(2,1);sign=torch.where(torch.arange(64)%2==1,1.,-1.).repeat(2,1)
         for law in ('iid','joint'):
             c,pre=input_cells(q,256,law,torch.Generator().manual_seed(8));kw=c.shape[2]
             base,n,p=conditional_parts(c[:,0],pre[:,0],w.long().abs(),kw)

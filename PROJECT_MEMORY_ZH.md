@@ -1,3 +1,15 @@
+## 2026-10-27 Issue193校准v2：精确合并计数与流水数字RTL已交付待实库
+
+用户要求实际Verilog，并确认未知ICG先提供可配置映射。task/193-calibration-v2，main d83eeb1f，独立目录tmp/calibration-v2-issue193-20261027；正式代码architecture_tlm/calibration_v2_20261027。发布状态以work/jieruiz/193/PUBLICATION.json为准，未有回执不能称远端已完成，不自动合并。
+
+新N64/B4T64/B7T128/M1/M8先固定2幂档位对齐再一树一累计，六/三级流水；16配置128帧与旧结构同流整数完全一致，G0/G1/回压/排空通过。W7mag+sign，不含−128；B4/B7 sum26/33位，接口已对齐，旧多桶恢复不能直接接或重复计移位。无OR近似、不改变样本数。ICG g0无门控/g1仅功能/g2实库接口且未映射拒绝；计数即时valid门控，不等同旧TLM idle8/wake1；ICG扇出/CTS待测。
+
+数字24配置22245事务通过：FP32加/乘及BF16product7拍、转换2拍、非融合MAC14拍；单context反馈II15、16context轮转II1并实际计512位累加+busy/tag存储。DAZ/IEEE RNE后FTZ/canonicalNaN，非完整IEEE渐进下溢或GPU FMA等价；数字CE不是ICG。31流程测试通过，功耗激励/门级oracle/真实窗口计数可复放；没有DC/PT/500MHz达标或新PPA，不改TLM默认。原软件启动/换行失败及修复保留。
+
+根交付calibration_v2_20261027.zip，SHA见DELIVERY；统一台账新增calibration-v2-193-rtl-20261027，旧记录不变。下一步用户填私有实库先g0/100MHz两类smoke，拿到面积/功率/关键路径后再改周期/ICG/频率，保留负slack和库/活动告警。完整exp/recip/rsqrt、CIM、RNG/HBM计价和模型质量仍未闭合。根记忆含其他任务待归并历史，当前只同步此新增段，不能公开覆盖他人资料。
+
+---
+
 ## 2026-10-25 第十一轮实际合并回执
 
 PR183已合入main（a73a75ce0566f5fff0b8c38fcb03d04961885f76），PR190最终审核291c437a已合入main（f8a861487170c2cd65bc9ecb95eb3e4f72b863be）。旧008b0227之后的七文件增量仅文献与派生分析，输入SHA和派生文档重现通过，执行代码/配置/原结果未变；110回归与18小形状测试无需重复冒充新实验。正式入口architecture_tlm/BASELINE_ZH.md；默认DDR4、HBM显式对照、R8/128/资源扩容候选分开。PR181历史回执与本轮审核/入口文档将由review/55-pr190-main交付main，最终文档PR及SHA见Issue55。后续质量用Instruct/后训练模型；真实质量、GU数值闭环、物理PPA未验收。其余17PR仍待完整审核。

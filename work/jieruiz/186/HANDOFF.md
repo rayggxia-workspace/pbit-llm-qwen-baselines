@@ -1,3 +1,5 @@
+发布确认（2026-10-27T09:40:24.289300+00:00）：功耗重算已上传PR192，科学提交4278dfed5ea5f2d97a53ea66521da366026ed602，6个关键远端文件原字节一致；Issue186已同步，待审未合并。回执work/jieruiz/186/ENERGY_RECALIBRATION_PUBLICATION.json。无新TLM/EDA/PPL，Projects待权限。
+
 ## 2026-10-27 Issue186：最新随机版能耗重算（发布状态见回执）
 
 复用task/186-local-pipeline/PR192与tmp/ffn-local-pipeline-issue186-20261025；用户要求用已返回PPA重算并只列关键校准缺口。新增architecture_tlm/ppa_recalibration_20261027后处理，原TLM时序/源/封存结果不改。三seed57.4454ms、32SC/2048MAC、GU64NL128、8MiB512bank；Attention为screen_pv准确Softmax，未启用Ising。

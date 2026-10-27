@@ -2,7 +2,7 @@
 
 ## 2026-10-27 保守调度审计追加
 
-用户要求将当前保守调度整理为文件并核查论文惯例。沿用本Issue/PR189，不修改Issue186的实现。只读PR192@556462dc5db37582310302ed8b916d717b4d6ceb与其12项500MHz条件结果；报告CONSERVATIVE_SCHEDULING_AUDIT_ZH.md已本地完成，上传以CONSERVATIVE_PUBLICATION.json为准。
+用户要求将当前保守调度整理为文件并核查论文惯例。沿用本Issue/PR189，不修改Issue186的实现。只读PR192@556462dc5db37582310302ed8b916d717b4d6ceb与其12项500MHz条件结果；报告CONSERVATIVE_SCHEDULING_AUDIT_ZH.md已推送源提交2a7352b767fb6966b800a04522d0650bae3864eb，6文件逐字回读/tree通过，本地同一SHA。PR仍待审未合并；回执CONSERVATIVE_PUBLICATION.json，Issue评论6435467483。
 
 执行：python -B work/rayggxia/187/check_conservative.py --source-root C:/Users/86134/Documents/a_P_BIT/tmp/ffn-local-pipeline-issue186-20261025。产物CONSERVATIVE_CHECK.json记录8源码SHA、12结果/派生配置SHA、两任务预约微例与报告SHA。微例是软件Scheduler验证，不是新数字/PPA run；无全模型重跑。原33条证据及旧HLS验证不改。
 

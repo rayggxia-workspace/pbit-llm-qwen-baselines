@@ -2,7 +2,7 @@
 
 ## 2026-10-27 保守调度审计
 
-- 用户要求整理为文件，沿用Issue187/PR189、task/187-simulator-survey；只读PR192@556462dc5db37582310302ed8b916d717b4d6ceb，调度实现仍归Issue186。当前文档本地完成，发布状态以work/rayggxia/187/CONSERVATIVE_PUBLICATION.json为准，未有回执不称已推送。
+- 用户要求整理为文件，沿用Issue187/PR189、task/187-simulator-survey；只读PR192@556462dc5db37582310302ed8b916d717b4d6ceb，调度实现仍归Issue186。源提交2a7352b767fb6966b800a04522d0650bae3864eb已推送，6文件逐字回读与tree核验通过，本地导入同一Git SHA；PR仍待审未合并。回执work/rayggxia/187/CONSERVATIVE_PUBLICATION.json；Issue评论6435467483。
 - 新报告architecture_tlm/simulator_survey_20261025/CONSERVATIVE_SCHEDULING_AUDIT_ZH.md；区分正确性检查、保守政策、优化不对称和非保守PPA项；没有“大部分模拟器”普查结论。
 - 实际验证入口check_conservative.py：8源码原字节/Git blob核对、12封存配置读取及Scheduler两任务微例；120ns与合法110ns安排不外推整机收益。无新完整TLM/GPU/PPL/RTL/EDA或服务器作业。
 - 下一步由Issue186逐项验证预约顺序、批间并发、数字预填充、SC跨窗口及恢复边界；本任务不修改运行源码/默认值/历史结果。Projects既有权限限制仍待同步。

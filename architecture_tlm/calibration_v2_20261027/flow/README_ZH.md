@@ -59,7 +59,7 @@ continuous（连续工作）、sparse（间歇）、idle（时钟开着但无工
 MODE2需icg_enable_pin及icg_test_enable_pin（实际EN/TE）。PT报告到这些真实ICG端点的max/min路径并保存slack；还须报告明确识别clock gating检查。无路径、缺slack或不能确认gating路径时返回review_required，不能标为可用频率；负门控slack返回not_met。
 
 数字bench的plusargs支持{CASE_DIR}和{RUN_DIR}，例如+VECTORS={CASE_DIR}/vectors.txt、+OUTPUT={RUN_DIR}/trace.txt；前者指case JSON所在目录，后者指本次新gate_sim目录，避免覆盖原验证trace。
-首次使用本流程尚需用户工具环境的真实DC/VCS/PT smoke；本机29项测试只验证配置、解析与Tcl文本完整性，不证明某个许可证版本支持全部命令。遇到工具语法错误应保留FAILURE和日志后适配，不能跳过检查冒称成功。
+首次使用本流程尚需用户工具环境的真实DC/VCS/PT smoke；本机31项测试只验证配置、解析与Tcl文本完整性，不证明某个许可证版本支持全部命令。遇到工具语法错误应保留FAILURE和日志后适配，不能跳过检查冒称成功。
 
 ## 数字算子：生成绑定到实际向量的用例
 
@@ -71,3 +71,9 @@ MODE2需icg_enable_pin及icg_test_enable_pin（实际EN/TE）。PT报告到这�
 每个case同目录生成vectors.txt、独立整数oracle的expected.json、FIXTURE.json。flow在preflight核验两份数据SHA、top及周期；VCS输出后运行prepare_power.py的逐周期ready/valid/输出值/status检查，再核验WINDOW的起止时间、完成事务数和接受输入数。任何不匹配都失败，不以sim退出0代替结果校验。数据与验证脚本SHA写入RESULT.json。
 
 一个MAC8事务包含8个乘法和8个加法；每事务能量不能直接冒称每个MAC能量。case同时保留primitive_operations_per_transaction和macs_per_transaction，后续按明确单位换算。单context累积II=15；16context轮转可II=1，但同一context仍II=15。这些元数据来自RTL功能验证，时序是否支持目标频率仍由STA决定。数字活动为合成普通浮点数分布，不是Qwen真实激活；本轮数字top未声称有ICG门控，MODE0只是其原始校准。
+
+## 计数器活动条件显式记录
+
+生成器默认`--threshold-profile swept --threshold-seed 193 --p8 128 --seed 17`，全部同时写入case元数据和TB plusargs。swept将64个阈值均匀铺在中心P8±64范围内、截到0..256，再按threshold seed置换；64路仍共享同一个R8，只是各路比较阈值不同。uniform使所有阈值等于P8，用于相关性极强的对照，不能冒称代表真实LLM活动。threshold seed与产生R8的SEED分别记录。不同profile/seed/P8也进入case文件名。
+
+TB输出完整THRESHOLDS列表并保存thresholds_used.hex，flow将该文件原字节SHA写入RESULT.json；请连同小文件回传。每种模式测量前有一帧暖机，窗口操作数不包含暖机。手工使用THRESHOLD_FILE时必须把该文件列入case.data_files归档SHA；生成器目前只提供swept/uniform两种明确可复现配置。

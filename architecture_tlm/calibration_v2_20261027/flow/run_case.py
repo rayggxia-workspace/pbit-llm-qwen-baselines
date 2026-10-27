@@ -202,6 +202,7 @@ def main():
                 rec["gate_trace_validation"]=checked
                 rec["gate_trace_validation_sha256"]=digest(sim/"validate_trace.log")
                 if (sim/"trace.txt").is_file(): rec["gate_trace_sha256"]=digest(sim/"trace.txt")
+            if (sim/"thresholds_used.hex").is_file(): rec["thresholds_used_sha256"]=digest(sim/"thresholds_used.hex")
             rec["vcd_sha256"]=digest(sim/"activity.vcd")
             text=(sim/"run.log").read_text(errors="replace")
             pat=r"WINDOW start_ns=([0-9.eE+-]+) end_ns=([0-9.eE+-]+) frames=(\d+) accepted_samples=(\d+)"

@@ -118,5 +118,19 @@ class Flow(unittest.TestCase):
  def test_fixture_window_time(self):
   f=self.fixture();w=dict(start_ns=0.,end_ns=20.,operations=2,accepted_samples=2)
   with self.assertRaises(ValueError):d.validate_window_fixture(w,f)
+ def counter_cases(self,extra):
+  output=self.p/"cases"
+  cmd=[sys.executable,str(P/"make_counter_cases.py"),"--output",str(output),"--bins","4","--pipeline","1","--modes","continuous"]+extra
+  result=subprocess.run(cmd,capture_output=True,text=True)
+  self.assertEqual(result.returncode,0,result.stderr)
+  return json.loads(next(output.glob("*.json")).read_text(encoding="utf-8"))
+ def test_counter_threshold_profile_default(self):
+  c=self.counter_cases([])
+  self.assertEqual(c["threshold_profile"],"swept");self.assertEqual(c["threshold_seed"],193)
+  self.assertIn("+THRESHOLD_PROFILE=swept",c["plusargs"]);self.assertIn("+THRESHOLD_SEED=193",c["plusargs"])
+ def test_counter_threshold_profile_uniform(self):
+  c=self.counter_cases(["--threshold-profile","uniform","--threshold-seed","42","--p8","64"])
+  self.assertEqual(c["threshold_profile"],"uniform");self.assertEqual(c["center_p8"],64)
+  self.assertIn("+THRESHOLD_PROFILE=uniform",c["plusargs"]);self.assertIn("+THRESHOLD_SEED=42",c["plusargs"]);self.assertIn("+P8=64",c["plusargs"])
  def test_hash(self):self.assertEqual(len(d.digest(self.p/"a.sv")),64)
 if __name__=="__main__":unittest.main()

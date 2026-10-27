@@ -28,10 +28,14 @@ beats中SRAM访问延迟和发起间隔分开。读：bank发起→数据就绪�
 
 ## 验证与比较范围
 
-42项测试通过，其中新增10项覆盖独立slice并行、同bank单端口冲突、读写共享link、有限credit/历史空隙、物理字节与SRAM能量相等、完整小模型事件无资源重叠、算术/DRAM/SRAM/FFN状态守恒；原调度/局部流水/能耗测试保持。
+首版42项测试通过；当前45项通过，其中新模块13项覆盖独立slice并行、同bank单端口冲突、读写共享link、有限credit/历史空隙、物理字节与SRAM能量相等、完整小模型事件无资源重叠、算术/DRAM/SRAM/FFN状态守恒；原调度/局部流水/能耗测试保持。
 
 run_case计划6项代表性实际DRAMSys对照：SC/BF16各legacy/descriptor/beats；Qwen3-4B原隐藏/FFN/注意力/完整词表形状，只执行一个decoder层。不是完整36层TPOT，最终结果必须从completed MANIFEST和原RESULT SHA确认，不用玩具例子或理想链路代替整机结果。全部使用相同供数和有限缓冲政策。
 
 新构造只接受exact/pv/screen_exact/screen_pv；并行Ising sink的旧整段SRAM占用尚需单独拆成输出beat，明确拒绝而不悄悄混用。报告会列slice/端点链路字节、每bank访问数、额外FIFO容量及等待。执行回执/交接见work/jieruiz/186/SRAM_SLICE_*，不重交旧健康作业；源快照不可变。
 
 运行测试：`python -m unittest architecture_tlm.sliced_sram_20261027.test_memory`。默认FullDecode不传memory_factory时仍为原SRAM。新增电路实验为0，不把TLM功能测试当作门级PPA。
+
+## 写入capture与credit（后续独立对照）
+
+原18dd259a执行把FIFO槽保留到bank周期结束，作为cycle_end策略保留。新accept策略在SRAM接受写入沿后归还payload credit，但bank端口仍占完整12.5ns发起周期；FIFO数据必须满足写入端setup/hold的接口合同，未由本次TLM代替STA。SC/BF16各新增一个beat对照，不重跑健康legacy/descriptor/cycle_end。45测试通过，含写入接受与端口占用分离；FastCalendar仅软件append优化，500个随机预约与原调度逐事件完全相同。

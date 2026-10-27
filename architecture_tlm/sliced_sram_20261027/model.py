@@ -25,5 +25,5 @@ def configure(c,mode='beats',clusters=4,credits=2):
     c['sram']['sliced']=dict(mode=mode,clusters=clusters,credits=credits,
         cluster_GBs=c['sram']['fabric_GBs']/clusters,
         endpoint_GBs=c['sram']['fabric_GBs']/clusters,
-        network_period_ns=1e9/c['core_hz'])
+        network_period_ns=1e9/c['core_hz'],write_credit_release='accept')
     return c

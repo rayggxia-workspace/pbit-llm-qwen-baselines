@@ -3,7 +3,7 @@ import argparse,hashlib,json,os,pathlib,platform,sys,time,traceback
 ROOT=pathlib.Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
 from architecture_tlm.clock500_resource_20261026.profiles import configuration as original_configuration
 from architecture_tlm.scheduling_v2_20261027.model import SchedulingDecode
-from architecture_tlm.scheduling_v2_20261027.calendar import ReadyCalendar
+from .calendar import FastCalendar as ReadyCalendar
 from architecture_tlm.ffn_local_pipeline_20261025.model import LocalPipelineFFN
 from architecture_tlm.unified_v6.run import write
 from .model import SlicedDecode,configure

@@ -30,6 +30,23 @@ def no_overlaps(test,events):
 
 
 class PortsAndLinks(unittest.TestCase):
+    def test_write_credit_returns_on_capture_not_next_port_cycle(self):
+        m,s,e=fixture();m.transfer(0,0,256,True,'weight_fill')
+        credits=[x for x in s.events if x['stage']=='sram_payload_credit']
+        writes=[x for x in s.events if x['stage']=='sram_bank_write']
+        self.assertEqual(len(credits),len(writes))
+        for credit,bank in zip(credits,writes):self.assertEqual(credit['end_ns'],bank['start_ns'])
+        no_overlaps(self,s.events)
+
+    def test_calendar_fast_path_preserves_reservations(self):
+        import random
+        from .calendar import FastCalendar
+        a=ReadyCalendar(2000);b=FastCalendar(2000);g=random.Random(186)
+        for i in range(500):
+            ready=g.randrange(1000);duration=g.randrange(1,30);rs=g.sample(['a','b','c'],g.randrange(1,4))
+            self.assertEqual(a.reserve(str(i),ready,duration,rs,2),b.reserve(str(i),ready,duration,rs,2))
+        self.assertEqual(a.events,b.events)
+
     def test_disjoint_slices_run_together(self):
         m,s,e=fixture();a=m.transfer(0,0,16,False,'a');b=m.transfer(0,4*16,16,False,'b')
         self.assertEqual(a,b)

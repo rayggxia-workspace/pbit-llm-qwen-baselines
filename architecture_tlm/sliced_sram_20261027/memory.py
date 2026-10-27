@@ -20,6 +20,8 @@ class ClusteredSRAM(SRAM):
         self.net_period=float(self.opt.get('network_period_ns',2.))
         self.quantum=min(self.bpc,int(self.opt.get('quantum_words',self.bpc)))
         self.endpoint_bw=float(self.opt.get('endpoint_GBs',self.bw))
+        self.write_release=self.opt.get('write_credit_release','accept')
+        if self.write_release not in ('accept','cycle_end'):raise ValueError('unknown write capture contract')
         if min(self.bw,self.endpoint_bw,self.net_period,self.quantum)<=0 or self.bw*self.clusters>cfg['fabric_GBs']+1e-9:
             raise ValueError('slice links exceed the original aggregate bandwidth')
         if self.mode=='beats' and not hasattr(scheduler,'calendar'):
@@ -45,7 +47,10 @@ class ClusteredSRAM(SRAM):
                 if write:
                     ls=self._earliest(probe,dur,lr,self.net_period)
                     bs=self._earliest(ls+dur,self.period,br,self.period)
-                    first,last=ls,bs+self.period
+                    # SRAM captures write data on the accepted clock edge.
+                    # Payload FIFO can be reused then; the bank port remains
+                    # occupied for its full issue interval independently.
+                    first,last=ls,bs+(self.period if self.write_release=='cycle_end' else 0.)
                 else:
                     bs=self._earliest(probe,self.period,br,self.period)
                     ls=self._earliest(bs+access,dur,lr,self.net_period)
@@ -139,6 +144,7 @@ class ClusteredSRAM(SRAM):
                 bank_period_ns=self.period,cluster_link_GBs=self.bw,aggregate_link_GBs=self.bw*self.clusters,
                 endpoint_GBs=self.endpoint_bw,network_period_ns=self.net_period,quantum_words=self.quantum,
                 credits_per_cluster=self.credits if self.mode=='beats' else 0,
+                write_credit_release=self.write_release,
                 additional_payload_buffer_bytes=self.clusters*self.credits*self.quantum*self.word if self.mode=='beats' else 0,
                 shared_SRAM_capacity_unchanged=True,stats=dict(self.stats),link_bytes=dict(self.link_bytes),
                 per_bank_word_operations=dict(self.bank_ops),

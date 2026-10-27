@@ -57,11 +57,14 @@ class LocalPorts(unittest.TestCase):
         self.assertEqual(c['sram']['fabric_GBs'],2048.)
         self.assertEqual(c['sram']['sliced']['cluster_GBs'],512.)
         self.assertEqual(c['sram']['clock_hz'],250e6)
+        self.assertFalse(c['sram']['local_ports']['independent_paths'])
 
     def test_path_byte_accounting(self):
         m,s=memory();m.transfer(0,15,3,False,'weight_consume');m.transfer(0,128,17,True,'weight_fill')
         self.assertEqual(dict(m.path_bytes),dict(matrix_R=32,DMA_W=32))
         self.assertEqual(sum(m.path_bytes.values()),m.traffic['read_physical_bytes']+m.traffic['write_physical_bytes'])
+        shared,_=memory(independent=False)
+        self.assertEqual(shared.report(200)['local_ports']['endpoint_GBs_per_slice'],dict(matrix=128.,vector=128.,DMA=128.))
 
     def test_wide_burst_does_not_increase_storage_or_external_bandwidth(self):
         args=dict(scope='one_layer',expanded_compute=True,expanded_sram=True,ffn='sc',attention='screen_pv')

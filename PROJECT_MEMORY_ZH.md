@@ -1,3 +1,19 @@
+## 2026-10-27 Issue186：SRAM本地端口/频率优化十二项完成
+
+复用task/186-local-pipeline/PR192，jieruiz，tmp/ffn-local-pipeline-issue186-20261025；main base d83eeb1f。已读取最新Issue/PR/README/AGENTS与Gemmini/ONNXim一手资料，新增主unified_v6的可选local_ports_20261027后端，不另造整机。正式默认DDR4/历史配置保留，新候选限定500MHz扩容/HBM/8MiB条件。
+
+删除无依据的全局512GB/s cap；E宏SS read最小周期3.468ns，选择250MHz（4ns）且保留200MHz对照，只做宏周期筛查不是wrapper/500MHz STA。建议4个本地共享读写宽通路，各512GB/s，源自128bank×16B×250MHz及512MAC×BF16×500MHz。8MiB、2048个E宏、512逻辑bank、原计算资源、额外16KiB FIFO均不增。真实bank单端口、同通路排队、有限credit/CDC、DRAMSys原外存继续限制，不加免费多端口bitcell。
+
+三源码77650539/Slurm3180六项、4eaedf28/3188两项、5847a24f/3191四项，12新项全部completed/原件SHA核验，另复用2旧accept基线，不重跑健康作业。58软件检查；14项算术/物理SRAM与DRAM字节/FFN及Attention工作/真实随机输出SHA/配置SHA逐数守恒。本任务无运行项；他人作业未操作。
+
+代表性单Qwen3-4B后训练形状层＋完整151936词表/seed0/2K，非全36层TPOT。SC旧8.322292→6.816810ms（缩短18.09%），数字FFN8.936880→7.172958ms（19.74%）；非词表SC1.432796→1.319518、数字2.047748→1.675802ms。只升频SC仅0.46%；首轮把片内DMA按HBM峰值限宽反而变慢，已保留负例，并在等宽对照允许原响应缓冲短时突发。等宽共享/独立/暴露宏总时间相同，因此先选较简单共享宽接口。暴露2048宏/分离ping-pong不增位，但占ping/pong各2MiB、workspace4MiB，unused行不再免费复用。
+
+宏cell面积68.0473mm²、读写动作动态能量不变；SC代表项共享SRAM动态1.25464mJ、漏电0.132166→0.108258mJ。不能将18%提速当18%节能或用旧2.52W套新结构。外围宽接口/driver/mux/gearbox/CDC/CTS及响应缓冲宽读出未新校准；HBM仍timing-only。DRAM/DMA忙5.7175ms/总6.8168ms，MAC忙0.4623ms，可重叠不可相加；后续重点是外存供数/有限tile生命周期，而非盲目加端口。Attention本轮screen_pv准确Softmax，Ising sink未拆beat继续明确拒绝。
+
+入口local_ports_20261027/RESULTS_ZH.md、COMPARISON.json与README_ZH；源/提交/封存/验证/唯一包归档见work/jieruiz/186/LOCAL_PORTS_*，collect三个后缀再analyze不带--partial可重建12/12。O19与统一台账07仅为TLM索引，无新PPA/PPL/数字run。代码结果本地已完成，远端上传状态以LOCAL_PORTS_PUBLICATION.json及发布确认前缀为准；PR不自动合并/Issue不自动关闭，Projects沿既有权限待同步。
+
+---
+
 发布确认（2026-10-27T10:42:13.295877+00:00）：SRAM分slice原型/八项完整对照已上传PR192，提交9109164faf256d82b4fe2541fc1ac78b493f7bae，6远端文件与16原摘要/执行字节核验通过；Issue186已同步，待审未合并。无本任务运行作业，回执work/jieruiz/186/SRAM_SLICE_PUBLICATION.json。无新PPA/36层加速结论，Projects待权限。
 
 ## 2026-10-27 Issue186：分slice SRAM八项完成，accept较旧慢约1.1%～1.2%

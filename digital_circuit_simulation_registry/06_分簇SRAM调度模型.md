@@ -7,3 +7,6 @@
 旧global/分slice描述符/beat-cycle_end六项一层Qwen3-4B＋完整词表实际DRAMSys已封存；写入接受返credit策略3178两项也已completed，8/8封存核验；SC/BF16较旧集中模型慢约1.13%/1.20%，无本任务运行作业。不是完整36层时间。当前功耗2.52W仍对应旧调度，不能自动套给新NoC。Ising输出sink未拆beat，配置明确不支持该新后端。
 
 正式来源[任务分支](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/tree/task/186-local-pipeline/architecture_tlm/sliced_sram_20261027)，未合并。此为TLM条件模型索引，不新增数字电路run，台账已有PRNG/SRAM证据不变。
+
+
+后续取消任意总带宽上限、按库周期与bank/消费者定宽的对照见[台账07](07_本地SRAM端口优化.md)。12新执行已完成，旧80MHz结果保留；不覆盖旧PPA或新增数字run。

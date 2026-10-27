@@ -3,7 +3,7 @@ from architecture_tlm.scheduling_v2_20261027.model import SchedulingDecode
 from .memory import LocalPortSRAM
 
 
-def configure(c,clock_hz=250_000_000,independent=True,wide=True):
+def configure(c,clock_hz=250_000_000,independent=False,wide=True):
     s=c['sram'];clusters=4;core=c['core_hz'];banks=s['banks']
     if s['capacity_bytes']!=8*1024**2 or banks!=512 or s['word_bytes']!=16:
         raise ValueError('this profile characterizes 8MiB/512 bank/128-bit geometry')
@@ -62,7 +62,7 @@ class LocalPortsDecode(SchedulingDecode):
 
 
 def configure_exposed(c,clock_hz=250_000_000):
-    configure(c,clock_hz=clock_hz)
+    configure(c,clock_hz=clock_hz,independent=True)
     s=c['sram'];s.update(banks=2048,fabric_GBs=2048*16*clock_hz/1e9)
     s['sliced']['quantum_words']=128
     s['local_ports'].update(physical_partition=True,weight_slot_bytes=c['weight_chunk_bytes'],

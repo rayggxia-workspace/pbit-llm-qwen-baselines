@@ -62,7 +62,8 @@ class LocalPortSRAM(ClusteredSRAM):
         r['scheduling']='single-port bank arbitration plus explicitly sized local endpoint trunks'
         r['local_ports']=dict(self.top,peak_per_slice_GBs=self.bpc*self.word/self.period,
             peak_bank_aggregate_GBs=self.c['banks']*self.word/self.period,
-            endpoint_GBs_per_slice={k:v*self.core_hz/1e9 for k,v in self.paths.items()},
+            endpoint_GBs_per_slice={k:(v*self.core_hz/1e9 if self.directional else self.endpoint_bw) for k,v in self.paths.items()},
+            endpoint_width_contract='independent path widths' if self.directional else 'shared-link endpoint width; independent width hypotheses inactive',
             physical_path_bytes=dict(self.path_bytes),true_multiport_bitcells=False,
             capacity_replication_bytes=0,clock_period_checked_against_macro=True,
             scope='four memory slices feeding the existing single scheduled matrix/vector consumers; not four independently scheduled cores',
@@ -70,5 +71,5 @@ class LocalPortSRAM(ClusteredSRAM):
             end_to_end_PPA_calibrated=False)
         r['sliced']['aggregate_link_GBs']=None
         r['sliced']['cluster_link_GBs']=None if self.directional else self.bw
-        r['sliced']['routing']='word-striped physical banks; independent local endpoint trunks; no mesh or global wire cap'
+        r['sliced']['routing']=('word-striped physical banks; independent endpoint trunks' if self.directional else 'word-striped physical banks; per-slice shared R/W trunk')+'; no mesh or global wire cap'
         return r

@@ -7,7 +7,7 @@ from architecture_tlm.unified_v6.core import Ledger
 from architecture_tlm.unified_v6.test_ffn_locality import case
 from architecture_tlm.scheduling_v2_20261027.test_scheduling import work
 from architecture_tlm.ffn_local_pipeline_20261025.model import LocalPipelineFFN
-from .model import configure,configure_exposed,LocalPortsDecode
+from .model import configure,configure_exposed,widen_burst_ports,LocalPortsDecode
 from .memory import LocalPortSRAM
 
 
@@ -62,6 +62,15 @@ class LocalPorts(unittest.TestCase):
         m,s=memory();m.transfer(0,15,3,False,'weight_consume');m.transfer(0,128,17,True,'weight_fill')
         self.assertEqual(dict(m.path_bytes),dict(matrix_R=32,DMA_W=32))
         self.assertEqual(sum(m.path_bytes.values()),m.traffic['read_physical_bytes']+m.traffic['write_physical_bytes'])
+
+    def test_wide_burst_does_not_increase_storage_or_external_bandwidth(self):
+        args=dict(scope='one_layer',expanded_compute=True,expanded_sram=True,ffn='sc',attention='screen_pv')
+        c,_=configuration(args,sys.executable,'/unused');configure(c);before=copy.deepcopy(c)
+        widen_burst_ports(c)
+        self.assertEqual(c['dram'],before['dram'])
+        self.assertEqual(c['sram']['capacity_bytes'],before['sram']['capacity_bytes'])
+        self.assertEqual(c['sram']['sliced'],before['sram']['sliced'])
+        self.assertEqual(c['sram']['local_ports']['path_bytes_per_core_cycle'],dict(matrix=1024,vector=1024,DMA=1024))
 
 
 class Integration(unittest.TestCase):

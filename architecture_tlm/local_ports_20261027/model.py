@@ -68,3 +68,18 @@ def configure_exposed(c,clock_hz=250_000_000):
     s['local_ports'].update(physical_partition=True,weight_slot_bytes=c['weight_chunk_bytes'],
         exposed_single_port_macros=2048,old_macro_mux_removed=True)
     return c
+
+
+def widen_burst_ports(c):
+    """Matched-width topology control: do not impose HBM average rate twice.
+
+The bounded64KiB response buffer already exists. Its burst read interface
+is sized to the same local bank bus; actual HBM completions still gate each
+tile. Buffer banking/mux/gearbox is a stated macro hypothesis, not measured
+free hardware. All variants retain the SAME payload-credit capacity.
+"""
+    p=c['sram']['local_ports'];width=p['path_bytes_per_core_cycle']['matrix']
+    p['path_bytes_per_core_cycle']=dict(matrix=width,vector=width,DMA=width)
+    p.update(matched_endpoint_width=True,
+        response_buffer_burst_read_contract='same width as local bank/matrix trunk; banking/driver PPA not yet characterized')
+    return c

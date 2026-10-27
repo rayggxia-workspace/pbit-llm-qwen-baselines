@@ -1,5 +1,6 @@
 ## 2026-10-27 55nm/28nm普通数字矩阵基线调研
 
+- 发布确认：源提交0231917514b80525c300fb5461d8a080413aebbb已推送PR189，8文件逐字/blob与tree核验通过，本地导入相同SHA；Issue评论6441943866。开放待审未合并，回执DIGITAL_MATMUL_PUBLICATION.json。
 - 沿用Issue187/PR189；新增DIGITAL_MATMUL_55_28_ZH.md与DIGITAL_MATMUL_SOURCES.json，核对两篇全文、RDCIM机构摘要、作者MIT RTL固定ebe4db7d的7文件。公开SAED32与论文SMIC28工艺不同；55nm功耗为含176KB存储的后布局协处理器任务功耗。
 - check_digital_matmul.py验证9文件原字节SHA及能量/峰值时间下界，结果DIGITAL_MATMUL_CHECK.json；没有执行作者RTL/EDA/PPA/TLM或模型实验，不能称已完成55nm移植。真实64维GEMV时延仍需后续测量，现有BF16核不作为强INT8唯一基线。
 - 本地资料完成；上传、准确源提交与回读状态见DIGITAL_MATMUL_PUBLICATION.json（生成后）。PR待审未合并，Projects权限仍待同步；不接管#193/#186实现。

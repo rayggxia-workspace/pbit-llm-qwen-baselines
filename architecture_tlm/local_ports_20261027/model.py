@@ -42,7 +42,11 @@ class LocalPortsDecode(SchedulingDecode):
     def __init__(self,c,shape,scheduler=None):
         if c['attention']['mode'] not in ('exact','pv','screen_exact','screen_pv'):
             raise ValueError('Ising output sink still needs a separate beat adapter')
-        super().__init__(c,shape,scheduler=scheduler,memory_factory=LocalPortSRAM)
+        factory=LocalPortSRAM
+        if c['sram']['local_ports'].get('physical_partition',False):
+            from .partition import PartitionedSRAM
+            factory=PartitionedSRAM
+        super().__init__(c,shape,scheduler=scheduler,memory_factory=factory)
 
     def run(self):
         r=super().run()
@@ -55,3 +59,12 @@ class LocalPortsDecode(SchedulingDecode):
         r['unpriced_actions']['local_endpoint_physical_bytes']=sum(self.mem.path_bytes.values())
         r['unpriced_actions']['local_payload_buffer_bytes']=r['SRAM']['sliced']['additional_payload_buffer_bytes']
         return r
+
+
+def configure_exposed(c,clock_hz=250_000_000):
+    configure(c,clock_hz=clock_hz)
+    s=c['sram'];s.update(banks=2048,fabric_GBs=2048*16*clock_hz/1e9)
+    s['sliced']['quantum_words']=128
+    s['local_ports'].update(physical_partition=True,weight_slot_bytes=c['weight_chunk_bytes'],
+        exposed_single_port_macros=2048,old_macro_mux_removed=True)
+    return c

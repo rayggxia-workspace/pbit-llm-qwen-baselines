@@ -5,7 +5,7 @@ from architecture_tlm.sliced_sram_20261027.run_case import configuration,digest
 from architecture_tlm.sliced_sram_20261027.calendar import FastCalendar
 from architecture_tlm.ffn_local_pipeline_20261025.model import LocalPipelineFFN
 from architecture_tlm.unified_v6.run import write
-from .model import LocalPortsDecode,configure
+from .model import LocalPortsDecode,configure,configure_exposed
 
 CASES=[
  dict(name='sc250_clock_only',ffn='sc',hz=250e6,independent=False,wide=False),
@@ -16,6 +16,8 @@ CASES=[
  dict(name='bf16250_wide_shared',ffn='bf16',hz=250e6,independent=False,wide=True),
  dict(name='sc_full250_local_paths',ffn='sc',hz=250e6,independent=True,wide=True,scope='full'),
  dict(name='bf16_full250_local_paths',ffn='bf16',hz=250e6,independent=True,wide=True,scope='full'),
+ dict(name='sc250_exposed_macros',ffn='sc',hz=250e6,independent=True,wide=True,exposed=True),
+ dict(name='bf16250_exposed_macros',ffn='bf16',hz=250e6,independent=True,wide=True,exposed=True),
 ]
 
 
@@ -31,7 +33,9 @@ def main():
         nonlinear_samples=128,clock_gating=False,attention='screen_pv',early_next_dma=True,
         calendar=True,digital_prefill=True,cross_window_program=True,seed=0)
     case.update(choice)
-    c,m=configuration(case,a.bridge,a.output/'dram');configure(c,choice['hz'],choice['independent'],choice['wide'])
+    c,m=configuration(case,a.bridge,a.output/'dram')
+    if choice.get('exposed'):configure_exposed(c,choice['hz'])
+    else:configure(c,choice['hz'],choice['independent'],choice['wide'])
     scheduler=FastCalendar(120,core_period_ns=1e9/c['core_hz'],installed_resources=['mac','vector']+(['sc:'+str(i) for i in range(c['ffn']['engines'])] if case['ffn']=='sc' else []))
     scope='full36layer Qwen3-4B decode+full151936vocabulary' if case['scope']=='full' else 'one actual Qwen3-4B-shaped layer+full151936vocabulary, NOT36layer TPOT'
     execution=dict(case=case,source=source,config_sha256=hashlib.sha256(json.dumps(c,sort_keys=True).encode()).hexdigest(),bridge_sha256=digest(pathlib.Path(a.bridge)),python=platform.python_version(),argv=sys.argv,

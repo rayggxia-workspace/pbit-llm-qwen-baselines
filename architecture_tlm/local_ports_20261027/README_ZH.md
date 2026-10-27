@@ -48,6 +48,14 @@
 
 每项使用真实Qwen3-4B后训练版结构、单层＋完整151936词表，seed0；SC固定四档T64、NL128、原32阵列，Attention筛选＋准确Softmax＋PV采样。不是模型权重推理或PPL，不把单层＋词表乘36。完整度、版本、配置、SHA及结果以`RESULTS_ZH.md`和`work/jieruiz/186/LOCAL_PORTS_*`为准。
 
+### 进一步暴露宏端口：索引8/9
+
+`configure_exposed`/`PartitionedSRAM`将原2048个E宏分别作为独立单端口bank，去掉原来每4宏合一bank的外部选择关系；**宏数量、存储位和库cell面积均不增加**。四个slice各512宏，分别保留128个ping宏、128个pong宏、256个workspace宏。当前权重读取、下一权重预取和工作区访问因此可以落在不同物理宏上；它们不再无故争用同一个逻辑bank。每类本地通路仍按上表定宽，FIFO仍16KiB。
+
+代价是按带宽分配容量：ping、pong各占2MiB物理宏容量，但目前每个live tile只用64KiB；workspace占4MiB。未使用的ping/pong行**不再当作另一份免费workspace**。映射器对virtual live region、实际宏row、workspace上限和跨slot请求逐项检查，返回实际物理bank/row。全2048宏的端口总峰值是8192GB/s，但单个权重slot只占512宏，其峰值仍2048GB/s，不能拿总峰值宣称矩阵获得四倍供数。
+
+这是通过现有宏端口与布局换并行，不是增加存储位或多端口bitcell。wrapper/mux可能简化，局部选择/布线/时钟使能会变化，净外围PPA仍需校准，当前不填写虚构的面积增量。端口宽度越大必然越好、完全免费均不是本模型的假设。
+
 本轮不改变：单DMA actor/有界窗口、一个响应缓冲、完整tile到齐再填充、矩阵本地装载后才计算、直方图RMW依赖。它们仍可能限制速度；删除一个任意带宽数不会使这些限制自动消失。Ising输出sink尚未拆成beat，新后端明确拒绝该模式，不能把此结果称作Ising整机结果。
 
 运行：`python -B -m unittest architecture_tlm.local_ports_20261027.test_ports`。正式DRAMSys运行必须使用提交后冻结manifest，通过Slurm调用`run_case.py`；不要覆盖已有快照。库内部SRAM动作能量/单元面积可按同宏复用，整片能量/宽互连增量不由本轮速度结果自动确定。

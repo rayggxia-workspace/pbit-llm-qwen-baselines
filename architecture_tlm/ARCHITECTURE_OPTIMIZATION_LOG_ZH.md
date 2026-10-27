@@ -39,6 +39,12 @@ O01—O08为本次核对的已有机制索引，**不是本次重新完成全部
 - **DS-CIM: Digital Stochastic Computing-In-Memory Featuring Accurate OR-Accumulation via Sample Region Remapping for Edge AI Models**，2026，§III-D。每四拍缓存后更新累加器，属于O03，不等于O09。其OR/双随机/重映射、CMR复制和本项目的固定W8/精确归约不同，不迁移其能效或面积倍率。[原文](https://arxiv.org/html/2601.06724v1#S3.SS4)
 - **Gemmini** 的scratchpad/accumulator与输出驻留提供成熟的确定性对照组织；累加存储可以是RF或专用SRAM，并非必须复用通用激活SRAM。[官方设计](https://github.com/ucb-bar/gemmini#scratchpad-and-accumulator)
 
+## 2026-10-27 Issue95：随机比较器与概率LUT独立表征边界
+
+问题：已有随机服务端点功耗包含多种模块，旧独立比较器P=12、旧p-bit LUT/输出比较16位，不能直接填当前signed8→q/256的LUT及8位比较成本。机制：新增独立LT、端点比较、组合表、寄存表和融合采样端，区分概率配置调用与逐拍采样调用，保持现有PRNG/TLM/算法默认不变。
+
+基线main d83eeb1f；代码与精确源manifest、配置、已有三seedPPA审计及新结果见[random_service/pbit8_char](random_service/pbit8_char/README_ZH.md)。不涉及模型输入，合成三seed五模式。75案例307200计量拍、全比较输入和256表项检查通过；只有RTL_FUNCTIONAL，新增核面积/能量/STA未知，模板未执行实际EDA。en不等于ICG；LUT复制/扇出、真实g转换、融合后门级优化仍待测。未改变整体TLM时延或声称功耗改善。交付状态见work/rayggxia/95/pbit8/PUBLICATION.json与HANDOFF.md，同Issue接收用户工艺结果后补齐。
+
 ## 每次改进的登记模板
 
 新增记录必须保留下列字段，优先填同一个表或链接同一任务报告，不能只留下“更快/更省”。

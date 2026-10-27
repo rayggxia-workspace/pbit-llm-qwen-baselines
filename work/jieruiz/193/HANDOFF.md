@@ -1,3 +1,5 @@
+发布确认（2026-10-27）：校准v2已上传[PR196](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/196)，提交69c61309d80656d3562ccc47209fd424c1c91329，远端tree/关键blob原字节已核验；待审、未合并。Issue193/107已同步，无新EDA/PPA。准确回执work/jieruiz/193/PUBLICATION.json。
+
 # Issue193校准v2交接
 
 负责人jieruiz，task/193-calibration-v2，基线main d83eeb1f；关联Issue107/133/186。目录tmp/calibration-v2-issue193-20261027。新计数器/数字/门控与通用flow已本地完成；上传状态见PUBLICATION.json，无回执时不能称已上传。不要合并PR。

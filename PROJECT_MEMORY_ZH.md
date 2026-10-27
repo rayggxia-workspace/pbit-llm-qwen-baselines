@@ -1,3 +1,5 @@
+发布确认（2026-10-27）：校准v2已上传[PR196](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/196)，提交69c61309d80656d3562ccc47209fd424c1c91329，远端tree/关键blob原字节已核验；待审、未合并。Issue193/107已同步，无新EDA/PPA。准确回执work/jieruiz/193/PUBLICATION.json。
+
 ## 2026-10-27 Issue193校准v2：精确合并计数与流水数字RTL已交付待实库
 
 用户要求实际Verilog，并确认未知ICG先提供可配置映射。task/193-calibration-v2，main d83eeb1f，独立目录tmp/calibration-v2-issue193-20261027；正式代码architecture_tlm/calibration_v2_20261027。发布状态以work/jieruiz/193/PUBLICATION.json为准，未有回执不能称远端已完成，不自动合并。

@@ -1,3 +1,5 @@
+发布入口：[PR202（草稿，主扫描运行中）](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/202)。
+
 # Wg/Wu双随机短流：阶段记录
 
 更新时间：2026-10-28T00:43:16+08:00；Issue201，负责人jieruiz。**正式主扫描仍在运行，尚无三seed双随机结论。** 未新增训练、RTL/PT/PPA；当前结果不能证明双随机硬件总体更省。

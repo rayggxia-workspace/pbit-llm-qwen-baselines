@@ -1,3 +1,9 @@
+## 2026-10-28 Issue201发布回执：PR202草稿，扫描继续
+
+2026-10-28T00:48:34+08:00，身份jieruiz。源码与阶段报告已实际推送到workspace的task/201-dual-gu-short，PR202（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/202）为draft/open、未合并；base为尚未合入的PR174分支。首次发布head98530eaa，九个关键远端blob原字节回读一致，PUBLICATION/REMOTE_VERIFICATION保存回执。Issue201验收项只勾选已通过部分，主扫描及最终三seed对比仍未完成，Projects缺read:project待同步。
+
+Slurm3200_[0-3]保留，不重复提交。18项验证、pilot封存完成；主协议未封存观测及剩余流程见同目录HANDOFF和REPORT。当前不是256拍质量验收、完整WT2、训练或硬件PPA结果。后续收齐四片后运行audit_artifacts.py --write-final，更新同一PR，不另建任务或重跑健康作业。
+
 ## 2026-10-28 Issue201：仅Wg/Wu双随机短流扫描运行中
 
 负责人jieruiz；task/201-dual-gu-short，目录tmp/dual-gu-issue201-20261027，依赖PR174@b41ee008（未合并）。科学执行2cd6d360不可变；18项CPU/CUDA验证通过（3205仅验证），pilot3199完成。正式Slurm3200_[0-3]健康运行，T32/64/128/256，各固定W、W-IID、联合2D分层三seed。后训练Qwen/Qwen3-4B；Wd固定W8、NL固定四档/联合32 T128、准确SDPA不改，全36层及前缀覆盖。不是训练或PPA。

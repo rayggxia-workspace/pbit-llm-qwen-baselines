@@ -1,5 +1,6 @@
 ## 2026-10-27 DS-CIM等随机矩阵指标审计
 
+- 用户后续明确新矩阵对照T=32，已记录MATRIX_COMPARE_NEXT_CONFIG.json；单路计数6bit、64路位平面累计12bit、B4完整带符号累计25bit，原始W8存储位不变。未修改他人T64固定top/历史结果，无新RTL/PPA；当前发布状态按PR189与Issue评论。
 - 发布确认：源ea35c581e876fba69ebfa0f037eff92b202eb5be已上传PR189，7源文件逐字/blob/tree及本地同一SHA通过；准确Issue评论与18探针范围见STOCHASTIC_AUDIT_PUBLICATION.json。仍待审未合并，无新硬件节能结论。
 - 新报告STOCHASTIC_METRIC_AUDIT_ZH.md及JSON。核对DS-CIM一位归一化/T64效率与T256质量/CMR64并发、SRR丢低位和缓存边界；交叉uGEMM、SASCHA和tubGEMM。上轮数字投影与CNN吞吐换算降为风险参照，旧价格数字保留，不当同质量胜负。
 - 当前B4T64三级显式数据状态374bit/输出（非实际综合DFF计数）；概率/权重/档号在固定帧内静态，当前计数DUT外部存储不能重复归因。精确累加有文献依据，不判作根本错误。

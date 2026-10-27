@@ -2,6 +2,8 @@
 
 日期：2026-10-27；Issue187/PR189，rayggxia。无新RTL、EDA、TLM或模型作业。读取DS-CIM、uGEMM、SASCHA、tubGEMM原文及现有计数RTL，另做18个软件整数恒等式探针。来源/代码SHA与结果：`STOCHASTIC_METRIC_AUDIT.json`；复现：`python -B work/rayggxia/187/audit_stochastic_metrics.py`。
 
+用户后续决定：新矩阵对照主采样长度固定T=32，参数与范围核对见`MATRIX_COMPARE_NEXT_CONFIG.json`；历史T64数据不改写。单路事件计数0..32需6bit，64路同一无符号位平面在32拍内合计0..2048需12bit；当前完整W7幅值/符号点积不含bin需19bit，含B4的0/2/4/6位移后需25bit。原始W8仍只有8个存储位（当前7幅值+1符号），累计进位和尺度对齐不等于增加存储权重位宽。新T32并未进行RTL/PPA。
+
 **有需要修正的口径，也有值得优化的电路选择；暂未发现上一轮30.48nJ的乘除算术有明显错误。它是当前多位权重精确归约实现的价格，不能作为随机计算最优成本。** 先前64MAC数字投影和CNN吞吐换算只是风险参照，不能作为同质量/同矩阵硬件的胜负依据。
 
 ## 1. DS-CIM的数千TOPS/W不是我们所报的同一种OPS

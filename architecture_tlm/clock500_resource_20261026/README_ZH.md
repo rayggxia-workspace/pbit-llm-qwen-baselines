@@ -18,3 +18,5 @@ Issue186 / PR192；统一模型仍为 unified_v6。本目录增加显式实验 p
 提交/采集：work/jieruiz/186/submit_clock500.py、collect_clock500.py。源SHA提交后冻结；只接受completed且原件SHA一致的结果。
 
 完整12项已完成：[结果与模块PPA](RESULTS_ZH.md)、[机器可读对照](COMPARISON.json)、[周期与假设](CYCLES_AND_UNCERTAINTY_ZH.md)。
+
+后续论文主模型的算子依据、调度改进顺序与校准口径见[PAPER_MODELING_POLICY_ZH.md](PAPER_MODELING_POLICY_ZH.md)（2026-10-27用户确认；本次文档尚未改变封存结果）。

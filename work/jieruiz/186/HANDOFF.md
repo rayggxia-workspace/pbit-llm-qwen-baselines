@@ -1,3 +1,11 @@
+# 2026-10-27 论文建模口径更新（Issue186/PR192）
+
+负责人jieruiz；task/186-local-pipeline；基线本轮556462dc，base main d83eeb1f；目录tmp/ffn-local-pipeline-issue186-20261025。用户指定两份资料已读，源码核对确认保守限制；新增PAPER_MODELING_POLICY_ZH.md与输入SHA索引，未改TLM运行代码/参数、未提交新仿真。实际发布见PAPER_POLICY_PUBLICATION.json；PR不自动合并，Projects沿既有权限缺口待同步。
+
+下一步按policy优先数字/SC合理预取、就绪调度和有限DMA流水，而非为未知项叠加串行等待；采用成熟PE/FPU的L/II依据，新PPA后续回填。新PR196已提供计数和数字RTL功能证据，工艺结果仍待回传，不重跑既有12项或健康任务。用户本轮先确认论文建模方向，不将此文档说成已实现优化或新速度结果。
+
+---
+
 发布确认（2026-10-27）：计数器/真实门控/数字校准清单已推送PR192并回读原字节，提交623f0236dfa68853e16e7ae8a6155a0d8fa9b70b；Issue186/193已同步，PR仍待审、未合并。没有新RTL/ICG/PT或数字校准结果。回执work/jieruiz/186/COUNTER_PLAN_PUBLICATION.json。
 
 # 2026-10-27 计数器/门控/数字校准清单：本地完成

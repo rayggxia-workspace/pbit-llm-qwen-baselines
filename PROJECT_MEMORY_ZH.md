@@ -1,3 +1,13 @@
+## 2026-10-27 用户确认：论文主模型采用有依据的算子和合理优化调度
+
+用户要求先读取统一台账03_算子周期与时延依据.md和Issue187的CONSERVATIVE_SCHEDULING_AUDIT_ZH.md，避免数字参数凭空设置、未知就串行、为工程防御牺牲论文架构性能。后续允许明确的宏参数/少量敏感性分析，随机源和数字PPA结果到齐后再逐步完善，无需等待整机工程闭合。
+
+接续Issue186/PR192，负责人jieruiz，task/186-local-pipeline；本轮仅源码/文档审计和规则归档，没有改TLM代码或参数，没有新仿真/加速数字。确认当前提交顺序预约、DMA批间排空、数字shared prefill默认关、SC跨窗口限制仍存在。后续优先两侧合理预取与复用、按就绪有限调度、DMA/描述符流水、SRAM/CDC区分启动与持续吞吐、SC跨窗口编程、统一恢复物理边界。
+
+L和II分开，独立操作用流水吞吐，反馈靠明确context/归约设计；新手写7/14拍核不是成熟ASIC性能上限，旧一拍负slack也不能决定普通浮点计算天生慢。参考成熟PE/FPU与模拟器映射，保留目标时钟/工艺假设。数字基线与SC分别合理优化，原64.5/110ms不能全归因随机算术；后续新结果另封存，不改旧12项。具体policy与两份输入SHA见architecture_tlm/clock500_resource_20261026/PAPER_MODELING_POLICY_ZH.md和work/jieruiz/186/PAPER_MODELING_POLICY.json。发布以回执为准；Issue187他人工作目录只读，Projects待权限。根记忆历史差异仍按原约定保留，本轮只同步此新增段。
+
+---
+
 发布确认（2026-10-27）：计数器/真实门控/数字校准清单已推送PR192并回读原字节，提交623f0236dfa68853e16e7ae8a6155a0d8fa9b70b；Issue186/193已同步，PR仍待审、未合并。没有新RTL/ICG/PT或数字校准结果。回执work/jieruiz/186/COUNTER_PLAN_PUBLICATION.json。
 
 ## 2026-10-27 用户确认：计数器重构、真实门控、数字校准为下一优先级

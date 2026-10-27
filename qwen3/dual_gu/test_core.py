@@ -51,6 +51,22 @@ class DualLaw(unittest.TestCase):
         self.assertTrue(torch.equal(y[0],torch.full_like(y[0],4096)))
         self.assertTrue(torch.equal(y[1],-y[0]))
 
+    def test_fixed_control_replays_entire_upstream_FFN(self):
+        from types import SimpleNamespace
+        from qwen3.and_direct.short_core import ShortStreamFFN
+        from .core import DualGUFFN
+        torch.manual_seed(173)
+        original=SimpleNamespace(**{n:torch.nn.Linear(64,64,bias=False) for n in ('gate_proj','up_proj','down_proj')})
+        modules=[ShortStreamFFN(original,0),DualGUFFN(original,0)]
+        x=torch.randn(2,64)*.1
+        for m in modules:
+            m.mode='sampled';m.cycles=64;m.strata=64
+            m.x_scales=torch.tensor([[1.,.25,.0625,.015625]])
+            m.rng_input.manual_seed(700001);m.set_spec(8,8,8);m.freeze_down();m.reset_short('lower_half','joint32',128,0)
+        modules[1].reset_gu('fixed',64,0)
+        self.assertTrue(torch.equal(modules[0](x),modules[1](x)))
+        a=modules[1].short_report();self.assertEqual(a['front_T'],64);self.assertFalse(a['Wd_weight_random'])
+
 
 @unittest.skipUnless(torch.cuda.is_available(),'CUDA kernel verification on Slurm')
 class CUDA(unittest.TestCase):

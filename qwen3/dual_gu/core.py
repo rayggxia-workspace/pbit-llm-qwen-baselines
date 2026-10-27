@@ -73,3 +73,13 @@ class DualGUFFN(ShortStreamFFN):
             from .kernel import project
             return project(encoded,self.gu_codes,self.gu_tile_lsb,self.gu_samples,self.gu_method,generator,self.rng_weight)
         return reference_project(encoded,self.gu_codes,self.gu_tile_lsb,self.gu_samples,self.gu_method,generator,self.rng_weight)
+
+    def short_report(self):
+        r=super().short_report()
+        if hasattr(self,'gu_method'):
+            ka=min(64,self.gu_samples) if self.gu_method!='joint' else GRIDS[self.gu_samples][0]
+            kw=None if self.gu_method=='fixed' else 1 if self.gu_method=='iid' else GRIDS[self.gu_samples][1]
+            r.update(front_T=self.gu_samples,front_K=ka,front_weight_K=kw,front_weight_method=self.gu_method,
+                Wd_weight_random=False,GU_weight_probability='abs(originalW8)/128',
+                GU_only_changed=True,GU_restore='FP32 upstream oracle, not full integer bittrue')
+        return r

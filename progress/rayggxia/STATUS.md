@@ -1,5 +1,7 @@
 # rayggxia — Issue95 概率输出端表征
 
+发布确认：PR195已开放待审、未合并；源码提交b25b48412f52efb48eaa47862626d027d238e529，整树与本地a59d2f5a完全一致，5份关键文件远端回读一致。回执work/rayggxia/95/pbit8/PUBLICATION.json；新增核仍无PPA。
+
 2026-10-27，连接器身份rayggxia。接续Issue95；分支task/95-pbit8-characterization，base main d83eeb1fc6b89a3dff51b5b62bf79acf665c7166；独立目录tmp/rng-pbit8-issue95-20261027。旧PR188质量研究和其他成员PPA工作保持。
 
 本地完成：已有38322118四种端点100MHz连续窗口三seed复核；旧独立比较器P=12源SHA核验；新增五个8位概率输出端RTL、256x9 sigmoid表、穷举/三seed活动、DC/PT模板及说明。没有新许可EDA/PPA/模型实验。

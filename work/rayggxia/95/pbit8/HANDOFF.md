@@ -1,5 +1,7 @@
 # Issue95：8位随机比较与LUT交接
 
+发布确认：PR195开放待审、未合并，源码b25b48412f52efb48eaa47862626d027d238e529，tree84798d4cee7f9c9fadf56cdd755933fea98de19c；本地a59d2f5a同树，五个关键文件远端原字节回读一致。PUBLICATION.json区分源码发布与随后回执更新；Git本地和连接器提交身份不同，但不需要reset现有工作树。
+
 负责人rayggxia，2026-10-27；正式仓库rayggxia-workspace/pbit-llm-qwen-baselines。工作目录为工作区下tmp/rng-pbit8-issue95-20261027，分支task/95-pbit8-characterization，基线main d83eeb1f。原生Git fetch报getaddrinfo thread失败，已通过GitHub连接器核实main精确SHA；发布用连接器，回执单独保存，不覆盖旧质量/服务目录的暂存状态。
 
 正式源码architecture_tlm/random_service/pbit8_char；README说明能耗证据、q/256与signed8/8、五个核边界、运行命令、EDA步骤及疑点。P=12历史源SHA验证通过；旧16位p-bit/整片数据不是本次8位独立PPA。

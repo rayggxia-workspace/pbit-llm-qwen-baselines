@@ -1,3 +1,15 @@
+# 2026-10-27 调度两轮已完成
+
+Issue186/PR192；jieruiz；task/186-local-pipeline；base main d83eeb1f；目录tmp/ffn-local-pipeline-issue186-20261025。3156七项＋3163四项全部completed、封存SHA核验；执行410fa5af/5ba79477，健康完成任务不重跑，远端source不可变。本轮全部只用CPU；无本任务运行作业。
+
+同硬件/采样/物理字节，组合三seed均值64.411267→57.445385ms/token，少10.81%；主要来自提前DMA覆盖BF16普通投影本地装载。FFN只少约1.1%，不是随机矩阵算术提升10.8%。134本地软件验证及远端每项12检查；无PPL/新PPA。
+
+入口architecture_tlm/scheduling_v2_20261027/FINAL_RESULTS_ZH.md与FINAL_COMPARISON.json，优化记录O16。collect/analyze_schedule_v2、collect/analyze_schedule_early、report_schedule_final可重建报告；源码/配置/原件SHA见SCHEDULE_*。两个tar包已逐SHA移入唯一归档，见SCHEDULE_PACKAGE_ARCHIVE.json。PR发布状态以SCHEDULE_V2_PUBLICATION.json为准，不自动合并，Projects待维护者同步。
+
+下一步：先审核此次供数政策并给数字基线同样优化；后续分项评估跨描述符有限并发、SRAM按beat服务、SC计算/恢复流水和文献/实库L/II校准。不得把本次模型时间当500MHz芯片实测，不把动态动作不变的10.8%提速当同比能量节省。
+
+---
+
 # 2026-10-27 调度第二轮运行中；首轮已完成
 
 Issue186/PR192，jieruiz，task/186-local-pipeline；目录tmp/ffn-local-pipeline-issue186-20261025。3156七项已completed/SHA核验，seed0 64.3779→64.30045ms，仅0.12%；prefill和日历无总时间收益。首轮执行410fa5af，结果architecture_tlm/scheduling_v2_20261027/RESULTS_ZH.md。

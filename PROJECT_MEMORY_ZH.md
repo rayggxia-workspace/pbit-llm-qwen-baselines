@@ -1,3 +1,15 @@
+## 2026-10-27 Issue186：调度两轮11项完成，整机减少10.81%
+
+用户要求先改随机版调度看效果。task/186-local-pipeline/PR192，新增architecture_tlm/scheduling_v2_20261027；首轮执行410fa5af/Slurm3156七项，提前DMA执行5ba79477/Slurm3163四项，全部completed、原RESULT/EXECUTION/SUMMARY SHA核验。134本地测试及第二轮每项12冻结包测试通过。当前无本任务运行作业，不重跑。
+
+固定Qwen3-4B后训练形状/36层/B1/2K、500MHz目标、32×64×64 SC、2048MAC/拍、GU64/NL128、8MiB512bank512GBs、标准HBM/screen_pv，不门控。首轮prefill/资源日历/SC跨窗口仅约0.14%均值收益；普通prefill42541次中前一计算结束前就绪数0。真正有效的是响应槽释放后即发下一DMA：普通BF16当前shared fill之后、SC当前program之后/context之前；复用原单响应槽、两shared槽与两本地bank，没有扩计算或数据容量。
+
+组合三seed旧均值64.411266667→57.445384667ms/token，少10.814695%，约1.121261倍。seed0 64.3779→57.421164；FFN 25.4915625→25.2069625ms约1.1%，普通投影/lm_head29.8444163→23.1708518ms约22.4%；主要收益是普通数字部分供数，不是随机算术本身快10.8%。同seed算术/采样需求、帧/恢复顺序、SRAM/DRAM物理字节和本地数据状态相同。旧seed0逐数复现。
+
+单文档FINAL_RESULTS_ZH.md、机器表FINAL_COMPARISON.json；原两轮表保留，O16已登记。源/提交/回收/验证/归档在work/jieruiz/186/SCHEDULE_*，两个输入包移至唯一project_archives/scheduling_issue186_20261027，不建新全量checkout。无新PPL/RTL/PT/全片PPA；数据/权重SHA不适用（合成形状事务）。外存仍单macro actor且跨描述符排空、SRAM整描述符、SC计数/恢复串行；数字L/II本轮未改。后续数字基线也应采用相同供数政策，再谈随机与数字公平比较。发布以SCHEDULE_V2_PUBLICATION回执为准；PR不自动合并，Projects待权限。
+
+---
+
 ## 2026-10-27 Issue186：首轮调度收益很小，已提交响应释放后提前DMA
 
 3156七项全部completed，执行410fa5af；原seed0逐数复现64.3779ms。只prefill或资源日历均64.3779，SC跨窗口/三项组合seed0为64.30045ms（少0.12%），组合三seed64.32323ms。工作量、采样、逻辑帧顺序、同seed SRAM/DRAM物理字节与数据状态相同。42541次普通prefill在前一计算结束前就绪数为0，指出DMA发起仍偏晚；不能据此说全部调度优化无效。

@@ -1,3 +1,7 @@
+# 随机版固定资源调度探索
+
+**最终入口：[FINAL_RESULTS_ZH.md](FINAL_RESULTS_ZH.md)**。两轮11项完整36层TLM已完成；组合三seed64.4113→57.4454ms/token，时间少10.81%。参数、字节、缓冲、分项效果和未展开调度均在该文档。代码/结果归Issue186/PR192，尚未合并。
+
 # 固定资源随机版：调度消融
 
 Issue186/PR192；Qwen3-4B后训练形状、36层、B1/2K，含lm_head。采用上一轮500MHz、32个64×64随机阵列、GU64/NL128、8MiB/512bank/512GB/s SRAM与同一标准HBM时序。Attention仍为筛选＋准确Softmax＋PV采样。

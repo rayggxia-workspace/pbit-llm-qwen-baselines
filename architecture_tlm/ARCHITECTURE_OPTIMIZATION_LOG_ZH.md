@@ -69,3 +69,13 @@ Issue186，分支task/186-local-pipeline，独立目录tmp/ffn-local-pipeline-is
 门控排空后idle8拍关，请求1拍恢复，内存/随机源保持；SRAM80MHz和HBM时序不跟核心加速。32SC、2048MAC/拍、512bank/512GBs、有限本地双bank256KiB，输出并行和后处理同步×4；不是同面积对照。旧计算预算来源与未实现吞吐详见新目录CYCLES_AND_UNCERTAINTY_ZH.md。
 新100MHz计数PPA按正确M1输出粒度回填，B7/M8×256约209.803mm²；已计价面积小计279.637mm²。500MHz条件门控80%情景小计27.34→8.41W，1.761→0.543J/token，未测ICG/500MHz/B7活动；完整物理PPA保持null。旧100MHz/NL64预算约0.476J不能被隐去，提速不保证每token省能。主候选仍screen_pv，未新测Ising。
 证据architecture_tlm/clock500_resource_20261026/RESULTS_ZH.md及COMPARISON/PPA_ANCHORS；功耗原件/台账SHA、CPU封存与验证见work/jieruiz/186/CLOCK500_*。下一步优化计数面积、实现500MHz流水线/门控，补HBM与本地存储成本。
+
+## O16（2026-10-27）：固定资源下提前发起下一DMA
+
+Issue186/PR192；[最终报告](scheduling_v2_20261027/FINAL_RESULTS_ZH.md)。Qwen3-4B后训练形状、36层/B1/2K含lm_head，500MHz目标、32SC/2048MAC、8MiB512GBs、GU64/NL128/HBM/screen_pv固定，不门控。两轮执行410fa5af/5ba79477、Slurm3156/3163共11项completed/SHA核验，134软件测试通过；没有模型载荷/PPL或新电路PPA。
+
+先测试prefill、就绪日历和SC跨窗口：只少约0.14%；下一DMA依然偏晚，42541次prefill中提前就绪数0。随后把普通矩阵DMA提到shared fill释放响应槽之后，SC DMA提到program释放响应槽之后/context准备之前。复用原1响应槽/2shared槽/2本地bank，不扩阵列或数据存储。
+
+组合三seed平均64.411267→57.445385ms/token，少10.81%；seed0 FFN25.4916→25.2070ms，普通投影/lm_head29.8444→23.1709ms。主收益属于普通部分供数，不能归为随机乘法本身10.8%提升。同seed动作/采样/帧顺序/物理字节/数据状态相同；控制PPA和完整能量待校准。
+
+负面结果和第一轮未删除。剩余：单macro DMA及批间排空、SRAM整描述符占用、SC恢复串行、旧数字L/II；下一步数字基线同样优化后再做公平比较。Git只留小汇总和manifest，原件在个人服务器；两个输入包唯一归档和恢复SHA见SCHEDULE_PACKAGE_ARCHIVE。上传与PR状态查work/jieruiz/186/SCHEDULE_V2_PUBLICATION.json。

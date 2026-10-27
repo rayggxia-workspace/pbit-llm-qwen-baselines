@@ -72,5 +72,5 @@ def main():
         '本轮是事务时序/动作模型，没有新模型PPL、GPU性能或RTL/PT。数字算子L/II仍沿原参数来隔离调度影响；后续按文献/实库校准另做参数情景。', '',
         '复现：先collect_schedule_early.py核远端completed和原件SHA，再analyze_schedule_early.py重新生成本报告。具体各动作变化、资源日历命中数和原件SHA见COMPARISON_EARLY_DMA.json与results_early_dma/。']
     (D/'RESULTS_EARLY_DMA_ZH.md').write_text('\n'.join(text)+'\n',encoding='utf-8',newline='\n')
-    print(json.dumps({'rows':len(rows),'baseline_ms':rows[0]['TPOT_ms'],'combined_ms':result['combined_mean_ms'],'baseline_reproduced':True}))
+    print(json.dumps({'rows':len(rows),'baseline_ms':references[0]['metrics']['TPOT_ms'],'combined_ms':result['combined_mean_ms'],'baseline_reproduced':True}))
 if __name__=='__main__':main()

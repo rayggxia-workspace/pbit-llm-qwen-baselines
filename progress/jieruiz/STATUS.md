@@ -1,3 +1,11 @@
+# 2026-10-27 随机版调度优化运行中
+
+Issue186/PR192，jieruiz，task/186-local-pipeline，base main d83eeb1f，目录tmp/ffn-local-pipeline-issue186-20261025。执行410fa5af，Slurm3156七CPU项已运行，源码/提交回执SCHEDULE_V2_SOURCE/SUBMISSION；133本地检查与远端每项11测试通过，无已完成全模型结果或加速数字。
+
+固定500MHz/32SC/GU64NL128/8MiB512bank512GBs/HBM/screen_pv，不门控。三项分别和组合：资源日历、SC跨窗口program、BF16普通矩阵prefill；数据容量/算术/样本不变。collect_schedule_v2.py收completed封存，再analyze_schedule_v2.py验证旧基线复现和同seed工作量/字节。不要重交健康3156、不要修改远端source。发布状态见SCHEDULE_V2_PUBLICATION，Projects待权限。等待时不用重跑旧PPL/RTL/PT。
+
+---
+
 发布确认（2026-10-27）：论文建模口径已推送PR192，提交81b826c80dcd4265883d7a40a83f1673d5251164并回读policy原字节一致；Issue186已同步，仍待审、未合并。仅文档，无新仿真或代码参数变更；回执work/jieruiz/186/PAPER_POLICY_PUBLICATION.json。
 
 # 2026-10-27 论文建模口径更新（Issue186/PR192）

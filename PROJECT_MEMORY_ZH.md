@@ -1,3 +1,13 @@
+## 2026-10-27 Issue186：随机版固定资源调度优化已提交
+
+用户要求实际改调度，先看随机版影响。仍task/186-local-pipeline/PR192，新增architecture_tlm/scheduling_v2_20261027，执行410fa5af，Slurm3156_[0-6]已submitted/running，CPU任务，不重跑旧封存结果。500MHz、32个64×64阵列、GU64/NL128、8MiB/512bank/512GBs、同标准HBM与screen_pv不变，均不开门控以隔离调度。
+
+三项策略：按就绪在资源日历空隙预约；另一权重/系数bank跨输出或输入窗口提前program；随机模型内BF16普通矩阵使用既有shared prefill。保留原逻辑帧顺序、单套计算/恢复及已有数据容量；无新bank/数组。默认路径保留。7项全36层：原调度、三个单因素、组合三seed。133本地检查及每项远端11测试通过。当前无完整新结果，不报加速；读SCHEDULE_V2_COLLECTION和MANIFEST确认完成，不重提交健康3156。
+
+远端个人projects/pbit-scheduling-issue186-20261025/schedule_v2_410fa5af。恢复先check已有任务，运行collect_schedule_v2.py按completed和原SHA收小摘要，再analyze_schedule_v2.py核算术/物理字节/本地容量、旧64.411ms基线复现和组合三seed。原件留远端，不取大trace。结果后更新优化记录O16、Issue/PR/STATUS及本备忘录。外存仍单macro actor且批间排空，SRAM仍整描述符，SC计算/恢复仍串行；本轮未改数字L/II、PPL或硬件PPA。发布以SCHEDULE_V2_PUBLICATION为准，Projects待权限。
+
+---
+
 发布确认（2026-10-27）：论文建模口径已推送PR192，提交81b826c80dcd4265883d7a40a83f1673d5251164并回读policy原字节一致；Issue186已同步，仍待审、未合并。仅文档，无新仿真或代码参数变更；回执work/jieruiz/186/PAPER_POLICY_PUBLICATION.json。
 
 ## 2026-10-27 用户确认：论文主模型采用有依据的算子和合理优化调度

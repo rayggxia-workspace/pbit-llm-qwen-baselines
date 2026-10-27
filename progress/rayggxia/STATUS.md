@@ -1,3 +1,10 @@
+## 2026-10-27 SC/数字矩阵定量估算追加
+
+- 用户要求先估算跨工艺各指标。报告SC_DIGITAL_ESTIMATE_ZH.md、完整机器表SC_DIGITAL_ESTIMATE.json；输入原件SHA在SC_DIGITAL_INPUTS.json，复算estimate_sc_digital.py。原55/28nm文献数据和历史实验不改。
+- 最有利B4/T64三级核64输出复制＋共享前端代理：1.744mm²、43.47mW、701.25ns/向量、30.48nJ/4096有效MAC；64×64 GEMM约44.88µs/1.951µJ。相对55nm MobileNet任务等效能量高26.7%，相对LeNet低21.6%；数字时间列均为吞吐换算，非目标矩阵实测。
+- 同吞吐64数字MAC的粗55nm投影约0.068–0.089mm²/3.89–4.50nJ，仅情景，不是已实现RTL。T32/128、B7与ICG、权重存储成本另列，质量未验证，外围未闭合。
+- 本轮只有算术后处理，无RTL/EDA/TLM/服务器/模型运行、不新增数字run。沿用Issue187/PR189，发布准确提交/回读状态见SC_DIGITAL_ESTIMATE_PUBLICATION.json（生成后）与Issue阶段评论；PR待审未合并，Projects待权限。实际硬件实现仍按独立任务接续。
+
 ## 2026-10-27 55nm/28nm普通数字矩阵基线调研
 
 - 发布确认：源提交0231917514b80525c300fb5461d8a080413aebbb已推送PR189，8文件逐字/blob与tree核验通过，本地导入相同SHA；Issue评论6441943866。开放待审未合并，回执DIGITAL_MATMUL_PUBLICATION.json。

@@ -1,7 +1,7 @@
 """Immutable representative Qwen3-4B layer experiment, actual DRAMSys."""
 import argparse,hashlib,json,os,pathlib,platform,sys,time,traceback
 ROOT=pathlib.Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
-from architecture_tlm.scheduling_v2_20261027.profiles import configuration
+from architecture_tlm.clock500_resource_20261026.profiles import configuration as original_configuration
 from architecture_tlm.scheduling_v2_20261027.model import SchedulingDecode
 from architecture_tlm.scheduling_v2_20261027.calendar import ReadyCalendar
 from architecture_tlm.ffn_local_pipeline_20261025.model import LocalPipelineFFN
@@ -10,6 +10,18 @@ from .model import SlicedDecode,configure
 
 
 def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def configuration(case,bridge,output):
+    c,m=original_configuration(case,bridge,output)
+    c['early_next_dma']=case.get('early_next_dma',False)
+    c['digital_shared_prefill']=case.get('digital_prefill',False)
+    if 'local_pipeline' in c:
+        c['local_pipeline']['early_next_dma']=c['early_next_dma']
+        c['local_pipeline']['cross_window_program']=case.get('cross_window_program',False)
+    c['scheduling_v2']=dict(calendar=case.get('calendar',False),digital_prefill=c['digital_shared_prefill'],cross_window_program=case.get('cross_window_program',False),early_next_dma=c['early_next_dma'])
+    c['trace_event_limit']=120
+    return c,m
 
 
 def main():

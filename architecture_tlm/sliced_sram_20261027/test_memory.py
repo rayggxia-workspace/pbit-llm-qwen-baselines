@@ -86,6 +86,17 @@ class PortsAndLinks(unittest.TestCase):
 
 
 class Integration(unittest.TestCase):
+    def test_runner_configuration_supports_bf16_and_preserves_SC(self):
+        from .run_case import configuration
+        from architecture_tlm.scheduling_v2_20261027.profiles import configuration as old
+        args=dict(scope='one_layer',expanded_compute=True,expanded_sram=True,nonlinear_samples=128,
+            clock_gating=False,ffn='sc',attention='screen_pv',early_next_dma=True,calendar=True,
+            digital_prefill=True,cross_window_program=True,seed=0)
+        self.assertEqual(configuration(args,'/unused/bridge','/unused/output'),old(args,'/unused/bridge','/unused/output'))
+        args['ffn']='bf16';c,m=configuration(args,'/unused/bridge','/unused/output')
+        self.assertEqual(c['ffn']['mode'],'bf16');self.assertTrue(c['digital_shared_prefill'])
+        self.assertNotIn('local_pipeline',c)
+
     @classmethod
     def setUpClass(cls):
         c,m=case(engines=2,retain=2)

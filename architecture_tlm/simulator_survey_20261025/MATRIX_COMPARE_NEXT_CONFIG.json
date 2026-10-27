@@ -9,9 +9,15 @@
   "baseline_N": 64,
   "BINS": 4,
   "range_checks": {
-    "single_event_count_range": [0, 32],
+    "single_event_count_range": [
+      0,
+      32
+    ],
     "single_event_count_bits": 6,
-    "unsigned_plane_sum_over_64_inputs_and_32_samples_range": [0, 2048],
+    "unsigned_plane_sum_over_64_inputs_and_32_samples_range": [
+      0,
+      2048
+    ],
     "unsigned_plane_sum_bits": 12,
     "signed_plane_sum_safe_bits": 13,
     "full_signed_weighted_sum_without_bins_max_abs": 260096,
@@ -26,5 +32,95 @@
     "B4 shifts by0/2/4/6 extend effective bit positions while raw stored weight stays8bits",
     "T32 quality and PPA are not newly verified",
     "per-frame static bins and signed correction must be retained in any plane implementation"
-  ]
+  ],
+  "OR4_requested": true,
+  "plan_state": "VALIDATION_PLAN_ONLY_NO_NEW_HARDWARE_RUN",
+  "planned_cases": [
+    {
+      "id": "S0",
+      "name": "T32 exact weighted tree",
+      "priority": 0
+    },
+    {
+      "id": "S1",
+      "name": "exact bitplane popcount and late recovery",
+      "priority": 0
+    },
+    {
+      "id": "S2",
+      "name": "count first then exact weighted backend",
+      "priority": 0
+    },
+    {
+      "id": "S3",
+      "name": "plain OR4 before temporal count",
+      "priority": 0
+    },
+    {
+      "id": "D0",
+      "name": "mature INT8 plus matched scale handling",
+      "priority": 0
+    },
+    {
+      "id": "D1",
+      "name": "deterministic bitserial plus matched scale handling",
+      "priority": 0
+    },
+    {
+      "id": "S4",
+      "name": "explicit mutual-exclusion OR4 mapping and compensation",
+      "priority": 1
+    }
+  ],
+  "initial_geometry": {
+    "T": 32,
+    "N": 64,
+    "M_function_then_shared": [
+      1,
+      8
+    ],
+    "PVT": "SS1.08V125C",
+    "frequency_MHz": 100,
+    "seeds_at_least": 3
+  },
+  "scale_candidates_after_screening": {
+    "N": [
+      256,
+      1024
+    ],
+    "M": [
+      64
+    ]
+  },
+  "OR4_unsigned_plane_count_max": 512,
+  "OR4_unsigned_plane_count_bits": 10,
+  "legacy_or_evidence": [
+    {
+      "path": "digital_circuit_simulation_registry/records/sc-38015538.json",
+      "bytes": 48029,
+      "sha256": "9f761a077d517171f330b2dea9a75a1d34cf0bcdaffce5ade3f6da4fc11b26da"
+    },
+    {
+      "path": "digital_circuit_simulation_registry/records/dff-38057668-0.json",
+      "bytes": 6536,
+      "sha256": "23a7523777f5b6d0199c06c5cf42be3010df24dfe39c2f2bbd40d87f235a6c7a"
+    },
+    {
+      "path": "digital_circuit_simulation_registry/records/sram-38068649-1.json",
+      "bytes": 6529,
+      "sha256": "13d55840a8169f25737c865c592fb935781b16d676f69041885f57e038b6a8a0"
+    },
+    {
+      "path": "sc_architecture_power_comparison_20261014/00_先看这里_架构功耗对比.txt",
+      "bytes": 14055,
+      "sha256": "1047bb511d32127dcf2b81db1785f7bf5ecd93de193db58cb491ee0897382799"
+    },
+    {
+      "path": "sc_weight_storage_or4_20261014/VALIDATION_ZH.md",
+      "bytes": 2031,
+      "sha256": "7b9effcda043a7055e94b0b340d37c5e3c19d9bf3554c396da70738b87a99afd"
+    }
+  ],
+  "legacy_plain_OR4_power_reduction_percent": 10.28,
+  "legacy_power_reduction_is_T32_result": false
 }

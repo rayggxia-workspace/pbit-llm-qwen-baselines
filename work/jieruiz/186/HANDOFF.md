@@ -1,3 +1,5 @@
+发布确认（2026-10-27T11:59:44.018808+00:00）：本地SRAM端口12新项/14对照已上传PR192，提交9c853d49ce426144a4a0740a38653e3daaa905b3；6远端关键文件原字节回读一致、24摘要/执行Git字节同封存SHA。Issue186已同步，待审未合并；无本任务运行作业、无新全36层/PPA。回执work/jieruiz/186/LOCAL_PORTS_PUBLICATION.json。
+
 ## 2026-10-27 Issue186：SRAM本地端口/频率优化十二项完成
 
 复用task/186-local-pipeline/PR192，jieruiz，tmp/ffn-local-pipeline-issue186-20261025；main base d83eeb1f。已读取最新Issue/PR/README/AGENTS与Gemmini/ONNXim一手资料，新增主unified_v6的可选local_ports_20261027后端，不另造整机。正式默认DDR4/历史配置保留，新候选限定500MHz扩容/HBM/8MiB条件。

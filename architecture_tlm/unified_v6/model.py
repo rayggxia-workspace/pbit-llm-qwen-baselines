@@ -328,6 +328,13 @@ class FullDecode:
         while first<out:
             current_ticket=ticket;n=current_ticket['n']
             loaded,slot=pipe.fill(t,current_ticket)
+            # The current response was consumed by shared fill. The one
+            # existing response slot can now receive the next BF16 tile while
+            # the current local operand load/MAC proceeds; no extra DMA slot.
+            nxt=first+n;early_ticket=None
+            if self.c.get('early_next_dma',False) and info['width']==2 and nxt<out and self.c['double_buffer']:
+                early_ticket=pipe.issue(loaded,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
+                pipe.counts['digital']['dma_issue_after_shared_fill']+=1
             loaded=self.mem.transfer(loaded,self.slots[slot],n*row_bytes,False,'weight_consume')
             self.e.action('digital_local_operand_write_byte',n*row_bytes,'digital_local_storage')
             if info['width']==1:
@@ -342,7 +349,7 @@ class FullDecode:
             self.e.action('digital_local_activation_read_byte',inp*n*input_width,'digital_local_storage')
             nxt=first+n
             if nxt<out and self.c['double_buffer']:
-                ticket=pipe.issue(start,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
+                ticket=early_ticket if early_ticket is not None else pipe.issue(start,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
             t=end
             if info['width']==1:t=self.digital_w8_restore(t,n,inp)
             output_width=4 if info['width']==1 or name=='lm_head' else 2

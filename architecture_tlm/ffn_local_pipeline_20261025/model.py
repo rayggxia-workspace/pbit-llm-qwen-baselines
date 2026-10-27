@@ -157,6 +157,12 @@ class LocalPipelineFFN(LocalityFFN):
             if 'ready_ns' not in ticket:self.program(t,ticket)
             t=max(t,ticket['ready_ns']);self.stats['exposed_supply_wait_ns']+=t-before
             self.active_bank=ticket['bank']
+            # program() consumed the old response; next DMA may already run
+            # during RNG-context preparation, using the same single buffer.
+            early_ticket=None
+            if self.opt.get('early_next_dma',False) and index+1<len(jobs):
+                early_ticket=self.issue_local(t,name,jobs[index+1])
+                self.stats['early_dma_before_context']+=1
             start,end=self.execute(t,n,kg,kind,j==0)
             ticket.update(compute_start_ns=start,compute_done_ns=end)
             order=[name,kw,j,k,kg,n];self.order_hash.update(json.dumps(order,separators=(',',':')).encode()+b'\n')
@@ -165,7 +171,7 @@ class LocalPipelineFFN(LocalityFFN):
             self.logical_frames.update(json.dumps([name,k,kg,j==0],separators=(',',':')).encode()+b'\n')
             next_ticket=None
             if index+1<len(jobs):
-                nxt=jobs[index+1];next_ticket=self.issue_local(start,name,nxt)
+                nxt=jobs[index+1];next_ticket=early_ticket if early_ticket is not None else self.issue_local(start,name,nxt)
                 if self.overlap and ((nxt[0]==kw and nxt[2]==j) or self.cross_window_program):
                     self.program(start,next_ticket)
                     self.stats['early_programs']+=1

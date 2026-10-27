@@ -6,10 +6,10 @@ from architecture_tlm.unified_v6.core import Scheduler
 from architecture_tlm.unified_v6.test_ffn_locality import case
 from architecture_tlm.ffn_local_pipeline_20261025.model import LocalPipelineFFN
 
-def run(calendar=False,prefill=False,cross=False,*,tile=64):
+def run(calendar=False,prefill=False,cross=False,*,tile=64,early=False):
     c,m=case(tile=tile,engines=2,retain=2,source_groups=tile//64)
     c['trace_event_limit']=100000;c['local_pipeline']=dict(overlap=True,weight_bypass=True,cross_window_program=cross)
-    c['digital_shared_prefill']=prefill
+    c['digital_shared_prefill']=prefill;c['early_next_dma']=early;c['local_pipeline']['early_next_dma']=early
     sched=ReadyCalendar(c['trace_event_limit'],core_period_ns=1e9/c['core_hz']) if calendar else Scheduler(c['trace_event_limit'])
     o=SchedulingDecode(c,m,scheduler=sched);o.ffn_latest=LocalPipelineFFN(o);r=o.run()
     return o,r
@@ -78,6 +78,28 @@ class ModelTests(unittest.TestCase):
         self.assertGreater(r['FFN_contract']['local_pipeline']['counts']['cross_window_early_programs'],0)
         self.assertGreater(r['tile_pipeline']['digital']['counts']['prefilled'],0)
         self.assertIsInstance(self.runs[-1][0].s,ReadyCalendar)
+    def test_earlier_dma_same_capacity_work_and_bytes(self):
+        _,a=run(False,False,False);o,b=run(True,True,True,early=True)
+        self.assertEqual(work(a['actions']),work(b['actions']))
+        self.assertEqual(a['DRAM']['traffic'],b['DRAM']['traffic'])
+        self.assertEqual(a['SRAM']['traffic'],b['SRAM']['traffic'])
+        self.assertEqual(a['FFN_contract']['local_state'],b['FFN_contract']['local_state'])
+        pipe=b['tile_pipeline']['digital'];self.assertEqual(pipe['counts']['max_pending'],1)
+        self.assertGreater(pipe['counts']['dma_issue_after_shared_fill'],0)
+        self.assertGreater(b['FFN_contract']['local_pipeline']['counts']['early_dma_before_context'],0)
+        self.assertLessEqual(b['metrics']['elapsed_ns'],a['metrics']['elapsed_ns'])
+        for prev,cur in zip(pipe['records'],pipe['records'][1:]):
+            if prev['name']==cur['name']:
+                self.assertGreaterEqual(cur['issue_ns']+1e-6,prev['fill_done_ns'])
+        resources={}
+        for e in b['events']:
+            self.assertGreaterEqual(e['start_ns']+1e-6,e['ready_ns'])
+            if e['end_ns']>e['start_ns']:
+                for r in e['resources']:resources.setdefault(r,[]).append((e['start_ns'],e['end_ns']))
+        for name,events in resources.items():
+            q=sorted(events)
+            for a,b in zip(q,q[1:]):self.assertLessEqual(a[1],b[0]+1e-6,name)
+
     def test_clock_usage_ungated(self):
         o,r=self.runs[-1];z=o.s.clock_gating_report(r['metrics']['elapsed_ns'])
         self.assertFalse(z['enabled'])

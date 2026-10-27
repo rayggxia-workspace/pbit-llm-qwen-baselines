@@ -87,3 +87,7 @@ Issue186/PR192；[最终报告](scheduling_v2_20261027/FINAL_RESULTS_ZH.md)。Qw
 三seed57.4454ms/token：已覆盖片上新计数CE12.7864W，计数真实ICG/数字CE10.0280W，数字门控90%空闲动态情景2.5162W（0.14454J/token）；数字工作时钟/漏电保留。旧64pJ/B+50mW外存仅粗预算另6.1661W，总候选8.6823W非HBM/整片已测。共享/局部/响应SRAM与PRNG已计，B7和500MHz仍外推。关键待补：计算/门控集成500MHz、CIM并行外围和互连、匹配HBM能量；Ising当前不启用。
 
 6份completed输入SHA、4份结果×3情景全表重建、8会计守卫通过。源价格及SHA见ANCHORS.json；统计RESULTS.json/MODULES.csv。新数字价格揭示CE-only大阵列idle占比，不能将旧2pJ动作代理与新全寿命功耗直接比较。没有新增电路run，统一台账05为派生索引。
+
+## O18 分slice SRAM端口/链路（2026-10-27）
+
+共享sram_fabric与整bank描述符锁改为可选bank/端点/link后端，原8MiB/512bank/512GBs保持，新增16KiB有限FIFO明确未价。45验证和六项真实形状一层DRAMSys对照已完成，原配置失败/修复保留。只去global锁未加速；cycle_end更慢，accept策略另两项3178待收。入口[sliced_sram_20261027](sliced_sram_20261027/README_ZH.md)，结果与精确状态查RESULTS_ZH/COMPARISON、SRAM_SLICE_*。不改默认、不是36层TPOT，不将TLM当PPA，旧功耗不能免费套新互连。

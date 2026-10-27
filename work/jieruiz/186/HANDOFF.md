@@ -1,3 +1,15 @@
+## 2026-10-27 Issue186：分slice SRAM端口模型，六项完成/accept两项待收
+
+task/186-local-pipeline/PR192；tmp/ffn-local-pipeline-issue186-20261025。用户指出全局SRAM串行模型过粗，已查Gemmini/Eyeriss v2/ONNXim一手资料。沿主unified_v6增加可选memory_factory，默认旧路径保留；新后端sliced_sram_20261027，4×128bank、80MHz16B单端口，4×128GB/s共享读写链路＋DMA/矩阵/向量端点，总8MiB/512GBs不变，额外16KiB双credit FIFO明确未价。bank周期/access/CDC与链路资源拆开，不锁全局fabric。原FFN本地CIM和寄存器已绕过shared fabric，不称全部片上访存原来都串行。
+
+45验证通过（新13），无重叠、物理字节/库能量/算术/状态守恒、500次FastCalendar与原预约全等；FastCalendar只是软件append优化。首执行18dd259a/3169：SC三项completed，BF16三项在配置阶段因SC专用local_pipeline键失败，日志SHA保留；2adacf79/3175只补失败BF16三项，全部completed。六项的实际随机输出SHA和工作/物理字节逐数相等。单层＋全151936词表ms：SC旧8.229026、分slice描述符8.280314、beat-cycle_end8.481780；BF16旧8.831064、描述符8.897864、beat-cycle_end9.125730。不是完整36层TPOT；仅删除global锁未提速，旧模型不是统一悲观上界。
+
+检查发现cycle_end将写FIFO保持至bank周期末；新accept在写入接受后归还credit，bank仍独占12.5ns，setup/hold由接口合同保证，TLM不替代STA。执行5d543eb9/Slurm3178_[2,5]为SC/BF16两个独立协议对照，已提交、尚未封存时不得报收益。三源快照不修改/不重复旧健康任务；当前无新GPU/PPL/RTL/PT。旧整机5.7008GB SRAM裸下界11.134ms，fabric忙15.284ms，总57.421ms；不能把总时间都归因SRAM或把单层×36当整机。
+
+恢复先读SRAM_SLICE_SUBMISSION/BF16FIX_SUBMISSION/ACCEPT_SUBMISSION、COLLECTION、HANDOFF；运行work/jieruiz/186/collect_sram_slices.py _ACCEPT，然后analyze_sram_slices.py（--partial仅允许阶段报告）。RESULTS_ZH/COMPARISON已6/8，源码/配置/原RESULT SHA齐；剩余2成功后去--partial校验8/8再更新PR/Issue/STATUS/备忘录。Ising旧输出sink尚未拆beat，当前新后端明确拒绝；不含BookSim/真实布局/NoC PPA，旧2.52W不迁移。原三包已逐SHA归档project_archives/sram_slices_issue186_20261027，不建全量副本。数字台账06只为TLM索引，run数量不增；Projects待权限，不自动合并。发布见SRAM_SLICE_PUBLICATION.json。
+
+---
+
 ## 2026-10-27 Issue186：共享SRAM分slice原型
 
 用户要求带宽约束落到具体端口/链路，接续task/186-local-pipeline/PR192，复用tmp/ffn-local-pipeline-issue186-20261025。核实shared sram_fabric全局锁＋所有bank整描述符锁/CDC是限制，本地CIM/寄存器已绕过。新sliced_sram_20261027可选factory，默认不改；4×128bank、每bank80MHz16B单端口、4×128GB/s读写合计链路，原8MiB和512GB/s保持。

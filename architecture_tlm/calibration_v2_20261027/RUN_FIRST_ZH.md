@@ -14,11 +14,11 @@ python flow/make_digital_cases.py --output fixtures100 --tops dig_fp32_add dig_b
 将flow/library.example.json复制到私有目录，填写真实`.db`、库Verilog模型、参考单元、SS/TT、电压和温度。area的单位换算必须有库文档依据，不知道时保持null。建议先沿已有SS/1.08V/125C/100MHz口径。
 
 ```
-python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17.json --library /private/library.json --output /private/counter_preflight
-python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17.json --library /private/library.json --output /private/counter_synth --stage synth
-python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17.json --library /private/library.json --output /private/counter_sta --stage sta --reuse-synth /private/counter_synth/synth
-python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17.json --library /private/library.json --output /private/counter_gate --stage gate_sim --reuse-synth /private/counter_synth/synth
-python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17.json --library /private/library.json --output /private/counter_power --stage power --reuse-synth /private/counter_synth/synth --windows /private/counter_gate/auto_windows.json
+python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17_swept_ts193_p8128.json --library /private/library.json --output /private/counter_preflight
+python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17_swept_ts193_p8128.json --library /private/library.json --output /private/counter_synth --stage synth
+python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17_swept_ts193_p8128.json --library /private/library.json --output /private/counter_sta --stage sta --reuse-synth /private/counter_synth/synth
+python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17_swept_ts193_p8128.json --library /private/library.json --output /private/counter_gate --stage gate_sim --reuse-synth /private/counter_synth/synth
+python flow/run_case.py --case cases100/counter_b4_t64_m1_p1_g0_100MHz_continuous_s17_swept_ts193_p8128.json --library /private/library.json --output /private/counter_power --stage power --reuse-synth /private/counter_synth/synth --windows /private/counter_gate/auto_windows.json
 ```
 
 数字同理，将case改为`fixtures100/dig_bf16_mac_continuous_f100_s17/case.json`，为每个阶段使用新的输出目录。idle可复用同top/源/约束/频率的综合结果，活动文件必须重新生成。综合只包含DUT，TB中的随机生成器不计入DUT功耗；真实随机前端以后单独计价。

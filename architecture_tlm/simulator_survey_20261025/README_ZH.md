@@ -6,6 +6,7 @@
 
 阅读入口：
 
+- [DS-CIM等随机矩阵指标审计](STOCHASTIC_METRIC_AUDIT_ZH.md)：位归一化、CMR并发、精度/边界、当前374bit/输出数据状态与“先计数后加权”18组整数等价探针。
 - [当前SC与数字的定量估算](SC_DIGITAL_ESTIMATE_ZH.md)：64×64 GEMV/GEMM、T32/64/128、实际锚点和跨工艺/同吞吐敏感性；不是新PPA或目标矩阵实测。
 - [55nm/28nm普通数字矩阵乘法基线](DIGITAL_MATMUL_55_28_ZH.md)：核查传统INT8阵列/协处理器功耗与时钟，固定作者开源RTL版本；区分峰值时间下界与本项目实际GEMV时延。没有新RTL/EDA运行。
 - [保守调度审计](CONSERVATIVE_SCHEDULING_AUDIT_ZH.md)：核查PR192固定版本的资源预约、DMA/SRAM屏障、数字/SC优化不对称及12项封存配置；区分正确性检查与架构政策，不把代表性工具对照当作多数统计。

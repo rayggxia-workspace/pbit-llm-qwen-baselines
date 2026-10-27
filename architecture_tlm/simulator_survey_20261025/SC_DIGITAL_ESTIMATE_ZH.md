@@ -2,6 +2,8 @@
 
 日期：2026-10-27，Issue187 / PR189，rayggxia。仅重算已有数据，没有新RTL、EDA、TLM或质量实验。输入与公式见`work/rayggxia/187/SC_DIGITAL_INPUTS.json`、`estimate_sc_digital.py`；完整机器数值见`SC_DIGITAL_ESTIMATE.json`。
 
+后续口径/实现审计见[DS-CIM等随机矩阵对照](STOCHASTIC_METRIC_AUDIT_ZH.md)。本文CNN吞吐换算与64MAC工艺投影仅为风险参照，不是同质量目标矩阵胜负；原估算数字保留。当前多位加权树价格不能代表SC最优成本。
+
 **结论：当前最有利的B4/T64/三级合并计数实现，瞬时功率低，但尚未体现相对成熟INT8数字阵列的面积、能量与速度综合优势。相对55nm整协处理器任务平均，单次能量接近；相对28nm高利用率计算阵列及粗略55nm投影，差距明显。不能将较低总功率当作较低每矩阵能量。**
 
 ## 1. 统一工作量与我们估算的边界

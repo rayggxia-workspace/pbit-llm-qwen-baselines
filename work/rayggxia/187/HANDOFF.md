@@ -1,3 +1,10 @@
+## 2026-10-27 DS-CIM等随机矩阵指标审计
+
+- 新报告STOCHASTIC_METRIC_AUDIT_ZH.md及JSON。核对DS-CIM一位归一化/T64效率与T256质量/CMR64并发、SRR丢低位和缓存边界；交叉uGEMM、SASCHA和tubGEMM。上轮数字投影与CNN吞吐换算降为风险参照，旧价格数字保留，不当同质量胜负。
+- 当前B4T64三级显式数据状态374bit/输出（非实际综合DFF计数）；概率/权重/档号在固定帧内静态，当前计数DUT外部存储不能重复归因。精确累加有文献依据，不判作根本错误。
+- 发现固定W/bin线性tile可严格重排为每输入先计数再加权；B4/B7×T32/64/128×三seed共18软件探针，逐事件/计数/带位权切片整数全等，不跨SiLU/FSM/反馈。尚未实现新RTL或测得PPA收益，不新增数字run/服务器任务。
+- 沿用Issue187/PR189，发布状态/准确源提交见STOCHASTIC_AUDIT_PUBLICATION.json（生成后）；PR待审未合并，Projects待权限。后续可新增严格等价硬件对照，不自动启动昂贵实验。
+
 ## 2026-10-27 SC/数字矩阵定量估算追加
 
 - 发布确认：科学提交d23dd91a3c8b2bc6337aa7502fd553f326b5c598已推送PR189，7文件逐字/blob/tree通过，本地导入相同SHA；Issue评论6442717767。原INT8投影未含bin对齐/宽累加，不能声称同质量胜负。回执SC_DIGITAL_ESTIMATE_PUBLICATION.json；开放待审未合并。

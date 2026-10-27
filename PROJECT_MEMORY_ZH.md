@@ -1,3 +1,11 @@
+## 2026-10-28 Issue201：仅Wg/Wu双随机短流扫描运行中
+
+负责人jieruiz；task/201-dual-gu-short，目录tmp/dual-gu-issue201-20261027，依赖PR174@b41ee008（未合并）。科学执行2cd6d360不可变；18项CPU/CUDA验证通过（3205仅验证），pilot3199完成。正式Slurm3200_[0-3]健康运行，T32/64/128/256，各固定W、W-IID、联合2D分层三seed。后训练Qwen/Qwen3-4B；Wd固定W8、NL固定四档/联合32 T128、准确SDPA不改，全36层及前缀覆盖。不是训练或PPA。
+
+主协议8×128=1024目标后缀，不是完整WT2。未封存主观察：BF16四片同为13.566049；固定W T64三seed逐值复现PR174。W-IID seed0 T32/64/128/256为77.9953/25.4284/18.1963/16.6126，其他seed/联合待齐，不能宣称256已足够。权重P=abs(W8)/128，无额外量化，独立W源；联合Ka×Kw=8×4/8×8/16×8/16×16，条件二项CDF压缩有数值精度边界，无Gaussian。GU仍FP32恢复oracle，未验收完整bittrue。2cd旧diagnostics front_T/K写死64，顶层gu_samples等为准；b0a仅报告/验证修复，不重跑。
+
+成果qwen3/dual_gu、qwen3/results/dual_gu_20261027；交接work/jieruiz/201/HANDOFF.md，SOURCE/SUBMISSION/COLLECTION及RECOVERY可恢复。旧3197类型fixture失败、3198依赖未运行已取消，健康3199/3200未取消。不重复提交；恢复先收complete.json/documents SHA，再核40物理/37唯一及三seed差异。当前阶段PR待创建，未推送/未合并；实际发布以PUBLICATION.json及Issue201为准。Projects缺read:project待同步，无新定时。更新时间2026-10-28T00:43:16+08:00。
+
 ## Issue173短流三路AND结果核验完成（2026-10-24）
 
 Slurm2891三片封存完成，48份/46唯一配置、documents/sidecar原字节SHA、36层全前缀、每片27项预检通过。执行c44c2edc不变；同轮BF16及原尺度mean/IID64三seed与旧结果逐值一致。Qwen3-4B后训练、准确Attention、8×128后缀，非完整WT2。前级W8/x固定四档共享64 T=K64；后级4×2×4联合32区间，各1/2/4次。整体减半固定四档[S/2,S/8,S/32,S/128]的mean/IID64/联合32/64/128 PPL为13.4034/27.4020/103.8940/21.8821/15.3647；BF16=13.5660，最佳128仍高13.26%，不能称无损。gate/up恢复仍FP32参考；无训练/PPA。

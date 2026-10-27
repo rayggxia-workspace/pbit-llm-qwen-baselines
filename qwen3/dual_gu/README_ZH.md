@@ -27,4 +27,6 @@ GPU每连接用独立Philox键/地址，token行进入64bit key，W地址低于2
 
 先Slurm运行CPU/CUDA小形状检验，再执行context256/32目标/1段pilot；通过后4个T的独立Slurm数组各执行BF16及9个配置。主协议沿PR174：context2048、8段×128=1024目标后缀，**不是完整WT2**。BF16、模型/数据/token、TRAIN校准SHA和每个目标的36层覆盖均重新核验；不继承旧PPL。报告相对同轮固定W的ΔNLL/PPL及三seed离散程度，不自行设置用户已接受的质量阈值。
 
-旧Issue30/32证明旧范围/IID会失真，但不替代当前测试；原高斯参考与精确条件二项结果分开。无新RTL/PT/PPA，其他训练任务不动。执行以work/jieruiz/201/SUBMISSION.json和不可变source为准；只有complete.json及documents SHA通过才记完成，不能把pilot当主表。
+旧Issue30/32证明旧范围/IID会失真，但不替代当前测试；原高斯参考与精确条件二项结果分开。无新RTL/PT/PPA，其他训练任务不动。执行以work/jieruiz/201/SUBMISSION_2cd6d360.json和不可变source为准；只有complete.json及documents SHA通过才记完成，不能把pilot当主表。
+
+阶段报告入口：`qwen3/results/dual_gu_20261027/REPORT_ZH.md`。主数组3200仍运行；当前主表只是未封存观察。恢复见work/jieruiz/201/HANDOFF.md。

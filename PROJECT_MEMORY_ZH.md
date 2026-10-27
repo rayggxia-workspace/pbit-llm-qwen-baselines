@@ -1,3 +1,5 @@
+发布确认（2026-10-27）：调度11项完整结果已上传PR192，提交f8292c87415f26d5473c5a98830e5ae6632a434c并回读4个关键blob原字节一致；Issue186已同步，待审未合并。无本任务运行作业，准确回执work/jieruiz/186/SCHEDULE_V2_PUBLICATION.json。
+
 ## 2026-10-27 Issue186：调度两轮11项完成，整机减少10.81%
 
 用户要求先改随机版调度看效果。task/186-local-pipeline/PR192，新增architecture_tlm/scheduling_v2_20261027；首轮执行410fa5af/Slurm3156七项，提前DMA执行5ba79477/Slurm3163四项，全部completed、原RESULT/EXECUTION/SUMMARY SHA核验。134本地测试及第二轮每项12冻结包测试通过。当前无本任务运行作业，不重跑。

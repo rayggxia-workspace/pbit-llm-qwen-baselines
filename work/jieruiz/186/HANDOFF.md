@@ -1,3 +1,5 @@
+发布确认（2026-10-27）：调度11项完整结果已上传PR192，提交f8292c87415f26d5473c5a98830e5ae6632a434c并回读4个关键blob原字节一致；Issue186已同步，待审未合并。无本任务运行作业，准确回执work/jieruiz/186/SCHEDULE_V2_PUBLICATION.json。
+
 # 2026-10-27 调度两轮已完成
 
 Issue186/PR192；jieruiz；task/186-local-pipeline；base main d83eeb1f；目录tmp/ffn-local-pipeline-issue186-20261025。3156七项＋3163四项全部completed、封存SHA核验；执行410fa5af/5ba79477，健康完成任务不重跑，远端source不可变。本轮全部只用CPU；无本任务运行作业。

@@ -9,3 +9,5 @@ MATRIX共7项：原调度、三个单因素、组合seed0/1/2。源提交后冻�
 验证：python -B -m unittest architecture_tlm.scheduling_v2_20261027.test_scheduling architecture_tlm.ffn_local_pipeline_20261025.test_pipeline -v。完整调度验证后才报告整机时间；小形状link不是HBM结果。时间变短引起的idle/background动作变化单列，算术和物理访存应保持一致。
 
 area/power缺项沿原边界，完整芯片PPA仍未知；若动作不变，动态能量不会因软件仿真更快自动同比下降。随机重播种若取决于墙钟可能改变epoch，不继承逐bit或PPL等价。后续数字基线会采用相同可行的预取政策，本次先看随机模型的变化。
+
+首轮7项已完成，见RESULTS_ZH.md：三个开关组合仅约0.14%均值收益。第二轮MATRIX_EARLY_DMA.json把下一请求前移到当前响应缓冲释放边界，单因素＋组合三seed已提交；结果将在RESULTS_EARLY_DMA_ZH.md记录。两轮执行快照独立，不覆盖旧结果。

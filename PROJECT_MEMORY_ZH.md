@@ -1,3 +1,13 @@
+## 2026-10-27 Issue186：首轮调度收益很小，已提交响应释放后提前DMA
+
+3156七项全部completed，执行410fa5af；原seed0逐数复现64.3779ms。只prefill或资源日历均64.3779，SC跨窗口/三项组合seed0为64.30045ms（少0.12%），组合三seed64.32323ms。工作量、采样、逻辑帧顺序、同seed SRAM/DRAM物理字节与数据状态相同。42541次普通prefill在前一计算结束前就绪数为0，指出DMA发起仍偏晚；不能据此说全部调度优化无效。
+
+续作保持相同资源，将普通BF16下一tile DMA提前到当前shared fill释放唯一响应槽后，SC下一DMA提前到当前program完成/准备随机context前；无新响应槽/数据bank或MAC。134本地测试通过。执行5ba79477，Slurm3163_[0-3]已运行、远端各12测试通过；一个单因素与组合三seed共四个完整36层CPU项，尚无完整新结果。远端schedule_early_5ba79477与首轮source分开冻结，不改已完成3156。
+
+恢复先看work/jieruiz/186/SCHEDULE_EARLY_SUBMISSION/对应SOURCE与HANDOFF，不重交健康3163；collect_schedule_early.py收completed封存SHA到results_early_dma，再analyze_schedule_early.py按旧同seed基线做验证。首轮完整报告RESULTS_ZH.md与COMPARISON.json保留。新增结果后统一O16、PR192、Issue186/STATUS/备忘录；完整PPA/PPL未做，原数字L/II仍固定。发布以SCHEDULE_V2_PUBLICATION为准，Projects待权限。
+
+---
+
 ## 2026-10-27 Issue186：随机版固定资源调度优化已提交
 
 用户要求实际改调度，先看随机版影响。仍task/186-local-pipeline/PR192，新增architecture_tlm/scheduling_v2_20261027，执行410fa5af，Slurm3156_[0-6]已submitted/running，CPU任务，不重跑旧封存结果。500MHz、32个64×64阵列、GU64/NL128、8MiB/512bank/512GBs、同标准HBM与screen_pv不变，均不开门控以隔离调度。

@@ -1,3 +1,13 @@
+# 2026-10-27 调度第二轮运行中；首轮已完成
+
+Issue186/PR192，jieruiz，task/186-local-pipeline；目录tmp/ffn-local-pipeline-issue186-20261025。3156七项已completed/SHA核验，seed0 64.3779→64.30045ms，仅0.12%；prefill和日历无总时间收益。首轮执行410fa5af，结果architecture_tlm/scheduling_v2_20261027/RESULTS_ZH.md。
+
+发现下一DMA仍晚发起；新开关early_next_dma在既有响应槽释放后立即issue下一块，保持单响应槽/两共享槽/两本地bank。执行5ba79477、Slurm3163四CPU项已运行，远端每项12测试通过；本地110+24测试。MATRIX_EARLY_DMA.json定义单因素和组合三seed，source与SUBMISSION为准。没有第二轮完整结果，勿提前填加速。
+
+恢复：不改远端source、不重交3163；collect_schedule_early.py按completed收results_early_dma，再analyze_schedule_early.py核同seed工作量/字节和资源，最终报告/PUBLICATION在同一任务。原500MHz/32SC/GU64NL128/8MiB512GBs/HBM/screen_pv均固定，不门控。Projects待权限；无新GPU/PPL/RTL/PT。大原件在个人服务器，Git只小汇总与SHA。
+
+---
+
 # 2026-10-27 随机版调度优化运行中
 
 Issue186/PR192，jieruiz，task/186-local-pipeline，base main d83eeb1f，目录tmp/ffn-local-pipeline-issue186-20261025。执行410fa5af，Slurm3156七CPU项已运行，源码/提交回执SCHEDULE_V2_SOURCE/SUBMISSION；133本地检查与远端每项11测试通过，无已完成全模型结果或加速数字。

@@ -53,7 +53,7 @@ python counter/tests/verify_counter.py --output NEW_OUTPUT --icg common/pbit_icg
 
 测试同时实例化：原193计数器+档间精确对齐、新版不开门控、新版行为门控；三者再与独立Python无限精度整数oracle比较。`tests/reference_ffn_counter.sv`为原件只读副本，原SHA在`REFERENCE_SOURCE.json`；它只供验证，不加入新设计综合。
 
-覆盖M1/M8、B4/B7、两种流水；M1用seed17/31/193，M8用seed17；每配置8完整帧，零/最大正/最大负/抵消/各档/无效档/IID/32层分层事件，另外有中途复位、排空中复位、输入暂停、输出回压、实际停钟和test_en开启检查。只验证给定事件流，未模拟真实p-bit相关性或LLM质量。
+完整验证已通过16配置、128完整帧（约989.56秒软件墙钟），见`results/functional_summary.json`；软件运行时间不是硬件延迟。覆盖M1/M8、B4/B7、两种流水；M1用seed17/31/193，M8用seed17；每配置8完整帧，零/最大正/最大负/抵消/各档/无效档/IID/32层分层事件，另外有中途复位、排空中复位、输入暂停、输出回压、实际停钟和test_en开启检查。只验证给定事件流，未模拟真实p-bit相关性或LLM质量。
 
 ## 用户运行功耗校准
 
@@ -64,11 +64,14 @@ python counter/tests/verify_counter.py --output NEW_OUTPUT --icg common/pbit_icg
 - `+MODE=continuous|sparse|idle|wake|stall`
 - `+PERIOD_NS=10.0`或`2.0`；这只是激励周期，不能证明100/500MHz时序通过。
 - `+FRAMES=8 +SEED=17 +P8=128 +VCD=activity.vcd`。
+- `+THRESHOLD_PROFILE=swept|uniform +THRESHOLD_SEED=193`；或`+THRESHOLD_FILE=per_lane.hex`回放64个十六进制阈值（0..256）。
 
 连续/间歇/唤醒/输出stall分别计独立窗口；idle窗口没有有效操作，不能除以零或伪造pJ/op。stdout的`WINDOW start_ns=... end_ns=... frames=... accepted_samples=...`给出实际窗口、完成输出帧和接受事件向量数；一个样本是64输入的一拍，不是单个乘积。每帧结果数为M，输入事件数量为N*T；恢复/非线性不在本DUT。
 
-激励使用固定帧内权重和档号；权重为合成均匀幅度，事件向量由一个共享R8与统一P8比较得到（所以同一拍64位一致）。这是明确的合成切换场景，不冒称真实Qwen分布。建议先三seed×五窗口，并可扫P8=32/128/224评估活动敏感性；网络活动回放是后续校准项。旧PT若激励/边界不同，不是严格同输入A/B比较。
+激励使用固定帧内权重和档号，权重为合成均匀幅度。默认`swept`在P8中心±64范围生成64个逐输入阈值，夹到0..256，按独立threshold_seed随机排列；同一拍仍只用一个共享R8，各输入分别比较。边缘P8经夹紧后的均值不必等于P8，实际阈值列表为准。`uniform`保留同阈值、64位全同的强相关对照；`THRESHOLD_FILE`可回放真实逐输入阈值，文件不足64项或含未知值/越界将拒绝。
 
-`verify_power_bench.py`可验证20个窗口和16top展开。其中g2使用**显式FUNCTIONAL_ONLY mock**检查接口路径，不是实际ICG或PPA证据；用户工艺flow不得使用该测试替身。真实库门级仿真需按flow说明提供库模型、ICG映射与活动覆盖检查。
+每次写出`thresholds_used.hex`，打印profile/原始threshold_seed/阈值列表；窗口输出也带profile/seed，汇总包含阈值SHA。各模式都先在测量窗口外完成一帧预热，idle测保留状态而非仅复位全零。上述仍是合成切换场景，不冒称真实Qwen权重或概率分布。建议三seed×五窗口，并可扫P8=32/128/224。旧PT若激励/边界不同，不是严格同输入A/B比较。
+
+`verify_power_bench.py`验证20个默认swept窗口、uniform/文件回放/非法短文件3项和16top展开。旧统一阈值的首轮验证在`power_bench_uniform_legacy_summary.json`单独保留，不与新版混称。其中g2使用**显式FUNCTIONAL_ONLY mock**检查接口路径，不是实际ICG或PPA证据；用户工艺flow不得使用该测试替身。真实库门级仿真需按flow说明提供库模型、ICG映射与活动覆盖检查。部分Windows vvp在`$fatal`后仍返回0；检查必须同时要求PASS标记并拒绝FATAL，不能只看进程退出码。
 
 期望回传面积、setup/hold及ICG timing检查、真实频率/PVT、电压、内部/切换/泄漏功率、窗口长度、有效计数、活动覆盖与所有告警。新旧比较须保持工艺、频率、电压、激励和模块边界一致，不将未通过时序的配置标为可用。

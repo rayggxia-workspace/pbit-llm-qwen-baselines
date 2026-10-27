@@ -20,6 +20,7 @@ module tb_counter_power;
  localparam N=64,M=`DUT_M,BINS=`DUT_BINS,T=`DUT_T,AW=`DUT_AW;
  real period_ns=10.0, window_start,window_end;
  integer seed=17,frames_to_run=8,p8=128,frame,step,n,lane,rv,tmp,wait_cycles;
+ integer threshold_seed=193,threshold_work_seed,ti,tj,swap_value,file_handle;
  integer accepted_frames=0,accepted_samples=0,completed_frames=0;
  reg clk=0,rst_n=0,test_en=0,frame_valid=0,sample_valid=0,out_ready=0;
  reg [N*M*7-1:0] w_mag7=0;reg [N*M-1:0] w_sign=0;
@@ -28,6 +29,8 @@ module tb_counter_power;
  reg [1023:0] vcd_path;reg [127:0] mode;
  reg signed [63:0] expected[0:M-1];reg signed [63:0] term,observed;
  reg counting=0;
+ reg [8:0] thresholds[0:N-1];
+ reg [127:0] threshold_profile;reg [1023:0] threshold_file;
  `DUT_TOP dut(.clk(clk),.rst_n(rst_n),.test_en(test_en),.frame_valid(frame_valid),
    .frame_ready(frame_ready),.w_mag7(w_mag7),.w_sign(w_sign),.x_sign(x_sign),
    .bin_id(bin_id),.sample_bits(sample_bits),.sample_valid(sample_valid),
@@ -75,8 +78,8 @@ module tb_counter_power;
      if(mode=="sparse" && q%4==2)repeat(5)begin sample_valid=0;tick;neg;end
      if(!sample_ready)$fatal(1,"sample_ready unexpectedly low");
      rv=$random(seed);
-     // Shared R8 comparator test pattern (one value per event, P8 configurable).
-     sample_bits=(rv[7:0]<p8)?{N{1'b1}}:{N{1'b0}};
+     // One shared R8, with distinct fixed per-lane P8 thresholds.
+     for(i=0;i<N;i=i+1) sample_bits[i]=(rv[7:0]<thresholds[i]);
      sample_valid=1;tick;neg;
    end
    sample_valid=0;sample_bits=0;wait_cycles=0;
@@ -85,14 +88,43 @@ module tb_counter_power;
    out_ready=1;tick;neg;out_ready=0;
  end endtask
  initial begin
-   mode="continuous";vcd_path="activity.vcd";
+   mode="continuous";vcd_path="activity.vcd";threshold_profile="swept";threshold_file=0;
    tmp=$value$plusargs("MODE=%s",mode);tmp=$value$plusargs("VCD=%s",vcd_path);
    tmp=$value$plusargs("SEED=%d",seed);tmp=$value$plusargs("FRAMES=%d",frames_to_run);
    tmp=$value$plusargs("P8=%d",p8);tmp=$value$plusargs("PERIOD_NS=%f",period_ns);
+   tmp=$value$plusargs("THRESHOLD_PROFILE=%s",threshold_profile);tmp=$value$plusargs("THRESHOLD_SEED=%d",threshold_seed);
+   tmp=$value$plusargs("THRESHOLD_FILE=%s",threshold_file);
+   if(threshold_file!=0)threshold_profile="file";
    if(period_ns<=0 || frames_to_run<1 || p8<0 || p8>256)$fatal(1,"invalid plusarg");
    if(mode!="continuous" && mode!="sparse" && mode!="idle" && mode!="wake" && mode!="stall")$fatal(1,"invalid MODE");
+   if(threshold_profile!="uniform" && threshold_profile!="swept" && threshold_profile!="file")$fatal(1,"invalid THRESHOLD_PROFILE");
+   if(threshold_profile=="file")begin
+     if(threshold_file==0)$fatal(1,"file profile requires THRESHOLD_FILE");
+     for(ti=0;ti<N;ti=ti+1)thresholds[ti]=9'bx;
+     file_handle=$fopen(threshold_file,"r");if(file_handle==0)$fatal(1,"cannot open THRESHOLD_FILE");$fclose(file_handle);
+     $readmemh(threshold_file,thresholds);
+   end else begin
+     for(ti=0;ti<N;ti=ti+1)begin
+       swap_value=p8;
+       if(threshold_profile=="swept")swap_value=p8+(ti*128)/(N-1)-64;
+       if(swap_value<0)swap_value=0;if(swap_value>256)swap_value=256;
+       thresholds[ti]=swap_value;
+     end
+     // Seeded Fisher-Yates permutation preserves the exact threshold histogram.
+     threshold_work_seed=threshold_seed;
+     if(threshold_profile=="swept")for(ti=N-1;ti>0;ti=ti-1)begin
+       rv=$random(threshold_work_seed);tj=(rv&32'h7fffffff)%(ti+1);
+       swap_value=thresholds[ti];thresholds[ti]=thresholds[tj];thresholds[tj]=swap_value;
+     end
+   end
+   for(ti=0;ti<N;ti=ti+1)if((^thresholds[ti])===1'bx || thresholds[ti]>256)$fatal(1,"invalid or missing lane threshold");
+   $writememh("thresholds_used.hex",thresholds);
+   $write("THRESHOLDS profile=%0s seed=%0d center_p8=%0d values=",threshold_profile,threshold_seed,p8);
+   for(ti=0;ti<N;ti=ti+1)$write("%0d,",thresholds[ti]);$write("\n");
    $dumpfile(vcd_path);$dumpvars(0,dut);
    repeat(4)tick;neg;rst_n=1;repeat(8)tick;neg;
+   // Warm-up is outside the measured window; idle retains realistic nonzero state.
+   do_frame;repeat(8)tick;neg;
    accepted_frames=0;accepted_samples=0;completed_frames=0;counting=1;window_start=$realtime;
    if(mode=="idle")repeat(512)tick;
    else for(frame=0;frame<frames_to_run;frame=frame+1)begin
@@ -101,7 +133,7 @@ module tb_counter_power;
    end
    neg;window_end=$realtime;counting=0;
    if(mode!="idle" && (completed_frames!=frames_to_run || accepted_samples!=T*frames_to_run || accepted_frames!=frames_to_run))$fatal(1,"event counts mismatch");
-   $display("WINDOW start_ns=%0.3f end_ns=%0.3f frames=%0d accepted_samples=%0d accepted_frames=%0d outputs=%0d mode=%0s",window_start,window_end,completed_frames,accepted_samples,accepted_frames,completed_frames,mode);
+   $display("WINDOW start_ns=%0.3f end_ns=%0.3f frames=%0d accepted_samples=%0d accepted_frames=%0d outputs=%0d mode=%0s threshold_profile=%0s threshold_seed=%0d",window_start,window_end,completed_frames,accepted_samples,accepted_frames,completed_frames,mode,threshold_profile,threshold_seed);
    $display("PASS counter_power integer_and_counts; DUT-only VCD; no STA/PPA claim");
    $finish;
  end

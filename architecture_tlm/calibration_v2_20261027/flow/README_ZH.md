@@ -25,7 +25,7 @@
     python flow/run_case.py --case cases100/CASE.json --library /private/library.json --output /private/run_sta --stage sta --reuse-synth /private/run_synth/synth
     python flow/run_case.py --case cases100/CASE.json --library /private/library.json --output /private/run_power --stage power --reuse-synth /private/run_synth/synth --windows /private/run_gate/auto_windows.json
 
-CASE替换生成的具体文件名，每次output必须新建，旧目录不覆盖。gate_sim只编译mapped.v+工艺Verilog模型+专用TB，不能再把原RTL并入同一仿真。数字算子每个top使用自己的bench和输入，不拿counter bench替代；case.example.json为待填写格式，不是可直接运行的真实结果。
+CASE替换生成的具体文件名，每次output必须新建，旧目录不覆盖。gate_sim只编译mapped.v+工艺Verilog模型+专用TB，不能再把原RTL并入同一仿真。数字算子每个top使用自己的bench和输入，不拿counter bench替代；case.example.json展示真实数字接口格式；用下方生成器把case与实际fixture一起生成，不能只复制example而遗漏向量。
 
 实际bench应支持+PERIOD_NS、+VCD，并输出WINDOW start_ns=... end_ns=... frames=... accepted_samples=...。flow自动生成窗口文件，counter的frames是完成输出帧数；M8一帧包含8输出，在operation_unit记录，不能与M1每输出能量直接比较。数字bench须把frames定义为完成结果数量，并填写不同operation_name。若自己的bench格式不同，按windows.example.json从真实事件统计填写；不猜操作数量。
 
@@ -59,4 +59,15 @@ continuous（连续工作）、sparse（间歇）、idle（时钟开着但无工
 MODE2需icg_enable_pin及icg_test_enable_pin（实际EN/TE）。PT报告到这些真实ICG端点的max/min路径并保存slack；还须报告明确识别clock gating检查。无路径、缺slack或不能确认gating路径时返回review_required，不能标为可用频率；负门控slack返回not_met。
 
 数字bench的plusargs支持{CASE_DIR}和{RUN_DIR}，例如+VECTORS={CASE_DIR}/vectors.txt、+OUTPUT={RUN_DIR}/trace.txt；前者指case JSON所在目录，后者指本次新gate_sim目录，避免覆盖原验证trace。
-首次使用本流程尚需用户工具环境的真实DC/VCS/PT smoke；本机23项测试只验证配置、解析与Tcl文本完整性，不证明某个许可证版本支持全部命令。遇到工具语法错误应保留FAILURE和日志后适配，不能跳过检查冒称成功。
+首次使用本流程尚需用户工具环境的真实DC/VCS/PT smoke；本机29项测试只验证配置、解析与Tcl文本完整性，不证明某个许可证版本支持全部命令。遇到工具语法错误应保留FAILURE和日志后适配，不能跳过检查冒称成功。
+
+## 数字算子：生成绑定到实际向量的用例
+
+    python flow/make_digital_cases.py --output digital100
+    python flow/run_case.py --case digital100/dig_fp32_add_continuous_f100_s17/case.json --library /private/library.json --output /private/add100 --stage all
+
+默认生成FP32 add和BF16乘后加FP32两种top，各continuous/idle窗口；增加`--tops dig_fp32_mul dig_bf16_mul dig_fp32_to_bf16 dig_bf16_mac8 dig_bf16_accum dig_bf16_context16 --modes continuous idle stall`可展开。`--frequency-mhz 250`或500会重新生成对应真实时钟窗口。全部先生成数据，没有自动调用EDA。
+
+每个case同目录生成vectors.txt、独立整数oracle的expected.json、FIXTURE.json。flow在preflight核验两份数据SHA、top及周期；VCS输出后运行prepare_power.py的逐周期ready/valid/输出值/status检查，再核验WINDOW的起止时间、完成事务数和接受输入数。任何不匹配都失败，不以sim退出0代替结果校验。数据与验证脚本SHA写入RESULT.json。
+
+一个MAC8事务包含8个乘法和8个加法；每事务能量不能直接冒称每个MAC能量。case同时保留primitive_operations_per_transaction和macs_per_transaction，后续按明确单位换算。单context累积II=15；16context轮转可II=1，但同一context仍II=15。这些元数据来自RTL功能验证，时序是否支持目标频率仍由STA决定。数字活动为合成普通浮点数分布，不是Qwen真实激活；本轮数字top未声称有ICG门控，MODE0只是其原始校准。

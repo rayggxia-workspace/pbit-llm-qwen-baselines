@@ -91,5 +91,32 @@ class Flow(unittest.TestCase):
   try:tcl=tkinter.Tcl()
   except tkinter.TclError:self.skipTest("Tcl runtime unavailable")
   for f in P.glob("*.tcl"):self.assertEqual(int(tcl.call("info","complete",f.read_text(encoding="utf-8"))),1,f.name)
+ def fixture(self):
+  (self.p/"vectors.txt").write_text("1\n0 0 0\n")
+  (self.p/"expected.json").write_text("[]")
+  (self.p/"validator.py").write_text("print('mock')")
+  cfg=dict(top="top",period_ns=10,vector_sha256=d.digest(self.p/"vectors.txt"),expected_sha256=d.digest(self.p/"expected.json"),start_ns=10,end_ns=20,frames=2,accepted_samples=2)
+  (self.p/"FIXTURE.json").write_text(json.dumps(cfg))
+  self.c.update(fixture_manifest="FIXTURE.json",validator_script="validator.py")
+  return cfg
+ def test_fixture_valid(self):
+  self.fixture();c,_=self.norm();f=d.validate_fixture(c)
+  self.assertEqual(len(c["data_files"]),2);self.assertEqual(f["frames"],2)
+ def test_fixture_changed(self):
+  self.fixture();(self.p/"vectors.txt").write_text("changed");c,_=self.norm()
+  with self.assertRaises(ValueError):d.validate_fixture(c)
+ def test_fixture_frequency_mismatch(self):
+  self.fixture();self.c["frequency_mhz"]=500;c,_=self.norm()
+  with self.assertRaises(ValueError):d.validate_fixture(c)
+ def test_fixture_no_validator(self):
+  self.fixture();del self.c["validator_script"];c,_=self.norm()
+  with self.assertRaises(ValueError):d.validate_fixture(c)
+ def test_fixture_window_counts(self):
+  f=self.fixture();w=dict(start_ns=10.,end_ns=20.,operations=2,accepted_samples=2)
+  d.validate_window_fixture(w,f);w["operations"]=3
+  with self.assertRaises(ValueError):d.validate_window_fixture(w,f)
+ def test_fixture_window_time(self):
+  f=self.fixture();w=dict(start_ns=0.,end_ns=20.,operations=2,accepted_samples=2)
+  with self.assertRaises(ValueError):d.validate_window_fixture(w,f)
  def test_hash(self):self.assertEqual(len(d.digest(self.p/"a.sv")),64)
 if __name__=="__main__":unittest.main()

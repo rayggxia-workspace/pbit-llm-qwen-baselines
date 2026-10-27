@@ -1,5 +1,5 @@
 """Portable DC / gate-VCS / PrimeTime calibration driver. No implicit EDA runs."""
-import argparse, hashlib, json, math, os, re, subprocess
+import argparse, hashlib, json, math, os, re, subprocess, sys
 from pathlib import Path
 PACKAGE = Path(__file__).resolve().parents[1]
 FLOW = Path(__file__).resolve().parent
@@ -19,8 +19,8 @@ def paths(values,base):
         if not p.is_file(): raise ValueError("Missing file: "+str(p))
         result.append(p)
     return result
-def normalize(case,library,base=PACKAGE,library_base=None):
-    c=dict(case); l=dict(library); lb=library_base or base
+def normalize(case,library,base=PACKAGE,library_base=None,case_base=None):
+    c=dict(case); l=dict(library); lb=library_base or base; cb=case_base or base
     for key in ("id","top","tb_top"):
         if not IDENT.fullmatch(c[key]): raise ValueError("Invalid "+key)
     c.setdefault("gate_mode",0)
@@ -38,6 +38,10 @@ def normalize(case,library,base=PACKAGE,library_base=None):
     for k in ("rtl_files","tb_files"):
         c[k]=paths(c.get(k,[]),base)
         if not c[k]: raise ValueError(k+" cannot be empty")
+    c["data_files"]=paths(c.get("data_files",[]),cb)
+    c["validator_source_files"]=paths(c.get("validator_source_files",[]),base)
+    if c.get("fixture_manifest"): c["fixture_manifest"]=paths([c["fixture_manifest"]],cb)[0]
+    if c.get("validator_script"): c["validator_script"]=paths([c["validator_script"]],base)[0]
     c["include_dirs"]=[str((base/Path(p)).resolve()) if not Path(p).is_absolute() else p for p in c.get("include_dirs",[])]
     c["defines"]=list(c.get("defines",[]))
     for d in c["defines"]:
@@ -62,6 +66,26 @@ def normalize(case,library,base=PACKAGE,library_base=None):
         if wrapper not in c["rtl_files"]: c["rtl_files"].append(wrapper)
         c["defines"].append("PB_ICG_TECH_MAPPED")
     return c,l
+def validate_fixture(c):
+    """Bind digital replay data to the independently generated expected trace."""
+    if not c.get("fixture_manifest"): return None
+    p=c["fixture_manifest"]; f=json.loads(p.read_text(encoding="utf-8"))
+    if f.get("top")!=c["top"] or f.get("period_ns")!=c["period_ns"]:
+        raise ValueError("Fixture top/period differs from case")
+    for name,key in (("vectors.txt","vector_sha256"),("expected.json","expected_sha256")):
+        q=p.parent/name
+        if not q.is_file() or digest(q)!=f.get(key): raise ValueError("Fixture SHA mismatch: "+name)
+        if q not in c["data_files"]: c["data_files"].append(q)
+    if not c.get("validator_script"): raise ValueError("Digital fixture needs a post-simulation oracle")
+    return f
+
+def validate_window_fixture(w,f):
+    if f is None: return
+    for key in ("start_ns","end_ns"):
+        if not math.isclose(w[key],f[key],abs_tol=1e-5,rel_tol=1e-9): raise ValueError("Bench/fixture window differs: "+key)
+    if w["operations"]!=f["frames"] or w["accepted_samples"]!=f["accepted_samples"]:
+        raise ValueError("Bench/fixture accepted or retired count differs")
+
 def configuration(c,l):
     rows=[]
     values={"CV2_TOP":c["top"],"CV2_LIBRARY_DB":l["target_db"],"CV2_REF_CELL":l["reference_cell"],
@@ -143,9 +167,11 @@ def main():
     if out.exists(): raise SystemExit("Use a NEW output directory; frozen output is never overwritten")
     out.mkdir(parents=True);rec=dict(status="running",stage=a.stage,scope="pre-layout macro calibration; not whole chip or 500MHz proof")
     try:
-        c,l=normalize(json.loads(a.case.read_text(encoding="utf-8")),json.loads(a.library.read_text(encoding="utf-8")),library_base=a.library.resolve().parent)
+        c,l=normalize(json.loads(a.case.read_text(encoding="utf-8")),json.loads(a.library.read_text(encoding="utf-8")),library_base=a.library.resolve().parent,case_base=a.case.resolve().parent)
+        fixture=validate_fixture(c)
         serial=lambda d:{k:[str(x) for x in v] if isinstance(v,list) else str(v) if isinstance(v,Path) else v for k,v in d.items()}
         rec.update(case=serial(c),library=serial(l),source_sha256={str(p):digest(p) for p in c["rtl_files"]+c["tb_files"]+[l["target_db"]]+l["verilog_models"]})
+        rec["input_sha256"]={str(p):digest(p) for p in c["data_files"]+c["validator_source_files"]+[p for p in (c.get("fixture_manifest"),c.get("validator_script")) if p is not None]}
         rec["flow_sha256"]={p.name:digest(p) for p in sorted(FLOW.glob("*")) if p.is_file() and p.suffix in (".py",".tcl")}
         cfg=out/"configuration.tcl";cfg.write_text(configuration(c,l),encoding="utf-8",newline="\n");rec["configuration_sha256"]=digest(cfg)
         env=os.environ.copy();env.update(CV2_CONFIG=str(cfg),CV2_FLOW=str(FLOW))
@@ -168,6 +194,14 @@ def main():
             plus=[str(v).replace("{RUN_DIR}",str(sim)).replace("{CASE_DIR}",str(a.case.resolve().parent)) for v in c.get("plusargs",[])]
             execute([sim/"simv","+VCD="+str(sim/"activity.vcd"),"+PERIOD_NS="+str(c["period_ns"])]+plus,sim,env,"run",a.timeout)
             if not (sim/"activity.vcd").is_file(): raise RuntimeError("Bench did not write +VCD activity file")
+            if c.get("validator_script"):
+                args=[str(v).replace("{RUN_DIR}",str(sim)).replace("{CASE_DIR}",str(a.case.resolve().parent)) for v in c.get("validator_args",[])]
+                execute([sys.executable,c["validator_script"]]+args,sim,env,"validate_trace",a.timeout)
+                checked=json.loads((sim/"validate_trace.log").read_text(encoding="utf-8"))
+                if checked.get("status")!="passed": raise RuntimeError("Trace oracle did not confirm passed")
+                rec["gate_trace_validation"]=checked
+                rec["gate_trace_validation_sha256"]=digest(sim/"validate_trace.log")
+                if (sim/"trace.txt").is_file(): rec["gate_trace_sha256"]=digest(sim/"trace.txt")
             rec["vcd_sha256"]=digest(sim/"activity.vcd")
             text=(sim/"run.log").read_text(errors="replace")
             pat=r"WINDOW start_ns=([0-9.eE+-]+) end_ns=([0-9.eE+-]+) frames=(\d+) accepted_samples=(\d+)"
@@ -175,6 +209,7 @@ def main():
             if len(found)!=1: raise RuntimeError("Expected one explicit WINDOW marker from bench")
             start,end,frames,samples=found[0]
             window=dict(name=c.get("power_mode","measured"),vcd=str(sim/"activity.vcd"),strip_path=c.get("dut_path",c["tb_top"]+"/dut"),start_ns=float(start),end_ns=float(end),operations=int(frames),accepted_samples=int(samples),operation_unit=c.get("operation_name","completed_result"))
+            validate_window_fixture(window,fixture)
             window["vcd_sha256"]=digest(sim/"activity.vcd")
             dump(out/"auto_windows.json",dict(top=c["top"],period_ns=c["period_ns"],netlist_sha256=rec["netlist_sha256"],windows=[window]))
         if "sta" in stages:

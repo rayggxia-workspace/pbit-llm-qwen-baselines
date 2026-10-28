@@ -118,3 +118,8 @@ Issue186/PR192；[结果与决定](local_ports_20261027/RESULTS_ZH.md)、[结构
 ## 2026-10-28 BF16二轮补充 已找到28nm阵列完整证据
 
 Issue204/PR209；[文献复核](bf16_baseline_20261028/LITERATURE_RECHECK_ZH.md)纠正首轮检索不足，MFSA28nm BF16/FP32后布线稳态功耗可作外部参考；65nm FlexBlock的BF16 SA含利用率影响，不能当纯MAC动作能量。原摘要条件值保留版本边界，不再作为唯一依据。两PDF/表格原图SHA核对、数值归一与吞吐计数通过；无新EDA/模型或台账run，55nm同条件PPA仍待独立表征。
+
+
+## 2026-10-28 成熟BF16本工艺表征与INT8经典划分
+
+Issue204/PR209；[完整结果](bf16_ppa_20261028/results/REPORT_ZH.md)、[INT8划分](bf16_ppa_20261028/INT8_CLASSIC_ZH.md)。五top/45PT窗口；N64四lane非融合DOT4实际计入启动/反馈/收尾，classic FMA流水参数不代替完整帧验证。源与原件统一登记matrix-bf16-204-20261028。复位释放契约另做同网表STA，原始失败与标量hold负余量保留；不称物理签核或同质量全芯片优势。无新模型/PPL。

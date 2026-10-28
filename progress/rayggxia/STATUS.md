@@ -1,3 +1,13 @@
+## 2026-10-28 SparQ + Ising Attention-only：短流已完成，完整WT2运行
+
+负责人rayggxia，继续Issue198/草稿PR199，不接管PR163。用户明确授权GPU实验。Qwen/Qwen3-4B后训练revision1cfa9a7，原BF16 FFN/QKV/Wo/norms不改。论文GQA概率求和r32/k128/local32；赢家保持argmax初始化、burn32、spacing1、理想FP32 sigmoid/Philox，不是q/256器件实测；实际赢家地址直接V读出，没有第二次PV抽样。
+
+短流科学源d9b64717641ae8f7efeaa2e9375a1b01a30361d0，CPU3263/GPU门禁3264/三seed3265已完成。8窗context2048，每窗128目标，共1024；所有计分目标全36层单query，非完整WT2。BF16原生/包装logits逐字节相同，5CPU测试、960帧GPU逐帧oracle和稳态TV门禁通过。三seedPPL：BF16 13.562400；纯SparQ12.822322；winner S32 14.741226±0.637781；S128 13.342155±0.145833；S512 13.006869±0.027843；IID128 13.002485±0.031817。相对纯SparQ仍有有限采样损失，S512接近IID128提示相关性成本；不能称无损或PPA胜出。S128四Q共享KV组平均唯一V55.11行，仅理想逻辑去重，不是实际DRAM流量。
+
+完整WT2源a7108f8cba2c72ad319114af34557f4cec2b793d；CPU3268、GPU3269门禁通过，batch32显存<28GiB。Slurm3270_[0-2]正在运行，固定S128三seed，每32窗配对BF16/纯SparQ/winner，计划299077目标；不得将已完成分片当完整PPL，不重复提交或取消健康任务。每片随机键含起点，避免随机流重置复用。GPU数值运行耗时不作ASIC周期。
+
+源码experiments/sparq_ising_20261028；阶段报告results/REPORT_ZH.md、SUMMARY.json。准确SOURCE/SUBMISSION/COLLECTION均在work/rayggxia/198/QUALITY_*；原字节本地project_archives/attention_compare_issue198_20261027/quality及本人GPU独立目录/home/Hongjie_Zeng/projects/attention-sparq-ising-issue198-20261028。collect_quality.py按源前缀下载校验，report_quality.py核三seed完整回执/目标/层/采样计数；完整结束后再次收a7108f8cba2c并生成完整表。未训练、无新RTL/EDA/数字台账run；PR待审不自动合并，Projects待既有权限同步。
+
 发布确认（2026-10-28）：KV读取与数字Attention基线调研源1f3ce3ee63653e1a88fb0b73f65eba5cd59ac2d0已推送草稿PR199；13文件完整tree/本地同SHA、7关键文件逐字读回通过。Issue198评论6461917653；100地址核验/18旧单头案例布局推导、功耗面积09三文件同字节，不是新GQA模型/时序/PPA。真实4头QKV与同质量完整链仍待补；82run不改，无运行作业。回执work/rayggxia/198/KV_BASELINE_PUBLICATION.json。
 
 2026-10-28 KV读取与经典数字Attention基线调研：正式KV_DIGITAL_BASELINE_ZH_20261028.md/SOURCES。锁定FlashInfer和vLLM布局文档；主TLM已做GQA并集/在线融合，不另造整机。本次100地址几何核验、18旧2K/d128/S128单头案例原ZIP/成员SHA复核并做布局换算；无新抽样/模型/DRAMSys/RTL/EDA。P0旧轨迹V连续行32KiB→指定通道交错页示例456KiB，不是GPU实测/同质量GQA；真实4头QKV/同质量S/有限SG与bank访问仍待确认。Qwen3-4B形状2K全KV每层8MiB、36层288MiB；下界不等于时延。功耗面积目录09与两份数据已同字节同步，旧文件和82run不改。仅只读Issue186/PR192@91f68416，未改统一入口/默认资源。发布见KV_BASELINE_PUBLICATION.json及Issue198最新评论，草稿PR199待审；无运行作业，Projects待维护者同步。

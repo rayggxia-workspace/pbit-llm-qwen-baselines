@@ -1,3 +1,5 @@
+2026-10-28 KV读取与经典数字Attention基线调研：正式KV_DIGITAL_BASELINE_ZH_20261028.md/SOURCES。锁定FlashInfer和vLLM布局文档；主TLM已做GQA并集/在线融合，不另造整机。本次100地址几何核验、18旧2K/d128/S128单头案例原ZIP/成员SHA复核并做布局换算；无新抽样/模型/DRAMSys/RTL/EDA。P0旧轨迹V连续行32KiB→指定通道交错页示例456KiB，不是GPU实测/同质量GQA；真实4头QKV/同质量S/有限SG与bank访问仍待确认。Qwen3-4B形状2K全KV每层8MiB、36层288MiB；下界不等于时延。功耗面积目录09与两份数据已同字节同步，旧文件和82run不改。仅只读Issue186/PR192@91f68416，未改统一入口/默认资源。发布见KV_BASELINE_PUBLICATION.json及Issue198最新评论，草稿PR199待审；无运行作业，Projects待维护者同步。
+
 发布确认（2026-10-28）：Softmax文献参考已放入统一功耗面积目录08文件及CSV/JSON，共14点；源310c0381978957df95a391af48779bacd795cc45已推送草稿PR199，5关键文件逐字读回、完整tree/本地同SHA通过。根阅读镜像3文件同字节；82run/105旧文件未改。Issue198评论6461568004，PR待审未合并。回执work/rayggxia/198/SOFTMAX_REFERENCE_PUBLICATION.json。
 
 2026-10-28用户要求调研也进入功耗面积文件夹：已在统一台账新增08_Softmax文献功耗面积周期参考.md及references/softmax_20261028的CSV/JSON，共14个文献点，含原工艺、整行拍数、时钟ns、面积和已有功耗/功耗频率；未知整行周期明确保留null。只列文献，不新增本机run、不跨工艺×0.81；根固定阅读副本3文件同字节，既有文件/records保持原SHA。复现build_softmax_reference.py；发布见SOFTMAX_REFERENCE_PUBLICATION.json及Issue198最新评论。PR199待审；无运行作业，Projects待维护者同步。

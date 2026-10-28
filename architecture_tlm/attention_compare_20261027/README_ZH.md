@@ -1,3 +1,5 @@
+2026-10-28补充：[KV读取与经典数字Attention基线](KV_DIGITAL_BASELINE_ZH_20261028.md)，含旧轨迹布局核算与后续验收，不是新硬件/模型仿真。
+
 2026-10-28补充：[普通数字Softmax周期/面积调研](SOFTMAX_DIGITAL_SURVEY_ZH_20261028.md)，文献与条件换算，无新增EDA。
 
 2026-10-28更新：服务器采样控制评估见[最新结果](control_v2/eda_20261028/RESULTS_ZH.md)，其余旧阶段保留原始日期和限制。

@@ -1,3 +1,5 @@
+发布确认（2026-10-28）：KV读取与数字Attention基线调研源1f3ce3ee63653e1a88fb0b73f65eba5cd59ac2d0已推送草稿PR199；13文件完整tree/本地同SHA、7关键文件逐字读回通过。Issue198评论6461917653；100地址核验/18旧单头案例布局推导、功耗面积09三文件同字节，不是新GQA模型/时序/PPA。真实4头QKV与同质量完整链仍待补；82run不改，无运行作业。回执work/rayggxia/198/KV_BASELINE_PUBLICATION.json。
+
 2026-10-28 KV读取与经典数字Attention基线调研：正式KV_DIGITAL_BASELINE_ZH_20261028.md/SOURCES。锁定FlashInfer和vLLM布局文档；主TLM已做GQA并集/在线融合，不另造整机。本次100地址几何核验、18旧2K/d128/S128单头案例原ZIP/成员SHA复核并做布局换算；无新抽样/模型/DRAMSys/RTL/EDA。P0旧轨迹V连续行32KiB→指定通道交错页示例456KiB，不是GPU实测/同质量GQA；真实4头QKV/同质量S/有限SG与bank访问仍待确认。Qwen3-4B形状2K全KV每层8MiB、36层288MiB；下界不等于时延。功耗面积目录09与两份数据已同字节同步，旧文件和82run不改。仅只读Issue186/PR192@91f68416，未改统一入口/默认资源。发布见KV_BASELINE_PUBLICATION.json及Issue198最新评论，草稿PR199待审；无运行作业，Projects待维护者同步。
 
 发布确认（2026-10-28）：Softmax文献参考已放入统一功耗面积目录08文件及CSV/JSON，共14点；源310c0381978957df95a391af48779bacd795cc45已推送草稿PR199，5关键文件逐字读回、完整tree/本地同SHA通过。根阅读镜像3文件同字节；82run/105旧文件未改。Issue198评论6461568004，PR待审未合并。回执work/rayggxia/198/SOFTMAX_REFERENCE_PUBLICATION.json。

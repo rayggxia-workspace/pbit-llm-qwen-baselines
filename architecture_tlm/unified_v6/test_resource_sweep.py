@@ -47,8 +47,9 @@ class ResourceSweep(unittest.TestCase):
         c['ffn']['mode']='bf16';d=FullDecode(c,m);d.matrix(0,'L0/gu')
         self.assertEqual(d.tile_pipeline.counts['digital'].get('prefilled',0),0)
 
-    def test_invalid_sc_mode_rejected(self):
+    def test_unvalidated_w8_prefill_rejected(self):
         c,m=case();c.update(schedule_policy='shared_tiles',digital_shared_prefill=True)
+        c['ffn']['mode']='w8'
         with self.assertRaises(ValueError):FullDecode(c,m)
 
     def test_resource_profiles_fixed_E_capacity_and_clock(self):

@@ -1,0 +1,88 @@
+import argparse,hashlib,json
+from pathlib import Path
+R=Path('C:/Users/86134/Documents/a_P_BIT/tmp/ffn-local-pipeline-issue186-20261025');D=R/'architecture_tlm/local_ports_20261027';W=R/'work/jieruiz/186'
+def read(p):return json.loads(p.read_text(encoding='utf-8'))
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def put(p,s):p.write_text(s,encoding='utf-8',newline='\n')
+p=argparse.ArgumentParser();p.add_argument('--partial',action='store_true');a=p.parse_args()
+entries=[(R/'architecture_tlm/sliced_sram_20261027/results_accept/case_2/RESULT_SUMMARY.json','sc80_accept'),(R/'architecture_tlm/sliced_sram_20261027/results_accept/case_5/RESULT_SUMMARY.json','bf1680_accept')]
+entries += [(D/f'results/case_{i}/RESULT_SUMMARY.json',None) for i in range(6)]
+entries += [(D/f'results_exposed/case_{i}/RESULT_SUMMARY.json',None) for i in (8,9)]
+entries += [(D/f'results_burst/case_{i}/RESULT_SUMMARY.json',None) for i in (10,11,12,13)]
+rows=[];pending=[];raw=[]
+ignore={'dram_background_ns','digital_idle_ns','sc_idle_ns','control_interconnect_ns','uncalibrated_HBM_system_ns','rng_calibrated_endpoint_energy_pJ'}
+base={}
+for q,name in entries:
+ if not q.exists():pending.append(str(q.relative_to(R)));continue
+ r=read(q);mf=read(q.with_name('MANIFEST.json'));ex=read(q.with_name('EXECUTION.json'))
+ assert mf['status']=='completed' and sha(q)==mf['files']['RESULT_SUMMARY.json']['sha256']
+ assert sha(q.with_name('EXECUTION.json'))==mf['files']['EXECUTION.json']['sha256']
+ assert hashlib.sha256(json.dumps(r['config'],sort_keys=True).encode()).hexdigest()==ex['config_sha256']
+ kind=r['case']['ffn'];name=name or r['case']['name']
+ if name.endswith('80_accept'):base[kind]=r
+ b=base[kind]
+ assert {k:v for k,v in b['actions'].items() if k not in ignore}=={k:v for k,v in r['actions'].items() if k not in ignore},name
+ for k in ('SRAM','DRAM'):assert b[k]['traffic']==r[k]['traffic'],(name,k)
+ assert b['DRAM']['details']['configuration_sha256']==r['DRAM']['details']['configuration_sha256'],name
+ for k in ('attention_activity','FFN_activity'):assert b[k]==r[k],(name,k)
+ assert b['random_interface']['frame_output_sha256']==r['random_interface']['frame_output_sha256'],name
+ assert r['model']['num_hidden_layers']==1
+ assert r['SRAM']['macros']==2048 and r['SRAM']['configured_bytes']==8*1024**2
+ assert r['SRAM']['area_mm2']==b['SRAM']['area_mm2']
+ assert r['SRAM']['sliced']['additional_payload_buffer_bytes']==16384
+ physical=sum(v for k,v in r['SRAM']['traffic'].items() if k.endswith('physical_bytes'))
+ assert sum(r['SRAM']['sliced']['link_bytes'].values())==physical
+ assert sum(r['SRAM']['sliced']['per_bank_word_operations'].values())*16==physical
+ ms=r['metrics']['TPOT_ms'];lm=r['phase_ns']['lm_head_and_argmax']/1e6
+ x=dict(name=name,algorithm=kind,elapsed_ms=ms,non_lm_head_ms=ms-lm,lm_head_ms=lm,
+   FFN_ms=sum(v for k,v in r['phase_ns'].items() if k.startswith('FFN_') or k in ('ffn_output_conversion','ffn_residual'))/1e6,
+   attention_core_ms=r['phase_ns']['attention_core']/1e6,
+   time_reduction_percent=(1-ms/b['metrics']['TPOT_ms'])*100,
+   SRAM_macro_clock_MHz=r['SRAM']['clock_hz']/1e6,SRAM_banks=r['SRAM']['banks'],
+   effective_endpoint_GBs_per_slice=({k:r['config']['sram']['sliced']['endpoint_GBs'] for k in ('matrix','vector','DMA')} if not r['config']['sram'].get('local_ports',{}).get('independent_paths',False) else r['SRAM'].get('local_ports',{}).get('endpoint_GBs_per_slice')),
+   SRAM_internal_mJ=r['energy_J']['SRAM_internal']*1e3,SRAM_leakage_mJ=r['energy_J']['SRAM_leakage']*1e3,
+   SRAM_cell_area_mm2=r['SRAM']['area_mm2'],physical_SRAM_bytes=physical,
+   DRAM_busy_ms=r['resource_busy_ns']['dram_dma']/1e6,
+   source_commit=r['execution_commit'],config_sha256=ex['config_sha256'],summary_path=q.relative_to(R).as_posix(),summary_sha256=sha(q),
+   raw_result_sha256=r['raw_result_sha256'],actual_random_output_sha256=r['random_interface']['frame_output_sha256'],wall_seconds=r['wall_seconds'])
+ rows.append(x);raw.append(r)
+if pending and not a.partial:raise ValueError('incomplete matrix '+str(pending))
+result=dict(status='partial' if pending else 'completed',rows=rows,pending=pending,
+ scope='single real-shaped Qwen3-4B layer plus full151936 vocabulary, seed0, NOT36layer TPOT; no weights/PPL/EDA',
+ conservation='all within-algorithm work, physical SRAM/DRAM bytes, FFN/attention demand, actual RNG output SHA equal',
+ PPA='SRAM macro cells only; wide port/driver/mux/wiring/CDC delta remains uncharacterized',default_changed=False,
+ recommended=dict(profile='250MHz_shared_local_wide',api='configure(c,clock_hz=250000000,independent=False,wide=True)',
+    comparison_cases=['sc250_wide_shared','bf16250_wide_shared'],boundary='500MHz core,8MiB expanded,HBM2; existing main defaultDDR4 preserved'))
+put(D/'COMPARISON.json',json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+lines=['# SRAM端口优化：同容量、同计算资源的实际对照','',
+ '**建议：先采用250MHz、四组本地共享宽通路（每slice512GB/s），保留512个单端口逻辑bank和8MiB；删除无依据的全局512GB/s封顶。** 相同宽度下进一步分独立端点/暴露2048宏端口没有本轮时间收益，暂不为此增加外围复杂度。','',
+ result['scope'],'',
+ '| 总括 | 旧80MHz accept | 本地通路优化后 | 缩短 |','|---|---:|---:|---:|',
+ '| SC：单层＋完整词表 | 8.322292ms | 6.816810ms | 18.09% |',
+ '| 数字FFN：单层＋完整词表 | 8.936880ms | 7.172958ms | 19.74% |','',
+ '这些是代表性单层＋词表边界，**不是全36层时间/token**。固定2K上下文、500MHz core、原计算资源与HBM；数字/SC两侧Attention均为筛选＋准确Softmax＋PV采样。','',
+ '## 完整消融','',
+ '| 配置 | 单层非词表 ms | 单层＋完整词表 ms | 相对80MHz accept缩短 |', '|---|---:|---:|---:|']
+labels={'sc80_accept':'SC：旧80MHz、每slice共享128GB/s','bf1680_accept':'数字FFN：旧80MHz、共享128GB/s',
+ 'sc250_clock_only':'SC：只升250MHz，原本地链路不变','sc250_wide_shared':'SC：250MHz、本地共享链路512GB/s',
+ 'sc250_local_paths':'SC：250MHz、独立DMA/矩阵/向量通路','sc200_local_paths':'SC：200MHz、独立通路',
+ 'bf16250_local_paths':'数字FFN：250MHz、独立通路','bf16250_wide_shared':'数字FFN：250MHz、共享宽链路',
+ 'sc250_exposed_macros':'SC：250MHz、暴露宏端口＋分离ping/pong','bf16250_exposed_macros':'数字FFN：250MHz、暴露宏端口＋分离ping/pong'}
+labels.update(sc250_burst_paths='SC：250MHz、等宽独立本地通路',bf16250_burst_paths='数字FFN：250MHz、等宽独立本地通路',
+ sc250_exposed_burst='SC：250MHz、等宽通路＋独立宏ping/pong',bf16250_exposed_burst='数字FFN：250MHz、等宽通路＋独立宏ping/pong')
+for x in rows:lines.append(f"| {labels[x['name']]} | {x['non_lm_head_ms']:.6f} | {x['elapsed_ms']:.6f} | {x['time_reduction_percent']:.2f}% |")
+lines += ['',f"已封存{len(rows)-2}/12项新执行，另复用2项旧基线；{result['status']}。数字FFN和SC两侧Attention均为同一筛选＋准确Softmax＋PV采样，本表的数字侧不是全准确Attention算法对照。",'',
+ '所有已完成项均核验completed封存MANIFEST、原摘要和执行SHA； within算法的算术/访存物理字节、FFN/Attention工作量及真实随机输出SHA不变。固定500MHz core、32个64×64SC阵列、2048MAC/拍、8MiB、2048个E宏、16KiB payload FIFO。变化只发生在SRAM端口/频率/物理bank映射。','',
+ '只提高SRAM频率而保留窄链路，SC仅缩短0.46%；拓宽通路才有明显收益。非词表部分SC1.432796→1.319518ms（7.91%），数字FFN2.047748→1.675802ms（18.16%）。同宽共享、独立通路、宏暴露三者的含词表时间相同，不把同宽无收益误说成端口不能优化。','',
+ '拓宽后SC代表执行DRAM/DMA资源忙5.717547ms，MAC忙0.462304ms，总6.816810ms；忙时间可以重叠、不可相加。当前重点转向外存供数/有限tile生命周期，继续加SRAM端口没有已观察收益。','',
+ '## 成本与边界','',
+ 'SRAM宏cell面积保持68.0473mm²、宏数量和有效容量不变。宏读写动作能量保持同库表，时间缩短只降低漏电驻留能量，不会自动同比降低动态能量。新增或调整的端口/mux/driver/布线/CDC/时钟树功耗面积尚未校准；不将68.05mm²当整片面积，不引用旧整机2.52W作为本新拓扑功耗。','',
+ '首轮窄独立通路保留为负对照：matrix512、vector32、DMA64GB/s；其中按HBM平均峰值给片内DMA限宽又引入了不必要的重复约束。原有响应缓冲允许短时突发，所以后续等宽独立配置把各本地通路都定为512GB/s/slice，bank单端口和相同有限credit仍限制总供给。宽响应缓冲读口/gearbox为明确未校准宏合同；不是声称已测免费多端口SRAM。外部HBM配置与实际完成模型始终不变。','',
+ '暴露宏端口并未增加存储位；每slot为512宏/2MiB，当前live64KiB，workspace4MiB。额外并行性付出了容量分配/外围通路成本，unused行不免费重复分配。','',
+ '原单DMA actor、按tile到齐后填充、矩阵先装载再计算等依赖仍保留。主流本地scratchpad＋DMA思想已借鉴，不能宣称实现了Gemmini/ONNXim或完成全局最优调度。完整36层新时间尚未本轮测量，禁止将单层＋词表乘36。Ising sink仍不在本后端覆盖内。','',
+ '## 封存元数据说明','',
+ '执行77650539的三个共享通路对照（case0/1/5）在local_ports.endpoint_GBs_per_slice字段显示了未启用独立模式的候选宽度；实际共享planner始终使用config.sram.sliced.endpoint_GBs（128或512），时序与动作没有使用该错误显示字段。旧原件/SHA保留，COMPARISON给出effective_endpoint_GBs_per_slice，当前report已修正并有检查。公共configure默认选250MHz共享宽通路，run_case每个封存case显式选择模式，不改旧实验定义。','',
+ '结构/端口宽度来源见README_ZH.md；COMPARISON.json给出逐项阶段、能量边界、文件/代码/配置SHA；work/jieruiz/186/LOCAL_PORTS_*保存源和执行回执。','']
+put(D/'RESULTS_ZH.md','\n'.join(lines))
+put(W/'LOCAL_PORTS_VALIDATION.json',json.dumps(dict(status=result['status'],new_completed=len(rows)-2,baseline_reused=2,pending=pending,conservation=result['conservation'],local_tests=58,new_PPA=False,full36layer_claim=False),ensure_ascii=False,indent=2)+'\n')
+print(json.dumps(dict(completed=len(rows)-2,pending=len(pending),rows=[{k:v for k,v in x.items() if k in ('name','elapsed_ms','non_lm_head_ms','time_reduction_percent')} for x in rows]),ensure_ascii=True))

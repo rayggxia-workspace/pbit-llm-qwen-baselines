@@ -1,3 +1,124 @@
+发布确认（2026-10-27T11:59:44.018808+00:00）：本地SRAM端口12新项/14对照已上传PR192，提交9c853d49ce426144a4a0740a38653e3daaa905b3；6远端关键文件原字节回读一致、24摘要/执行Git字节同封存SHA。Issue186已同步，待审未合并；无本任务运行作业、无新全36层/PPA。回执work/jieruiz/186/LOCAL_PORTS_PUBLICATION.json。
+
+## 2026-10-27 Issue186：SRAM本地端口/频率优化十二项完成
+
+复用task/186-local-pipeline/PR192，jieruiz，tmp/ffn-local-pipeline-issue186-20261025；main base d83eeb1f。已读取最新Issue/PR/README/AGENTS与Gemmini/ONNXim一手资料，新增主unified_v6的可选local_ports_20261027后端，不另造整机。正式默认DDR4/历史配置保留，新候选限定500MHz扩容/HBM/8MiB条件。
+
+删除无依据的全局512GB/s cap；E宏SS read最小周期3.468ns，选择250MHz（4ns）且保留200MHz对照，只做宏周期筛查不是wrapper/500MHz STA。建议4个本地共享读写宽通路，各512GB/s，源自128bank×16B×250MHz及512MAC×BF16×500MHz。8MiB、2048个E宏、512逻辑bank、原计算资源、额外16KiB FIFO均不增。真实bank单端口、同通路排队、有限credit/CDC、DRAMSys原外存继续限制，不加免费多端口bitcell。
+
+三源码77650539/Slurm3180六项、4eaedf28/3188两项、5847a24f/3191四项，12新项全部completed/原件SHA核验，另复用2旧accept基线，不重跑健康作业。58软件检查；14项算术/物理SRAM与DRAM字节/FFN及Attention工作/真实随机输出SHA/配置SHA逐数守恒。本任务无运行项；他人作业未操作。
+
+代表性单Qwen3-4B后训练形状层＋完整151936词表/seed0/2K，非全36层TPOT。SC旧8.322292→6.816810ms（缩短18.09%），数字FFN8.936880→7.172958ms（19.74%）；非词表SC1.432796→1.319518、数字2.047748→1.675802ms。只升频SC仅0.46%；首轮把片内DMA按HBM峰值限宽反而变慢，已保留负例，并在等宽对照允许原响应缓冲短时突发。等宽共享/独立/暴露宏总时间相同，因此先选较简单共享宽接口。暴露2048宏/分离ping-pong不增位，但占ping/pong各2MiB、workspace4MiB，unused行不再免费复用。
+
+宏cell面积68.0473mm²、读写动作动态能量不变；SC代表项共享SRAM动态1.25464mJ、漏电0.132166→0.108258mJ。不能将18%提速当18%节能或用旧2.52W套新结构。外围宽接口/driver/mux/gearbox/CDC/CTS及响应缓冲宽读出未新校准；HBM仍timing-only。DRAM/DMA忙5.7175ms/总6.8168ms，MAC忙0.4623ms，可重叠不可相加；后续重点是外存供数/有限tile生命周期，而非盲目加端口。Attention本轮screen_pv准确Softmax，Ising sink未拆beat继续明确拒绝。
+
+入口local_ports_20261027/RESULTS_ZH.md、COMPARISON.json与README_ZH；源/提交/封存/验证/唯一包归档见work/jieruiz/186/LOCAL_PORTS_*，collect三个后缀再analyze不带--partial可重建12/12。O19与统一台账07仅为TLM索引，无新PPA/PPL/数字run。代码结果本地已完成，远端上传状态以LOCAL_PORTS_PUBLICATION.json及发布确认前缀为准；PR不自动合并/Issue不自动关闭，Projects沿既有权限待同步。
+
+---
+
+发布确认（2026-10-27T10:42:13.295877+00:00）：SRAM分slice原型/八项完整对照已上传PR192，提交9109164faf256d82b4fe2541fc1ac78b493f7bae，6远端文件与16原摘要/执行字节核验通过；Issue186已同步，待审未合并。无本任务运行作业，回执work/jieruiz/186/SRAM_SLICE_PUBLICATION.json。无新PPA/36层加速结论，Projects待权限。
+
+## 2026-10-27 Issue186：分slice SRAM八项完成，accept较旧慢约1.1%～1.2%
+
+三执行18dd259a/3169 SC三项、2adacf79/3175 BF16三项、5d543eb9/3178 accept两项全部completed/封存SHA核验；当前无本任务运行作业，不重跑。原BF16配置失败三项及cycle_end保守策略结果保留。45检查（新13）通过，8项逐数保持within算法算术、DRAM/SRAM物理字节、FFN/Attention工作和实际RNG输出SHA，16原摘要/执行字节同MANIFEST。
+
+单Qwen3-4B decoder层＋完整151936词表、seed0，500MHz目标、原8MiB512bank80MHz/总512GBs，新增16KiB有限link FIFO明确未价；不是36层TPOT/新PPA。SC旧8.229026ms、分slice描述符8.280314、beat-cycle_end8.481780、写入接受即归还credit8.322292（对旧+1.1334%）；BF16旧8.831064、描述符8.897864、cycle_end9.125730、accept8.936880（+1.1982%）。accept比保守cycle_end快约1.88%/2.07%，bank仍占完整12.5ns周期。FastCalendar软件优化500预约与旧逐事件相等。没有为了提速暗增总带宽或漏掉R/W冲突。
+
+结论：需要显式端口/链路以正确定位瓶颈，旧模型不是单向悲观上界；只分区/去global锁不会自动加速，旧模型也有理想化流水。旧全36层5.7008GB SRAM下界11.134ms、fabric忙15.284ms，总57.421ms不能全归因SRAM锁。沿主TLM可选memory_factory新后端，旧默认保留；下一步若验收新后端再做完整36层/公平两侧及NoC/FIFO/CDC成本，不拿本轮单层×36或旧2.52W冒充新整机。
+
+结果sliced_sram_20261027/RESULTS_ZH.md、COMPARISON.json，复核collect_sram_slices.py各后缀再analyze_sram_slices.py不带--partial，已8/8。精确输入/配置/原件/源SHA和唯一源码包归档均在SRAM_SLICE_*；Ising sink尚未映射，当前后端明确拒绝，待独立接入。O18、统一台账06已更新。发布见SRAM_SLICE_PUBLICATION.json；PR192待审未合并、Projects待权限。
+
+---
+
+## 2026-10-27 Issue186：分slice SRAM端口模型，六项完成/accept两项待收
+
+task/186-local-pipeline/PR192；tmp/ffn-local-pipeline-issue186-20261025。用户指出全局SRAM串行模型过粗，已查Gemmini/Eyeriss v2/ONNXim一手资料。沿主unified_v6增加可选memory_factory，默认旧路径保留；新后端sliced_sram_20261027，4×128bank、80MHz16B单端口，4×128GB/s共享读写链路＋DMA/矩阵/向量端点，总8MiB/512GBs不变，额外16KiB双credit FIFO明确未价。bank周期/access/CDC与链路资源拆开，不锁全局fabric。原FFN本地CIM和寄存器已绕过shared fabric，不称全部片上访存原来都串行。
+
+45验证通过（新13），无重叠、物理字节/库能量/算术/状态守恒、500次FastCalendar与原预约全等；FastCalendar只是软件append优化。首执行18dd259a/3169：SC三项completed，BF16三项在配置阶段因SC专用local_pipeline键失败，日志SHA保留；2adacf79/3175只补失败BF16三项，全部completed。六项的实际随机输出SHA和工作/物理字节逐数相等。单层＋全151936词表ms：SC旧8.229026、分slice描述符8.280314、beat-cycle_end8.481780；BF16旧8.831064、描述符8.897864、beat-cycle_end9.125730。不是完整36层TPOT；仅删除global锁未提速，旧模型不是统一悲观上界。
+
+检查发现cycle_end将写FIFO保持至bank周期末；新accept在写入接受后归还credit，bank仍独占12.5ns，setup/hold由接口合同保证，TLM不替代STA。执行5d543eb9/Slurm3178_[2,5]为SC/BF16两个独立协议对照，已提交、尚未封存时不得报收益。三源快照不修改/不重复旧健康任务；当前无新GPU/PPL/RTL/PT。旧整机5.7008GB SRAM裸下界11.134ms，fabric忙15.284ms，总57.421ms；不能把总时间都归因SRAM或把单层×36当整机。
+
+恢复先读SRAM_SLICE_SUBMISSION/BF16FIX_SUBMISSION/ACCEPT_SUBMISSION、COLLECTION、HANDOFF；运行work/jieruiz/186/collect_sram_slices.py _ACCEPT，然后analyze_sram_slices.py（--partial仅允许阶段报告）。RESULTS_ZH/COMPARISON已6/8，源码/配置/原RESULT SHA齐；剩余2成功后去--partial校验8/8再更新PR/Issue/STATUS/备忘录。Ising旧输出sink尚未拆beat，当前新后端明确拒绝；不含BookSim/真实布局/NoC PPA，旧2.52W不迁移。原三包已逐SHA归档project_archives/sram_slices_issue186_20261027，不建全量副本。数字台账06只为TLM索引，run数量不增；Projects待权限，不自动合并。发布见SRAM_SLICE_PUBLICATION.json。
+
+---
+
+## 2026-10-27 Issue186：共享SRAM分slice原型
+
+用户要求带宽约束落到具体端口/链路，接续task/186-local-pipeline/PR192，复用tmp/ffn-local-pipeline-issue186-20261025。核实shared sram_fabric全局锁＋所有bank整描述符锁/CDC是限制，本地CIM/寄存器已绕过。新sliced_sram_20261027可选factory，默认不改；4×128bank、每bank80MHz16B单端口、4×128GB/s读写合计链路，原8MiB和512GB/s保持。
+
+legacy/分slice描述符/有限beat三对照；beat双credit每slice2×2KiB，新增16KiB payload FIFO显式列为未价硬件成本，无无限缓冲。bank12.5ns发起周期、access延迟与网络/CDC20ns分开，credit按实际在途区间预约，可回填早到空隙。相同bank/link/endpoint排队，不做免费全双工或重排/广播。Ising sink未拆beat，配置明确不支持。
+
+42测试（新增10）已通过，含算术/实际字节/能量/状态守恒和无重叠。下一步冻结6个一层Qwen3-4B全形状/词表实际DRAMSys SC/BF16公平对照；不是36层TPOT，无完成数字时不报加速。执行以SRAM_SLICE_SOURCE/SUBMISSION/COLLECTION为准，不重复旧任务。资料和来源README_ZH.md；不自动合并，Projects待权限。
+
+---
+
+发布确认（2026-10-27T09:40:24.289300+00:00）：功耗重算已上传PR192，科学提交4278dfed5ea5f2d97a53ea66521da366026ed602，6个关键远端文件原字节一致；Issue186已同步，待审未合并。回执work/jieruiz/186/ENERGY_RECALIBRATION_PUBLICATION.json。无新TLM/EDA/PPL，Projects待权限。
+
+## 2026-10-27 Issue186：最新随机版能耗重算（发布状态见回执）
+
+复用task/186-local-pipeline/PR192与tmp/ffn-local-pipeline-issue186-20261025；用户要求用已返回PPA重算并只列关键校准缺口。新增architecture_tlm/ppa_recalibration_20261027后处理，原TLM时序/源/封存结果不改。三seed57.4454ms、32SC/2048MAC、GU64NL128、8MiB512bank；Attention为screen_pv准确Softmax，未启用Ising。
+
+PR197新三级合并计数/B4实测按B7 RTL位数1.36947外推；真实X8计数门控、单MAC/FP32加、既有PRNG和SRAM已映射，数字单元idle不再遗漏，漏电不随频率乘5。共享/局部/响应SRAM各按物理动作分别计，随机流不存SRAM；10 NL端点已含200比较器覆盖192路，不叠收费。旧恢复作公共系数/舍入代理，不额外叠七桶归约。
+
+片上已覆盖12.7864W/0.73452J（新计数CE），10.0280W/0.57606J（计数实测ICG、数字CE）；数字候选消除90%空闲动态、保留工作时钟和漏电后2.5162W/0.14454J。数字门控尚未真实阵列校准，500MHz均固定V能量/拍外推。旧64pJ/B+50mW仅HBM粗预算另6.1661W，候选8.6823W/0.49876J不是全片已测。HBM桥仅时序、零占位电流未被误当0W；完整已校准总值仍null。已计价面积192.7mm²，非物理整片。
+
+PRNG/SRAM已有数据，不重跑本体。关键缺项三类：B7计数/公共恢复/宽部分和及数字门控500MHz集成；CIM全并行读出+阵列互连/CTS；有效HBM能量。Ising反馈仅可选路线缺项，当前不收费。6输入MANIFEST/SHA、8会计守卫通过，无新EDA/PPL/TLM时序。统一台账05_随机版功耗重算.md为索引，不重复新增电路run。发布以work/jieruiz/186/ENERGY_RECALIBRATION_PUBLICATION.json为准；Projects待既有权限，PR不自动合并。
+
+---
+
+发布确认（2026-10-27）：调度11项完整结果已上传PR192，提交f8292c87415f26d5473c5a98830e5ae6632a434c并回读4个关键blob原字节一致；Issue186已同步，待审未合并。无本任务运行作业，准确回执work/jieruiz/186/SCHEDULE_V2_PUBLICATION.json。
+
+# 2026-10-27 调度两轮已完成
+
+Issue186/PR192；jieruiz；task/186-local-pipeline；base main d83eeb1f；目录tmp/ffn-local-pipeline-issue186-20261025。3156七项＋3163四项全部completed、封存SHA核验；执行410fa5af/5ba79477，健康完成任务不重跑，远端source不可变。本轮全部只用CPU；无本任务运行作业。
+
+同硬件/采样/物理字节，组合三seed均值64.411267→57.445385ms/token，少10.81%；主要来自提前DMA覆盖BF16普通投影本地装载。FFN只少约1.1%，不是随机矩阵算术提升10.8%。134本地软件验证及远端每项12检查；无PPL/新PPA。
+
+入口architecture_tlm/scheduling_v2_20261027/FINAL_RESULTS_ZH.md与FINAL_COMPARISON.json，优化记录O16。collect/analyze_schedule_v2、collect/analyze_schedule_early、report_schedule_final可重建报告；源码/配置/原件SHA见SCHEDULE_*。两个tar包已逐SHA移入唯一归档，见SCHEDULE_PACKAGE_ARCHIVE.json。PR发布状态以SCHEDULE_V2_PUBLICATION.json为准，不自动合并，Projects待维护者同步。
+
+下一步：先审核此次供数政策并给数字基线同样优化；后续分项评估跨描述符有限并发、SRAM按beat服务、SC计算/恢复流水和文献/实库L/II校准。不得把本次模型时间当500MHz芯片实测，不把动态动作不变的10.8%提速当同比能量节省。
+
+---
+
+# 2026-10-27 调度第二轮运行中；首轮已完成
+
+Issue186/PR192，jieruiz，task/186-local-pipeline；目录tmp/ffn-local-pipeline-issue186-20261025。3156七项已completed/SHA核验，seed0 64.3779→64.30045ms，仅0.12%；prefill和日历无总时间收益。首轮执行410fa5af，结果architecture_tlm/scheduling_v2_20261027/RESULTS_ZH.md。
+
+发现下一DMA仍晚发起；新开关early_next_dma在既有响应槽释放后立即issue下一块，保持单响应槽/两共享槽/两本地bank。执行5ba79477、Slurm3163四CPU项已运行，远端每项12测试通过；本地110+24测试。MATRIX_EARLY_DMA.json定义单因素和组合三seed，source与SUBMISSION为准。没有第二轮完整结果，勿提前填加速。
+
+恢复：不改远端source、不重交3163；collect_schedule_early.py按completed收results_early_dma，再analyze_schedule_early.py核同seed工作量/字节和资源，最终报告/PUBLICATION在同一任务。原500MHz/32SC/GU64NL128/8MiB512GBs/HBM/screen_pv均固定，不门控。Projects待权限；无新GPU/PPL/RTL/PT。大原件在个人服务器，Git只小汇总与SHA。
+
+---
+
+# 2026-10-27 随机版调度优化运行中
+
+Issue186/PR192，jieruiz，task/186-local-pipeline，base main d83eeb1f，目录tmp/ffn-local-pipeline-issue186-20261025。执行410fa5af，Slurm3156七CPU项已运行，源码/提交回执SCHEDULE_V2_SOURCE/SUBMISSION；133本地检查与远端每项11测试通过，无已完成全模型结果或加速数字。
+
+固定500MHz/32SC/GU64NL128/8MiB512bank512GBs/HBM/screen_pv，不门控。三项分别和组合：资源日历、SC跨窗口program、BF16普通矩阵prefill；数据容量/算术/样本不变。collect_schedule_v2.py收completed封存，再analyze_schedule_v2.py验证旧基线复现和同seed工作量/字节。不要重交健康3156、不要修改远端source。发布状态见SCHEDULE_V2_PUBLICATION，Projects待权限。等待时不用重跑旧PPL/RTL/PT。
+
+---
+
+发布确认（2026-10-27）：论文建模口径已推送PR192，提交81b826c80dcd4265883d7a40a83f1673d5251164并回读policy原字节一致；Issue186已同步，仍待审、未合并。仅文档，无新仿真或代码参数变更；回执work/jieruiz/186/PAPER_POLICY_PUBLICATION.json。
+
+# 2026-10-27 论文建模口径更新（Issue186/PR192）
+
+负责人jieruiz；task/186-local-pipeline；基线本轮556462dc，base main d83eeb1f；目录tmp/ffn-local-pipeline-issue186-20261025。用户指定两份资料已读，源码核对确认保守限制；新增PAPER_MODELING_POLICY_ZH.md与输入SHA索引，未改TLM运行代码/参数、未提交新仿真。实际发布见PAPER_POLICY_PUBLICATION.json；PR不自动合并，Projects沿既有权限缺口待同步。
+
+下一步按policy优先数字/SC合理预取、就绪调度和有限DMA流水，而非为未知项叠加串行等待；采用成熟PE/FPU的L/II依据，新PPA后续回填。新PR196已提供计数和数字RTL功能证据，工艺结果仍待回传，不重跑既有12项或健康任务。用户本轮先确认论文建模方向，不将此文档说成已实现优化或新速度结果。
+
+---
+
+发布确认（2026-10-27）：计数器/真实门控/数字校准清单已推送PR192并回读原字节，提交623f0236dfa68853e16e7ae8a6155a0d8fa9b70b；Issue186/193已同步，PR仍待审、未合并。没有新RTL/ICG/PT或数字校准结果。回执work/jieruiz/186/COUNTER_PLAN_PUBLICATION.json。
+
+# 2026-10-27 计数器/门控/数字校准清单：本地完成
+
+本人Git认证jieruiz；task/186-local-pipeline，PR192 base main d83eeb1f，任务目录tmp/ffn-local-pipeline-issue186-20261025。仍open/unmerged；具体上传回执见work/jieruiz/186/COUNTER_PLAN_PUBLICATION.json。
+本次改动仅设计审计、派生脚本/结果、任务清单与记忆。144个合成事件帧整数等价通过；不属于RTL验证，没有新PPA/PPL/提交作业。待办与合同见architecture_tlm/clock500_resource_20261026/COUNTER_GATING_DIGITAL_TODO_ZH.md。
+下一步接续Issue193实现合并档位归约候选、验证真实ICG，接续数字校准；500MHz需新STA。当前只记录计划，不能勾成已做。PR/Issue发布后同步，Projects依既有缺read:project待维护者操作。
+记忆同步注意：根阅读副本在本轮开始已含其他任务较新的记录，历史字节与本分支不同；本轮新增段逐字一致，保留所有原记录。未把其他任务的未公开内容推入PR192，完整镜像归并仍待专门维护；不得为追求字节一致覆盖较新记录。
+
+---
+
 发布确认（2026-10-25T12:50:42.665685+00:00）：ASIC文献与剩余瓶颈报告已推送bd283248并回读SHA核验；Issue186/PR190已更新、未合并；准确回执work/jieruiz/186/ASIC_COMPARISON_PUBLICATION.json。
 
 # Issue186 / PR190：ASIC论文比较说明本地完成

@@ -238,7 +238,11 @@ class IntegratedRandomService:
                 clocks=p.counts['clock_edges'];idle=clocks-active
                 # Full endpoint cost: its native compare/state/control are not
                 # priced again. Seed/global bus/frontends remain unpriced.
-                joules=(active*cost['stream_uW']+idle*cost['idle_uW'])*self.period*1e-15
+                # Fixed reference energy/edge avoids reducing action cost when frequency rises.
+                # No leakage split exists here: treating all measured power as edge-dependent
+                # is a conservative high-frequency proxy, not a new 500MHz PT result.
+                cost_period=1e9/self.cfg.get('energy_reference_hz',1e9/self.period)
+                joules=(active*cost['stream_uW']+idle*cost['idle_uW'])*cost_period*1e-15
                 energy+=joules;area+=cost['area_um2']*1e-6
                 profiles.append(dict(port=name,kind=p.kind,active_cycles=active,idle_cycles=idle,
                     conditional_energy_J=joules,area_mm2=cost['area_um2']*1e-6))
@@ -250,6 +254,8 @@ class IntegratedRandomService:
             simulated_idle_edges_jumped=self.network.jumped_edges if self.network else 0,
             calibrated_endpoint_two_state_energy_J=energy,calibrated_endpoint_area_mm2=area,
             endpoint_costs=profiles,ppa_provenance=self.ppa['provenance'],
+            energy_reference_hz=self.cfg.get('energy_reference_hz',1e9/self.period),
+            high_frequency_energy_policy='fixed reference energy per edge; unsplit leakage conservatively scales with clock',
             full_random_energy_J=None,full_random_area_mm2=None,
             limitations=['native Issue95 ports persist across all layers/queries; original protocol unchanged',
                 '8-bit q/256 sigmoid table alters numerical response; no inherited model PPL',

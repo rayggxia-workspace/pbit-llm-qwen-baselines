@@ -302,7 +302,7 @@ class LatestFFN:
 
     def restore(self,t,n,buckets,k,j):
         o=self.o;f=self.f;values=n*64
-        t=self.macro(t,'SC_bucket_shift_reduce',values*buckets,64,3)
+        t=self.macro(t,'SC_bucket_shift_reduce',values*buckets,f.get('bucket_reduce_lanes',64),3)
         t=self.macro(t,'SC_coefficient16_restore',values,f['restore_lanes'],f['restore_latency'],f['restore_II'])
         size=values*8;addr=o.matrix_output+j*64*8
         if k:

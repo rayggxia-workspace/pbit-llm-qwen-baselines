@@ -28,3 +28,6 @@ Python 3.10+，标准库即可。正式运行前提交执行源码；输出目�
 Qwen3-4B使用后训练版形状；旧Qwen2.5、Llama1/2配置保留历史标注，只用于形状/调度研究，不宣称这些新FFN已完成模型质量验收。Attention实现与原集成版本保持一致，新增的Qwen3显式head_dim及QK归一化是形状适配。
 
 历史实验及完整证据继续在[冻结集成版本](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/tree/d6d33995754fcdcea99286e4ce43f91647aa231a/architecture_tlm)，无需复制历史大结果目录。
+
+
+可选500MHz/HBM/8MiB扩容条件下的[SRAM本地宽通路优化及12项消融](local_ports_20261027/RESULTS_ZH.md)：取消无依据全局512GB/s封顶，保留bank单端口与有限buffer；250MHz为库周期合格候选。默认mature_ddr4未改，代表性单层＋词表结果不能当全36层TPOT。

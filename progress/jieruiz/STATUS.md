@@ -1,3 +1,11 @@
+## Issue206正常g门控对照：41项通过，Slurm3240运行
+
+用户确认sigmoid使用正常输入：从幅度裁剪前g生成原signed8 field/P8 LUT，不调用连续浮点sigmoid；g/u共享尺度与饱和不能改门控输入。科学源32b5ed929ff14f9f1a55c22e0805bf213ccb3cc9，72执行blob；测试3239共41 CPU/CUDA通过。主3240_[0-2]运行，计划36计分/34唯一，未收齐、暂无最终质量结论。原BF1613.566049复现，旧耦合控制已逐值复现前两seed，完整三seed以封存记录为准。
+
+五规则max/g_trim1/u_trim1/both_trim1/both_trim4各三seed有限NL128及条件NL均值诊断。x只groupmax、PoT W8每64x64、GU64、NL joint32T128、准确SDPA不变。只复用原四档，没有专门重新校准尺度表；正常g输入仍signed8量化，GU恢复仍FP32oracle，不是全链路bittrue，无新训练/RTL/PPA/TLM。1024后缀目标非完整WT2。只按complete/documents SHA判完成，不拿当前单seed作结论；不重交，不修改冻结源，旧3211继续自身legacy扫描，无自动回查。
+
+恢复work/jieruiz/206/GATE_SUBMISSION/GATE_SOURCE、collect_independent_gate.py；三片齐后audit_independent_gate.py。代码qwen3/group_shared/independent_gate.py与gate_run.py；旧报告/失败原件保持。阶段通过同PR207上传，实际head以GATE_STAGE_PUBLICATION回执为准，PRdraft未合并。Projects待既有权限同步。
+
 ## Issue206：sigmoid正常g独立输入，g/u共享幅度裁剪对照准备
 
 ## sigmoid独立读取正常g（用户2026-10-28确认）

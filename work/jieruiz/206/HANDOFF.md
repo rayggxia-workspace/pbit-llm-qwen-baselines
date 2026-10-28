@@ -1,3 +1,11 @@
+## Issue206：g/u共享数量/档数扫描完成（2026-10-28）
+
+用户要求x保持64共享；六组G64/32/16×B4/8全部三seed完成。最好G16/B4 PPL16.999183±0.118233，原G64/B4为17.921546；同轮BF1613.566049。各组均值：g64_b4=17.921546, g32_b4=17.647903, g16_b4=16.999183, g64_b8=17.659725, g32_b8=17.574396, g16_b8=17.370886。均仅1024后缀目标，不是完整WT2或任务准确率；不能宣称无损。输入x四档/共享64、PoTW8每64x64、GU64、正常g signed8-P8、NLjoint32T128、准确SDPA、所有36层/前缀均不变。
+
+执行源df758fba20949b8493c75394afb2c7ae560b06e4，82源/旧75字节不变。四档继承成功e888；缩小子组复制parent64目录，八档嵌套补齐且最高尺度不变，无新TRAIN拟合或TEST选表。CPU71（10跳过）/GPU71通过；3291/3292/3293全部完成，主36物理/28标签/25唯一配置seed，另3门禁独立列。SHA、36层/目标/NLL/档号同组核验通过。报告GROUP_SIZE_LEVELS_REPORT_ZH/JSON，候选GROUP_SWEEP_BEST_CANDIDATE.json；原CURRENT_RECOMMENDED和TLM/RTL默认不自动替换。每活动FFN标签状态从G64/B4的76B变化到最佳304B，仅结构计数，无新PPA；GU仍FP32oracle非全链bittrue。
+
+无本轮运行作业；准确上传状态以后续GROUP_SWEEP_FINAL_PUBLICATION为准，未合并/不关闭Issue，Projects待既有权限同步。下方保留历史。
+
 ## Issue206分组/档数扫描已提交Slurm
 
 科学源df758fba20949b8493c75394afb2c7ae560b06e4；CPU 3291、GPU门禁3292、6片数组3293。源82文件已传输SHA核验，先CPU再GPU再正式数组；结果目录/home/Hongjie_Zeng/projects/pbit-qwen3-group64-scale-20261028-issue206/results/df758fba2094/group_size_levels。当前结果未完成，不重交健康任务，不自动回查；提交回执GROUP_SWEEP_SUBMISSION_df758fba.json。

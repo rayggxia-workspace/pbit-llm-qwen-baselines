@@ -73,3 +73,11 @@ CURRENT_RECOMMENDED.json保留e888 risk4/PPL17.9215。d825四组继续调整未�
 每组3seed有限NL、1seed条件NL均值诊断，并重跑BF16及旧risk4一个匹配seed；主36物理计分，去重按实际标签/配置核算，另GPU门禁3份（其中8目标pilot独立列，不是主PPL）。均值仅诊断，不是可部署电路或PPL下界。CPU再GPU Slurm门禁后提交数组，旧冻结源和推荐表不修改。只1024目标后缀非完整WT2，无训练/RTL/PT/PPA/TLM默认改变，GU仍FP32oracle；分组标签/比较/对齐成本只报结构计数，不冒称实测节能。
 
 当前实现和AST本地完成，远程实际执行/作业/结果以后续GROUP_SWEEP_SUBMISSION/COLLECTION为准，不把待跑写成已完成。沿用Issue206/PR207及同工作目录，Projects沿既有权限限制待同步；保留旧所有负结果。
+
+## Issue206：g/u共享数量/档数扫描完成（2026-10-28）
+
+用户要求x保持64共享；六组G64/32/16×B4/8全部三seed完成。最好G16/B4 PPL16.999183±0.118233，原G64/B4为17.921546；同轮BF1613.566049。各组均值：g64_b4=17.921546, g32_b4=17.647903, g16_b4=16.999183, g64_b8=17.659725, g32_b8=17.574396, g16_b8=17.370886。均仅1024后缀目标，不是完整WT2或任务准确率；不能宣称无损。输入x四档/共享64、PoTW8每64x64、GU64、正常g signed8-P8、NLjoint32T128、准确SDPA、所有36层/前缀均不变。
+
+执行源df758fba20949b8493c75394afb2c7ae560b06e4，82源/旧75字节不变。四档继承成功e888；缩小子组复制parent64目录，八档嵌套补齐且最高尺度不变，无新TRAIN拟合或TEST选表。CPU71（10跳过）/GPU71通过；3291/3292/3293全部完成，主36物理/28标签/25唯一配置seed，另3门禁独立列。SHA、36层/目标/NLL/档号同组核验通过。报告GROUP_SIZE_LEVELS_REPORT_ZH/JSON，候选GROUP_SWEEP_BEST_CANDIDATE.json；原CURRENT_RECOMMENDED和TLM/RTL默认不自动替换。每活动FFN标签状态从G64/B4的76B变化到最佳304B，仅结构计数，无新PPA；GU仍FP32oracle非全链bittrue。
+
+无本轮运行作业；准确上传状态以后续GROUP_SWEEP_FINAL_PUBLICATION为准，未合并/不关闭Issue，Projects待既有权限同步。下方保留历史。

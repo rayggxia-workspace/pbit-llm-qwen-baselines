@@ -29,4 +29,4 @@ GPU每连接用独立Philox键/地址，token行进入64bit key，W地址低于2
 
 旧Issue30/32证明旧范围/IID会失真，但不替代当前测试；原高斯参考与精确条件二项结果分开。无新RTL/PT/PPA，其他训练任务不动。执行以work/jieruiz/201/SUBMISSION_2cd6d360.json和不可变source为准；只有complete.json及documents SHA通过才记完成，不能把pilot当主表。
 
-阶段报告入口：`qwen3/results/dual_gu_20261027/REPORT_ZH.md`。主数组3200仍运行；当前主表只是未封存观察。恢复见work/jieruiz/201/HANDOFF.md。
+最终结果入口：`qwen3/results/dual_gu_20261027/REPORT_ZH.md`。主数组3200四片均封存，40份/37唯一主计分已核验；三seed联合256拍PPL15.8951，相对同拍固定W高4.30%。仍为1024目标后缀，非完整WT2。历史阶段记录单独保留；恢复见work/jieruiz/201/HANDOFF.md。

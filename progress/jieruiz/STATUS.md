@@ -1,3 +1,11 @@
+## 2026-10-28 Issue201：Wg/Wu双随机40项已完成核验
+
+2026-10-28T09:51:41+08:00；负责人jieruiz，task/201-dual-gu-short，PR202依赖未合PR174，目录tmp/dual-gu-issue201-20261027。Slurm3200四片各10份完成，40物理/37唯一主计分、三seed齐全；pilot4份独立。58源blob、模型/数据/token/目标/TRAIN表、documents/sidecar SHA与36层各8次/17400词覆盖核验通过，18项CPU/CUDA通过。此前运行中/单seed数字仅历史；未重跑。
+
+后训练Qwen3-4B、1024目标后缀（非完整WT2），BF16四次13.566049。T32/64/128/256固定W均值15.6137/15.3647/15.6853/15.2405，W-IID76.2007/25.5600/18.8150/16.8902，A/W联合29.9061/18.3942/16.5566/15.8951。联合256 std0.1856，相对同T固定W+4.30%、BF16+17.17%；不能称无损。仅Wg/Wu权重取随机，Wd固定W8、原随机NL128、准确SDPA不变；联合分配同时换A/W层数，W独立未共享。GU恢复FP32oracle，非全链路bittrue，无训练/RTL/PPA。256是GU长度非整token周期。
+
+成果qwen3/dual_gu、qwen3/results/dual_gu_20261027/REPORT_ZH.md、FINAL_SUMMARY/RAW_INDEX；work/jieruiz/201/ARTIFACT_AUDIT与HANDOFF。科学源2cd6d360不变，b0仅诊断/测试补丁。当前本地最终汇总完成，待更新同一PR202；正式发布以FINAL_PUBLICATION回执为准，不合并、不关闭Issue。旧控制器3200记录已失效，完成依据封存文件，未虚报Slurm历史退出码。无新定时；Projects缺read:project待同步。
+
 ## 2026-10-28 Issue201发布回执：PR202草稿，扫描继续
 
 2026-10-28T00:48:34+08:00，身份jieruiz。源码与阶段报告已实际推送到workspace的task/201-dual-gu-short，PR202（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/202）为draft/open、未合并；base为尚未合入的PR174分支。首次发布head98530eaa，九个关键远端blob原字节回读一致，PUBLICATION/REMOTE_VERIFICATION保存回执。Issue201验收项只勾选已通过部分，主扫描及最终三seed对比仍未完成，Projects缺read:project待同步。

@@ -13,3 +13,5 @@ main尚无完整台账工具；未将其他分支的79条记录或整套catalog�
 2026-10-28：新增09_KV读取与数字Attention基线参考.md及references/kv_baseline_20261028两份同字节地址算术数据；100几何核验/18旧单头案例，不新增run，不改既有records/catalog。主报告/源索引在attention_compare；真实后训练GQA与同质量端到端仍待补。
 
 2026-10-28新增attention-control128-198-eda-20261028：336回放/56PT/8top内部STA审计，whole STA violations；参考CONTROL128_REGISTRY_CHECK.json（85记录）与CONTROL128_ARCHIVE_INVENTORY_APPEND.csv增量合并。保留其他分支catalog/record，不整目录覆盖。
+
+2026-10-29新增attention-regbank-198-eda-20261029：7top/42功能回放/84PT窗口，16位hold和比较器低slew告警保留；参考REGBANK_REGISTRY_CHECK/SYNC及ARCHIVE_INVENTORY_APPEND增量合并。根88记录check/render，旧87原字节保留，不用本分支子集覆盖中央union。

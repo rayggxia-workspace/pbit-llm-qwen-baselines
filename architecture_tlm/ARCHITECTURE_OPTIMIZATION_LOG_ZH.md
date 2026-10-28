@@ -87,3 +87,18 @@ SS1.08V125°C100MHz、IO delay0/slew.1ns/load.02pF/setup uncertainty2ns/hold.1ns
 DC38444217/38444227，replay/PT38444238/38444263，timing38444334，collection38444378；无本轮GPU/PPL。首次依赖提交在创建job前拒绝，已有作业完成后重提，原失败回执保留。当前本地实现/测试/归档/台账完成；准确分支上传SHA和回读见CONTROL128_PUBLICATION.json。PR199待审、未合并，Issue保持开放，Projects沿既有限制待同步。下一步修接口hold和标注，再结合真实候选激励及外部接口成本，不启动未经要求的昂贵模型重跑。
 
 ---
+
+
+## 2026-10-29：128字概率阈值寄存器及并行比较器EDA完成
+
+负责人rayggxia，继续Issue198 / task/198-attention-compare / draft PR199，base main，复用tmp/attention-compare-issue198-20261027。执行父提交1f4dff93加v2/v3/v4/v5冻结SHA；未新建重复checkout，未运行GPU/PPL。7top/三seed/42条RTL与门级oracle回放，8904执行拍/8610检查拍；84最终PT窗口，全部net/leaf cell活动100%。Slurm38447688及修复38447724完成，早期失败38447560与旧slew38447569原件保留。
+
+SS1.08V125°C100MHz、原SHARK面积×0.81。真实32个X8 ICG门控，128×12/16位阈值库单头等效0.00928746/0.012273444mm²，保持33.17/37.69μW；CE常开时钟915/1220μW。8拍装载+160拍采样完整事务84.722/102.183pJ，装载30.65/40.53pJ已计。加128路比较器：0.015184778/0.020186302mm²、605.808/796.656pJ每事务。11位score库额外0.008540964mm²/头。32头阈值库6/8KiB、0.297199/0.392750mm²，保持1.062/1.206mW；加比较器、11位score及旧控制的模块面积和1.132714/1.292763mm²。36层复用时面积不乘36，能量按1152次query-head外推。完整RNG/LUT/max/转换/地址映射/V/累加均未计，不能称完整Ising PPA。
+
+功能通过但不是物理签核：16位门控wr_data输入hold=-0.010220ns；12位门控hold仅+0.004787ns。比较器每窗口256个低slew库表外推告警，其他五top check_power通过。无缺表/无用户false或multicycle，禁用弧是常量条件传播。无CTS/SPEF/SDF/完整延迟毛刺；合成阈值活动并非真实Qwen，不能和旧p=1/32、S128/B0的控制能量直接拼成实测总能量。8拍装载要求上游16阈值/拍，ROM端口成本没有计入。
+
+正式代码及RESULTS/SUMMARY/REPORT_ZH.md在architecture_tlm/attention_compare_20261027/regbank_20261029；功耗面积目录10_阈值寄存器与全Q头资源估算.md提供参考。原报告1953成员、历史2031成员SHA核验；本地project_archives/attention_compare_issue198_20261027/regbank_20261029，完整RAW包21.7MB留授权EDA服务器，位置/校验在私有COLLECTION。统一run attention-regbank-198-eda-20261029，根台账87→88条check/render且旧87记录字节不改；元数据校验与本轮原件核验分开，未重验全部历史原件。
+
+本地成果已完成，准确远端提交与回读以work/rayggxia/198/REGBANK_PUBLICATION.json为准。PR199仍待审未合并、Issue开放，Projects沿既有限制待维护者同步。下一步匹配真实接口关闭hold/低slew告警，再评估16阈值/拍LUT和合格RNG吞吐；不以本轮估计宣称整机竞争力。
+
+---

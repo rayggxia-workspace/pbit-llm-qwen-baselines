@@ -1,3 +1,9 @@
+## 最新：参数化模块能耗库已发布（2026-10-28）
+
+科学源080729c314e2e0e62efada3e32d4c27c7eac4bb5，同PR205待审。33配置/396窗口/99功能回放完成，67报告/2源包核验。恢复优先读module_energy/HANDOFF.md和architecture_tlm/module_energy_20261028/results/REPORT_ZH.md。无本任务遗留Slurm，旧位宽/单尺度结果如下保留。
+
+---
+
 ## 最新：OR4计数位宽分析已发布（2026-10-28）
 
 科学源904068b9e70bab558f93c93ff2c230216164cf51，同PR205，数值统计/一手论文核查，无新RTL/PPA。恢复先读counter_precision/HANDOFF.md与architecture_tlm/matrix_counter_precision_20261028/REPORT_ZH.md。原单尺度PPA和旧四档如下保留。

@@ -1,0 +1,65 @@
+"""Build a readable report from the verified numerical replay and primary sources."""
+from pathlib import Path
+import hashlib,json
+HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[1];WS=ROOT.parents[1]
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(p,x):p.write_text(json.dumps(x,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+def main():
+ r=json.loads((HERE/'RESULTS.json').read_text(encoding='utf-8'))
+ sources=[
+  {'id':'REX_SC','title':'REX-SC: Range-Extended Stochastic Computing Accumulation for Neural Network Acceleration',
+   'url':'https://nanocad.ee.ucla.edu/wp-content/papercite-data/pdf/j74.pdf','section':'II-C, III; PDF pp4/6/8',
+   'verified_claim':'Explicitly compares no-truncation and saturating configurations; saturating adders limited to6 bits. Signed saturation depends on computation order; unmodeled intermediate saturation can hurt model accuracy.'},
+  {'id':'SC_DCNN','title':'SC-DCNN: Highly-Scalable Deep Convolutional Neural Network using Stochastic Computing',
+   'url':'https://ywang393.expressions.syr.edu/wp-content/uploads/2016/07/SC-DCNN-Highly-scalable-deep-convolutional-neural-network-using-stochastic-computing.pdf','section':'4.1, Fig7, Table3',
+   'verified_claim':'Approximate per-cycle parallel counting uses fewer logic gates and lower precision. 16-input example uses4 output bits with LSB weight2; it is not an arbitrary-width temporal accumulator.'},
+  {'id':'DS_CIM','title':'DS-CIM: Digital Stochastic Computing-In-Memory Featuring Accurate OR-Accumulation via Sample Region Remapping for Edge AI Models',
+   'url':'https://arxiv.org/html/2601.06724v1#S3.SS4','section':'III-D',
+   'verified_claim':'Eight D-latches cache four 2-bit outputs, then update the accumulator once every4 cycles. Reported accumulation energy reduction56%, macro power reduction21.8%, area increase10%; these are paper-specific, not our PPA.'}]
+ save(HERE/'SOURCES.json',{'accessed_on':'2026-10-28','primary_sources_only':True,'sources':sources})
+ q=WS/'tmp/group64-scale-issue206-20261028/qwen3/group_shared/pot_weight.py'
+ summary=WS/'tmp/group64-scale-issue206-20261028/qwen3/results/group_shared_20261028/POT_WEIGHT_SUMMARY.json'
+ assert 'clamp(-127,127)' in q.read_text(encoding='utf-8')
+ save(HERE/'WEIGHT_CONTRACT_REFERENCE.json',{'scope':'Read-only contract cross-check; no model execution or acceptance of model quality',
+  'issue':206,'source_commit':'aa43d00d0b8c1c9efbd981d00e45dffd358865ce','quantizer_sha256':sha(q),
+  'summary_sha256':sha(summary),'code_range':[-127,127],'magnitude_planes':7,
+  'archive_member_verified':'project_archives/group64_scale_issue206_20261028/pot-source-aa43d00d0b8c.tar.gz::qwen3/group_shared/pot_weight.py',
+  'warning':'This model contract differs from the measured complete signedINT8 [-128,127] core. Its absent magnitude128 plane can be omitted only after adopting this explicit interface restriction.'})
+ lines=['# OR4计数器位宽：统计、近似方案与论文核查','',
+  '建议把11位保留为精确对照，优先评估9位饱和计数，以及省去最低权重位平面。没有必要未经统计就把所有位平面配置为同样的最坏情况宽度。',
+  '', '本轮只读取已冻结的N64/T32、M1/M8、seed17/503/1009合成fixtures并做数值回放，不运行新模型、RTL、综合或PT，不改变任何已测PPA。脚本逐帧重构OR4，各432个功耗/功能输出均等于原OR oracle；统计所有32拍前缀。输入与脚本SHA见MANIFEST.json。',
+  '', '主表采用M8功耗刺激的384个点积，来自24条驻留权重行、每行16帧；不是384份独立权重，也不是真实Qwen权重/激活统计。M1另有48点积；功能刺激432输出含极值压力例，单列在RESULTS.json，不能用平均分布掩盖压力例。',
+  '', '1. 为什么精确对照是11位、为什么可以压缩',
+  '', 'OR4后每拍16路，每平面正负先分别popcount再相减，delta∈[-16,16]。32拍有符号累计C∈[-512,512]，严格精确需11位；若正负分别用无符号计数，每个分支0..512需10位。10位有符号范围[-512,511]仅缺+512。',
+  '', '更强的结论：前31拍|C|≤496，10位不会溢出；仅最后一拍的+512须裁为511，每平面最多差1，8平面加权原始误差上界255。它是可控端点近似，不需要为这一点坚持每平面11位；但不能直接丢最高位导致符号回绕。',
+  '', '2. 实际累计值',
+  '', '| 位平面p/位权 | 帧末累计绝对值均值 | 帧末绝对值99分位 | 全32拍绝对值最大值 |',
+  '|---|---:|---:|---:|']
+ for x in r['datasets']['power_M8']['planes']:
+  lines.append('| B%d / %d | %.2f | %.2f | %d |'%(x['plane'],x['bit_weight'],x['abs_count_mean'],x['abs_final_p99'],x['max_abs_prefix']))
+ lines+=['', 'B0–B6的正、负分支各自平均累计约193–205，先相减后的平均绝对值仅53–58；小计数来自正负抵消，不能把两支各自提前饱和后当作同一种算法。低位事件数量并不特别少，但恢复时的位权小，允许更大的计数误差。B7只因完整INT8的−128存在而激活。',
+  '', '3. 逐拍饱和/删平面扫描',
+  '', '额外NRMSE = RMS(缩位结果−原OR4结果)/RMS(原OR4结果)，不是新增模型PPL、不是硬件精度位数，也不等于总SC误差。每拍都实施饱和，不能只在帧末裁剪。',
+  '', '| 配置 | 累计状态位 | 相对88位减少 | M8额外NRMSE |', '|---|---:|---:|---:|']
+ names={'sat10':'所有平面10位饱和','sat9':'所有平面9位饱和','sat9_top7':'B0–B6各9位，B7为7位',
+  'sat8':'所有平面8位饱和','drop_low1_sat9_top7':'删除B0；B1–B6各9位，B7为7位',
+  'drop_low2_sat9':'删除B0/B1，其余9位','mixed_6_7_8_8_9_9_9_7':'B0起宽度6/7/8/8/9/9/9/7'}
+ for key,name in names.items():
+  v=r['candidates'][key]['power_M8'];lines.append('| %s | %d | %.1f%% | %.3f%% |'%(name,v['counter_bits'],100*(1-v['counter_bits']/88),100*v['extra_NRMSE_vs_OR_RMS']))
+ lines+=['', '9位方案有4/384输出发生额外变化，额外NRMSE约0.242%；8位饱和约10.681%，8位直接回绕则约74.642%。缩位必须定义饱和或明确缩放，不可依赖Verilog赋值自动截高位。删B0方案整层OR/popcount/恢复逻辑均可能移除，比只省一两个计数FF更值得评估。上述状态位减少不是总面积/功耗降幅，饱和判定也有代价。',
+  '', '按seed17/503校准、seed1009留出评估，逐平面贪心缩位在约1%额外误差目标得到低到高[5,8,9,9,9,9,9,6]，状态64位；留出额外NRMSE为1.072%。这是合成分布拟合、不是最优证明或真实模型可用配置；极值功能集会显著退化，全部压力结果保留，不能因普通分布误差小就称零风险。',
+  '', '4. 从权重支持度收紧无损上界',
+  '', '令Gp为某输出权重行在该位平面上、16个OR4组中至少有一个权重bit=1的组数。固定权重已知时，无论输入符号/样本如何，|C|≤32Gp。Gp=0可删除该平面；精确有符号位宽为1+ceil(log2(32Gp+1))。Gp≤1/3/7/15时分别最多需7/8/9/10位；只有Gp=16才可能碰到+512端点。应先对真实模型每层/矩阵/权重tile做这个离线统计，再考虑允许裁剪的概率边界。',
+  '', '运行时换权重不会自动减小物理寄存器数量。要把支持度变成面积节省，需要离线固定电路配置；可编程共享硬件则更适合用上位时钟门控或位平面使能节能。模型/训练/测试划分和冻结校准集必须明确。',
+  '', '另核对Issue206当前PoT量化：clamp(-127,127)，没有−128，因此只有7个幅值位平面，符号另计；B7可以在采用该接口约束后无损删除。此前PPA按完整signedINT8含−128设计，才保留8幅值平面。不能把完整INT8结果悄悄改称7幅值位结果；源/归档成员SHA见WEIGHT_CONTRACT_REFERENCE.json。',
+  '', '5. 论文是否都按最大值配位宽',
+  '', '[REX-SC](https://nanocad.ee.ucla.edu/wp-content/papercite-data/pdf/j74.pdf) §II-C明确比较完全不截断和饱和配置，后者把加法器限为6位，说明最坏情况无损扩位不是唯一做法。论文也指出有符号逐步饱和与计算顺序相关，未建模饱和会损害精度；它的6位不能直接当作本设计6位的依据。',
+  '', '[SC-DCNN](https://ywang393.expressions.syr.edu/wp-content/uploads/2016/07/SC-DCNN-Highly-scalable-deep-convolutional-neural-network-using-stochastic-computing.pdf) §4.1/Fig7使用近似并行计数器，用简化逻辑/降低计数分辨率换取硬件收益，16输入示例4位输出的LSB位权为2。这里是每拍popcount近似，不是直接删时间累计寄存器的高位；我们的popcount16还可以另外研究这一层近似，但应与计数饱和分开消融。',
+  '', '[DS-CIM](https://arxiv.org/html/2601.06724v1#S3.SS4) §III-D给出的关键办法是8个D-latch缓存4拍2位结果，每4拍才更新主累加器，作者报告累计能量下降56%、宏功率下降21.8%、面积增加10%。它支持降低宽累加器更新频率这条路线，不是任意截位都安全的证据，也不是我们已测到的收益。',
+  '', '6. 推荐下一步配置',
+  '', '保留11位作oracle；先实现10位端点饱和作保守参照，主候选采用B0–B6为9位、B7为7位（70位状态）。更激进候选删除B0、其余同上（61位）。若接口正式采用Issue206的[-127,127]权重，可再无损移除B7：分别63位、54位。低位混合精度[5,8,9,...]目前只作为校准示例，不直接定为硬件默认。',
+  '', '计数统计要用真实同尺度的模型权重和激活补齐，按层/矩阵/位平面记录饱和率与加权输出误差，并做独立留出与端点压力验证。缩位后再跑同条件RTL/DC/PT，饱和检测/门控开销必须计入；本报告不预测能量按位数成比例下降，也没有新PPA。',
+  '', '直接截掉计数LSB同样有陷阱：每拍delta先除4再累加，32次+1会全部丢掉；正确累计后除4应得8。若需要降低分辨率，应明确舍入、残余进位或分块累加。只把最终结果裁剪/舍入不能宣称内部计数器已经缩位。']
+ (HERE/'REPORT_ZH.md').write_text('\n'.join(lines)+'\n',encoding='utf-8',newline='\n')
+ print('REPORT_WRITTEN',sha(HERE/'REPORT_ZH.md'))
+if __name__=='__main__':main()

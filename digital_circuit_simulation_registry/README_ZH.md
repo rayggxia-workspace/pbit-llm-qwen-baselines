@@ -1,3 +1,7 @@
+## 2026-10-28 Issue204：经典INT8 DOT4与面积复核
+
+新增run matrix-int8-classic-204-20261028：2配置/18PT窗口，INT32主参考40.869pJ/190ns/等效0.003098542mm²，INT22为39.330pJ/0.002933788mm²；时序均非负。SC54与四路整数的映射单元面积复核见architecture_tlm/int8_classic_ppa_20261028/results/AREA_EXPLANATION_ZH.md。任务分支66、当前完整根镜像87条，原65/86个record字节保留；无模型/PPL或物理签核。
+
 ## 2026-10-28 Issue204成熟BF16新增结果
 
 中央run matrix-bf16-204-20261028：五top/45PT窗口，N64完整帧577pJ、300ns、55nm等效0.044918mm²；前布局/复位释放契约与原始负时序、功耗范围告警保留。见architecture_tlm/bf16_ppa_20261028/results/REPORT_ZH.md。任务分支65条，本机完整union86条，85个既有根record原字节保留；中央元数据check/render通过。局部原件检查有94个旧路径不可访问，本新run全部原件/成员已核验。

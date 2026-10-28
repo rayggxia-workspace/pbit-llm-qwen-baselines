@@ -123,3 +123,8 @@ Issue204/PR209；[文献复核](bf16_baseline_20261028/LITERATURE_RECHECK_ZH.md)
 ## 2026-10-28 成熟BF16本工艺表征与INT8经典划分
 
 Issue204/PR209；[完整结果](bf16_ppa_20261028/results/REPORT_ZH.md)、[INT8划分](bf16_ppa_20261028/INT8_CLASSIC_ZH.md)。五top/45PT窗口；N64四lane非融合DOT4实际计入启动/反馈/收尾，classic FMA流水参数不代替完整帧验证。源与原件统一登记matrix-bf16-204-20261028。复位释放契约另做同网表STA，原始失败与标量hold负余量保留；不称物理签核或同质量全芯片优势。无新模型/PPL。
+
+
+## 2026-10-28 经典INT8折叠DOT4与SC面积审计
+
+Issue204/PR209；[正式结果](int8_classic_ppa_20261028/results/REPORT_ZH.md)、[面积复核](int8_classic_ppa_20261028/results/AREA_EXPLANATION_ZH.md)。2配置/18窗口，INT32与N64精确INT22；同BF16派生数值比较，SC当前核更大的组合逻辑与四路数字时分复用均明确，不按AND直觉改面积。中央run matrix-int8-classic-204-20261028；v1/v2映射X失败保留、v4真实控制reset验证。无新模型/PPL、存储与物理签核。

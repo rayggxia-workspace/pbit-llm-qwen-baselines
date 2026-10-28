@@ -1,0 +1,52 @@
+{
+  "pytorch_tag": "v2.7.1",
+  "flash_submodule": "979702c87a8713a8e0a5e9fee122b90d2ef13be5",
+  "pytorch_submodule_url": "https://api.github.com/repos/pytorch/pytorch/contents/third_party/flash-attention?ref=v2.7.1",
+  "sources": [
+    {
+      "path": "csrc/flash_attn/src/kernel_traits.h",
+      "blob_sha": "8c0897488dc631fa19869b222a2fd18e0160d3d6",
+      "url": "https://github.com/Dao-AILab/flash-attention/blob/979702c87a8713a8e0a5e9fee122b90d2ef13be5/csrc/flash_attn/src/kernel_traits.h",
+      "evidence": [
+        {
+          "line": 26,
+          "text": "    using ElementAccum = float;"
+        }
+      ]
+    },
+    {
+      "path": "csrc/flash_attn/src/flash_fwd_kernel.h",
+      "blob_sha": "1ba07da157fc97eec4c0919503c48636a4c29bca",
+      "url": "https://github.com/Dao-AILab/flash-attention/blob/979702c87a8713a8e0a5e9fee122b90d2ef13be5/csrc/flash_attn/src/flash_fwd_kernel.h",
+      "evidence": [
+        {
+          "line": 343,
+          "text": "            ? softmax.template softmax_rescale_o</*Is_first=*/true,  /*Check_inf=*/Is_causal || Is_local>(acc_s, acc_o, params.scale_softmax_log2)"
+        },
+        {
+          "line": 346,
+          "text": "        // Convert acc_s from fp32 to fp16/bf16"
+        },
+        {
+          "line": 347,
+          "text": "        Tensor rP = FLASH_NAMESPACE::convert_type<Element>(acc_s);"
+        }
+      ]
+    },
+    {
+      "path": "csrc/flash_attn/src/softmax.h",
+      "blob_sha": "01589adedb3ab348af47785f9dc451d12481dac1",
+      "url": "https://github.com/Dao-AILab/flash-attention/blob/979702c87a8713a8e0a5e9fee122b90d2ef13be5/csrc/flash_attn/src/softmax.h",
+      "evidence": [
+        {
+          "line": 139,
+          "text": "        Tensor scores = make_tensor(acc_s.data(), FLASH_NAMESPACE::convert_layout_acc_rowcol(acc_s.layout()));"
+        },
+        {
+          "line": 143,
+          "text": "            FLASH_NAMESPACE::scale_apply_exp2(scores, row_max, softmax_scale_log2);"
+        }
+      ]
+    }
+  ]
+}

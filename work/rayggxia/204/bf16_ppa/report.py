@@ -7,7 +7,7 @@ def main():
  lines=['# 成熟BF16本工艺前布局PPA', '',
  'Issue204 / PR209；rayggxia，2026-10-28。用户明确授权按经典划分表征成熟BF16，再核对INT8经典结构。本轮实际完成CVFPU/FPnew四个算术top及常规四lane N64整核的综合、门级逐结果回放和45个PT窗口。执行的源码、配置和合成激励由不可覆盖ZIP及manifest绑定，不将后续Git提交伪称执行时提交。', '',
  '统一SS1.08V/125℃/100MHz，数据I/O最大/最小延迟1/0.02ns，输出负载20fF，setup/hold uncertainty0.5/0.05ns。下列面积已按用户约定只乘一次0.81，原始库面积另列；功耗、能量和时间不缩放。前布局无CTS/SDF/SPEF。', '',
- '| 单元 | 原始面积 µm² | 55nm等效面积 µm² | normal功率 mW | normal能量 pJ/次 | INT8派生输入 pJ/次 |', '|---|---:|---:|---:|---:|---:|']
+ '| 单元 | 原始面积 µm² | 55nm等效面积 µm² | normal功率 mW | normal能量 pJ/次 | int8命名窗口 pJ/次 |', '|---|---:|---:|---:|---:|---:|']
  for n in ['mul1','add2','fma2','fma3','dot64_4']:
   x=by[n];q=x['profiles']['normal'];iq=x['profiles']['int8'];lines.append('| %s | %.2f | %.2f | %.6f | %.5f | %.5f |'%(n,x['raw_area_um2'],x['area_55eq_um2'],q['total_W']*1000,q['energy_pJ'],iq['energy_pJ']))
  lines+=['', '**操作单位不同：前四项为一次标量运算，dot64_4为64对输入的完整点积。** 标量一窗1024操作加12拍排空；N64一窗16帧，逐帧真实启动、输入、排空、最终归约和间隔均计入，300ns/帧。功率是该完整窗口均值，能量=P×窗口时长÷完成次数，含泄漏及自由时钟成本。不是把标量结果乘64。idle和三seed结果见FINAL_SUMMARY.json；idle功耗不从主表扣除。', '',
@@ -26,6 +26,7 @@ def main():
  '历史失败均保留：v1默认Python2；v2 VCS timescale；v3模板替换污染成功标记；v4 DC不支持常量函数clog2形参；v5 DC不支持宏默认参数；v6只显式化33个寄存器宏的原默认clk/reset，未改浮点算法。常量函数等价循环已用65536值对照。COMPATIBILITY_PATCHES.json绑定原/补丁SHA，UPSTREAM.json绑定精确版本。旧限制许可的common_cells下载仅保留本地历史，不发布该版本源码。', '',
  '源码包/原始报告在授权project_archives/matrix204_bf16_ppa_20261028，FINAL_SUMMARY列原字节与成员SHA；中央记录matrix-bf16-204-20261028。失败版本、多副本和重复功能回放不重复算作新架构实验。驱动内dot64_4的operation_definition文字误写scalar，派生摘要明确更正为一整帧，数值单位/能量未受影响。无新模型/语料/PPL，相关字段N/A。', '',
  'INT8经典划分的独立核查见[INT8_CLASSIC_ZH.md](../INT8_CLASSIC_ZH.md)，流程与恢复见work/rayggxia/204/bf16_ppa/HANDOFF.md。']
+ lines+=['','标量活动说明：FMA/mul的int8窗口仅A/B为INT8派生BF16，FMA的C仍为随机FP32；add2的A未使用，其B/C在两个活动窗口都为随机FP32，所以int8只是该加法窗口的名字，不能作为INT8整数加法或精度切换消融。N64的int8窗口另为明确的INT8派生输入，48帧精确点积核验有效。见METADATA_CLARIFICATIONS.json；原始数值和归档字节未改。']
  (P/'results/REPORT_ZH.md').write_bytes(('\n'.join(lines)+'\n').encode())
  (P/'README_ZH.md').write_bytes(('# BF16成熟算术与N64本工艺结果\n\n最新入口：[结果与口径](results/REPORT_ZH.md)、[完整数值与原件索引](results/FINAL_SUMMARY.json)、[INT8经典划分](INT8_CLASSIC_ZH.md)。\n\nCVFPU与common_cells精确提交及许可见UPSTREAM.json、vendor/；两处DC2018等价兼容改动见COMPATIBILITY_PATCHES.json。冻结执行manifest保留原字节。fixtures由prepare.py、work/rayggxia/204/bf16_ppa/prepare_matrix.py生成并存在源ZIP；重新生成后必须重施记录的兼容补丁，不能把原冻结目录当可变实验目录。\n\n本轮为前布局综合/门级/PT及单独复位契约STA，不是布局签核或芯片实测；未运行模型推理/PPL。\n').encode())
  print('REPORT_WRITTEN')

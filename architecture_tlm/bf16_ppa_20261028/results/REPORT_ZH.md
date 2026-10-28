@@ -4,7 +4,7 @@ Issue204 / PR209；rayggxia，2026-10-28。用户明确授权按经典划分表�
 
 统一SS1.08V/125℃/100MHz，数据I/O最大/最小延迟1/0.02ns，输出负载20fF，setup/hold uncertainty0.5/0.05ns。下列面积已按用户约定只乘一次0.81，原始库面积另列；功耗、能量和时间不缩放。前布局无CTS/SDF/SPEF。
 
-| 单元 | 原始面积 µm² | 55nm等效面积 µm² | normal功率 mW | normal能量 pJ/次 | INT8派生输入 pJ/次 |
+| 单元 | 原始面积 µm² | 55nm等效面积 µm² | normal功率 mW | normal能量 pJ/次 | int8命名窗口 pJ/次 |
 |---|---:|---:|---:|---:|---:|
 | mul1 | 3220.56 | 2608.65 | 0.128500 | 1.30006 | 1.25723 |
 | add2 | 16036.56 | 12989.61 | 0.592567 | 5.99511 | 5.96847 |
@@ -45,3 +45,5 @@ N64三seed normal 577.000±1.838pJ/帧，INT8派生输入556.200±0.648pJ/帧；
 源码包/原始报告在授权project_archives/matrix204_bf16_ppa_20261028，FINAL_SUMMARY列原字节与成员SHA；中央记录matrix-bf16-204-20261028。失败版本、多副本和重复功能回放不重复算作新架构实验。驱动内dot64_4的operation_definition文字误写scalar，派生摘要明确更正为一整帧，数值单位/能量未受影响。无新模型/语料/PPL，相关字段N/A。
 
 INT8经典划分的独立核查见[INT8_CLASSIC_ZH.md](../INT8_CLASSIC_ZH.md)，流程与恢复见work/rayggxia/204/bf16_ppa/HANDOFF.md。
+
+标量活动说明：FMA/mul的int8窗口仅A/B为INT8派生BF16，FMA的C仍为随机FP32；add2的A未使用，其B/C在两个活动窗口都为随机FP32，所以int8只是该加法窗口的名字，不能作为INT8整数加法或精度切换消融。N64的int8窗口另为明确的INT8派生输入，48帧精确点积核验有效。见METADATA_CLARIFICATIONS.json；原始数值和归档字节未改。

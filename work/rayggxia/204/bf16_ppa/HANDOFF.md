@@ -10,7 +10,7 @@ N64原始面积55454.76µm²，raw×0.81等效0.044918mm²，normal平均1.92333
 
 v1..v7负结果/源包/原始报告保留，原字节、远端SHA和全部报告成员核验。v6标量完整，v6 N64仅TB time变量裁剪失败；v7只修波形裁剪并核验全部RTL/bench/fixture/库绑定/约束后复用相同网表，未重综合。补充STA独立冻结。执行是base99bf019c+uncommitted快照，后续源码提交需按ZIP逐字绑定，不伪造执行提交。准确批次见work/rayggxia/204/bf16_ppa/RUN_LEDGER.json；本轮作业已结束，不重交。
 
-中央run matrix-bf16-204-20261028；分支与根镜像分别向各自最新record集合增量登记，旧record字节均保留，绝不用分支子集覆盖完整镜像。准确数量、check/render及原件校验见REGISTRY_CHECK.json。源码/报告准备完毕；实际推送提交和PR状态以同目录PUBLICATION.json为准，PR待审未合并、Issue不关闭，Projects沿既有限制待维护者同步。
+中央run matrix-bf16-204-20261028；分支与根镜像分别向各自最新record集合增量登记，旧record字节均保留，绝不用分支子集覆盖完整镜像。准确数量、check/render及原件校验见REGISTRY_CHECK.json。科学源5d21923c7dc7268e2cb19cf393bd858dc3dfb52b已推送PR209，70文件tree与8关键文件内容/blob回读一致；实际回执见同目录PUBLICATION.json。PR待审未合并、Issue不关闭，Projects沿既有限制待维护者同步。
 
 INT8经典实现采用signed8×8→16位积，output-stationary INT32反馈累加，或DOT4/8平衡树后累加；固定N64无bias最坏范围可用22位精确，但可复用长K/带bias经典基线应保留32位，再把22位列独立消融。Gemmini/NVDLA一手源码/文档已核查；推荐100MHz先用乘法级+累加级，是否树内增级交STA决定，无新INT8 PPA冒称。
 

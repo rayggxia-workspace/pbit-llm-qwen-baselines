@@ -43,8 +43,8 @@ module ac_rejection #(
  reg decide,emit_sample,multi_reject,empty_reject;
  reg [4:0] next_m;
  reg [AW-1:0] chosen;
- wire [MAX_SHIFT-1:0] fair_bits_in_mask=fair_bits_input&coin_mask;
  wire [MAX_SHIFT-1:0] coin_mask=({MAX_SHIFT{1'b1}} >> (MAX_SHIFT-shift_m));
+ wire [MAX_SHIFT-1:0] fair_bits_in_mask=fair_bits_input&coin_mask;
  always @* begin
   decide=0;emit_sample=0;multi_reject=0;empty_reject=0;next_m=shift_m;chosen=ref_r;
   if(state==REDUCE && tree_valid)begin

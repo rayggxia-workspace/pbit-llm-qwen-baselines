@@ -1,3 +1,9 @@
+2026-10-28服务器评估已完成：8DC/116VCS回放230400拍/66PT窗口及8top时序审计，所有hold违例，PWR-981保留；无签核/模型结论。主候选G16融合折算0.035969mm²、全1控制17.17pJ/输出。准确结果RESULTS_ZH.md，源/作业/原件EDA_*；原始私有大包仅服务器。本地报告包逐成员SHA与72诊断成员已核；上传见EDA_PUBLICATION.json，PR199待审。下一步IO/reset合同/hold/标注，无需重跑健康原任务。
+
+## 2026-10-28 EDA服务器测试进行中
+
+用户明确授权本任务EDA实测；延续PR199/task198，不接管pbit整片任务。已通过现有客户端验证登录、库SHA与本地一致；私有连接/库/模型位置仅在.eda_private。DC预检38437604因拒绝RTL先引用后声明coin_mask失败；仅调整声明顺序，新20项/90000拍独立oracle通过，旧快照保留。修正预检38437625完成，G16p2 setup约+0.44ns、hold约−0.02ns，不能称时序通过。其余DC矩阵38437668（7项，%2）及VCS/PT预检38437709/矩阵38437736已提交。SS1.08V125C/100MHz、输入slew0.1ns/输出0.02pF、setup uncertainty2ns/hold0.1ns；无SPEF/CTS/SDF。原始面积×0.81另报55nm折算，功耗时序不缩放。长任务均Slurm，已冻结v1/v2/v3且逐SHA校验；真实状态以后续收集回执为准。不得重复提交健康任务。
+
 发布确认（2026-10-27）：完整Attention反馈/仲裁v2已推送草稿PR199，源7fe360390c01de5195e504094f36ee62735b02be；56文件完整tree与本地同SHA、7关键文件逐字读回通过。Issue198评论6445525003；待审未合并，STA/PT及后训练/全V链仍待后续，无运行中任务。准确回执work/rayggxia/198/CONTROL_PUBLICATION.json。
 
 2026-10-27 控制v2本地完成，上传状态见CONTROL_PUBLICATION.json（尚未生成即未确认发布）。完整赢家/拒绝反馈仲裁RTL、8固定PPA top、独立oracle/数学检查、DC/PT脚本在control_v2。124RTL项422800拍及3个cap64零延迟门级1920拍通过，8个55nm SS映射0.018058–0.056112mm²；STA/功耗未跑，不把TB100MHz当时序通过。源码/原字节/公开包/台账/记忆同步见CONTROL_*。保留G16融合/两级及G32候选待STA；源供给/完整V链/后训练QKV/GQA/D1仍待补。无运行中GPU/Slurm/许可EDA作业；PR199草稿、未合并。

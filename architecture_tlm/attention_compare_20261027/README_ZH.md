@@ -1,3 +1,5 @@
+2026-10-28更新：服务器采样控制评估见[最新结果](control_v2/eda_20261028/RESULTS_ZH.md)，其余旧阶段保留原始日期和限制。
+
 # Attention单query首轮实现与结果（Issue198）
 
 2026-10-27；rayggxia；main@d83eeb1f；task/198-attention-compare。当前是第一阶段交付，后续验收仍开放。

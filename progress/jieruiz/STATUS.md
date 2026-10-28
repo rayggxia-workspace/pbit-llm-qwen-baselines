@@ -1,3 +1,9 @@
+## 2026-10-28 Issue206：28项通过，共享尺度Slurm3211运行
+
+2026-10-28T13:49:22+08:00；jieruiz，task/206-group64-scale，tmp/group64-scale-issue206-20261028，依赖PR202@fbd67c39。冻结4d6883b24ad27d9fa96feb84592696c374cfd808、62执行blob；28项CPU/CUDA通过，3210 pilot5项封存核验通过。正式3211四片运行，40主输出/37唯一待齐，固定W约20min、双随机60～90min；不重交，不碰3208。四次BF16同13.566049，原固定首seed15.551865复现。无新训练/RTL/PPA/TLM。
+
+x/g/u每token连续64项各共用一档，限TRAIN原冻结四PoT。固定W GU64及双随机联合GU256分别六配置：lane、仅x max、仅g/u max、all max、all trim1、all trim4；g/u分开选，sigmoid恢复真实g，NL128/Wd/准确SDPA不动。共享尺度可将组内对齐移到归约后；质量及能效还未验收。1024目标后缀非完整WT2；GU恢复FP32oracle。成果qwen3/group_shared及qwen3/results/group_shared_20261028，交接work/jieruiz/206/HANDOFF；collect_group_scale.py收complete/documents，audit_artifacts.py --write-final须四片齐才运行。SOURCE/SUBMISSION/RECOVERY含SHA；源码包仅project_archives/group64_scale_issue206_20261028一份。PR待创建，本地阶段成果尚未发布，实际状态以后续PUBLICATION为准；Projects待权限，无定时。
+
 ## 2026-10-28 Issue206：每64元素共享四档尺度实验准备
 
 用户要求x及非线性g/u每64个数共享一个尺度，限于原先规定四个二次幂。jieruiz，新独立task/206-group64-scale，目录tmp/group64-scale-issue206-20261028，依赖PR202@fbd67c39，不改旧冻结扫描。Qwen3-4B后训练、准确SDPA；固定W GU64及双随机联合GU256分开测试，NL128/Wd固定W8不变。六配置lane/x_max/gu_max/all_max/all_trim1/all_trim4，各三seed；g和u分别使用各自冻结表，sigmoid恢复真实g。

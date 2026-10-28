@@ -1,3 +1,7 @@
+## 2026-10-28 Issue206发布确认：PR207草稿，3211扫描运行中
+
+代码/28项验证/封存pilot已实际推送PR207（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/207），draft/open未合并，依赖PR202分支。发布科学head d08c3732，五个关键远端blob原字节核验一致，PUBLICATION/REMOTE_VERIFICATION保存回执。Issue206已同步；主3211四片仍在运行，三seed结果及质量建议未完成，不能将阶段交付当最终验收。继续收同一任务，不重交/不改source4d6883b2、不新建自动回查。Projects待权限同步。
+
 ## 2026-10-28 Issue206：28项通过，共享尺度Slurm3211运行
 
 2026-10-28T13:49:22+08:00；jieruiz，task/206-group64-scale，tmp/group64-scale-issue206-20261028，依赖PR202@fbd67c39。冻结4d6883b24ad27d9fa96feb84592696c374cfd808、62执行blob；28项CPU/CUDA通过，3210 pilot5项封存核验通过。正式3211四片运行，40主输出/37唯一待齐，固定W约20min、双随机60～90min；不重交，不碰3208。四次BF16同13.566049，原固定首seed15.551865复现。无新训练/RTL/PPA/TLM。

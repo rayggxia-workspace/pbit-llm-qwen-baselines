@@ -7,7 +7,7 @@ ROOT='/home/Hongjie_Zeng/projects/attention-sparq-ising-issue198-20261028'
 PY='/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python'
 
 def remote(code):
-    return subprocess.check_output(SSH+['python3 -'],input=code.encode(),timeout=60).decode()
+    return subprocess.check_output(SSH+['bash -lc "python3 -"'],input=code.encode(),timeout=60).decode()
 
 def stage():
     commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R).decode().strip()
@@ -39,11 +39,14 @@ manifest=json.loads((source/'execution.json').read_bytes())
 for p,sha in manifest['files_sha256'].items():assert hashlib.sha256((source/p).read_bytes()).hexdigest()==sha
 print(json.dumps({'commit':COMMIT,'source':str(source),'root':str(root),'package_sha256':DIGEST,'files':len(manifest['files_sha256'])}))
 '''.replace('ROOT',repr(ROOT)).replace('COMMIT',repr(commit)).replace('DATA',repr(base64.b64encode(data).decode())).replace('DIGEST',repr(digest)))
-    receipt=json.loads(text);(W/'QUALITY_SOURCE.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8',newline='\n')
+    receipt=json.loads(text)
+    for name in ('QUALITY_SOURCE.json',f'QUALITY_SOURCE_{commit[:12]}.json'):
+        (W/name).write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8',newline='\n')
     print(text)
 
 def submit(phase,dependency=None,samples=128):
     receipt=json.loads((W/'QUALITY_SOURCE.json').read_bytes());source=receipt['source'];sha=receipt['commit'][:12]
+    assert not (W/f'QUALITY_SUBMISSION_{sha}_{phase}.json').exists(), 'already submitted; inspect receipt/queue'
     gpu=phase!='cpu';array=phase in ('short','full')
     script='#!/bin/bash\n#SBATCH --partition=gpu5090\n#SBATCH --cpus-per-task=4\n#SBATCH --mem='+('48G' if gpu else '8G')+'\n#SBATCH --time='+('24:00:00' if phase=='full' else '02:00:00')+'\n'
     if gpu:script+='#SBATCH --gres=gpu:1\n'
@@ -62,13 +65,14 @@ def submit(phase,dependency=None,samples=128):
     code='''import json,pathlib,subprocess
 source=pathlib.Path(SOURCE)
 path=source/NAME
-assert not path.exists();path.write_text(SCRIPT)
+if path.exists():assert path.read_text()==SCRIPT
+else:path.write_text(SCRIPT)
 args=['sbatch','--parsable','--job-name',JOB,'--output',OUTPUT,'--error',OUTPUT]
 if DEP:args+=['--dependency','afterok:'+DEP]
 args+=[str(path)]
 job=subprocess.check_output(args,text=True).strip()
 print(json.dumps({'job':job,'phase':PHASE,'source':SOURCE,'dependency':DEP,'script':str(path)}))
-'''.replace('SOURCE',repr(source)).replace('NAME',repr(phase+'.sbatch')).replace('SCRIPT',repr(script)).replace('JOB',repr('attn198-'+phase)).replace('OUTPUT',repr(ROOT+'/logs/'+sha+'-'+phase+'-%A_%a.out')).replace('DEP',repr(dependency)).replace('PHASE',repr(phase))
+'''.replace('SOURCE',repr(source)).replace('NAME',repr(phase+'.sbatch')).replace('JOB',repr('attn198-'+phase)).replace('OUTPUT',repr(ROOT+'/logs/'+sha+'-'+phase+'-%A_%a.out')).replace('DEP',repr(dependency)).replace('PHASE',repr(phase)).replace('SCRIPT',repr(script))
     text=remote(code);obj=json.loads(text)
     (W/f'QUALITY_SUBMISSION_{sha}_{phase}.json').write_text(json.dumps(obj,indent=2)+'\n',encoding='utf-8',newline='\n');print(text)
 

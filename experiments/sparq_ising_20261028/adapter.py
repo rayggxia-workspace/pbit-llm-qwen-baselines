@@ -47,7 +47,7 @@ class Controller:
         else:
             # Independent per configuration/layer/call Philox keys; NOT paired S prefixes.
             identity=f'{self.seed}:{a.layer_idx}:{state["calls"]}:{self.cfg}'
-            key=int.from_bytes(hashlib.sha256(identity.encode()).digest()[:4],'little')
+            key=int.from_bytes(hashlib.sha256(identity.encode()).digest()[:8],'little') & ((1<<63)-1)
             out,diag=attention(q,k,v,self.cfg,key,True)
             out=out.transpose(1,2)
             state['zero_fallback']+=diag['zero_fallback_groups']

@@ -1,3 +1,15 @@
+## Issue206：重新校准共享g/u四档有效，PPL17.9215（2026-10-28）
+
+jieruiz/task206/PR207；最终科学源e8888a26dacec4fd5e5afe3e7dabb0e4964e3e6d、75源blob，旧72不改。3249共52 CPU/CUDA通过；3250 TRAIN校准、3251三片24物理22唯一+校准1BF16全部封存核验。原BF1613.566049四次相同，旧表正常g三seed复现。GU64、NL joint32T128、PoTW8每64x64、x共享64、准确SDPA、36层不变，无权重训练/RTL/PPA/TLM修改，1024后缀非完整WT2。
+
+新dense2 PPL87.660860；独立risk4四档17.921546±0.266163；risk4_active18.162080±0.411486。旧共享64正常g表64.755351，最公平x共享/g-u逐元素参考16.274044，新risk4仍高10.12%，BF16仍高32.11%，不能称无损。重新校准确有效，不能再据旧表要求逐元素；仅相邻2倍无效，需要偏差+实际采样方差拟合。risk4条件均值15.870195，有偏差/方差权衡，非整LLM期望。active本次未见额外收益。
+
+TRAIN teacher正常逐层输入后实际PoTW8/x共享GU64，16窗512/窗取16行=256观察/层，192拟合64验证；测试不选表。各层/64组g/u分别从8 PoT候选选4，离线两初值坐标拟合；目标是Wd列范数加权对角风险，忽略偏差交叉项，非全局最优/完整Wd MSE。部署仍每64一个2位档号；约42.75KiB离线指数/方案，不是PPA。sigmoid保持正常g signed8/P8。新恢复公共载体指数/最小monobit系数严格整数，上界最多55位，GU仍FP32oracle非全链bittrue。
+
+报告qwen3/results/group_shared_20261028/RECALIBRATION_REPORT_ZH.md/RECALIBRATION_SUMMARY。校准原表SHA9a26ddde7c2ed935e652cefbadd5bf63b9f5b4f23a269775f47d38f0963987f7，gzip原字节保存，COMPRESSED_ARTIFACTS索引和archive单份原件；audit_recal.py可核验。6909/3244系数guard与44fc/3247变量名失败保留，依赖3245/3248仅未执行取消，新3251无须重跑。旧3211三片legacy独立运行，不新增自动回查。通过同PR207发布，实际以RECAL_FINAL_PUBLICATION回执为准，draft未合并；Projects待既有权限同步。
+
+下方保留历史阶段。
+
 ## Issue206重新校准g/u共享四档：实现及Slurm准备
 
 ## 面向共享64的TRAIN独立四档校准（2026-10-28）

@@ -63,3 +63,7 @@ GU矩阵尺度恢复仍为FP32数值oracle，Wd采用直接整数事件累加、
 ## 后续：sigmoid独立读取正常g
 
 已完成五种g/u幅度裁剪规则/三seed，见[正常g门控对照](INDEPENDENT_GATE_REPORT_ZH.md)。本报告此前数字和旧快照保留，不将两批结果混算。
+
+## 最新：重新校准g/u四档
+
+训练语料独立校准已完成，risk4三seed PPL17.9215，旧共享表64.7554，仍共享64和GU64/NL128；见[重新校准报告](RECALIBRATION_REPORT_ZH.md)。旧结果完整保留。

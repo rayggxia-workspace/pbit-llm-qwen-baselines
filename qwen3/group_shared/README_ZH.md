@@ -61,3 +61,7 @@ gate_run五规则max、g_trim1、u_trim1、both_trim1、both_trim4，各有限NL
 每组从10 PoT指数候选选4，4初值4轮坐标搜索。阈值仍为2^(尺度指数+delta)，可用阈值比较/OR，不需浮点乘法；实际尺度值不随delta变化。偏移由TRAIN拟合，验证只报告，测试PPL不选表。近相等风险（相对1e-12）按较窄指数跨度和delta0消歧，避免无意义累加位宽。实际signed64边界继续检查。
 
 预期新9+旧52共61 CPU/CUDA检查，校准完成才运行四片，每片BF16+旧risk4一个匹配seed+新方案有限三seed/条件NL均值三seed，共32物理/29唯一，另校准BF16。全部仅1024目标后缀非完整WT2。无权重训练/新RTL/PPA/TLM，GU仍FP32oracle。旧75执行blob不改，不重跑健康任务；执行以TUNE_SUBMISSION为准。
+
+## 当前选择与本轮完成状态
+
+CURRENT_RECOMMENDED.json保留e888 risk4/PPL17.9215。d825四组继续调整未改善，不替换推荐。61项核心检查、额外8有限/16直接均值数值检查、主32物理28唯一+1校准BF16均完成；原预计29已按重复控制更正。旧3211全完成40/37+5pilot。新结果TUNE4_REPORT_ZH.md，旧结果不覆盖。

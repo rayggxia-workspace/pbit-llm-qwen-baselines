@@ -67,3 +67,7 @@ GU矩阵尺度恢复仍为FP32数值oracle，Wd采用直接整数事件累加、
 ## 最新：重新校准g/u四档
 
 训练语料独立校准已完成，risk4三seed PPL17.9215，旧共享表64.7554，仍共享64和GU64/NL128；见[重新校准报告](RECALIBRATION_REPORT_ZH.md)。旧结果完整保留。
+
+## 最新调整：保留17.92，新四组不采纳
+
+四档大样本/组内Gram/阈值继续调整的32份对照全部退化，数值交叉检查通过；见[TUNE4报告](TUNE4_REPORT_ZH.md)。当前推荐仍是e888 risk4，入口CURRENT_RECOMMENDED.json。旧3211补充已全部完成，见LEGACY_SCAN_FINAL_REPORT_ZH.md。

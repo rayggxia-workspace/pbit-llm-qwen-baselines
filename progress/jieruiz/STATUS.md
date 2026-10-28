@@ -1,3 +1,13 @@
+## Issue206四档继续优化未改善，保留risk4 17.9215（2026-10-28）
+
+主科学源d825f7d6e0757a5f847693922cf0d3018ea3a00d，78源blob且旧75不改；3254共61 CPU/CUDA通过、3255校准/3256四片全部完成，32物理28唯一+1校准BF16，三seed及旧risk4三seed逐值复现。大样本对角145.8641、组内Gram137.5114、Gram阈值169.9111、偏重偏差118.7165，均不采纳；条件均值仍68.74–110.79，提示系统偏差而非仅计数噪声。不能把局部目标改善当整LLM PPL改善，也不能据此判四档极限。四档/shared64/PoTW8/GU64/NL128/准确SDPA/正常g sigmoid不变，无权重训练/新RTL/PPA/TLM。
+
+校准32窗2048、每窗后半32行=1024观察/层，768拟合256验证，仅TRAIN；候选8→10、4初值4轮。相对旧17.92同时改变多项，不能只归因样本变多。组内Gram仍漏组间项，方差0.5是启发式。额外代表层0/12/24/35各16行，3261辅助源359c8d24d838c90a094617e06fa1be1cad087761：8项有限parent、16项直接解码mean逐元素全等。3260相对导入先失败记录保留，原PPL代码不改。不是全链bittrue，GU仍FP32oracle。仅1024后缀非完整WT2。
+
+CURRENT_RECOMMENDED.json明确保留e888 risk4（17.9215±.2662），不启用d825新目录；报告TUNE4_REPORT_ZH.md与TUNE4_SUMMARY，交接work/jieruiz/206/TUNE_SUBMISSION/SOURCE/COLLECTION及TUNE_SANITY。校准原字节gzip/SHA/单份归档齐。旧3211补充本次全部核验40主/37唯一+5pilot（legacy非PoT），不再运行，早先pending属历史。当前本任务无运行作业、无自动回查；PR待审不自动合并/关闭Issue，最终上传状态以TUNE_FINAL_PUBLICATION为准，Projects待既有权限同步。
+
+下方保留历史阶段。
+
 ## Issue206四档继续优化：实现及Slurm准备
 
 ## 保持四档：扩大样本、组内Gram误差及PoT选档阈值优化（2026-10-28）

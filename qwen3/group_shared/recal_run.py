@@ -86,7 +86,7 @@ def main():
             for name,entry in (('dense2',dense),('risk4',fitted),('risk4_active',active)):
                 e=lsbs[i]+torch.tensor(entry['g'])[:,-1][None,:]+torch.tensor(entry['u'])[:,-1][None,:]
                 span=int((e.amax(-1)-e.amin(-1)).max());entry['unpacked_Wd_span']=span
-                coeff,oe,gc,uc,limit=pack_carriers(exact_pow2(lsbs[i]).float(),torch.tensor(entry['g']),torch.tensor(entry['u']))
+                coeff,oe,carrier_g,carrier_u,limit=pack_carriers(exact_pow2(lsbs[i]).float(),torch.tensor(entry['g']),torch.tensor(entry['u']))
                 bound=9728*128*127*int(coeff.max())*(1<<limit);assert bound<1<<63,('catalog signed64 guard',i,name,bound.bit_length()+1)
                 entry['Wd_coefficient_span']=int(coeff.max()).bit_length()-1;entry['accumulator_bound_bits']=bound.bit_length()+1;entry['carrier_limit']=limit
                 tables[name][str(i)]=entry

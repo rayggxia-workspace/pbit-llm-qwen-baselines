@@ -60,6 +60,23 @@ class Recal(unittest.TestCase):
         expected=(aligned[:,None,:]*weights.long()[None,:,:]*coeff.repeat_interleave(64,0).repeat_interleave(64,1)[None,:,:]).sum(-1)
         self.assertTrue(torch.equal(result,expected))
 
+    def test_calibration_fit_and_validation_pipeline(self):
+        from .recal_run import local_calibrate
+        torch.manual_seed(301);g=torch.randn(6,2,64);u=torch.randn(6,2,64);norm=torch.rand(2,64)
+        for active in (False,True):
+            a,b=local_calibrate(g,u,norm,4,active)
+            self.assertLessEqual(a['risk']['fit'],b['risk']['fit']*(1+1e-10)+1e-15)
+            for side in ('g','u'):
+                v=torch.tensor(a[side]);self.assertEqual(tuple(v.shape),(2,4));self.assertTrue((v[:,1:]>v[:,:-1]).all())
+
+    def test_main_module_aliases_are_not_shadowed(self):
+        import ast,pathlib
+        root=ast.parse(pathlib.Path(__file__).with_name('recal_run.py').read_text())
+        aliases={a.asname or a.name.split('.')[0] for n in root.body if isinstance(n,ast.Import) for a in n.names}
+        main=next(n for n in root.body if isinstance(n,ast.FunctionDef) and n.name=='main')
+        assigned={n.id for n in ast.walk(main) if isinstance(n,ast.Name) and isinstance(n.ctx,ast.Store)}
+        self.assertFalse(aliases&assigned,aliases&assigned)
+
     def test_normal_g_sigmoid_and_finite_catalog(self):
         o,m=self.make();m.install_catalog([[-4,-3,-2,-1]],[[-6,-4,-2,0]],True)
         y=m(torch.randn(2,64)*.1);self.assertTrue(torch.isfinite(y).all());r=m.shared_report()

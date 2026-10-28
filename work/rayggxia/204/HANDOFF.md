@@ -1,3 +1,9 @@
+## 最新：OR4计数位宽分析已发布（2026-10-28）
+
+科学源904068b9e70bab558f93c93ff2c230216164cf51，同PR205，数值统计/一手论文核查，无新RTL/PPA。恢复先读counter_precision/HANDOFF.md与architecture_tlm/matrix_counter_precision_20261028/REPORT_ZH.md。原单尺度PPA和旧四档如下保留。
+
+---
+
 ## 最新：单尺度INT8后续已发布（2026-10-28）
 
 科学源5dcef4fd99200418f804cbd51f3bf325d1cbea60，同PR205待审未合并。新16核96窗口/1056帧、22报告/3源包已核验，83条台账联合检查通过。详细交接见work/rayggxia/204/single_scale/HANDOFF.md；旧四档结果如下保留，恢复应优先读单尺度交接。

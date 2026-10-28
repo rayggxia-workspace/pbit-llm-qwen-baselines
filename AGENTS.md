@@ -1,3 +1,10 @@
+
+## 面积折算默认口径（用户2026-10-28确认，Issue28）
+
+- 本项目这套65工艺流程的原始仿真面积，制造按线性0.9微缩；后续默认55nm汇总面积为 `A_55nm = A_raw × 0.9² = A_raw × 0.81`。例如原始100mm²，折算后81mm²。
+- 保留原始报告/台账数值与字节SHA；在新汇总/TLM面积结果中记录原始面积、面积系数0.81和折算面积。已乘0.81的项目不得再次折算，其他工艺/外部来源不套用本项目系数。
+- 此规则是用户指定的面积口径；不自动将功耗、能量、频率、周期或时延乘0.81，也不据此重命名原始PVT。当前仅登记默认规则，未重跑电路或批量重算历史结果。
+
 # Project memory and resuming work
 
 - Before starting or resuming any LLM task, read the repository-root `PROJECT_MEMORY_ZH.md`, especially sections 0, 1, 12 and the section for the current subsystem; then check the latest remote Issue/PR, `progress/<verified-GitHub-login>/STATUS.md` and task HANDOFF. The memo is a navigation and decision record, not a replacement for current evidence or repository rules.

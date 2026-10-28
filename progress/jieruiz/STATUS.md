@@ -1,3 +1,9 @@
+
+发布确认：面积0.81默认规则已上传 [PR203](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/203)，ready/open、未合并；Issue28已同步。本地规则即时按用户要求执行，正式合并状态以后续回执为准。
+## Issue28面积口径更新：本地已完成，待发布
+
+2026-10-28T11:12:48+08:00；负责人jieruiz；分支task/28-area-081；base main@d83eeb1fc6b89a3dff51b5b62bf79acf665c7166，目录tmp/area-scale-issue28-20261028。登记用户指定65流程→线性0.9→面积0.81为后续默认55nm口径，原始报告/功耗/时延不改；未新建仿真、未批量改历史数值。AGENTS和长期备忘录已同步本地入口。旧Issue28工作目录有未提交内容，未触碰。下一步通过同Issue的新PR交付（PR29已历史合并），不混入其他实验。Projects沿既有权限限制待同步。
+
 ## 2026-10-25 第十一轮实际合并回执
 
 PR183已合入main（a73a75ce0566f5fff0b8c38fcb03d04961885f76），PR190最终审核291c437a已合入main（f8a861487170c2cd65bc9ecb95eb3e4f72b863be）。旧008b0227之后的七文件增量仅文献与派生分析，输入SHA和派生文档重现通过，执行代码/配置/原结果未变；110回归与18小形状测试无需重复冒充新实验。正式入口architecture_tlm/BASELINE_ZH.md；默认DDR4、HBM显式对照、R8/128/资源扩容候选分开。PR181历史回执与本轮审核/入口文档将由review/55-pr190-main交付main，最终文档PR及SHA见Issue55。后续质量用Instruct/后训练模型；真实质量、GU数值闭环、物理PPA未验收。其余17PR仍待完整审核。

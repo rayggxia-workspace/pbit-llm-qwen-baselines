@@ -1,3 +1,13 @@
+## 2026-10-28 Issue206：完整澄清方案33项完成，g/u共享64短流退化
+
+jieruiz；PR207仍draft/open未合并，task/206-group64-scale，tmp/group64-scale-issue206-20261028；依赖PR202@fbd67c39。用户确认x及Wg/Wu输出g/u各64连续通道共享四档PoT；Wg/Wu/Wd各64x64静态PoT权重LSB。旧权重absmax/127不是PoT，4d/be/a1结果仅legacy控制，不与本轮混算。新科学源aa43d00d0b8c1c9efbd981d00e45dffd358865ce，Slurm3231共34项CPU/CUDA通过；3232四片33物理/27唯一计分、原件及SHA已核验，不重跑。后训练Qwen3-4B、准确SDPA、36层全覆盖、1024目标后缀非完整WT2，GU64/NL128三seed。
+
+新PoT权重原逐元素PPL15.696722、只x共享16.274044、只g/u共享63.014791、全共享67.873234，BF16 13.566049。同路径W8+FP32线性/精确SiLU控制legacy13.414964→PoT13.500676，权重不是主要退化来源。条件NL均值对照g/u共享13.540598、全共享13.729721明显恢复，支持三AND稀疏事件/有限采样噪声为主；该对照不是硬件，也非整LLM期望。暂不采纳g/u共享64直接替换，不谎称质量无损。旧细联合128拍改善有限，trim1/4严重退化均保留。
+
+GU恢复仍FP32 oracle，非全链路bittrue，无新PPA/TLM。初版a05c/3226在精确系数断言停止，3230定位CUDA ldexp一ULP误差，修复IEEE指数构造，失败原件保留。旧双随机3211_1/2/3仍运行，legacy三seed未齐；没有自动回查，不碰其他任务。报告qwen3/results/group_shared_20261028/REPORT_ZH.md及POT_WEIGHT_SUMMARY；权重/激活边界qwen3/group_shared/SCALE_CONTRACT_ZH.md；恢复work/jieruiz/206/HANDOFF和POT_SUBMISSION/SOURCE/COLLECTION、audit_group_pot.py。成果将通过同PR207上传，实际发布以FINAL_PUBLICATION回执为准；Projects待权限同步。
+
+下方保留历史时点记录，旧ETA60～90min被实际双随机约40min/配置推翻，完整六配置分片约4小时；不可沿用旧ETA。
+
 ## Issue206澄清更新：共享激活64，三矩阵权重64x64 PoT
 
 

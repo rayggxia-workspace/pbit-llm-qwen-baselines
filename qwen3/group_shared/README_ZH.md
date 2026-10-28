@@ -35,3 +35,11 @@ W8与四档实际取值、符号、x的full_one和NL的q<=255规则不变；sigm
 新independent_gate.py：sigmoid从Wg累加恢复的g直接RNE到原signed8 field（步长1/8、饱和[-128,127]），再查既有P8 LUT；不经过g幅度编码的裁剪/尺度，也不调用浮点sigmoid。g/u幅度各连续64共享四档PoT，分别允许0或1/4项超出所选尺度，选最小可用档。所有元素仍参与乘积，不是丢弃异常值。
 
 gate_run五规则max、g_trim1、u_trim1、both_trim1、both_trim4，各有限NL128三seed及条件NL均值诊断三seed；另旧耦合all_max三seed逐值回放＋每片BF16。共36物理/34唯一，1024后缀目标非完整WT2。x只用groupmax，不裁剪；固定PoT W8、GU64、NL联合32层T128、准确SDPA不变。只复用原冻结四档，尚非专门校准的新尺度表。条件均值仅定位偏差，不能当部署电路。GU恢复仍FP32数值oracle，硬件需由定点累加器作等价移位舍入得到field；本轮无RTL/PT/PPA/TLM变化。
+
+## 面向共享64的TRAIN独立四档校准（2026-10-28）
+
+用户要求重新选择g/u四档。新recal_core/recal_run分别校准各层、各连续64输出组的g/u四个PoT指数。候选为训练拟合组最大幅度指数附近8档，从中选4档，不再固定四倍间隔。dense2为相邻2倍四档；risk4为有限误差拟合；risk4_active另允许选档时忽略sigmoid码严格为0的无贡献通道。g/u表不同，不在线搜索16组合，不排序，不动态生成新尺度；部署仍按最大有效幅度从4档选择最小能容纳的档（最大档不足时饱和）。
+
+校准以BF16 teacher提供正常逐层输入，再实际执行固定PoTW8、x共享、GU64/K64采样，采16个训练512token窗口中每窗16行，共256行/层。前12窗192行拟合、后4窗64行仅报告验证；测试文本/PPL不参与表选择。sigmoid仍原g signed8/P8。目标是Wd列范数加权的逐通道平方偏差+精确joint32NL128方差，明确忽略通道/组间偏差交叉项，不冒称完整Wd输出MSE。两初值、三轮坐标离线选g/u目录；指数范围/四档和结果全部封存。实际GU恢复仍FP32oracle。
+
+计划校准门控成功后，dense2/risk4/risk4_active各三seed有限NL128+条件均值诊断；三片各BF16及旧表正常g一个seed完整控制，共24物理/22唯一1024目标后缀计分，非完整WT2。PoTW8/准确SDPA/x groupmax/GU64/NL128不改，无训练/RTL/PPA/TLM。系数16位精确PoT与signed64归约边界不放宽，失败需保留快照另修。源75blob，测试新8+既有41共49。

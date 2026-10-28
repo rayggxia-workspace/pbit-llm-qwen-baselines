@@ -1,3 +1,11 @@
+## Issue206：非线性共享组与档数受控扫描（2026-10-28）
+
+用户要求x保持已证明可用的64共享；只调整g/u非线性共享数量和可选档数。6组为G64/B4、G32/B4、G16/B4、G64/B8、G32/B8、G16/B8。沿用e888成功risk4原四档，子组复制parent64目录；B8补齐以原最大档结尾的8个连续PoT，包含旧四档，不增大最大尺度。无新拟合、不按TEST选择、不改变入口x/固定PoTW8每64x64/GU64/K64/NLjoint32T128/正常g signed8-P8 sigmoid/准确SDPA。
+
+每组3seed有限NL、1seed条件NL均值诊断，并重跑BF16及旧risk4一个匹配seed；主36物理计分，去重按实际标签/配置核算，另GPU门禁3份（其中8目标pilot独立列，不是主PPL）。均值仅诊断，不是可部署电路或PPL下界。CPU再GPU Slurm门禁后提交数组，旧冻结源和推荐表不修改。只1024目标后缀非完整WT2，无训练/RTL/PT/PPA/TLM默认改变，GU仍FP32oracle；分组标签/比较/对齐成本只报结构计数，不冒称实测节能。
+
+当前实现和AST本地完成，远程实际执行/作业/结果以后续GROUP_SWEEP_SUBMISSION/COLLECTION为准，不把待跑写成已完成。沿用Issue206/PR207及同工作目录，Projects沿既有权限限制待同步；保留旧所有负结果。
+
 ## Issue206四档继续调整最终发布回执（2026-10-28）
 
 本轮负面结果及旧补充完整原件已实际推送PR207，交付head 00428d81841c2fbe01e8dec07da0893543361e74；7关键文件远端逐字核验、Git对象/tree同SHA。32物理28唯一+1校准BF16、61核心检查、额外8有限/16均值数值比较全等；新四组不采纳，CURRENT_RECOMMENDED明确保留e888 risk4/PPL17.9215。旧3211也全部40主37唯一+5pilot完成，无本任务运行作业。PR实际为ready/open、未合并，Issue保留open待审；TUNE_FINAL_PUBLICATION保存准确回执/就绪权限状态。完整WT2/新PPA/TLM仍未新增，不重跑已完成作业。Projects待既有权限同步。

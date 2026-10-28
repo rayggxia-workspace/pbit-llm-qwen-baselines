@@ -51,3 +51,13 @@ gate_run五规则max、g_trim1、u_trim1、both_trim1、both_trim4，各有限NL
 ## 校准脚本变量名修复
 
 3247已通过50核心检查并采集16窗，但脚本main的局部carrier变量gc覆盖导入的gc模块，释放模型时停止；原件保留，仅取消未执行的依赖3248。已更名并增加小形状校准整流程与导入模块别名回归，新52项；数学校准目标、四档、采样和整数格式均未改变。
+
+## 保持四档：扩大样本、组内Gram误差及PoT选档阈值优化（2026-10-28）
+
+用户要求继续调整，四档/共享64/GU64/NL128/准确SDPA/正常g sigmoid不变。新tune_core/tune_run：32个TRAIN2048窗口，各在后1024位置均匀取32行，共1024观察/层（768拟合、256验证），比原256行增4倍，teacher上下文总65536token，不是65536拟合样本。依然teacher正常逐层输入后执行真实PoTW8/sharedx/GU64。
+
+4预定方案：large_diag4（大样本、原对角风险）、large_gram4（同64通道组内Wd Gram平方偏差+精确有限NL方差）、large_gram4_threshold（再校准3个选档边界的共同PoT偏移delta=-1/0/+1，g/u各组独立）、large_gram4_threshold_bias（方差权重0.5以优先幅度偏差，启发式）。Gram只补组内交叉项，仍忽略组间偏差项，非整层/整模型最优。
+
+每组从10 PoT指数候选选4，4初值4轮坐标搜索。阈值仍为2^(尺度指数+delta)，可用阈值比较/OR，不需浮点乘法；实际尺度值不随delta变化。偏移由TRAIN拟合，验证只报告，测试PPL不选表。近相等风险（相对1e-12）按较窄指数跨度和delta0消歧，避免无意义累加位宽。实际signed64边界继续检查。
+
+预期新9+旧52共61 CPU/CUDA检查，校准完成才运行四片，每片BF16+旧risk4一个匹配seed+新方案有限三seed/条件NL均值三seed，共32物理/29唯一，另校准BF16。全部仅1024目标后缀非完整WT2。无权重训练/新RTL/PPA/TLM，GU仍FP32oracle。旧75执行blob不改，不重跑健康任务；执行以TUNE_SUBMISSION为准。

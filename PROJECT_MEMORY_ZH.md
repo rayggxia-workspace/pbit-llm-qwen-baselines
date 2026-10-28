@@ -1,3 +1,11 @@
+## Issue206完整WT2门禁已通过、3309运行中
+
+CPU3307共77项（10 CUDA跳过）通过；GPU3308四个计分文件封存，旧1024后缀BF16=13.566049199388152/G64B4seed0=18.20000779048508准确复现，首尾完整窗仅门禁，不是完整PPL。86源文件含旧82字节不变，模型/文本/tokenizer/冻结表SHA核验。正式3309共18片、每seed六片，6GPU并行；按当前约6秒/窗，预计15～20分钟完成三seed，不自动回查、不重交。完整PPL待全部299077目标覆盖核验后报告。
+
+## Issue206：64共享完整WT2已提交Slurm
+
+科学源5d49ea97502d2c11bf0745d50689b4c558c384d1；CPU 3307→GPU门禁3308→18片数组3309，最多6GPU并行。匹配BF16+G64B4三seed，context2048/stride1024，每seed299077目标；准确SDPA/原冻结四档/采样数保持。新PPL未完成，不重交健康任务、不新建定时。回执FULL_WT2_SUBMISSION_5d49ea97.json，结果/home/Hongjie_Zeng/projects/pbit-qwen3-group64-scale-20261028-issue206/results/5d49ea97502d/full_wt2。
+
 ## Issue206：64共享完整WT2评测准备（2026-10-28）
 
 用户授权补测当前G64/B4完整WT2，准确SDPA；x64/固定PoTW8每64x64/GU64-K64/g-u分别64共享四档e888 risk4/正常g signed8-P8/NLjoint32T128均不变，不训练不重新选表。匹配BF16及三个随机seed，context2048/stride1024、299077目标每个恰计一次，无BOS/chat/cache；全部36层和窗口前缀均替换。每seed六片、最多六GPU并行；CPU和GPU门禁后正式提交，实际作业以FULL_WT2_SUBMISSION为准。门禁复现旧后缀BF16/G64B4并检查首尾全窗；门禁分数不当完整PPL。

@@ -1,0 +1,99 @@
+from report_fixed import *
+s=json.loads((D/'SUMMARY.json').read_bytes());p=json.loads((D/'PPL_SUMMARY.json').read_bytes())
+r=s['results'];f=s['finite']
+def table(names):
+    lines=['|方案|平均TV|最大单头TV|平均输出相对RMS|','|---|---:|---:|---:|']
+    for n,label in names:
+        q=r[n];lines.append(f"|{label}|{100*q['tv_mean']:.4f}%|{100*q['tv_max']:.4f}%|{100*q['output_relative_rms_mean']:.4f}%|")
+    return '\n'.join(lines)
+txt='''# Qwen3-4B QK 定点分数与 LUT 输入验证
+
+2026-10-28，Issue198 / draft PR199，rayggxia。执行父提交49880d167e663a912abbcc08eb6b3247a235720b加逐文件SHA冻结快照。**可以使用定点分数；本批结果支持把11/12位绝对分数、8位差值地址、12/16位概率阈值分别选型。不能把三者都叫“8位”。** 所有新结果为GPU数值/短流质量验证，不是RTL或PPA，未更改默认。
+
+## 测试范围与对照
+
+Qwen/Qwen3-4B后训练revision1cfa9a7208912126459214e8b04321603b3df60c，原BF16 Q/K/V投影、QK-norm、RoPE、FFN、Wo和残差保持。torch2.7.1+cu128、transformers4.51.3、RTX5090，TF32关闭；模型、tokenizer、WT2 train/test原字节与token SHA绑定provenance。只量化缩放后的 z=QKᵀ/sqrt(128)，不量化Q/K乘法或声称已实现定点累加器。
+
+局部审计：4个train窗口（起点0/8192/16384/24576）用于逐层逐头固定尺度/参考点标定；8个test窗口（0..28672步长4096），每个2048 token，观察最后一个decode query、全部36层×32头，共9216头行。FP32 SparQ r32/k128/local32候选固定，参考为FP32分数softmax和FP32 PV。每个窗口有/无诊断各跑一次，12/12词表logits逐位一致；不把诊断输出送回模型。测试了62个分数/阈值配置，另10种有限采样×3seed。
+
+分数量化比较直接对高精度累加结果转换；带bf16前缀者才是先BF16舍入再转换。TV=0.5Σ|p−pref|，按头行等权。输出相对RMS=每个query-layer的||误差||₂/||参考||₂，随后跨288张量等权平均；不是逐头最大。SUMMARY另给pooled能量加权和逐层结果。全部范围/步长是分数真实单位，采用最近偶数舍入与饱和。
+
+## 分数位宽：范围与小数位必须同时给出
+
+'''
+txt+=table([('bf16','BF16分数'),('i8_f1','signed8，步长1/2，范围[-64,63.5]'),('i8_f2','signed8，步长1/4，范围[-32,31.75]'),
+    ('i10_f3','signed10，步长1/8，范围[-64,63.875]'),('i11_f4','signed11，步长1/16，范围[-64,63.9375]'),
+    ('i12_f5','signed12，步长1/32，范围[-64,63.96875]'),('i14_f7','signed14，步长1/128，范围约±64'),
+    ('gap_u8_f4','先高精度减max，再unsigned8差值，步长1/16')])
+txt+='''
+
+测试分数范围[-17.4184,37.5958]。范围±32的方案会饱和；即使把小数位升至16位总宽度、范围仍±32，最大单头TV仍约72%，所以不能只增加小数位而不增加范围。signed8/步长1/2本批无饱和，但局部精度显著低于BF16；不能据此断言所有INT8设计都不可用。
+
+signed11/步长1/16本批无饱和，平均输出误差与BF16相近。signed12/步长1/32进一步降低误差；signed12/步长1/16则把范围扩为[-128,127.9375]，本批数值与signed11完全相同，可作为额外整数范围余量。样本无饱和不是模型全输入范围保证，后续仍需溢出检测/更广语料验证。
+
+train-only逐头PoT标定的INT8平均TV约1.646%，但最大单头63.259%，训练四个query不足以保证测试不越界；这是本标定方法的负结果，不代表所有离线标定都失败。
+
+## 分数寄存器较宽，不必扩大到同样位宽的 LUT
+
+可以在点积结束时直接生成定点整数，避免先舍入BF16：
+
+```text
+q_i = saturate_signed11(round_even(16*z_i))
+m   = max_i(q_i)                  # 11位整数比较
+a_i = min(m - q_i, 255)           # 足够宽的减法后截到8位地址
+T[a] = round_even(2^P / (1 + exp(a/16)))
+p-bit = (uniform_P_bit_random < T[a])
+```
+
+这仍需要128候选的整数max/差值处理，不能叫“没有求最大值”；但不需要FP32最大值树、运行时除法或完整数字softmax归一化。常数16可在格式转换中通过指数/移位实现，真实转换电路和并行度成本尚未综合。差值大于255饱和到15.9375；其截断参考概率质量在本批平均仅约2.53e-8。
+
+表为256项。P12逻辑容量3072 bit=384 byte；P16为4096 bit=512 byte。只是单份表的信息容量，不等于128个p-bit同时更新所需的多端口/复制ROM面积、功耗或访问周期；随机源和比较器还要计费。
+
+'''
+txt+=table([('fp32_i11_f4_gap_u8','11位分数→8位地址，理想阈值'),('fp32_i11_f4_gap_u8_p8','同上，8位概率阈值'),('fp32_i11_f4_gap_u8_p12','同上，12位概率阈值'),('fp32_i11_f4_gap_u8_p16','同上，16位概率阈值'),('bf16_i11_f4_gap_u8_p16','先BF16→11位分数→8位地址→16位阈值')])
+txt+='''
+
+有限阈值后的概率误差使用赢家保持的精确稳态权重 odds=p/(1−p)，归一化后与目标softmax比较；不是错误地直接归一化sigmoid概率。CPU对3节点全8个激活集合枚举转移矩阵验证了此稳态公式；实际有限采样另列。P8把平均约1.702%的目标概率质量量化为零，P12约0.08210%，P16约0.001578%。不使用强行抬成一个LSB的隐含修补。
+
+8位地址已经可行，8位概率阈值则明显增加分布偏差。12位阈值可作为紧凑候选，16位阈值提供更小的尾部误差；最终选择还需同质量PPA和完整PPL。
+
+## 固定参考点不能只凭平移不变性判断
+
+实验固定c为每层每头train最大分数+2，再向上对齐到1/16，免去在线max。理想无限精度下共同参考点不改变稳态odds比例，但有限精度和有限更新次数不同。P8/P12/P16分别有1414/344/74个测试头行全部概率阈值变零（总9216），没有唯一目标稳态，保持初始赢家。invalid_heads显式统计；这些行不混入稳态TV均值，也没有静默uniform fallback。
+
+即使P16，此方案S128/burn32的平均输出相对RMS约80.25%，理想动态max参考约19.59%。因此本次不推荐这个固定参考点方法。此结论包含参考点选择、阈值位宽、±32分数范围与有限混合的共同影响，不是对所有预估c方法的不可行证明。
+
+## 128次有限采样与模型PPL
+
+局部10配置均采用S128、burn32、spacing1、3seed，同case/layer/seed共享Philox键，候选固定；FP32 PV精确期望为参照。理想采样平均输出相对RMS为19.585%，11位+8位地址+P12为19.586%，P16为19.616%。这里有限采样误差明显大于分数量化误差，但不能据此推断长期模型质量相同。P8的局部抽样误差偶尔更小可来自截尾偏差/方差取舍，不意味着它的稳态更准确。
+
+另运行全36层逐query替换的短流teacher-forced PPL，保留原BF16 FFN/所有其他模块与dense prefill；4个等间距WT2窗口，每窗64目标，共256目标。prefill2047 token，随后64步，实际上下文2048增长到2111；不是完整WT2，也不同于旧1024目标/299077目标协议。原生/包装门禁8目标logits逐字节一致；每个正式case每层计分256次，采样case每层8192头行，目标SHA一致。每次模型参数版本和地址不变。
+
+LUT的256×P12/P16共512表项逐项与独立Python整数量化公式一致。量化方案用同Config和seed生成每层/调用Philox键；模型隐状态/候选会随误差改变，因此不是保证整条赢家轨迹一致。PPL14个case全部完成；每个量化case检查37748736个score，以下±64配置全部0饱和。
+
+|方案|PPL均值|三seed样本标准差|相对理想采样均值|
+|---|---:|---:|---:|
+'''
+base=p['aggregate']['ideal']['mean']
+for n,label in [('bf16','原生BF16'),('sparq_exact','纯SparQ+精确PV'),('ideal','理想FP32分数/阈值赢家'),('i8_f1','INT8/步长1/2，理想阈值'),('i11_gap_p12','11位分数+8位地址+12位阈值'),('i11_gap_p16','11位分数+8位地址+16位阈值')]:
+    v=p['aggregate'][n];sd='—' if v['sample_sd'] is None else f"{v['sample_sd']:.4f}";delta='—' if n in ('bf16','sparq_exact') else f"{100*(v['mean']/base-1):+.3f}%"
+    txt+=f"|{label}|{v['mean']:.4f}|{sd}|{delta}|\n"
+txt+='''
+量化方案这组均值比理想采样高约2%–3%，同时三seed波动和256目标的小样本限制明显。范围扩大的选择参考了前一轮test局部观察，属于探索性选型，尚非独立预注册验收。不能宣布无损、统计显著优劣或INT8已经淘汰；也不能因为均值低于原生BF16就声称量化提高质量。12位绝对分数更细步长只做了局部审计，尚未做其PPL。
+
+## 建议与证据边界
+
+下一步硬件接口主候选：11位有符号分数（或12位保留范围余量）、4位小数、整数max/差值、8位地址、P12/P16阈值。较精细的12位/5小数是质量备选，但若保持约16的差值范围和1/32步长需要9位地址（512项），不能免费沿用8位表宣称同精度。先BF16再量化的额外误差已单列；可以从原高精度累加器直接转换。
+
+未给用户自定质量容忍阈值，未完成全WT2/任务准确率或量化QK乘法验证，不把短流验收为最终参数。下一项完整PPL应比较同S/burn、同量化路由边界和原生/纯SparQ/理想采样，不能继承旧完整PPL。没有新RTL、DC/PT、频率/周期/能量、工艺面积或物理随机源测试，数字电路台账不新增伪PPA run。
+
+CPU3301/GPU3302首次在全零阈值断言失败，日志与不可变源码包保留；CPU3303/GPU3304完成失效分类并暴露±32饱和；CPU3305/GPU3306完成扩范围、62配置/10×3seed局部审计和14case短流PPL。v2/v3原生输入digest、12个原生参考和13248个共用数值记录逐项完全一致；REPEAT_CHECK.json有回执。未覆盖原服务器快照。
+
+正式源码audit.py/quantize.py/quality.py，SUMMARY.json、PPL_SUMMARY.json、CALIBRATION.json、provenance.json、COMPLETE.json、RAW_INDEX.json。完整11.8MB局部原始结果和逐case PPL存私有本地/服务器归档，Git仅摘要/索引；见work/rayggxia/198/FIXED{,2,3}_SOURCE/CPU/SUBMISSION/COLLECTION和FIXED_FAILURE。report_fixed.py校验SHA、执行源、计分目标与覆盖并重建汇总；write_fixed_report.py生成本文。
+
+provenance.scope与RESULTS.limits中的“no modified-model PPL”描述局部审计部分；随后追加的模型短流以PPL_COMPLETE/PPL_SUMMARY为准，保留执行原字节而不回写该历史字段。tokenizer的全语料长度告警来自一次tokenization，模型实际只输入上述短窗口，没有输入整段百万token。
+
+源码/结果实际推送与回读状态查work/rayggxia/198/FIXED_PUBLICATION.json；PR保持draft待审、未合并，Issue不关闭，Projects沿既有权限限制待维护者同步。
+'''
+(D/'REPORT_ZH.md').write_bytes(txt.encode())
+print('REPORT_WRITTEN',len(txt))

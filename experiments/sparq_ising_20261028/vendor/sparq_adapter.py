@@ -145,4 +145,3 @@ class SparQController:
             a.forward = original
             delattr(a, '_sparq_owner')
         self._originals.clear()
-

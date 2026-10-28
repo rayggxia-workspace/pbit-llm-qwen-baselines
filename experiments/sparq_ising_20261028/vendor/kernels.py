@@ -120,4 +120,3 @@ def sample(logits,samples,method,generator=None,burn=0,seed=None,replay=None,cap
     if not bool(((out>=0)&(out<n)&torch.isfinite(logits.gather(1,out))).all()):
         raise RuntimeError('invalid sampled address')
     return out,stats
-

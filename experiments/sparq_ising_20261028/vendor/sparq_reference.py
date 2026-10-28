@@ -183,4 +183,3 @@ def sparq_attention(q: Tensor, k: Tensor, v: Tensor, *, config: SparQConfig = Sp
         "compute_dtype": str(compute_dtype),
         "cost_scope": "ideal_algorithm_elements_not_observed_reference_memory_traffic",
     }
-

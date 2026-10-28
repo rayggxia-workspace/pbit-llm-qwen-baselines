@@ -1,5 +1,5 @@
 import types,unittest,torch
-from .pot_weight import PoTWeightFFN,quantize_pot64
+from .pot_weight import PoTWeightFFN,quantize_pot64,exact_pow2
 from .test_core import setup
 
 class PoT(unittest.TestCase):
@@ -32,6 +32,15 @@ class PoT(unittest.TestCase):
 
 @unittest.skipUnless(torch.cuda.is_available(),'CUDA required')
 class CUDAPoT(unittest.TestCase):
+    def test_cuda_exact_negative_exponents_and_multirow_coefficients(self):
+        ex=torch.arange(-100,101,device='cuda')
+        self.assertTrue(torch.equal(exact_pow2(ex).cpu(),torch.tensor([2.**e for e in range(-100,101)],dtype=torch.float64)))
+        o=types.SimpleNamespace(**{n:torch.nn.Linear(128,128,bias=False,device='cuda') for n in ('gate_proj','up_proj','down_proj')})
+        m=PoTWeightFFN(o,0);m.g_top=torch.tensor([1.,.25],device='cuda');m.u_top=torch.tensor([2.,.5],device='cuda');m.freeze_down()
+        expected=m.down_tile_lsb.double()*(m.g_top.double()*m.u_top.double())[None,:]
+        restored=m.coeff.double()*exact_pow2(m.output_exp[:,None]-16)
+        self.assertTrue(torch.equal(expected,restored))
+
     def test_cuda_weight_codes_and_shared_forward(self):
         torch.manual_seed(27)
         w=torch.randn(128,128)

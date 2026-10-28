@@ -8,6 +8,17 @@ from torch.nn import functional as F
 from .core import Group64FFN
 from .mean_diagnostic import MeanGroupFFN
 
+def exact_pow2(exponents):
+    """Construct normal binary64 PoT by IEEE bits, avoiding CUDA ldexp ULPs.
+
+    This offline constant construction is a simulator detail; hardware keeps
+    the integer exponent. Do not relax an exact scale equality into tolerance.
+    """
+    e=exponents.to(torch.int64)
+    if bool(((e < -1022)|(e > 1023)).any()):raise ValueError('normal binary64 exponent required')
+    return ((e+1023)<<52).contiguous().view(torch.float64)
+
+
 def quantize_pot64(weight):
     rows,cols=weight.shape
     if rows%64 or cols%64:raise ValueError('64x64 tiles required')
@@ -56,7 +67,7 @@ class PoTWeightFFN(Group64FFN):
         ex=ex.long()-1;maximum=ex.amax(-1);shift=15+ex-maximum[:,None]
         if bool((shift<0).any()):raise ValueError('PoT coefficient exponent span exceeds15; do not silently round')
         self.coeff=torch.ones_like(shift)<<shift;self.output_exp=maximum+1
-        reconstructed=torch.ldexp(self.coeff.double(),self.output_exp[:,None]-16)
+        reconstructed=self.coeff.double()*exact_pow2(self.output_exp[:,None]-16)
         assert torch.equal(reconstructed,c)
         self.fixed_effective_weight=(self.down_codes.double()*reconstructed.repeat_interleave(64,0).repeat_interleave(64,1)).float()
         self.coefficient_nmse=0.;self.weight_metrics['Wd_restoration']=dict(exact_pot_coeff=True,coefficient_bits=16,

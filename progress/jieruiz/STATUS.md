@@ -1,3 +1,7 @@
+## Issue206正常g门控最终发布回执（2026-10-28）
+
+新36项/34唯一已实际推送PR207，交付head 90f084e147e1ef39acd277b44bc7ee29018d2576；6关键文件远端逐字核验，原始结果Git原字节核验通过。源32b5ed92，41 CPU/CUDA，3240三片完成，不重跑。GATE_FINAL_PUBLICATION.json保存回执，正常g输入不受幅度裁剪影响；原四档简单饱和未取得可接受效果，不伪称已完成共享尺度表优化。PRdraft/open未合并，旧3211独立扫描仍运行。Projects待既有权限同步。
+
 ## Issue206正常g门控36项已完成（2026-10-28）
 
 用户确认sigmoid使用正常g：幅度裁剪前g→原signed8 field/P8 LUT，不调用浮点sigmoid。新执行32b5ed929ff14f9f1a55c22e0805bf213ccb3cc9，72源blob且旧69不改；3239共41 CPU/CUDA通过，3240三片36物理/34唯一封存核验通过，旧耦合三seed逐值复现，BF1613.566049三次一致。准确SDPA、x groupmax、PoT W8每64x64、GU64/NL联合32层T128不变；1024后缀目标非完整WT2。

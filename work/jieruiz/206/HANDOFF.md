@@ -1,3 +1,7 @@
+## Issue206共享尺度最新发布回执（2026-10-28）
+
+新33项PoT权重澄清方案及旧固定/均值/细分层对照已实际推送PR207，科学交付head c7bf71e076c80b2e576adb243eefc2065d7d7b02；8个关键远端文件逐字核验、Git tree/对象同SHA。34 CPU/CUDA通过，33计分/27唯一。PR仍draft/open未合并，旧3211三片legacy双随机待齐。准确回执work/jieruiz/206/FINAL_PUBLICATION.json；无新PPA/TLM或训练。Projects待权限同步。
+
 ## 2026-10-28 Issue206：完整澄清方案33项完成，g/u共享64短流退化
 
 jieruiz；PR207仍draft/open未合并，task/206-group64-scale，tmp/group64-scale-issue206-20261028；依赖PR202@fbd67c39。用户确认x及Wg/Wu输出g/u各64连续通道共享四档PoT；Wg/Wu/Wd各64x64静态PoT权重LSB。旧权重absmax/127不是PoT，4d/be/a1结果仅legacy控制，不与本轮混算。新科学源aa43d00d0b8c1c9efbd981d00e45dffd358865ce，Slurm3231共34项CPU/CUDA通过；3232四片33物理/27唯一计分、原件及SHA已核验，不重跑。后训练Qwen3-4B、准确SDPA、36层全覆盖、1024目标后缀非完整WT2，GU64/NL128三seed。

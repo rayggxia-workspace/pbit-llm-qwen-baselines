@@ -1,3 +1,5 @@
+2026-10-28用户要求调研也进入功耗面积文件夹：已在统一台账新增08_Softmax文献功耗面积周期参考.md及references/softmax_20261028的CSV/JSON，共14个文献点，含原工艺、整行拍数、时钟ns、面积和已有功耗/功耗频率；未知整行周期明确保留null。只列文献，不新增本机run、不跨工艺×0.81；根固定阅读副本3文件同字节，既有文件/records保持原SHA。复现build_softmax_reference.py；发布见SOFTMAX_REFERENCE_PUBLICATION.json及Issue198最新评论。PR199待审；无运行作业，Projects待维护者同步。
+
 发布确认（2026-10-28）：普通数字Softmax调研已推送草稿PR199，源e73e50abc414c7b5ebd442a5c0f515880260236e，完整tree与本地同SHA、4关键文件逐字读回通过。Issue198评论6461443490，未合并；PDF私有归档SHA和5行周期换算已核。无新RTL/EDA/模型/台账run。准确回执work/rayggxia/198/SOFTMAX_PUBLICATION.json。
 
 2026-10-28 普通数字Softmax调研完成：512输入公开FP16/DW/P8为199拍/45nm 0.283300mm²；fixed32/LUT/P1/2/4为1542/775/392拍、0.059/0.085/0.138mm²（NOREG，外部存储另计）。65nm小定点核与FP精度/边界不同；不据跨工艺文献宣称Ising胜出。正式SURVEY/SOURCES记录PDF SHA、页面/代码pin、失败与算术；私有原件已逐SHA归档。无新RTL/EDA/模型或registry run、无运行作业；上传状态见SOFTMAX_PUBLICATION.json。下一步同SHARK库实现明确精度/缓冲的数字及CDF采样对手，本轮未启动。Projects待维护者同步，PR199待审未合并。

@@ -29,3 +29,9 @@ W8与四档实际取值、符号、x的full_one和NL的q<=255规则不变；sigm
 旧4d/be/a1实验权重LSB=absmax/127，并未强制PoT。因此结果保留为legacy权重对照，不能当本澄清方案。新pot_weight.py对原BF16每块重新量化：LSB=ceilPow2(maxabs/127)，q=RNE(W/LSB)限制[-127,127]。Wd恢复系数严格用PoT对齐，16位容器存2的幂；指数跨度超过15则明确失败，不静默舍入。代码中的整数乘系数是移位的功能参考。
 
 新pot_run四片：各BF16、PoT W8-only精确SiLU控制、各一种lane/x_max/gu_max/all_max的finiteNL128三seed与条件NL均值三seed；片0另有legacy W8-only控制。33物理/27唯一计分。固定W GU64、准确SDPA、sigmoid真实g signed8/P8、四档与NL joint32不变；不训练。权重量化精确SiLU、条件均值均是诊断，不能宣称为电路。GU恢复仍FP32 oracle，尚非全链路bittrue。本轮无RTL/PT或TLM默认改变。
+
+## sigmoid独立读取正常g（用户2026-10-28确认）
+
+新independent_gate.py：sigmoid从Wg累加恢复的g直接RNE到原signed8 field（步长1/8、饱和[-128,127]），再查既有P8 LUT；不经过g幅度编码的裁剪/尺度，也不调用浮点sigmoid。g/u幅度各连续64共享四档PoT，分别允许0或1/4项超出所选尺度，选最小可用档。所有元素仍参与乘积，不是丢弃异常值。
+
+gate_run五规则max、g_trim1、u_trim1、both_trim1、both_trim4，各有限NL128三seed及条件NL均值诊断三seed；另旧耦合all_max三seed逐值回放＋每片BF16。共36物理/34唯一，1024后缀目标非完整WT2。x只用groupmax，不裁剪；固定PoT W8、GU64、NL联合32层T128、准确SDPA不变。只复用原冻结四档，尚非专门校准的新尺度表。条件均值仅定位偏差，不能当部署电路。GU恢复仍FP32数值oracle，硬件需由定点累加器作等价移位舍入得到field；本轮无RTL/PT/PPA/TLM变化。

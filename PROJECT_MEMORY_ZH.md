@@ -1,3 +1,13 @@
+## Issue206：sigmoid正常g独立输入，g/u共享幅度裁剪对照准备
+
+## sigmoid独立读取正常g（用户2026-10-28确认）
+
+新independent_gate.py：sigmoid从Wg累加恢复的g直接RNE到原signed8 field（步长1/8、饱和[-128,127]），再查既有P8 LUT；不经过g幅度编码的裁剪/尺度，也不调用浮点sigmoid。g/u幅度各连续64共享四档PoT，分别允许0或1/4项超出所选尺度，选最小可用档。所有元素仍参与乘积，不是丢弃异常值。
+
+gate_run五规则max、g_trim1、u_trim1、both_trim1、both_trim4，各有限NL128三seed及条件NL均值诊断三seed；另旧耦合all_max三seed逐值回放＋每片BF16。共36物理/34唯一，1024后缀目标非完整WT2。x只用groupmax，不裁剪；固定PoT W8、GU64、NL联合32层T128、准确SDPA不变。只复用原冻结四档，尚非专门校准的新尺度表。条件均值仅定位偏差，不能当部署电路。GU恢复仍FP32数值oracle，硬件需由定点累加器作等价移位舍入得到field；本轮无RTL/PT/PPA/TLM变化。
+
+待Slurm回执，未有新PPL；下方历史记录保留。
+
 ## Issue206共享尺度最新发布回执（2026-10-28）
 
 新33项PoT权重澄清方案及旧固定/均值/细分层对照已实际推送PR207，科学交付head c7bf71e076c80b2e576adb243eefc2065d7d7b02；8个关键远端文件逐字核验、Git tree/对象同SHA。34 CPU/CUDA通过，33计分/27唯一。PR仍draft/open未合并，旧3211三片legacy双随机待齐。准确回执work/jieruiz/206/FINAL_PUBLICATION.json；无新PPA/TLM或训练。Projects待权限同步。

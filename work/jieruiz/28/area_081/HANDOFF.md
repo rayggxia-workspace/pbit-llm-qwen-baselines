@@ -1,3 +1,5 @@
+
+发布确认：面积0.81默认规则已上传 [PR203](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/203)，ready/open、未合并；Issue28已同步。本地规则即时按用户要求执行，正式合并状态以后续回执为准。
 # Issue28：面积0.81默认规则
 
 ## Issue28面积口径更新：本地已完成，待发布

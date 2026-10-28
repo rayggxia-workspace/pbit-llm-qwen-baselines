@@ -1,5 +1,5 @@
 import types,unittest,torch
-from .recal_core import RecalibratedFFN,encode_catalog,output_risk,fit_catalogs,ceil_exp
+from .recal_core import RecalibratedFFN,encode_catalog,output_risk,fit_catalogs,ceil_exp,pack_carriers,catalog_accumulate
 from .independent_gate import IndependentGateFFN
 from .test_core import setup
 from .pot_weight import exact_pow2
@@ -44,6 +44,21 @@ class Recal(unittest.TestCase):
         a,b=fit_catalogs(torch.zeros(4,2,8,8),torch.zeros(4,2,dtype=torch.long),torch.zeros(4,2,dtype=torch.long),3)
         self.assertTrue((a==torch.tensor([3,4,5,6])).all())
         with self.assertRaises(ValueError):encode_catalog(torch.zeros(1,64),torch.tensor([[0,1,1,2]]))
+
+    def test_wide_catalog_span_packs_without_changing_values(self):
+        lg=torch.tensor([[-1,0,1,2],[-17,-16,-15,-14]]);lu=torch.tensor([[-3,-2,-1,0],[-3,-2,-1,0]])
+        lsb=torch.tensor([[.125,.25]])
+        coeff,oe,cg,cu,limit=pack_carriers(lsb,lg,lu)
+        restored=coeff.double()*exact_pow2(oe[:,None]-16)
+        self.assertTrue(torch.equal(restored,lsb.double()*exact_pow2(cg+cu)[None,:]))
+        self.assertTrue((cg>=lg[:,-1]).all());self.assertTrue((cu>=lu[:,-1]).all())
+        torch.manual_seed(18);count=torch.randint(0,129,(2,128));sign=torch.where(torch.rand(2,128)>.5,1,-1)
+        shifts=(cg+cu-lg[:,0]-lu[:,0]).repeat_interleave(64)[None,:].expand_as(count)
+        weights=torch.randint(-127,128,(64,128),dtype=torch.int8)
+        result=catalog_accumulate(count,sign,shifts,weights,coeff,128,limit)
+        aligned=(count<<(limit-shifts))*sign
+        expected=(aligned[:,None,:]*weights.long()[None,:,:]*coeff.repeat_interleave(64,0).repeat_interleave(64,1)[None,:,:]).sum(-1)
+        self.assertTrue(torch.equal(result,expected))
 
     def test_normal_g_sigmoid_and_finite_catalog(self):
         o,m=self.make();m.install_catalog([[-4,-3,-2,-1]],[[-6,-4,-2,0]],True)

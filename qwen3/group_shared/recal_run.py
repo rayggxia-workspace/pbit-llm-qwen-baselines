@@ -10,7 +10,7 @@ from .core import encode_x
 from .pot_weight import quantize_pot64,exact_pow2
 from .independent_gate import original_g_field
 from qwen3.nonlinear_width.core import make_lut
-from .recal_core import RecalibratedFFN,ceil_exp,output_risk,fit_catalogs,OFFSETS,encode_catalog
+from .recal_core import RecalibratedFFN,ceil_exp,output_risk,fit_catalogs,OFFSETS,encode_catalog,pack_carriers
 
 SCHEMES=('dense2','risk4','risk4_active')
 
@@ -85,7 +85,10 @@ def main():
             fitted,dense=local_calibrate(g,u,norm,192,False);active,_=local_calibrate(g,u,norm,192,True)
             for name,entry in (('dense2',dense),('risk4',fitted),('risk4_active',active)):
                 e=lsbs[i]+torch.tensor(entry['g'])[:,-1][None,:]+torch.tensor(entry['u'])[:,-1][None,:]
-                span=int((e.amax(-1)-e.amin(-1)).max());entry['Wd_coefficient_span']=span;assert span<=15,('coefficient guard',i,name,span)
+                span=int((e.amax(-1)-e.amin(-1)).max());entry['unpacked_Wd_span']=span
+                coeff,oe,gc,uc,limit=pack_carriers(exact_pow2(lsbs[i]).float(),torch.tensor(entry['g']),torch.tensor(entry['u']))
+                bound=9728*128*127*int(coeff.max())*(1<<limit);assert bound<1<<63,('catalog signed64 guard',i,name,bound.bit_length()+1)
+                entry['Wd_coefficient_span']=int(coeff.max()).bit_length()-1;entry['accumulator_bound_bits']=bound.bit_length()+1;entry['carrier_limit']=limit
                 tables[name][str(i)]=entry
             stats[str(i)]={n:dict(risk=tables[n][str(i)]['risk'],Wd_span=tables[n][str(i)]['Wd_coefficient_span']) for n in SCHEMES}
             del g,u,norm;captures[i].clear();print('FITTED_LAYER',i,flush=True)

@@ -59,3 +59,7 @@ Qwen/Qwen3-4B后训练版，36个FFN全替换，Attention准确SDPA。每配置3
 GU矩阵尺度恢复仍为FP32数值oracle，Wd采用直接整数事件累加、精确PoT系数对齐。不是全链路有限宽bittrue，不是新RTL/PT/PPA或TLM速度/能耗验证。共享尺度潜在减少档号和归约前移位成本，本轮未给无依据的节能百分比。源码包单份归档，原始结果字节受.gitattributes -text保护。
 
 交付PR207仍draft/open未合并；依赖PR202。Issue206保留开放，旧双随机补充未齐。Projects无read:project权限，待维护者同步。
+
+## 后续：sigmoid独立读取正常g
+
+已完成五种g/u幅度裁剪规则/三seed，见[正常g门控对照](INDEPENDENT_GATE_REPORT_ZH.md)。本报告此前数字和旧快照保留，不将两批结果混算。

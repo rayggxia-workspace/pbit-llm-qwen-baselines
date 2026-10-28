@@ -1,3 +1,15 @@
+## Issue206正常g门控36项已完成（2026-10-28）
+
+用户确认sigmoid使用正常g：幅度裁剪前g→原signed8 field/P8 LUT，不调用浮点sigmoid。新执行32b5ed929ff14f9f1a55c22e0805bf213ccb3cc9，72源blob且旧69不改；3239共41 CPU/CUDA通过，3240三片36物理/34唯一封存核验通过，旧耦合三seed逐值复现，BF1613.566049三次一致。准确SDPA、x groupmax、PoT W8每64x64、GU64/NL联合32层T128不变；1024后缀目标非完整WT2。
+
+五规则finite PPL（3seed均值）：max=64.755351, g_trim1=72.027506, u_trim1=118.765281, both_trim1=238.552854, both_trim4=813.535696
+
+已分开g/u幅度饱和与真实g门控；五规则finite及条件NL均值、clip、事件密度均保存，具体结论以报告主表为准，不能只看概率增大。四档相邻4倍沿用旧逐元素表，后续需专门校准共享组尺度，尚未实现；无擅自新训练/RTL/PPA/TLM。GU恢复仍FP32oracle，硬件需等价定点field转换，不是全链路bittrue。
+
+报告qwen3/results/group_shared_20261028/INDEPENDENT_GATE_REPORT_ZH.md，准确值INDEPENDENT_GATE_SUMMARY；交接work/jieruiz/206/GATE_SUBMISSION/GATE_SOURCE/GATE_COLLECTION与audit_independent_gate.py。旧3211三片legacy独立运行，不混计；无自动回查，不重跑新36项。通过同PR207发布，实际head以GATE_FINAL_PUBLICATION为准；PRdraft未合并，Projects待既有权限同步。
+
+下方保留早期运行状态。
+
 ## Issue206正常g门控对照：41项通过，Slurm3240运行
 
 用户确认sigmoid使用正常输入：从幅度裁剪前g生成原signed8 field/P8 LUT，不调用连续浮点sigmoid；g/u共享尺度与饱和不能改门控输入。科学源32b5ed929ff14f9f1a55c22e0805bf213ccb3cc9，72执行blob；测试3239共41 CPU/CUDA通过。主3240_[0-2]运行，计划36计分/34唯一，未收齐、暂无最终质量结论。原BF1613.566049复现，旧耦合控制已逐值复现前两seed，完整三seed以封存记录为准。

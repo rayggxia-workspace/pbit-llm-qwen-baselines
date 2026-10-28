@@ -83,11 +83,11 @@ def bitplane_reference(weights, codes, thresholds, bins):
 
 
 class FullDecode:
-    def __init__(self, config, shape):
+    def __init__(self, config, shape, scheduler=None, memory_factory=None):
         self.c, self.m = copy.deepcopy(config), copy.deepcopy(shape)
         c, m = self.c, self.m
         self.period = 1e9/c['core_hz']
-        self.s, self.e = Scheduler(c['trace_event_limit']), Ledger(c['prices_pJ'])
+        self.s, self.e = (scheduler if scheduler is not None else Scheduler(c['trace_event_limit'])), Ledger(c['prices_pJ'])
         if c['attention']['mode'] not in MODES or c['ffn']['mode'] not in ('bf16', 'w8', 'sc'):
             raise ValueError('unknown operator mode')
         f = c['ffn']
@@ -107,7 +107,7 @@ class FullDecode:
         calibration_path = TLM/c['sram']['calibration']
         calibration = json.loads(calibration_path.read_text(encoding='utf-8'))
         spec = macro_lookup(calibration, c['sram']['macro_depth'], c['sram']['word_bytes']*8, c['sram']['corner'], c['sram']['clock_hz'])
-        self.mem = SRAM(c['sram'], spec, self.s, self.e)
+        self.mem = (SRAM if memory_factory is None else memory_factory)(c['sram'], spec, self.s, self.e)
         self.calibration_sha = sha(calibration_path)
         self.arena = Arena(c['sram']['capacity_bytes'])
         chunk = c['weight_chunk_bytes']
@@ -161,8 +161,8 @@ class FullDecode:
         policy=c.get('schedule_policy','legacy')
         if policy not in ('legacy','shared_tiles'):raise ValueError('unknown schedule policy')
         self.tile_pipeline=TilePipeline(self) if policy=='shared_tiles' else None
-        if c.get('digital_shared_prefill',False) and (policy!='shared_tiles' or f['mode']!='bf16'):
-            raise ValueError('digital shared prefill currently validated for full BF16 reference only')
+        if c.get('digital_shared_prefill',False) and (policy!='shared_tiles' or f['mode']=='w8'):
+            raise ValueError('digital shared prefill requires BF16 matrix operands: BF16 reference or SC FFN with BF16 ordinary projections')
         self.digital_activation_peak=0;self.digital_partial_peak=0
         if c.get('digital_w8_restore','legacy_row') not in ('legacy_row','block64'):
             raise ValueError('unknown W8 scale restoration contract')
@@ -328,6 +328,13 @@ class FullDecode:
         while first<out:
             current_ticket=ticket;n=current_ticket['n']
             loaded,slot=pipe.fill(t,current_ticket)
+            # The current response was consumed by shared fill. The one
+            # existing response slot can now receive the next BF16 tile while
+            # the current local operand load/MAC proceeds; no extra DMA slot.
+            nxt=first+n;early_ticket=None
+            if self.c.get('early_next_dma',False) and info['width']==2 and nxt<out and self.c['double_buffer']:
+                early_ticket=pipe.issue(loaded,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
+                pipe.counts['digital']['dma_issue_after_shared_fill']+=1
             loaded=self.mem.transfer(loaded,self.slots[slot],n*row_bytes,False,'weight_consume')
             self.e.action('digital_local_operand_write_byte',n*row_bytes,'digital_local_storage')
             if info['width']==1:
@@ -342,7 +349,7 @@ class FullDecode:
             self.e.action('digital_local_activation_read_byte',inp*n*input_width,'digital_local_storage')
             nxt=first+n
             if nxt<out and self.c['double_buffer']:
-                ticket=pipe.issue(start,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
+                ticket=early_ticket if early_ticket is not None else pipe.issue(start,name,nxt*row_bytes,min(rows,out-nxt)*row_bytes,'digital',first=nxt,n=min(rows,out-nxt))
             t=end
             if info['width']==1:t=self.digital_w8_restore(t,n,inp)
             output_width=4 if info['width']==1 or name=='lm_head' else 2

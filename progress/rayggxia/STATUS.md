@@ -1,3 +1,25 @@
+## 2026-10-28：128节点控制EDA已完成，按能量与时间联合选型
+
+负责人rayggxia；Issue198 / task/198-attention-compare / 草稿PR199，base main，执行源父提交5f4f5bde及CONTROL128_SOURCE.json精确SHA。工作目录tmp/attention-compare-issue198-20261027复用，未新建重复checkout。
+
+用户明确不能为了面积牺牲功耗和时间。8个top重新DC；本机168回放106227拍，服务器336个RTL/门级回放212454拍通过；56个PT窗口、8top额外时序审计完成。G16融合、binary winner、10位计数、弹性流水主候选：原面积0.014409360mm²×0.81=55nm折算0.011671582mm²；稀疏p=1/32三seed、S128/B0全query平均0.922946nJ、161.667拍/1.61667μs、570.833μW，7.210516pJ/输出。串行2.246279nJ/415.667拍且面积更大，排除；G32能量仅低0.83%、面积高10.79%且setup余量更小，保留备选。提前保持dense有收益但setup仅0.052158ns，暂不主选；公平随机源本体仍未计。
+
+全1压力首帧至首输出3拍、稳定II1、完整query133拍，不能视为独立有效样本。S64/256/512、burn32功能/周期已测，没测相应能量；不由硬件结果决定模型必须burn0。候选局部7位index不等于KV物理地址；不包含概率驱动/随机源/token映射/V读取/累加，也没有给其附加串行调度。
+
+SS1.08V125°C100MHz、IO delay0/slew.1ns/load.02pF/setup uncertainty2ns/hold.1ns；无SDF/SPEF/CTS/毛刺完整建模。全部整体hold负；主候选−0.056977ns来自cfg_ready→configured，内部reg-reg setup/hold为+2.801410/+0.134473ns。仅SS内部通过，不是全接口/FF hold/物理签核。PWR-981虽100% net/cell标注仍保留；禁用弧p/C/c、无loop-breaking/user false/multicycle。不缩放功率/时序。时钟持续空闲445.9μW，未实现/假扣ICG。
+
+正式结果architecture_tlm/attention_compare_20261027/control128_20261028/RESULTS_ZH.md及RESULTS/COMPARISON/TIMING_AUDIT.json。本机原报告2426成员、额外时序96成员SHA核验，完整大包仅授权EDA远端；恢复索引work/rayggxia/198/CONTROL128_ARCHIVE.json，私有原件project_archives/attention_compare_issue198_20261027/control128_20261028。统一台账新增attention-control128-198-eda-20261028；84→85条增量check/render通过，旧记录不变。仅schema check不冒称对全台账原件重哈希，本轮新原件核验单列。
+
+DC38444217/38444227，replay/PT38444238/38444263，timing38444334，collection38444378；无本轮GPU/PPL。首次依赖提交在创建job前拒绝，已有作业完成后重提，原失败回执保留。当前本地实现/测试/归档/台账完成；准确分支上传SHA和回读见CONTROL128_PUBLICATION.json。PR199待审、未合并，Issue保持开放，Projects沿既有限制待同步。下一步修接口hold和标注，再结合真实候选激励及外部接口成本，不启动未经要求的昂贵模型重跑。
+
+---
+
+## 2026-10-28 128候选反馈／仲裁控制进行中
+
+用户明确只做控制，不纳入概率驱动、随机源本体、V读取和累加，不施加这些模块的保守调度。rayggxia继续Issue198/PR199，基线5f4f5bde。8top比较G8/G16/G32融合、G16两级/提前保持/one-hot/32位计数器/串行参考；其他10位计数器、总更新上限1023。168项本机Icarus/flat oracle、106227拍通过，含1023边界/溢出/无效配置、rank cap失败、三seed压力、S64/128/256/512和burn0/32、输入/输出等待；未改变旧512源码。
+
+源362文件manifest8b71c9bb83cc87b7d1302c23a4324086638d65f81cde3a806c2acead15c13552，执行快照v1不改。EDA DC预检38444217完成，余7项38444227、VCS/PT预检38444238已提交；首次replaypre的Slurm历史依赖被拒绝，未创建作业，保留回执后无依赖提交。准确状态查CONTROL128_SUBMISSION及私有ops128.py poll，不重复作业。计划56功耗窗口，SS100MHz旧同约束、面积×0.81，hold/标注未验收。新目录architecture_tlm/attention_compare_20261027/control128_20261028；统一台账待完成后登记，不称现有完整PPA。
+
 ## 2026-10-28 SparQ＋Ising完整WT2三seed完成（Issue198 / PR199）
 
 负责人rayggxia；task/198-attention-compare，原独立checkout继续复用，PR待审未合并。GPU Slurm3270_[0-2]完整结果均已收齐，独立SHA/回执、299077目标恰好各一次、36层计分覆盖及每头160更新/128保留采样审计通过。执行源a7108f8cba2c72ad319114af34557f4cec2b793d；短流源d9b64717641ae8f7efeaa2e9375a1b01a30361d0。模型Qwen/Qwen3-4B后训练revision1cfa9a7208912126459214e8b04321603b3df60c，权重/tokenizer/原始train-test/token SHA在provenance中核验。原BF16 FFN/投影/归一化不改，dense prefill、全36层单query Attention替换；无chat模板、无BOS，window2048/stride1024、batch32。

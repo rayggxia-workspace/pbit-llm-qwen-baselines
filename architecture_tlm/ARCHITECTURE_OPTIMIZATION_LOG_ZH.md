@@ -70,3 +70,20 @@ O01—O08为本次核对的已有机制索引，**不是本次重新完成全部
 完整平均每KV组唯一V 54.594行。理想标量读取、候选K维度复用、4Q完整去重下，K+V逻辑元素需求为dense的17.41%、纯SparQ的87.91%；不是实测DRAM字节或速度。SparQ第一阶段全N近似softmax和top-k仍存在，只替换候选上的第二阶段softmax/PV。当前说明质量可行但未证明同质量完整硬件PPA胜出；完整缓存、布局、仲裁、累加及有限相关采样成本待补，不继承旧控制RTL为整机PPA。无新数字电路台账run。
 
 正式源码及报告：experiments/sparq_ising_20261028/results/REPORT_ZH.md、SUMMARY.json。准确SOURCE/SUBMISSION/COLLECTION见work/rayggxia/198/QUALITY_*；原始结果保留本人GPU目录/home/Hongjie_Zeng/projects/attention-sparq-ising-issue198-20261028和本地project_archives/attention_compare_issue198_20261027/quality。report_quality.py可按封存原件重建。下一步以纯SparQ为硬件主要对手，在匹配质量下接有限KV读出和控制费用；未自动启动额外全量扫参、未合并PR或关闭Issue，Projects权限待维护者同步。发布以QUALITY_PUBLICATION.json和远端实际head为准。
+
+
+## 2026-10-28：128节点控制EDA已完成，按能量与时间联合选型
+
+负责人rayggxia；Issue198 / task/198-attention-compare / 草稿PR199，base main，执行源父提交5f4f5bde及CONTROL128_SOURCE.json精确SHA。工作目录tmp/attention-compare-issue198-20261027复用，未新建重复checkout。
+
+用户明确不能为了面积牺牲功耗和时间。8个top重新DC；本机168回放106227拍，服务器336个RTL/门级回放212454拍通过；56个PT窗口、8top额外时序审计完成。G16融合、binary winner、10位计数、弹性流水主候选：原面积0.014409360mm²×0.81=55nm折算0.011671582mm²；稀疏p=1/32三seed、S128/B0全query平均0.922946nJ、161.667拍/1.61667μs、570.833μW，7.210516pJ/输出。串行2.246279nJ/415.667拍且面积更大，排除；G32能量仅低0.83%、面积高10.79%且setup余量更小，保留备选。提前保持dense有收益但setup仅0.052158ns，暂不主选；公平随机源本体仍未计。
+
+全1压力首帧至首输出3拍、稳定II1、完整query133拍，不能视为独立有效样本。S64/256/512、burn32功能/周期已测，没测相应能量；不由硬件结果决定模型必须burn0。候选局部7位index不等于KV物理地址；不包含概率驱动/随机源/token映射/V读取/累加，也没有给其附加串行调度。
+
+SS1.08V125°C100MHz、IO delay0/slew.1ns/load.02pF/setup uncertainty2ns/hold.1ns；无SDF/SPEF/CTS/毛刺完整建模。全部整体hold负；主候选−0.056977ns来自cfg_ready→configured，内部reg-reg setup/hold为+2.801410/+0.134473ns。仅SS内部通过，不是全接口/FF hold/物理签核。PWR-981虽100% net/cell标注仍保留；禁用弧p/C/c、无loop-breaking/user false/multicycle。不缩放功率/时序。时钟持续空闲445.9μW，未实现/假扣ICG。
+
+正式结果architecture_tlm/attention_compare_20261027/control128_20261028/RESULTS_ZH.md及RESULTS/COMPARISON/TIMING_AUDIT.json。本机原报告2426成员、额外时序96成员SHA核验，完整大包仅授权EDA远端；恢复索引work/rayggxia/198/CONTROL128_ARCHIVE.json，私有原件project_archives/attention_compare_issue198_20261027/control128_20261028。统一台账新增attention-control128-198-eda-20261028；84→85条增量check/render通过，旧记录不变。仅schema check不冒称对全台账原件重哈希，本轮新原件核验单列。
+
+DC38444217/38444227，replay/PT38444238/38444263，timing38444334，collection38444378；无本轮GPU/PPL。首次依赖提交在创建job前拒绝，已有作业完成后重提，原失败回执保留。当前本地实现/测试/归档/台账完成；准确分支上传SHA和回读见CONTROL128_PUBLICATION.json。PR199待审、未合并，Issue保持开放，Projects沿既有限制待同步。下一步修接口hold和标注，再结合真实候选激励及外部接口成本，不启动未经要求的昂贵模型重跑。
+
+---

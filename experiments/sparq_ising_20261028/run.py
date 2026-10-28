@@ -85,7 +85,8 @@ def main():
         for s in (32,128,512):run_case(f'winner_S{s}',Config(samples=s),**opt)
         run_case('iid_S128',Config(mode='iid'),**opt)
         # Production context/batch memory and sampler check uses the same 8 windows.
-        run_case('production_memory',Config(),context=2048,decode=2,examples=8,batch=8)
+        memory=run_case('production_memory',Config(),context=2048,decode=2,examples=32,batch=32)
+        assert memory['peak_memory_bytes'] < 28*1024**3
         seal(out/'GATE.json',dict(passed=True,gpu_core=checks,native_wrapper_bitwise=True,all_layer_targets=True))
     elif a.phase=='short':
         gate=root/'results'/manifest['commit'][:12]/'preflight/seed0/GATE.json'
@@ -98,11 +99,11 @@ def main():
     else:
         gate=root/'results'/manifest['commit'][:12]/'preflight/seed0/GATE.json'
         assert read_sealed(gate)['passed']
-        plan=full_window_plan(len(ids));chunk=16
+        plan=full_window_plan(len(ids));chunk=32
         cases=[('bf16',None),('sparq_exact',Config(mode='exact')),(f'winner_S{a.samples}',Config(samples=a.samples))]
         for start in range(0,len(plan),chunk):
             for name,cfg in cases:
-                run_case(f'{name}_part{start:04d}',cfg,protocol='full',batch=16,plan_slice=(start,min(start+chunk,len(plan))))
+                run_case(f'{name}_part{start:04d}',cfg,protocol='full',batch=32,plan_slice=(start,min(start+chunk,len(plan))),rng_stream=start)
         for name,cfg in cases:
             parts=[read_sealed(out/f'{name}_part{start:04d}.json') for start in range(0,len(plan),chunk)]
             rows=[row for part in parts for row in part['records']]

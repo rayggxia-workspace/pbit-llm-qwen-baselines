@@ -7,10 +7,11 @@ from .adapter import Controller
 from .vendor.plans import full_window_plan,suffix_plan,plan_batches,plan_metadata,summarize_records,ids_sha256
 
 
-def score(model,ids,cfg=None,seed=0,protocol='suffix',context=2048,decode=128,examples=8,batch=8,native=False,capture=False,progress=None,plan_slice=None):
+def score(model,ids,cfg=None,seed=0,protocol='suffix',context=2048,decode=128,examples=8,batch=8,native=False,capture=False,progress=None,plan_slice=None,rng_stream=None):
     plan=(suffix_plan(len(ids),context,decode,examples) if protocol=='suffix' else full_window_plan(len(ids),context,1024))
     if plan_slice is not None:plan=plan[plan_slice[0]:plan_slice[1]]
-    controller=None if native else Controller(model,cfg,seed)
+    stream_seed=seed if rng_stream is None else f'{seed}:part{rng_stream}'
+    controller=None if native else Controller(model,cfg,stream_seed)
     # Even the unchanged control has an independent all-layer execution audit.
     counters=[0]*len(model.model.layers)
     phase=['prefill']

@@ -8,7 +8,7 @@
 
 对照：原生BF16 cached SDPA、FP32纯SparQ准确候选softmax/PV、SparQ+winner、SparQ+IID128诊断。BF16 wrapper先要求与同形状原生logits逐字节相同，参数data_ptr/version不变，所有目标全层覆盖。实际GPU时间是Python/Triton数值实验耗时，不作为稀疏硬件速度。
 
-初筛：8个均匀分布位置、context2048、每窗后缀128、共1024目标，batch8；所有方案相同目标，明确不是完整WT2。随后支持完整WT2 window2048/stride1024；每16窗成片配对，batch16，无BOS或chat模板，完整目标1..N-1各一次。不能用初筛选择最优后不披露选择，也不将旧Base或不同FFN结果当因果基线。
+初筛：8个均匀分布位置、context2048、每窗后缀128、共1024目标，batch8；所有方案相同目标，明确不是完整WT2。完整WT2 window2048/stride1024，每32窗成片配对、batch32，真实模型显存门禁<28GiB；每片随机键另含分片起点，避免重置重用其他分片随机流。无BOS或chat模板，完整目标1..N-1各一次。完整首轮固定S128、三seed；初筛S512结果另列，不假装未观察过测试子集。不能将旧Base或不同FFN结果当因果基线。
 
 复用来源：PR163固定ca3da3a5308cdd820d1d9554b2866b9eb098d5a4，原始qwen3/stochastic/vendor/kernels.py、qwen3/sparq/core.py、qwen3/sparq/adapter.py保存于vendor。新core/adapter在本目录独立实现，未修改PR163。plans/support来自PR202本地已发布源码，执行包逐SHA登记；vendor原件不修改。
 

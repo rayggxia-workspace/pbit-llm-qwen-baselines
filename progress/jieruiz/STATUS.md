@@ -1,3 +1,9 @@
+## 2026-10-28 Issue201最终发布确认：PR202已ready
+
+最终结果已实际推送，科学成果提交4134a3629bf2d08610a303ed6e13057f562fd441；PR202 ready/open、待审未合并（依赖PR174）。40份主计分/37唯一、108原始JSON与sidecar的Git字节SHA全部一致，八个关键远端blob回读一致。FINAL_PUBLICATION.json含准确提交、回读SHA和Issue201评论链接；不是此前草稿/运行中状态。Issue验收项已更新，保持open待审，不合并；Projects缺read:project待同步。
+
+核心结果：联合256拍PPL15.8951±0.1856，固定W同T15.2405±0.2481（+4.30%）；原BF1613.566049（+17.17%）。仅1024目标后缀、非完整WT2；未训练，无新PPA，GU恢复仍FP32oracle。当前用户要求的扫描和报告已交付，无需再收3200或重交。后续可审阅该PR，若扩充完整WT2/共享W源/Ka×Kw扫描须显式作为后续研究；不建立新自动回查。
+
 ## 2026-10-28 Issue201：Wg/Wu双随机40项已完成核验
 
 2026-10-28T09:51:41+08:00；负责人jieruiz，task/201-dual-gu-short，PR202依赖未合PR174，目录tmp/dual-gu-issue201-20261027。Slurm3200四片各10份完成，40物理/37唯一主计分、三seed齐全；pilot4份独立。58源blob、模型/数据/token/目标/TRAIN表、documents/sidecar SHA与36层各8次/17400词覆盖核验通过，18项CPU/CUDA通过。此前运行中/单seed数字仅历史；未重跑。

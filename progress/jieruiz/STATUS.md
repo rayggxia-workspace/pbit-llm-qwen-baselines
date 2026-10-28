@@ -1,3 +1,9 @@
+## Issue206：64共享完整WT2评测准备（2026-10-28）
+
+用户授权补测当前G64/B4完整WT2，准确SDPA；x64/固定PoTW8每64x64/GU64-K64/g-u分别64共享四档e888 risk4/正常g signed8-P8/NLjoint32T128均不变，不训练不重新选表。匹配BF16及三个随机seed，context2048/stride1024、299077目标每个恰计一次，无BOS/chat/cache；全部36层和窗口前缀均替换。每seed六片、最多六GPU并行；CPU和GPU门禁后正式提交，实际作业以FULL_WT2_SUBMISSION为准。门禁复现旧后缀BF16/G64B4并检查首尾全窗；门禁分数不当完整PPL。
+
+新完整协议使用seed+全局窗口号的SHA256随机键，不反复重用同一窗口种子，分片数量不影响同一窗口随机流。不同于旧后缀连续消耗RNG的调度；不能要求完整PPL等于旧17.92。GU仍FP32恢复oracle、非全链bittrue，无RTL/PPA/TLM更改。原推荐不变；沿Issue206/PR207，未合并，Projects仍待既有权限同步。
+
 ## Issue206分组/档数扫描最终发布回执（2026-10-28）
 
 主结果已实际推送PR207，交付head b402cd323f89daf8b8a083d0cdeb1fe967a1cc71；6关键文件远端原字节回读、Git对象/tree一致，115份本轮原件/压缩索引Git字节核验。G16/B4最佳PPL16.999183±0.118233，原G64/B4=17.921546。六组36物理/25唯一配置seed（另3门禁）全部完成；71 CPU/GPU、源/配置/模型/数据/目标/36层及SHA核验。只改g/u分组/档数，x64及其余保持。候选索引单独保存，CURRENT_RECOMMENDED和TLM/RTL默认不变。仅1024后缀、GU FP32oracle、无新PPA；PR未合并/Issue开放，Projects待既有权限同步。本轮无运行作业。准确回执GROUP_SWEEP_FINAL_PUBLICATION.json。

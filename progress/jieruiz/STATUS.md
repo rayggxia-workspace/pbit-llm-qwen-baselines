@@ -1,3 +1,7 @@
+## Issue206重新校准最终发布回执（2026-10-28）
+
+源e8888a26的24计分/22唯一+1校准BF16已实际推送PR207，交付head 45ce805a87984be1042229bf369692d993600d6d；6关键远端文件逐字核验、完整Git对象/tree同SHA，原始JSON/gzip/log字节一致。52 CPU/CUDA；3250校准/3251全完成，不重跑。新risk4 PPL17.9215，旧共享表64.7554，仍比最接近逐元素g/u参考16.2740高10.12%；无训练/新RTL/PPA/TLM。RECAL_FINAL_PUBLICATION.json含准确回执。PRdraft/open未合并，旧3211独立补充仍运行，Projects待既有权限同步。
+
 ## Issue206：重新校准共享g/u四档有效，PPL17.9215（2026-10-28）
 
 jieruiz/task206/PR207；最终科学源e8888a26dacec4fd5e5afe3e7dabb0e4964e3e6d、75源blob，旧72不改。3249共52 CPU/CUDA通过；3250 TRAIN校准、3251三片24物理22唯一+校准1BF16全部封存核验。原BF1613.566049四次相同，旧表正常g三seed复现。GU64、NL joint32T128、PoTW8每64x64、x共享64、准确SDPA、36层不变，无权重训练/RTL/PPA/TLM修改，1024后缀非完整WT2。

@@ -8,11 +8,36 @@
 
 ## 2026-10-25 第十一轮实际合并回执
 
-PR183已合入main（a73a75ce0566f5fff0b8c38fcb03d04961885f76），PR190最终审核291c437a已合入main（f8a861487170c2cd65bc9ecb95eb3e4f72b863be）。旧008b0227之后的七文件增量仅文献与派生分析，输入SHA和派生文档重现通过，执行代码/配置/原结果未变；110回归与18小形状测试无需重复冒充新实验。正式入口architecture_tlm/BASELINE_ZH.md；默认DDR4、HBM显式对照、R8/128/资源扩容候选分开。PR181历史回执与本轮审核/入口文档将由review/55-pr190-main交付main，最终文档PR及SHA见Issue55。后续质量用Instruct/后训练模型；真实质量、GU数值闭环、物理PPA未验收。其余17PR仍待完整审核。
+## 2026-10-26 Issue193：第一轮55nm FFN校准脚本已交付
 
-## 2026-10-25 第十一轮：PR190转为main共同调度基线（发布前）
+[PR194](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/194)已创建，待审未合并，Issue193负责人jieruiz；task/193-ffn-calibration-stage1，base main d83eeb1f。只新增architecture_tlm/ffn_calibration_stage1，不改PR192/TLM默认。源码冻结55c607dc，结果提交499c19d0；精确发布状态见work/jieruiz/193/PUBLICATION.json。
 
-负责人jieruiz，Issue55；review/55-pr190-main，目录tmp/pr55-review-round11-20261025，main基线5273e5d9。190@008b0227及依赖183@0341b4ac、历史回执181@8f401be4审核通过有限交付，准备进入main，实际合并以Issue55最终回执为准。110测试、18小形状重放、688执行源码blob、246本地制品SHA与六组汇总核验通过；440个远端原件条目本轮未重下载。默认mature_ddr4、HBM显式对照、R8/128/大MAC宽SRAM作为候选；正式入口architecture_tlm/BASELINE_ZH.md。没有改科学代码/默认资源，没有新GPU/全模型DRAMSys/RTL/PT。旧TLM分支改为历史追溯，后续主线面向main；完整PPA/真实质量仍未知。报告work/jieruiz/55/round11/REVIEW_ZH.md，归档project_archives/pr_review_issue55_round11_20261025；其余17项分流未宣称完整审核。下一步精确head合并、回读验证、镜像同步及审阅副本回收；Projects待维护者同步。
+用户要求先做第一步：N64固定W7mag+sign精确计数＋B4/B7整数恢复coeff16/rshift6＋signed64饱和部分和，含单帧chain、9固定top、整数oracle/逐周期TB、Slurm→VCS→DC→可选PT-STA脚本。M1三seed/M8一seed的9case功能通过、9 top展开、29流程测试通过；非PPL评估。计数末样本后6拍valid；恢复握手8/10拍，acc1拍，单帧80/146拍；恢复II1不是整帧II1。100MHz尚无55nm STA验证。旧240s Icarus宽配置软件超时保留，正式900s上限9case通过；未运行VCS/DC/PT/Slurm，无新PPA。
+
+ZIP根路径ffn_calibration_stage1_20261025.zip，110224B，SHA256 51d2f5a5052ba8f45299d2447a07dcf161b8e4ddf4998b910215549f0ec7ab81。先读包内RUN_FIRST_ZH.md，用SS/1.08V/125C实库跑counter_b4_t64_m1、restore_b4_c20两个smoke，回传reports.tar.gz/ARCHIVE.json再依关键路径改流水。同步reset不false-path；负slack须保留not_met。真实模型尺度→coeff/rshift编译、PPL、SRAM/PRNG/比较器/非线性/BF16均在本包边界外。
+
+台账新record ffn-stage1-193-rtl-20261025已加入PR，root联合阅读索引67→68且旧记录SHA不变/check/render通过。main尚缺完整registry；正式56条仍在TLM历史集成分支d6d3399，不能把根68条都说成已合。证据小归档project_archives/ffn_calibration_stage1_issue193_20261025/validation_evidence.tar.gz，helper唯一部分结果另归档counter_helper_partial.tar.gz，三个完成helper工作树已按SHA和refs回收。Projects缺read:project待同步；后续别重跑健康PPL或把本轮功能当工艺结果。
+
+## 2026-10-25 Issue186：有限双本地bank完整TLM
+
+发布确认：本轮已上传 [PR192](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/192)，待审、未合并；Issue186已同步；13项结果已完成。准确head与原字节核验见work/jieruiz/186/PIPELINE_PUBLICATION.json。
+
+独立分支task/186-local-pipeline、目录tmp/ffn-local-pipeline-issue186-20261025，新正式目录architecture_tlm/ffn_local_pipeline_20261025；基线main d83eeb1f，PR190已合并。Slurm3074的13项已completed/封存SHA核验：3完整36层＋10单层扫描，执行6f73ef65；44合同/回归通过。旧版407.142620ms逐数复现；双bank315.236180、加shared权重bypass307.049120ms/token；FFN268.576→176.680→168.488ms。主对照100MHz/8×64阵列/R8/W8/B4/GU64/NL64/HBM/8MiB64GBs不变，新增32KiB权重＋32B系数bank，不复制计数/计算/恢复。
+
+已明确旧瓶颈含装载串行屏障。改后单层4.966ms：SRAM翻倍再少3.5%，恢复/累加扩4倍少11.6%，阵列翻倍少20.5%；B1每权重有效乘积仍1，64次是本地随机事件。shared版本字节不变，bypass每token少5.015GiB共享读写；SRAM内部动态25.532→13.131mJ，仅已标定局部能量，整机PPA未知，HBM电流占位禁用能耗。真实随机端点/GU数值闭环/PPL/物理双bank接口仍待验证。成熟模拟器参考和16波时间线在新目录。原件个人服务器pbit-scheduling-issue186-20261025/pipeline_6f73ef65；本地只留小摘要与manifest，不复制大轨迹。
+
+交付状态以work/jieruiz/186/PIPELINE_PUBLICATION.json为准；Issue186保留开放，不自动合并新PR。恢复先核PR、STATUS和LOCAL_PIPELINE_HANDOFF，13项已完成，不要重跑。Projects无read:project待同步。
+
+## 2026-10-25 Issue55 第十一轮：PR190正式进入main
+
+用户要求继续审核并重点安排PR190新基线。本轮PR183合并a73a75ce，PR190最终审核291c437a合并f8a86148，基线入口与审核证据PR191合并d83eeb1fc6b89a3dff51b5b62bf79acf665c7166；PR181历史回执经该PR纳入main并已显示merged。已回读四个PR、main及剩余17项列表。
+
+正式入口main的architecture_tlm/BASELINE_ZH.md，统一python -m architecture_tlm / unified_v6。默认mature_ddr4，mature_hbm2_pipelined为显式外存对照；R8/128阵列/宽SRAM大MAC/预填充为候选，107.639ms不是默认或同面积性能。后续主线PR面向main，旧pbit-tlm-attention-details-20261016仅历史追溯。模型使用后训练Qwen3-4B形状，不加载权重、不做PPL。
+
+本轮110测试、18小形状重放、688冻结源blob与246本地制品SHA、六组汇总重现通过；440远端原件条目未重新下载。合并前捕获291c437a文献增量，七文件未改运行代码/配置/原结果，派生输入SHA与文档重现通过。没有新GPU/PPL/全模型DRAMSys/RTL/PT；真实质量、GU数值等价、完整PPA仍未验收。main运行源与190逐blob一致，仅新增入口文档。
+
+其余17PR未完整验收：优先170，再按160→169→172→174→176/178依赖；188随机源质量、189调研独立审查；185/163草稿；137/143/147/149/153/155维持Base迁移门禁。Issue182/186保留后续研究工作，不自动关闭。Projects未宣称同步。报告work/jieruiz/55/round11/REVIEW_ZH.md；本地归档project_archives/pr_review_issue55_round11_20261025。审核副本tmp/pr55-review-round11-20261025将在核实clean/ignored及恢复索引后回收，review/55-pr190-main提交59f7c4f与所有实验历史保留。
+
 发布确认（2026-10-25T12:50:42.665685+00:00）：ASIC文献与剩余瓶颈报告已推送bd283248并回读SHA核验；Issue186/PR190已更新、未合并；准确回执work/jieruiz/186/ASIC_COMPARISON_PUBLICATION.json。
 
 ## 2026-10-25 Issue186：ASIC文献与剩余时延归因
@@ -907,6 +932,14 @@ FFN-only变化较小，S128相对BF16的acc_norm变化−0.290/+0.140/−0.700�
 旧3/39、11/39与动态预计完成时间保留为历史，恢复先看本节、Issue59/PR62及交接，不再重复提交已完成39项。仓库上传身份jieruiz已核实admin/push；Projects是否成功同步以最新发布回执为准。当前正式报告PR仍未合并。
 
 ## 6 随机源、p-bit与相关性
+
+2026-10-25定时采样发布已完成：PR185增量科学提交191fee84c02682e43acf2705ddc4d0b9af5f9548，与本地59a32876b74de8140d3224f41e570fe20efa2ece完整tree57c9b8628b15bcf5baf9db66b7595f3d7441a813相同；5份关键执行源远端逐字符读回一致。新任务38398237已RUNNING、16确定性实际案例通过，短噪声和新三seed各2万次尚未验收。正式执行源be26000c和只读snapshot不变；PR仍draft/open、未合并，Issue184未关闭。回执work/rayggxia/184/PUBLICATION_SAMPLED.json，上传目录远端上传/sampled_readout_v1；只有单通道，无阵列/MUX/时钟树/PPA/熵声明。Projects待维护者同步；重复API传输缓存已按SHA核验后移除，可从Git重建。
+
+2026-10-25用户授权下一轮只做到真实比较器定时采样，不展开阵列；接续Issue184/PR185及现有目录，不新建全量checkout。新增physical_rng_sampled_readout/src、远端sampled_readout_v1；原38387635/normal_readout_v1不改。2MOS核心＋10MOS连续LVT20u比较器＋13MOS真实传输门/再生保持锁存，共25MOS；外部理想有限边沿两相时钟和复位，不计时钟树/阵列。1us一读：读点t，track从t-150ns到t-50ns，关闭后2ns闭反馈，再生到t；保存点检查保持到t+800ns。Vref沿独立冻结.604745V，不按新验证seed重调；captureMID保留，由实际Q/Qbar电平判读，禁止模拟oracle筛掉Q坏点。源be26000c2c401befa13eb7b2b1bde2e11e52a9e2、manifest9df7309709ebe6748479b0c66b19756c6198247508b544c503983d57a8f5ca27、配置1e8cfceefafd6293a3e76a2241a44ad0777fa1096e7f13bb73a0186fc7882a1e；25文件逐个SFTP已传。本地/远端各10检查、17Python3.6 AST、2Bash、27PDK哈希通过。Slurm38398237已RUNNING，8CPU16GB、最多8个APS1案例、6h计算＋15min收集；source snapshot sampled-vWv3v20y/source不可改。2026-10-25T14:29:22.962324Z首查16真实确定性案例（2通道阶跃＋14锁存边界）全通过，读点无无效Q、保持保存点无变化；含近边沿captureMID仍在50ns后得到有效Q，但不等于罕见亚稳态认证。当前新numeric66007/13/29短精度/成本检查运行，过门后才用68003/11/23各20000次1us、2ms固定启动。TT25C/500Hz/100MHz/2.5ns，保存50ns不替代内部演化；正式统计未完成。结果/public3/home/t6s011227/analog_pbit_20261016/sampled_readout_v1/results/38398237，结束自动sampled_readout_38398237.tar.gz/.sha256。中央新增同一run，不把脚本/16短案例当正式60000随机位或PPA。发布以PUBLICATION_SAMPLED.json为准，Issue/PR未关闭合并。
+
+2026-10-25结果发布回执：38387635完整结果已上传PR185，科学提交a66626b132caedd528790cf081a9b1118e49acb6，与本地b8f31a43a8394a8b60d16e44e760a2c8741d9cc3完整tree fb8e762c04519065d61d2bac5bd937df23188360相同；报告/REVIEW/中央台账三文件远端逐字符读回一致。PR说明已更新为完成状态且保留draft/open，未合并；Issue184已记录最终结果，未关闭。准确回执work/rayggxia/184/PUBLICATION_RESULTS.json；Projects工具未暴露待维护者同步。
+
+2026-10-25 Issue184/PR185最终结果本地复核完成：Slurm38387635 COMPLETED/0:0，3:45:08、8CPU/累计12:01:03；58案例，预期SVT20u尾管OP淘汰保留，Spectre零error/warning。原包44,059,813B、SHA d7112d162e1a22351d4e745be22669bae66ffd37d2af2d13805a70e04eebd8f0在project_archives/normal_readout_20261025/results；536成员、24执行源、60000原PSF采样重数及CSV/TXT/时间戳/多lag/VN一致。LVT20u/1.2V/5fF/TT25C/500Hz/连续工作，独立校准冻结0.604745V；新64007/13/33各22ms总、丢2ms、1us/20000次，P1=.48795/.49805/.49865，lag1=.008577/.006336/.005443，MID140/126/138。MID仍.63%～.70%，原32bit种子包含MID130/116/131个/625（18.56%～20.96%）；不能将软件阈值bit直接称可用数字种子。离线VN_valid4855/4896/4813位、P1=.494954/.497549/.504467，约24%保留；有效性oracle未在硬件实现。100ns密集rho约.273，不能把3.5ns确定性延迟当独立位率；100→200MHz短screen通过宽容差但均值P1差1.76pp/ACF差.0226，不宣称严格带宽收敛。原件/报告/逐位数据analog_pbit_20261016/normal_readout_38387635，正式报告architecture_tlm/physical_rng_normal_readout/results/38387635/REPORT_ZH.txt。下一步优先真实时钟/采样再生锁存、电平有效性和亚稳态，再考察共享接口；本轮未新提交、未改快照，无10Hz长漂移/PVT/PEX/动态能耗/熵认证。PR/Issue未自动合并或关闭，最终远端发布见PUBLICATION_RESULTS.json。
 
 2026-10-25 07:24:42Z只读复查：38387635仍RUNNING，8CPU，已运行3:33:05；28物理检查、9短精度、18校准案例共55条已结束，保留原SVT20u OP失败。预设SHORT_SCREEN_PASS，独立校准参考已冻结0.604745V（SHA c9d2358bf5f400c9d4c40059d29a6210ce47bde61e7c60fb6b0dd2a3d3c8c8fe），验证64007/64013/64033正在并行，已保存到19.7283/19.6519/19.7186ms，总22ms，物理时间进度89.3%～89.7%。按实际运行速度外推剩余约11分钟加收集打包，非保证；最终每seed20000次统计尚未完成，不能用校准/部分波形代替。未改快照、未取消或重交。此次本地状态原件OBSERVATION_38387635_4.json、PROGRESS_38387635_5.json保留，最终结果归同PR185追加。
 

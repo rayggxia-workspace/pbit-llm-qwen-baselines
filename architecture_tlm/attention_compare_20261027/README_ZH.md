@@ -1,3 +1,5 @@
+2026-10-28补充：[普通数字Softmax周期/面积调研](SOFTMAX_DIGITAL_SURVEY_ZH_20261028.md)，文献与条件换算，无新增EDA。
+
 2026-10-28更新：服务器采样控制评估见[最新结果](control_v2/eda_20261028/RESULTS_ZH.md)，其余旧阶段保留原始日期和限制。
 
 # Attention单query首轮实现与结果（Issue198）

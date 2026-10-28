@@ -14,6 +14,6 @@ v1/v2门级X失败保留，v2去重定时仍失败，故不能归因于重定时
 
 4执行ZIP/14报告/42传输文件和成员SHA核验，配置/SDC/库模型指纹单列EXECUTION_FINGERPRINTS；准确作业见RUN_LEDGER。v4 manifest6523fbde32b9d8cad460f09f1ccf9892466788071fc20aa37a931d86d507255f。实际执行为base6435de88+未提交冻结快照，不伪造执行提交。原件project_archives/matrix204_int8_classic_ppa_20261028，本轮无运行作业；私有控制器不发布。
 
-中央run matrix-int8-classic-204-20261028，任务/完整根镜像各自增量union check/render，准确数见REGISTRY_CHECK。旧record字节保留，不用任务子集覆盖全镜像；本run所有产物可访问，旧94路径仍不可访问。源码/报告已准备，实际发布提交/回读和PR状态查同目录PUBLICATION.json；待审未合并、Issue保持open，Projects工具不支持写待维护者同步。
+中央run matrix-int8-classic-204-20261028，任务/完整根镜像各自增量union check/render，准确数见REGISTRY_CHECK。旧record字节保留，不用任务子集覆盖全镜像；本run所有产物可访问，旧94路径仍不可访问。科学源fe060b5a26bfa5281b8a61b353cb8b5bd33f47d9已推送PR209，49文件tree及8关键内容/blob远端回读一致；准确回执见同目录PUBLICATION.json；待审未合并、Issue保持open，Projects工具不支持写待维护者同步。
 
 恢复先核实Issue204/PR209最新head和本目录PUBLICATION，再读RESULTS及RUN_LEDGER。所有EDA已结束，不重交；init.py为v1历史引导，不在冻结树重跑。新实验必须新目录快照，保留旧失败。源模型/语料N/A。下一步是审核、匹配存储/精度/并行度及SC逻辑优化，不自动启动模型或额外EDA。

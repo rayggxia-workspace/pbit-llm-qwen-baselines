@@ -1,4 +1,4 @@
-# 当前 TLM 基线与配置选择（PR183 / PR190）
+# 当前 TLM 基线与配置选择（PR183 / PR190，2026-10-28更新）
 
 正式交付主线为 `main`；统一命令 `python -m architecture_tlm`，实现仍在 `unified_v6/`。PR183补齐标准DRAM/片存及跨组预取，PR190建立数字与随机方案共用的有限tile调度、SG接口和对照证据。旧分支 `pbit-tlm-attention-details-20261016` 用于历史追溯，后续主线修改面向main。
 
@@ -52,3 +52,21 @@ python -m architecture_tlm --memory-profile mature_hbm2_pipelined --model qwen3_
 - [本轮审核与验证边界](../work/jieruiz/55/round11/REVIEW_ZH.md)
 
 完整物理能耗/面积保持null；DDR4负ACT分项原样保留且不反馈时序，priced subtotal不是整机能耗。旧结果保留执行SHA和旧标签，新配置不得继承旧PPL或改写原始结果。
+
+## 2026-10-28新增实现与证据
+
+PR190仍是共同调度基线。下列模块和候选随本轮审核接入main，默认配置不变；各阶段应分别引用，不能把功能测试、局部PPA与模型精度拼成同一已验证系统。
+
+| 入口 | 已完成 | 仍需完成 |
+|---|---|---|
+| [FFN第一阶段](ffn_calibration_stage1/README_ZH.md)、[校准v2](calibration_v2_20261027/README_ZH.md) | 精确整数计数/恢复、合并计数、BF16/FP32数字核及握手功能；PR194/196 | 真实模型数制闭环、目标频率完整集成；v2私有EDA执行包比公开功能包有后续流程修订，应按PPA源manifest复现 |
+| [8位前端](random_service/pbit8_char/README_ZH.md)、[228窗口PPA](../digital_circuit_simulation_registry/summaries/20261027/PPA_SUMMARY.json) | 比较器/LUT及部分计数/门控/数字核的局部DC、gate、PT结果；PR195/197 | 非后布局；100MHz表征不能证明500MHz；X4负例与工具告警保留 |
+| [固定资源调度](scheduling_v2_20261027/FINAL_RESULTS_ZH.md) | 完整36层条件TLM三seed 64.4113→57.4454ms；PR192，大部分收益来自普通投影供数 | 500MHz STA、同质量/同面积验证；没有新PPL |
+| [本地端口](local_ports_20261027/RESULTS_ZH.md) | 单层＋完整词表SC 8.3223→6.8168ms，数字8.9369→7.1730ms；原件/负例保留 | 不是36层TPOT；16KiB FIFO、端口/mux/driver/CDC/CTS成本未闭环；新后端拒绝尚未适配的Ising sink |
+| [T32单尺度矩阵](matrix_single_scale_20261028/README_ZH.md) | 真INT8、精确/先计数/OR4/数字对照；16设计96个局部PPA窗口；PR205 | OR4不是精确算术：约42–44%相对事件参考NRMSE；本批仍未胜过数字位串行能量；未测真实模型质量 |
+| [参数化模块能耗库](module_energy_20261028/results/REPORT_ZH.md) | PR205增量：33个固定top、396窗口；组合逻辑、累计器与bank分开表征 | bank为预解码7幅值位，abs(W)≤127，不同于旧完整INT8；未经校准的模块相加偏差约23%–27%，0.637%仅为相邻位宽配置留出验证 |
+| [文献与指标审计](simulator_survey_20261025/README_ZH.md) | 调研、计算边界和数值探针；PR189 | 不是论文复现实验；历史“待跑T32”等计划由PR205的新证据接续，不能用旧估算覆盖实测 |
+
+原始面积及原件SHA不改。本项目后续面积汇总按用户口径单次乘0.81，保留原始面积、系数与等效面积；本轮[面积派生表](../work/jieruiz/55/round12/evidence/AUDIT197.json)给出对应值。旧PPA/TLM表中的原始面积不能当作已折算值。功率、能量、频率、时延与PVT标签不随面积折算。
+
+[本轮审核、复验与待办](../work/jieruiz/55/round12/REVIEW_ZH.md)；[统一数字电路台账](../digital_circuit_simulation_registry/README_ZH.md)。保留已计算功耗但时序违例、准备中和历史负结果的独立阶段；台账收录不代表所有设计验收通过。

@@ -1,10 +1,12 @@
-# Current complete-model TLM (2026-10-25, PR183 / PR190)
+# Current complete-model TLM (2026-10-28; PR190 baseline retained)
 
 正式主线为 **main**。当前[基线与配置选择](architecture_tlm/BASELINE_ZH.md)区分默认DDR4共同调度、HBM对照和资源扩容候选；沿用同一个 `python -m architecture_tlm` 入口。条件时延基线不等于完整模型质量或芯片PPA验收。
 
 Canonical entry: [architecture_tlm](architecture_tlm/README.md). Fixed-scale W8 FFN with stochastic nonlinearity directly into Wd; existing Attention and memory interfaces. Read the macro/numerical limitations. Historical experiments below remain historical.
 
-Architecture changes and paper evidence: [架构优化记录本](architecture_tlm/ARCHITECTURE_OPTIMIZATION_LOG_ZH.md). Latest optional experiment: [FFN本地部分和与128阵列](architecture_tlm/unified_v6/FFN_LOCALITY_ZH.md), with full timing/traffic controls and explicit unmeasured area boundaries.
+本轮新增[局部流水与本地端口候选](architecture_tlm/BASELINE_ZH.md)、[FFN数字核](architecture_tlm/calibration_v2_20261027/README_ZH.md)、[T32单尺度矩阵对照](architecture_tlm/matrix_single_scale_20261028/README_ZH.md)和[统一仿真台账](digital_circuit_simulation_registry/README_ZH.md)。[审核报告](work/jieruiz/55/round12/REVIEW_ZH.md)列出实际复验与未通过验收的部分；原始面积保留，后续本项目等效面积单次乘0.81。
+
+Architecture changes and paper evidence: [架构优化记录本](architecture_tlm/ARCHITECTURE_OPTIMIZATION_LOG_ZH.md). Optional configurations retain their own timing, traffic and unmeasured physical-cost boundaries.
 
 > Workspace 协作入口：[AGENTS.md](AGENTS.md)。任务通过 Issue、独立分支和 PR 交付；个人进度见 `progress/<GitHub用户名>/STATUS.md`。
 

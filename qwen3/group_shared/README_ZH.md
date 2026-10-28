@@ -87,3 +87,7 @@ CURRENT_RECOMMENDED.json保留e888 risk4/PPL17.9215。d825四组继续调整未�
 用户授权补测当前G64/B4完整WT2，准确SDPA；x64/固定PoTW8每64x64/GU64-K64/g-u分别64共享四档e888 risk4/正常g signed8-P8/NLjoint32T128均不变，不训练不重新选表。匹配BF16及三个随机seed，context2048/stride1024、299077目标每个恰计一次，无BOS/chat/cache；全部36层和窗口前缀均替换。每seed六片、最多六GPU并行；CPU和GPU门禁后正式提交，实际作业以FULL_WT2_SUBMISSION为准。门禁复现旧后缀BF16/G64B4并检查首尾全窗；门禁分数不当完整PPL。
 
 新完整协议使用seed+全局窗口号的SHA256随机键，不反复重用同一窗口种子，分片数量不影响同一窗口随机流。不同于旧后缀连续消耗RNG的调度；不能要求完整PPL等于旧17.92。GU仍FP32恢复oracle、非全链bittrue，无RTL/PPA/TLM更改。原推荐不变；沿Issue206/PR207，未合并，Projects仍待既有权限同步。
+
+## 64共享完整WT2已完成
+
+BF16 11.537160；G64/B4三seed 14.883993±0.018381；2048/1024全语料299077目标，准确SDPA，原目录/采样不变。结果[完整WT2报告](../results/group_shared_20261028/FULL_WT2_G64B4_REPORT_ZH.md)，不与旧后缀混称。

@@ -79,3 +79,7 @@ GU矩阵尺度恢复仍为FP32数值oracle，Wd采用直接整数事件累加、
 执行源df758fba20949b8493c75394afb2c7ae560b06e4，82源/旧75字节不变。四档继承成功e888；缩小子组复制parent64目录，八档嵌套补齐且最高尺度不变，无新TRAIN拟合或TEST选表。CPU71（10跳过）/GPU71通过；3291/3292/3293全部完成，主36物理/28标签/25唯一配置seed，另3门禁独立列。SHA、36层/目标/NLL/档号同组核验通过。报告GROUP_SIZE_LEVELS_REPORT_ZH/JSON，候选GROUP_SWEEP_BEST_CANDIDATE.json；原CURRENT_RECOMMENDED和TLM/RTL默认不自动替换。每活动FFN标签状态从G64/B4的76B变化到最佳304B，仅结构计数，无新PPA；GU仍FP32oracle非全链bittrue。
 
 无本轮运行作业；准确上传状态以后续GROUP_SWEEP_FINAL_PUBLICATION为准，未合并/不关闭Issue，Projects待既有权限同步。下方保留历史。
+
+## 64共享完整WT2补测
+
+BF16 **11.537160**，G64/B4 **14.883993 ± 0.018381**，三seed、299077目标、准确SDPA。详见[FULL_WT2_G64B4_REPORT_ZH.md](FULL_WT2_G64B4_REPORT_ZH.md)。旧后缀分数保持原标注。

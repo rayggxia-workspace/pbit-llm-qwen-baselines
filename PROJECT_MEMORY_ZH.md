@@ -1,3 +1,14 @@
+## Issue206澄清更新：共享激活64，三矩阵权重64x64 PoT
+
+
+2026-10-28：x每token连续64通道共享一档；Wg/Wu算出的g/u各连续64通道共享一档，g与u分别选；Wg/Wu/Wd各64x64权重块共享静态二次幂LSB。前两者只从原TRAIN冻结四档选，权重LSB离线确定，不要求所有权重块共用同一指数，也不将权重指数限定为激活四档。
+
+旧4d/be/a1实验权重LSB=absmax/127，并未强制PoT。因此结果保留为legacy权重对照，不能当本澄清方案。新pot_weight.py对原BF16每块重新量化：LSB=ceilPow2(maxabs/127)，q=RNE(W/LSB)限制[-127,127]。Wd恢复系数严格用PoT对齐，16位容器存2的幂；指数跨度超过15则明确失败，不静默舍入。代码中的整数乘系数是移位的功能参考。
+
+新pot_run四片：各BF16、PoT W8-only精确SiLU控制、各一种lane/x_max/gu_max/all_max的finiteNL128三seed与条件NL均值三seed；片0另有legacy W8-only控制。33物理/27唯一计分。固定W GU64、准确SDPA、sigmoid真实g signed8/P8、四档与NL joint32不变；不训练。权重量化精确SiLU、条件均值均是诊断，不能宣称为电路。GU恢复仍FP32 oracle，尚非全链路bittrue。本轮无RTL/PT或TLM默认改变。
+
+下方保留旧时点记录。
+
 ## 2026-10-28 Issue206发布确认：PR207草稿，3211扫描运行中
 
 代码/28项验证/封存pilot已实际推送PR207（https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/207），draft/open未合并，依赖PR202分支。发布科学head d08c3732，五个关键远端blob原字节核验一致，PUBLICATION/REMOTE_VERIFICATION保存回执。Issue206已同步；主3211四片仍在运行，三seed结果及质量建议未完成，不能将阶段交付当最终验收。继续收同一任务，不重交/不改source4d6883b2、不新建自动回查。Projects待权限同步。

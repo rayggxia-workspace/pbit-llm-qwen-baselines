@@ -21,3 +21,11 @@ W8与四档实际取值、符号、x的full_one和NL的q<=255规则不变；sigm
 ## 固定128拍的细联合分层补测
 
 条件均值对照显示共享g/u编码本身误差小，原4x2x4各4次在共享尺度后事件稀疏。因此另测8x2x8、4x2x16、16x2x4各1次，仍总128拍。固定WGU64、lane/gu_max/all_max各三seed；3BF16+27配置=30份/28唯一。四项新数学/原law回放/整FFN回放与literal独立oracle验证，GRID_SUBMISSION独立，不改原4d扫描。此为额外采样分配消融，不能覆盖旧共享max失败结果，也不把条件均值当部署方案。
+
+## 用户澄清后的完整契约：Wg/Wu/Wd也必须PoT
+
+2026-10-28：x每token连续64通道共享一档；Wg/Wu算出的g/u各连续64通道共享一档，g与u分别选；Wg/Wu/Wd各64x64权重块共享静态二次幂LSB。前两者只从原TRAIN冻结四档选，权重LSB离线确定，不要求所有权重块共用同一指数，也不将权重指数限定为激活四档。
+
+旧4d/be/a1实验权重LSB=absmax/127，并未强制PoT。因此结果保留为legacy权重对照，不能当本澄清方案。新pot_weight.py对原BF16每块重新量化：LSB=ceilPow2(maxabs/127)，q=RNE(W/LSB)限制[-127,127]。Wd恢复系数严格用PoT对齐，16位容器存2的幂；指数跨度超过15则明确失败，不静默舍入。代码中的整数乘系数是移位的功能参考。
+
+新pot_run四片：各BF16、PoT W8-only精确SiLU控制、各一种lane/x_max/gu_max/all_max的finiteNL128三seed与条件NL均值三seed；片0另有legacy W8-only控制。33物理/27唯一计分。固定W GU64、准确SDPA、sigmoid真实g signed8/P8、四档与NL joint32不变；不训练。权重量化精确SiLU、条件均值均是诊断，不能宣称为电路。GU恢复仍FP32 oracle，尚非全链路bittrue。本轮无RTL/PT或TLM默认改变。

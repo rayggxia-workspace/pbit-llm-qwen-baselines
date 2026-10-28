@@ -1,3 +1,9 @@
+## 2026-10-28 Issue206：每64元素共享四档尺度实验准备
+
+用户要求x及非线性g/u每64个数共享一个尺度，限于原先规定四个二次幂。jieruiz，新独立task/206-group64-scale，目录tmp/group64-scale-issue206-20261028，依赖PR202@fbd67c39，不改旧冻结扫描。Qwen3-4B后训练、准确SDPA；固定W GU64及双随机联合GU256分开测试，NL128/Wd固定W8不变。六配置lane/x_max/gu_max/all_max/all_trim1/all_trim4，各三seed；g和u分别使用各自冻结表，sigmoid恢复真实g。
+
+选档采用64路阈值超限计数：max零超限，trim1/4允许最多1/4项裁剪，不生成新的尺度、无排序、无数据拟合。目标为减少逐元素档号与对齐，不能默认精度或PPA无损。源码qwen3/group_shared；当前本地实现和AST检查完成，GPU/CPU实际验证与Slurm尚未提交，无新PPL。计划先28项核心检查和32目标pilot，后四片40物理/37唯一1024目标后缀（非完整WT2）。执行以work/jieruiz/206/SUBMISSION为准，未有回执不声称运行；不新建定时、不碰健康3208或其他任务。更新时间2026-10-28T13:39:38+08:00。
+
 ## 2026-10-28 Issue201最终发布确认：PR202已ready
 
 最终结果已实际推送，科学成果提交4134a3629bf2d08610a303ed6e13057f562fd441；PR202 ready/open、待审未合并（依赖PR174）。40份主计分/37唯一、108原始JSON与sidecar的Git字节SHA全部一致，八个关键远端blob回读一致。FINAL_PUBLICATION.json含准确提交、回读SHA和Issue201评论链接；不是此前草稿/运行中状态。Issue验收项已更新，保持open待审，不合并；Projects缺read:project待同步。

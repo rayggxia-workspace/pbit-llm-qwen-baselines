@@ -1,3 +1,7 @@
+## Issue206分组/档数扫描已提交Slurm
+
+科学源df758fba20949b8493c75394afb2c7ae560b06e4；CPU 3291、GPU门禁3292、6片数组3293。源82文件已传输SHA核验，先CPU再GPU再正式数组；结果目录/home/Hongjie_Zeng/projects/pbit-qwen3-group64-scale-20261028-issue206/results/df758fba2094/group_size_levels。当前结果未完成，不重交健康任务，不自动回查；提交回执GROUP_SWEEP_SUBMISSION_df758fba.json。
+
 ## Issue206：非线性共享组与档数受控扫描（2026-10-28）
 
 用户要求x保持已证明可用的64共享；只调整g/u非线性共享数量和可选档数。6组为G64/B4、G32/B4、G16/B4、G64/B8、G32/B8、G16/B8。沿用e888成功risk4原四档，子组复制parent64目录；B8补齐以原最大档结尾的8个连续PoT，包含旧四档，不增大最大尺度。无新拟合、不按TEST选择、不改变入口x/固定PoTW8每64x64/GU64/K64/NLjoint32T128/正常g signed8-P8 sigmoid/准确SDPA。

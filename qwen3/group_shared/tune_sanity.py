@@ -2,11 +2,11 @@
 import argparse,hashlib,json,os,pathlib
 import torch
 from torch.nn import functional as F
-from .recal_run import context,load
-from .tune_core import TunedFFN,encode_threshold
-from .recal_core import RecalibratedFFN
-from .pot_weight import exact_pow2
-from .independent_gate import original_g_field
+from qwen3.group_shared.recal_run import context,load
+from qwen3.group_shared.tune_core import TunedFFN,encode_threshold
+from qwen3.group_shared.recal_core import RecalibratedFFN
+from qwen3.group_shared.pot_weight import exact_pow2
+from qwen3.group_shared.independent_gate import original_g_field
 from qwen3.fixed_scale.run import sealed
 from qwen3.baselines.support import sha256
 

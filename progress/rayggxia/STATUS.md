@@ -1,6 +1,6 @@
 # Issue210 原整机TLM分项审计 2026-10-29
 
-负责人rayggxia；Issue210；task/210-tlm-component-audit；目标main，基线787489192ebfcdb61ad72edde406818f450aa3dc；独立目录tmp/tlm-breakdown-issue210-20261029。当前本地完成，待发布PR，不自动合并。实际发布以work/rayggxia/210/PUBLICATION.json为准。
+负责人rayggxia；Issue210；task/210-tlm-component-audit；目标main，基线787489192ebfcdb61ad72edde406818f450aa3dc；独立目录tmp/tlm-breakdown-issue210-20261029。已上传PR211，待审、未合并，不自动合并。科学提交346f5ca9761ed650a06313c91475474ca56e51fd；19blob SHA一致、两JSON回读一致。实际发布以work/rayggxia/210/PUBLICATION.json为准。CLI fetch网络reset，本地HEAD待对齐，远端PR已成功交付。
 
 成果architecture_tlm/component_budget_audit_20261029：原57.445385ms/2.516212W预算14物理账目、16阶段、24服务、5功能MAC及外存/缺项表，六页Word与可复算CSV/JSON。raw面积192.738839mm²，0.81一次后156.118460mm²。MAC48.10%、FFN计数恢复34.72%、片存14.74%；原准确Softmax未用Ising。合并随机前端不伪拆价，转换等缺项明确。
 

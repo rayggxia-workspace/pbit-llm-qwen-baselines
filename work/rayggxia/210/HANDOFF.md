@@ -7,7 +7,7 @@
 - 验证：6项闭合、4×3旧情景精确复算、原8会计单测、6页Word视觉QA；没有新GPU/EDA/TLM运行。
 - 结论：57.445385ms；已价片上144.544740mJ/2.516212W；raw192.738839mm²，0.81后156.118460mm²。能量MAC48.10%、FFN计数恢复34.72%、片存14.74%。外存6.166W仅旧代理。
 - 原screen_pv用准确Softmax未用Ising。PRNG与比较器合并；转换/CIM外围/CTS与HBM仍有未价项，详见ACCOUNTING_GAPS.csv。
-- 本地完成，尚待发布；实际远端提交/PR及字节核验以本目录PUBLICATION.json为准。
-- 下一步：核对最新身份/Issue/PR/head，明确文件范围发布PR、更新同一Issue210和本人STATUS；不得自动合并，也不据本审计重跑健康实验。
+- 已发布PR211，open/待审、未合并；科学提交346f5ca9761ed650a06313c91475474ca56e51fd，19个blob SHA与index一致，两JSON回读原文一致，详见PUBLICATION.json。DOCX连接器不支持独立二进制回读，未冒称下载核验。
+- 下一步：按PR211审阅意见更新同一任务，不自动合并或重跑健康实验；Issue210已同步，等待验收。CLI fetch因Connection reset失败，本地HEAD仍main基线，index为已发布文件及本回执；远端交付未因此失败。网络恢复后先核对index与PR tree再对齐自己的分支，不直接reset或覆盖其他工作。
 - Projects：当前GitHub连接器没有Projects操作接口，尚未同步看板；不声称缺少已核实权限或看板已更新。
 - 无本任务运行中作业，不需要定时回查；PR待审保留此最小工作目录，合并后按生命周期规则归档索引再回收。

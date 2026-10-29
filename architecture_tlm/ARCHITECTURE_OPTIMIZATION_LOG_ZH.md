@@ -138,3 +138,8 @@ Issue204/PR209；[正式报告](int8_parallel64_20261028/results/REPORT_ZH.md)�
 ## 2026-10-29 双随机双轴分层矩阵方案分析
 
 Issue204/PR209，[方案](../digital_circuit_simulation_registry/12_双随机分层矩阵架构评估计划.md)。保持现有共享尺度，双SNG/AND/单套累计；T32=8×4而非1024拍。精确signed popcount64+13位累计为参考，OR4+11位为独立近似；分层覆盖不提供OR互斥保证，连接独立与广播共享不等价。须计权重比较器、随机分发、SRAM读/保持、符号与尺度恢复；只读引用Issue201/206已有数值，不继承其模型精度。无新RTL/EDA/PPL、不新增run，后续实验未启动。
+
+
+## 2026-10-29 双随机SRAM存内比较主架构与旧估算延续
+
+Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内比较估算口径与证据.md)。用户要求保留SRAM驻留/本地比较，双全局LFSR不变，DFF仅对照。沿旧宏本体+邻近SNG/分发+存储节点带载增量估算；普通预读保持及M1单seed前端数据各保留边界，不能当完整定制CIM。新W7比较与接口动态待测，不每拍重复收费普通全读，也不把缺项当0。无新RTL/EDA/SPICE/PPL，旧run未改。

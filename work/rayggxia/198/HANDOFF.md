@@ -1,3 +1,13 @@
+## 2026-10-29 Issue198：数字Softmax后的采样纳入公平对照
+
+owner rayggxia，task/198-attention-compare，draft PR199；本轮只读源码/文献，无新EDA/GPU/PPL/run。SANTA v2 §2.1/附录P算法5及官方commit2e5f8611两个CUDA核已核实：每头/tile偏移、warp前缀scan、floor差得到整数次数、非零压缩、保留次数进行V累加；实际CUDA有cf*V，不能按“No-mulT”名称认定所有乘法为零。PyTorch2.7.1有放回多样本路径含归一化/CDF/Philox/二分并输出索引，不推广到所有单样本实现。
+
+对照统一为同128候选分数→可用索引/次数→共同token映射/V接口。独立Bernoulli多bit不能直接替代每次恰好选一个位置的categorical；当前Ising原始候选bit还要公平仲裁/赢家保持。数字不必生成128bit one-hot再编码；IID每样本一个均匀值，systematic每分布/tile一个偏移并直接产生计数，样本相关须匹配质量。指数权重CDF按总质量缩放随机阈值可避免物化逐项归一概率；直接计数也不必先生成S索引再直方图，端口/融合/流水不能被旧串行模型固定。
+
+旧P0/P2的core.py:93与schedule.py:101–119已包含CDF_scan/systematic_counts/histogram费用，缺口是后半段同工艺采样PPA和同质量闭环，不能说以前所有模型均未计采样。标准dense Attention直接pV无采样，另留为质量/整条路径基线。新增DIGITAL_SAMPLING_BASELINE_ZH_20261029.md、源pin/本地SHA、功耗面积19专题；原结果和质量默认不改。发布见DIGITAL_SAMPLING_PUBLICATION.json；PR待审/Issue开放，Projects沿既有限制待维护者同步。
+
+---
+
 ## 2026-10-29 Issue198：采样前端占整模型的条件预算
 
 继续task/198-attention-compare，owner rayggxia，draft PR199。复用公开PR192/91f68416的Qwen3-4B后训练形状36层B1/2K整模型锚点：57.445385ms/token，原始计价面积192.738839mm²，按0.81等效156.118460mm²；片上数字门控候选2.5162W、加旧外存粗预算8.6823W，完整芯片仍未校准。只为占比敏感性移除旧Attention RNG一行，再加新前端，其余动作/时序保持，不能宣称真实新Ising整机替换结果。

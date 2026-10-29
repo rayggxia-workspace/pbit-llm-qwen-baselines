@@ -1,0 +1,65 @@
+{
+  "kind": "source_review_no_new_simulation",
+  "date": "2026-10-29",
+  "santa": {
+    "repository": "OPUSLab/SANTA",
+    "commit": "2e5f861196ec3d634d4b64729609fa7d687937b5",
+    "files": [
+      {
+        "path": "flash_style_fused_santa_fixed_tile_budgets/santa_cuda_kernel.cu",
+        "git_blob_sha": "afda295a97705ff92d3a73f3b0da4c5792fb8158"
+      },
+      {
+        "path": "santa_fused_proportional_tile_budgets/santa_cuda_kernel.cu",
+        "git_blob_sha": "5fc4e646d60edec909fc4e59ee1af7a7eb156f86"
+      }
+    ],
+    "paper": "https://arxiv.org/html/2605.01910v2",
+    "sections": [
+      "2.1",
+      "Appendix P Algorithm5",
+      "Appendix Q"
+    ],
+    "observations": [
+      "per-tile random offset",
+      "warp prefix scan",
+      "floor difference gives integer counts",
+      "nonzero compaction",
+      "integer multiplicity retained in V accumulation"
+    ]
+  },
+  "pytorch": {
+    "repository": "pytorch/pytorch",
+    "ref": "v2.7.1",
+    "path": "aten/src/ATen/native/cuda/MultinomialKernel.cu",
+    "reviewed_lines": [
+      141,
+      172,
+      390,
+      450
+    ],
+    "observations": [
+      "multiple draws with replacement path",
+      "normalization and cumsum",
+      "Philox uniform and CDF binary search",
+      "index output"
+    ]
+  },
+  "project": {
+    "base_commit": "8893a31e6b59eac6cad379c6e8855367c052a834",
+    "paths": [
+      "architecture_tlm/attention_compare_20261027/core.py",
+      "architecture_tlm/attention_compare_20261027/schedule.py"
+    ],
+    "existing_model": "P0/P2 systematic + CDF/histogram actions already present; macro cost, not measured sampling PPA",
+    "source_sha256": {
+      "architecture_tlm/attention_compare_20261027/core.py": "d53fd83934a3df4c16a838ed633ebd29593d7482783d8c06011362dc15002cc7",
+      "architecture_tlm/attention_compare_20261027/schedule.py": "52ed23b8aae28e9f066422a2547c1fad630df98d00fbd604aba718d7c1a15557"
+    }
+  },
+  "comparison_terminal": "same128 candidate scores to usable local indices/counts; common token map then V pipeline",
+  "new_EDA": false,
+  "new_GPU": false,
+  "new_PPL": false,
+  "registry_new_runs": 0
+}

@@ -7,7 +7,8 @@ import math
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PROFILES = ('nonfused_pair', 'fma2', 'fma3')
+DEFAULT_PROFILE = 'fma2'
+PROFILES = ('fma2', 'fma3', 'nonfused_pair')
 
 
 def anchors():
@@ -17,7 +18,7 @@ def anchors():
 def estimate(config, actions, resource_busy_ns, elapsed_ns, *, profile=None):
     a = anchors()
     options = config.get('digital_power', {})
-    name = profile or options.get('profile', 'nonfused_pair')
+    name = profile or options.get('profile', DEFAULT_PROFILE)
     if name not in PROFILES:
         raise ValueError('digital power profile is not a scalar drop-in: ' + name)
     keep = options.get('idle_dynamic_keep', .1)
@@ -87,7 +88,8 @@ def estimate(config, actions, resource_busy_ns, elapsed_ns, *, profile=None):
 def attach(result, ledger):
     """Replace the exact legacy bf16_mac charge; preserve all other actions."""
     cfg = result['config']
-    profile = cfg.get('digital_power', {}).get('profile', 'legacy_proxy')
+    profile = cfg.get('digital_power', {}).get('profile',
+        DEFAULT_PROFILE if 'digital_power' in cfg else 'legacy_proxy')
     if profile == 'legacy_proxy':
         return result
     q = estimate(cfg, result['actions'], result['resource_busy_ns'], result['metrics']['elapsed_ns'])

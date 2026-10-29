@@ -2,6 +2,7 @@
 import copy
 import json
 from pathlib import Path
+from ..digital_energy_20261029.model import DEFAULT_PROFILE
 
 HERE = Path(__file__).resolve().parent
 
@@ -57,8 +58,8 @@ def load(model='qwen', legacy=False):
             SRAM='internal energy only; do not overlap with a whole-memory measured price'))
     cfg['model_record'] = model_record
     if not legacy:
-        cfg['digital_power'] = dict(profile='nonfused_pair', idle_dynamic_keep=.1)
-        cfg['cost_policy']['conditional_prices'] = 'BF16 MAC lifetime from digital_power (legacy action fee replaced); vector1pJ/nonlinear10pJ and external64pJ/B+50mW remain proxies'
+        cfg['digital_power'] = dict(profile=DEFAULT_PROFILE, idle_dynamic_keep=.1)
+        cfg['cost_policy']['conditional_prices'] = 'BF16 fused FMA lifetime from digital_power (legacy action fee replaced); vector1pJ/nonlinear10pJ and external64pJ/B+50mW remain proxies'
         cfg['cost_policy']['BF16_MAC'] = 'digital_power lifetime replaces legacy bf16_mac action price exactly once; scalar100MHz measured, target-frequency/idle scenario'
         from .ffn_latest import defaults
         cfg['ffn'].update(defaults())

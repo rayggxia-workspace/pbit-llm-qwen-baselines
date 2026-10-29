@@ -13,6 +13,7 @@ if __package__ in (None, ''):
     sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
     __package__ = 'architecture_tlm.unified_v6'
 from .config import load
+from ..digital_energy_20261029.model import DEFAULT_PROFILE
 from .model import FullDecode, MODES
 from .core import sha
 from .memory_profiles import apply as memory_profile,PROFILES
@@ -117,7 +118,8 @@ def main(argv=None):
     p.add_argument('--contexts',nargs='+',type=int)
     p.add_argument('--seeds',nargs='+',type=int,default=[0,1,2])
     p.add_argument('--include-winner',action='store_true')
-    p.add_argument('--digital-energy-profile',choices=['legacy_proxy','nonfused_pair','fma2','fma3'],default=None)
+    p.add_argument('--digital-energy-profile',choices=['legacy_proxy','nonfused_pair','fma2','fma3'],default=None,
+        help='latest configs default to fma2; explicit complete/legacy configs retain their profile')
     p.add_argument('--digital-idle-keep',type=float,default=None)
     p.add_argument('--rng-backend',choices=['integrated_service','local_prng_interface'],default=None)
     a = p.parse_args(argv)
@@ -149,7 +151,7 @@ def main(argv=None):
                     if a.digital_energy_profile is not None:
                         cfg.setdefault('digital_power', {})['profile'] = a.digital_energy_profile
                     if a.digital_idle_keep is not None:
-                        cfg.setdefault('digital_power', dict(profile='nonfused_pair'))['idle_dynamic_keep'] = a.digital_idle_keep
+                        cfg.setdefault('digital_power', dict(profile=DEFAULT_PROFILE))['idle_dynamic_keep'] = a.digital_idle_keep
                     cfg['ffn'].update(mode=ffn,bins=a.bins)
                     if a.ffn_samples is not None:cfg['ffn']['samples']=a.ffn_samples
                     if a.strata is not None:cfg['ffn']['strata']=a.strata

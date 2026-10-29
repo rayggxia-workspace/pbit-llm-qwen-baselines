@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 from statistics import mean
-from .model import PROFILES, estimate, anchors
+from .model import DEFAULT_PROFILE, PROFILES, estimate, anchors
 
 
 def digest(p):
@@ -16,6 +16,8 @@ def digest(p):
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--digital-energy-profile', choices=PROFILES, default=DEFAULT_PROFILE,
+                   help='profile selected for MODULES/report and idle sensitivity; default fma2')
     p.add_argument('--repo', type=Path, default=Path(__file__).resolve().parents[2])
     a = p.parse_args(argv)
     if a.output.exists():
@@ -40,7 +42,10 @@ def main(argv=None):
         for s in inputs:
             c = copy.deepcopy(s['config'])
             c['digital_power'] = dict(profile=profile, idle_dynamic_keep=.1)
-            quotes.append(estimate(c, s['actions'], s['resource_busy_ns'], s['metrics']['elapsed_ns']))
+            quote = estimate(c, s['actions'], s['resource_busy_ns'], s['metrics']['elapsed_ns'])
+            quote['replay_config_sha256'] = hashlib.sha256(json.dumps(c, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+            quote['replay_overrides'] = {'digital_power': c['digital_power']}
+            quotes.append(quote)
         q = {key: mean(x[key] for x in quotes) for key in ('energy_J', 'raw_area_mm2',
             'area_55eq_mm2', 'leakage_J', 'background_dynamic_J', 'work_increment_J')}
         total_mJ = d['totals']['onchip_mJ'] - old['energy_mJ_per_token'] + q['energy_J'] * 1000
@@ -72,11 +77,11 @@ def main(argv=None):
     for keep in (0., .1, 1.):
         qs=[]
         for s in inputs:
-            c=copy.deepcopy(s['config']);c['digital_power']=dict(profile='nonfused_pair',idle_dynamic_keep=keep)
+            c=copy.deepcopy(s['config']);c['digital_power']=dict(profile=a.digital_energy_profile,idle_dynamic_keep=keep)
             qs.append(estimate(c,s['actions'],s['resource_busy_ns'],s['metrics']['elapsed_ns']))
-        sensitivity.append(dict(idle_dynamic_keep=keep,MAC_average_W=mean(x['energy_J'] for x in qs)/time_s))
+        sensitivity.append(dict(profile=a.digital_energy_profile,idle_dynamic_keep=keep,MAC_average_W=mean(x['energy_J'] for x in qs)/time_s))
     output = dict(scope='new digital energy-only replay of frozen synthetic TLM activity; no new full-model time or EDA',
-        recommended_profile='nonfused_pair', full_calibrated_system_PPA=None,
+        recommended_profile=a.digital_energy_profile, full_calibrated_system_PPA=None,
         baseline_commit='9fce5f54ca0c737488c91bf53673e53617eb5704',
         baseline_sha256=digest(baseline_path), sources=sources,
         anchor_source=anchors()['source'], anchor_sha256=digest(Path(__file__).with_name('ANCHORS.json')),
@@ -86,17 +91,17 @@ def main(argv=None):
                 'TPOT_work_memory_random_source_unchanged':True,'old_immutable_files_untouched':True})
     a.output.mkdir(parents=True)
     (a.output/'RESULTS.json').write_text(json.dumps(output,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
-    for name,rows in [('PROFILE_COMPARISON.csv',profiles_csv),('MODULES.csv',results['nonfused_pair']['modules'])]:
+    for name,rows in [('PROFILE_COMPARISON.csv',profiles_csv),('MODULES.csv',results[a.digital_energy_profile]['modules'])]:
         with (a.output/name).open('w',encoding='utf-8-sig',newline='') as f:
             w=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator='\n');w.writeheader();w.writerows(rows)
-    selected=results['nonfused_pair']
+    selected=results[a.digital_energy_profile]
     rows='\n'.join(f"|{x['label_zh']}|{x['energy_mJ_per_token']:.6f}|{x['average_power_W']:.6f}|{x['onchip_energy_share_pct']:.3f}%|{x['equivalent_55nm_area_mm2']:.6f}|" if x['equivalent_55nm_area_mm2'] is not None else f"|{x['label_zh']}|{x['energy_mJ_per_token']:.6f}|{x['average_power_W']:.6f}|{x['onchip_energy_share_pct']:.3f}%|未独立价|" for x in selected['modules'])
     comparison='\n'.join(f"|{name}|{x['MAC_average_W']:.6f}|{x['covered_onchip_average_W']:.6f}|{x['covered_area_55eq_mm2']:.6f}|" for name,x in results.items())
     text=f'''# 新数字标定后的TLM功耗预算
 
 Issue210 / PR211；原PR209 BF16表征只读。新数据已进入unified_v6的数字能耗后端，不只是更改报告常数；同时对原三seed全36层活动记录作能量重放。没有重跑全模型时序、EDA或PPL。
 
-默认采用nonfused_pair：独立BF16乘法＋FP32加法的已测单元相加代理，保持原非融合算术口径；不是集成MAC实测。FMA2/3是成本替代情景，未验证替换后的数值或500MHz阵列。原始SS1.08V/125℃100MHz，按活动完成次数归一化；只对面积乘0.81，不缩功耗、频率或时间。
+本次选定{a.digital_energy_profile}，当前统一TLM默认fma2：使用已测融合BF16乘法＋FP32加法的FMA单元价格，不再叠加独立乘法器与加法器。FMA3保留为流水配置敏感性，nonfused_pair保留为历史非融合组合代理。这里更换的是硬件能量/面积映射，不是GPU前向算术或PPL结果；未验证500MHz集成阵列。原始SS1.08V/125℃100MHz，按活动完成次数归一化；只对面积乘0.81，不缩功耗、频率或时间。
 
 ## 总括对照
 
@@ -115,9 +120,11 @@ Issue210 / PR211；原PR209 BF16表征只读。新数据已进入unified_v6的�
 
 ## 如何接入
 
-新load非legacy配置默认digital_power.profile=nonfused_pair；CLI可选--digital-energy-profile nonfused_pair/fma2/fma3/legacy_proxy、--digital-idle-keep。FullDecode在执行完成后按实际动作数、MAC资源忙时和整段寿命计价，并从Ledger逐类别移除原bf16_mac收费后替换一次。其余数字动作和FP32_MAC未价项保留，不减掉其他vector费用，也不把原2pJ再叠上去。
+新load非legacy配置默认digital_power.profile=fma2；CLI可选--digital-energy-profile nonfused_pair/fma2/fma3/legacy_proxy、--digital-idle-keep。FullDecode在执行完成后按实际动作数、MAC资源忙时和整段寿命计价，并从Ledger逐类别移除原bf16_mac收费后替换一次。其余数字动作和FP32_MAC未价项保留，不减掉其他vector费用，也不把原2pJ再叠上去。
 
-活动增量按(活动功率−idle功率)×实测窗口时长÷实际完成次数，包含标量窗口1036拍/1024次的排空归一化；背景按参考拍能量×工作/等待拍数，漏电按寿命计。新nonfused_pair的MAC工作增量约{selected['work_increment_J']*1000:.6f}mJ、背景{selected['background_dynamic_J']*1000:.6f}mJ、漏电{selected['leakage_J']*1000:.6f}mJ。
+活动增量按(活动功率−idle功率)×实测窗口时长÷实际完成次数，包含标量窗口1036拍/1024次的排空归一化；背景按参考拍能量×工作/等待拍数，漏电按寿命计。选定{a.digital_energy_profile}的MAC工作增量约{selected['work_increment_J']*1000:.6f}mJ、背景{selected['background_dynamic_J']*1000:.6f}mJ、漏电{selected['leakage_J']*1000:.6f}mJ。
+
+本表仍是随机FFN＋screen_pv注意力候选的能量重放，不是原始全数字LLM基线；screen_pv保留准确Softmax。全数字基线须另用完整数字FFN和准确Attention执行记录。
 
 ## 当前还缺的关键数字验证
 

@@ -1,11 +1,12 @@
 import copy
+from itertools import product
 import json
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 
-from .model import anchors, estimate
+from .model import DEFAULT_PROFILE, PROFILES, anchors, estimate
 from ..unified_v6.config import tiny, load
 from ..unified_v6.core import Ledger
 from ..unified_v6.model import FullDecode
@@ -61,16 +62,17 @@ class DigitalEnergyContracts(unittest.TestCase):
         with self.assertRaises(ValueError): estimate(c, {'bf16_mac': 100}, {}, 100)
 
     def test_live_decode_reprices_without_changing_work_or_schedule(self):
-        for mode in ['exact', 'screen_pv']:
+        for mode, profile in product(['exact', 'screen_pv'], PROFILES):
             c, shape = tiny()
             c['attention']['mode'] = mode
             baseline = FullDecode(c, shape).run()
-            c['digital_power'] = {'profile': 'nonfused_pair', 'idle_dynamic_keep': .1}
+            c['digital_power'] = {'profile': profile, 'idle_dynamic_keep': .1}
             updated = FullDecode(c, shape).run()
             for key in ['actions', 'resource_busy_ns', 'stage_busy_ns', 'phase_ns', 'attention_activity', 'FFN_activity']:
                 self.assertEqual(baseline[key], updated[key], key)
             self.assertEqual(baseline['metrics']['TPOT_ms'], updated['metrics']['TPOT_ms'])
             q = updated['digital_power']
+            self.assertEqual(q['profile'], profile)
             removed = sum(q['replaced_legacy_charges_J'].values())
             self.assertAlmostEqual(sum(updated['energy_J'].values()),
                 sum(baseline['energy_J'].values()) - removed + q['energy_J'])
@@ -103,8 +105,35 @@ class DigitalEnergyContracts(unittest.TestCase):
             self.assertIsNone(rows[0]['physical_energy_J'])
             self.assertTrue(json.loads((out/'ARTIFACT_MANIFEST.json').read_text()))
 
+    def test_opt_in_without_profile_uses_fma_and_legacy_without_policy_stays_unchanged(self):
+        c, shape = tiny()
+        legacy = FullDecode(c, shape).run()
+        self.assertNotIn('digital_power', legacy)
+        c['digital_power'] = {'idle_dynamic_keep': .1}
+        fused = FullDecode(c, shape).run()
+        self.assertEqual(fused['digital_power']['profile'], DEFAULT_PROFILE)
+        self.assertEqual([x['unit'] for x in fused['digital_power']['components']], ['fma2'])
+        self.assertEqual(legacy['actions'], fused['actions'])
+        self.assertEqual(legacy['metrics']['TPOT_ms'], fused['metrics']['TPOT_ms'])
+
+    def test_cli_default_and_legacy_idle_override_use_fma(self):
+        from ..unified_v6 import run
+        for policy_present in (False, True):
+            c, shape = tiny()
+            if policy_present:
+                c['digital_power'] = copy.deepcopy(load('qwen3_4b')[0]['digital_power'])
+            with tempfile.TemporaryDirectory(prefix='pbit_fma210_') as tmp:
+                out = Path(tmp) / 'run'
+                with patch.object(run, 'source_record', return_value={'commit': 'UNIT_TEST_ONLY'}), patch.object(run, 'load', return_value=(c, shape)):
+                    rows = run.main(['--model','qwen','--ffn','bf16','--attention','exact',
+                        '--ffn-profile','legacy','--memory-profile','legacy','--rng-backend','local_prng_interface',
+                        '--digital-idle-keep','.1','--output',str(out)])
+                self.assertEqual(rows[0]['digital_MAC_profile'], 'fma2')
+
     def test_current_config_defaults_and_legacy_fixture(self):
-        self.assertEqual(load('qwen3_4b')[0]['digital_power']['profile'], 'nonfused_pair')
+        for model in ['qwen', 'qwen3_4b', 'llama1', 'llama2']:
+            self.assertEqual(load(model)[0]['digital_power']['profile'], 'fma2')
+            self.assertNotIn('digital_power', load(model, legacy=True)[0])
         self.assertNotIn('digital_power', tiny()[0])
 
 

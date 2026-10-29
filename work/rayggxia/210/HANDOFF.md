@@ -1,3 +1,13 @@
+# Issue210 数字MAC标定接入更新 2026-10-29
+
+用户追加授权修改TLM标注与功耗。同task/210-tlm-component-audit、PR211；实际新发布见DIGITAL_POWER_PUBLICATION.json，未有回执前仅本地完成，旧回执不代表本增量。
+
+已实现architecture_tlm/digital_energy_20261029及unified_v6四个挂接文件，默认nonfused_pair，FMA2/3可选，legacy_proxy保留。Ledger逐动作归账确保替换旧收费；真实FullDecode/CLI小形状验证，主110＋新9测试通过。新复算3原摘要SHA与14项账目闭合；MAC0.451426W/片上1.757236W/154.017521mm²，TPOT57.445385ms不变。无新EDA/GPU/PPL/完整时序；PR209数据只读，不发布其本地未批准预算。
+
+成果、限制和复现见digital_energy_20261029/README_ZH.md及results/REPORT_ZH.md。500MHz、ICG、集成tile、模型活动、接口/CTS仍缺，DOT64拒绝直接套scalar。当前HEAD仍main基线，index含API已发布旧20文件及本增量；CLI HTTP1重试仍low-speed失败，API发布可用。不得reset其他工作。下一步发布本增量到同PR211、核对新tree/来源、同步Issue和本人STATUS；不自动合并，Projects无操作接口待维护者同步。
+
+---
+
 # Issue210交接
 
 - 负责人：rayggxia。Issue210；分支task/210-tlm-component-audit；目标main；不自动合并。

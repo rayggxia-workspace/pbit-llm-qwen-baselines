@@ -1,3 +1,11 @@
+# Issue210 数字MAC新标定接入 2026-10-29
+
+rayggxia；同PR211/task/210-tlm-component-audit；独立目录tmp/tlm-breakdown-issue210-20261029。新增digital_energy_20261029真实挂接主TLM及CLI，默认非融合组合代理，旧报价保留。新9＋主110测试通过；3seed旧活动重放片上1.757236W、MAC0.451426W、55nm已价154.017521mm²；原时间57.445385ms不变。
+
+当前本地完成待本增量发布，实际以work/rayggxia/210/DIGITAL_POWER_PUBLICATION.json为准，旧PUBLICATION不覆盖新任务阶段。无新GPU/PPL/EDA/full-time run；PR209只读来源未冒写合并。500MHz/ICG/集成tile/模型轨迹及接口仍待校准；Projects无操作接口，CLI fetch仍失败但API可发布。下面旧阶段保留历史。
+
+---
+
 # Issue210 原整机TLM分项审计 2026-10-29
 
 负责人rayggxia；Issue210；task/210-tlm-component-audit；目标main，基线787489192ebfcdb61ad72edde406818f450aa3dc；独立目录tmp/tlm-breakdown-issue210-20261029。已上传PR211，待审、未合并，不自动合并。科学提交346f5ca9761ed650a06313c91475474ca56e51fd；19blob SHA一致、两JSON回读一致。实际发布以work/rayggxia/210/PUBLICATION.json为准。CLI fetch网络reset，本地HEAD待对齐，远端PR已成功交付。

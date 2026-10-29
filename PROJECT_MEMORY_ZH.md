@@ -1,3 +1,13 @@
+## 2026-10-29 Issue210 数字MAC新标定已接入TLM
+
+同task/210-tlm-component-audit/PR211，rayggxia；复用tmp/tlm-breakdown-issue210-20261029。新增architecture_tlm/digital_energy_20261029，真实挂接unified_v6 Ledger/FullDecode/CLI；默认nonfused_pair，FMA2/3价格情景及legacy_proxy对照。数据为PR209@9228b08的100MHz SS BF16/FP32表征，原摘要SHA327a788e；不复制其未批准本地预算，不接管Issue204。
+
+逐类别移除旧MAC收费后计活动/背景/漏电，含1036/1024窗口归一化；原3seed活动重放MAC1.210401→0.451426W、片上2.516212→1.757236W/100.945118mJ、等效面积154.017521mm²，TPOT57.445385ms不变。FMA2/3片上1.618731/1.658065W，只作替代情景。非融合单元相加非集成实测；500MHz/90%空闲动态消除仍为外推假设。DOT64的30拍/帧不是scalar吞吐，接口明确拒绝直接套价。
+
+原主110＋新9测试通过，旧摘要SHA及14项账目闭合；无新GPU/PPL/EDA/整机时序，不新增数字run。README/优化记录本/台账05有入口，旧原件不改。实际新发布见work/rayggxia/210/DIGITAL_POWER_PUBLICATION.json；当前源/进度阶段不以旧回执冒充。关键后续500MHz、真实ICG与回压、小型集成tile、模型轨迹/算术一致性、SRAM/广播/CTS。CLI fetch仍受网络限制，API可用；Projects待维护者同步，不自动合并。
+
+---
+
 ## 2026-10-29 Issue210 原整机TLM分项审计
 
 负责人rayggxia；task/210-tlm-component-audit；独立稀疏目录tmp/tlm-breakdown-issue210-20261029，main基线787489192ebfcdb61ad72edde406818f450aa3dc。正式报告architecture_tlm/component_budget_audit_20261029，含六页Word、完整中文表、14物理账目/16阶段/24服务/功能MAC/外存/缺项CSV与JSON、原件及交付SHA。实际发布见Issue210关联PR和work/rayggxia/210/PUBLICATION.json，不自动合并。

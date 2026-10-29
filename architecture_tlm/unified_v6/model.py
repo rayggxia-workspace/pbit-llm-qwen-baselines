@@ -788,7 +788,7 @@ class FullDecode:
         totals['other_explicit_memory'] = t-sum(totals.values())
         if totals['other_explicit_memory'] < -1e-6:
             raise AssertionError('phase accounting overlap')
-        return dict(schema_version=6,model=m,config=c,
+        result = dict(schema_version=6,model=m,config=c,
             scope='batch1 full decoder decode + embedding/final norm/lm_head/greedy selection; prior context already exists; no prefill/TTFT',
             implementation='bounded tile/resource event TLM; NOT full-chip cycle-accurate simulation',
             metrics=dict(TPOT_ms=sum(token_times)/len(token_times)/1e6,token_ms=[x/1e6 for x in token_times],
@@ -832,3 +832,5 @@ class FullDecode:
                 'warm K summaries live in DRAM; context prefill/build cost excluded, steady updates included',
                 'all published timing/traffic cases synthetic unless complete user logit trace supplied',
                 'no new PPL, GPU performance, RTL/PT or silicon measurements'])
+        from ..digital_energy_20261029.model import attach
+        return attach(result, self.e)

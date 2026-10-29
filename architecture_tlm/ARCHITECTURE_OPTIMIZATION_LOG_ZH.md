@@ -128,3 +128,8 @@ Issue204/PR209；[完整结果](bf16_ppa_20261028/results/REPORT_ZH.md)、[INT8�
 ## 2026-10-28 经典INT8折叠DOT4与SC面积审计
 
 Issue204/PR209；[正式结果](int8_classic_ppa_20261028/results/REPORT_ZH.md)、[面积复核](int8_classic_ppa_20261028/results/AREA_EXPLANATION_ZH.md)。2配置/18窗口，INT32与N64精确INT22；同BF16派生数值比较，SC当前核更大的组合逻辑与四路数字时分复用均明确，不按AND直觉改面积。中央run matrix-int8-classic-204-20261028；v1/v2映射X失败保留、v4真实控制reset验证。无新模型/PPL、存储与物理签核。
+
+
+## 2026-10-29 同64路并行INT8与SC对照
+
+Issue204/PR209；[正式报告](int8_parallel64_20261028/results/REPORT_ZH.md)。按用户指定物理输入并行度，64乘法并行+平衡树、固定N64精确32/22位结果，满速和350ns发帧分别测量；SC面积优势成立、相同完成工作率能量优势未成立，输入SHA匹配但SC近似/数字精确。v1 hold负值与v2实际hold buffer修复原件保留；最终24窗口，中央matrix-int8-par64-204-20261029。无模型PPL/存储供数/后布局签核。

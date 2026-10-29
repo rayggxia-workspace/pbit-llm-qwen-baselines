@@ -1,3 +1,7 @@
+## 2026-10-29 Issue204：同64路并行INT8对照
+
+新增matrix-int8-par64-204-20261029，最终2top/24PT窗口，另24初版hold违例保留。原生1拍/II1；32位结果等效0.028222798mm²、满速21.2633pJ、同350ns间隔40.18pJ。SC同64并行面积小5.109倍，能量关系见正式报告，不把功率比当节能比。任务67、完整本机union89条，各自保留全部旧record字节；check/render通过，无物理签核/模型PPL。
+
 ## 2026-10-28 Issue204：经典INT8 DOT4与面积复核
 
 新增run matrix-int8-classic-204-20261028：2配置/18PT窗口，INT32主参考40.869pJ/190ns/等效0.003098542mm²，INT22为39.330pJ/0.002933788mm²；时序均非负。SC54与四路整数的映射单元面积复核见architecture_tlm/int8_classic_ppa_20261028/results/AREA_EXPLANATION_ZH.md。任务分支66、当前完整根镜像87条，原65/86个record字节保留；无模型/PPL或物理签核。

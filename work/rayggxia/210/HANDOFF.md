@@ -1,0 +1,13 @@
+# Issue210交接
+
+- 负责人：rayggxia。Issue210；分支task/210-tlm-component-audit；目标main；不自动合并。
+- 工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/tlm-breakdown-issue210-20261029；独立稀疏worktree，保留原jieruiz目录只读。
+- 原main：787489192ebfcdb61ad72edde406818f450aa3dc；原PR192科学head：91f68416acad0e8306b920b1b8ac779f3d24ad98。
+- 已本地完成：architecture_tlm/component_budget_audit_20261029，Word/中文Markdown/CSV/JSON/复算脚本/原输入与交付SHA。没有改算法、TLM时序、原封存、台账run或其他成员STATUS。
+- 验证：6项闭合、4×3旧情景精确复算、原8会计单测、6页Word视觉QA；没有新GPU/EDA/TLM运行。
+- 结论：57.445385ms；已价片上144.544740mJ/2.516212W；raw192.738839mm²，0.81后156.118460mm²。能量MAC48.10%、FFN计数恢复34.72%、片存14.74%。外存6.166W仅旧代理。
+- 原screen_pv用准确Softmax未用Ising。PRNG与比较器合并；转换/CIM外围/CTS与HBM仍有未价项，详见ACCOUNTING_GAPS.csv。
+- 本地完成，尚待发布；实际远端提交/PR及字节核验以本目录PUBLICATION.json为准。
+- 下一步：核对最新身份/Issue/PR/head，明确文件范围发布PR、更新同一Issue210和本人STATUS；不得自动合并，也不据本审计重跑健康实验。
+- Projects：当前GitHub连接器没有Projects操作接口，尚未同步看板；不声称缺少已核实权限或看板已更新。
+- 无本任务运行中作业，不需要定时回查；PR待审保留此最小工作目录，合并后按生命周期规则归档索引再回收。

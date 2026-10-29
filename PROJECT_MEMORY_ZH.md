@@ -1,3 +1,15 @@
+## 2026-10-29 Issue210 原整机TLM分项审计
+
+负责人rayggxia；task/210-tlm-component-audit；独立稀疏目录tmp/tlm-breakdown-issue210-20261029，main基线787489192ebfcdb61ad72edde406818f450aa3dc。正式报告architecture_tlm/component_budget_audit_20261029，含六页Word、完整中文表、14物理账目/16阶段/24服务/功能MAC/外存/缺项CSV与JSON、原件及交付SHA。实际发布见Issue210关联PR和work/rayggxia/210/PUBLICATION.json，不自动合并。
+
+只分解原PR192的36层Qwen3-4B后训练形状预算：三seed57.445385ms/token，片上已价144.544740mJ/2.516212W；raw192.738839mm²，0.81一次后156.118460mm²。MAC48.10%、FFN计数恢复34.72%、片存14.74%；MAC有效动作增量仅7.035814mJ，其余为背景动态和漏电。数字90%空闲动态消除为情景、500MHz为每拍能量外推，外存6.166W仍是64pJ/B＋50mW旧代理，不是完整已测整片。
+
+原Attention为screen_pv准确Softmax未用Ising，不能为Ising伪造原预算占比。入口及NL PRNG已合并比较器，不能叠费或假精确拆价；定点编码、格式转换、控制及CIM/互连/CTS等缺项保留。阶段可相加，服务忙时会重叠；同一共享MAC/SRAM面积只计一次。新本地端口单层结果、双随机及新Ising不冒充已经重算36层。
+
+6项闭合、4配置×3旧情景逐字典复算、原8会计单测及6页Word视觉QA通过；无新GPU/PPL/TLM/EDA、无新数字run。只核对封存raw轨迹SHA引用，未重新下载大轨迹或门级原件。Projects连接器无操作接口，待维护者同步；本地union仅同步此新增段，不以main旧副本覆盖其他任务历史。
+
+---
+
 ## 2026-10-28 Issue55 第十二轮审核：已完成本地验证，等待集中PR合入main
 
 负责人jieruiz；独立分支review/55-pr-round12；目录tmp/pr55-review-round12-20261028；远端main基线5188bd4695d373cfef78602cfcca4f66b6431696（PR203面积0.81规则已合并）。本轮选择性集成PR194/195/196/197/205/192/189，精确head、验证、原件SHA和限制见work/jieruiz/55/round12/REVIEW_ZH.md及evidence/MANIFEST.json；尚未发布的本地合并不等于远端已合并。

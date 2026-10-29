@@ -1,3 +1,13 @@
+# Issue210 原整机TLM分项审计 2026-10-29
+
+负责人rayggxia；Issue210；task/210-tlm-component-audit；目标main，基线787489192ebfcdb61ad72edde406818f450aa3dc；独立目录tmp/tlm-breakdown-issue210-20261029。当前本地完成，待发布PR，不自动合并。实际发布以work/rayggxia/210/PUBLICATION.json为准。
+
+成果architecture_tlm/component_budget_audit_20261029：原57.445385ms/2.516212W预算14物理账目、16阶段、24服务、5功能MAC及外存/缺项表，六页Word与可复算CSV/JSON。raw面积192.738839mm²，0.81一次后156.118460mm²。MAC48.10%、FFN计数恢复34.72%、片存14.74%；原准确Softmax未用Ising。合并随机前端不伪拆价，转换等缺项明确。
+
+实际验证6项闭合/4×3原情景复算/8会计单测/6页视觉QA；无新GPU/PPL/TLM/RTL/PT。SOURCE_MANIFEST与DELIVERY_MANIFEST保留原字节SHA。HANDOFF含边界与下一步；Projects无连接器操作接口待维护者同步。下面旧任务历史原样保留，不代表其当前远端状态。
+
+---
+
 # Issue204：参数化模块能耗完整交接（2026-10-28）
 
 rayggxia；task/204-matrix-t32，同PR205，base main@d83eeb1fc6b89a3dff51b5b62bf79acf665c7166。执行基线9f762ced3d25b47bf3963fbf38ff8d321850854b；复用tmp/matrix-t32-issue204-20261028。新目录architecture_tlm/module_energy_20261028，不改旧冻结PPA或模型/整机默认。

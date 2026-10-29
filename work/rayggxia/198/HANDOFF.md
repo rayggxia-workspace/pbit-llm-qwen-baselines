@@ -1,3 +1,13 @@
+## 2026-10-29：128个128bit SRAM bank测试完成
+
+继续Issue198 / task/198-attention-compare / draft PR199；本人rayggxia。生成38454852、阵列38454992、接口38455163完成。128×1编译拒绝；实际128个64×2 SRAM加读出选位逻辑，2KiB有效容量。原始面积171320.126912μm²、×0.81等效0.13876930mm²/头；每轮128bit约81.400–82.920pJ（各模式三seed均值），32头复制4.440618mm²。12功能回放/3072向量/393216bit通过，36PT窗口（含原18）均保存。下降沿输入协议最终setup=2.418762ns/hold=0.431146ns；原上升沿输入合同hold=-0.3031ns保留。最终18窗口net活动100%；厂商memory输出无组合function提示保留。无CTS/SPEF/SDF、无GPU/PPL。
+
+正式报告architecture_tlm/attention_compare_20261027/smallbanks_20261029/REPORT_ZH.md，台账15专题与run attention-smallbanks-198-eda-20261029；748成员证据本机归档project_archives/attention_compare_issue198_20261027/smallbanks_20261029/REPORTS.zip。生成/源搬入/外部请求驱动/仲裁/V未计；64拍装载假设上游256bit/拍。不是全概率4KiB表，也不是160轮采样质量验证。现有宏独立bank成本偏高；同时间序号可用单128×128宏，其新库提取面积0.01955676mm²、9.4921pJ/字，不支持任意128路地址。
+
+本地已完成；远端提交/回读以SMALLBANK_PUBLICATION.json为准，未写成合并/关闭。下一步是共享时间地址宽宏的接口评估与真实随机表相关性/刷新成本；不启动昂贵GPU重跑。Projects沿既有限制待维护者同步。
+
+---
+
 ## 2026-10-29：128字概率阈值寄存器及并行比较器EDA完成
 
 负责人rayggxia，继续Issue198 / task/198-attention-compare / draft PR199，base main，复用tmp/attention-compare-issue198-20261027。执行父提交1f4dff93加v2/v3/v4/v5冻结SHA；未新建重复checkout，未运行GPU/PPL。7top/三seed/42条RTL与门级oracle回放，8904执行拍/8610检查拍；84最终PT窗口，全部net/leaf cell活动100%。Slurm38447688及修复38447724完成，早期失败38447560与旧slew38447569原件保留。

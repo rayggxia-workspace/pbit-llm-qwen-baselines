@@ -15,3 +15,5 @@ main尚无完整台账工具；未将其他分支的79条记录或整套catalog�
 2026-10-28新增attention-control128-198-eda-20261028：336回放/56PT/8top内部STA审计，whole STA violations；参考CONTROL128_REGISTRY_CHECK.json（85记录）与CONTROL128_ARCHIVE_INVENTORY_APPEND.csv增量合并。保留其他分支catalog/record，不整目录覆盖。
 
 2026-10-29新增attention-regbank-198-eda-20261029：7top/42功能回放/84PT窗口，16位hold和比较器低slew告警保留；参考REGBANK_REGISTRY_CHECK/SYNC及ARCHIVE_INVENTORY_APPEND增量合并。根88记录check/render，旧87原字节保留，不用本分支子集覆盖中央union。
+
+2026-10-29新增attention-smallbanks-198-eda-20261029：128真实64×2 SRAM，12功能/36PT含原接口违例；新4宏库提取与128×1拒绝保留。通过SMALLBANK_REGISTRY_SYNC/CHECK.json增量同步中央记录，不覆盖其他run。

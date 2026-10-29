@@ -102,3 +102,13 @@ SS1.08V125°C100MHz、原SHARK面积×0.81。真实32个X8 ICG门控，128×12/1
 本地成果已完成，准确远端提交与回读以work/rayggxia/198/REGBANK_PUBLICATION.json为准。PR199仍待审未合并、Issue开放，Projects沿既有限制待维护者同步。下一步匹配真实接口关闭hold/低slew告警，再评估16阈值/拍LUT和合格RNG吞吐；不以本轮估计宣称整机竞争力。
 
 ---
+
+## 2026-10-29：128个128bit SRAM bank测试完成
+
+继续Issue198 / task/198-attention-compare / draft PR199；本人rayggxia。生成38454852、阵列38454992、接口38455163完成。128×1编译拒绝；实际128个64×2 SRAM加读出选位逻辑，2KiB有效容量。原始面积171320.126912μm²、×0.81等效0.13876930mm²/头；每轮128bit约81.400–82.920pJ（各模式三seed均值），32头复制4.440618mm²。12功能回放/3072向量/393216bit通过，36PT窗口（含原18）均保存。下降沿输入协议最终setup=2.418762ns/hold=0.431146ns；原上升沿输入合同hold=-0.3031ns保留。最终18窗口net活动100%；厂商memory输出无组合function提示保留。无CTS/SPEF/SDF、无GPU/PPL。
+
+正式报告architecture_tlm/attention_compare_20261027/smallbanks_20261029/REPORT_ZH.md，台账15专题与run attention-smallbanks-198-eda-20261029；748成员证据本机归档project_archives/attention_compare_issue198_20261027/smallbanks_20261029/REPORTS.zip。生成/源搬入/外部请求驱动/仲裁/V未计；64拍装载假设上游256bit/拍。不是全概率4KiB表，也不是160轮采样质量验证。现有宏独立bank成本偏高；同时间序号可用单128×128宏，其新库提取面积0.01955676mm²、9.4921pJ/字，不支持任意128路地址。
+
+本地已完成；远端提交/回读以SMALLBANK_PUBLICATION.json为准，未写成合并/关闭。下一步是共享时间地址宽宏的接口评估与真实随机表相关性/刷新成本；不启动昂贵GPU重跑。Projects沿既有限制待维护者同步。
+
+---

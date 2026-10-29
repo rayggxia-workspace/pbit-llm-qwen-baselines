@@ -17,3 +17,5 @@ main尚无完整台账工具；未将其他分支的79条记录或整套catalog�
 2026-10-29新增attention-regbank-198-eda-20261029：7top/42功能回放/84PT窗口，16位hold和比较器低slew告警保留；参考REGBANK_REGISTRY_CHECK/SYNC及ARCHIVE_INVENTORY_APPEND增量合并。根88记录check/render，旧87原字节保留，不用本分支子集覆盖中央union。
 
 2026-10-29新增attention-smallbanks-198-eda-20261029：128真实64×2 SRAM，12功能/36PT含原接口违例；新4宏库提取与128×1拒绝保留。通过SMALLBANK_REGISTRY_SYNC/CHECK.json增量同步中央记录，不覆盖其他run。
+
+2026-10-29新增attention-digital-p8-198-eda-20261029：两条4lane门控数字采样完成；保留未门控/原复位违例及三个16lane进行中项。增量合并独立record、P8_ARCHIVE_INVENTORY_APPEND.csv，再check/render；本机中央91条、原90条record字节保持，见P8_REGISTRY_SYNC/CHECK.json。不得用本分支子集覆盖其他任务catalog。22专题为同字节阅读镜像。

@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "id": "attention-digital-p8-198-eda-20261029",
+  "name": "数字P8 Softmax＋systematic/独立R8比较：真实ICG与启动复位合同",
+  "family": "Attention数字Softmax与采样",
+  "registered_on": "2026-10-29",
+  "owner": "rayggxia",
+  "issue": 198,
+  "evidence_level": "DC_GATE_PT_PRELAYOUT",
+  "status": "primary_gated_baselines_complete; supplementary16lane_running; original_negative_results_retained",
+  "stages": {
+    "functional": "pass",
+    "synthesis": "completed; v4 reuses v3",
+    "sta": "v4_reported_nonnegative_under_cold_reset_contract; v2/v3 violations_retained",
+    "power": "calculated",
+    "postlayout": "not_run"
+  },
+  "boundary": "128 FP32 scores -> fixed11/F4 -> max/expQ1.15/sum/shared reciprocal -> conservedP8 bank -> probability/count stream. Includes compact Bivium and histogram/ICG; excludes QK,V/token mapping/accumulation, physical entropy and global clock/reset controller.",
+  "conditions": {
+    "node_nm": 65,
+    "area_scale_to_55eq": 0.81,
+    "library_corner_label": "SS1P08V125C",
+    "voltage_V": 1.08,
+    "temperature_C": 125,
+    "clock_MHz": 100,
+    "seeds": [
+      17,
+      503,
+      1009
+    ],
+    "candidates": 128,
+    "samples": 128,
+    "lanes": [
+      1,
+      4,
+      16
+    ],
+    "output_load_pF": 0.002,
+    "slew_ns": 0.1,
+    "input_interface": "falling-edge arrival0..1ns, rising capture; v4 clock stopped through reset release plus20ns guard",
+    "sdf": false,
+    "spef": false,
+    "cts": false
+  },
+  "limitations": [
+    "Synthetic score vectors only; no model/tokenizer/corpus/PPL. ConservedP8 is not ordinary RNE; probability1 flag/index included; P8 quality not inherited from Ising threshold8.",
+    "Systematic fixed total128, correlated; atP8/S128 only one phase bit affects counts. Independent R8 comparison has random total, divided by fixed128, not hit count.",
+    "v3 Bernoulli original reset recovery slack -0.366158ns retained; v4 explicit cold-start clock-stop contract, not arbitrary running reset signoff. Tiny positive prelayout margin is not physical signoff.",
+    "PT out-of-range ramp/load warnings, high-fanout reset, no wire/clock/reset tree; all raw logs preserved.",
+    "Compact Bivium omits old endpoint checkpoint/epoch service and can also serve Ising; no IID/entropy certification. Cold seed/warmup separate, not per query.",
+    "v2/v3 synthesis optimization commands differ; changes cannot be attributed only to ICG. CE/ICG idle and leakage retained; no free global stop assumption."
+  ],
+  "source": {
+    "git_commit": "01270f9c50d9475017603bf2ee7148193280ded7",
+    "binding": "base Git01270f9c; executed uncommitted patches bound by immutable SOURCE manifests; v4 reuses v3 netlists byte-for-byte",
+    "manifests": {
+      "v2": "ee8c5752da5bfc793ecb1be44d6f0137d0c7a228d9534f9ef93babd3637f8b99",
+      "v3": "aec417216dc7cc16e1425e77e66b9364af31316c813b5d9402230177e0974755",
+      "v4": "3a99a7fa3bb0b0275fc3b0c2455e8ab676fde6b5ab78bc846013f5f80bde1882"
+    },
+    "runtime_fingerprints": {
+      "standard_db": {
+        "path": "/public3/home/t6s011227/ICsprout_55LLULP1225_STD_0818/ICsprout55_SC9T_BASIC_SVT/0.1/lib/ICsprout55_9TSVT_ss_v1p08_125c_basic_nldm.db",
+        "sha256": "bd574cc4073151635cc505a640005ab99dd74facd3884e95c45de2c15f111489",
+        "bytes": 19021824
+      },
+      "standard_model": {
+        "path": "/public3/home/t6s011227/ICsprout_55LLULP1225_STD_0818/ICsprout55_SC9T_BASIC_SVT/0.1/verilog/ICsprout55_9TSVT_basic.v",
+        "sha256": "247ffbf8be1dbdc178fe7e319c07981bf2f35de2409babced51761b37057de2d",
+        "bytes": 1244025
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "path": "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/llm_digital_p8_issue198_20261029/collection_v2_completed/RAW.zip",
+      "role": "v2_raw_archive",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "d74b7148c489183e3584094f42604ffa63a1b326f23fd1e7cab4e038d9e6ecb9",
+      "bytes": 300711481
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/project_archives/attention_compare_issue198_20261027/digital_p8_20261029/v2/REPORTS.zip",
+      "role": "v2_reports_archive",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "7a812260d83ccd4ee0e40f971d6e8294459ca855562f989940351c10cc87454f",
+      "bytes": 10200881
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/project_archives/attention_compare_issue198_20261027/digital_p8_20261029/v3/RAW.zip",
+      "role": "v3_raw_archive",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "fc0b0296cbbc7edd5fb213af79a7a7cc4029eb6d612ce26134bf8fd05710006b",
+      "bytes": 341764496
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/project_archives/attention_compare_issue198_20261027/digital_p8_20261029/v3/REPORTS.zip",
+      "role": "v3_reports_archive",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "c50d048a9fd341539f00008f408430c018d56083bb3c44cb10c879d8577bf6a1",
+      "bytes": 5482223
+    },
+    {
+      "path": "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/llm_digital_p8_issue198_20261029/collection_v4/RAW.zip",
+      "role": "v4_raw_archive",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "c68a29094598657dff88b23187ba0a4a3a8ffaf3b3518848ba788247cfe593ec",
+      "bytes": 339801167
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/project_archives/attention_compare_issue198_20261027/digital_p8_20261029/v4/REPORTS.zip",
+      "role": "v4_reports_archive",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "f32046479d9c693bf6394a60cad54fb00599512182bf92943be611636f8fb56e",
+      "bytes": 4976900
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/SUPPLEMENTARY_STATUS.json",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "cebe7bd168cbb73cb3d1fd18981d6a9e4117003e15965bef23d4cda2d8e1f051",
+      "bytes": 945
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/RESULTS.json",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "b9a48e56598b8564e4c131133a95dd70115e0061c897bb6be499826b0345ee10",
+      "bytes": 51424
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/RESULTS_V2.json",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "0eef18e39c6cf7fe287c7d5a6c63ace00f19e8ee885a6a98099a453d43bf245d",
+      "bytes": 67192
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/RESULTS_V3_ORIGINAL.json",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "3aa8384577c7c98bfb8f5ba8f3afa2b5478714dd522cc7ce2ad1e2220748a6d4",
+      "bytes": 51470
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/SUMMARY.json",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "813859a46b29005e81436eb5214c860977c1737685d063bd58db273944203fa8",
+      "bytes": 11276
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/NUMERICAL_AUDIT.json",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "cd7b1b203fd098a954725d37db4d6527794c4498868d9fe25c8217b5927b20a3",
+      "bytes": 12003
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/REPORT_ZH.md",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "2fb78087187abeb8539a6a794ec9d352b2da88a6ec475a0d63f310dcbc819c2c",
+      "bytes": 5665
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/SOURCE.json",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "3a99a7fa3bb0b0275fc3b0c2455e8ab676fde6b5ab78bc846013f5f80bde1882",
+      "bytes": 6426
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/SOURCE_V2.json",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "ee8c5752da5bfc793ecb1be44d6f0137d0c7a228d9534f9ef93babd3637f8b99",
+      "bytes": 5353
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/SOURCE_V3.json",
+      "role": "summary_or_source_manifest",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "aec417216dc7cc16e1425e77e66b9364af31316c813b5d9402230177e0974755",
+      "bytes": 6020
+    },
+    {
+      "path": "C:/Users/86134/Documents/a_P_BIT/tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/digital_p8_20261029/EVIDENCE.json",
+      "role": "provenance",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "4784300af90aa38419eb863ea3bedda7f4164897248b1f32bb04037bd602fb08",
+      "bytes": 5676
+    }
+  ],
+  "cases": [
+    {
+      "version": "v2",
+      "top": "smx_p8_l1",
+      "lanes": 1,
+      "mode": 0,
+      "synthesis_reused": false,
+      "raw_area_um2": 80633.88000002457,
+      "area55_mm2": 0.06531344280001991,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 6,
+      "worst_setup_ns": 0.001146,
+      "worst_hold_ns": 0.216165,
+      "netlist_sha256": "fd5b43a0443829ffdba3345e4f80abe7afe212ffa35aae4fe12e46f6f7f193d8",
+      "source_manifest_sha256": "ee8c5752da5bfc793ecb1be44d6f0137d0c7a228d9534f9ef93babd3637f8b99"
+    },
+    {
+      "version": "v2",
+      "top": "smx_p8_l4",
+      "lanes": 4,
+      "mode": 0,
+      "synthesis_reused": false,
+      "raw_area_um2": 155492.64000101687,
+      "area55_mm2": 0.12594903840082367,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 6,
+      "worst_setup_ns": -0.271489,
+      "worst_hold_ns": 0.216165,
+      "netlist_sha256": "0b33751bb46645899a714aaf5e822522acb78db815c0500c4d4112d809398031",
+      "source_manifest_sha256": "ee8c5752da5bfc793ecb1be44d6f0137d0c7a228d9534f9ef93babd3637f8b99"
+    },
+    {
+      "version": "v2",
+      "top": "smx_sys_l4",
+      "lanes": 4,
+      "mode": 1,
+      "synthesis_reused": false,
+      "raw_area_um2": 165128.03999901086,
+      "area55_mm2": 0.13375371239919878,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 9,
+      "worst_setup_ns": -0.281436,
+      "worst_hold_ns": 0.214565,
+      "netlist_sha256": "39b5f0403b1e9bdedf6ba0c66e278ae51624b6a436fbaaf948b93b747744c3a9",
+      "source_manifest_sha256": "ee8c5752da5bfc793ecb1be44d6f0137d0c7a228d9534f9ef93babd3637f8b99"
+    },
+    {
+      "version": "v2",
+      "top": "smx_bern_l4",
+      "lanes": 4,
+      "mode": 2,
+      "synthesis_reused": false,
+      "raw_area_um2": 245757.599998979,
+      "area55_mm2": 0.199063655999173,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 9,
+      "worst_setup_ns": -0.432352,
+      "worst_hold_ns": 0.216165,
+      "netlist_sha256": "55ce93dbb398493d8af9122e93e1f3816ccf95c9e64b8a62a5af0af7760aea3a",
+      "source_manifest_sha256": "ee8c5752da5bfc793ecb1be44d6f0137d0c7a228d9534f9ef93babd3637f8b99"
+    },
+    {
+      "version": "v3",
+      "top": "smx_p8_l4",
+      "lanes": 4,
+      "mode": 0,
+      "synthesis_reused": false,
+      "raw_area_um2": 88347.24000003946,
+      "area55_mm2": 0.07156126440003197,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 6,
+      "worst_setup_ns": 0.000469,
+      "worst_hold_ns": 0.145801,
+      "netlist_sha256": "f939defcc558e9db94e45ac05ecc1ff2699dc52b6b493c2c10e14172f3986ab1",
+      "source_manifest_sha256": "aec417216dc7cc16e1425e77e66b9364af31316c813b5d9402230177e0974755"
+    },
+    {
+      "version": "v3",
+      "top": "smx_sys_l4",
+      "lanes": 4,
+      "mode": 1,
+      "synthesis_reused": false,
+      "raw_area_um2": 94850.28000004748,
+      "area55_mm2": 0.07682872680003847,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 9,
+      "worst_setup_ns": 0.002089,
+      "worst_hold_ns": 0.145801,
+      "netlist_sha256": "ea40f1eeaecfbc06c30c0ddd411b534a0ad63941ee071cc3ff3ddb10ede9dd0c",
+      "source_manifest_sha256": "aec417216dc7cc16e1425e77e66b9364af31316c813b5d9402230177e0974755"
+    },
+    {
+      "version": "v3",
+      "top": "smx_bern_l4",
+      "lanes": 4,
+      "mode": 2,
+      "synthesis_reused": false,
+      "raw_area_um2": 165121.56000007433,
+      "area55_mm2": 0.1337484636000602,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 9,
+      "worst_setup_ns": -0.366158,
+      "worst_hold_ns": 0.145801,
+      "netlist_sha256": "8dd4381b43f2d02eebd5eb1addaa4ecb16afc40543bb7cb1fceb41dd3855fb9a",
+      "source_manifest_sha256": "aec417216dc7cc16e1425e77e66b9364af31316c813b5d9402230177e0974755"
+    },
+    {
+      "version": "v4",
+      "top": "smx_p8_l4",
+      "lanes": 4,
+      "mode": 0,
+      "synthesis_reused": true,
+      "raw_area_um2": 88347.24000003946,
+      "area55_mm2": 0.07156126440003197,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 6,
+      "worst_setup_ns": 0.000469,
+      "worst_hold_ns": 0.145801,
+      "netlist_sha256": "f939defcc558e9db94e45ac05ecc1ff2699dc52b6b493c2c10e14172f3986ab1",
+      "source_manifest_sha256": "3a99a7fa3bb0b0275fc3b0c2455e8ab676fde6b5ab78bc846013f5f80bde1882"
+    },
+    {
+      "version": "v4",
+      "top": "smx_sys_l4",
+      "lanes": 4,
+      "mode": 1,
+      "synthesis_reused": true,
+      "raw_area_um2": 94850.28000004748,
+      "area55_mm2": 0.07682872680003847,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 9,
+      "worst_setup_ns": 0.002089,
+      "worst_hold_ns": 0.145801,
+      "netlist_sha256": "ea40f1eeaecfbc06c30c0ddd411b534a0ad63941ee071cc3ff3ddb10ede9dd0c",
+      "source_manifest_sha256": "3a99a7fa3bb0b0275fc3b0c2455e8ab676fde6b5ab78bc846013f5f80bde1882"
+    },
+    {
+      "version": "v4",
+      "top": "smx_bern_l4",
+      "lanes": 4,
+      "mode": 2,
+      "synthesis_reused": true,
+      "raw_area_um2": 165121.56000007433,
+      "area55_mm2": 0.1337484636000602,
+      "rtl_checks": 4,
+      "gate_checks": 4,
+      "pt_windows": 9,
+      "worst_setup_ns": 0.00055,
+      "worst_hold_ns": 0.145801,
+      "netlist_sha256": "8dd4381b43f2d02eebd5eb1addaa4ecb16afc40543bb7cb1fceb41dd3855fb9a",
+      "source_manifest_sha256": "3a99a7fa3bb0b0275fc3b0c2455e8ab676fde6b5ab78bc846013f5f80bde1882"
+    },
+    {
+      "array_job": "38459583_2",
+      "top": "smx_p8_l16",
+      "rtl_checks": 4,
+      "synthesis_complete": false,
+      "all_replay_complete": false,
+      "failure": null,
+      "version": "v2",
+      "stage": "synthesis_running; PPA_not_available",
+      "source_manifest_sha256": "ee8c5752da5bfc793ecb1be44d6f0137d0c7a228d9534f9ef93babd3637f8b99"
+    },
+    {
+      "array_job": "38459583_4",
+      "top": "smx_sys_l16",
+      "rtl_checks": 4,
+      "synthesis_complete": false,
+      "all_replay_complete": false,
+      "failure": null,
+      "version": "v2",
+      "stage": "synthesis_running; PPA_not_available",
+      "source_manifest_sha256": "ee8c5752da5bfc793ecb1be44d6f0137d0c7a228d9534f9ef93babd3637f8b99"
+    },
+    {
+      "array_job": "38459583_6",
+      "top": "smx_bern_l16",
+      "rtl_checks": 4,
+      "synthesis_complete": false,
+      "all_replay_complete": false,
+      "failure": null,
+      "version": "v2",
+      "stage": "synthesis_running; PPA_not_available",
+      "source_manifest_sha256": "ee8c5752da5bfc793ecb1be44d6f0137d0c7a228d9534f9ef93babd3637f8b99"
+    }
+  ],
+  "next_action": "Collect healthy supplementary jobs38459583_2/_4/_6 and full archive38459807 without resubmitting or cancelling; keep current completed archives immutable. Model-matched BF16 reference/P8 quality and common KV closure; physical CTS/reset/layout validation; PR199 review, not automatically merged."
+}

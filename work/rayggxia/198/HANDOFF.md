@@ -1,3 +1,17 @@
+## 2026-10-29 Issue198：数字P8 Softmax双采样主基线完成
+
+owner rayggxia，task/198-attention-compare，draft PR199，基线01270f9c50d9475017603bf2ee7148193280ded7；主基线本地完成，远端发布状态以P8_PUBLICATION.json为准。共用FP32→fixed11/F4、max/exp/sum/公共倒数/保质量P8；128候选/S128、4lane、100MHz、SS1.08V125C。门控前端/完整systematic/完整独立R8比较：0.83015/0.85651/6.37028nJ，面积原始88347.24/94850.28/165121.56µm²，单次×0.81后0.0715613/0.0768287/0.1337485mm²；内部概率132拍就绪，完整输出166/166/294拍。含转换/存储/紧凑Bivium/直方图/ICG，不含QK、token映射、V/物理熵/全局复位时钟树。
+
+ICG实际182/189/353个，空闲0.2084/0.2211/0.4021mW，不视寄存器保持为零功耗。v3原Bernoulli reset recovery−0.366158ns保留；v4复用同网表，启动时停钟释放复位并等20ns后启钟，仅rst_n使用setup2/hold1合同，正常数据时序不放宽；最终setup最小0.000469ns/hold0.145801ns、ICG检查非负，余量极小、无CTS/SPEF/SDF，非后布局验收。PT表外slew/load警告保留。
+
+Systematic总数固定128、相关；P8/S128仅1bit相位影响计数。独立比较总命中可变并按固定128平均。8bit概率不是Ising8bit阈值的同精度证明，合成Gaussian2平均TV7.44%、四峰6.66%，无新GPU/模型/PPL。紧凑Bivium也可供Ising复用，不能将旧完整服务端点差额当数字算法独占收益。
+
+正式architecture_tlm/attention_compare_20261027/digital_p8_20261029，README/REPORT/RESULTS/源快照SHA及EVIDENCE齐备；中央run attention-digital-p8-198-eda-20261029和22功耗专题已同步，91条元数据check/render通过，原90条record原字节保留。v2完成4配置/30PT，v3三门控配置24PT，v4三网表复用/启动合同24PT；已完整归档80功能回放/81920计数比较/78PT，另三个16lane12次RTL预检通过。REPORTS本机644+557+573成员逐SHA核验，v3 RAW584成员也已本机验证；v2/v4大波形仅保留授权服务器原字节归档，不谎称已本机下载。
+
+补充16lane 38459583_2/_4/_6仍在综合，完整收集依赖作业38459807；不取消/重交健康任务，不把它们列为已测PPA。当前已完成数据来自collection_v2_completed、collection_v3、collection_v4；后续完整v2必须另存新归档/摘要，不能覆盖本次已登记SHA。SUPPLEMENTARY_STATUS.json为带时戳快照。远端根/public3/home/t6s011227/pbit_chimera_pipeline_20260920/llm_digital_p8_issue198_20261029；ops入口work/rayggxia/198/.eda_private/p8ops.py。PR待审/Issue开放，Projects沿既有限制待维护者同步；下一步为补充扫描收集、模型匹配质量和共同KV闭环。
+
+---
+
 ## 2026-10-29 Issue198：数字Softmax后的采样纳入公平对照
 
 owner rayggxia，task/198-attention-compare，draft PR199；本轮只读源码/文献，无新EDA/GPU/PPL/run。SANTA v2 §2.1/附录P算法5及官方commit2e5f8611两个CUDA核已核实：每头/tile偏移、warp前缀scan、floor差得到整数次数、非零压缩、保留次数进行V累加；实际CUDA有cf*V，不能按“No-mulT”名称认定所有乘法为零。PyTorch2.7.1有放回多样本路径含归一化/CDF/Philox/二分并输出索引，不推广到所有单样本实现。

@@ -1,3 +1,11 @@
+## Issue206：Z1T源码与已有评测指标派生（2026-10-29）
+
+只读核实Extropic上游8c0f7e66五个源码SHA：稀疏gather+加权求和/偏置、DyT、AFTConv（Q/V为D，K为H）、MLP D→4D→D、独立稠密clf；model.py包装clf外线性。TL+TM同时开时第一投影后有连续两次tanh；公开前向没有32样本/4bit执行循环。train.py CE/ln2在GPT2BPE上是bits/token，不应因命名bpb就当bits/byte；active_params浮点叶子计数也包含固定PE，非逐token访存数。
+
+现有完整WT2派生CE BF162.445573→G64B4 2.700286 nats/token，BPT3.528216→3.895689，增加.254713nats/.367473bits。Qwen原始参数按核实结构4022468096，FFN2689597440（66.8644%）；2K主要矩阵4.626252G MAC/token，8K6.438191G，非真实SC操作数/周期/能量。W8权重payload减半不等于整机节能。源码/算式/JSON/报告在qwen3/group_shared/derive_z1t_metrics.py及results/group_shared_20261028/Z1T_METRIC_MAP_ZH.md、Z1T_METRICS_DERIVED.json。
+
+无新GPU/训练/EDA/TLM、不新增数字run、不修改任何默认，GU仍FP32恢复oracle；不读取或发布Issue204未获上传批准的预算资料。当前仅既有Issue206评测的派生补充，通过同PR207交付，实际上传以Z1T_METRICS_PUBLICATION为准；PR未合并/Issue开放，Projects待既有权限同步。
+
 ## Issue206：64共享完整WT2最终发布回执（2026-10-28）
 
 完整三seedWT2结果已实际推送PR207，科学交付head a91403f03a70b2b1bbf6a55e6ba7625b98dcbd82；5关键远端文件原字节回读、Git对象/tree一致，176份本轮原件/日志Git字节核验。BF16=11.537160，G64/B4=14.883993±0.018381，相对+29.01%；每seed299077目标/292窗/所有36层及前缀，准确SDPA、原目录与采样不变。CPU77（10跳过）、GPU后缀回放、18片全封存、SHA/NLL/覆盖通过。无运行作业、不新建回查；PR未合并/Issue待审，Projects待既有权限同步。推荐/TLM/RTL默认不变，GU仍FP32oracle，无新PPA。准确回执FULL_WT2_FINAL_PUBLICATION.json。

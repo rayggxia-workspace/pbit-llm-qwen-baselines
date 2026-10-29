@@ -132,10 +132,13 @@ def time_profile(model,legacy,token,baseline_logits,output,steps):
     prof.export_chrome_trace(str(output/'TRACE.json'))
     rows=[]
     for event in prof.key_averages():
-        if event.key.startswith('gpu212::'):
+        # Kineto also creates CUDA user-annotation ranges with the same key.
+        # Their elapsed duration contains stream gaps; use CPU ranges' linked
+        # kernel totals, rather than overwriting them with CUDA range duration.
+        if event.key.startswith('gpu212::') and str(event.device_type).endswith('CPU'):
             total=getattr(event,'device_time_total',None)
             if total is None:total=event.cuda_time_total
-            rows.append({'category':event.key.split('::',1)[1],'calls':event.count,
+            rows.append({'category':event.key.split('::',1)[1],'calls':event.count,'annotation_device_type':str(event.device_type),
                 'GPU_kernel_ms_per_decode':total/1000/steps,'CPU_range_ms_per_decode':event.cpu_time_total/1000/steps})
     kernels=[e.name for e in prof.events() if str(e.device_type).endswith('CUDA')]
     if not kernels:raise RuntimeError('CUDA Profiler did not collect kernels')

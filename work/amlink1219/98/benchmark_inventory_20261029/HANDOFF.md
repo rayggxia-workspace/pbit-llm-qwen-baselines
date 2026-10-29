@@ -7,3 +7,5 @@
 原稿217检查通过；来源54文件、45个已知Git blob核验，科学正文与数表保持。发布版另验证全部相对链接、Git diff、声明文件范围与远端原字节。实际发布回执见PUBLICATION.json；当前准备阶段，未自动合并。
 
 下一步为PR评审；无需重跑任何科学实验。文献NR与完整物理PPA缺项按原报告保留。
+
+实际远端交付：[PR #213](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/213) open/未合并，科学文档提交`00f6cf26bec1da796c86b72df0eb402ad90492b7`；下一步评审，禁止将发布回执当已合并。

@@ -1,0 +1,26 @@
+{
+  "owner": "jieruiz",
+  "issue": 206,
+  "PR": 207,
+  "parent": "51546eded5f83efa8a3d8c87169dff76f2e8c42e",
+  "model": "posttrained Qwen/Qwen3-4B",
+  "protocol": "complete WT2 sliding-window;context2048/stride1024;all targets1..299077 exactlyonce;no BOS/chat/cache",
+  "comparison": "unmodified BF16 vs G64B4 frozen e888 risk4,three seeds;accurate SDPA",
+  "unchanged": "x shared64/frozen4;g/u shared64/own frozen4;WgWuWd PoTW8 tile64x64;GU64/K64;NLjoint32T128;normal g signed8-P8",
+  "shards_per_seed": 6,
+  "tasks": 18,
+  "max_parallel_GPU": 6,
+  "first_gate": "CPU tests then GPU suffix exact replay + first/tail full windows",
+  "acceptance": [
+    "source/model/text/tokenizer/config/calibration SHA",
+    "all299077 target positions once perseed",
+    "all36 layers/allprefix replaced",
+    "same BF16 scorer and per-shard comparison",
+    "immutable execution;sealed completed JSON/documents SHA"
+  ],
+  "RNG": "SHA256 issue206-full-v1/seed/global_segment;no duplicate per-window seed;independent of shard count;different from suffix sequential RNG schedule",
+  "no_training": true,
+  "no_new_PPA": true,
+  "no_TLM_default_change": true,
+  "GU_restore": "FP32 numerical oracle;not fullchain bittrue"
+}

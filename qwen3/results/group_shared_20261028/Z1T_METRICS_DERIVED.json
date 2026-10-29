@@ -1,0 +1,121 @@
+{
+  "status": "derived_from_existing_results",
+  "quality_source_sha256": "1cbaec20d2b9a480c92c2359b34d840bc3a7d895f332c837f3f9beac4ceb22d4",
+  "quality_execution_source": "5d49ea97502d2c11bf0745d50689b4c558c384d1",
+  "quality": {
+    "bf16": {
+      "mean_CE_nats_per_token": 2.4455731735507498,
+      "mean_bits_per_token": 3.528216289612751,
+      "pooled_seed_PPL": 11.537160499310174,
+      "mean_PPL": 11.537160499310174,
+      "CE_seed_sample_SD": 0.0,
+      "scored_tokens_per_seed": 299077
+    },
+    "g64b4": {
+      "mean_CE_nats_per_token": 2.7002858249366293,
+      "mean_bits_per_token": 3.8956889686188387,
+      "pooled_seed_PPL": 14.883985331114566,
+      "mean_PPL": 14.88399290152581,
+      "CE_seed_sample_SD": 0.0012354124899408528,
+      "scored_tokens_per_seed": 299077
+    },
+    "delta_CE_nats": 0.2547126513858795,
+    "delta_bits_per_token": 0.3674726790060877,
+    "arithmetic_mean_PPL_change_percent": 29.00915179619585,
+    "BPB": null,
+    "BPB_reason": "BPE token CE/log(2) is bits/token;true bits/byte needs UTF8 byte coverage aligned with scored targets;not computed."
+  },
+  "qwen": {
+    "layers": 36,
+    "hidden": 2560,
+    "FFN_width": 9728,
+    "vocab": 151936,
+    "Q_heads": 32,
+    "KV_heads": 8,
+    "head_dim": 128,
+    "FFN_weights": 2689597440,
+    "attention_projection_weights": 943718400,
+    "tied_embedding_and_lm_head_weights": 388956160,
+    "norm_weights": 196096,
+    "unique_learned_parameters": 4022468096,
+    "FFN_parameter_percent": 66.86435730029964,
+    "logical_FFN_W8_bytes": 2689597440,
+    "logical_FFN_BF16_bytes": 5379194880,
+    "weight_storage_reduction_percent": 50,
+    "storage_exclusions": "scales/labels/alignment/bias-free_Qwen;not SRAM capacity or DRAM traffic"
+  },
+  "dense_reference_work": [
+    {
+      "K_including_current_token": 2048,
+      "FFN_MAC": 2689597440,
+      "QKV_Wo_MAC": 943718400,
+      "lm_head_MAC": 388956160,
+      "QK_PV_MAC": 603979776,
+      "total_major_MAC": 4626251776,
+      "equivalent_major_FLOPs": 9252503552,
+      "FFN_MAC_percent": 58.13772293918488,
+      "excludes": "norm/rope/softmax/SwiGLU_elementwise/residual/index/control/sampling/conversion;batch1 dense decode reference,not measured throughput"
+    },
+    {
+      "K_including_current_token": 8192,
+      "FFN_MAC": 2689597440,
+      "QKV_Wo_MAC": 943718400,
+      "lm_head_MAC": 388956160,
+      "QK_PV_MAC": 2415919104,
+      "total_major_MAC": 6438191104,
+      "equivalent_major_FLOPs": 12876382208,
+      "FFN_MAC_percent": 41.775669540610146,
+      "excludes": "norm/rope/softmax/SwiGLU_elementwise/residual/index/control/sampling/conversion;batch1 dense decode reference,not measured throughput"
+    }
+  ],
+  "z1t_shape_derivations": [
+    {
+      "D": 12288,
+      "assumed_layers": 4,
+      "assumed_H": 4,
+      "assumed_kernel": 4,
+      "fan_in": 4,
+      "vocab": 50257,
+      "sequence": 256,
+      "block_weights_and_biases_and_norms_and_conv": 2162840,
+      "learned_parameters_by_code": 1237353706,
+      "embedding_parameters": 617558016,
+      "lm_head_parameters": 617608273,
+      "fixed_PE_floats": 3145728,
+      "code_float_leaf_count_including_PE": 1240499434,
+      "index_INT32_bytes_if_stored4": 6291712,
+      "note": "shape derivation,no checkpoint loaded;active_params sums all floating leaves,including PE buffer;indices int excluded;512 entry illustrative geometry,not claimed exact blog model."
+    },
+    {
+      "D": 512,
+      "assumed_layers": 4,
+      "assumed_H": 4,
+      "assumed_kernel": 4,
+      "fan_in": 4,
+      "vocab": 50257,
+      "sequence": 256,
+      "block_weights_and_biases_and_norms_and_conv": 90264,
+      "learned_parameters_by_code": 51604714,
+      "embedding_parameters": 25731584,
+      "lm_head_parameters": 25781841,
+      "fixed_PE_floats": 131072,
+      "code_float_leaf_count_including_PE": 51735786,
+      "index_INT32_bytes_if_stored4": 262400,
+      "note": "shape derivation,no checkpoint loaded;active_params sums all floating leaves,including PE buffer;indices int excluded;512 entry illustrative geometry,not claimed exact blog model."
+    }
+  ],
+  "unavailable": [
+    "matched training FLOPs/scaling law",
+    "full-system energy/token with calibrated all-module boundary",
+    "ASIC decode latency matched currentG64 risk4",
+    "same-corpus same-tokenizer Z1T quality",
+    "physical finite-sample chip results"
+  ],
+  "no_new_GPU": true,
+  "no_new_EDA": true,
+  "no_new_TLM": true,
+  "derivation_script_sha256": "811cbd83f9a99aef79ad9e0c9255b341c3fccd250c05a225172bfc7852d1d607",
+  "upstream_commit": "8c0f7e66cfea794f70e81fcf289e179d9f58ed0d",
+  "date_beijing": "2026-10-29",
+  "not_a_new_model_or_hardware_experiment": true
+}

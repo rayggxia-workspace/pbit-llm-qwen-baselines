@@ -33,3 +33,5 @@ Bivium的5拍预热是新种子后的PRNG初始化，与Ising采样链的预热�
 已核验三个原始报告包、summary/source_manifest成员及中央记录引用原件的SHA，RESULTS.json保留全部校验入口和公式。来源为既有rng-38322118-lfsr/gf64/bivium-100三run；原报告POWER_RESULTS_38322118_ZH_20261022.txt。
 
 原100MHz已报告setup/hold非负，但所有端点仍有库表外负载/部分slew告警，LFSR/GF64还有warm_left向量映射告警；状态CALCULATED_PROVISIONAL。无CTS/SDF/SPEF，不能当作精确硅片功耗。两批激励、接口不完全相同；随机端点输出负载20fF，不能把同PVT当成完整同输入验收。本轮只读复用原件，没有重跑历史矩阵，也不把其他任务尚未获上传批准的新预算带入本PR。
+
+后续整模型占比与空闲功耗见[三方案占比](18_Attention三种采样前端整模型占比.md)。

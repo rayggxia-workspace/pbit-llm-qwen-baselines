@@ -6,6 +6,8 @@ Canonical entry: [architecture_tlm](architecture_tlm/README.md). Fixed-scale W8 
 
 本轮新增[局部流水与本地端口候选](architecture_tlm/BASELINE_ZH.md)、[FFN数字核](architecture_tlm/calibration_v2_20261027/README_ZH.md)、[T32单尺度矩阵对照](architecture_tlm/matrix_single_scale_20261028/README_ZH.md)和[统一仿真台账](digital_circuit_simulation_registry/README_ZH.md)。[审核报告](work/jieruiz/55/round12/REVIEW_ZH.md)列出实际复验与未通过验收的部分；原始面积保留，后续本项目等效面积单次乘0.81。
 
+[Benchmark、比较论文与具体数据总表（37项）](architecture_tlm/benchmark_inventory_20261029/README_ZH.md)按模块、端到端和质量补充逐篇列出方案、对手、数据集、数值与证据边界。
+
 Architecture changes and paper evidence: [架构优化记录本](architecture_tlm/ARCHITECTURE_OPTIMIZATION_LOG_ZH.md). Optional configurations retain their own timing, traffic and unmeasured physical-cost boundaries.
 
 > Workspace 协作入口：[AGENTS.md](AGENTS.md)。任务通过 Issue、独立分支和 PR 交付；个人进度见 `progress/<GitHub用户名>/STATUS.md`。

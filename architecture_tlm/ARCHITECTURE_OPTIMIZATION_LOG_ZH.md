@@ -133,3 +133,8 @@ Issue204/PR209；[正式结果](int8_classic_ppa_20261028/results/REPORT_ZH.md)�
 ## 2026-10-29 同64路并行INT8与SC对照
 
 Issue204/PR209；[正式报告](int8_parallel64_20261028/results/REPORT_ZH.md)。按用户指定物理输入并行度，64乘法并行+平衡树、固定N64精确32/22位结果，满速和350ns发帧分别测量；SC面积优势成立、相同完成工作率能量优势未成立，输入SHA匹配但SC近似/数字精确。v1 hold负值与v2实际hold buffer修复原件保留；最终24窗口，中央matrix-int8-par64-204-20261029。无模型PPL/存储供数/后布局签核。
+
+
+## 2026-10-29 双随机双轴分层矩阵方案分析
+
+Issue204/PR209，[方案](../digital_circuit_simulation_registry/12_双随机分层矩阵架构评估计划.md)。保持现有共享尺度，双SNG/AND/单套累计；T32=8×4而非1024拍。精确signed popcount64+13位累计为参考，OR4+11位为独立近似；分层覆盖不提供OR互斥保证，连接独立与广播共享不等价。须计权重比较器、随机分发、SRAM读/保持、符号与尺度恢复；只读引用Issue201/206已有数值，不继承其模型精度。无新RTL/EDA/PPL、不新增run，后续实验未启动。

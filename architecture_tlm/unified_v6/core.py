@@ -24,6 +24,7 @@ class Ledger:
         self.actions = Counter()
         self.energy = defaultdict(float)
         self.missing = Counter()
+        self.action_energy = defaultdict(Counter)
 
     def action(self, name, count, category, price=None):
         if count < 0 or not math.isfinite(count):
@@ -35,7 +36,23 @@ class Ledger:
         elif count:
             if value < 0 or not math.isfinite(value):
                 raise ValueError('invalid energy price: ' + name)
-            self.energy[category] += count * value * 1e-12
+            charge = count * value * 1e-12
+            self.energy[category] += charge
+            self.action_energy[name][category] += charge
+
+
+    def replace_action_energy(self, name, energy_J, category):
+        if energy_J < 0 or not math.isfinite(energy_J):
+            raise ValueError('invalid replacement action energy')
+        previous = dict(self.action_energy[name])
+        for old_category, amount in previous.items():
+            self.energy[old_category] -= amount
+            if abs(self.energy[old_category]) < 1e-18:
+                self.energy[old_category] = 0.
+        self.energy[category] += energy_J
+        self.action_energy[name] = Counter({category: energy_J})
+        self.missing.pop(name, None)
+        return previous
 
 
 class Scheduler:

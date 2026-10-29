@@ -1,3 +1,21 @@
+# Issue210 数字MAC新标定接入 2026-10-29
+
+rayggxia；同PR211/task/210-tlm-component-audit；独立目录tmp/tlm-breakdown-issue210-20261029。新增digital_energy_20261029真实挂接主TLM及CLI，默认非融合组合代理，旧报价保留。新9＋主110测试通过；3seed旧活动重放片上1.757236W、MAC0.451426W、55nm已价154.017521mm²；原时间57.445385ms不变。
+
+新标定已推送PR211，科学提交7ec37c3ba7ba054fdf7eb2304544d64493f63b94；23文件blob与完整tree一致，四关键分支文件回读核验，127测试通过。待审、未合并；准确回执work/rayggxia/210/DIGITAL_POWER_PUBLICATION.json，旧PUBLICATION不覆盖新阶段。无新GPU/PPL/EDA/full-time run；PR209只读来源未冒写合并。500MHz/ICG/集成tile/模型轨迹及接口仍待校准；Projects无操作接口，CLI fetch仍失败但API可发布。下面旧阶段保留历史。
+
+---
+
+# Issue210 原整机TLM分项审计 2026-10-29
+
+负责人rayggxia；Issue210；task/210-tlm-component-audit；目标main，基线787489192ebfcdb61ad72edde406818f450aa3dc；独立目录tmp/tlm-breakdown-issue210-20261029。已上传PR211，待审、未合并，不自动合并。科学提交346f5ca9761ed650a06313c91475474ca56e51fd；19blob SHA一致、两JSON回读一致。实际发布以work/rayggxia/210/PUBLICATION.json为准。CLI fetch网络reset，本地HEAD待对齐，远端PR已成功交付。
+
+成果architecture_tlm/component_budget_audit_20261029：原57.445385ms/2.516212W预算14物理账目、16阶段、24服务、5功能MAC及外存/缺项表，六页Word与可复算CSV/JSON。raw面积192.738839mm²，0.81一次后156.118460mm²。MAC48.10%、FFN计数恢复34.72%、片存14.74%；原准确Softmax未用Ising。合并随机前端不伪拆价，转换等缺项明确。
+
+实际验证6项闭合/4×3原情景复算/8会计单测/6页视觉QA；无新GPU/PPL/TLM/RTL/PT。SOURCE_MANIFEST与DELIVERY_MANIFEST保留原字节SHA。HANDOFF含边界与下一步；Projects无连接器操作接口待维护者同步。下面旧任务历史原样保留，不代表其当前远端状态。
+
+---
+
 # Issue204：参数化模块能耗完整交接（2026-10-28）
 
 rayggxia；task/204-matrix-t32，同PR205，base main@d83eeb1fc6b89a3dff51b5b62bf79acf665c7166。执行基线9f762ced3d25b47bf3963fbf38ff8d321850854b；复用tmp/matrix-t32-issue204-20261028。新目录architecture_tlm/module_energy_20261028，不改旧冻结PPA或模型/整机默认。

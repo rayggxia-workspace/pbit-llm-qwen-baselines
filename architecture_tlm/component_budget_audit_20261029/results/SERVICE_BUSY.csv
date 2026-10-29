@@ -1,0 +1,25 @@
+﻿service,service_busy_ms,over_TPOT_pct,interpretation,source_stages
+外存DMA总资源,39.80299704496436,69.28841590308036,resource busy time,@dram_dma
+共享SRAM fabric,15.28600577270492,26.60963254298617,resource busy time,@sram_fabric
+普通数字MAC总资源,1.5761026666666667,2.7436541261098353,resource busy time,@mac
+FFN入口编码,0.00864,0.015040372782138331,sum of named stage reservations; may overlap other rows,SC_fixed4_P8_encode
+FFN GU采样与计数,2.1312,3.7099586195941217,sum of named stage reservations; may overlap other rows,SC_locality_gu
+FFN非线性编码与查表,0.120384,0.2095625274311274,sum of named stage reservations; may overlap other rows,SC_fixed4_GU_P8_encode;SC_true_g_signed8;SC_sigmoid_ROM9;SC_sign_and_exponent_sum
+FFN AND直连Wd采样与计数,5.80032,10.097103594408866,sum of named stage reservations; may overlap other rows,SC_locality_down
+FFN权重与系数编程,6.617088,11.518920168080344,sum of named stage reservations; may overlap other rows,SC_local_weight_program;SC_local_coefficient_program
+FFN旧恢复宏,3.309696,5.76146546707779,sum of named stage reservations; may overlap other rows,SC_bucket_shift_reduce;SC_coefficient16_restore
+FFN宽部分和更新,0.708192,1.2328092223759386,sum of named stage reservations; may overlap other rows,locality_partial_clear;locality_accumulator_update
+数制转换 数字矩阵输出及FFN输出,0.071568,0.12458442121204584,sum of named stage reservations; may overlap other rows,matrix_FP32_to_BF16;SC_wide_RNE_BF16
+Attention QKV投影算术,0.626688,1.0909283724644336,sum of named stage reservations; may overlap other rows,matrix_qkv
+Attention O投影算术,0.41472,0.7219378935426399,sum of named stage reservations; may overlap other rows,matrix_o
+RoPE算术,0.01728,0.030080745564276663,sum of named stage reservations; may overlap other rows,RoPE_bias
+摘要筛选算术,0.19584,0.3409151163951355,sum of named stage reservations; may overlap other rows,summary_update;summary_mean;screen_Q_summary;screen_max4_normalize_sigmoid;fixed_candidate_budget_repair
+筛选摘要存取,0.29683699999978547,0.5167290666120797,sum of named stage reservations; may overlap other rows,dram_summary_update;dram_summary_read;sram_summary_fill;sram_summary_operand;sram_candidate_maps
+K读入与片存搬运,4.401482794331723,7.6620303264950245,sum of named stage reservations; may overlap other rows,dram_K_selected;sram_KV_fill;sram_KV_operand
+QK打分与缩放,0.10305466666666667,0.1793959031951009,sum of named stage reservations; may overlap other rows,attention_QK;attention_score_scale
+准确Softmax含输入输出SRAM,0.223488,0.3890443092979782,sum of named stage reservations; may overlap other rows,accurate_softmax;sram_score_input;sram_probabilities
+PV采样选址与GQA合并,0.1815250099833332,0.3159958124341104,sum of named stage reservations; may overlap other rows,CDF_prefix;systematic_CDF_counts;sram_CDF_scan;sample_histogram_remap;sram_index_remap;sram_V_worklist;sram_GQA_worklist_merge;GQA_sorted_union
+V外存读取 片存装载与广播,1.80033990256636,3.134002693189428,sum of named stage reservations; may overlap other rows,dram_V_sparse_union;sram_V_fill;sram_V_broadcast
+V选择累加与平均,0.596304,1.038036394847247,sum of named stage reservations; may overlap other rows,V_repeated_add;sample_average;sram_attention_output
+Attention随机服务真实响应,0.00864,0.015040372782138331,sum of named stage reservations; may overlap other rows,rng_selector_real_response;rng_PV_real_uniform32
+lm_head算术与argmax,0.455812,0.7934701850199117,sum of named stage reservations; may overlap other rows,matrix_lm_head;stream_argmax

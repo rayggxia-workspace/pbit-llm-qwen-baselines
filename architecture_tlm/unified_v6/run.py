@@ -13,6 +13,7 @@ if __package__ in (None, ''):
     sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
     __package__ = 'architecture_tlm.unified_v6'
 from .config import load
+from ..digital_energy_20261029.model import DEFAULT_PROFILE
 from .model import FullDecode, MODES
 from .core import sha
 from .memory_profiles import apply as memory_profile,PROFILES
@@ -31,6 +32,8 @@ def source_record():
     paths = list((ROOT/'architecture_tlm/unified_v6').rglob('*.py'))
     paths += list((ROOT/'architecture_tlm/unified_v6/configs').rglob('*.json'))
     paths += list((ROOT/'architecture_tlm/random_service').rglob('*.py'))
+    paths += list((ROOT/'architecture_tlm/digital_energy_20261029').glob('*.py'))
+    paths += [ROOT/'architecture_tlm/digital_energy_20261029/ANCHORS.json']
     paths += [ROOT/'architecture_tlm/random_service/shared64_mapping.json']
     paths += [ROOT/'architecture_tlm/unified_v6/SOURCE_INDEX.json']
     paths += [ROOT/'architecture_tlm'/p for p in ['parallel_sampler_v5.py',
@@ -74,6 +77,9 @@ def compact(model, context, seed, ffn, attention, result):
         TPOT_ms=result['metrics']['TPOT_ms'],
         priced_subtotal_mJ=result['metrics']['priced_subtotal_mJ_per_token'],
         physical_energy_J=None,physical_area_mm2=None,
+        digital_MAC_profile=result.get('digital_power',{}).get('profile','legacy_proxy'),
+        digital_MAC_mJ_per_token=result['metrics'].get('digital_MAC_mJ_per_token'),
+        digital_MAC_average_W=result['metrics'].get('digital_MAC_average_W'),
         K_physical_bytes=traffic.get('K_selected_physical_bytes',0)+fused//2,
         V_physical_bytes=traffic.get('V_sparse_union_physical_bytes',0)+fused//2,
         summary_bytes=sum(v for k,v in traffic.items() if k.startswith('summary_') and k.endswith('_physical_bytes')),
@@ -112,6 +118,9 @@ def main(argv=None):
     p.add_argument('--contexts',nargs='+',type=int)
     p.add_argument('--seeds',nargs='+',type=int,default=[0,1,2])
     p.add_argument('--include-winner',action='store_true')
+    p.add_argument('--digital-energy-profile',choices=['legacy_proxy','nonfused_pair','fma2','fma3'],default=None,
+        help='latest configs default to fma2; explicit complete/legacy configs retain their profile')
+    p.add_argument('--digital-idle-keep',type=float,default=None)
     p.add_argument('--rng-backend',choices=['integrated_service','local_prng_interface'],default=None)
     a = p.parse_args(argv)
     if a.output.exists():
@@ -139,6 +148,10 @@ def main(argv=None):
                     if a.config:
                         cfg=json.loads(a.config.read_text(encoding='utf-8'))
                     cfg.update(context_tokens=context,decode_tokens=a.decode,seed=seed)
+                    if a.digital_energy_profile is not None:
+                        cfg.setdefault('digital_power', {})['profile'] = a.digital_energy_profile
+                    if a.digital_idle_keep is not None:
+                        cfg.setdefault('digital_power', dict(profile=DEFAULT_PROFILE))['idle_dynamic_keep'] = a.digital_idle_keep
                     cfg['ffn'].update(mode=ffn,bins=a.bins)
                     if a.ffn_samples is not None:cfg['ffn']['samples']=a.ffn_samples
                     if a.strata is not None:cfg['ffn']['strata']=a.strata

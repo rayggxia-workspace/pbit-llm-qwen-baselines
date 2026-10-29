@@ -1,3 +1,7 @@
+## 2026年10月29日 数字MAC能耗标定
+
+新非legacy配置默认接入[BF16数字能耗后端](digital_energy_20261029/README_ZH.md)，以新BF16乘法＋FP32加法的已测单元相加代理替换旧MAC动作价，分开活动、背景和漏电。`--digital-energy-profile`可选nonfused_pair/fma2/fma3/legacy_proxy；`--digital-idle-keep`控制未实测的空闲动态情景。不改变时序、访存、随机源或默认DDR4，也不把100MHz数据当500MHz达标。原旧预算与新重放占比均保留，完整芯片PPA仍未知。
+
 # 完整 LLM TLM：统一入口
 
 **当前正式基线：main 上的 PR183 / PR190。** 先读[基线与配置选择](BASELINE_ZH.md)：默认 `mature_ddr4`，HBM、局部部分和和资源扩容分别作为显式对照/候选。旧TLM集成分支用于历史追溯，后续修改面向main；实现仍为 `unified_v6`。

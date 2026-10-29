@@ -1,0 +1,11 @@
+﻿function,status,energy_account,area_account,time_ms,note
+FFN入口随机源与64比较器,合并计价,FFN_shared64_input_frontend,同一合并模块,2.1312,原价含LFSR、比较器及分发；不能凭纯比较器价格强行减拆。GU服务时间与计数器重叠。
+FFN非线性随机源与192路比较,合并计价,FFN_nonlinear_10_local_PRNG_endpoints,10端点共享,5.80032,每端点20比较器，200路容量覆盖192路；含随机与比较不再叠加三路比较费用。与Wd采样重叠。
+FFN输入与g/u定点编码,有动作和时间，独立PPA缺失,,,0.052416000000000004,x 92160值，g/u 700416值；不能因已计比较器就认为编码也收费。
+真正g的signed8编码,有时间，独立PPA缺失,,,0.021888,350208值；真实g驱动sigmoid，不等于分档后的概率码直接入sigmoid。
+FP32或宽定点转BF16,有时间，独立PPA缺失,,,0.071568,数字矩阵313344值，FFN最终92160值；原表未为这两类转换独立定价。
+三路AND本体与符号指数恢复,部分并入计算核，未独立闭合,counter及restore已含部分门控；额外AND控制缺独立PPA,,,179306496次两输入AND仅为动作；不能把整个非线性视为只付sigmoid LUT的能量。
+RoPE与RMSNorm,旧向量非线性代理,other_vector_and_nonlinear_proxy,,0.01728,RoPE、范数、指数与倒数没有完整同工艺阵列PPA。
+筛选器,摘要点积加概率保留与固定预算修整,MAC增量+Attention随机端+旧向量代理,共享MAC及随机端,0.19584,不是耦合Ising退火；candidate_compact等控制未独立定价。
+Ising Softmax,本锚点未启用,,,,screen_pv实际执行准确Softmax；不能从原2.516W拆出Ising，也不能把未启用理解为物理电路零成本。
+V读取,字节与时间已记录，HBM能量仅粗预算,外存64pJ/B代理+共享SRAM,共享存储；HBM控制器和PHY未价,1.80033990256636,GQA去重后真实物理读取，不能按每头样本数重复读或把面积重复分摊。

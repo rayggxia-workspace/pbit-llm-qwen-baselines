@@ -1,5 +1,7 @@
 ## 2026-10-29 Issue198：数字P8 Softmax双采样主基线完成
 
+发布已核验：科学提交75e7613c30c14856fe97a225cc00af86585f7f3e，4关键远端文件逐字一致，Issue198评论6500114569；PR199保持draft/open，未合并。详见P8_PUBLICATION.json。
+
 owner rayggxia，task/198-attention-compare，draft PR199，基线01270f9c50d9475017603bf2ee7148193280ded7；主基线本地完成，远端发布状态以P8_PUBLICATION.json为准。共用FP32→fixed11/F4、max/exp/sum/公共倒数/保质量P8；128候选/S128、4lane、100MHz、SS1.08V125C。门控前端/完整systematic/完整独立R8比较：0.83015/0.85651/6.37028nJ，面积原始88347.24/94850.28/165121.56µm²，单次×0.81后0.0715613/0.0768287/0.1337485mm²；内部概率132拍就绪，完整输出166/166/294拍。含转换/存储/紧凑Bivium/直方图/ICG，不含QK、token映射、V/物理熵/全局复位时钟树。
 
 ICG实际182/189/353个，空闲0.2084/0.2211/0.4021mW，不视寄存器保持为零功耗。v3原Bernoulli reset recovery−0.366158ns保留；v4复用同网表，启动时停钟释放复位并等20ns后启钟，仅rst_n使用setup2/hold1合同，正常数据时序不放宽；最终setup最小0.000469ns/hold0.145801ns、ICG检查非负，余量极小、无CTS/SPEF/SDF，非后布局验收。PT表外slew/load警告保留。

@@ -1,3 +1,11 @@
+## 2026-10-29：补齐Attention随机前端成本口径
+
+只读复用38322118 SS100MHz三seed原件，三个原包/summary/source_manifest SHA及五个RTL与执行快照一致；无新EDA/PPL/run。每轮128个R8按现有端点复制：LFSR128份207.957pJ/0.32703990mm²，GF64两份27.107pJ/0.02398352mm²，Bivium七份84.28pJ/0.10961040mm²；面积0.81已乘。端点已含比较/输出寄存器/控制，不再加整块旧4.71pJ；外部阈值保持、物理熵/全局分发/公平RNG未计。Bivium140字供128路、12字丢弃收费；不是6.4实例。GF64联合相关性已知，Attention默认拒绝，不能直接用其低价验收。P8与旧P12/P16精度不同；修正此前未计RNG时寄存器明显胜过SRAM的判断：Bivium与SRAM81.4–82.9pJ已接近，完整方案待匹配质量/成本。
+
+正式rng_cost_20261029/REPORT_ZH.md、RESULTS.json、derive.py，功耗面积17专题；只新增派生参考，中央90条run原字节不变。PR199保持draft/open；远端回执RNG_COST_PUBLICATION.json。
+
+---
+
 ## 2026-10-29：128个128bit SRAM bank测试完成
 
 继续Issue198 / task/198-attention-compare / draft PR199；本人rayggxia。生成38454852、阵列38454992、接口38455163完成。128×1编译拒绝；实际128个64×2 SRAM加读出选位逻辑，2KiB有效容量。原始面积171320.126912μm²、×0.81等效0.13876930mm²/头；每轮128bit约81.400–82.920pJ（各模式三seed均值），32头复制4.440618mm²。12功能回放/3072向量/393216bit通过，36PT窗口（含原18）均保存。下降沿输入协议最终setup=2.418762ns/hold=0.431146ns；原上升沿输入合同hold=-0.3031ns保留。最终18窗口net活动100%；厂商memory输出无组合function提示保留。无CTS/SPEF/SDF、无GPU/PPL。

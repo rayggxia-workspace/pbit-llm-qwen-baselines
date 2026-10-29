@@ -1,3 +1,7 @@
+## Issue206：Z1T指标补充已发布（2026-10-29）
+
+派生报告、计算脚本及源码SHA已实际推送PR207，科学提交d705bb09b311b5ce69c726086c7a98fba13a683e；4关键远端文件逐字回读、Git tree/对象一致。原始PPL结果及默认不变，无新GPU/EDA/TLM。Z1T_METRICS_PUBLICATION.json保留准确回执；PR待审未合并、Issue开放，Projects仍待既有权限同步。
+
 ## Issue206：Z1T源码与已有评测指标派生（2026-10-29）
 
 只读核实Extropic上游8c0f7e66五个源码SHA：稀疏gather+加权求和/偏置、DyT、AFTConv（Q/V为D，K为H）、MLP D→4D→D、独立稠密clf；model.py包装clf外线性。TL+TM同时开时第一投影后有连续两次tanh；公开前向没有32样本/4bit执行循环。train.py CE/ln2在GPT2BPE上是bits/token，不应因命名bpb就当bits/byte；active_params浮点叶子计数也包含固定PE，非逐token访存数。

@@ -1,6 +1,6 @@
 # Issue210 数字MAC标定接入更新 2026-10-29
 
-用户追加授权修改TLM标注与功耗。同task/210-tlm-component-audit、PR211；实际新发布见DIGITAL_POWER_PUBLICATION.json，未有回执前仅本地完成，旧回执不代表本增量。
+用户追加授权修改TLM标注与功耗。同task/210-tlm-component-audit、PR211；新标定已推送PR211，科学提交7ec37c3ba7ba054fdf7eb2304544d64493f63b94，tree7341acc61847239096ce9c424e39c43ec61acf8a；23文件逐blob核验和4关键分支文件回读通过。待审、未合并；准确发布见DIGITAL_POWER_PUBLICATION.json，旧回执不代表本增量。
 
 已实现architecture_tlm/digital_energy_20261029及unified_v6四个挂接文件，默认nonfused_pair，FMA2/3可选，legacy_proxy保留。Ledger逐动作归账确保替换旧收费；真实FullDecode/CLI小形状验证，主110＋新9测试通过。新复算3原摘要SHA与14项账目闭合；MAC0.451426W/片上1.757236W/154.017521mm²，TPOT57.445385ms不变。无新EDA/GPU/PPL/完整时序；PR209数据只读，不发布其本地未批准预算。
 

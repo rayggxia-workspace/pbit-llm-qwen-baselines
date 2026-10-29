@@ -2,7 +2,7 @@
 
 rayggxia；同PR211/task/210-tlm-component-audit；独立目录tmp/tlm-breakdown-issue210-20261029。新增digital_energy_20261029真实挂接主TLM及CLI，默认非融合组合代理，旧报价保留。新9＋主110测试通过；3seed旧活动重放片上1.757236W、MAC0.451426W、55nm已价154.017521mm²；原时间57.445385ms不变。
 
-当前本地完成待本增量发布，实际以work/rayggxia/210/DIGITAL_POWER_PUBLICATION.json为准，旧PUBLICATION不覆盖新任务阶段。无新GPU/PPL/EDA/full-time run；PR209只读来源未冒写合并。500MHz/ICG/集成tile/模型轨迹及接口仍待校准；Projects无操作接口，CLI fetch仍失败但API可发布。下面旧阶段保留历史。
+新标定已推送PR211，科学提交7ec37c3ba7ba054fdf7eb2304544d64493f63b94；23文件blob与完整tree一致，四关键分支文件回读核验，127测试通过。待审、未合并；准确回执work/rayggxia/210/DIGITAL_POWER_PUBLICATION.json，旧PUBLICATION不覆盖新阶段。无新GPU/PPL/EDA/full-time run；PR209只读来源未冒写合并。500MHz/ICG/集成tile/模型轨迹及接口仍待校准；Projects无操作接口，CLI fetch仍失败但API可发布。下面旧阶段保留历史。
 
 ---
 

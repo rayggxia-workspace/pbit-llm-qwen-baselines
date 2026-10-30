@@ -1,0 +1,78 @@
+{
+  "scope": "two-paper reading and derived arithmetic, not new hardware/model execution",
+  "date": "2026-10-30",
+  "issue": 212,
+  "PR": 214,
+  "owner": "rayggxia",
+  "papers": [
+    {
+      "name": "HSA",
+      "url": "https://arxiv.org/pdf/2507.09010v1",
+      "bytes": 3821579,
+      "sha256": "24a5a6cd0b06cbaaa40304912a1bdd44dd718684e02350fc59439921f2a5136c"
+    },
+    {
+      "name": "KELLE",
+      "url": "https://arxiv.org/pdf/2510.16040v1",
+      "bytes": 2474265,
+      "sha256": "69fa6db1f4a272dc54ca5d51fec75a4b3b6b4e6e90dd74ba8e90630bff7b1bb5"
+    }
+  ],
+  "visual_review": {
+    "HSA": [
+      5,
+      6
+    ],
+    "KELLE": [
+      7,
+      8,
+      10
+    ]
+  },
+  "Qwen_shape": {
+    "architectures": [
+      "Qwen3ForCausalLM"
+    ],
+    "vocab_size": 151936,
+    "hidden_size": 2560,
+    "intermediate_size": 9728,
+    "num_hidden_layers": 36,
+    "num_attention_heads": 32,
+    "num_key_value_heads": 8,
+    "head_dim": 128,
+    "attention_bias": false,
+    "max_position_embeddings": 40960,
+    "tie_word_embeddings": true,
+    "model_type": "qwen3",
+    "qk_norm": true
+  },
+  "Qwen_shape_source": {
+    "path": "architecture_tlm/scheduling_v2_20261027/results_early_dma/case_1/RESULT_SUMMARY.json",
+    "sha256": "1554eb70f8bc77473664d0abede19abd4ee0692a1722ca4b6c63ea64ae6765b9"
+  },
+  "calculations": {
+    "HSA_table_I_SILO_output_per_full_request_second": 35.25,
+    "HSA_table_I_LISO_output_per_full_request_second": 8.64375,
+    "HSA_table_II_SILO_total_tokens_per_second_derived": 74.1258,
+    "HSA_table_II_SILO_output_per_full_request_second_derived": 69.4929375,
+    "HSA_table_II_LISO_total_tokens_per_second_derived": 157.33368,
+    "HSA_rough_1_3B_W4_weight_GB_excluding_metadata": 0.65,
+    "HSA_rough_weight_only_floor_ms_at_51_2GBs": 12.6953125,
+    "Kelle_illustration_7B_W8_weight_sweep_ms_at_64GBs": 109.375,
+    "Kelle_illustration_B16_weight_only_aggregate_tokens_per_second_upper_bound": 146.28571428571428,
+    "Qwen3_4B_BF16_x_bytes_per_layer_per_token": 5120,
+    "Qwen3_4B_BF16_K_plus_V_bytes_per_layer_per_token": 4096,
+    "Qwen3_4B_store_x_instead_of_KV_capacity_ratio": 1.25,
+    "Kelle_Llama2_7B_WT2_relative_PPL_change": 0.04936014625228524,
+    "Kelle_Llama2_7B_PG19_relative_PPL_change": 0.19790675547098013
+  },
+  "report_sha256": "c39b666d9d331b41489935daad6527313f9bf28582fa862ae8a46877671eed03",
+  "script_sha256": "41bffac6cc1eafa7ee78ac7123bc465e1bc0fb75f59589d002eedf054521f427",
+  "limitations": [
+    "HSA Table I and II do not numerically close; cause not established",
+    "Output/full-request rate is not pure decode TPOT",
+    "Kelle absolute tokens/s unknown from normalized main figures",
+    "0.65GB and7GB are illustrative parameter-size estimates, not traffic traces",
+    "No new PPL/TLM/EDA; default unchanged; PR213 author files not modified"
+  ]
+}

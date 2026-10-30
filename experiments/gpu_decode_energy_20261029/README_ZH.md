@@ -1,3 +1,7 @@
+## 2026-10-30 同卡长窗口复测
+
+最新[完整报告](../../../results/gpu_decode_energy_20261029/remeasure_20261030/REPORT_ZH.md)、[复测代码与协议](remeasure_20261030/README_ZH.md)。包含固定冷却对照、14类模块和独立Nsight，保留所有失败及原测量。
+
 # Qwen3-4B decode：GPU 实测与 TLM 对照（Issue212）
 
 对象为后训练版 `Qwen/Qwen3-4B`，revision `1cfa9a7208912126459214e8b04321603b3df60c`。B1，BF16 权重/输入，保留原生归一化与融合内核的内部精度；Transformers SDPA。测量不修改 FFN/Attention 的数学计算，不做训练或 PPL 评测。

@@ -1,4 +1,4 @@
-"""Same-temperature-start whole-model repeats; independent Nsight trace mode.
+"""Idle-cooldown whole-model repeats; independent Nsight trace mode.
 
 Energy invocation runs without a profiler. --trace-only is a separate invocation
 under nsys, never a source of primary joules or TPOT. Model math is unchanged.
@@ -39,8 +39,9 @@ def main():
             controlled_source_sha256=expected,prepared_sha256=c.digest(a.prepared),revision=prepared['revision'],
             token_ids_sha256=c.tensor_hash(ids),uuid_sha256=hashlib.sha256(uuid.encode()).hexdigest(),
             trace_only=a.trace_only,torch=torch.__version__,batch=1,model=prepared['model']['id'],dtype='BF16',
-            target_start_temperature_C=40,tolerance_C=1,weight_change=False,
-            protocol='interleaved three modes, three repeats; restore 40+/-1C before every window; no clock/power changes'))
+            target_start_temperature_C=None,cooldown_minimum_s=10,cooldown_maximum_s=30,weight_change=False,
+               CPU_affinity=sorted(os.sched_getaffinity(0)),
+               protocol='four rotating modes, three repeats; calibrate before >=10s idle cooldown; last five idle temperature samples span <=1C; actual start temperature recorded, not thermostated; no clock/power changes'))
         if a.trace_only:
             class NVTX(c.Instrument):
                 def call(self,category,name,fn,*args,**kwargs):
@@ -70,20 +71,32 @@ def main():
         def reset_temperature(heater):
             start=time.perf_counter();states=[]
             torch.cuda.synchronize()
-            while time.perf_counter()-start<120:
+            while time.perf_counter()-start<30:
+                time.sleep(1.)
                 state=meter.state();state['elapsed_s']=time.perf_counter()-start;states.append(state)
-                if 39<=state['temperature_C']<=40:
-                    time.sleep(.3)
-                    final=meter.state()
-                    if 39<=final['temperature_C']<=40:
-                        return dict(states=states,seconds=time.perf_counter()-start,state_at_release=final,pass_target=True)
-                elif state['temperature_C']<39:
-                    until=time.perf_counter()+.25
-                    while time.perf_counter()<until:
-                        for _ in range(8):heater()
-                        torch.cuda.synchronize()
-                else:time.sleep(.5)
-            raise RuntimeError('could not restore target start temperature; do not silently accept drift')
+                if state['elapsed_s']>=10 and c.stable_temperature(states):
+                    break
+            assert c.stable_temperature(states), 'idle temperature did not settle within 30s'
+            return dict(states=states,seconds=time.perf_counter()-start,state_at_release=meter.state(),
+                        pass_target=True,method='>=10s idle; last five samples span<=1C; not absolute-temperature control')
+        def ready_window(fn,batch,repeat):
+            # Calibrated batch is supplied BEFORE thermal reset, not inside here.
+            from meter import PowerSampler,integrate
+            sampler=PowerSampler(meter,interval=.05).start()
+            before=meter.state();start=torch.cuda.Event(enable_timing=True);end=torch.cuda.Event(enable_timing=True)
+            torch.cuda.synchronize();e0=meter.energy_mJ();t0=time.perf_counter();start.record();count=0
+            while time.perf_counter()-t0<10.:
+                for _ in range(batch):result=fn()
+                torch.cuda.synchronize();count+=batch
+            end.record();torch.cuda.synchronize();t1=time.perf_counter();e1=meter.energy_mJ()
+            row=c.counter_result(e0,e1,t0,t1,count)
+            row.update(repeat=repeat,gpu_ms=start.elapsed_time(end),state_before=before,state_after=meter.state(),
+                requested_window_s=10.,synchronization_batch=batch)
+            sampler.finish();assert not sampler.errors
+            integral=integrate(sampler.samples,t0,t1)
+            row.update(power_integral_J=integral,power_integral_relative_difference=integral/row['energy_J']-1,
+                power_samples=[[t-t0,p] for t,p in sampler.samples])
+            return row
         for context in [2048,8192]:
             folder=a.output/str(context);folder.mkdir()
             legacy,token,_=c.build_prefix(model,ids[:context-1].unsqueeze(0).to('cuda'))
@@ -94,26 +107,35 @@ def main():
             with static:
                 static_work=lambda:static.run(token)
                 sg,so=c.graph_callable(static_work);assert torch.equal(so.logits,ref)
-            results={mode:[] for mode in ['original_eager','original_graph','static_KV_graph']}
-            # Latin-square order distributes slow ambient drift over modes.
-            orders=[['original_eager','original_graph','static_KV_graph'],
-                    ['original_graph','static_KV_graph','original_eager'],
-                    ['static_KV_graph','original_eager','original_graph']]
+            results={mode:[] for mode in ['original_eager','original_graph','static_KV_graph','native_greedy']}
+            functions={'original_eager':original,'original_graph':og.replay,'static_KV_graph':sg.replay}
+            batches={}
+            for mode,fn in functions.items():
+                torch.cuda.synchronize();t=time.perf_counter()
+                for _ in range(32):fn()
+                torch.cuda.synchronize();per=(time.perf_counter()-t)/32
+                batches[mode]=max(1,int(.2/per))
+            # Rotate the four modes over three repetitions to spread ambient drift.
+            orders=[['original_eager','original_graph','static_KV_graph','native_greedy'],
+                    ['original_graph','static_KV_graph','native_greedy','original_eager'],
+                    ['static_KV_graph','native_greedy','original_eager','original_graph']]
             for repeat,order in enumerate(orders):
                 for mode in order:
                     c.exclusive(uuid)
                     thermal=reset_temperature(og.replay)
-                    fn={'original_eager':original,'original_graph':og.replay,'static_KV_graph':sg.replay}[mode]
-                    row=c.measure_window(fn,meter,10.,repeat,telemetry=True)
+                    if mode=='native_greedy':
+                        row=c.native_greedy(model,legacy,token,meter,context,256,1)['repeats'][0]
+                        row['repeat']=repeat
+                    else:
+                        row=ready_window(functions[mode],batches[mode],repeat)
                     row.update(thermal_reset=thermal,mode=mode)
-                    assert 39<=row['state_before']['temperature_C']<=41
                     results[mode].append(row)
                     c.save(folder/(mode+'_'+str(repeat)+'.json'),row)
                     c.emit(dict(event='paired',context=context,mode=mode,repeat=repeat,
                         ms=row['wall_ms_per_item'],J=row['energy_mJ_per_item']/1000,
                         start_C=row['state_before']['temperature_C'],end_C=row['state_after']['temperature_C']))
             c.save(folder/'SUMMARY.json',{mode:c.summarize(rows) for mode,rows in results.items()})
-            del og,oo,sg,so,static,legacy,token,ref,original,static_work,fn
+            del og,oo,sg,so,static,legacy,token,ref,original,static_work,fn,functions
             gc.collect();torch.cuda.empty_cache()
         c.exclusive(uuid)
         manifest={str(f.relative_to(a.output)):dict(sha256=c.digest(f),bytes=f.stat().st_size)

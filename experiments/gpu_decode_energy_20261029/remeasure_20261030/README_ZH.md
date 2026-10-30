@@ -5,7 +5,7 @@
 ## 测什么
 
 - `controlled_remeasure.py`：同一GPU的2K/8K，原HF eager固定forward、原Graph、静态KV Graph、真实连续贪心生成256步；14类模块隔离回放，每类包含所有36层的同类调用。整体10秒×3、模块5秒×3；移除原来对小算子不合适的100000次上限。每个阶段温度筛查、窗口温度和时钟记录，未通过筛查照实保留。
-- `paired_thermal.py`：每个整模型窗口前恢复40±1°C起始温度（预热/校准后的实际起始状态还须满足范围），三个方式以拉丁方次序交错，各10秒×3；用来识别连续窗口温升造成的偏差。它不锁GPU时钟，不宣称外部电表精度。
+- `paired_thermal.py`：先校准，再在每个窗口前空闲至少10秒，最后五个约1s温度样本跨度≤1°C；四种方式轮换，各三个重复，真实连续256步另列。记录实际起温，不宣称恒温或锁频。先前40°C控制失败已保留，不放宽原门限伪装通过。
 - 同一脚本`--trace-only`：独立进程在Nsight Systems下运行2K/8K、各四次静态KV前向，14类NVTX；原始模型logits逐位一致。能量测量进程不在Profiler下运行，跟踪时间不替代主TPOT。
 - `build_controlled_report.py`：校验下载封存原件的SHA、计量单位和调用数，区分实际生成和固定forward，输出整体表/模块表。CPU标注关联的kernel总时间包含所有层，不能再乘36。
 
@@ -35,3 +35,5 @@ nsys stats --report nvtx_kern_sum --format csv --output NEW_STATS NEW_TRACE.nsys
 `python -m unittest test_controlled_remeasure -v`：温度筛查、能量mJ/J与单位时间/调用换算、坏计数器边界。真实模型门禁包含权重/语料/token SHA、36层调用覆盖、插桩与Graph逐位一致。无新PPL、训练或电路PPA。
 
 结果位置：`results/gpu_decode_energy_20261029/remeasure_20261030/`；公开速度来源和不可直接比较的口径写在报告，不把TDP推算当作公开实测J/token。
+
+最终封存：Slurm3440（预热长窗与14类模块）和3443（固定冷却对照＋独立Nsight）均completed。数据/结论见结果报告；大TRACE和nsys-rep/SQLite留既定服务器存储并记录SHA。原始CSV可含CRLF，上传不得通过read_text()归一化其字节。

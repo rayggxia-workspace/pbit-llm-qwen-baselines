@@ -108,3 +108,38 @@ Issue186/PR192；[结果与决定](local_ports_20261027/RESULTS_ZH.md)、[结构
 三不可变源码/Slurm3180、3188、3191共12新项全部completed＋2旧基线，58软件检查，算术/实际物理字节/真实RNG输出/配置SHA守恒。单层＋全词表SC8.322292→6.816810ms，数字FFN8.936880→7.172958ms；非整36层TPOT。只升频收益0.46%；窄DMA反而变慢的负例保留，修正为响应缓冲可短时宽突发、HBM外部仍实际限制。等宽共享/独立/暴露宏时间相同，选择简单共享宽通路，不以增加端口数冒充收益。
 
 宏cell面积68.0473mm²不变，SRAM动作能量不变，非整片PPA；宽读出/driver/mux/gearbox/CTS仍待校准，不能免费套旧功耗。Ising sink未适配，当前筛选＋准确Softmax＋PV。全36层新结果未跑，不将代表项×36；默认main旧配置保留。唯一包归档/源/执行/原件/验证/发布回执均在LOCAL_PORTS_*；数字台账07仅索引，无新增电路run。
+
+
+## 2026-10-28 BF16数字对照的能耗预算（Issue204）
+
+[研究报告](bf16_baseline_20261028/REPORT_ZH.md)与[可复算脚本](bf16_baseline_20261028/estimate.py)：BF16乘法/FP32累加为主合同；28nm成熟PE摘要能效的条件N64换算72.67pJ已接近SC54计算核69.46pJ，不能预设数量级节能。旧本工艺BF16 SS/TT均时序违例，不作为有效100MHz基线。补测候选是专用融合MAC/小型DOT共享处理与真实反馈调度；保留同量化INT8控制。仅研究/预算，无新电路仿真、模型质量或整机结果；面积raw×0.81仅用于本项目已有面积，不缩放外部论文工艺或能量。
+
+
+## 2026-10-28 BF16二轮补充 已找到28nm阵列完整证据
+
+Issue204/PR209；[文献复核](bf16_baseline_20261028/LITERATURE_RECHECK_ZH.md)纠正首轮检索不足，MFSA28nm BF16/FP32后布线稳态功耗可作外部参考；65nm FlexBlock的BF16 SA含利用率影响，不能当纯MAC动作能量。原摘要条件值保留版本边界，不再作为唯一依据。两PDF/表格原图SHA核对、数值归一与吞吐计数通过；无新EDA/模型或台账run，55nm同条件PPA仍待独立表征。
+
+
+## 2026-10-28 成熟BF16本工艺表征与INT8经典划分
+
+Issue204/PR209；[完整结果](bf16_ppa_20261028/results/REPORT_ZH.md)、[INT8划分](bf16_ppa_20261028/INT8_CLASSIC_ZH.md)。五top/45PT窗口；N64四lane非融合DOT4实际计入启动/反馈/收尾，classic FMA流水参数不代替完整帧验证。源与原件统一登记matrix-bf16-204-20261028。复位释放契约另做同网表STA，原始失败与标量hold负余量保留；不称物理签核或同质量全芯片优势。无新模型/PPL。
+
+
+## 2026-10-28 经典INT8折叠DOT4与SC面积审计
+
+Issue204/PR209；[正式结果](int8_classic_ppa_20261028/results/REPORT_ZH.md)、[面积复核](int8_classic_ppa_20261028/results/AREA_EXPLANATION_ZH.md)。2配置/18窗口，INT32与N64精确INT22；同BF16派生数值比较，SC当前核更大的组合逻辑与四路数字时分复用均明确，不按AND直觉改面积。中央run matrix-int8-classic-204-20261028；v1/v2映射X失败保留、v4真实控制reset验证。无新模型/PPL、存储与物理签核。
+
+
+## 2026-10-29 同64路并行INT8与SC对照
+
+Issue204/PR209；[正式报告](int8_parallel64_20261028/results/REPORT_ZH.md)。按用户指定物理输入并行度，64乘法并行+平衡树、固定N64精确32/22位结果，满速和350ns发帧分别测量；SC面积优势成立、相同完成工作率能量优势未成立，输入SHA匹配但SC近似/数字精确。v1 hold负值与v2实际hold buffer修复原件保留；最终24窗口，中央matrix-int8-par64-204-20261029。无模型PPL/存储供数/后布局签核。
+
+
+## 2026-10-29 双随机双轴分层矩阵方案分析
+
+Issue204/PR209，[方案](../digital_circuit_simulation_registry/12_双随机分层矩阵架构评估计划.md)。保持现有共享尺度，双SNG/AND/单套累计；T32=8×4而非1024拍。精确signed popcount64+13位累计为参考，OR4+11位为独立近似；分层覆盖不提供OR互斥保证，连接独立与广播共享不等价。须计权重比较器、随机分发、SRAM读/保持、符号与尺度恢复；只读引用Issue201/206已有数值，不继承其模型精度。无新RTL/EDA/PPL、不新增run，后续实验未启动。
+
+
+## 2026-10-29 双随机SRAM存内比较主架构与旧估算延续
+
+Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内比较估算口径与证据.md)。用户要求保留SRAM驻留/本地比较，双全局LFSR不变，DFF仅对照。沿旧宏本体+邻近SNG/分发+存储节点带载增量估算；普通预读保持及M1单seed前端数据各保留边界，不能当完整定制CIM。新W7比较与接口动态待测，不每拍重复收费普通全读，也不把缺项当0。无新RTL/EDA/SPICE/PPL，旧run未改。

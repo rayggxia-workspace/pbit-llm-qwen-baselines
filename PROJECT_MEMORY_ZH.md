@@ -1855,3 +1855,7 @@ PR119/120/122/125/126/127/130已通过集成PR131实际合并，集成SHA `69667
 用户指出当前应较慢采样，复核确认质量主链硬编码0.5us，不能把旧比较器rho约0.72～0.74泛化为慢速采种质量。复用9条已签SHA波形，72项间隔重分析/216 Pearson交叉核验/9数组SHA通过；10us固定时间lag的两款旧比较器三seed范围0.027～0.052，20us约0.018～0.047。单相位长间隔样本少，不能宣布IID或长间隔更差；P1偏置不会随间隔自动消失。VN原负相关仅属0.5us场景。
 
 RandomNetwork未规定同一物理源采样间隔；SeedWords.interval是调理32bit字间隔，1亿拍换种在100MHz约1s，但不决定包内原始bit间隔。下一轮需显式物理时间戳/同源间隔及调理时序，再贯穿各层。入口architecture_tlm/random_service/quality/results/sampling_review_20261023/REPORT_ZH.txt；用户副本远端上传/rng_sampling_review_20261023.txt。沿用Issue95/PR134/task/95-rng-quality与现有工作目录，不改原189案例、旧报告或正式模型默认，不新增EDA/RTL/PPL/数字实验。台账原run补充后处理索引，不虚增实验数量。补充远端交付状态以work/rayggxia/95/quality/SAMPLING_PUBLICATION.json为准；Projects未同步，PR不自动合并。
+
+## 2026-10-30 Issue98：小面积pJ级p-bit证据调研
+
+amlink1219补充分工；入口`architecture_tlm/pbit_sampler_feasibility_20261030/README_ZH.md`。14项原始来源与2个版本记录，保留1pJ/81µm² SPAD、6.95pJ/6551µm² CMOS和Extropic约3×3µm²实物RNG的不同边界；13fJ Z1T、2fJ DTCA均为模型，不替代本工艺PPA。无新仿真、模型或物理测量，不接管95/152/184。来源与78项文档核验在同目录JSON；本人交接`work/amlink1219/98/pbit_sampler_20261030`，发布状态见PUBLICATION，不自动合并。

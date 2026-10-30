@@ -1,6 +1,6 @@
 ## 2026-10-30 同卡长窗口复测
 
-最新[完整报告](../../../results/gpu_decode_energy_20261029/remeasure_20261030/REPORT_ZH.md)、[复测代码与协议](remeasure_20261030/README_ZH.md)。包含固定冷却对照、14类模块和独立Nsight，保留所有失败及原测量。
+最新[完整报告](../../results/gpu_decode_energy_20261029/remeasure_20261030/REPORT_ZH.md)、[复测代码与协议](remeasure_20261030/README_ZH.md)。包含固定冷却对照、14类模块和独立Nsight，保留所有失败及原测量。
 
 # Qwen3-4B decode：GPU 实测与 TLM 对照（Issue212）
 

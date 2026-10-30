@@ -1,3 +1,15 @@
+# Issue212：RTX5090 Qwen3-4B decode（2026-10-29）
+
+负责人rayggxia；分支task/212-gpu-decode-profile；base main7874891；工作目录tmp/gpu-decode-issue212-20261029。Slurm3389/3398/3399均完成，无运行中作业。远端真实执行源码20d46ec7；源快照7911a0aff763f0dc。
+
+2K原生25.720ms/5931.5mJ，CUDA Graph固定forward10.531ms/3927.7mJ；8K原生25.756ms/8437.8mJ，Graph固定forward16.774ms/7823.2mJ。8项CPU测试、逐位logits、36层计数、全部远端产物SHA通过。模块回放能量不可加；TLM条件估计未闭合，禁止把条件比值当实测节能。
+
+成果：results/gpu_decode_energy_20261029/REPORT_ZH.md；代码：experiments/gpu_decode_energy_20261029/；交接：work/rayggxia/212/HANDOFF.md。代码/结果本地完成待推送同一任务PR；实际PR号与阶段以Issue212回执为准，不自动合并。大trace留本人服务器任务存储。后续动作：核对远端发布与PR、等评审；不重跑健康测量。
+
+---
+
+以下保留此前个人状态记录。
+
 # Issue204：参数化模块能耗完整交接（2026-10-28）
 
 rayggxia；task/204-matrix-t32，同PR205，base main@d83eeb1fc6b89a3dff51b5b62bf79acf665c7166。执行基线9f762ced3d25b47bf3963fbf38ff8d321850854b；复用tmp/matrix-t32-issue204-20261028。新目录architecture_tlm/module_energy_20261028，不改旧冻结PPA或模型/整机默认。

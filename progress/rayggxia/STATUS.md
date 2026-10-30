@@ -4,7 +4,7 @@
 
 本轮模型小测已完成：同后训练Qwen3-4B/准确SDPA、8固定片段共1024目标、全36FFN及前缀；BF1613.566049、原17.921546±.266163、单g数值码raw9=17.511391±.246922、raw8=17.882045±.286634。直接复用裁剪幅值码的另一族严重失败，原件及原因保留。没有新训练/尺度拟合/完整WT2/RTL/PPA或默认变更。
 
-26CPU通过2CUDA跳过、GPU28通过；86冻结依赖源、模型/语料/尺度/计分位置/118原件SHA及两归档逐成员核验，旧BF16/三seed严格重放。3502/3503/3504及3507/3508/3509完成，最终队列为空；3499测试参考dtype失败及未执行依赖撤销有恢复记录。正式experiments/gu_unified_codec_20261030/results/REPORT_ZH.md；交接work/rayggxia/204/unified_gu/HANDOFF.md。仅本轮小型代码/结果增量交付，实际PR/提交/回读见PUBLICATION.json；未合并、不关闭Issue。项目看板无已知写工具，待维护者同步。
+26CPU通过2CUDA跳过、GPU28通过；86冻结依赖源、模型/语料/尺度/计分位置/118原件SHA及两归档逐成员核验，旧BF16/三seed严格重放。3502/3503/3504及3507/3508/3509完成，最终队列为空；3499测试参考dtype失败及未执行依赖撤销有恢复记录。正式experiments/gu_unified_codec_20261030/results/REPORT_ZH.md；交接work/rayggxia/204/unified_gu/HANDOFF.md。仅本轮小型代码/结果增量交付，科学交付934ab21a、PR219 open待审，23文件Git树和5个关键文件读回一致；回执见work/rayggxia/204/unified_gu/PUBLICATION.json。未合并、不关闭Issue。项目看板无已知写工具，待维护者同步。
 
 下一步为两种格式的编码/解码、LUT、SRAM接口模块PPA及完整WT2确认；本轮不自动追加执行。下方原公开状态保留。
 
@@ -48,4 +48,3 @@ Issue95随机源模型/RTL已由本账号发布PR97，开放待审未合并；�
 PR97已合并（上文旧状态为历史）；当前新增离线架构核对图，源码/数值模型/RTL未改。task/95-rng-architecture-view基于eb317e4f，目标pbit-tlm-attention-details-20261016。12场景372沿由原模型导出；11模块交互及1440/768/390宽度浏览器检查通过，无JS错误。文件architecture_tlm/random_service/architecture-view.html；恢复work/rayggxia/95/VISUALIZATION_HANDOFF.md。已注明PR103小接口与38322118后续布局前PPA边界。待文档PR评审与用户核对，不代表整机已全部换源；Projects同步未核实。本节不改变Issue98记录。
 
 可视化交付PR：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/113，开放待审、未合并；源提交bc8561813c110b62829287661c1303c65a2d14b0。远端HTML已读回与本地逐字符一致。
-

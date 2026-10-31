@@ -1,5 +1,7 @@
 # 当前结果：8位比较器与32路共享Sigmoid
 
+[当前T64重算结果](../nonlinear_wd_t64_20261031/README_CURRENT_ZH.md)：64次有效采样、20位加权累加及OR4的9/10位对照。旧T32数据保留。
+
 [与Attention数字p-bit的J/bit交叉核对](../pbit_crosscheck_20261031/README_ZH.md)：区分随机供给、概率保持、纯采样及完整Ising/Wd；共享LUT省面积不自动等于最低每比特能量。已有结果离线重算，无新EDA。
 
 [数字非线性＋Wd对照流程与条件预算](../nonlinear_digital_comparison_20261031/PLAN_ZH.md)：同g/u码与共享尺度，Sigmoid/融合门控表→整数乘法→z9重编码→A9×W8；这是流程分析，尚无完整数字集成PPA。

@@ -296,3 +296,9 @@ and remain subject to their own licenses and terms.
 ## 可训练概率 Attention（Issue138 / PR142）
 
 [赢家保持与校正拒绝 PyTorch 模块](experiments/trainable_pbit_attention/README_ZH.md)提供真实随机前向、完整轨迹训练梯度和使用示例。该模块属于可训练研究参考，尚无大模型微调权重或硬件PPA；[main集成交接](work/jieruiz/138/MAIN_HANDOFF_ZH.md)记录来源与验证范围。
+
+<!-- santa-method-comparison-20261031 -->
+
+### 2026-10-31 SANTA / SANTA++ 方法与项目重合比较（Issue139）
+
+[比较报告](architecture_tlm/research_readings/santa_comparison_20261031/SANTA_VS_SANTAPP_PROJECT_ZH.md)：V 地址采样对应 SANTA，摘要筛选后精算对应 SANTA++，随机 FFN 另与 Bernoulli QK 相近；区分候选内拒绝校正与 team 纳入校正。本轮为文献/固定源码核对，无新模型或 PPA 运行。完整版本及哈希见报告目录。

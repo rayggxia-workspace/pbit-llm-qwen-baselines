@@ -1,38 +1,9 @@
-# rayggxia 当前任务
+## 当前Issue204：非线性到Wd实测及数字对照流程
 
-## Issue112 资源预算与片上存储探索计划
+负责人rayggxia；PR219，task/204-gu-unified-code，base task/206-group64-scale，open待审未合并。SC六配置科学结果26c4dd72613c9c44e9514d2d7df7c455b2b74c56：weighted全LUT436.6733pJ/340ns、共享CE724.02pJ/660ns、共享ICG566.61pJ/660ns；均8输出。66PT、RTL/门级各13614检查完成，原作业全部结束，勿重跑。
 
-- 更新时间：2026-10-22；负责人：rayggxia（本轮连接器已核实）。
-- 分支：task/112-resource-budget-plan；PR base：pbit-tlm-attention-details-20261016@eb317e4f6fb1b0d8844887401f3275f128ef8a83。
-- 工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/resource-budget-issue112-20261022，独立最小稀疏worktree。
-- 阶段：中文实施计划已上传PR114，ready/open待审、未合并；来源提交18c2a62f4a6cee4cf2a7df62594510a35073639d，4份来源文件远端回读一致。最终回执见work/rayggxia/112/PUBLICATION.json及Issue112，不自动合并/关闭。
-- 成果：architecture_tlm/resource_budget_plan_20261022/PLAN_ZH.md；本机pbit_llm_master_report_20261012/PBIT_LLM_ASIC_RESOURCE_PLAN_ZH_20261022.md为同字节阅读副本。
-- 验证：12个固定Git文件链接解析、四份封存结果数值、FFN/KV容量/带宽下界、UTF-8/LF和阅读副本SHA通过；记录work/rayggxia/112/VALIDATION.json。
-- 边界：仅计划/文档核算，无新PPL/GPU/Slurm/TLM/RTL/EDA/DRAMSys；2/4MiB非最优结论，完整物理PPA保持null。
-- 待同步：当前连接器未提供Projects操作；唯一备忘录维护源的入口追加由其维护流程处理，拟文见HANDOFF，不覆盖其他工作树增量。
-- 下一步：PR审阅；后续从资源账本、条件下界和恢复/供数流水开始执行。本任务未接管95/96/104/107/110。
+新增数字流程分析5207a7d3114ef3f82c8a20ac56b80fe20056b2c5：同g/u8、幅值裁剪、原g的Sigmoid表、W8及共享PoT尺度；直接两乘法或融合F[g,档位]表＋一次16×8乘法，再将P/2^16做RNE得到8位幅值＋符号z9，接A9×W8。块输出指数eg+eu+ew−8；尺度未省略。131072整数范围检查，F16/P24足够，z幅值最大253，不需满幅旁路。
 
-以下保留此前状态的历史快照；Issue98/PR100及Issue95/PR97已进入本任务集成基线，不将旧“待审”文字作为当前状态。
+这只是候选流程与条件预算，没有新RTL/EDA/模型/PPL，不新增run，也未验收z9量化质量。保留64路主并行对照；2/4路流式复用仅列另一资源点。已有A9满负载MAC按8输出预算约186.75pJ，给前端/控制留下约249.93pJ才有机会低于SC；不同激励/精度/帧节奏的模块数值不作完整集成PPA。BF16单列更高精度参考。旧A9原始PPA仍仅本地，不上传旧未批准归档/索引。
 
-更新时间：2026-10-22；本会话 GitHub 连接器实际账号 rayggxia。
-
-## Issue98：benchmark / LLM质量 / PPA统一调研
-
-- 分支：task/98-benchmark-protocol；PR base：pbit-tlm-attention-details-20261016@83e15289434af50fc09c35e699d8b39965389d98。
-- 工作目录：C:/Users/86134/Documents/a_P_BIT/tmp/benchmark-protocol-issue98-20261022，最小稀疏 worktree。
-- 阶段：研究文档、16篇结构化对照与协议已上传；PR100开放待审未合并，源提交618b85ac59e4823497dc8ae7083aefc75247b7f4，9份来源文件已远端读回一致。最终发布状态见work/rayggxia/98/PUBLICATION.json；不关闭Issue。
-- 验证：work/rayggxia/98/verify.py，33项文档/数据一致性、来源制品hash、Git内链接及例子复算通过；不是33项模型或PPA测试。
-- 成果：architecture_tlm/benchmark_protocol_20261022/README_ZH.md、PAPERS.json/.csv、PROTOCOL_PROPOSAL.json。
-- 未运行：模型、训练、GPU、Slurm、TLM、EDA；协议/质量门槛是提议，未知物理成本仍null。
-- 待同步：Projects权限/写入未核实；长期备忘录唯一维护目录已有其他任务未提交增量，不覆盖。待合并/维护时追加本研究入口，拟追加文字在HANDOFF。
-- 下一步：PR100评审验收；质量预算与协议评审后再决定新实验。接口实现仍由Issue95/96负责。
-
-## 并行既有任务保留
-
-Issue95随机源模型/RTL已由本账号发布PR97，开放待审未合并；其工作目录、进度及实际验证以 task/95-rng-service-rtl 的 work/rayggxia/95/HANDOFF.md / PUBLICATION.json为准。本分支没有修改其源码、默认配置、冻结结果或工作目录，也未接管Issue96等成员任务。
-
-## 2026-10-22 Issue95 架构图续作
-
-PR97已合并（上文旧状态为历史）；当前新增离线架构核对图，源码/数值模型/RTL未改。task/95-rng-architecture-view基于eb317e4f，目标pbit-tlm-attention-details-20261016。12场景372沿由原模型导出；11模块交互及1440/768/390宽度浏览器检查通过，无JS错误。文件architecture_tlm/random_service/architecture-view.html；恢复work/rayggxia/95/VISUALIZATION_HANDOFF.md。已注明PR103小接口与38322118后续布局前PPA边界。待文档PR评审与用户核对，不代表整机已全部换源；Projects同步未核实。本节不改变Issue98记录。
-
-可视化交付PR：https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/113，开放待审、未合并；源提交bc8561813c110b62829287661c1303c65a2d14b0。远端HTML已读回与本地逐字符一致。
+入口architecture_tlm/nonlinear_digital_comparison_20261031/PLAN_ZH.md、ANALYSIS.json；analyze.py只做离线范围/预算检查。恢复见本地work/rayggxia/204/digital_nonlinear_plan/PUBLICATION.json。下一步是在用户确认范围后实现两种数字前端并与Wd配对表征；不自动启动新昂贵实验。此前完整状态在[上一版本](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/327868a68146f356c1f096e6c4e19ce956bc60fa/progress/rayggxia/STATUS.md)，本地历史完整保留。

@@ -1,0 +1,298 @@
+{
+  "schema": "qwen3-attention-eleven-case-plan-v2",
+  "kind": "design_and_numeric_contract_not_training_runner",
+  "issue": 220,
+  "owner": "rayggxia",
+  "date": "2026-10-31",
+  "executable": false,
+  "model": {
+    "id": "Qwen/Qwen3-4B",
+    "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "posttrained": true,
+    "layers": 36,
+    "hidden_size": 2560,
+    "intermediate_size": 9728,
+    "query_heads": 32,
+    "kv_heads": 8,
+    "head_dim": 128
+  },
+  "root_baseline": "N_WH128",
+  "cases": [
+    {
+      "id": "N_WH128",
+      "screen": "none",
+      "sampler": "winner_hold",
+      "samples": 128,
+      "family_baseline": "N_WH128",
+      "paired_screen_case": "K_WH128",
+      "changed_factor_within_family": "baseline"
+    },
+    {
+      "id": "N_WH64",
+      "screen": "none",
+      "sampler": "winner_hold",
+      "samples": 64,
+      "family_baseline": "N_WH128",
+      "paired_screen_case": "K_WH64",
+      "changed_factor_within_family": "samples"
+    },
+    {
+      "id": "N_WH256",
+      "screen": "none",
+      "sampler": "winner_hold",
+      "samples": 256,
+      "family_baseline": "N_WH128",
+      "paired_screen_case": "K_WH256",
+      "changed_factor_within_family": "samples"
+    },
+    {
+      "id": "N_CR128",
+      "screen": "none",
+      "sampler": "corrected_rejection",
+      "samples": 128,
+      "family_baseline": "N_WH128",
+      "paired_screen_case": "K_CR128",
+      "changed_factor_within_family": "sampler"
+    },
+    {
+      "id": "N_G128",
+      "screen": "none",
+      "sampler": "dense_random_scan_gibbs",
+      "samples": 128,
+      "family_baseline": "N_WH128",
+      "paired_screen_case": "K_G128",
+      "changed_factor_within_family": "sampler"
+    },
+    {
+      "id": "K_WH128",
+      "screen": "sparq",
+      "sampler": "winner_hold",
+      "samples": 128,
+      "family_baseline": "K_WH128",
+      "paired_screen_case": "N_WH128",
+      "changed_factor_within_family": "baseline"
+    },
+    {
+      "id": "K_WH64",
+      "screen": "sparq",
+      "sampler": "winner_hold",
+      "samples": 64,
+      "family_baseline": "K_WH128",
+      "paired_screen_case": "N_WH64",
+      "changed_factor_within_family": "samples"
+    },
+    {
+      "id": "K_WH256",
+      "screen": "sparq",
+      "sampler": "winner_hold",
+      "samples": 256,
+      "family_baseline": "K_WH128",
+      "paired_screen_case": "N_WH256",
+      "changed_factor_within_family": "samples"
+    },
+    {
+      "id": "K_CR128",
+      "screen": "sparq",
+      "sampler": "corrected_rejection",
+      "samples": 128,
+      "family_baseline": "K_WH128",
+      "paired_screen_case": "N_CR128",
+      "changed_factor_within_family": "sampler"
+    },
+    {
+      "id": "K_G128",
+      "screen": "sparq",
+      "sampler": "dense_random_scan_gibbs",
+      "samples": 128,
+      "family_baseline": "K_WH128",
+      "paired_screen_case": "N_G128",
+      "changed_factor_within_family": "sampler"
+    },
+    {
+      "id": "K_WH32",
+      "screen": "sparq",
+      "sampler": "winner_hold",
+      "samples": 32,
+      "family_baseline": "K_WH128",
+      "paired_screen_case": null,
+      "changed_factor_within_family": "samples",
+      "comparison_note": "additional screened low-S case; no N_WH32 training or screening-only pair"
+    }
+  ],
+  "controls": [
+    {
+      "id": "C_DENSE",
+      "screen": "none",
+      "sampler": "accurate_softmax_exact_pv"
+    },
+    {
+      "id": "C_SPARQ",
+      "screen": "sparq",
+      "sampler": "accurate_softmax_exact_pv"
+    }
+  ],
+  "common": {
+    "ffn": "original_exact_SwiGLU_frozen_parameters",
+    "qkv_rope_qknorm": "matched BF16 data and FP32 accumulation",
+    "trainable_scope": [
+      "model.layers.*.self_attn.q_proj.weight",
+      "model.layers.*.self_attn.k_proj.weight",
+      "model.layers.*.self_attn.v_proj.weight",
+      "model.layers.*.self_attn.o_proj.weight"
+    ],
+    "expected_trainable_weights": 943718400,
+    "freeze_qk_norm": true,
+    "freeze_other_parameters": true,
+    "keep_gradient_through_frozen_modules": true,
+    "use_lora": false,
+    "teacher": "frozen original BF16 checkpoint",
+    "loss": {
+      "ce": 1.0,
+      "kl": 0.5,
+      "temperature": 1.0,
+      "kl_direction": "teacher_to_student",
+      "same_valid_target_mask": true
+    },
+    "max_effective_supervised_tokens_per_case": 100000000,
+    "effective_tokens_per_update_target": 131072,
+    "training_seed": 0,
+    "deployment_seeds": [
+      101,
+      102,
+      103
+    ],
+    "training_context_tokens": 2048,
+    "dense_prefix_tokens": 1792,
+    "stochastic_suffix_tokens": 256,
+    "train_loss_mask": "original_mask AND suffix_mask; controls use identical mask",
+    "sampling_curriculum": "none; constant case S from first stochastic update",
+    "shared_trained_prefix": false,
+    "prior_ffn_checkpoint_allowed": false,
+    "gradient_mode": "explicit_biased_softmax_surrogate_for_QK_actual_sample_counts_for_V",
+    "optimization_source": "inherit verified prior seven-case B0 optimizer/LR/data recipe via exact source config SHA; unresolved fields block job submission",
+    "full_wt2": {
+      "window": 2048,
+      "stride": 1024,
+      "raw_text": true,
+      "chat_template": false,
+      "target_position_ledger_required": true,
+      "coverage_layers": 36
+    },
+    "numeric_contract": "score12_F4_to_negative_U8_F4_sigmoid_LUT_P8_v1",
+    "samples_are": "retained V addresses per query/head, with replacement; not updates or cycles",
+    "no_second_pv_sampling": true,
+    "no_or_approximation": true,
+    "no_learned_sampler_parameters": true
+  },
+  "screening": {
+    "name": "SparQ",
+    "feature_budget": 32,
+    "total_candidate_budget": 256,
+    "recent_candidate_budget": 32,
+    "gqa_merge": "probability_sum",
+    "short_context": "use all visible positions but still run stochastic sampler",
+    "arithmetic": "pinned paper/reference digital path: BF16 Q/K/V, FP32 reductions/coarse scores/softmax; not fixed11/Q0.16 RTL",
+    "differentiability": "indices stop-gradient; selected Q/K/V remain differentiable",
+    "allow_cross_candidate_shared_bernoulli_uniform": false
+  },
+  "samplers": {
+    "winner_hold": {
+      "burn_in_updates": 32,
+      "spacing_updates": 1,
+      "initial": "argmax",
+      "shift": 0.0
+    },
+    "corrected_rejection": {
+      "initial_m": 0,
+      "max_m": 24,
+      "max_trials_per_sample": 64,
+      "adaptive": true,
+      "all_zero_correction": "exact probability 2^-m, independent fair bits",
+      "row_trial_cap": "S*64; stop and report failure, no silent fallback",
+      "execution_mode": "strict_bounded_pure_CR",
+      "on_row_cap_failure": "fail_current_case_and_archive_input",
+      "partial_output_allowed": false,
+      "fallback_sampler": null,
+      "drop_failed_rows": false,
+      "continue_other_cases": true,
+      "preflight_optimizer_updates": 2,
+      "failure_propagation": "coordinate all workers of the current case through the existing launcher; never leave peers blocked in collectives",
+      "execution_note": "CR_AGENT_REPLY_ZH.md; cap counts full-candidate proposals per query/head, not ASIC cycles or wall time"
+    },
+    "dense_random_scan_gibbs": {
+      "encoding": "N-1 bits; all-zero state encodes argmax reference",
+      "penalty_kappa": 24.0,
+      "inverse_temperature": 1.0,
+      "update": "one uniformly selected non-reference node with replacement",
+      "initial": "all zero",
+      "burn_in_sweep_equivalents": 32,
+      "spacing_sweep_equivalents": 1,
+      "updates_per_sweep_equivalent": "N_valid-1",
+      "dense_pairwise_coupling": true,
+      "exact_global_population_broadcast_equivalent_allowed": true,
+      "ctmc_substitution_allowed": false,
+      "exact_discrete_event_skipping_allowed_after_oracle_validation": true
+    }
+  },
+  "policy": {
+    "user_confirmed": [
+      "11 probability cases: original 10 plus screened winner S32",
+      "SparQ total candidates 256, recent32 included; feature r32 unchanged",
+      "two matched digital controls; C_SPARQ also uses 256 candidates",
+      "P8 threshold and 8-bit sigmoid input",
+      "dense sequential Gibbs"
+    ],
+    "author_recommended": [
+      "QKV/O-only training",
+      "two matched digital controls",
+      "100M ceiling",
+      "dense-prefix sampled-suffix training",
+      "score12/F4 internal format and negative U8/F4 LUT address",
+      "kappa24 and fixed burn/spacing"
+    ],
+    "no_training_submitted": true,
+    "no_new_ppa": true,
+    "no_automatic_merge": true
+  },
+  "numerical_review": {
+    "status": "REAL_SCORE_COMPLETION_PASSED_IN_SAMPLE_QUALITY_PENDING",
+    "report": "QUANTIZATION_HARDWARE_REVIEW_ZH.md",
+    "known_counterexample": "uniform N2048; N_CR128 cap completion almost zero and strong reference bias",
+    "affected_case": "N_CR128",
+    "all_cases_still_require_real_score_preflight": true,
+    "changed_user_P8": false,
+    "changed_case_matrix": true,
+    "change_authority": "user 2026-10-31: preserve original ten and add K_WH32; SparQ total256",
+    "real_score_gate": {
+      "result_commit": "1695639da29b1d6d7f855d149023a79d834b7bc7",
+      "modes": [
+        "N2048",
+        "SparQ256"
+      ],
+      "S": 128,
+      "cap": 8192,
+      "configured_rows": 1152,
+      "MC_runs": 110592,
+      "MC_failures": 0,
+      "scope": "fixed native-BF16 QKV rows; exact event-class law in float64; no training/PPL/physical-source claim",
+      "bias_resolved": false,
+      "synthetic_counterexamples_preserved": true
+    },
+    "remaining_checks": [
+      "actual hard-forward training and gradients",
+      "short-stage heldout CE/PPL",
+      "monitor cap and distribution as weights change"
+    ]
+  },
+  "revision": {
+    "previous_plan_commit": "2b6dadb0214f37b3f0b365e244db17411dc2b8c8",
+    "previous_schema": "qwen3-attention-ten-case-plan-v1",
+    "approved_change": "SparQ total128->256 for all screened probability/control cases; append K_WH32",
+    "probability_cases": 11,
+    "digital_controls": 2,
+    "total_training_cases": 13,
+    "unchanged": "all original ten case sampler/S/pairs; model/common training/numeric/sampler settings",
+    "superseded_proposals": "six-probability-group reduction and replacement of K_WH256 with K_WH32 were not adopted"
+  },
+  "case_id_convention": "N=no screening; K=SparQ; WH/CR/G=sampler; numeric suffix is sample S, not candidate count"
+}

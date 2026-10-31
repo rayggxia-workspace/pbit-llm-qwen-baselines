@@ -1,3 +1,45 @@
+## 2026-10-31 Issue220：CR有界执行说明与可转发检验
+
+用户要求明确修改CR并附检验给训练方。当前采用严格纯CR执行策略，不改概率律/P8/m/S或13组矩阵：每query/head总提议S×64，当前S128为8192；最后一轮恰好收齐算成功，否则归档并退出当前CR case、协调全部worker，其他case独立继续。不返回部分结果、不丢训练行、不隐式回退。上限保证成功或失败返回，不保证所有输入成功；不声称分布偏差已修复。
+
+CASES仅增加执行/门禁状态字段，原11组、2控制、model/common/screening及采样数学参数逐对象保持。真实Qwen检验110592事件MC0超限/约214–222轮、P8归零约7%/2.95%、CR期望TV约10.4%/4.9%随报告附在CR_AGENT_REPLY_ZH.md。仅完成率/行级诊断，实际两更新及原10M阶段后再看训练质量。作为备选不阻塞赢家/数字对照。未新增GPU/训练/EDA或PPL，不重跑已完成3571/3572/3573。
+
+正式入口qwen3/training/attention_ten_case_20261031/CR_AGENT_REPLY_ZH.md；同目录主方案/数值/复核/清单和校验器同步，父远端da2bbd276aeebe826d64deb59219c9bcae703ffb，复用Issue220/PR221/task/220-attention-ten-case-plan及本人原工作树。实际验证/发布见work/rayggxia/220/CR_GUIDANCE_VALIDATION.json和CR_GUIDANCE_PUBLICATION.json，PR待审未合并，Projects待维护者同步。
+
+CR说明已发布至922afa5391ee5cb9d48ba5182484a1c5c03b1994，11份文件远端逐内容核对通过；Issue220与PR221已同步，PR保持open/unmerged。方案校验13组/14负例与小N数值核验通过，未新增训练/实验。发布回执work/rayggxia/220/CR_GUIDANCE_PUBLICATION.json；Projects待维护者同步。
+
+下方原记录保留。
+
+## 2026-10-31 Issue220：真实Qwen P8门禁已完成
+
+TRAIN/test各8个2K上下文，原BF16 Attention/FFN、冻结权重，全部36层。18432个原生query/head行的P8诊断；固定每层每KV头一行，共1152个候选配置行（576个原生行），三seed各32副本，共110592次事件类MC，S128/cap8192全部完成。全候选/筛选256的期望轮数均值约220/217；没有在这批行复现均匀合成例的超时。
+
+共同P8尾部仍存在：全头归零质量均值全候选约7.0%、筛选256约2.95%；CR期望直方图相对准确Softmax的TV约10.4%/4.9%，相对P8 odds仍有约5.0%/2.7%的差异（详细CR行与全头统计集合不同，不机械相减）。这些不是PPL增幅。真实分数的参考地址本来概率约46%/48%，不能用均匀1/N解释其频率。
+
+源de13b021a375d5492e54190c54c28b70d8cc9005；Slurm3571/3572/3573均封存completed。原80ae源GPU3569因原生注册入口绕过诊断钩子而覆盖断言失败，无有效模型结果；旧源/日志保留，仅取消死依赖3570。匹配包装修复后原生logits/NLL逐位一致，36层覆盖及参数不变；小N枚举、12真实行R8事件类核对、1152期望直方图复算通过。未改P8/原11+2矩阵，未长训、无新PPL/RTL/PPA。
+
+成果qwen3/results/p8_real_score_gate_20261031/REPORT_ZH.md、SUMMARY/CSV、validate_archive.py；原包SHA278aaed9d321dae6c57b427091fc52bfc4a45c3a8ae441cc9674fb89ef8726a0在个人远端及本地project_archives/p8_real_score_gate_issue220_20261031。结论为本批完成率通过、质量未验收；CR保留备选，后续实际短训练/heldout/PPL再决定，不阻塞赢家/数字对照。原生固定轨迹诊断不是概率模型轨迹，WT2 test已被历史探索观察，不称blind，事件类MC不是完整物理/GF位图。
+
+结果1695639da29b1d6d7f855d149023a79d834b7bc7已推送PR221，10份结果读回一致，Issue/PR及长期记忆同步，本人队列已空，详见real_score_gate/PUBLICATION.json；历史任务记录如下。
+
+## 2026-10-31 Issue220：11概率＋2数字控制V2按用户要求修订
+
+rayggxia，task/220-attention-ten-case-plan / PR221，base main7d42c7d3；复用独立tmp/attention-ten-case-plan-issue220-20261031。用户明确保留原10概率组及S64/128/256，所有筛选概率组和C_SPARQ改候选256（r32/local32不变），只增筛选赢家K_WH32，无N_WH32，共13训练组。未采用6概率组精简建议。QKV/O-only/原FFN冻结、教师/损失/预算/seed/数制/采样规则未改。
+
+成果qwen3/training/attention_ten_case_20261031/REVISION_V2_ZH.md、CASES.json v2及同目录方案；验证work/rayggxia/220/VALIDATION_V2.json、REVISION_DIFF.json，实际发布见PUBLICATION_V2.json。已推送科学提交33c7e6886623e453b338a611d1eb64763636dbfb，13文件读回一致，Issue220/PR221已更新；未提交训练/评测/EDA，无新PPL/PPA。N_CR128已有P8门禁未解除，新N256也须真实分数门禁。恢复先读最新Issue/PR/HANDOFF，PR待审未合并、Projects待维护者同步。
+
+## 2026-10-31 Issue220：量化与硬件复核发现P8拒绝反例
+
+用户要求仔细分析后，补QUANTIZATION_HARDWARE_REVIEW_ZH.md、P8_REVIEW.json与解析/事件MC脚本。N2048均匀分数时P8校正拒绝S128期望55473.5次提议，参考占42.3155%，8192内完成约2.09e-61；64条MC均未在cap内完成。N128均匀行约416.14次。P8尾部置零在多候选时亦可聚合大质量。此前小状态稳态检查并不保证接近原softmax，不能把所有十组已可直接长训。
+
+十组、用户P8及数值合同保留；N_CR128明确标为真实分数/量化门禁未闭合。查现有128接口后列出score12、饱和差值、argmax/burn32、S256九位状态与N2K扩展需求，不继承原PPA。无新模型/GPU/训练/RTL/PPA；仅CPU合成解析与64事件MC。PR221不自动合并，来源/发布见Issue220实际回执。
+
+## 2026-10-31 Issue220：Attention十组训练方案
+
+已通过PR221发布，open未合并；科学提交a9474b62a622ed3c24d3763740cf2215cca70ce0，14文件GitHub读回一致。负责人rayggxia；task/220-attention-ten-case-plan，PR base main@7d42c7d30fa9c729c899ba7f815332dd6ed5671a。正式入口qwen3/training/attention_ten_case_20261031/REMOTE_AGENT_PLAN_ZH.md，交接work/rayggxia/220。用户确定5种无筛选方案及5个SparQ配对、P8阈值/8位sigmoid入口、传统稠密逐节点Gibbs。设计建议QKV/O-only更新943718400权重、两条匹配数字控制、100M上限和准确前缀/概率后缀；其余参数冻结但保留反向图。
+
+10组矩阵/P8表及5个错误配置拒绝检查通过；三个小分数行的6项精确稳态和72项人口广播/稠密等价检查通过。仅本地设计/数值合同验证，无LLM训练/GPU/Slurm/RTL/PPA。实际训练器和原optimizer/LR/data源配置仍待对方接合，不把已有参考当即用runner。发布以同目录PUBLICATION.json和Issue220回执为准，不自动合并，Projects待维护者同步。已有其他任务记录原字节保留。
+
 ## 2026-10-29 Issue204：用户要求继续SRAM存内比较主架构
 
 双随机结构继续SRAM驻留、本地SNG并行比较，阵列输出随机权重bit；不默认搬整组权重到DFF，不默认每采样走普通窄口完整读。两颗全局LFSR32（输入一颗/权重一颗）、T32/8×4与原共享尺度保持；P8输入/P7权重各需5位抖动。ICG DFF及普通宏预读保持仅作对照。已更新12方案页，新增13_SRAM存内比较估算口径与证据.md并同字节同步根阅读镜像。
@@ -162,3 +204,4 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 面积均已按用户要求raw×0.81并保留原始列。S0两尺寸hold−0.041792ns；S2 M8 setup仅0.000099ns，功耗表范围等警告保留。前布局，无CTS/SDF/SPEF、真实模型质量、存储/RNG/比较器/编码/最终浮点尺度及实际广播线成本。D0是未优化q9参考，不称成熟最佳INT8。SRAM/门控权重与内部位宽收紧属于后续，不伪称本轮全链路完成。
 
 中央台账新增matrix-t32-204-20261028，82记录联合check/render、81旧record逐字保留；main缺全台账，本PR只交付增量record及校验回执，不复制别人记录。失败波形/别名/调试可见性版本保留；v3旧数字后处理实际已跑1分34秒后取消并由v9替代，如实记录。Projects既有权限限制待同步。下一步：审阅本轮PR，修hold/功耗表范围，M8数字控制、SC位宽/真实ICG及驻留权重端口验证；不自动启动新模型或昂贵作业。
+

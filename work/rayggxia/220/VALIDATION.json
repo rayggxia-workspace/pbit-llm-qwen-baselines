@@ -1,0 +1,39 @@
+{
+  "kind": "LOCAL_PLAN_AND_SMALL_STATE_NUMERIC_VALIDATION",
+  "date": "2026-10-31",
+  "python": "3.12.14",
+  "checks": [
+    {
+      "command": "python -B qwen3/training/attention_ten_case_20261031/validate_plan.py",
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "cases": 10,
+        "controls": 2,
+        "rejected_negative_cases": [
+          "duplicate_case",
+          "extra_sampler_scan",
+          "hidden_screening",
+          "wrong_trainable_count",
+          "shared_trained_prefix"
+        ],
+        "numeric_table_entries": 256,
+        "scope": "design/numeric-contract validation only; no sampler/LLM training/PPA"
+      }
+    },
+    {
+      "command": "python -B qwen3/training/attention_ten_case_20261031/validate_numeric_oracle.py",
+      "exit_code": 0,
+      "result": {
+        "status": "passed",
+        "score_rows": 3,
+        "exact_stationarity_checks": 6,
+        "population_equivalence_cases": 72,
+        "scope": "small-state exact Fraction proof for proposed P8 WH/Gibbs laws; no CR training/LLM/PPA validation"
+      }
+    }
+  ],
+  "new_training": false,
+  "new_gpu": false,
+  "new_ppa": false
+}

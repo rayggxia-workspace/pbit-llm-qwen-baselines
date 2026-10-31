@@ -1,3 +1,9 @@
+## 2026-10-31 Issue220：11概率＋2数字控制V2按用户要求修订
+
+rayggxia，task/220-attention-ten-case-plan / PR221，base main7d42c7d3；复用独立tmp/attention-ten-case-plan-issue220-20261031。用户明确保留原10概率组及S64/128/256，所有筛选概率组和C_SPARQ改候选256（r32/local32不变），只增筛选赢家K_WH32，无N_WH32，共13训练组。未采用6概率组精简建议。QKV/O-only/原FFN冻结、教师/损失/预算/seed/数制/采样规则未改。
+
+成果qwen3/training/attention_ten_case_20261031/REVISION_V2_ZH.md、CASES.json v2及同目录方案；验证work/rayggxia/220/VALIDATION_V2.json、REVISION_DIFF.json，实际发布见PUBLICATION_V2.json。当前本地配置修改/校验，发布后更新Issue/PR；未提交训练/评测/EDA，无新PPL/PPA。N_CR128已有P8门禁未解除，新N256也须真实分数门禁。恢复先读最新Issue/PR/HANDOFF，PR待审未合并、Projects待维护者同步。
+
 ## 2026-10-31 Issue220：量化与硬件复核发现P8拒绝反例
 
 用户要求仔细分析后，补QUANTIZATION_HARDWARE_REVIEW_ZH.md、P8_REVIEW.json与解析/事件MC脚本。N2048均匀分数时P8校正拒绝S128期望55473.5次提议，参考占42.3155%，8192内完成约2.09e-61；64条MC均未在cap内完成。N128均匀行约416.14次。P8尾部置零在多候选时亦可聚合大质量。此前小状态稳态检查并不保证接近原softmax，不能把所有十组已可直接长训。

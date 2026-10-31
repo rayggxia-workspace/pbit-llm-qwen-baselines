@@ -1,5 +1,5 @@
 {
-  "schema": "qwen3-attention-ten-case-plan-v1",
+  "schema": "qwen3-attention-eleven-case-plan-v2",
   "kind": "design_and_numeric_contract_not_training_runner",
   "issue": 220,
   "owner": "rayggxia",
@@ -107,6 +107,16 @@
       "family_baseline": "K_WH128",
       "paired_screen_case": "N_G128",
       "changed_factor_within_family": "sampler"
+    },
+    {
+      "id": "K_WH32",
+      "screen": "sparq",
+      "sampler": "winner_hold",
+      "samples": 32,
+      "family_baseline": "K_WH128",
+      "paired_screen_case": null,
+      "changed_factor_within_family": "samples",
+      "comparison_note": "additional screened low-S case; no N_WH32 training or screening-only pair"
     }
   ],
   "controls": [
@@ -177,7 +187,7 @@
   "screening": {
     "name": "SparQ",
     "feature_budget": 32,
-    "total_candidate_budget": 128,
+    "total_candidate_budget": 256,
     "recent_candidate_budget": 32,
     "gqa_merge": "probability_sum",
     "short_context": "use all visible positions but still run stochastic sampler",
@@ -217,7 +227,9 @@
   },
   "policy": {
     "user_confirmed": [
-      "10 probability cases",
+      "11 probability cases: original 10 plus screened winner S32",
+      "SparQ total candidates 256, recent32 included; feature r32 unchanged",
+      "two matched digital controls; C_SPARQ also uses 256 candidates",
       "P8 threshold and 8-bit sigmoid input",
       "dense sequential Gibbs"
     ],
@@ -240,6 +252,18 @@
     "affected_case": "N_CR128",
     "all_cases_still_require_real_score_preflight": true,
     "changed_user_P8": false,
-    "changed_case_matrix": false
-  }
+    "changed_case_matrix": true,
+    "change_authority": "user 2026-10-31: preserve original ten and add K_WH32; SparQ total256"
+  },
+  "revision": {
+    "previous_plan_commit": "2b6dadb0214f37b3f0b365e244db17411dc2b8c8",
+    "previous_schema": "qwen3-attention-ten-case-plan-v1",
+    "approved_change": "SparQ total128->256 for all screened probability/control cases; append K_WH32",
+    "probability_cases": 11,
+    "digital_controls": 2,
+    "total_training_cases": 13,
+    "unchanged": "all original ten case sampler/S/pairs; model/common training/numeric/sampler settings",
+    "superseded_proposals": "six-probability-group reduction and replacement of K_WH256 with K_WH32 were not adopted"
+  },
+  "case_id_convention": "N=no screening; K=SparQ; WH/CR/G=sampler; numeric suffix is sample S, not candidate count"
 }

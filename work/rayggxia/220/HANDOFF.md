@@ -1,3 +1,13 @@
+## 2026-10-31用户确认V2，覆盖下方历史十组口径
+
+当前正式矩阵为11概率＋2数字控制：原10概率组的采样器/S/五对筛选对照全部保留，全部SparQ概率组和C_SPARQ候选改256，r32/local32不变；仅增加K_WH32（赢家保持S32，无N_WH32）。保留原S256，不采用此前6概率组精简/部署扫描替代训练的建议。
+
+正式入口仍qwen3/training/attention_ten_case_20261031/REMOTE_AGENT_PLAN_ZH.md，详见REVISION_V2_ZH.md和CASES.json v2。模型/参数范围/教师/损失/预算/seed/数制/采样器规则未改。更新validate_plan.py及FILE_INDEX，验证结果见VALIDATION_V2.json，配置差异证据见REVISION_DIFF.json。历史VALIDATION/PUBLICATION/P8_REVIEW记录保留，不能称为本轮训练或256节点PPA。
+
+目标仓库和rayggxia身份已核实，复用task/220-attention-ten-case-plan / PR221及本人独立目录；前远端head2b6dadb0、本地9dd73cff不同历史，API按真实远端父提交更新，不force。未启动新训练/评测/EDA；P8拒绝门禁仍保留。发布以PUBLICATION_V2.json为准；PR待审未合并，Projects缺写接口待维护者同步。
+
+---
+
 # Issue220交接
 
 负责人rayggxia，2026-10-31。目标rayggxia-workspace/pbit-llm-qwen-baselines；远端task/220-attention-ten-case-plan基于main@7d42c7d30fa9c729c899ba7f815332dd6ed5671a。本地隔离稀疏目录tmp/attention-ten-case-plan-issue220-20261031，从可用本地787489192ebfcdb61ad72edde406818f450aa3dc建立；API发布时必须以真实远端main为父、仅加入本任务文件，不覆盖其他变更，不force-push。

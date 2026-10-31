@@ -1,0 +1,120 @@
+{
+  "kind": "FLOW_AND_CONDITIONAL_BUDGET_NO_NEW_PPA",
+  "date": "2026-10-31",
+  "issue": 204,
+  "source_base": "af40cc769797b0d487e5d1861bd4e92079feb403",
+  "scope": "Already encodedg/u through same nonlinear function andfixedWd64x8;no GU,inputencoding,SRAM,RNG,crossK/BF16cost in current SC comparison",
+  "recommended_matched_integer": {
+    "input_g": "signed8 k,unit1/8,originalg retained for sigmoid address",
+    "input_u": "sign+mag7,au=mag7<<1,P8 amplitude",
+    "shared_scales": "Sg=2^eg,Su=2^eu,W=qW*2^ew;all64 share each scale",
+    "sigmoid": "q=existingLUT(k),unsigned0..256;do not substitute sigmoid(ag)",
+    "amplitude": "ag=clip255(RNE(abs(k)*2^(5-eg)));au=um<<1",
+    "exact_reference": "P=ag*au*q,unsigned24 plus independent sign;z=sign*P*2^(eg+eu-24)",
+    "baseline_z": "z8mag=RNE(P/2^16);signed9 carrier =sign*z8mag;sharedSz=Sg*Su",
+    "matrix": "D_j=sum_i signed9(z_i)*signed8(W_ij);output D_j*2^(eg+eu+ew-8)",
+    "sampling_reference": "SC C_j=sum_t,sum_i sign*zbit_it*W_ij;output C_j*2^(eg+eu+ew-5);OR4 is another approximation",
+    "fused_candidate": "F[k,scale_select]=ag(k,eg)*q(k),unsigned16;one16x8 multiply F*au then sameRNE. Four test scales require a10bit logical LUT address,not automatically a single256entry table",
+    "validation": "Existing256-entry sigma table and all131072(k,eg,um) cases;fused ag*q representation fits16bits,P24fits,z<=253;sign supplied separately",
+    "range_cases": 131072,
+    "range_maxima": {
+      "fused_LUT_unsigned16": 65280,
+      "product_unsigned24": 16581120,
+      "z_unsigned8": 253,
+      "requantization_error_numerator": 32768
+    },
+    "requantization": "One additional deterministic rounding versus exact conditional mean;absolute normalized error<=1/512;not a model/PPL acceptance or proof of equivalence to sampledT32",
+    "output_bits": "23bit generic A9xW8 sum tree/32bit interface reuse;undercurrentabs(z)<=253,abs(W)<=127 a22bit signed sum suffices mathematically,butno new narrowtreePPA measured"
+  },
+  "operation_counts": {
+    "N": 64,
+    "M": 8,
+    "sigmoid_or_fused_lookups": 64,
+    "unfused_nonlinear_integer_multiplications": 128,
+    "fused_nonlinear_integer_multiplications": 64,
+    "z_requantizations": 64,
+    "Wd_multiplications": 512,
+    "Wd_tree_additions": 504,
+    "nonlinear_reuse": "One z perinput drivesall8outputcolumns;do not repeat nonlinearity8times",
+    "clock_policy": "Gate data pipeline/valid waiting periods;measure coldload,drain,hold andfullframe,no free overlap"
+  },
+  "resource_points": [
+    {
+      "name": "Primary requested64-way parallel control",
+      "nonlinear_lanes": 64,
+      "Wd_MAC_lanes": 512,
+      "pipeline": "lookup/convert -> one or two multiply stages -> RNE -> existingparallelA9/W8 tree;4-5stages initial target,STA determines actual edges",
+      "status": "NOT_IMPLEMENTED_NOT_MEASURED"
+    },
+    {
+      "name": "Additional throughput-matched stream point",
+      "nonlinear_lanes": [
+        2,
+        4
+      ],
+      "Wd_MAC_lanes": [
+        16,
+        32
+      ],
+      "issue_cycles": [
+        32,
+        16
+      ],
+      "pipeline": "Share each2/4 z across8columns,localintegerpartial sums;carry indices/weights/scales through pipeline;no full64probabilitybank required",
+      "status": "OPTIONAL_NOT_IMPLEMENTED_NOT_MEASURED"
+    }
+  ],
+  "existing_anchors": {
+    "SC_full_nonlinearity_Wd_pJ_frame8outputs": 436.6733333333333,
+    "SC_frame_ns": 340,
+    "A9W8_p8peak_pJ_per64dot": 23.343333333333334,
+    "A9W8_p8paced350ns_pJ_per64dot": 43.47,
+    "replicated8output_MAC_only_peak_pJ": 186.74666666666667,
+    "replicated8output_MAC_only_paced_pJ": 347.76,
+    "conditional_frontend_budget_to_tie_SC_using_peak_MAC_pJ": 249.92666666666662,
+    "conditional_budget_per_gu_pair_pJ": 3.905104166666666,
+    "old_Q10_pJ_per_gu_pair": {
+      "full": 4.486078125,
+      "central": 5.352099609375
+    },
+    "old_Q10_bulk64_pJ": {
+      "full": 287.109,
+      "central": 342.534375
+    },
+    "old_BF16_dot64_4_pJ_per_dot": 577.0,
+    "old_BF16_8copies_MAC_only_pJ": 4616.0
+  },
+  "interpretation": "SC versus oldBF16reference looks favorable,butmatchedquantizeddigital may be comparable or lower. PeakMACreplication andQ10 are separate synthetic activities/widths/schedules;do not call their sum an integratedPPA orassume347.76paced is optimalgated. Complete matched digitalpath remains unmeasured.",
+  "BF16_control": "Separate higher-precision reference:g/uBF16 -> suitableSigmoid/SiLUapproximation -> BF16multiplication -> BF16weights/FP32accumulation. Sameold9bitprobabilityLUT does not establish a fullBF16activation accuracy. Do not require exactexp/divider ifLUT/PWL meets error budget.",
+  "sources": [
+    {
+      "file": "architecture_tlm\\nonlinear_wd_shared32_20261031\\results\\SUMMARY_SMALL.json",
+      "sha256": "342788c429ce0c1924cf6701a9eb34768a2ebe115e8633157dc8e0c5f6374abb",
+      "availability": "local project evidence;A9PPAnotyetpublished asfullrawhistory"
+    },
+    {
+      "file": "architecture_tlm\\a9w8_parallel64_20261030\\results\\FINAL_SUMMARY.json",
+      "sha256": "5a52ebb8e47517759dfc0c12ec71af2167c5c0b2a5aee77276492cb02eba6454",
+      "availability": "local project evidence;A9PPAnotyetpublished asfullrawhistory"
+    },
+    {
+      "file": "architecture_tlm\\bf16_ppa_20261028\\results\\FINAL_SUMMARY.json",
+      "sha256": "327a788e0e4477512b1bcb010cac0217c65706f5d727669ce11caf51ae7e4221",
+      "availability": "local project evidence;A9PPAnotyetpublished asfullrawhistory"
+    },
+    {
+      "file": "digital_circuit_simulation_registry/records/swiglu-38100634-ss.json",
+      "sha256": "df297b17e9fc570ebbe87c31cfe7838fae3bb8ebc0316a67d22f38793c14d03a",
+      "availability": "local project evidence;A9PPAnotyetpublished asfullrawhistory"
+    },
+    {
+      "file": "architecture_tlm\\nonlinear_wd_shared32_20261031\\rtl\\sigmoid.sv",
+      "sha256": "eb395fa203d7c6cff6f126ad1217c08e0d39b5e3781083962689d6dff454bd90",
+      "availability": "local project evidence;A9PPAnotyetpublished asfullrawhistory"
+    }
+  ],
+  "new_RTL": 0,
+  "new_EDA": 0,
+  "new_model_or_PPL": 0,
+  "registry_new_run": false
+}

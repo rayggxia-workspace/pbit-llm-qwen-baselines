@@ -1,3 +1,9 @@
+## 2026-10-31 Issue220：量化与硬件复核发现P8拒绝反例
+
+用户要求仔细分析后，补QUANTIZATION_HARDWARE_REVIEW_ZH.md、P8_REVIEW.json与解析/事件MC脚本。N2048均匀分数时P8校正拒绝S128期望55473.5次提议，参考占42.3155%，8192内完成约2.09e-61；64条MC均未在cap内完成。N128均匀行约416.14次。P8尾部置零在多候选时亦可聚合大质量。此前小状态稳态检查并不保证接近原softmax，不能把所有十组已可直接长训。
+
+十组、用户P8及数值合同保留；N_CR128明确标为真实分数/量化门禁未闭合。查现有128接口后列出score12、饱和差值、argmax/burn32、S256九位状态与N2K扩展需求，不继承原PPA。无新模型/GPU/训练/RTL/PPA；仅CPU合成解析与64事件MC。PR221不自动合并，来源/发布见Issue220实际回执。
+
 ## 2026-10-31 Issue220：Attention十组训练方案
 
 已通过PR221发布，open未合并；科学提交a9474b62a622ed3c24d3763740cf2215cca70ce0，14文件GitHub读回一致。负责人rayggxia；task/220-attention-ten-case-plan，PR base main@7d42c7d30fa9c729c899ba7f815332dd6ed5671a。正式入口qwen3/training/attention_ten_case_20261031/REMOTE_AGENT_PLAN_ZH.md，交接work/rayggxia/220。用户确定5种无筛选方案及5个SparQ配对、P8阈值/8位sigmoid入口、传统稠密逐节点Gibbs。设计建议QKV/O-only更新943718400权重、两条匹配数字控制、100M上限和准确前缀/概率后缀；其余参数冻结但保留反向图。

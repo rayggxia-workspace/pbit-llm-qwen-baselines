@@ -11,3 +11,5 @@
 发布状态和PR链接见PUBLICATION.json。本任务PR不自动合并，不关闭Issue；项目看板若工具不支持写入则待维护者同步。大权重和数据不在本目录，未改变服务器任务或节点交接状态。
 
 发布回执：科学提交a9474b62a622ed3c24d3763740cf2215cca70ce0；PR221已创建、open未合并；14个科学交付文件内容已逐一从GitHub读回一致。后续回执提交不代表新实验。Projects待维护者同步。
+
+2026-10-31进一步审阅：新增QUANTIZATION_HARDWARE_REVIEW_ZH.md、P8_REVIEW.json和p8_rejection_audit.py。P8在相对差值6.25后为0；N2048均匀行的校正拒绝期望55473.5提议/128地址，参考占比42.3155%，8192 cap几乎不完成。64事件MC交叉核对。N_CR128数值门禁未就绪，不改用户P8、十组或偷偷加cap。现有128硬件还需12位score、饱和差值、argmax/burn32和S256计数状态匹配。仅本地解析/接口审阅，无新LLM/GPU/RTL/PPA。

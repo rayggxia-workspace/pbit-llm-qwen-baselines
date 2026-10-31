@@ -6,7 +6,9 @@ CASES仅增加执行/门禁状态字段，原11组、2控制、model/common/scre
 
 正式入口qwen3/training/attention_ten_case_20261031/CR_AGENT_REPLY_ZH.md；同目录主方案/数值/复核/清单和校验器同步，父远端da2bbd276aeebe826d64deb59219c9bcae703ffb，复用Issue220/PR221/task/220-attention-ten-case-plan及本人原工作树。实际验证/发布见work/rayggxia/220/CR_GUIDANCE_VALIDATION.json和CR_GUIDANCE_PUBLICATION.json，PR待审未合并，Projects待维护者同步。
 
-当前本地说明/校验已完成，实际远端发布以CR_GUIDANCE_PUBLICATION.json为准；下方原记录保留。
+CR说明已发布至922afa5391ee5cb9d48ba5182484a1c5c03b1994，11份文件远端逐内容核对通过；Issue220与PR221已同步，PR保持open/unmerged。方案校验13组/14负例与小N数值核验通过，未新增训练/实验。发布回执work/rayggxia/220/CR_GUIDANCE_PUBLICATION.json；Projects待维护者同步。
+
+下方原记录保留。
 
 ## 2026-10-31 Issue220：真实Qwen P8门禁已完成
 

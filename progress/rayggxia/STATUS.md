@@ -1,3 +1,9 @@
+## 2026-10-31 Issue222：SparQ后P8赢家预算预评测已完成
+
+rayggxia，task/222-sparq-sampling-budget / PR223，base main7d42c7d3；独立tmp/sparq-sampling-budget-issue222-20261031。Slurm3554门禁及3555三seed已完成，41封存JSON/25主PPL的SHA、身份、512目标及36层覆盖独立复核。Qwen3-4B保持BF16 FFN/投影，SparQ r32/k128/local32，P8赢家S32/64/128 PPL均值15.678466/14.303636/13.683438，对照准确SparQ13.341657、原BF1614.116851。建议SparQ训练区间32/64/128，128质量基线、64折中；非完整WT2、无新训练/PPA。K128平均保留87.22%概率质量，K256为91.74%，后者留作质量核查。
+
+成果qwen3/results/sparq_budget_probe_20261031；交接work/rayggxia/222；原件project_archives/sparq_budget_issue222_20261031，压缩SHA d8bec56cafd920f02e6223b03208974711bc3e52f15b1a6de475a77b10f9ba4e。执行源8c0748c2a130，现有快照不改、不重交健康任务。当前将结果交PR待审，未合并；Issue220预算建议独立有版本同步，不将不同S当筛选单因素配对。Projects缺写工具待维护者同步，下一步训练Agent按门禁接合，无自动长训。
+
 ## 2026-10-29 Issue204：用户要求继续SRAM存内比较主架构
 
 双随机结构继续SRAM驻留、本地SNG并行比较，阵列输出随机权重bit；不默认搬整组权重到DFF，不默认每采样走普通窄口完整读。两颗全局LFSR32（输入一颗/权重一颗）、T32/8×4与原共享尺度保持；P8输入/P7权重各需5位抖动。ICG DFF及普通宏预读保持仅作对照。已更新12方案页，新增13_SRAM存内比较估算口径与证据.md并同字节同步根阅读镜像。

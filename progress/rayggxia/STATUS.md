@@ -8,7 +8,7 @@ TRAIN/test各8个2K上下文，原BF16 Attention/FFN、冻结权重，全部36�
 
 成果qwen3/results/p8_real_score_gate_20261031/REPORT_ZH.md、SUMMARY/CSV、validate_archive.py；原包SHA278aaed9d321dae6c57b427091fc52bfc4a45c3a8ae441cc9674fb89ef8726a0在个人远端及本地project_archives/p8_real_score_gate_issue220_20261031。结论为本批完成率通过、质量未验收；CR保留备选，后续实际短训练/heldout/PPL再决定，不阻塞赢家/数字对照。原生固定轨迹诊断不是概率模型轨迹，WT2 test已被历史探索观察，不称blind，事件类MC不是完整物理/GF位图。
 
-本轮结果已在本地校验，按原PR221交付，实际提交和读回见real_score_gate/PUBLICATION.json；历史任务记录如下。
+结果1695639da29b1d6d7f855d149023a79d834b7bc7已推送PR221，10份结果读回一致，Issue/PR及长期记忆同步，本人队列已空，详见real_score_gate/PUBLICATION.json；历史任务记录如下。
 
 ## 2026-10-31 Issue220：11概率＋2数字控制V2按用户要求修订
 

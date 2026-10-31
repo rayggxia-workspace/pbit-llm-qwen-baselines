@@ -7,3 +7,5 @@
 验证：两篇 PDF/HTML 原始散列、所引项目文件 blob/散列、文档范围与 Git diff；无新模型/RTL/EDA/远端任务。现阶段为本地完成、待推送/PR；实际发布以工作交接回执为准，不表示已合并。
 Zotero 两篇已有条目复用；SANTA v2 补附件/笔记因后台接口未连接而待办。Projects 权限待实际查询；不会为本任务申请扩大权限。
 下一步：上传任务分支、创建关联 Issue139 的 PR、逐文件远端回读后评审。不自动关闭 Issue 或合并。
+
+发布回执：[224](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/224) open/未合并；文档已上传，Issue139保持 open。文档提交 `01ebf383211a4198678bde97df3c8697bf66c370`；回执元数据单独补交。

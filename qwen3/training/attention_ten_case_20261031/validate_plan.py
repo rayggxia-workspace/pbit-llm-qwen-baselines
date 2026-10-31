@@ -29,6 +29,14 @@ def check(plan,tables):
     assert len([c for c in cases if c['screen']=='none'])==5
     assert len([c for c in cases if c['screen']=='sparq'])==6
     assert len(cases)+len(plan['controls'])==13
+    cr=plan['samplers']['corrected_rejection']
+    assert cr['execution_mode']=='strict_bounded_pure_CR'
+    assert cr['max_trials_per_sample']==64 and cr['initial_m']==0 and cr['max_m']==24
+    assert cr['row_trial_cap']=='S*64; stop and report failure, no silent fallback'
+    assert cr['on_row_cap_failure']=='fail_current_case_and_archive_input'
+    assert cr['partial_output_allowed'] is False and cr['fallback_sampler'] is None
+    assert cr['drop_failed_rows'] is False and cr['continue_other_cases'] is True
+    assert cr['preflight_optimizer_updates']==2
     assert plan['common']['no_second_pv_sampling']
     assert not plan['executable']
     assert plan['common']['shared_trained_prefix'] is False
@@ -73,6 +81,10 @@ def main():
         ('replace_original_S256',lambda p:p['cases'][7].update(samples=32)),
         ('wrong_S32_sampler',lambda p:p['cases'][-1].update(sampler='corrected_rejection')),
         ('invent_N_S32_pair',lambda p:p['cases'][-1].update(paired_screen_case='N_WH32')),
+        ('unbounded_CR_cap',lambda p:p['samplers']['corrected_rejection'].update(max_trials_per_sample=0)),
+        ('hidden_CR_fallback',lambda p:p['samplers']['corrected_rejection'].update(fallback_sampler='winner_hold')),
+        ('drop_failed_CR_rows',lambda p:p['samplers']['corrected_rejection'].update(drop_failed_rows=True)),
+        ('partial_CR_output',lambda p:p['samplers']['corrected_rejection'].update(partial_output_allowed=True)),
     ]:
         p=copy.deepcopy(plan);mutate(p)
         try:check(p,tables)

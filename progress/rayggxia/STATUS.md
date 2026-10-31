@@ -1,3 +1,9 @@
+## 2026-10-31 Issue220：Attention十组训练方案
+
+负责人rayggxia；task/220-attention-ten-case-plan，PR base main@7d42c7d30fa9c729c899ba7f815332dd6ed5671a。正式入口qwen3/training/attention_ten_case_20261031/REMOTE_AGENT_PLAN_ZH.md，交接work/rayggxia/220。用户确定5种无筛选方案及5个SparQ配对、P8阈值/8位sigmoid入口、传统稠密逐节点Gibbs。设计建议QKV/O-only更新943718400权重、两条匹配数字控制、100M上限和准确前缀/概率后缀；其余参数冻结但保留反向图。
+
+10组矩阵/P8表及5个错误配置拒绝检查通过；三个小分数行的6项精确稳态和72项人口广播/稠密等价检查通过。仅本地设计/数值合同验证，无LLM训练/GPU/Slurm/RTL/PPA。实际训练器和原optimizer/LR/data源配置仍待对方接合，不把已有参考当即用runner。发布以同目录PUBLICATION.json和Issue220回执为准，不自动合并，Projects待维护者同步。已有其他任务记录原字节保留。
+
 ## 2026-10-29 Issue204：用户要求继续SRAM存内比较主架构
 
 双随机结构继续SRAM驻留、本地SNG并行比较，阵列输出随机权重bit；不默认搬整组权重到DFF，不默认每采样走普通窄口完整读。两颗全局LFSR32（输入一颗/权重一颗）、T32/8×4与原共享尺度保持；P8输入/P7权重各需5位抖动。ICG DFF及普通宏预读保持仅作对照。已更新12方案页，新增13_SRAM存内比较估算口径与证据.md并同字节同步根阅读镜像。

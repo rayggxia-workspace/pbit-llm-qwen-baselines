@@ -1,5 +1,7 @@
 # 当前结果：8位比较器与32路共享Sigmoid
 
+[与Attention数字p-bit的J/bit交叉核对](../pbit_crosscheck_20261031/README_ZH.md)：区分随机供给、概率保持、纯采样及完整Ising/Wd；共享LUT省面积不自动等于最低每比特能量。已有结果离线重算，无新EDA。
+
 [数字非线性＋Wd对照流程与条件预算](../nonlinear_digital_comparison_20261031/PLAN_ZH.md)：同g/u码与共享尺度，Sigmoid/融合门控表→整数乘法→z9重编码→A9×W8；这是流程分析，尚无完整数字集成PPA。
 
 6配置、三seed、66PT，RTL和门级各13614逐拍检查通过。比较64份完整组合LUT，与每32路共享一份LUT、每路8位概率保持的CE/真实ICG版；保留weighted和OR4signed9两种Wd后端。所有比较器主体8位，q=0/256通过现有g符号区分，无概率精度改变。

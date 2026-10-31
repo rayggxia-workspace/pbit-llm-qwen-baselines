@@ -81,10 +81,15 @@ def extract(root,cfg,source,lut,m_table):
    return result
   options=dict(context=2048,decode=1,examples=8,batch=8,native=True,capture=True)
   before=score(model,ids,None,**options)
+  # The pinned matched wrapper resolves the module attribute at dispatch time;
+  # native Qwen caches a registry function and bypasses that attribute hook.
+  # Compare the instrumented wrapper against the original native output below.
+  options['native']=False
   sdpa.sdpa_attention_forward=hook
   try:after=score(model,ids,None,**options)
   finally:sdpa.sdpa_attention_forward=old
-  assert layers==list(range(36)) and before['logits_sha256']==after['logits_sha256'] and before['nll_sum']==after['nll_sum']
+  assert layers==list(range(36)),('capture_coverage',layers)
+  assert before['logits_sha256']==after['logits_sha256'] and before['nll_sum']==after['nll_sum'],('native_wrapper_mismatch',before['nll_sum'],after['nll_sum'])
   assert all(p._version==ver and p.data_ptr()==ptr for p,ver,ptr in unchanged)
   assert before['tokens_per_layer']==after['tokens_per_layer']==[8]*36
   for label in ['full','K256']:
@@ -93,7 +98,7 @@ def extract(root,cfg,source,lut,m_table):
    seal(out/f'{corpus}_{label}.json',dict(status='completed',corpus=corpus,mode=label,npz_sha256=sha(path),
       global_metric_names=['zeroed_softmax_mass','P8_odds_tv','P8_expected_V_relative_L2','entropy','pmax','nonzero_thresholds','retained_full_mass','score_saturated_fraction','gap_saturated_fraction'],
       all_head_rows=8*36*32,selected_audit_rows=len(details[label]),rows=details[label]))
-  seal(out/f'{corpus}_GATE.json',dict(status='completed',native_logits_unchanged=True,model_parameters_unchanged=True,
+  seal(out/f'{corpus}_GATE.json',dict(status='completed',native_logits_unchanged=True,matched_native_wrapper=True,model_parameters_unchanged=True,
       all_36_layers=True,rows_per_mode=9216,audit_rows_per_mode=288,token_ids_sha256=token_sha,
       data_sha256=cfg['data_sha256'][name],reference=before,diagnostic=after,warning='8 target query diagnostic, not model PPL; test already observed in earlier budget work'))
  seal(out/'EXTRACT_COMPLETED.json',dict(status='completed',files={p.name:sha(p) for p in out.iterdir() if p.suffix in ['.json','.npz'] and p.name!='EXTRACT_COMPLETED.json'}))

@@ -1,6 +1,6 @@
 ## 2026-10-31 Issue220：Attention十组训练方案
 
-负责人rayggxia；task/220-attention-ten-case-plan，PR base main@7d42c7d30fa9c729c899ba7f815332dd6ed5671a。正式入口qwen3/training/attention_ten_case_20261031/REMOTE_AGENT_PLAN_ZH.md，交接work/rayggxia/220。用户确定5种无筛选方案及5个SparQ配对、P8阈值/8位sigmoid入口、传统稠密逐节点Gibbs。设计建议QKV/O-only更新943718400权重、两条匹配数字控制、100M上限和准确前缀/概率后缀；其余参数冻结但保留反向图。
+已通过PR221发布，open未合并；科学提交a9474b62a622ed3c24d3763740cf2215cca70ce0，14文件GitHub读回一致。负责人rayggxia；task/220-attention-ten-case-plan，PR base main@7d42c7d30fa9c729c899ba7f815332dd6ed5671a。正式入口qwen3/training/attention_ten_case_20261031/REMOTE_AGENT_PLAN_ZH.md，交接work/rayggxia/220。用户确定5种无筛选方案及5个SparQ配对、P8阈值/8位sigmoid入口、传统稠密逐节点Gibbs。设计建议QKV/O-only更新943718400权重、两条匹配数字控制、100M上限和准确前缀/概率后缀；其余参数冻结但保留反向图。
 
 10组矩阵/P8表及5个错误配置拒绝检查通过；三个小分数行的6项精确稳态和72项人口广播/稠密等价检查通过。仅本地设计/数值合同验证，无LLM训练/GPU/Slurm/RTL/PPA。实际训练器和原optimizer/LR/data源配置仍待对方接合，不把已有参考当即用runner。发布以同目录PUBLICATION.json和Issue220回执为准，不自动合并，Projects待维护者同步。已有其他任务记录原字节保留。
 
@@ -168,3 +168,4 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 面积均已按用户要求raw×0.81并保留原始列。S0两尺寸hold−0.041792ns；S2 M8 setup仅0.000099ns，功耗表范围等警告保留。前布局，无CTS/SDF/SPEF、真实模型质量、存储/RNG/比较器/编码/最终浮点尺度及实际广播线成本。D0是未优化q9参考，不称成熟最佳INT8。SRAM/门控权重与内部位宽收紧属于后续，不伪称本轮全链路完成。
 
 中央台账新增matrix-t32-204-20261028，82记录联合check/render、81旧record逐字保留；main缺全台账，本PR只交付增量record及校验回执，不复制别人记录。失败波形/别名/调试可见性版本保留；v3旧数字后处理实际已跑1分34秒后取消并由v9替代，如实记录。Projects既有权限限制待同步。下一步：审阅本轮PR，修hold/功耗表范围，M8数字控制、SC位宽/真实ICG及驻留权重端口验证；不自动启动新模型或昂贵作业。
+

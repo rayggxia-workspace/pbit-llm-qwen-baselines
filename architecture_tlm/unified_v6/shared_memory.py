@@ -161,7 +161,10 @@ class BeatSRAM:
             self.count[kind+'_words']+=1;self.count[kind+'_physical_bytes']+=self.word
             record=self.by_tag.setdefault(tag,Counter());record[kind+'_words']+=1
             self.energy_pJ+=self.prices[kind]
-            if job['next']==job['last']:self.hub.later(now+self.access_ns,job['cb'])
+            if job['next']==job['last']:
+                ready=now+self.access_ns
+                if self.hub.common_period_ns is not None:ready=align_time(ready,self.hub.common_period_ns)
+                self.hub.later(ready,job['cb'])
             else:self.queue.append(job)
         self.count['cycles_with_grants']+=bool(used)
         self.count['peak_banks_per_cycle']=max(self.count['peak_banks_per_cycle'],len(used))
@@ -199,7 +202,7 @@ class SharedMemory:
                  issue_period_ns=10.,descriptor_serial=False,response_buffered=True,
                  memory_config=None,owner_quantum=16,return_banks=128):
         if min(credit,response_bytes,issue_per_cycle,issue_period_ns)<=0:raise ValueError('finite positive limits')
-        self.backend=backend;self.now=0.;self.events=[];self.serial=itertools.count()
+        self.backend=backend;self.now=0.;self.events=[];self.serial=itertools.count();self.common_period_ns=None
         self.req_id=0;self.desc_id=0;self.queues={};self.owners=[];self.rr=0
         self.active_owners=deque()
         self.owner_quantum=owner_quantum;self.current_owner=None;self.quantum_left=0
@@ -218,7 +221,9 @@ class SharedMemory:
         heapq.heappush(self.events,(t,next(self.serial),callback,args))
     def after(self,ns,callback):self.later(self.now+ns,callback)
     def delay(self,ns):
-        done=Signal();self.after(ns,done.set);yield done
+        done=Signal();end=self.now+ns
+        if self.common_period_ns is not None:end=align_time(end,self.common_period_ns)
+        self.later(end,done.set);yield done
     def dma(self,owner,address,size,region,offset,kind,callback,write=False,spans=None):
         if size==0:self.later(self.now,callback);return None
         if owner not in self.queues:self.queues[owner]=deque();self.owners.append(owner)
@@ -274,7 +279,8 @@ class SharedMemory:
             del self.descriptors[d.id]
             self.count['descriptors_completed']+=1
             if len(self.completions)<100:self.completions.append(dict(descriptor=d.id,owner=d.owner,kind=d.kind,done_ns=self.now,bytes=d.size))
-            d.cb()
+            if self.common_period_ns is None:d.cb()
+            else:self.later(align_time(self.now,self.common_period_ns),d.cb)
     def _response(self,reply):
         d,offset=self.pending.pop(reply['id']);d.returned+=64
         if self.descriptor_serial and d.returned==d.size:self.active_desc=None

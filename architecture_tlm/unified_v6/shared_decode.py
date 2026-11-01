@@ -10,6 +10,7 @@ from collections import Counter,deque
 from pathlib import Path
 import argparse,hashlib,json,math,time
 from .shared_memory import SharedMemory,AnalyticDRAM,DRAMSysAsync,dram_energy,align_time,Signal,when_any
+from .shared_clock import SharedClock,PROFILES
 
 
 MODEL=dict(hidden=2560,ffn=9728,layers=36,q_heads=32,kv_heads=8,head_dim=128,vocab=151936)
@@ -29,7 +30,8 @@ def spans_tile(base,out_start,outputs,k,input_size,inputs,element):
 class SharedDecode:
     def __init__(self,hub,*,layers=36,context=2048,ffn='sc',gu=16,nl=256,
                  staging=False,seed=17,attention_input=None,fullpv=False,include_lm=True,
-                 hidden=2560,ffn_size=9728,q_heads=32,kv_heads=8,head_dim=128,vocab=151936,cross_prefetch=True,progress=None):
+                 hidden=2560,ffn_size=9728,q_heads=32,kv_heads=8,head_dim=128,vocab=151936,cross_prefetch=True,progress=None,
+                 clock_profile='chip100'):
         if ffn not in ('sc','w8','bf16'):raise ValueError('FFN mode')
         if min(hidden,ffn_size)%64 or context%32:raise ValueError('full64 channels and32token layout blocks required')
         self.h=hub;self.model=dict(MODEL,hidden=hidden,ffn=ffn_size,layers=layers,
@@ -39,7 +41,13 @@ class SharedDecode:
         self.seed=seed;self.fullpv=fullpv;self.include_lm=include_lm
         self.cross_prefetch=cross_prefetch;self.progress=progress;self.prefetched=set();self.prefetched_gu=set();self.metadata_prefetched=set()
         self.a=AddressSpace();self.actions=Counter();self.phases=[];self.compute=Counter();self.kernel_active=Counter()
-        self.unpriced=Counter();self.mac_hz=500000000;self.mac_lanes=2048
+        self.clock=SharedClock(clock_profile)
+        if self.clock.synchronous:
+            if hub.now or hub.descriptors or hub.mem.queue:raise ValueError('set chip clock before execution')
+            if abs(hub.mem.period-self.clock.period_ns)>1e-8 or abs(hub.issue_period-self.clock.period_ns)>1e-8:
+                raise ValueError('chip100 SRAM/DMA front clock mismatch')
+            hub.common_period_ns=self.clock.period_ns
+        self.unpriced=Counter();self.mac_hz=self.clock.mac_hz;self.mac_lanes=2048
         self.vector_hz=100000000;self.extra_input=attention_input;self.numeric_quality=False
         # Physical banks0..255 serve weights/local vectors.256..511 give eight
         # groups32 physical128-bit banks, i.e.16 logical256-bit1RW banks each.
@@ -64,10 +72,15 @@ class SharedDecode:
         self.lm_base=self.a.alloc('lm_head',vocab*hidden*2)
     def phase(self,name,generators,layer):
         start=self.h.now;values=self.h.execute(generators)
-        self.phases.append(dict(layer=layer,stage=name,start_ns=start,end_ns=self.h.now,duration_ns=self.h.now-start))
+        row=dict(layer=layer,stage=name,start_ns=start,end_ns=self.h.now,duration_ns=self.h.now-start)
+        if self.clock.synchronous:
+            if abs(self.h.now/self.clock.period_ns-round(self.h.now/self.clock.period_ns))>1e-5:raise ValueError('off-edge chip completion')
+            row['chip_cycles']=round((self.h.now-start)/self.clock.period_ns)
+        self.phases.append(row)
         if self.progress:self.progress(self.phases[-1])
         return values
     def delay(self,ns,name):
+        ns=self.clock.service_ns(name,ns)
         self.compute[name]+=ns;yield from self.h.delay(ns)
     def copy(self,src,src_offset,dst,dst_offset,size,tag):
         # Four64B elastic copy slots, not an unaccounted whole-tile buffer.
@@ -135,7 +148,7 @@ class SharedDecode:
                 yield state['loaded'].setdefault(ix,Signal())
                 start=self.h.now;nbytes=sum(n for _,n in spans)
                 yield from self.h.transfer(self.weight[slot],0,nbytes,False,name+'_operand')
-                compute_end=start+math.ceil(work/self.mac_lanes)/self.mac_hz*1e9+4
+                compute_end=start+(math.ceil(work/self.mac_lanes)+2)*self.clock.mac_period_ns
                 if self.h.now<compute_end:yield from self.h.delay(compute_end-self.h.now)
                 self.actions['digital_'+('BF16' if element==2 else 'W8')+'_MAC']+=work
                 self.compute['ordinary_MAC_ideal_ns']+=math.ceil(work/self.mac_lanes)/self.mac_hz*1e9
@@ -185,7 +198,7 @@ class SharedDecode:
                         self.kernel_active['GU_frames']+=1;self.actions['GU_logical_R8_ports']+=4096
                         # Cross-K exponent alignment and128 INT64 updates; not
                         # included in the measured GU frame. Existing32-lane,
-                        # latency2 macro at500MHz, no new RTL validation.
+                        # latency2 macro; chip100 uses5 whole100MHz cycles.
                         yield from self.delay(10,'GU_crossK_align_add_macro')
                         self.actions['crossK_updates']+=128
                         if k+2<d//64:pending[k+2]=load(k+2)
@@ -344,8 +357,9 @@ class SharedDecode:
         for head in range(4):
             q=queries[head] if queries else None
             if q:
-                events.extend((offset+t,head,index,count) for t,index,count in q['events'])
-                offset+=q['duration_ns']+10
+                edge=lambda t:align_time(t,self.clock.period_ns) if self.clock.synchronous else t
+                events.extend((offset+edge(t),head,index,count) for t,index,count in q['events'])
+                offset+=edge(q['duration_ns'])+10
             else:
                 events.extend((offset+700+j*10,head,(self.seed+head*19+j*7)%128,1) for j in range(64));offset+=1460
         queues=[deque() for _ in range(4)];busy=[False]*4;cache={};producer={'index':0,'shift':0.,'held':False};consumed=[0]*4
@@ -457,8 +471,8 @@ class SharedDecode:
             phases=self.phases,actions=dict(self.actions),kernel_active=dict(self.kernel_active),
             compute_macro_busy_sum_ns=dict(self.compute),unpriced_state_and_actions=dict(self.unpriced),
             external_tensor_bytes=self.a.next,work_spec_sha256=self.work_digest.hexdigest(),
-            numeric_model_executed=False,model_quality_verified=False,
-            macro_evidence='GU/NL100MHz measured frames; digital500MHz/QK/crossK/normalization clocks are explicit unvalidated operator contracts')
+            numeric_model_executed=False,model_quality_verified=False,clock_contract=self.clock.report(),
+            macro_evidence='GU/NL100MHz measured frames; digital array/crossK/normalization remain explicit operator contracts; selected profile determines cycles/time')
 
 
 def main():
@@ -467,6 +481,7 @@ def main():
     p.add_argument('--binary');p.add_argument('--dram-config');p.add_argument('--input',type=Path)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--layers',type=int,default=36)
     p.add_argument('--ffn',choices=['sc','w8','bf16'],default='sc');p.add_argument('--seed',type=int,default=17)
+    p.add_argument('--clock-profile',choices=PROFILES,default='chip100')
     p.add_argument('--issue',type=int,default=8);p.add_argument('--credit',type=int,default=64)
     p.add_argument('--quantum',type=int,default=16)
     p.add_argument('--return-banks',type=int,default=128)
@@ -479,13 +494,14 @@ def main():
     hub=SharedMemory(backend,credit=a.credit,issue_per_cycle=a.issue,descriptor_serial=a.serial,response_buffered=not a.response_bypass,owner_quantum=a.quantum,return_banks=a.return_banks)
     try:
         model=SharedDecode(hub,layers=a.layers,ffn=a.ffn,gu=a.gu,nl=a.nl,staging=a.staging,seed=a.seed,include_lm=not a.no_lm,
-            attention_input=json.loads(a.input.read_bytes()) if a.input else None,cross_prefetch=not a.no_cross_prefetch,
+            attention_input=json.loads(a.input.read_bytes()) if a.input else None,cross_prefetch=not a.no_cross_prefetch,clock_profile=a.clock_profile,
             progress=lambda row:print('PHASE '+json.dumps(row),flush=True))
         result=model.run();result['memory']=hub.report();result['DRAM']=dram_energy(backend.finish(hub.now))
         result.update(status='completed',backend=a.backend,wall_seconds=time.time()-start,arguments={k:str(v) if isinstance(v,Path) else v for k,v in vars(a).items()},
             input_sha256=hashlib.sha256(a.input.read_bytes()).hexdigest() if a.input else None,
             simulated_ms=hub.now*1e-6,complete_chip_energy_J=None,
             scope='whole configured layer/weight/address workload on ONE memory timeline; no numerical inference or physical timing signoff')
+        if model.clock.synchronous:result['simulated_chip_cycles']=round(hub.now/model.clock.period_ns)
         (a.out/'RESULT.json').write_text(json.dumps(result,indent=2,allow_nan=False)+'\n',encoding='utf-8')
         print(json.dumps(dict(status='completed',simulated_ms=result['simulated_ms'],wall_seconds=result['wall_seconds'],DRAM=result['DRAM'],SRAM_mJ=result['memory']['SRAM']['dynamic_mJ']+result['memory']['SRAM']['leakage_mJ'])))
     finally:backend.close()

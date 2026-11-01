@@ -1,3 +1,5 @@
+**时钟版本更新：新共享后端默认`chip100`，片上统一100MHz；本页原v2/v3数值属于`legacy_mixed`旧混合时钟，原表保留。见[统一100MHz配置与结果](clock100/REPORT_ZH.md)。**
+
 # unified_v6共享存储后端（Issue227）
 
 [中文结果与能耗审计](REPORT_ZH.md) · [机器可读结果](results/RESULTS.json) · [旧存储账复算](results/STORAGE_ENERGY_AUDIT_ZH.md)

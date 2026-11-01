@@ -1,3 +1,7 @@
+## 2026-11-01 Issue227已发布PR228，完整回放仍运行
+
+19个科学文件完整回读通过，提交2146afd0423988f7fdcd893b0c254575f5ed1404；PR228 open/draft、未合并。Slurm3650健康运行，最新检查已进入第4层；预计仍约2–3h总墙钟。回执work/rayggxia/227/PUBLICATION.json，Issue评论6557211590。
+
 ## 2026-11-01 Issue227共享存储调度与能耗审计（rayggxia）
 
 分支task/227-shared-memory，base main@7d42c7d3；独立目录tmp/shared-memory-issue227-20261101。正式报告architecture_tlm/shared_memory_20261101/REPORT_ZH.md，交接work/rayggxia/227/HANDOFF.md。新共享后端、16机制检查与官方DDR电流表三组配对已完成；发布/PR状态看work/rayggxia/227/PUBLICATION.json，不把本地完成当合并。

@@ -1,3 +1,7 @@
+## 2026-11-01 Issue159：HF登录核对已完成
+
+rayggxia，task/159-hf-model-index / PR229，独立tmp/ffn-hf-index-issue159-20261101。已通过用户登录的IAB读取私有模型库，固定fa0a9e4a7ad394ffb60e8175cb0d1e34dff93caf；本批submissions/20261031T115253Z-xhy12309-seven-case-weights，七组各38文件/36FFN分片，合计276文件/37,494,721,776逻辑字节。HANDOFF/code_reference已读；配套dataset CyberPrometheus/p-computing4LLM@a7c02990...的seven-case-code-results目录及加载器引用已记录。必须同组non_ffn＋FFN，非adapter/from_pretrained。元数据核对不等于下载重算SHA/实际加载/PPL；新helper全4B未运行的交付限制保留。原401只属匿名历史，本次访问阻塞已解除。正式备注与JSON已更新，发布以VERIFIED_PUBLICATION回执为准；PR待审不自动合并，Projects待维护者同步。
+
 ## 2026-11-01 Issue159：七组FFN训练权重HF入口备注
 
 负责人rayggxia；分支task/159-hf-model-index，远端base main@7d42c7d3，独立tmp/ffn-hf-index-issue159-20261101；接续PR200训练方案，PR号见hf_index/PUBLICATION.json。已记录用户给出的CyberPrometheus/p-computing4llm-models分支xuhaoyuan02-qwen3-4b-seven-20261031，并核对计划七组B0/W6/W10/S1/S3/T16/T64。匿名无缓存重查目标仓库/分支均401，公开Qwen对照200；HF commit、实际目录/加载器/文件SHA未验收，未下载大权重/训练/PPL。正式入口qwen3/model_artifacts/HF_SEVEN_FFN_MODELS_ZH_20261101.md及同名JSON；访问阻塞与继续步骤见work/rayggxia/159/hf_index/HANDOFF.md。已发布/PR状态以回执为准，不把备注完成当权重验收；Projects无写接口待同步。

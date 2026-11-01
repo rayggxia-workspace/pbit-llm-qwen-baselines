@@ -1,4 +1,4 @@
-> 七组Qwen3-4B随机FFN训练模型的[Hugging Face共享入口与实验标签](qwen3/model_artifacts/HF_SEVEN_FFN_MODELS_ZH_20261101.md)已登记；当前匿名文件访问仍401，实际HF提交/目录/SHA待核验。
+> 七组Qwen3-4B随机FFN训练模型的[固定HF版本、七组实际目录与配套加载器入口](qwen3/model_artifacts/HF_SEVEN_FFN_MODELS_ZH_20261101.md)已通过登录会话核对；未下载大权重或重跑模型验证。
 
 # Current complete-model TLM (2026-10-28; PR190 baseline retained)
 

@@ -1,3 +1,5 @@
+**2026-11-01完整回放与逐层等待审计：[报告](bottleneck_audit/REPORT_ZH.md)。100MHz完整66.991850ms；11项有界资源对照与28检查通过。MAC加倍无收益、NL160反而更快，供数/尾批仍需改进。历史“完整运行中”状态已由本回执更新。**
+
 **DMA后续增量：保持100MHz/8MiB，8通道入口＋有限DMA扩展＋权重tile排布，单层5.418→1.591ms；见[dma_expand报告](dma_expand/REPORT_ZH.md)。下方旧配置/旧结果保留。**
 
 **时钟版本更新：新共享后端默认`chip100`，片上统一100MHz；本页原v2/v3数值属于`legacy_mixed`旧混合时钟，原表保留。见[统一100MHz配置与结果](clock100/REPORT_ZH.md)。**
@@ -16,7 +18,7 @@ python -B -m architecture_tlm --shared-memory --backend dramsys --binary <bounde
 
 `analytic`只有功能/时间代理，无DRAM能量，不作为DRAMSys结果。真实后端要求已有`bounded_async_v1`请求/完成桥；桥/配置/输入身份见任务EXECUTION_INDEX。标准DDR4控制器不由Python重新猜测。
 
-可控消融：`--serial`整描述符返回屏障；`--staging`增加一次staging写/读/目标写；`--no-cross-prefetch`关闭跨阶段预取；`--return-banks 16`复现狭窄返回FIFO；`--ffn w8`数字W8 FFN隔离对照。默认8MiB、512个128bit单端口bank、100MHz；GU16/NL256测得100MHz合同，普通矩阵2048MAC/500MHz合同。不是全芯片STA或完整PPA。
+可控消融：`--serial`整描述符返回屏障；`--staging`增加一次staging写/读/目标写；`--no-cross-prefetch`关闭跨阶段预取；`--return-banks 16`复现狭窄返回FIFO；`--ffn w8`数字W8 FFN隔离对照。默认8MiB、512个128bit单端口bank、100MHz；chip100默认GU16/NL256/普通2048MAC均100MHz；legacy_mixed显式保留旧普通MAC500MHz合同。不是全芯片STA或完整PPA。
 
 事件输入格式：`rows`为3场景×8KV组，每行`dimensions`（32索引）与`candidates`（128索引）；`queries[seed][group]`为3场景×4queryhead，每个查询给`duration_ns`及`events=[时间ns,候选下标,次数]`，每头总64样本。候选/采样事件不由本TLM重新计算；原输入只在授权服务端和归档，公共Git仅记SHA，不发布本地未公开交接fixture。无输入时只用于合成机制检查，不能冒充真实模型事件。
 

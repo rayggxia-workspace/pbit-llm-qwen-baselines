@@ -151,3 +151,10 @@ Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内
 沿PR228/task/227-shared-memory，片上100MHz、8chDDR4-1866、8MiB SRAM/计算/采样不变。旧单入口约28.5GB/s；8原生initiator＋24请求/拍＋256全局在途＋32KiB返回FIFO，连续流110.84GB/s（名义119.424的92.8%）。按计算tile离线重排权重，单层5.418380→1.591150ms，DDR核心49.454646→27.970639mJ，SRAM.431049→.370269mJ；访问命令反增、背景刷新下降，平均DDR功率9.13→17.58W。不是全芯片能量/实测或PPL。
 
 公开实现unified_v6/shared_dma.py与shared_memory.py/shared_decode.py，bridge在shared_memory_20261101/dma_expand；25测试，实际Slurm3655–3668消融，额外seed3669–3672与完整3673按RESULTS/HANDOFF_DMA核验；旧3650/3653健康任务不重交。全局额度不复制，原FRFCFS/JEDEC/端口冲突保留，重排物理地址改变但算术/字节/SRAM事件一致。控制/互连/PHY未定价；不发布受限module_handoff或原fixture。结果/源/配置SHA见dma_expand/RESULTS.json，状态以DMA_PUBLICATION回执为准；未自动合并，根正式MEMORY由Issue28接收此窄增量。
+
+
+## 2026-11-01 Issue227 / PR228：完整token与驱动等待审计
+
+[正式报告](shared_memory_20261101/bottleneck_audit/REPORT_ZH.md)；100MHz完整3673为66.991850ms/6,699,185拍，36层57.012840ms＋lm_head9.978310ms。旧同钟3653为222.636130ms，形状/输入/动作/核帧一致，DMA前端与权重排布改变。不是PPL/全芯片PPA。
+
+11项CPU审计与28检查通过，原调度仅增加零时序扰动观测。数字2048→4096MAC仍1.591150ms/层；NL256→160到1.498110ms，有限弹性入口bypass到1.394060ms；在途扩1024只1.573780ms，总fabric加倍和向量bank扩展无整层收益。负面结果保留，不能把单项收益相加。仍有普通operand端口/返回SRAM争用、Wd尾批/g-u码重复读、GU→Wd屏障。shared后端RNG为服务/事件合同，完整RNG和统一500MHz/256GB/s尚未实施；控制/PHY成本未全标定。全部36层表/工作量/原件与SHA见同目录CSV/JSON，PR仍待审未合并。不是新增电路PPA run。

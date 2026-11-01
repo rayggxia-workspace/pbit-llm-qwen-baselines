@@ -1,3 +1,7 @@
+## 2026-11-01 Issue225：最新GU/NL/Attention预算刷新已发布
+
+负责人rayggxia；task/225-module-estimate，PR226，base main。科学提交bb37994a，8份新增预算/交接远端逐字节核验一致。报告architecture_tlm/module_estimate_20261101/REPORT_ZH.md；默认GU16/NL256/KV8参考52.56–61.36ms、片上已计价49.28–55.26mJ、覆盖面积139.76mm²。三交接SHA/合同及七情景守恒PASS，旧结果不变。没有完整TLM/DRAMSys重跑、新EDA/PPL或质量验收；113µs未安装为固定actor。统一异步DMA/真实bank分配及KV维护待接入；Projects/全量长期备忘录协调待同步。交接work/rayggxia/225/REFRESH_HANDOFF_20261101.md；本条保留其他任务原STATUS全部内容，PR仍open未合并。
+
 ## 2026-10-29 Issue204：用户要求继续SRAM存内比较主架构
 
 双随机结构继续SRAM驻留、本地SNG并行比较，阵列输出随机权重bit；不默认搬整组权重到DFF，不默认每采样走普通窄口完整读。两颗全局LFSR32（输入一颗/权重一颗）、T32/8×4与原共享尺度保持；P8输入/P7权重各需5位抖动。ICG DFF及普通宏预读保持仅作对照。已更新12方案页，新增13_SRAM存内比较估算口径与证据.md并同字节同步根阅读镜像。

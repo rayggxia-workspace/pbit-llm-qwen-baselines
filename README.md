@@ -1,3 +1,5 @@
+> 七组Qwen3-4B随机FFN训练模型的[固定HF版本、七组实际目录与配套加载器入口](qwen3/model_artifacts/HF_SEVEN_FFN_MODELS_ZH_20261101.md)已通过登录会话核对；未下载大权重或重跑模型验证。
+
 # Current complete-model TLM (2026-10-28; PR190 baseline retained)
 
 正式主线为 **main**。当前[基线与配置选择](architecture_tlm/BASELINE_ZH.md)区分默认DDR4共同调度、HBM对照和资源扩容候选；沿用同一个 `python -m architecture_tlm` 入口。条件时延基线不等于完整模型质量或芯片PPA验收。

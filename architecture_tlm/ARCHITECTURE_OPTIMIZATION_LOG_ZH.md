@@ -143,3 +143,11 @@ Issue204/PR209，[方案](../digital_circuit_simulation_registry/12_双随机分
 ## 2026-10-29 双随机SRAM存内比较主架构与旧估算延续
 
 Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内比较估算口径与证据.md)。用户要求保留SRAM驻留/本地比较，双全局LFSR不变，DFF仅对照。沿旧宏本体+邻近SNG/分发+存储节点带载增量估算；普通预读保持及M1单seed前端数据各保留边界，不能当完整定制CIM。新W7比较与接口动态待测，不每拍重复收费普通全读，也不把缺项当0。无新RTL/EDA/SPICE/PPL，旧run未改。
+
+
+
+## 2026-11-01 Issue227 / PR228：扩展DMA与8通道入口
+
+沿PR228/task/227-shared-memory，片上100MHz、8chDDR4-1866、8MiB SRAM/计算/采样不变。旧单入口约28.5GB/s；8原生initiator＋24请求/拍＋256全局在途＋32KiB返回FIFO，连续流110.84GB/s（名义119.424的92.8%）。按计算tile离线重排权重，单层5.418380→1.591150ms，DDR核心49.454646→27.970639mJ，SRAM.431049→.370269mJ；访问命令反增、背景刷新下降，平均DDR功率9.13→17.58W。不是全芯片能量/实测或PPL。
+
+公开实现unified_v6/shared_dma.py与shared_memory.py/shared_decode.py，bridge在shared_memory_20261101/dma_expand；25测试，实际Slurm3655–3668消融，额外seed3669–3672与完整3673按RESULTS/HANDOFF_DMA核验；旧3650/3653健康任务不重交。全局额度不复制，原FRFCFS/JEDEC/端口冲突保留，重排物理地址改变但算术/字节/SRAM事件一致。控制/互连/PHY未定价；不发布受限module_handoff或原fixture。结果/源/配置SHA见dma_expand/RESULTS.json，状态以DMA_PUBLICATION回执为准；未自动合并，根正式MEMORY由Issue28接收此窄增量。

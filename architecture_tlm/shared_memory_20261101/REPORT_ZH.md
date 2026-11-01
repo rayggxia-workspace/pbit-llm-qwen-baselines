@@ -1,3 +1,5 @@
+**DMA后续增量：保持100MHz/8MiB，8通道入口＋有限DMA扩展＋权重tile排布，单层5.418→1.591ms；见[dma_expand报告](dma_expand/REPORT_ZH.md)。下方旧配置/旧结果保留。**
+
 **时钟版本更新：新共享后端默认`chip100`，片上统一100MHz；本页原v2/v3数值属于`legacy_mixed`旧混合时钟，原表保留。见[统一100MHz配置与结果](clock100/REPORT_ZH.md)。**
 
 # 共享存储调度与能耗核查（Issue227）

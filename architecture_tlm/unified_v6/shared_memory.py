@@ -66,13 +66,21 @@ class AnalyticDRAM:
 
 class DRAMSysAsync:
     """Existing bounded_async_v1 protocol, no added macro-DMA drain barrier."""
-    def __init__(self,binary,config,credit=64,log='dramsys.stderr.log'):
+    def __init__(self,binary,config,credit=64,log='dramsys.stderr.log',request_gap_ps=None,request_lanes=None):
         self.log=open(log,'w',encoding='utf-8')
-        self.p=subprocess.Popen([str(binary),str(config),str(credit),'64'],
+        args=[str(binary),str(config),str(credit),'64']
+        if request_lanes is not None and request_gap_ps is None:raise ValueError('explicit gap required with lane override')
+        if request_gap_ps is not None:args+=['1',str(request_gap_ps)]
+        if request_lanes is not None:args+=[str(request_lanes)]
+        self.p=subprocess.Popen(args,
             stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.log,text=True,bufsize=1)
         self.ready=self._read();self.now=0.;self.final=None
         if self.ready.get('status')!='ready' or 'bounded_async_v1' not in self.ready.get('features',[]):
             self.close();raise ValueError('bounded_async_v1 DRAMSys bridge required')
+        if request_gap_ps is not None and ('request_gap_v1' not in self.ready.get('features',[]) or self.ready.get('request_gap_ps')!=request_gap_ps):
+            self.close();raise ValueError('configurable request_gap_v1 bridge required')
+        if request_lanes is not None and ('lane_dma_v1' not in self.ready.get('features',[]) or self.ready.get('request_lanes')!=request_lanes):
+            self.close();raise ValueError('lane_dma_v1 bridge required')
     def _read(self):
         while True:
             s=self.p.stdout.readline()

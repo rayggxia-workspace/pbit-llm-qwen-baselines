@@ -1,3 +1,7 @@
+## 2026-11-01 Issue227 DMA扩展
+
+rayggxia，task/227-shared-memory / PR228，main7d42c7d3，独立tmp/shared-memory-issue227-20261101。25机制检查与实际DRAMSys消融：同100MHz/8MiB/采样，连续流28.5→110.8GB/s，单层5.418380→1.591150ms，DDR核心49.454646→27.970639mJ；权重tile重排不改运算/容量。额外三seed和完整状态见dma_expand/RESULTS；3673完整36层尚未封存，3650/3653旧健康任务保留。手动收集步骤HANDOFF_DMA；源码/输入/配置/成果SHA齐备，无新EDA/PPL，全芯片控制/PHY成本未标定。当前发布状态看DMA_PUBLICATION.json；PR仍open/draft未合并、Projects待维护者同步。
+
 ## 2026-11-01 Issue227的100MHz配对已封存
 
 Slurm3651/3652 completed：chip100 5.418380ms（541838拍）对legacy_mixed 5.459883ms；同地址/动作/SRAM事件通过，legacy复现旧v3全部时间/存储结果。数字理想活动128000ns对25600ns，主瓶颈仍供数。完整100MHz作业3653已解除依赖运行，原3650混合版保留。20检查通过；本轮发布以CLOCK100_PUBLICATION.json为准。

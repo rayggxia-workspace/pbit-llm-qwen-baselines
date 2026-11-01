@@ -11,6 +11,7 @@ from pathlib import Path
 import argparse,hashlib,json,math,time
 from .shared_memory import SharedMemory,AnalyticDRAM,DRAMSysAsync,dram_energy,align_time,Signal,when_any
 from .shared_clock import SharedClock,PROFILES
+from .shared_dma import DMA_PROFILES,dma_config
 
 
 MODEL=dict(hidden=2560,ffn=9728,layers=36,q_heads=32,kv_heads=8,head_dim=128,vocab=151936)
@@ -23,7 +24,10 @@ class AddressSpace:
         base=math.ceil(self.next/4096)*4096;self.regions[name]=(base,size);self.next=base+size;return base
 
 
-def spans_tile(base,out_start,outputs,k,input_size,inputs,element):
+def spans_tile(base,out_start,outputs,k,input_size,inputs,element,layout='row_major'):
+    if layout=='tile_packed':
+        return [(base+(out_start*input_size+outputs*k)*element,outputs*inputs*element)]
+    if layout!='row_major':raise ValueError('weight layout')
     return [(base+(out_start+j)*input_size*element+k*element,inputs*element) for j in range(outputs)]
 
 
@@ -31,13 +35,15 @@ class SharedDecode:
     def __init__(self,hub,*,layers=36,context=2048,ffn='sc',gu=16,nl=256,
                  staging=False,seed=17,attention_input=None,fullpv=False,include_lm=True,
                  hidden=2560,ffn_size=9728,q_heads=32,kv_heads=8,head_dim=128,vocab=151936,cross_prefetch=True,progress=None,
-                 clock_profile='chip100'):
+                 clock_profile='chip100',weight_layout='row_major'):
         if ffn not in ('sc','w8','bf16'):raise ValueError('FFN mode')
         if min(hidden,ffn_size)%64 or context%32:raise ValueError('full64 channels and32token layout blocks required')
         self.h=hub;self.model=dict(MODEL,hidden=hidden,ffn=ffn_size,layers=layers,
             q_heads=q_heads,kv_heads=kv_heads,head_dim=head_dim,vocab=vocab)
         if q_heads//kv_heads!=4 or q_heads%kv_heads or head_dim!=128:raise ValueError('four query heads per KV/d128 contract')
         self.N=context;self.ffn_mode=ffn;self.gu=gu;self.nl=nl;self.staging=staging
+        if weight_layout not in ('row_major','tile_packed'):raise ValueError('weight layout')
+        self.weight_layout=weight_layout
         self.seed=seed;self.fullpv=fullpv;self.include_lm=include_lm
         self.cross_prefetch=cross_prefetch;self.progress=progress;self.prefetched=set();self.prefetched_gu=set();self.metadata_prefetched=set()
         self.a=AddressSpace();self.actions=Counter();self.phases=[];self.compute=Counter();self.kernel_active=Counter()
@@ -111,7 +117,7 @@ class SharedDecode:
             nout=min(64,outputs-o)
             for k in range(0,inputs,1024):
                 n=min(1024,inputs-k)
-                spans=spans_tile(base,o,nout,k,inputs,n,element)
+                spans=spans_tile(base,o,nout,k,inputs,n,element,self.weight_layout)
                 tasks.append((spans,nout*n,o,nout,k+n==inputs))
         return tasks
     def prefetch_matrix(self,layer,name,outputs,inputs,element=2):
@@ -123,8 +129,8 @@ class SharedDecode:
     def prefetch_gu(self,layer):
         d=self.model['hidden'];f=self.model['ffn']
         def first(engine,k):
-            spans=spans_tile(self.weight_bases[layer,'g'],engine*64,64,k*64,d,64,1)
-            spans+=spans_tile(self.weight_bases[layer,'u'],engine*64,64,k*64,d,64,1)
+            spans=spans_tile(self.weight_bases[layer,'g'],engine*64,64,k*64,d,64,1,self.weight_layout)
+            spans+=spans_tile(self.weight_bases[layer,'u'],engine*64,64,k*64,d,64,1,self.weight_layout)
             yield from self.load('GU'+str(engine),spans,k%2,engine*8192,'GU_weights')
             self.prefetched_gu.add((layer,engine,engine,k))
         yield from self._parallel([first(e,k) for e in range(min(self.gu,f//64)) for k in range(min(2,d//64))])
@@ -184,8 +190,8 @@ class SharedDecode:
                     if key in self.prefetched_gu:
                         self.prefetched_gu.remove(key);self.actions['GU_prefetch_hits']+=1
                     else:
-                        spans=spans_tile(self.weight_bases[layer,'g'],out*64,64,k*64,d,64,1)
-                        spans+=spans_tile(self.weight_bases[layer,'u'],out*64,64,k*64,d,64,1)
+                        spans=spans_tile(self.weight_bases[layer,'g'],out*64,64,k*64,d,64,1,self.weight_layout)
+                        spans+=spans_tile(self.weight_bases[layer,'u'],out*64,64,k*64,d,64,1,self.weight_layout)
                         yield from self.load('GU'+str(engine),spans,slot,off,'GU_weights')
                     yield from self.h.transfer(self.vector,65536+(out*(d//64)+k)*2,2,False,'GU_weight_scale_metadata')
                     loaded[k].set()
@@ -216,7 +222,7 @@ class SharedDecode:
             while groups:
                 out=groups.popleft();pending={};loaded={k:Signal() for k in range(f//64)}
                 def load(k):
-                    spans=spans_tile(self.weight_bases[layer,'down'],out*8,8,k*64,f,64,1)
+                    spans=spans_tile(self.weight_bases[layer,'down'],out*8,8,k*64,f,64,1,self.weight_layout)
                     yield from self.load('NL'+str(engine),spans,k%2,engine*512,'down_weights')
                     yield from self.h.transfer(self.vector,65536+2*(f//64)*(d//64)+(out//8)*(f//64)+k,1,False,'Wd_weight_scale_metadata')
                     loaded[k].set()
@@ -471,7 +477,7 @@ class SharedDecode:
             phases=self.phases,actions=dict(self.actions),kernel_active=dict(self.kernel_active),
             compute_macro_busy_sum_ns=dict(self.compute),unpriced_state_and_actions=dict(self.unpriced),
             external_tensor_bytes=self.a.next,work_spec_sha256=self.work_digest.hexdigest(),
-            numeric_model_executed=False,model_quality_verified=False,clock_contract=self.clock.report(),
+            numeric_model_executed=False,model_quality_verified=False,clock_contract=self.clock.report(),weight_layout=self.weight_layout,
             macro_evidence='GU/NL100MHz measured frames; digital array/crossK/normalization remain explicit operator contracts; selected profile determines cycles/time')
 
 
@@ -482,21 +488,28 @@ def main():
     p.add_argument('--out',type=Path,required=True);p.add_argument('--layers',type=int,default=36)
     p.add_argument('--ffn',choices=['sc','w8','bf16'],default='sc');p.add_argument('--seed',type=int,default=17)
     p.add_argument('--clock-profile',choices=PROFILES,default='chip100')
-    p.add_argument('--issue',type=int,default=8);p.add_argument('--credit',type=int,default=64)
+    p.add_argument('--dma-profile',choices=tuple(DMA_PROFILES),default='wide24')
+    p.add_argument('--weight-layout',choices=['row_major','tile_packed'],default='row_major')
+    p.add_argument('--issue',type=int);p.add_argument('--credit',type=int);p.add_argument('--response-bytes',type=int)
+    p.add_argument('--bridge-gap-ps',type=int);p.add_argument('--bridge-lanes',type=int,choices=[1,8])
     p.add_argument('--quantum',type=int,default=16)
-    p.add_argument('--return-banks',type=int,default=128)
+    p.add_argument('--return-banks',type=int)
     p.add_argument('--serial',action='store_true');p.add_argument('--staging',action='store_true')
     p.add_argument('--response-bypass',action='store_true');p.add_argument('--no-lm',action='store_true')
     p.add_argument('--no-cross-prefetch',action='store_true')
     p.add_argument('--gu',type=int,default=16);p.add_argument('--nl',type=int,default=256)
     a=p.parse_args();a.out.mkdir(parents=True,exist_ok=False);start=time.time()
-    backend=DRAMSysAsync(a.binary,a.dram_config,a.credit,a.out/'dramsys.stderr.log') if a.backend=='dramsys' else AnalyticDRAM()
-    hub=SharedMemory(backend,credit=a.credit,issue_per_cycle=a.issue,descriptor_serial=a.serial,response_buffered=not a.response_bypass,owner_quantum=a.quantum,return_banks=a.return_banks)
+    cfg=dma_config(a.dma_profile,issue=a.issue,credit=a.credit,response_bytes=a.response_bytes,return_banks=a.return_banks,bridge_gap_ps=a.bridge_gap_ps,bridge_lanes=a.bridge_lanes)
+    backend=DRAMSysAsync(a.binary,a.dram_config,cfg['credit'],a.out/'dramsys.stderr.log',request_gap_ps=cfg['bridge_gap_ps'],request_lanes=cfg['bridge_lanes']) if a.backend=='dramsys' else AnalyticDRAM()
+    hub=SharedMemory(backend,credit=cfg['credit'],issue_per_cycle=cfg['issue'],response_bytes=cfg['response_bytes'],descriptor_serial=a.serial,response_buffered=not a.response_bypass,owner_quantum=a.quantum,return_banks=cfg['return_banks'])
     try:
         model=SharedDecode(hub,layers=a.layers,ffn=a.ffn,gu=a.gu,nl=a.nl,staging=a.staging,seed=a.seed,include_lm=not a.no_lm,
-            attention_input=json.loads(a.input.read_bytes()) if a.input else None,cross_prefetch=not a.no_cross_prefetch,clock_profile=a.clock_profile,
+            attention_input=json.loads(a.input.read_bytes()) if a.input else None,cross_prefetch=not a.no_cross_prefetch,clock_profile=a.clock_profile,weight_layout=a.weight_layout,
             progress=lambda row:print('PHASE '+json.dumps(row),flush=True))
-        result=model.run();result['memory']=hub.report();result['DRAM']=dram_energy(backend.finish(hub.now))
+        result=model.run();result['memory']=hub.report();backend_result=backend.finish(hub.now);result['DRAM']=dram_energy(backend_result)
+        result['dma_contract']=dict(profile=a.dma_profile,**cfg,controller_and_interconnect_PPA='unpriced; finite queues/banks included in timing; SRAM total capacity unchanged')
+        result['bridge_contract']=dict(request_gap_ps=backend_result.get('request_gap_ps'),request_lanes=backend_result.get('request_lanes'),peak_pending=backend_result.get('peak_pending'),host_transactions=backend_result.get('host_transactions'),burst_count=backend_result.get('burst_count'))
+        (a.out/'DRAM_BACKEND.json').write_text(json.dumps(backend_result,indent=2)+'\n',encoding='utf-8',newline='\n')
         result.update(status='completed',backend=a.backend,wall_seconds=time.time()-start,arguments={k:str(v) if isinstance(v,Path) else v for k,v in vars(a).items()},
             input_sha256=hashlib.sha256(a.input.read_bytes()).hexdigest() if a.input else None,
             simulated_ms=hub.now*1e-6,complete_chip_energy_J=None,

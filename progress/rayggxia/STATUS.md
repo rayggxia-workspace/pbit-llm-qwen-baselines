@@ -1,3 +1,7 @@
+## 2026-11-01 Issue159：七组FFN训练权重HF入口备注
+
+负责人rayggxia；分支task/159-hf-model-index，远端base main@7d42c7d3，独立tmp/ffn-hf-index-issue159-20261101；接续PR200训练方案，PR号见hf_index/PUBLICATION.json。已记录用户给出的CyberPrometheus/p-computing4llm-models分支xuhaoyuan02-qwen3-4b-seven-20261031，并核对计划七组B0/W6/W10/S1/S3/T16/T64。匿名无缓存重查目标仓库/分支均401，公开Qwen对照200；HF commit、实际目录/加载器/文件SHA未验收，未下载大权重/训练/PPL。正式入口qwen3/model_artifacts/HF_SEVEN_FFN_MODELS_ZH_20261101.md及同名JSON；访问阻塞与继续步骤见work/rayggxia/159/hf_index/HANDOFF.md。已发布/PR状态以回执为准，不把备注完成当权重验收；Projects无写接口待同步。
+
 ## 2026-10-29 Issue204：用户要求继续SRAM存内比较主架构
 
 双随机结构继续SRAM驻留、本地SNG并行比较，阵列输出随机权重bit；不默认搬整组权重到DFF，不默认每采样走普通窄口完整读。两颗全局LFSR32（输入一颗/权重一颗）、T32/8×4与原共享尺度保持；P8输入/P7权重各需5位抖动。ICG DFF及普通宏预读保持仅作对照。已更新12方案页，新增13_SRAM存内比较估算口径与证据.md并同字节同步根阅读镜像。

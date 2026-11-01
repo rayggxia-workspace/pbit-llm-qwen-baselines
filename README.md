@@ -1,3 +1,5 @@
+> 七组Qwen3-4B随机FFN训练模型的[Hugging Face共享入口与实验标签](qwen3/model_artifacts/HF_SEVEN_FFN_MODELS_ZH_20261101.md)已登记；当前匿名文件访问仍401，实际HF提交/目录/SHA待核验。
+
 # Current complete-model TLM (2026-10-28; PR190 baseline retained)
 
 正式主线为 **main**。当前[基线与配置选择](architecture_tlm/BASELINE_ZH.md)区分默认DDR4共同调度、HBM对照和资源扩容候选；沿用同一个 `python -m architecture_tlm` 入口。条件时延基线不等于完整模型质量或芯片PPA验收。

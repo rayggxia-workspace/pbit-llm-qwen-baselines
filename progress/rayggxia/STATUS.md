@@ -1,3 +1,13 @@
+## 2026-11-01 Issue227共享存储调度与能耗审计（rayggxia）
+
+分支task/227-shared-memory，base main@7d42c7d3；独立目录tmp/shared-memory-issue227-20261101。正式报告architecture_tlm/shared_memory_20261101/REPORT_ZH.md，交接work/rayggxia/227/HANDOFF.md。新共享后端、16机制检查与官方DDR电流表三组配对已完成；发布/PR状态看work/rayggxia/227/PUBLICATION.json，不把本地完成当合并。
+
+v3单层同地址/动作配对：异步5.459883ms、.431708mJ SRAM、49.802673mJ DDR；串行8.834193ms、.485296mJ、69.530172mJ；staging6.444903ms、.638161mJ、57.642898mJ。旧21.304mJ存储账复算PASS；发现DDR同名电流表被覆盖，官方表配对仅改电流总能量低8.77%，负ACT转正。无新EDA/PPL，不修改Issue186/225原件，不上传受限module_handoff。
+
+运行中3650是36层+lm_head统一DDR时间线，预计2–3h/6h上限，源和全部身份见EXECUTION_INDEX；不重复提交/改冻结源码。当前是seed17代表性地址流，不是完整模型推理或同质量比较。Projects无写接口待维护者同步，根正式MEMORY由Issue28合并本增量；本机根入口已追加导航。下方main既有个人状态原字节保留。
+
+---
+
 ## 2026-10-29 Issue204：用户要求继续SRAM存内比较主架构
 
 双随机结构继续SRAM驻留、本地SNG并行比较，阵列输出随机权重bit；不默认搬整组权重到DFF，不默认每采样走普通窄口完整读。两颗全局LFSR32（输入一颗/权重一颗）、T32/8×4与原共享尺度保持；P8输入/P7权重各需5位抖动。ICG DFF及普通宏预读保持仅作对照。已更新12方案页，新增13_SRAM存内比较估算口径与证据.md并同字节同步根阅读镜像。

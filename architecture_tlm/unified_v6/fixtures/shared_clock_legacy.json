@@ -1,0 +1,2082 @@
+{
+  "model": {
+    "model": {
+      "hidden": 64,
+      "ffn": 64,
+      "layers": 1,
+      "q_heads": 4,
+      "kv_heads": 1,
+      "head_dim": 128,
+      "vocab": 320
+    },
+    "context": 128,
+    "ffn": "sc",
+    "seed": 17,
+    "phases": [
+      {
+        "layer": -1,
+        "stage": "embedding",
+        "start_ns": 0.0,
+        "end_ns": 92.877,
+        "duration_ns": 92.877
+      },
+      {
+        "layer": 0,
+        "stage": "save_attention_residual",
+        "start_ns": 92.877,
+        "end_ns": 112.877,
+        "duration_ns": 20.0
+      },
+      {
+        "layer": 0,
+        "stage": "norm",
+        "start_ns": 112.877,
+        "end_ns": 182.877,
+        "duration_ns": 70.00000000000001
+      },
+      {
+        "layer": 0,
+        "stage": "QKV",
+        "start_ns": 182.877,
+        "end_ns": 2982.877,
+        "duration_ns": 2800.0
+      },
+      {
+        "layer": 0,
+        "stage": "RoPE_headnorm",
+        "start_ns": 2982.877,
+        "end_ns": 4622.877,
+        "duration_ns": 1640.0000000000005
+      },
+      {
+        "layer": 0,
+        "stage": "attention",
+        "start_ns": 4622.877,
+        "end_ns": 62682.877,
+        "duration_ns": 58060.0
+      },
+      {
+        "layer": 0,
+        "stage": "attention_gather",
+        "start_ns": 62682.877,
+        "end_ns": 62762.877,
+        "duration_ns": 80.0
+      },
+      {
+        "layer": 0,
+        "stage": "O",
+        "start_ns": 62762.877,
+        "end_ns": 63332.877,
+        "duration_ns": 570.0
+      },
+      {
+        "layer": 0,
+        "stage": "attention_residual",
+        "start_ns": 63332.877,
+        "end_ns": 63402.877,
+        "duration_ns": 70.0
+      },
+      {
+        "layer": 0,
+        "stage": "save_ffn_residual",
+        "start_ns": 63402.877,
+        "end_ns": 63422.877,
+        "duration_ns": 20.0
+      },
+      {
+        "layer": 0,
+        "stage": "ffn_norm",
+        "start_ns": 63422.877,
+        "end_ns": 63492.877,
+        "duration_ns": 70.0
+      },
+      {
+        "layer": 0,
+        "stage": "metadata",
+        "start_ns": 63492.877,
+        "end_ns": 64252.877,
+        "duration_ns": 760.0
+      },
+      {
+        "layer": 0,
+        "stage": "GU",
+        "start_ns": 64252.877,
+        "end_ns": 65012.877,
+        "duration_ns": 760.0
+      },
+      {
+        "layer": 0,
+        "stage": "NL_Wd",
+        "start_ns": 65012.877,
+        "end_ns": 71392.877,
+        "duration_ns": 6379.999999999993
+      },
+      {
+        "layer": 0,
+        "stage": "residual",
+        "start_ns": 71392.877,
+        "end_ns": 71462.877,
+        "duration_ns": 70.0
+      },
+      {
+        "layer": -1,
+        "stage": "final_norm",
+        "start_ns": 71462.877,
+        "end_ns": 71532.877,
+        "duration_ns": 70.0
+      },
+      {
+        "layer": -1,
+        "stage": "lm_head",
+        "start_ns": 71532.877,
+        "end_ns": 72346.877,
+        "duration_ns": 814.0
+      }
+    ],
+    "actions": {
+      "digital_BF16_MAC": 102400,
+      "attention_QK_MAC": 81920,
+      "sampler_queries": 4,
+      "samples": 256,
+      "unique_V": 127,
+      "PV_ADD": 32768,
+      "V_fetch_reuse": 129,
+      "ordinary_prefetch_hits": 3,
+      "GU_prefetch_hits": 1,
+      "GU_logical_R8_ports": 4096,
+      "crossK_updates": 192,
+      "NL_logical_R8_ports": 98304,
+      "argmax_compares": 320
+    },
+    "kernel_active": {
+      "GU_frames": 1,
+      "NL_frames": 8
+    },
+    "compute_macro_busy_sum_ns": {
+      "RMSNorm_macro": 120,
+      "ordinary_MAC_ideal_ns": 100.0,
+      "matrix_output_quant_macro": 520,
+      "RoPE_headnorm_macro": 1600,
+      "K_transpose_macro": 2560,
+      "feature_topk_macro": 1633.333333,
+      "SparQ_normalize_macro": 17300,
+      "token_topk_macro": 8146.666667,
+      "sample_normalize_BF16_macro": 160,
+      "residual_add_macro": 80,
+      "x_P8_encoding_macro": 30,
+      "GU100MHz_core": 660,
+      "GU_crossK_align_add_macro": 10,
+      "GU_fixed8_quant_macro": 8,
+      "NL100MHz_core": 5280,
+      "down_crossK_align_add_macro": 32,
+      "final_BF16_macro": 48,
+      "streaming_argmax_macro": 70
+    },
+    "unpriced_state_and_actions": {
+      "copy_elastic_256B_engines": 1,
+      "digital_FP32_partial_register_bytes_peak": 256,
+      "digital_activation_hold_bytes_peak": 1024,
+      "GU_crossK_INT64_register_bytes": 1024,
+      "GU_input_hold_bytes": 80,
+      "NL_crossK_INT64_register_bytes": 64,
+      "NL_input_hold_bytes": 128
+    },
+    "external_tensor_bytes": 413696,
+    "work_spec_sha256": "98af46b899a53292b4254c09a55a55e60852697b918c428877c505bcf7db77c4",
+    "numeric_model_executed": false,
+    "model_quality_verified": false,
+    "macro_evidence": "GU/NL100MHz measured frames; digital500MHz/QK/crossK/normalization clocks are explicit unvalidated operator contracts"
+  },
+  "memory": {
+    "elapsed_ns": 72346.877,
+    "global_credit": 64,
+    "response_bytes": 8192,
+    "issue_peak_GBs": 51.2,
+    "descriptor_serial": false,
+    "owner_quantum": 16,
+    "return_banks": 128,
+    "response_buffered": true,
+    "counts": {
+      "descriptors": 165,
+      "peak_descriptors": 11,
+      "peak_outstanding": 64,
+      "issue_batches": 729,
+      "dram_read_bytes": 331648,
+      "peak_response_bytes": 3072,
+      "descriptors_completed": 165,
+      "peak_write_source_slots": 8,
+      "dram_write_bytes": 8704
+    },
+    "by_kind": {
+      "embedding": {
+        "issued_bytes": 128,
+        "issued_address_sum": 749888,
+        "issued_address_xor": 64,
+        "read_bytes": 128
+      },
+      "QKV_weights": {
+        "issued_bytes": 98304,
+        "issued_address_sum": 176111616,
+        "issued_address_xor": 0,
+        "read_bytes": 98304
+      },
+      "O_weights": {
+        "issued_bytes": 65536,
+        "issued_address_sum": 201293824,
+        "issued_address_xor": 0,
+        "read_bytes": 65536
+      },
+      "K_append": {
+        "issued_bytes": 256,
+        "issued_address_sum": 1228160,
+        "issued_address_xor": 0,
+        "write_bytes": 256
+      },
+      "V_append": {
+        "issued_bytes": 256,
+        "issued_address_sum": 1490304,
+        "issued_address_xor": 0,
+        "write_bytes": 256
+      },
+      "K_block_for_transpose": {
+        "issued_bytes": 8192,
+        "issued_address_sum": 38793216,
+        "issued_address_xor": 0,
+        "read_bytes": 8192
+      },
+      "K_feature_append": {
+        "issued_bytes": 8192,
+        "issued_address_sum": 41426944,
+        "issued_address_xor": 0,
+        "write_bytes": 8192
+      },
+      "coarse_K": {
+        "issued_bytes": 8192,
+        "issued_address_sum": 41414656,
+        "issued_address_xor": 0,
+        "read_bytes": 8192
+      },
+      "selected_K": {
+        "issued_bytes": 32768,
+        "issued_address_sum": 148881408,
+        "issued_address_xor": 0,
+        "read_bytes": 32768
+      },
+      "sample_V": {
+        "issued_bytes": 32512,
+        "issued_address_sum": 181065344,
+        "issued_address_xor": 0,
+        "read_bytes": 32512
+      },
+      "GU_weights": {
+        "issued_bytes": 8192,
+        "issued_address_sum": 29880320,
+        "issued_address_xor": 0,
+        "read_bytes": 8192
+      },
+      "FFN_scale_metadata": {
+        "issued_bytes": 32768,
+        "issued_address_sum": 132104192,
+        "issued_address_xor": 0,
+        "read_bytes": 32768
+      },
+      "down_weights": {
+        "issued_bytes": 4096,
+        "issued_address_sum": 15333376,
+        "issued_address_xor": 0,
+        "read_bytes": 4096
+      },
+      "lm_head_weights": {
+        "issued_bytes": 40960,
+        "issued_address_sum": 251637760,
+        "issued_address_xor": 0,
+        "read_bytes": 40960
+      }
+    },
+    "SRAM": {
+      "capacity_bytes": 8388608,
+      "allocated_bytes": 926592,
+      "physical_banks": 512,
+      "word_bytes": 16,
+      "clock_hz": 100000000.0,
+      "fabric_GBs": 512.0,
+      "counts": {
+        "logical_write_bytes": 697728,
+        "peak_jobs": 43,
+        "write_words": 43608,
+        "write_physical_bytes": 697728,
+        "cycles_with_grants": 3181,
+        "peak_banks_per_cycle": 136,
+        "peak_words_per_cycle": 136,
+        "logical_read_bytes": 719962,
+        "read_words": 45006,
+        "read_physical_bytes": 720096,
+        "bank_head_conflicts": 10699
+      },
+      "by_tag": {
+        "DMA_return_write": {
+          "write_words": 20728
+        },
+        "DMA_return_read": {
+          "read_words": 20728
+        },
+        "embedding_fill": {
+          "write_words": 8
+        },
+        "save_residual_read": {
+          "read_words": 16
+        },
+        "save_residual_write": {
+          "write_words": 16
+        },
+        "norm_activation": {
+          "read_words": 24
+        },
+        "norm_gamma": {
+          "read_words": 24
+        },
+        "norm_output": {
+          "write_words": 24
+        },
+        "QKV_activation_to_local": {
+          "read_words": 8
+        },
+        "QKV_weights_fill": {
+          "write_words": 6144
+        },
+        "QKV_operand": {
+          "read_words": 6144
+        },
+        "QKV_output": {
+          "write_words": 96
+        },
+        "QK_norm_rope_input": {
+          "read_words": 80
+        },
+        "QK_norm_rope_output": {
+          "write_words": 80
+        },
+        "K_append_source": {
+          "read_words": 16,
+          "write_words": 16
+        },
+        "V_append_source": {
+          "read_words": 16,
+          "write_words": 16
+        },
+        "Q_to_attention": {
+          "read_words": 64
+        },
+        "Q_local_fill": {
+          "write_words": 64
+        },
+        "K_append_input": {
+          "read_words": 16
+        },
+        "K_append_DMA_source": {
+          "read_words": 16
+        },
+        "O_weights_fill": {
+          "write_words": 4096
+        },
+        "V_append_input": {
+          "read_words": 16
+        },
+        "V_append_DMA_source": {
+          "read_words": 16
+        },
+        "K_block_for_transpose_fill": {
+          "write_words": 512
+        },
+        "K_transpose_read": {
+          "read_words": 512
+        },
+        "K_transpose_write": {
+          "write_words": 512
+        },
+        "K_feature_append_DMA_source": {
+          "read_words": 512
+        },
+        "query_feature_scan": {
+          "read_words": 32
+        },
+        "coarse_K_fill": {
+          "write_words": 512
+        },
+        "coarse_K_operand": {
+          "read_words": 512
+        },
+        "coarse_scores": {
+          "write_words": 1024
+        },
+        "coarse_score_pass1": {
+          "read_words": 1024
+        },
+        "coarse_score_pass2": {
+          "read_words": 1024
+        },
+        "coarse_score_pass3": {
+          "read_words": 1024
+        },
+        "selected_K_fill": {
+          "write_words": 2048
+        },
+        "selected_K_operand": {
+          "read_words": 2048
+        },
+        "selected_scores": {
+          "write_words": 128
+        },
+        "sampler_score_input": {
+          "read_words": 128
+        },
+        "sample_V_fill": {
+          "write_words": 2032
+        },
+        "sample_V_operand": {
+          "read_words": 4096
+        },
+        "attention_output": {
+          "write_words": 64
+        },
+        "attention_gather_read": {
+          "read_words": 64
+        },
+        "attention_gather_write": {
+          "write_words": 64
+        },
+        "O_activation_to_local": {
+          "read_words": 64
+        },
+        "O_operand": {
+          "read_words": 4096
+        },
+        "GU_weights_fill": {
+          "write_words": 512
+        },
+        "O_output": {
+          "write_words": 8
+        },
+        "residual_branch": {
+          "read_words": 16
+        },
+        "residual_skip": {
+          "read_words": 16
+        },
+        "residual_output": {
+          "write_words": 16
+        },
+        "FFN_scale_metadata_fill": {
+          "write_words": 2048
+        },
+        "x_encode_input": {
+          "read_words": 8
+        },
+        "x_codes_store": {
+          "write_words": 8
+        },
+        "GU_weight_scale_metadata": {
+          "read_words": 1
+        },
+        "GU_x_codes": {
+          "read_words": 5
+        },
+        "GU_quantized_output": {
+          "write_words": 8
+        },
+        "down_weights_fill": {
+          "write_words": 256
+        },
+        "lm_head_weights_fill": {
+          "write_words": 2560
+        },
+        "Wd_weight_scale_metadata": {
+          "read_words": 8
+        },
+        "NL_gu_codes": {
+          "read_words": 64
+        },
+        "FFN_BF16_output": {
+          "write_words": 8
+        },
+        "lm_head_activation_to_local": {
+          "read_words": 8
+        },
+        "lm_head_operand": {
+          "read_words": 2560
+        }
+      },
+      "dynamic_mJ": 0.0010611951354003448,
+      "leakage_mJ": 0.001148941563922022,
+      "area_raw_mm2": 68.0473027584,
+      "area_factor": 0.81,
+      "area55eq_mm2": 55.118315234304,
+      "boundaries": "macro internal events and CEoff leakage; no external driver/CTS/PHY",
+      "regions": [
+        {
+          "name": "DMA_return_FIFO",
+          "base": 0,
+          "size": 8192,
+          "banks": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127
+          ]
+        },
+        {
+          "name": "operand_ping",
+          "base": 8192,
+          "size": 131072,
+          "banks": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127
+          ]
+        },
+        {
+          "name": "operand_pong",
+          "base": 139264,
+          "size": 131072,
+          "banks": [
+            128,
+            129,
+            130,
+            131,
+            132,
+            133,
+            134,
+            135,
+            136,
+            137,
+            138,
+            139,
+            140,
+            141,
+            142,
+            143,
+            144,
+            145,
+            146,
+            147,
+            148,
+            149,
+            150,
+            151,
+            152,
+            153,
+            154,
+            155,
+            156,
+            157,
+            158,
+            159,
+            160,
+            161,
+            162,
+            163,
+            164,
+            165,
+            166,
+            167,
+            168,
+            169,
+            170,
+            171,
+            172,
+            173,
+            174,
+            175,
+            176,
+            177,
+            178,
+            179,
+            180,
+            181,
+            182,
+            183,
+            184,
+            185,
+            186,
+            187,
+            188,
+            189,
+            190,
+            191,
+            192,
+            193,
+            194,
+            195,
+            196,
+            197,
+            198,
+            199,
+            200,
+            201,
+            202,
+            203,
+            204,
+            205,
+            206,
+            207,
+            208,
+            209,
+            210,
+            211,
+            212,
+            213,
+            214,
+            215,
+            216,
+            217,
+            218,
+            219,
+            220,
+            221,
+            222,
+            223,
+            224,
+            225,
+            226,
+            227,
+            228,
+            229,
+            230,
+            231,
+            232,
+            233,
+            234,
+            235,
+            236,
+            237,
+            238,
+            239,
+            240,
+            241,
+            242,
+            243,
+            244,
+            245,
+            246,
+            247,
+            248,
+            249,
+            250,
+            251,
+            252,
+            253,
+            254,
+            255
+          ]
+        },
+        {
+          "name": "CIM_ping",
+          "base": 270336,
+          "size": 131072,
+          "banks": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127
+          ]
+        },
+        {
+          "name": "CIM_pong",
+          "base": 401408,
+          "size": 131072,
+          "banks": [
+            128,
+            129,
+            130,
+            131,
+            132,
+            133,
+            134,
+            135,
+            136,
+            137,
+            138,
+            139,
+            140,
+            141,
+            142,
+            143,
+            144,
+            145,
+            146,
+            147,
+            148,
+            149,
+            150,
+            151,
+            152,
+            153,
+            154,
+            155,
+            156,
+            157,
+            158,
+            159,
+            160,
+            161,
+            162,
+            163,
+            164,
+            165,
+            166,
+            167,
+            168,
+            169,
+            170,
+            171,
+            172,
+            173,
+            174,
+            175,
+            176,
+            177,
+            178,
+            179,
+            180,
+            181,
+            182,
+            183,
+            184,
+            185,
+            186,
+            187,
+            188,
+            189,
+            190,
+            191,
+            192,
+            193,
+            194,
+            195,
+            196,
+            197,
+            198,
+            199,
+            200,
+            201,
+            202,
+            203,
+            204,
+            205,
+            206,
+            207,
+            208,
+            209,
+            210,
+            211,
+            212,
+            213,
+            214,
+            215,
+            216,
+            217,
+            218,
+            219,
+            220,
+            221,
+            222,
+            223,
+            224,
+            225,
+            226,
+            227,
+            228,
+            229,
+            230,
+            231,
+            232,
+            233,
+            234,
+            235,
+            236,
+            237,
+            238,
+            239,
+            240,
+            241,
+            242,
+            243,
+            244,
+            245,
+            246,
+            247,
+            248,
+            249,
+            250,
+            251,
+            252,
+            253,
+            254,
+            255
+          ]
+        },
+        {
+          "name": "activations_and_codes",
+          "base": 532480,
+          "size": 262144,
+          "banks": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63
+          ]
+        },
+        {
+          "name": "resident_norm_weights",
+          "base": 794624,
+          "size": 896,
+          "banks": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63
+          ]
+        },
+        {
+          "name": "Attention_KVgroup0",
+          "base": 795520,
+          "size": 131072,
+          "banks": [
+            256,
+            257,
+            258,
+            259,
+            260,
+            261,
+            262,
+            263,
+            264,
+            265,
+            266,
+            267,
+            268,
+            269,
+            270,
+            271,
+            272,
+            273,
+            274,
+            275,
+            276,
+            277,
+            278,
+            279,
+            280,
+            281,
+            282,
+            283,
+            284,
+            285,
+            286,
+            287
+          ]
+        }
+      ]
+    },
+    "unpriced_actions": {
+      "write_source_holding_bytes_peak": 512
+    },
+    "first_completions": [
+      {
+        "descriptor": 1,
+        "owner": "embedding",
+        "kind": "embedding",
+        "done_ns": 92.877,
+        "bytes": 128
+      },
+      {
+        "descriptor": 2,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 432.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 3,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 592.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 4,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 882.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 5,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 1042.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 6,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 1332.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 7,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 1492.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 8,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 1782.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 9,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 1942.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 10,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 2232.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 11,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 2392.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 12,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 2682.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 13,
+        "owner": "ordinary",
+        "kind": "QKV_weights",
+        "done_ns": 2842.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 15,
+        "owner": "Attention0",
+        "kind": "K_append",
+        "done_ns": 4782.1436227224,
+        "bytes": 256
+      },
+      {
+        "descriptor": 16,
+        "owner": "Attention0",
+        "kind": "V_append",
+        "done_ns": 4904.287245444801,
+        "bytes": 256
+      },
+      {
+        "descriptor": 17,
+        "owner": "Attention0",
+        "kind": "K_block_for_transpose",
+        "done_ns": 5322.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 14,
+        "owner": "ordinary",
+        "kind": "O_weights",
+        "done_ns": 6152.877,
+        "bytes": 65536
+      },
+      {
+        "descriptor": 18,
+        "owner": "Attention0",
+        "kind": "K_feature_append",
+        "done_ns": 9327.164245444808,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 19,
+        "owner": "Attention0",
+        "kind": "coarse_K",
+        "done_ns": 11212.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 20,
+        "owner": "Attention0",
+        "kind": "selected_K",
+        "done_ns": 40882.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 21,
+        "owner": "Attention0",
+        "kind": "selected_K",
+        "done_ns": 41052.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 22,
+        "owner": "Attention0",
+        "kind": "selected_K",
+        "done_ns": 43842.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 23,
+        "owner": "Attention0",
+        "kind": "selected_K",
+        "done_ns": 46542.877,
+        "bytes": 8192
+      },
+      {
+        "descriptor": 24,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52552.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 25,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52562.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 26,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52582.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 27,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52582.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 28,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52602.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 29,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52602.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 30,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52622.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 31,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52622.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 32,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52642.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 33,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52642.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 34,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52652.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 35,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52662.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 36,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52672.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 37,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52682.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 38,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52692.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 39,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52702.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 40,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52712.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 41,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52722.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 42,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52732.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 43,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52742.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 44,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52762.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 45,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52762.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 46,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52772.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 47,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52782.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 48,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52792.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 49,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52802.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 50,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52812.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 51,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52822.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 52,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52832.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 53,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52842.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 54,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52852.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 55,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52862.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 56,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52872.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 57,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52882.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 58,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52892.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 59,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52902.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 60,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52912.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 61,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52922.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 62,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52932.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 63,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52942.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 64,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52962.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 65,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52962.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 66,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52972.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 67,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52982.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 68,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 52992.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 69,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53002.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 70,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53012.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 71,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53022.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 72,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53032.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 73,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53042.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 74,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53052.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 75,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53062.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 76,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53082.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 77,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53082.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 78,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53092.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 79,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53102.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 80,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53112.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 81,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53122.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 82,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53132.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 83,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53142.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 84,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53152.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 85,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53162.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 86,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53172.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 87,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 53182.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 88,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54452.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 89,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54452.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 90,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54462.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 91,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54482.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 92,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54482.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 93,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54502.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 94,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54502.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 95,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54522.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 96,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54532.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 97,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54542.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 98,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54542.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 99,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54552.877,
+        "bytes": 256
+      },
+      {
+        "descriptor": 100,
+        "owner": "Attention0",
+        "kind": "sample_V",
+        "done_ns": 54572.877,
+        "bytes": 256
+      }
+    ],
+    "final_pending": 0,
+    "final_response_occupied": 0
+  }
+}

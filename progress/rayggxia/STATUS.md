@@ -1,3 +1,41 @@
+## 2026-11-01 Issue227完整结果与审计已推送
+
+科学提交05b9f6ef01f567c6cbdaf97d11083665cfecc168，18文件内容及Git blob远端回读一致；PR228和Issue227已更新，仍open/draft未合并。完整66.991850ms、11审计/28检查及下一步见HANDOFF_BOTTLENECK；本轮无运行中任务。回执BOTTLENECK_PUBLICATION.json，Projects待维护者同步。
+
+## 2026-11-01 Issue227完整回放与瓶颈审计（待PR228审核）
+
+rayggxia，task/227-shared-memory / PR228，main7d42c7d3，复用tmp/shared-memory-issue227-20261101。完整3673已验收：100MHz、8chDDR4-1866、8MiB、B1/2K/r32/k128/S64，66.991850ms/6,699,185拍；36层57.012840ms，lm_head9.978310ms。旧同100MHz3653为222.636130ms；同模型/输入/动作/核帧，DMA与物理排布改变。不是数值推理/PPL或全芯片PPA。
+
+11项CPU审计3688全部封存、28机制检查通过；观测器不改变原单层结果。数字MAC2048→4096单层仍1.591150ms；NL256→160降到1.498110ms（Wd332.89→239.85µs），有限返回直达省FIFO写读为1.394060ms；在途256→1024只降到1.573780ms，扩总fabric/向量bank没有整层收益。工作量/外存地址守恒；bypass有意减少SRAM写读，控制/路由PPA未标定，各收益不可相加或当完整token。
+
+仍有普通投影操作数端口不足、Wd突发/尾批与g/u码重复读、GU供数与采样混合、GU→Wd屏障、粗QK/筛选宏开销。shared后端只用随机核/事件合同，没有实际调用完整RNG服务，500MHz仍未实现统一周期迁移。报告architecture_tlm/shared_memory_20261101/bottleneck_audit/REPORT_ZH.md含36层表、等待/资源结果与SHA。恢复先读HANDOFF_BOTTLENECK.md及BOTTLENECK_PUBLICATION.json，不重交已完成作业。PR仍待审未合并；Projects待维护者同步。正式根记忆由Issue28接收此窄增量；保留其当前内容与并发他人更新。
+
+## 2026-11-01 Issue227 DMA扩展
+
+rayggxia，task/227-shared-memory / PR228，main7d42c7d3，独立tmp/shared-memory-issue227-20261101。25机制检查与实际DRAMSys消融：同100MHz/8MiB/采样，连续流28.5→110.8GB/s，单层5.418380→1.591150ms，DDR核心49.454646→27.970639mJ；权重tile重排不改运算/容量。额外三seed和完整状态见dma_expand/RESULTS；3673完整36层尚未封存，3650/3653旧健康任务保留。手动收集步骤HANDOFF_DMA；源码/输入/配置/成果SHA齐备，无新EDA/PPL，全芯片控制/PHY成本未标定。当前发布状态看DMA_PUBLICATION.json；PR仍open/draft未合并、Projects待维护者同步。
+
+## 2026-11-01 Issue227的100MHz配对已封存
+
+Slurm3651/3652 completed：chip100 5.418380ms（541838拍）对legacy_mixed 5.459883ms；同地址/动作/SRAM事件通过，legacy复现旧v3全部时间/存储结果。数字理想活动128000ns对25600ns，主瓶颈仍供数。完整100MHz作业3653已解除依赖运行，原3650混合版保留。20检查通过；本轮发布以CLOCK100_PUBLICATION.json为准。
+
+## 2026-11-01 Issue227统一100MHz配置
+
+用户要求统一片上时钟；沿PR228/task/227-shared-memory，root tmp/shared-memory-issue227-20261101。chip100默认，legacy_mixed精确复现；20检查通过。新单层3651/3652、完整3653（依赖3651），原3650仍为旧混合版。准确结果以architecture_tlm/shared_memory_20261101/clock100/RESULTS.json为准；不把提交当完成。新交接work/rayggxia/227/HANDOFF_CLOCK100.md。发布实际回执CLOCK100_PUBLICATION.json；尚未自动合并，Projects待维护者同步。保留下方历史状态。
+
+## 2026-11-01 Issue227已发布PR228，完整回放仍运行
+
+19个科学文件完整回读通过，提交2146afd0423988f7fdcd893b0c254575f5ed1404；PR228 open/draft、未合并。Slurm3650健康运行，最新检查已进入第4层；预计仍约2–3h总墙钟。回执work/rayggxia/227/PUBLICATION.json，Issue评论6557211590。
+
+## 2026-11-01 Issue227共享存储调度与能耗审计（rayggxia）
+
+分支task/227-shared-memory，base main@7d42c7d3；独立目录tmp/shared-memory-issue227-20261101。正式报告architecture_tlm/shared_memory_20261101/REPORT_ZH.md，交接work/rayggxia/227/HANDOFF.md。新共享后端、16机制检查与官方DDR电流表三组配对已完成；发布/PR状态看work/rayggxia/227/PUBLICATION.json，不把本地完成当合并。
+
+v3单层同地址/动作配对：异步5.459883ms、.431708mJ SRAM、49.802673mJ DDR；串行8.834193ms、.485296mJ、69.530172mJ；staging6.444903ms、.638161mJ、57.642898mJ。旧21.304mJ存储账复算PASS；发现DDR同名电流表被覆盖，官方表配对仅改电流总能量低8.77%，负ACT转正。无新EDA/PPL，不修改Issue186/225原件，不上传受限module_handoff。
+
+运行中3650是36层+lm_head统一DDR时间线，预计2–3h/6h上限，源和全部身份见EXECUTION_INDEX；不重复提交/改冻结源码。当前是seed17代表性地址流，不是完整模型推理或同质量比较。Projects无写接口待维护者同步，根正式MEMORY由Issue28合并本增量；本机根入口已追加导航。下方main既有个人状态原字节保留。
+
+---
+
 ## 2026-10-29 Issue204：用户要求继续SRAM存内比较主架构
 
 双随机结构继续SRAM驻留、本地SNG并行比较，阵列输出随机权重bit；不默认搬整组权重到DFF，不默认每采样走普通窄口完整读。两颗全局LFSR32（输入一颗/权重一颗）、T32/8×4与原共享尺度保持；P8输入/P7权重各需5位抖动。ICG DFF及普通宏预读保持仅作对照。已更新12方案页，新增13_SRAM存内比较估算口径与证据.md并同字节同步根阅读镜像。

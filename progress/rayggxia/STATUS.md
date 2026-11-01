@@ -1,3 +1,7 @@
+## 2026-11-01 Issue227完整结果与审计已推送
+
+科学提交05b9f6ef01f567c6cbdaf97d11083665cfecc168，18文件内容及Git blob远端回读一致；PR228和Issue227已更新，仍open/draft未合并。完整66.991850ms、11审计/28检查及下一步见HANDOFF_BOTTLENECK；本轮无运行中任务。回执BOTTLENECK_PUBLICATION.json，Projects待维护者同步。
+
 ## 2026-11-01 Issue227完整回放与瓶颈审计（待PR228审核）
 
 rayggxia，task/227-shared-memory / PR228，main7d42c7d3，复用tmp/shared-memory-issue227-20261101。完整3673已验收：100MHz、8chDDR4-1866、8MiB、B1/2K/r32/k128/S64，66.991850ms/6,699,185拍；36层57.012840ms，lm_head9.978310ms。旧同100MHz3653为222.636130ms；同模型/输入/动作/核帧，DMA与物理排布改变。不是数值推理/PPL或全芯片PPA。

@@ -1,3 +1,11 @@
+# Issue95 九项预算整理
+
+2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。
+
+本地完成27行（九结构×K1/64/128）100MHz功率/J每输出bit条件表，81项算术与确定性重建通过。PR215已核实合并，本次不新增EDA/run，不改已有原件/其他任务。正式结果random_service/digital_pbit/nineway_20261102，中央summaries同字节镜像。共享q8价格仍代理，不称独立实测。精确版本/发布及下一步见work/rayggxia/95/nineway/HANDOFF.md、PUBLICATION.json；Projects待同步。
+
+---
+
 ## 2026-11-02 Issue230：55 nm/100 MHz纯数字基线仿真清单
 
 负责人rayggxia；分支task/230-digital-baseline-plan，目标main。独立稀疏目录tmp/digital-baseline-plan-issue230-20261102。正式文档digital_circuit_simulation_registry/41_纯数字基线仿真清单_55nm_100MHz.md；根a_P_BIT同名阅读副本按SHA核对。

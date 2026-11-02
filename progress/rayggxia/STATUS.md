@@ -6,7 +6,7 @@
 
 本地引用存在/JSON解析、UTF-8 LF及阅读镜像字节检查通过，SOURCE_INDEX.json绑定文档及13份record的SHA。没有新RTL/EDA/GPU/Slurm/PPA/PPL，未修改#198/#204/#210/#227代码和冻结任务。尚未执行清单中的补测，未知成本不填0。
 
-发布前已读远端main@7d42c7d30fa9c729c899ba7f815332dd6ed5671a及规则。Git网络fetch失败，局部准备基于已存787489192ebfcdb61ad72edde406818f450aa3dc；通过API只把本任务4份文档增量接到核验后的main，不推送本地历史。具体PR/提交和回读状态见work/rayggxia/230/HANDOFF.md及PUBLICATION.json；待审不等于合并。Projects看板未同步，待有接口的维护者处理。
+发布前已读远端main@7d42c7d30fa9c729c899ba7f815332dd6ed5671a及规则。Git网络fetch失败，局部准备基于已存787489192ebfcdb61ad72edde406818f450aa3dc；通过API只把本任务4份文档增量接到核验后的main，不推送本地历史。主体已发布提交6d137fdbcb2d79db416e084558ccc24dd0c59feb，PR #231 ready/open、待审未合并；四个PR文件逐项blob SHA及零删除核对通过。具体本地回执见work/rayggxia/230/PUBLICATION.json；待审不等于合并。Projects看板未同步，待有接口的维护者处理。
 
 下一步先决定并实现最小代表模块，再按功能→STA→三seed PT逐项推进；不要把本任务当作自动启动许可EDA的指令。
 

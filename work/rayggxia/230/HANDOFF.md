@@ -16,7 +16,7 @@
 远端main核验7d42c7d30fa9c729c899ba7f815332dd6ed5671a，实际GitHub登录rayggxia（324905371）。
 本地准备base为已存787489192ebfcdb61ad72edde406818f450aa3dc：git fetch首次DNS失败，重试连接重置。远端提交按API基于核验main构造，仅交付总文件、本SOURCE_INDEX、HANDOFF和保留既有内容的本人STATUS，不上传其他任务本地历史/源码。
 
-本机核查：13个record路径存在和JSON解析；文档UTF-8/LF；正式文件/阅读副本SHA相同。具体文档SHA与引用SHA在SOURCE_INDEX.json。发布结果以PUBLICATION.json为准，未有回执前不写已推送或已合并。
+本机核查：13个record路径存在和JSON解析；文档UTF-8/LF；正式文件/阅读副本SHA相同。具体文档SHA与引用SHA在SOURCE_INDEX.json。主体提交6d137fdbcb2d79db416e084558ccc24dd0c59feb已发布，PR #231 ready/open、待审未合并；PR四个文件的blob SHA与本机一致，原STATUS只有新增、零删除。本地PUBLICATION.json保留实际回执，不将本地辅助回执存在写成远端也有该文件。
 
 ## 未完成与下一步
 

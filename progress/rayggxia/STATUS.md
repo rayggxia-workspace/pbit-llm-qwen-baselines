@@ -1,3 +1,17 @@
+## 2026-11-02 Issue230：55 nm/100 MHz纯数字基线仿真清单
+
+负责人rayggxia；分支task/230-digital-baseline-plan，目标main。独立稀疏目录tmp/digital-baseline-plan-issue230-20261102。正式文档digital_circuit_simulation_registry/41_纯数字基线仿真清单_55nm_100MHz.md；根a_P_BIT同名阅读副本按SHA核对。
+
+本轮仅文档：盘点13份已读台账record，区分复用、补测、宏估计和TLM重放；新增建议包括FMA反馈/供数切片、完整数字SwiGLU、在线Softmax、归一化/转换及局部DMA/SRAM外围。既有A9W8/端点、FMA时序限制、P8与完整Softmax差别均保留；不把筛选后准确PV当完整数字Attention。
+
+本地引用存在/JSON解析、UTF-8 LF及阅读镜像字节检查通过，SOURCE_INDEX.json绑定文档及13份record的SHA。没有新RTL/EDA/GPU/Slurm/PPA/PPL，未修改#198/#204/#210/#227代码和冻结任务。尚未执行清单中的补测，未知成本不填0。
+
+发布前已读远端main@7d42c7d30fa9c729c899ba7f815332dd6ed5671a及规则。Git网络fetch失败，局部准备基于已存787489192ebfcdb61ad72edde406818f450aa3dc；通过API只把本任务4份文档增量接到核验后的main，不推送本地历史。具体PR/提交和回读状态见work/rayggxia/230/HANDOFF.md及PUBLICATION.json；待审不等于合并。Projects看板未同步，待有接口的维护者处理。
+
+下一步先决定并实现最小代表模块，再按功能→STA→三seed PT逐项推进；不要把本任务当作自动启动许可EDA的指令。
+
+---
+
 ## 2026-10-29 Issue204：用户要求继续SRAM存内比较主架构
 
 双随机结构继续SRAM驻留、本地SNG并行比较，阵列输出随机权重bit；不默认搬整组权重到DFF，不默认每采样走普通窄口完整读。两颗全局LFSR32（输入一颗/权重一颗）、T32/8×4与原共享尺度保持；P8输入/P7权重各需5位抖动。ICG DFF及普通宏预读保持仅作对照。已更新12方案页，新增13_SRAM存内比较估算口径与证据.md并同字节同步根阅读镜像。

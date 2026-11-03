@@ -1,3 +1,17 @@
+# LPDDR时序与论文方法核查：不要求所有工作逐命令模拟
+
+2026-11-03。5500/6400到8533的主要差异是传输速率，不能把阵列访问时间同比缩短。固定Ramulator LPDDR5预设换算：5500→6400，tRCD18.889→18.750ns，tRP同值，CL21.795→21.250ns，tRAS42.137→42.500ns；同128bit带宽88→102.4GB/s，8533目标136.528GB/s。8533具体CL/WL未取得，不填造。已有LPDDR5层级/调度可作扩展基础，需区分参数来源、派生转换及假设。
+
+文献并非统一要求完整命令后端：IKS ASPLOS2025使用自研cycle-approximate模型；固定公开源码main.cpp@7705ae474a8c56cb20eb77d6a9558ae7257a7e8f已逐文件核验，每批base_cycles=d，补TopK停顿，公开文件无ACT/刷新/bank队列，流供数体现在68个FP16/1GHz拍≈136GB/s的服务率中。这是公开版本边界，不推断未公开实现。
+
+Kelle MICRO2025 §6用操作数/吞吐、字节/带宽估时，§8为CACTI7外存、Destiny片上存储和RTL综合；不能补称它有命令精确模型。Edge-LLM DAC2024用解析重叠代价与SCALE-Sim，LPDDR4 8GB。另查Samsung2026 LP5X-PIM Sim技术报告：DRAMSim3/Ramulator派生、内部PIM规范、JEDEC时序，评估LPDDR5X9600；未找到完整公开源码，不当可直接下载的8533配置。
+
+因此修正前述措辞：完整8533命令模型不是唯一可接受的论文路线。有来源、保留关键有限并发/回压且经代表负载核验的近周期模型也可用；当前未标定60ns测试代理仍不能直接当正式新结果。建议保留已选8533目标，用LPDDR5框架形成明确派生情景，保留阵列绝对ns约束、核对高速模式/列间隔，分别验证流权重与随机KV，并给6400及关键时序敏感性。不因缺预设反复改变目标，也不宣称本轮已接入/验证新TPOT。
+
+来源：[IKS论文](https://arxiv.org/html/2412.15246v1#S6.SS1)、[IKS固定代码](https://github.com/architecture-research-group/iks_simulator/blob/7705ae474a8c56cb20eb77d6a9558ae7257a7e8f/main.cpp)、[Kelle §6/8](https://arxiv.org/html/2510.16040v1#S8)、[Edge-LLM](https://www.haoranyou.com/publications/pdf/2024DAC_EdgeLLM.pdf)、[LP5X-PIM Sim技术报告](https://arxiv.org/html/2606.00636v1#S3)。本轮仅文献/静态源码/算术，无新LPDDR时序、PPL或PPA；完整报告/原件仅本地。PR226仍open未合并。
+
+---
+
 # DMA当前能力与LPDDR时序模型的澄清
 
 2026-11-03。当前DMA是64B逻辑请求×24请求/10ns，发射上限153.6GB/s，已经高于LPDDR5X目标136.528GB/s。上一条76.8GB/s仅是未来改为32B逻辑请求而请求数不变的条件风险，不是当前瓶颈。优先保留64B逻辑接口，由匹配后端处理物理突发拆分、子请求并发与完成合并。

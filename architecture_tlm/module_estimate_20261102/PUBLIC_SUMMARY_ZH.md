@@ -1,3 +1,21 @@
+# LPDDR候选和实际模型核查
+
+2026-11-03，接续Issue225。完成公开源码与参数文件静态核查，未运行新内存仿真、未改变默认。
+
+优先器件方向为16GiB／128bit LPDDR5X-8533（峰值136.528GB/s），例如两颗Micron MT62F1G64D4EK-023家族x64器件；优先现有后端路线为16GiB／256bit LPDDR4X-4266（136.512GB/s），例如八颗MT53E512M32D1ZW-046家族x32器件。具体revision/等级/供货及PHY需确认，不作采购承诺。LPDDR5-6400／128bit仅102.4GB/s，余量不足；256bit则204.8GB/s，可作为原生开源时序预设备选。
+
+实际取回并按Git blob、SHA-256核对13份公开源码/配置/许可文件：
+- DRAMSys有8/16Gb x16 LPDDR4-4266时序配置，但所读两份4266配置功耗全零；不能直接用它们报告能耗。3200配置非零但DQ1.1V，不是已匹配的4266 LPDDR4X功率表。
+- Ramulator2.1公开LPDDR5时序/控制器，当前所读预设只有5500/6400；没有现成8533/9600预设，不只改rate就当LPDDR5X。
+- DRAMPower当前公开源码已明确包含LPDDR5核心和接口功耗实现。它的公开测试JSON有channel=0等测试数值，不能当实际器件参数；仍需对应IDD/电压/I/O表。
+- Micron TN-53-07（LPDDR4X）及TN-62-05（LPDDR5）功耗计算器存在，但为受限访问，当前未取得。
+
+接入要按32B/64B实际突发拆分并保持相同在途字节窗口；例如256×64B变为512×32B才同为16KiB，避免请求数固定导致人为限流。新通道/bank映射、WCK/CK、背景与低功耗状态仍须配对回放。上述是资源可得性与静态检查，不是完整后端已部署或LPDDR性能/能量结果。
+
+来源：[Micron LPDDR4目录](https://in.micron.com/products/memory/lpddr-components/lpddr4/part-catalog)、[Micron LPDDR5X目录](https://in.micron.com/products/memory/dram-components/lpddr5x/part-catalog)、[DRAMSys](https://github.com/tukl-msd/DRAMSys)、[Ramulator LPDDR5](https://github.com/CMU-SAFARI/ramulator2/blob/1bb52ceed30cc607a2d328589815eaea976c0224/python/ramulator/dram/lpddr5.py)、[DRAMPower编译清单](https://github.com/tukl-msd/DRAMPower/blob/a2068bc58411ff36abb2f6aab74b1a5fbe98e93d/src/DRAMPower/CMakeLists.txt)、[Micron功耗工具](https://www.micron.com/sales-support/design-tools/dram-power-calculator)。完整研究和取回原件仍仅本地，PR226不自动合并。
+
+---
+
 # 外存能耗复核：论文口径与低功耗候选
 
 2026-11-03，Issue225补充。仅复核既有三seed封存结果并重计价，没有新DRAM/RTL/PPL仿真，不改默认或旧结果。

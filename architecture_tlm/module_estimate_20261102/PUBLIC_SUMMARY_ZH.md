@@ -1,3 +1,27 @@
+# 外存能耗复核：论文口径与低功耗候选
+
+2026-11-03，Issue225补充。仅复核既有三seed封存结果并重计价，没有新DRAM/RTL/PPL仿真，不改默认或旧结果。
+
+当前实际读写合计5.412434944GB/token，原执行窗口53.668ms/token，已覆盖片上26.812mJ/token不变。
+
+| 情景 | 外存mJ/token | 同窗口外存平均W | 加已有片上后mJ/token |
+|---|---:|---:|---:|
+| 64GiB双rank DDR4命令＋状态模型 | 796.726 | 14.845 | 823.538 |
+| FIGNA/MBA同口径3.9pJ/bit | 168.868 | 3.147 | 195.680 |
+| LPDDR5X代表参数4pJ/bit | 173.198 | 3.227 | 200.010 |
+
+后两行是相同流量的器件/系数情景，不能称新增概率算法节能或实际LPDDR回放，不自动改变带宽与时延，也不当作已包含全部PHY/控制器的板卡功耗。
+
+用户提供的MBA原文第5页采用HBM **1.5TB/s、3.9pJ/bit**；其中256GB/s是每个本地eDRAM缓冲的带宽。FIGNA为HBM2 256GB/s、3.9pJ/bit。MBA参考[38]《Fine-Grained DRAM》将约3.9pJ/bit分为激活、内部搬运和I/O；不是裸阵列价格。两篇评估段未逐项披露本项目这样的rank背景/刷新状态模型，不能直接混称同一计价边界。
+
+当前DDR4为8通道、128颗器件、64GiB、NoPowerDown。背景与刷新346.056mJ/token，占43.43%；即使理想全部去掉仍有命令450.670mJ。全部分配地址落在rank0，未用rank仍待机/刷新。当前IDD/IPP表还使PowerDown状态功率高于普通待机，须核实后才能评估省电；不能静默改电流或直接宣布开关后的收益。
+
+建议保留原详细结果，另列统一3.9pJ/bit公平对照；候选先检查同8通道单rank32GiB与有效PowerDown参数，再探索16GiB/128bit LPDDR5X-8533（理论136.53GB/s）。128bit LPDDR5-6400仅102.4GB/s，离当前平均100.85GB/s太近。高速PHY与功率边界仍待确认，候选尚未运行。完整报告与原件索引仅本地保留，PR226仍待审未合并。
+
+来源：[MBA官方题录](https://63dac.conference-program.com/presentation/?id=RESEARCH509&sess=sess318)、[FIGNA](https://doi.org/10.1109/HPCA57654.2024.00064)、[Fine-Grained DRAM](https://niladrish.org/pubs/micro17.pdf)、[Micron技术简报](https://sg.micron.com/content/dam/micron/global/public/documents/products/product-flyer/lpddr5x-camm2-technical-brief.pdf)。Micron官方索引列4pJ/bit，但直接PDF下载被站点拒绝，边界未完整核实；不把自刷新低功率当工作功率。
+
+---
+
 # 完整回放更新：2.5 MiB SRAM＋12核公共FFN
 
 2026-11-03，Issue225。已完成6项单层配对及3个seed的36层＋lm_head完整事件回放；27项预检、结果封存校验、容量和队列排空检查通过。完整源码快照、输入及原始记录由项目方本地维护，此页只更新公开汇总。

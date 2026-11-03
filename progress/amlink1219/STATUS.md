@@ -13,7 +13,7 @@
 - 范围：优先复用WH从粗分数采样，32近期＋224唯一非近期；对比有放回去重与mask适配，明确GQA混合、P8支持、cap和成本。独立小网不进入首轮。
 - 已完成：文档初稿、两份独立数学/成本审阅；数字IID收费和P8条件化/空支持处理已补充。
 - 验证：本地文本/链接/差异和Git blob检查完成情况见`work/amlink1219/234/VALIDATION.json`；没有模型、训练、Slurm、RTL或EDA实验。
-- 发布：文档准备完成，任务分支/PR与远端回读待交付步骤更新；未合并。
+- 发布：[PR235](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/235)已创建，正式方案提交`2eee5845c8cf566a76fbf5b5f63861d0d6962880`；5文件已逐字节远端读回一致，PR待审、未合并。
 - 不修改Issue220既有13组矩阵、SparQ默认、他人STATUS或冻结结果。
 - 下一步：交付MD和PR；未来实验须先落实PPL容差、候选补满要求、运行环境与任务分工，本轮未提交。
 - Projects看板：本轮未执行看板写入，待有权限的维护者同步。

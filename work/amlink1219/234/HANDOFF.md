@@ -8,7 +8,7 @@
 - 任务分支：`task/234-sparq-coarse-sampling`；独立稀疏目录`workspace_projects/cs234`。
 - 交付：`qwen3/sparq/proposals/pbit_sampling_selector_20261103/PLAN_ZH.md`。
 - 用户决定：首试粗阶段WH采样生成256候选，暂不做独立小网。本文不替换正式SparQ默认、不扩原13组训练。
-- 精确交付commit与PR以本任务发布回执和PR head为准；本文不把本地文档完成称为远端实验完成。
+- 正式方案提交：`2eee5845c8cf566a76fbf5b5f63861d0d6962880`；[PR235](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/235)已创建，5文件远端逐字节核验一致，待审未合并。后续元数据head以PR和发布回执为准；本轮没有远端实验。
 
 ## 已做与验证
 

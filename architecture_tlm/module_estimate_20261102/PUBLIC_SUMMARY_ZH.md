@@ -4,7 +4,7 @@
 
 同5.412434944GB/token，外存预算173.198mJ/token；沿旧53.668ms窗口约3.227W，加已有片上后200.010mJ/token。6.6pJ/bit敏感性为285.777mJ外存，8pJ工程情景为346.396mJ。均不是新器件实测或新的TPOT；不得把更换外存的收益归于概率算法，数字基线和概率版使用相同外存规则。
 
-文献核对：[IKS，ASPLOS2025](https://arxiv.org/html/2412.15246v1#S6.SS1)采用LPDDR5X8533，方法段列LPDDR4pJ/bit并说明缩放至16nm；本项目不继承其逻辑技术缩放。[CXL-PNM，HPCA2024](https://snu.elsevierpure.com/en/publications/an-lpddr-based-cxl-pnm-platform-for-tco-efficient-inference-of-tr/)采用512GB/1.1TB/s LPDDR5X；[Kelle，MICRO2025](https://arxiv.org/html/2510.16040v1#S8)使用16GB/64GB/s LPDDR4与CACTI7；[Edge-LLM，DAC2024](https://www.haoranyou.com/publications/pdf/2024DAC_EdgeLLM.pdf)使用8GB LPDDR4。[LLMET预印本表2](https://arxiv.org/html/2607.26491v1#S3)把LPDDR5建模为6.6pJ/bit（非LPDDR5X实测），用于敏感性。[HSA正式比较](https://arxiv.org/html/2507.09010v1#S5.SS2)是DDR5 51.2GB/s、32pJ/Byte，不能混为引言的Jetson LPDDR5参考。
+文献核对：[IKS，ASPLOS2025](https://arxiv.org/html/2412.15246v1#S6.SS1)采用LPDDR5X，正文给出8533Mb/s/pin能力，方法段列LPDDR访问4pJ/bit并说明缩放至16nm；本项目不继承其逻辑技术缩放。[CXL-PNM，HPCA2024](https://snu.elsevierpure.com/en/publications/an-lpddr-based-cxl-pnm-platform-for-tco-efficient-inference-of-tr/)采用512GB/1.1TB/s LPDDR5X；[Kelle，MICRO2025](https://arxiv.org/html/2510.16040v1#S8)使用16GB/64GB/s LPDDR4与CACTI7；[Edge-LLM，DAC2024](https://www.haoranyou.com/publications/pdf/2024DAC_EdgeLLM.pdf)使用8GB LPDDR4。[LLMET预印本表2](https://arxiv.org/html/2607.26491v1#S3)把LPDDR5建模为6.6pJ/bit（非LPDDR5X实测），用于敏感性。[HSA正式比较](https://arxiv.org/html/2507.09010v1#S5.SS2)是DDR5 51.2GB/s、32pJ/Byte，不能混为引言的Jetson LPDDR5参考。
 
 4pJ也有Micron LPDDR5X官方简报索引支持，但完整背景/刷新、PHY/控制器边界尚未拆分，标未知而非0；不再叠加旧DDR4那份背景能量。无新LPDDR/EDA/PPL运行。完整本地报告、预算JSON及原件索引继续留本地；PR226仍待审未合并。
 

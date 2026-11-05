@@ -1,6 +1,6 @@
 from pathlib import Path
 import copy,json,unittest
-from contract import validate,guard_values,flashinfer_scale
+from contract import validate,guard_values,flashinfer_scale,whole_measurement_class
 import math
 from types import SimpleNamespace
 
@@ -16,6 +16,17 @@ class Tests(unittest.TestCase):
         self.assertFalse(guard_values(.0142698,True)['accepted'])
         self.assertFalse(guard_values(.001,False)['accepted'])
         self.assertTrue(guard_values(.009,True)['accepted'])
+
+    def test_exploratory_whole_keeps_failed_gate(self):
+        gate=guard_values(.07,True)
+        self.assertFalse(gate['accepted'])
+        self.assertEqual(whole_measurement_class(False,True,True,True),'blocked')
+        self.assertEqual(whole_measurement_class(False,True,True,True,True),'exploratory_numerical_gate_failed')
+        self.assertFalse(gate['accepted'])
+
+    def test_exploratory_does_not_override_invalid_kernel_or_input(self):
+        for args in ((False,True,True),(True,False,True),(True,True,False)):
+            self.assertEqual(whole_measurement_class(False,*args,exploratory=True),'blocked')
 
     def test_default_scale_workaround_is_exact(self):
         for d in (64,128,256):

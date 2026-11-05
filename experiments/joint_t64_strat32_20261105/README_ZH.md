@@ -4,7 +4,7 @@ Issue242，负责人rayggxia。Qwen/Qwen3-4B后训练版revision `1cfa9a72089121
 
 FFN复用实际T64训练100M export、匹配non_ffn、W8码、冻结四档尺度和sigmoid表。GU入口32分层；后级g/sigmoid/u联合4×2×4分层，共32次AND；事件计数直接乘固定Wd，不先重编码z。与Issue204相同抽样分布的软件条件计数加速，不是逐拍GF64回放。
 
-Attention保留BF16 QKV/O、QK-Norm、RoPE、KV接口。默认SparQ r32/k128/recent32，四Q共享候选，无mean-V补偿；筛选沿既有FP32行为，尚未验为RTL量化筛选。候选QK分数按下列数制：
+Attention使用同一T64导出的匹配non_ffn：上轮全模型训练已更新过这些参数，但当时Attention仍准确计算；本轮没有概率Attention适配训练。保留BF16 QKV/O、QK-Norm、RoPE、KV接口。默认SparQ r32/k128/recent32，四Q共享候选，无mean-V补偿；筛选沿既有FP32行为，尚未验为RTL量化筛选。候选QK分数按下列数制：
 
 1. `q = clamp(RNE(score × 16), -2048, 2047)`：总宽12位，含符号、4位小数。
 2. `gap = max(q) - q`：先用加宽整数作差，不回绕。

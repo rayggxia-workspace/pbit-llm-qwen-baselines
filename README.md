@@ -296,3 +296,5 @@ and remain subject to their own licenses and terms.
 ## 可训练概率 Attention（Issue138 / PR142）
 
 [赢家保持与校正拒绝 PyTorch 模块](experiments/trainable_pbit_attention/README_ZH.md)提供真实随机前向、完整轨迹训练梯度和使用示例。该模块属于可训练研究参考，尚无大模型微调权重或硬件PPA；[main集成交接](work/jieruiz/138/MAIN_HANDOFF_ZH.md)记录来源与验证范围。
+
+- 2026-10-30：[pJ级、小面积p-bit采样器与Extropic硬件证据调研](architecture_tlm/pbit_sampler_feasibility_20261030/README_ZH.md)（文献实测/仿真/系统估计分开；Refs #98）。

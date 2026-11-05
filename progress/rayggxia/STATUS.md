@@ -1,3 +1,21 @@
+## 2026-11-05 Issue242最终：七项匹配后缀PPL完成
+
+PR243/draft/open，未合并；本任务已无运行作业。CPU4641、GPU4642和正式4643七项均完成封存。固定1024个WT2后缀目标，BF16 13.580350987，FFN-only三seed13.372338299±0.224580021，联合14.297114509±0.520343413；Attention附加0.924776210 PPL/6.9156%。这是后缀，不是完整WT2，SparQ筛选为FP32行为，不能宣称整Attention位真或PPA。T64导出/non_ffn匹配及36层覆盖、原件SHA通过。
+
+恢复work/rayggxia/242/HANDOFF.md及FINAL_VALIDATION，原件在project_archives/joint_quality242_20261105/result_7eb9a57acccb。可运行finalize.py从原件汇总，不重复提交模型作业。科学报告experiments/joint_t64_strat32_20261105/results/REPORT_ZH.md、RESULTS.json。PR已发布代码，结果已发布12cb6fa7261c7c96845e5080e55f1537ed1d8450，26文件回读一致；最后进度同步见PUBLICATION_FINAL；Projects待维护者同步。下面旧running/待PR是历史快照。
+
+---
+
+## 2026-11-05 Issue242：T64分层32＋max-gap P8 Attention联合PPL
+
+负责人rayggxia；task/242-t64-strat32-joint，base main@2aab624068d2de84c88704bf2e03363234cf3be9；独立tmp/joint-quality-issue242-20261105，PR待创建。用户最新确认S12/F4分数先max和差，再饱和U8/F4查P8，SparQ K128/recent32/r32、赢家保持S64/burn0/slot0，独立IID R8。FFN实际T64训练100M权重、匹配non_ffn，GU32分层/AND4×2×4共32、直接Wd。
+
+CPU4641六项PASS；GPU4642字节帧oracle/原logits no-op逐位一致/36层覆盖/权重不变PASS。首版CPU4635缺依赖失败原件保留，未执行4636仅因死依赖撤回。正式4643七项、最多两GPU，固定WT2后缀1024目标；BF16已完成13.580350987，FFN-only和联合三seed尚未完成。无完整联合WT2结果、无训练/PPA。
+
+恢复work/rayggxia/242/HANDOFF.md及ops.py results；只从COMPLETE及原件SHA统计，勿重复stage/evaluate。不动204健康下载/六模型评估。代码/小报告在experiments/joint_t64_strat32_20261105；任务快照源7eb9a57acccb，准确哈希在EXECUTION/EVALUATION_SUBMISSION。GitHub Issue242已同步，PR未合并/Projects未操作。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

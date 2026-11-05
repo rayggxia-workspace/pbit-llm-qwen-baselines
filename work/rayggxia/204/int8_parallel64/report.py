@@ -1,0 +1,40 @@
+"""Derive the same64 comparison from verified measurements, not target ratios."""
+from pathlib import Path
+import hashlib,json,shutil
+H=Path(__file__).resolve().parent;R=H.parents[3];W=R.parents[1];P=R/'architecture_tlm/int8_parallel64_20261028';A=W/'project_archives/matrix204_parallel64_20261029'
+def save(p,x):p.write_bytes((json.dumps(x,ensure_ascii=False,indent=2)+'\n').encode())
+def main():
+ s=json.loads((P/'results/FINAL_SUMMARY.json').read_text());sc=s['SC_reference'];x,y=s['PPA'];assert x['case']['AW']==32
+ q=x['profiles'];ratios=dict(digital_to_SC_area=x['area_55eq_um2']/sc['area_55eq_um2'],digital_to_SC_peak_power=q['peak']['total_W']/sc['power_W'],SC_to_digital_peak_energy=sc['energy_pJ']/q['peak']['energy_pJ'],SC_to_digital_paced_energy=sc['energy_pJ']/q['paced']['energy_pJ'],SC_to_digital_paced_power=sc['power_W']/q['paced']['total_W'],SC_to_digital_native_interval=35)
+ save(P/'results/COMPARISON.json',ratios)
+ lines=['# 同64路物理输入并行度：SC与完整INT8点积核', '', '2026-10-29，Issue204 / PR209，rayggxia。用户指定的主比较是64路同时处理；此前四lane时分复用保留为另一资源点。', '',
+ '同SS 1.08V / 125℃ / 100MHz；面积原始值单次乘0.81，功率、能量、周期不折算。一帧为64项点积、一个输出。该结果不能直接称64×64全矩阵，也没有新模型/PPL。', '',
+ '| 实现及运行方式 | raw面积 µm² | 55nm等效面积 mm² | 平均功率 mW | 每帧能量 pJ | 原生结果延迟/可接受帧间隔 | 实测发帧间隔 |',
+ '|---|---:|---:|---:|---:|---|---|',
+ f"| SC54，T32 / OR4 | {sc['raw_area_um2']:.2f} | {sc['area_55eq_um2']/1e6:.9f} | {sc['power_W']*1000:.6f} | {sc['energy_pJ']:.4f} | 35拍封装帧间隔 | 350ns |"]
+ for z in s['PPA']:
+  for mode,label in [('peak','满速'),('paced','与SC同发帧速率')]:
+   p=z['profiles'][mode];lines.append(f"| 64路INT8，{z['case']['AW']}位结果，{label} | {z['raw_area_um2']:.2f} | {z['area_55eq_um2']/1e6:.9f} | {p['total_W']*1000:.6f} | {p['energy_pJ']:.4f} | 1拍 / 1拍（10ns） | {p['cycles_per_operation']*10:g}ns |")
+ lines+=['',f"SC相对64路/32位结果数字核，面积小{ratios['digital_to_SC_area']:.3f}倍；两核各自满速时SC功率低{ratios['digital_to_SC_peak_power']:.3f}倍。数字核的原生输出速率高35倍，因此满速每帧能量仍比SC低{ratios['SC_to_digital_peak_energy']:.3f}倍。数字核以35拍间隔接受输入时，SC功率/能量仍是数字核的{ratios['SC_to_digital_paced_energy']:.3f}倍。面积优势已经证实；目前不能宣称相同完成工作率下SC已有能耗优势。", '',
+ '`E_frame[pJ] = P[mW] × interval[ns]`。paced模式每35拍只接受一帧、其余拍保持输入，时钟仍100MHz自由运行，输出CE保持；包含该工作节奏下的时钟/漏电成本，不宣称最佳ICG门控数字实现。不能把数字2.126mW与SC0.198mW直接叫10.7倍节能。', '',
+ '## 电路与输入合同', '',
+ '64个signed8×8乘法器同时运算，16位乘积经六级平衡加法树成为22位精确和，最后一级结果寄存。没有乘法器时分复用，也没有强制增加64组乘积寄存器。100MHz实际STA允许这一划分，故未加树中间流水。32/22指固定N64结果寄存位数，两个模块外部均输出32位；不是任意长K的时间累加器。−128×−128的64项和为1048576，需22位有符号数，22位版本不截断本问题有效位。综合可合并/复制高符号位，故两版本面积差仅约0.247%。', '',
+ '权重不是编译常量：a/b各512bit动态输入，mapped门级对全部端口活动检查。没有在此核内计整组权重/概率寄存器或SRAM；SC54同样以外部位平面/事件/符号为输入。SC的RNG/比较器/编码与两边输入存储、格式转换、真实供数广播、时钟树均在当前比较之外。', '',
+ 'matched_inputs.json从既有SC replay的不可变ZIP恢复，原成员SHA逐项匹配module_energy/INPUT_REFERENCE.json；每帧选W行f%8、幅值上限127，与SC54一致，X保持signed8。三seed17/503/1009各16帧，peak重复8遍得到128连续输出，paced原16帧/35拍。另有16帧完整signedINT8及4个极值，idle独立。每seed/top共164个有效结果，最终两top共984个RTL与984个映射门级结果逐项oracle通过，四态valid===en检查。', '',
+ 'SC54为六幅值平面1..6、每平面9位状态，OR4/T32且去掉LSB；数字对同原操作数做精确整数点积。输入批次匹配不代表两算法输出质量相同，OR碰撞/采样/截位误差未消失。无模型、tokenizer、语料及PPL，相关模型参考重跑规则在本合成电路任务N/A。', '',
+ '## 时序与原始负结果', '',
+ '| 最终版本 | setup ns | hold ns | parser列出的review flags |', '|---|---:|---:|---|']
+ for z in s['PPA']:lines.append(f"| {z['case']['name']} | {z['setup_slack_ns']:.6f} | {z['hold_slack_ns']:.6f} | {z['review_flags']} |")
+ lines+=['', '初版v1两个核功耗均算出，但en→valid的hold为−0.061165ns，原24窗口和网表SHA保留。v2核验RTL/bench/fixtures/库绑定/配置全部相同后，读取原映射网表，用DC原生`compile -incremental_mapping -only_hold_time`插入真实缓冲，不重新编译算术、不retime、不放宽约束。面积每核仅增加raw1.44µm²、等效1.1664µm²。最终门级重新回放、24窗口重新PT；原始48窗口合计不冒称48个新架构。', '',
+ '数据IO max/min1/0.02ns、slew0.05ns、20fF输出、setup/hold uncertainty0.5/0.05ns；reset在距上升沿4.5..5.5ns释放，与bench及既有BF16补充STA一致，未加false/multicycle。最终PT全mapped端口和leaf活动100%，不忽略X。门级活动无SDF、禁止timing-check，STA独立运行；无CTS/SPEF/完整延迟毛刺或布局布线，不是芯片实测/物理签核，不能由此外推最高频率。', '',
+ '## 复现与追溯', '',
+ '实际执行是Git基线158e489816bde1547d07cd3f9e377b809055f63f加明确未提交冻结快照，最终公开文件按EXECUTION_MANIFEST逐字核对；不把后续发布提交伪称执行提交。v2 ZIP及manifest见FINAL_SUMMARY.json。两执行ZIP、8原始报告归档、24传输文件、全部RETURN_MANIFEST成员SHA均核验，配置/SDC/库指纹保存在授权归档；工艺库本体不发布。', '',
+ '原件：`C:/Users/86134/Documents/a_P_BIT/project_archives/matrix204_parallel64_20261029`；成员索引见FINAL_SUMMARY.json及work/rayggxia/204/int8_parallel64/TRANSFER_VERIFICATION.json。中央run为matrix-int8-par64-204-20261029。准确作业与命令见同目录RUN_LEDGER.json；恢复先读HANDOFF和PUBLICATION，不在冻结目录重跑init.py或再次submit。', '',
+ '经典结构依据沿用已核查的[Gemmini固定提交](https://github.com/ucb-bar/gemmini/tree/8c3f9923a44a2fe2c7930587be297d6d4f8c09ca)与[NVDLA CMAC/CACC文档](https://nvdla.org/hw/v1/ias/unit_description.html)，本64路树直接依据项目旧MODE4平衡树，准确文件SHA在INPUT_REFERENCE.json；这是项目内实现，不称完整移植上游或全局最优数字引擎。', '',
+ '下一步若继续优化，应对SC符号/OR/累计路径、真实权重驻留和多输出共享做独立消融，并带上模型质量预算。完整M输出需复制/共享及实际供数证据，不能仅将本表功率线性放大就称整片结论。']
+ (P/'results/REPORT_ZH.md').write_bytes(('\n'.join(lines)+'\n').encode())
+ (P/'README_ZH.md').write_bytes(('# 同64路并行INT8对照\n\n[正式报告](results/REPORT_ZH.md)、[核验汇总](results/FINAL_SUMMARY.json)、[输入追溯](INPUT_REFERENCE.json)、[执行manifest](EXECUTION_MANIFEST.json)。\n\n64并行乘法+平衡树，固定N64精确22位和、32/22位结果寄存。两top/三seed最终24PT窗口，v1保持违例另24窗口保留。功能与对应门级均984有效输出。源码是base158e4898+冻结ZIP，不伪造执行提交；无真实模型/PPL。\n\n在新目录重建RTL/bench及激励：`python architecture_tlm/int8_parallel64_20261028/prepare.py`；prepare会重写RTL/bench/fixtures，不在冻结快照内运行。实际EDA命令及哈希见work/rayggxia/204/int8_parallel64/RUN_LEDGER.json，需已授权服务器与相同私有库绑定。不要在冻结快照继续改写/提交。\n').encode())
+ ledger=dict(issue=204,owner='rayggxia',source_base=s['source_base'],uncommitted_execution_snapshots=True,versions=[dict(name='par64_204_v1_20261029',functional_job=38447564,ppa_job=38447584,result='RTL/gate pass,24 PT windows calculated; original hold violation retained'),dict(name='par64_204_v2_20261029',functional_job=38447776,ppa_job=38447785,result='RTL/gate984 outputs each,24 PT windows; native DC hold-only buffer repair; all final setup/hold nonnegative')],indices='0-1',source_packages=s['source_packages'],auxiliary_readonly_DC_help_jobs=[38447702,38447714],commands=['source "$HOME/.bashrc"','export MATRIX_PRIVATE_LIBRARY=<snapshot>/private_library.json','python3 flow/run_parallel64.py functional --case "$SLURM_ARRAY_TASK_ID" --out results/functional_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}','python3 flow/run_parallel64.py ppa --case "$SLURM_ARRAY_TASK_ID" --out results/ppa_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID} --reuse <v1>/results/ppa_38447584_$SLURM_ARRAY_TASK_ID'],slurm=dict(partition='v6_384',cpus=2,memory_GB=8,time_limit='01:00:00',array_concurrency=2),model_corpus='N/A synthetic circuit-only',validation=['python work/rayggxia/204/int8_parallel64/finalize.py','python work/rayggxia/204/int8_parallel64/report.py','python work/rayggxia/204/int8_parallel64/update_registry.py'])
+ save(H/'RUN_LEDGER.json',ledger)
+ print(json.dumps(ratios))
+if __name__=='__main__':main()

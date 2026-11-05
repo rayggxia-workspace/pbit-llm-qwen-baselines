@@ -1,0 +1,1 @@
+Numerical derivation only; see HANDOFF.md and the formal report under architecture_tlm/matrix_counter_precision_20261028. Private publication controls are ignored. The existing 83-run circuit registry is unchanged because no new circuit or PPA was simulated.

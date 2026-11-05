@@ -1,3 +1,15 @@
+# Current complete-model TLM (2026-10-28; PR190 baseline retained)
+
+正式主线为 **main**。当前[基线与配置选择](architecture_tlm/BASELINE_ZH.md)区分默认DDR4共同调度、HBM对照和资源扩容候选；沿用同一个 `python -m architecture_tlm` 入口。条件时延基线不等于完整模型质量或芯片PPA验收。
+
+Canonical entry: [architecture_tlm](architecture_tlm/README.md). Fixed-scale W8 FFN with stochastic nonlinearity directly into Wd; existing Attention and memory interfaces. Read the macro/numerical limitations. Historical experiments below remain historical.
+
+本轮新增[局部流水与本地端口候选](architecture_tlm/BASELINE_ZH.md)、[FFN数字核](architecture_tlm/calibration_v2_20261027/README_ZH.md)、[T32单尺度矩阵对照](architecture_tlm/matrix_single_scale_20261028/README_ZH.md)和[统一仿真台账](digital_circuit_simulation_registry/README_ZH.md)。[审核报告](work/jieruiz/55/round12/REVIEW_ZH.md)列出实际复验与未通过验收的部分；原始面积保留，后续本项目等效面积单次乘0.81。
+
+Architecture changes and paper evidence: [架构优化记录本](architecture_tlm/ARCHITECTURE_OPTIMIZATION_LOG_ZH.md). Optional configurations retain their own timing, traffic and unmeasured physical-cost boundaries.
+
+> Workspace 协作入口：[AGENTS.md](AGENTS.md)。任务通过 Issue、独立分支和 PR 交付；个人进度见 `progress/<GitHub用户名>/STATUS.md`。
+
 # p-bit LLM: Qwen2.5-0.5B baselines
 
 Reproducible BF16 reference measurements and inspection utilities for studying
@@ -275,43 +287,12 @@ input result, but uses more replacement parameters, teacher initialization,
 and different readout precision. See the
 [twenty-layer AND-bank experiment](results/multithreshold_and_twenty_layer_20261002/RESULTS_ZH.md).
 
-A separate [p-bit attention experiment](experiments/pbit_attention/README.md)
-retains all original FFNs and changes only decode-time AV aggregation in all
-24 attention layers. At S=512, categorical-tree / independent-Bernoulli PPL is
-10.42392 / 10.44439 versus 10.37356 original SDPA on 2k-context sampled suffixes,
-and 9.49162 / 9.49449 versus 9.41898 at 8k. Three inference seeds are reported.
-These are cached-decode subset metrics, not the historical full-test PPL.
-See the [report](results/pbit_attention_20261003/RESULTS_ZH.md) for all 34 runs,
-sampling-law tests, and the distinction between logical sparsity and hardware speed.
-
-A follow-up [query-side p-bit experiment](experiments/pbit_qk/README.md) changes
-only decode-time QK and retains dense PV and original FFNs. Across 70 evaluations,
-stratified B=64 reaches PPL 10.43481 / 9.50974 at 2k / 8k (below 1% above
-original SDPA), but GQA-group key-feature access exceeds 99.99%. This establishes
-a quality limitation of small sampling budgets and little logical key-read
-saving at high fidelity for this per-head encoding. See the
-[QK report](results/pbit_qk_20261006/RESULTS_ZH.md).
-
-The [block-scale QK extension](experiments/pbit_qk_block/README.md) is explicitly
-separate from the paper-style per-head encoder. Across 76 matched evaluations,
-8-feature blocks with B=32 give PPL 10.41063 / 9.45379 at 2k / 8k, but require
-eight continuous scales per head, about 12.8 signed-add events per original MAC
-term, and almost full logical GQA key-feature access. See the
-[block-scale report](results/pbit_qk_block_20261006/RESULTS_ZH.md).
-
-A separate [Ising SoftMax and block-routing experiment](experiments/pbit_softmax_router/README.md)
-completes 140 matched decode evaluations with original FFNs. Ideal asynchronous
-hard-penalty Ising dynamics, with 16-clock burn-in, 4-clock observation spacing
-and 512 samples, gives five-seed PPL **10.43017 / 9.46223** at 2k / 8k versus
-10.37356 / 9.41898 original SDPA. Time units are simulated per-bit clocks, not
-hardware microseconds. Finite penalties and transient laws were checked separately.
-An untrained BoltzFormer-inspired cached mean-key block router gives 8k PPL
-**9.55960** while retaining about 13.33% of candidate positions per head; GQA
-group address union is about 42.6%. These are numerical references and logical
-access counts, not sparse GPU or hardware acceleration. See the
-[full report](results/pbit_softmax_router_20261006/RESULTS_ZH.md).
 
 ## License
 
 Apache License 2.0. Qwen model weights and WikiText-2 are obtained separately
 and remain subject to their own licenses and terms.
+
+## 可训练概率 Attention（Issue138 / PR142）
+
+[赢家保持与校正拒绝 PyTorch 模块](experiments/trainable_pbit_attention/README_ZH.md)提供真实随机前向、完整轨迹训练梯度和使用示例。该模块属于可训练研究参考，尚无大模型微调权重或硬件PPA；[main集成交接](work/jieruiz/138/MAIN_HANDOFF_ZH.md)记录来源与验证范围。

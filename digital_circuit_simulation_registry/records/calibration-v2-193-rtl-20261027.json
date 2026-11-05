@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "id": "calibration-v2-193-rtl-20261027",
+  "name": "合并档位计数/可配置ICG及流水BF16-FP32数字校准RTL",
+  "family": "FFN/计数/数字/门控",
+  "registered_on": "2026-10-27",
+  "owner": "jieruiz",
+  "issue": 193,
+  "evidence_level": "RTL_FUNCTIONAL",
+  "status": "functional_only_eda_prepared",
+  "stages": {
+    "functional": "pass",
+    "synthesis": "not_run",
+    "sta": "not_run",
+    "power": "not_run",
+    "postlayout": "not_run"
+  },
+  "boundary": "N64 M1/M8 B4T64/B7T128 exact aligned single reduction tree and temporal sum; optional 6/3 pipeline cuts and real-ICG interface. Digital FP32/BF16 add/product/conversion/nonfused MAC, 8 lanes, one/16 accumulation contexts. No PRNG/SRAM/CIM/CTS.",
+  "conditions": {
+    "simulator": "Icarus Verilog 10.1",
+    "functional_period_ns": 10,
+    "target_node_nm": 55,
+    "target_frequency_mhz": [
+      100,
+      250,
+      500
+    ],
+    "technology_bound": false,
+    "real_icg_cell_unknown": true
+  },
+  "source": {
+    "git_commit": "07dbb0c74f0b43c4fe3c941333afe546e80ae0f1",
+    "source_manifest_commit": "91510663e4f5c1bf3dbceda1139ddf787ebcde61",
+    "source_manifest_sha256": "84efea0a9ebe1f5d79ca54d07bc71c14da335eacb32b2f73b75cddcd2bf73410",
+    "repository_path": "architecture_tlm/calibration_v2_20261027"
+  },
+  "artifacts": [
+    {
+      "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\calibration_v2_20261027.zip",
+      "role": "source_and_small_functional_results",
+      "present_at_registration": true,
+      "required": true,
+      "sha256": "343e81bc7d7c5d099f1dd6fe7aeb9513c61045c6e31962be3fc1fa3bf998c72e",
+      "bytes": 96899
+    }
+  ],
+  "cases": [
+    {
+      "case": "counter_exact_equivalence",
+      "configurations": 16,
+      "frames": 128,
+      "status": "passed",
+      "area_um2": null,
+      "power_W": null
+    },
+    {
+      "case": "digital_integer_oracle",
+      "configurations": 24,
+      "completed_transactions": 22245,
+      "status": "passed",
+      "area_um2": null,
+      "power_W": null
+    },
+    {
+      "case": "ICG_functional_mapping_and_synthesis_guards",
+      "status": "passed",
+      "real_technology_cell_tested": false
+    },
+    {
+      "case": "portable_EDA_flow_host_tests",
+      "tests": 31,
+      "status": "passed",
+      "licensed_eda_run": false
+    }
+  ],
+  "limitations": [
+    "No new DC/STA/PT/P&R results or implemented frequency; functional clock is not timing closure.",
+    "MODE1 and mock cell only validate behavior; MODE2 requires actual ICG mapping. Digital CE is not ICG.",
+    "Nonfused BF16 MAC with DAZ and RNE-before-FTZ; not full IEEE gradual underflow or GPU fused arithmetic.",
+    "Counter output is already bin-aligned; old multi-bucket restore must not be directly connected.",
+    "Power stimuli synthetic, not a Qwen trace; matched stimulus/PVT/constraints required for architecture ratios.",
+    "Root registry is aggregate pending integration view; publish only this new record, preserve other task records."
+  ],
+  "next_action": "User fills private library config; run initial ungated 100MHz cases then real ICG and 250/500MHz, preserve negative slack and activity warnings; calibrate TLM only from accepted results."
+}

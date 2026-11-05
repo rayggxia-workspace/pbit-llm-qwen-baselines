@@ -1,0 +1,21 @@
+{
+  "id": "digital_add_ss100",
+  "top": "dig_fp32_add",
+  "tb_top": "tb_digital",
+  "gate_mode": 0,
+  "frequency_mhz": 100,
+  "rtl_files": ["digital/rtl/dig_fp32.sv", "digital/rtl/dig_mac.sv"],
+  "tb_files": ["digital/tests/tb_digital.sv"],
+  "defines": ["DIG_TOP=dig_fp32_add"],
+  "plusargs": ["+VECTORS={CASE_DIR}/vectors.txt", "+OUTPUT={RUN_DIR}/trace.txt", "+WSTART_CYCLE=64", "+WEND_CYCLE=640"],
+  "fixture_manifest": "FIXTURE.json",
+  "data_files": ["vectors.txt", "expected.json"],
+  "validator_script": "digital/tests/prepare_power.py",
+  "validator_source_files": ["digital/tests/verify_digital.py", "digital/tests/verify_context.py"],
+  "validator_args": ["--check-fixture", "{CASE_DIR}", "--trace", "{RUN_DIR}/trace.txt"],
+  "latency_cycles": 7,
+  "ii_cycles": 1,
+  "power_mode": "continuous",
+  "operation_name": "completed_fp32_add",
+  "comment": "Illustrates a real scalar bench. Use make_digital_cases.py to generate this case with its bound fixture files in the same directory."
+}

@@ -1,0 +1,60 @@
+{
+  "issue": 204,
+  "owner": "rayggxia",
+  "source_base": "158e489816bde1547d07cd3f9e377b809055f63f",
+  "uncommitted_execution_snapshots": true,
+  "versions": [
+    {
+      "name": "par64_204_v1_20261029",
+      "functional_job": 38447564,
+      "ppa_job": 38447584,
+      "result": "RTL/gate pass,24 PT windows calculated; original hold violation retained"
+    },
+    {
+      "name": "par64_204_v2_20261029",
+      "functional_job": 38447776,
+      "ppa_job": 38447785,
+      "result": "RTL/gate984 outputs each,24 PT windows; native DC hold-only buffer repair; all final setup/hold nonnegative"
+    }
+  ],
+  "indices": "0-1",
+  "source_packages": [
+    {
+      "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\matrix204_parallel64_20261029\\par64_204_v1_20261029.zip",
+      "sha256": "b84dc4f66cd209e940c5c89fb5a7c314d0cf388d93c7ff885bfddaa34fc7fee4",
+      "bytes": 62739,
+      "manifest_sha256": "f08342dc9f269a980fbe23414d53c11acc0b1eb508441f5b873f2a56a4475d31",
+      "members_verified": 35
+    },
+    {
+      "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\matrix204_parallel64_20261029\\par64_204_v2_20261029.zip",
+      "sha256": "29e872e0ea6c4a6c3defb1f2bcc9795be44aa02225ff42f9f82db6a4067bab9c",
+      "bytes": 63335,
+      "manifest_sha256": "f39df885a073d53ac9c5a7584d78e97906122722b29664ba0155f8e6cd434c8d",
+      "members_verified": 35
+    }
+  ],
+  "auxiliary_readonly_DC_help_jobs": [
+    38447702,
+    38447714
+  ],
+  "commands": [
+    "source \"$HOME/.bashrc\"",
+    "export MATRIX_PRIVATE_LIBRARY=<snapshot>/private_library.json",
+    "python3 flow/run_parallel64.py functional --case \"$SLURM_ARRAY_TASK_ID\" --out results/functional_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}",
+    "python3 flow/run_parallel64.py ppa --case \"$SLURM_ARRAY_TASK_ID\" --out results/ppa_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID} --reuse <v1>/results/ppa_38447584_$SLURM_ARRAY_TASK_ID"
+  ],
+  "slurm": {
+    "partition": "v6_384",
+    "cpus": 2,
+    "memory_GB": 8,
+    "time_limit": "01:00:00",
+    "array_concurrency": 2
+  },
+  "model_corpus": "N/A synthetic circuit-only",
+  "validation": [
+    "python work/rayggxia/204/int8_parallel64/finalize.py",
+    "python work/rayggxia/204/int8_parallel64/report.py",
+    "python work/rayggxia/204/int8_parallel64/update_registry.py"
+  ]
+}

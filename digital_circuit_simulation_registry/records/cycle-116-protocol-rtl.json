@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "id": "cycle-116-protocol-rtl",
+  "name": "周期核有限流水与双时钟握手协议",
+  "family": "周期执行控制",
+  "registered_on": "2026-10-23",
+  "owner": "amlink1219",
+  "issue": 116,
+  "evidence_level": "RTL_FUNCTIONAL",
+  "status": "functional_only",
+  "stages": {
+    "functional": "pass",
+    "synthesis": "not_run",
+    "sta": "not_run",
+    "power": "not_run",
+    "postlayout": "not_run"
+  },
+  "boundary": "9组协议测试、252个接受/完成/消费握手与TLM逐ps一致；有限inflight/FIFO、latency/II、输出回压、2FF双向单槽mailbox。",
+  "conditions": {
+    "core_period_ps": 10000,
+    "sram_period_ps": 12500,
+    "simulator": "Icarus Verilog 12.0",
+    "job_id": 2764,
+    "process": "no technology library"
+  },
+  "limitations": [
+    "只验证控制协议RTL，不验证SC/FFN/Attention数值数据通路RTL。",
+    "没有综合、STA、PT、物理布线或亚稳态MTBF证据。",
+    "严格匹配报告source hashes；不把后续软件提交自动等同于这次执行源码。"
+  ],
+  "source": {
+    "git_commit": null,
+    "binding": "RTL_CONTRACT_VALIDATION.json source_sha256 and complete archived source snapshot",
+    "url": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/tree/task/116-cycle-execution/architecture_tlm/cycle_v1/rtl"
+  },
+  "artifacts": [
+    {
+      "path": "E:/BaiduSyncdisk/p-bit/DAC_2026_Draft_Proceedings/DAC_2026_Draft_Proceedings/workspace_projects/cycle23/architecture_tlm/cycle_v1/results/rtl_contract_20261023/RTL_CONTRACT_VALIDATION.json",
+      "repository_path": "architecture_tlm/cycle_v1/results/rtl_contract_20261023/RTL_CONTRACT_VALIDATION.json",
+      "role": "functional",
+      "present_at_registration": true,
+      "required": true,
+      "bytes": 14997,
+      "sha256": "40f65f3efd6b78b7993cb91f0dc5c31be9df2549acb9dbf93a5b82123a12b7f7"
+    },
+    {
+      "path": "E:/BaiduSyncdisk/p-bit/DAC_2026_Draft_Proceedings/DAC_2026_Draft_Proceedings/workspace_projects/cycle23/work/amlink1219/116/rtl/rtl-contract-2764-results.tar.gz",
+      "repository_path": "work/amlink1219/116/rtl/rtl-contract-2764-results.tar.gz",
+      "role": "archive",
+      "present_at_registration": true,
+      "required": true,
+      "bytes": 47569,
+      "sha256": "85071026f69532defbd57d875fdbe5be0d12a59e07024bdd01b3d0eb9abfe518"
+    }
+  ],
+  "cases": [
+    {
+      "case": "pipeline_0",
+      "top": "tb_cycle_contract",
+      "configuration": {
+        "LATENCY": 3,
+        "II": 1,
+        "CAPACITY": 4,
+        "OUTPUT_II": 1,
+        "N": 8,
+        "FIFO_CAPACITY": 3,
+        "INITIAL_FILL": 3,
+        "DRAIN_START": 12,
+        "DRAIN_II": 2
+      },
+      "checked_handshakes": 27,
+      "properties": {
+        "inflight": 4,
+        "fifo": 3
+      },
+      "status": "passed"
+    },
+    {
+      "case": "pipeline_1",
+      "top": "tb_cycle_contract",
+      "configuration": {
+        "LATENCY": 5,
+        "II": 2,
+        "CAPACITY": 3,
+        "OUTPUT_II": 2,
+        "N": 12,
+        "FIFO_CAPACITY": 2,
+        "INITIAL_FILL": 2,
+        "DRAIN_START": 15,
+        "DRAIN_II": 3
+      },
+      "checked_handshakes": 38,
+      "properties": {
+        "inflight": 3,
+        "fifo": 2
+      },
+      "status": "passed"
+    },
+    {
+      "case": "pipeline_2",
+      "top": "tb_cycle_contract",
+      "configuration": {
+        "LATENCY": 1,
+        "II": 1,
+        "CAPACITY": 1,
+        "OUTPUT_II": 1,
+        "N": 6,
+        "FIFO_CAPACITY": 1,
+        "INITIAL_FILL": 1,
+        "DRAIN_START": 8,
+        "DRAIN_II": 2
+      },
+      "checked_handshakes": 19,
+      "properties": {
+        "inflight": 1,
+        "fifo": 1
+      },
+      "status": "passed"
+    },
+    {
+      "case": "pipeline_3",
+      "top": "tb_cycle_contract",
+      "configuration": {
+        "LATENCY": 2,
+        "II": 1,
+        "CAPACITY": 4,
+        "OUTPUT_II": 3,
+        "N": 12,
+        "FIFO_CAPACITY": 3,
+        "INITIAL_FILL": 0,
+        "DRAIN_START": 0,
+        "DRAIN_II": 1
+      },
+      "checked_handshakes": 36,
+      "properties": {
+        "inflight": 4,
+        "fifo": 1
+      },
+      "status": "passed"
+    },
+    {
+      "case": "pipeline_4",
+      "top": "tb_cycle_contract",
+      "configuration": {
+        "LATENCY": 7,
+        "II": 1,
+        "CAPACITY": 8,
+        "OUTPUT_II": 2,
+        "N": 16,
+        "FIFO_CAPACITY": 4,
+        "INITIAL_FILL": 4,
+        "DRAIN_START": 20,
+        "DRAIN_II": 2
+      },
+      "checked_handshakes": 52,
+      "properties": {
+        "inflight": 8,
+        "fifo": 4
+      },
+      "status": "passed"
+    },
+    {
+      "case": "cdc_0",
+      "top": "tb_cycle_cdc",
+      "configuration": {
+        "DST_PHASE": 0,
+        "N": 5,
+        "SRC_LATENCY": 1,
+        "DST_LATENCY": 2
+      },
+      "checked_handshakes": 20,
+      "properties": {
+        "mailbox_capacity": 1,
+        "request_synchronizer_flops": 2,
+        "ack_synchronizer_flops": 2,
+        "consumer_visible_destination_edge": 3
+      },
+      "status": "passed"
+    },
+    {
+      "case": "cdc_1",
+      "top": "tb_cycle_cdc",
+      "configuration": {
+        "DST_PHASE": 2500,
+        "N": 5,
+        "SRC_LATENCY": 2,
+        "DST_LATENCY": 3
+      },
+      "checked_handshakes": 20,
+      "properties": {
+        "mailbox_capacity": 1,
+        "request_synchronizer_flops": 2,
+        "ack_synchronizer_flops": 2,
+        "consumer_visible_destination_edge": 3
+      },
+      "status": "passed"
+    },
+    {
+      "case": "cdc_2",
+      "top": "tb_cycle_cdc",
+      "configuration": {
+        "DST_PHASE": 6250,
+        "N": 5,
+        "SRC_LATENCY": 3,
+        "DST_LATENCY": 2
+      },
+      "checked_handshakes": 20,
+      "properties": {
+        "mailbox_capacity": 1,
+        "request_synchronizer_flops": 2,
+        "ack_synchronizer_flops": 2,
+        "consumer_visible_destination_edge": 3
+      },
+      "status": "passed"
+    },
+    {
+      "case": "cdc_3",
+      "top": "tb_cycle_cdc",
+      "configuration": {
+        "DST_PHASE": 10000,
+        "N": 5,
+        "SRC_LATENCY": 1,
+        "DST_LATENCY": 3
+      },
+      "checked_handshakes": 20,
+      "properties": {
+        "mailbox_capacity": 1,
+        "request_synchronizer_flops": 2,
+        "ack_synchronizer_flops": 2,
+        "consumer_visible_destination_edge": 3
+      },
+      "status": "passed"
+    }
+  ],
+  "next_action": "完善实际SC/数字算子RTL逐拍对照；目标工艺STA/PPA单独运行，不从本功能结果推断。"
+}

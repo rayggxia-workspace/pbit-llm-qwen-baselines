@@ -1,0 +1,28 @@
+{
+  "user": "jieruiz",
+  "main": "d83eeb1fc6b89a3dff51b5b62bf79acf665c7166",
+  "pr": {
+    "number": 192,
+    "head": "e3d5038aba200bbfda8967d1943a0f606bd07196",
+    "state": "open",
+    "base": "main"
+  },
+  "issue": {
+    "state": "open",
+    "assignees": [
+      "jieruiz"
+    ]
+  },
+  "latest_comments": [
+    {
+      "updated": "2026-10-27T07:37:19Z",
+      "user": "jieruiz",
+      "body": "首轮调度7项已全部completed并核验SHA：seed0原调度64.3779ms逐数复现旧结果；prefill或资源日历单独开启均64.3779，SC跨窗口与三项组合64.30045ms（约少0.12%）。组合三seed均值64.32323ms。固定阵列/采样/时钟/存储；同seed动作、物理字节、逻辑帧顺序和数据容量不变。普通矩阵42541次prefill里，在上一计算结束前就绪次数为0。负面结果已保留，不能说已解决主要调度问题。\n\n据此继续将下一DMA请求前移：普通BF16 tile在当前shared fill释放唯一响应槽时issue；SC在program释放响应槽后、随机context准备前issue。仍一个响应槽、两共享槽和两本地bank，不扩容。本地110+24测试通过，执行5ba79477，Slurm3163四CPU项运行中，远端每项12测试通过；一个单因素＋组合三seed，单独冻结新快照，不改3156。\n\n源码、首轮完整报告与续作交接已上传同PR192 head8352fe71，仍待审未合并。下一步只收3163 completed原件并验证后报告，没有提前填入第二轮性能或PPA。Projects沿既有权限缺口待同步。"
+    },
+    {
+      "updated": "2026-10-27T07:52:47Z",
+      "user": "jieruiz",
+      "body": "调度两轮11项已全部completed并核验原件SHA；执行410fa5af/3156与5ba79477/3163。组合三seed64.411267→57.445385ms/token，少10.81%，固定计算/存储资源、采样和物理字节。真正有效的是响应槽释放后提前发起下一DMA；只开prefill/日历/跨窗口约0.14%的负面结果保留。\n\nseed0 FFN25.4916→25.2070ms约1.1%，普通投影/lm_head29.8444→23.1709ms约22.4%，主要不是随机算术加速。134本地测试及远端每项12检查通过，无新PPL/PPA，数字L/II本轮未改。\n\n已上传同PR192，提交f8292c87415f26d5473c5a98830e5ae6632a434c并回读4个关键blob原字节一致；PR待审未合并。最终单文件architecture_tlm/scheduling_v2_20261027/FINAL_RESULTS_ZH.md，优化记录O16/STATUS/HANDOFF/备忘录和原件索引已同步，无本任务运行作业；Projects仍待权限。下一步数字基线沿用同样供数政策，再分别评估跨描述符并发、按beat服务和SC恢复流水。"
+    }
+  ]
+}

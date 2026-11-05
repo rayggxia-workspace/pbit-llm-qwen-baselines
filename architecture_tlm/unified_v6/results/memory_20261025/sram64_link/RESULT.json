@@ -1,0 +1,6203 @@
+{
+  "schema_version": 6,
+  "model": {
+    "architectures": [
+      "Qwen3ForCausalLM"
+    ],
+    "vocab_size": 151936,
+    "hidden_size": 2560,
+    "intermediate_size": 9728,
+    "num_hidden_layers": 36,
+    "num_attention_heads": 32,
+    "num_key_value_heads": 8,
+    "head_dim": 128,
+    "attention_bias": false,
+    "max_position_embeddings": 40960,
+    "tie_word_embeddings": true,
+    "model_type": "qwen3",
+    "qk_norm": true
+  },
+  "config": {
+    "core_hz": 100000000,
+    "context_tokens": 2048,
+    "decode_tokens": 1,
+    "seed": 0,
+    "macs_per_cycle": 512,
+    "mac_startup_cycles": 2,
+    "vector_lanes": 64,
+    "nonlinear_lanes": 16,
+    "weight_chunk_bytes": 65536,
+    "double_buffer": true,
+    "trace_event_limit": 80,
+    "row_receipt_limit": 16,
+    "ffn": {
+      "mode": "sc",
+      "bins": 4,
+      "samples": 64,
+      "strata": 64,
+      "engines": 8,
+      "startup_cycles": 1,
+      "sample_II_cycles": 1,
+      "drain_cycles": 8,
+      "algorithm": "fixed4_and_direct",
+      "nonlinear_samples": 64,
+      "joint_strata": [
+        4,
+        2,
+        4
+      ],
+      "weight_bits": 8,
+      "x_scale_offsets": [
+        0,
+        2,
+        4,
+        6
+      ],
+      "gu_scale_offsets": [
+        1,
+        3,
+        5,
+        7
+      ],
+      "encoder_lanes": 64,
+      "encoder_latency": 3,
+      "encoder_II": 1,
+      "field_lanes": 64,
+      "field_latency": 2,
+      "lut_lanes": 16,
+      "lut_latency": 1,
+      "restore_lanes": 16,
+      "restore_latency": 6,
+      "restore_II": 1,
+      "accumulate_lanes": 32,
+      "accumulate_latency": 2,
+      "bf16_lanes": 16,
+      "bf16_latency": 3,
+      "local_weight_bytes": 32768,
+      "local_weight_load_bytes_per_cycle": 1024,
+      "weight_feed": "resident_macro",
+      "weight_schedule": "legacy",
+      "counter_pipeline_bits_per_lane": 512,
+      "wide_bits": 64,
+      "coefficient_bits": 16,
+      "rng_nl": {
+        "words_per_cycle": 192,
+        "response_latency": 2,
+        "stream_II": 2,
+        "command_cycles": 2,
+        "state_bits_per_endpoint": 177,
+        "words_per_endpoint": 20,
+        "seed_word_bits": 32,
+        "seed_word_interval_cycles": 100,
+        "warmup_cycles": 5,
+        "reseed_interval_cycles": 100000000
+      },
+      "numeric_status": "GU fixed-point coefficient/rounding macro pending bit-exact validation; no inherited PPL"
+    },
+    "attention": {
+      "mode": "exact",
+      "tile_tokens": 128,
+      "samples": null,
+      "sample_ratio": 0.0625,
+      "minimum_samples": 1,
+      "winner_update_multiplier": 8,
+      "candidate_blocks": 8,
+      "selection": "fixed_budget",
+      "selector_bias": -1.5,
+      "selector_temperature": 1.0,
+      "synthetic_logit_std": 1.5,
+      "trace_file": null,
+      "selector_calibration": null,
+      "serial_burn": 16,
+      "serial_spacing": 4,
+      "serial_cycles_per_attempt": 6
+    },
+    "random": {
+      "backend": "integrated_service",
+      "clock_hz": 100000000,
+      "reseed_cycles": 100000000,
+      "seed_word_interval_cycles": 100,
+      "seed_startup_cycles": 10,
+      "sigmoid_step": 0.125,
+      "lut_lanes": 16,
+      "config_lanes": 64,
+      "cpu_fast": true,
+      "startup_cycles": 1,
+      "frame_cycles": 1,
+      "restore_cycles": 1
+    },
+    "sampler_v5": {
+      "drive_bits": 32,
+      "drive_step": null,
+      "max_proposals_per_sample": 128,
+      "offset_update_mode": "per_candidate",
+      "source_command_cycles": 1,
+      "source_settle_cycles": 2,
+      "source_capture_cycles": 1,
+      "source_min_interval_cycles": 1,
+      "tree_levels_per_cycle": 2,
+      "burn_updates": 0,
+      "record_events": false,
+      "energy_pJ": {},
+      "idle_W": null,
+      "area": {}
+    },
+    "sram": {
+      "capacity_bytes": 8388608,
+      "banks": 64,
+      "word_bytes": 16,
+      "macro_depth": 4096,
+      "corner": "SS",
+      "clock_hz": 80000000,
+      "fabric_GBs": 64.0,
+      "cdc_ns": 20.0,
+      "calibration": "llama7b/runtime/results/sram_calibration_v1_20261016/calibration.json"
+    },
+    "dram": {
+      "backend": "link",
+      "bandwidth_GBs": 16.0,
+      "latency_ns": 80.0,
+      "burst_bytes": 64,
+      "max_pending": 32
+    },
+    "prices_pJ": {
+      "bf16_mac": 2.0,
+      "fp32_mac": null,
+      "vector_op": 1.0,
+      "nonlinear_op": 10.0,
+      "dram_read": 64.0,
+      "dram_write": 64.0,
+      "dram_background_ns": 50.0,
+      "FP32_to_BF16": null,
+      "weight_scale_op": null,
+      "SC_encode_op": null,
+      "SC_restore_op": null,
+      "digital_idle_ns": null,
+      "sc_idle_ns": null,
+      "control_interconnect_ns": null,
+      "rng_seed": null,
+      "rng_frame": null,
+      "rng_restore": null,
+      "rng_uniform_bit": null,
+      "rng_biased_response": null,
+      "selector_compare": null,
+      "budget_compare_exchange": null,
+      "candidate_compact": null,
+      "V_selection_add": 0.0
+    },
+    "cost_policy": {
+      "full_physical_PPA": "unknown",
+      "measured_anchor": "55nm SS SRAM macro internal energy/area/timing table",
+      "conditional_prices": "legacy digital 2pJ BF16 MAC,1pJ vector,10pJ nonlinear; DRAM64pJ/B,50mW background",
+      "null_prices": "uncharacterized components, NOT zero energy",
+      "V_selection_add": "activity alias only: energy already in vector_op; do not price twice",
+      "SC_restore": "counts signed bit-plane reconstruction/bin alignment/W scale application; no duplicate conversion fee",
+      "SRAM": "internal energy only; do not overlap with a whole-memory measured price",
+      "memory_hierarchy": "DRAM -> shared banked SRAM ping/pong -> full-width local SC weight macro -> counters; no entire-layer residency assumption"
+    },
+    "model_record": {
+      "model": "qwen3_4b",
+      "model_id": "Qwen/Qwen3-4B",
+      "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+      "source_sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-4B/blob/1cfa9a7208912126459214e8b04321603b3df60c/config.json",
+      "posttrained": true,
+      "scope": "architecture shape only; no new weight/data/PPL run",
+      "shape": {
+        "architectures": [
+          "Qwen3ForCausalLM"
+        ],
+        "vocab_size": 151936,
+        "hidden_size": 2560,
+        "intermediate_size": 9728,
+        "num_hidden_layers": 36,
+        "num_attention_heads": 32,
+        "num_key_value_heads": 8,
+        "head_dim": 128,
+        "attention_bias": false,
+        "max_position_embeddings": 40960,
+        "tie_word_embeddings": true,
+        "model_type": "qwen3",
+        "qk_norm": true
+      }
+    },
+    "memory_profile": "sram64"
+  },
+  "scope": "batch1 full decoder decode + embedding/final norm/lm_head/greedy selection; prior context already exists; no prefill/TTFT",
+  "implementation": "bounded tile/resource event TLM; NOT full-chip cycle-accurate simulation",
+  "metrics": {
+    "TPOT_ms": 879.74788,
+    "token_ms": [
+      879.74788
+    ],
+    "tokens_per_second": 1.1366892978474696,
+    "elapsed_ns": 879747880.0,
+    "priced_subtotal_mJ_per_token": 442.55930594455157,
+    "full_physical_energy_J": null,
+    "full_physical_area_mm2": null,
+    "quality_reference_ppl": null
+  },
+  "energy_J": {
+    "DRAM_dynamic": 0.36241824153620744,
+    "SRAM_internal": 0.027641989605546795,
+    "digital": 0.0033149551619988775,
+    "random_new_macro": 0.0,
+    "RNG_endpoint_calibrated": 0.00010598697460533334,
+    "DRAM_background": 0.043987394,
+    "SRAM_leakage": 0.005090738666193101
+  },
+  "unpriced_actions": {
+    "FP32_to_BF16": 313344,
+    "fp32_mac": 301989888,
+    "SC_fixed4_P8_encode": 92160,
+    "SC_local_weight_program_byte": 2689597440,
+    "SC_W8_magnitude_AND": 1204939653120,
+    "SC_product_sign_XOR": 172134236160,
+    "SC_weighted_bitplane_compress_bit_work": 11296309248000,
+    "SC_signed_temporal_accumulate": 13447987200,
+    "SC_bucket_route": 172134236160,
+    "SC_local_weight_feed_cycle": 42024960,
+    "SC_bucket_shift_reduce": 210124800,
+    "SC_coefficient16_restore": 42024960,
+    "SC_cross_tile_add64": 41232384,
+    "SC_fixed4_GU_P8_encode": 700416,
+    "SC_true_g_signed8": 350208,
+    "SC_sigmoid_ROM9": 350208,
+    "SC_sign_and_exponent_sum": 350208,
+    "AND_rng_seed_beat": 60,
+    "AND_rng_warmup_endpoint_cycle": 50,
+    "AND_rng_save": 54720,
+    "AND_rng_native_endpoint_update": 17510400,
+    "AND_threeway_comparison": 336199680,
+    "AND_two_input_gate": 224133120,
+    "AND_rng_restore": 218880,
+    "AND_rng_release": 54720,
+    "SC_wide_RNE_BF16": 92160,
+    "rng_FFN_shared64_compare": 224133120,
+    "rng_stratum_counter_update": 3502080,
+    "rng_seed_bus_beat": 1,
+    "digital_idle_ns": 879747880.0,
+    "sc_idle_ns": 879747880.0,
+    "control_interconnect_ns": 879747880.0
+  },
+  "actions": {
+    "dram_read": 5662637568,
+    "sram_write": 375074104,
+    "sram_read": 375051500,
+    "vector_op": 21822336,
+    "nonlinear_op": 2380393,
+    "bf16_mac": 1634664448,
+    "FP32_to_BF16": 313344,
+    "dram_write": 147456,
+    "fp32_mac": 301989888,
+    "SC_fixed4_P8_encode": 92160,
+    "SC_local_weight_program_byte": 2689597440,
+    "SC_W8_magnitude_AND": 1204939653120,
+    "SC_product_sign_XOR": 172134236160,
+    "SC_weighted_bitplane_compress_bit_work": 11296309248000,
+    "SC_signed_temporal_accumulate": 13447987200,
+    "SC_bucket_route": 172134236160,
+    "SC_local_weight_feed_cycle": 42024960,
+    "SC_bucket_shift_reduce": 210124800,
+    "SC_coefficient16_restore": 42024960,
+    "SC_cross_tile_add64": 41232384,
+    "SC_fixed4_GU_P8_encode": 700416,
+    "SC_true_g_signed8": 350208,
+    "SC_sigmoid_ROM9": 350208,
+    "SC_sign_and_exponent_sum": 350208,
+    "AND_rng_seed_beat": 60,
+    "AND_rng_warmup_endpoint_cycle": 50,
+    "AND_rng_save": 54720,
+    "AND_rng_native_endpoint_update": 17510400,
+    "AND_rng_R8_word_demand": 336199680,
+    "AND_threeway_comparison": 336199680,
+    "AND_two_input_gate": 224133120,
+    "AND_rng_restore": 218880,
+    "AND_rng_release": 54720,
+    "SC_wide_RNE_BF16": 92160,
+    "rng_calibrated_endpoint_energy_pJ": 105986974.60533334,
+    "rng_FFN_shared64_compare": 224133120,
+    "rng_stratum_counter_update": 3502080,
+    "rng_sigmoid_lut_lookup": 0,
+    "rng_threshold_config_bit": 0,
+    "rng_seed_bus_beat": 1,
+    "dram_background_ns": 879747880.0,
+    "digital_idle_ns": 879747880.0,
+    "sc_idle_ns": 879747880.0,
+    "control_interconnect_ns": 879747880.0
+  },
+  "phase_ns": {
+    "embedding": 560.0,
+    "attention_norm": 80022.5,
+    "QKV_projection": 151400309.7391996,
+    "QK_head_norm": 158550.7608003905,
+    "RoPE_bias_KV_append": 102389.5,
+    "attention_core": 56928643.0,
+    "O_projection": 100831169.23919962,
+    "residual_and_ffn_norm": 109302.76080037467,
+    "FFN_gate_up": 293639670.0,
+    "FFN_nonlinear_encoding": 1436177.2391996272,
+    "FFN_AND_direct_down": 170913032.76080036,
+    "ffn_output_conversion": 74520.0,
+    "ffn_residual": 28800.0,
+    "final_norm": 2010.0,
+    "lm_head_and_argmax": 103981660.0,
+    "other_explicit_memory": 61062.5
+  },
+  "phases": [
+    {
+      "name": "embedding",
+      "token": 0,
+      "layer": null,
+      "start_ns": 0.0,
+      "end_ns": 560.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 1802.5,
+      "end_ns": 4037.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 4037.5,
+      "end_ns": 4209613.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 4209725.8122,
+      "end_ns": 4214130.0
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 4214130.0,
+      "end_ns": 4216962.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 4217485.0,
+      "end_ns": 5798860.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 5798860.5,
+      "end_ns": 8599726.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 8599726.3122,
+      "end_ns": 8602762.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 8602762.5,
+      "end_ns": 16759420.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 16759420.0,
+      "end_ns": 16799313.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 16799313.8122,
+      "end_ns": 21605280.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 21605280.0,
+      "end_ns": 21607350.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 21607350.0,
+      "end_ns": 21608150.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 21609190.0,
+      "end_ns": 21611412.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 21611412.5,
+      "end_ns": 25816976.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 25817088.3122,
+      "end_ns": 25821492.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 25821492.5,
+      "end_ns": 25824337.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 25824860.0,
+      "end_ns": 27406210.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 27406210.5,
+      "end_ns": 30207076.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 30207076.3122,
+      "end_ns": 30210112.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 30210112.5,
+      "end_ns": 38366770.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 38366770.0,
+      "end_ns": 38406663.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 38406663.8122,
+      "end_ns": 43152580.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 43152580.0,
+      "end_ns": 43154650.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 43154650.0,
+      "end_ns": 43155450.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 43156490.0,
+      "end_ns": 43158712.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 43158712.5,
+      "end_ns": 47364276.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 47364388.3122,
+      "end_ns": 47368792.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 47368792.5,
+      "end_ns": 47371637.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 47372160.0,
+      "end_ns": 48953510.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 48953510.5,
+      "end_ns": 51754376.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 51754376.3122,
+      "end_ns": 51757412.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 51757412.5,
+      "end_ns": 59914070.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 59914070.0,
+      "end_ns": 59953963.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 59953963.8122,
+      "end_ns": 64699880.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 64699880.0,
+      "end_ns": 64701950.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 64701950.0,
+      "end_ns": 64702750.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 64703790.0,
+      "end_ns": 64706012.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 64706012.5,
+      "end_ns": 68911576.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 68911688.3122,
+      "end_ns": 68916092.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 68916092.5,
+      "end_ns": 68918937.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 68919460.0,
+      "end_ns": 70500810.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 70500810.5,
+      "end_ns": 73301676.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 73301676.3122,
+      "end_ns": 73304712.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 73304712.5,
+      "end_ns": 81461370.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 81461370.0,
+      "end_ns": 81501263.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 81501263.8122,
+      "end_ns": 86247180.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 86247180.0,
+      "end_ns": 86249250.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 86249250.0,
+      "end_ns": 86250050.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 86251090.0,
+      "end_ns": 86253312.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 86253312.5,
+      "end_ns": 90458876.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 90458988.3122,
+      "end_ns": 90463392.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 90463392.5,
+      "end_ns": 90466237.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 90466760.0,
+      "end_ns": 92048110.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 92048110.5,
+      "end_ns": 94848976.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 94848976.3122,
+      "end_ns": 94852012.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 94852012.5,
+      "end_ns": 103008670.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 103008670.0,
+      "end_ns": 103048563.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 103048563.8122,
+      "end_ns": 107794480.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 107794480.0,
+      "end_ns": 107796550.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 107796550.0,
+      "end_ns": 107797350.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 107798390.0,
+      "end_ns": 107800612.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 107800612.5,
+      "end_ns": 112006176.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 112006288.3122,
+      "end_ns": 112010692.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 112010692.5,
+      "end_ns": 112013537.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 112014060.0,
+      "end_ns": 113595410.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 113595410.5,
+      "end_ns": 116396276.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 116396276.3122,
+      "end_ns": 116399312.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 116399312.5,
+      "end_ns": 124555970.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 124555970.0,
+      "end_ns": 124595863.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 124595863.8122,
+      "end_ns": 129341780.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 129341780.0,
+      "end_ns": 129343850.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 129343850.0,
+      "end_ns": 129344650.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 129345690.0,
+      "end_ns": 129347912.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 129347912.5,
+      "end_ns": 133553476.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 133553588.3122,
+      "end_ns": 133557992.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 133557992.5,
+      "end_ns": 133560837.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 133561360.0,
+      "end_ns": 135142710.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 135142710.5,
+      "end_ns": 137943576.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 137943576.3122,
+      "end_ns": 137946612.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 137946612.5,
+      "end_ns": 146103270.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 146103270.0,
+      "end_ns": 146143163.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 146143163.8122,
+      "end_ns": 150889080.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 150889080.0,
+      "end_ns": 150891150.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 150891150.0,
+      "end_ns": 150891950.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 150892990.0,
+      "end_ns": 150895212.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 150895212.5,
+      "end_ns": 155100776.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 155100888.3122,
+      "end_ns": 155105292.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 155105292.5,
+      "end_ns": 155108137.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 155108660.0,
+      "end_ns": 156690010.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 156690010.5,
+      "end_ns": 159490876.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 159490876.3122,
+      "end_ns": 159493912.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 159493912.5,
+      "end_ns": 167650570.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 167650570.0,
+      "end_ns": 167690463.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 167690463.8122,
+      "end_ns": 172436380.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 172436380.0,
+      "end_ns": 172438450.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 172438450.0,
+      "end_ns": 172439250.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 172440290.0,
+      "end_ns": 172442512.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 172442512.5,
+      "end_ns": 176648076.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 176648188.3122,
+      "end_ns": 176652592.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 176652592.5,
+      "end_ns": 176655437.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 176655960.0,
+      "end_ns": 178237310.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 178237310.5,
+      "end_ns": 181038176.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 181038176.3122,
+      "end_ns": 181041212.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 181041212.5,
+      "end_ns": 189197870.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 189197870.0,
+      "end_ns": 189237763.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 189237763.8122,
+      "end_ns": 193983680.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 193983680.0,
+      "end_ns": 193985750.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 193985750.0,
+      "end_ns": 193986550.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 193987590.0,
+      "end_ns": 193989812.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 193989812.5,
+      "end_ns": 198195376.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 198195488.3122,
+      "end_ns": 198199892.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 198199892.5,
+      "end_ns": 198202737.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 198203260.0,
+      "end_ns": 199784610.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 199784610.5,
+      "end_ns": 202585476.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 202585476.3122,
+      "end_ns": 202588512.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 202588512.5,
+      "end_ns": 210745170.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 210745170.0,
+      "end_ns": 210785063.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 210785063.8122,
+      "end_ns": 215530980.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 215530980.0,
+      "end_ns": 215533050.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 215533050.0,
+      "end_ns": 215533850.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 215534890.0,
+      "end_ns": 215537112.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 215537112.5,
+      "end_ns": 219742676.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 219742788.3122,
+      "end_ns": 219747192.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 219747192.5,
+      "end_ns": 219750037.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 219750560.0,
+      "end_ns": 221331910.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 221331910.5,
+      "end_ns": 224132776.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 224132776.3122,
+      "end_ns": 224135812.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 224135812.5,
+      "end_ns": 232292470.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 232292470.0,
+      "end_ns": 232332363.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 232332363.8122,
+      "end_ns": 237078280.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 237078280.0,
+      "end_ns": 237080350.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 237080350.0,
+      "end_ns": 237081150.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 237082190.0,
+      "end_ns": 237084412.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 237084412.5,
+      "end_ns": 241289976.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 241290088.3122,
+      "end_ns": 241294492.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 241294492.5,
+      "end_ns": 241297337.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 241297860.0,
+      "end_ns": 242879210.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 242879210.5,
+      "end_ns": 245680076.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 245680076.3122,
+      "end_ns": 245683112.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 245683112.5,
+      "end_ns": 253839770.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 253839770.0,
+      "end_ns": 253879663.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 253879663.8122,
+      "end_ns": 258625580.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 258625580.0,
+      "end_ns": 258627650.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 258627650.0,
+      "end_ns": 258628450.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 258629490.0,
+      "end_ns": 258631712.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 258631712.5,
+      "end_ns": 262837276.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 262837388.3122,
+      "end_ns": 262841792.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 262841792.5,
+      "end_ns": 262844637.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 262845160.0,
+      "end_ns": 264426510.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 264426510.5,
+      "end_ns": 267227376.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 267227376.3122,
+      "end_ns": 267230412.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 267230412.5,
+      "end_ns": 275387070.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 275387070.0,
+      "end_ns": 275426963.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 275426963.8122,
+      "end_ns": 280172880.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 280172880.0,
+      "end_ns": 280174950.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 280174950.0,
+      "end_ns": 280175750.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 280176790.0,
+      "end_ns": 280179012.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 280179012.5,
+      "end_ns": 284384576.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 284384688.3122,
+      "end_ns": 284389092.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 284389092.5,
+      "end_ns": 284391937.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 284392460.0,
+      "end_ns": 285973810.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 285973810.5,
+      "end_ns": 288774676.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 288774676.3122,
+      "end_ns": 288777712.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 288777712.5,
+      "end_ns": 296934370.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 296934370.0,
+      "end_ns": 296974263.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 296974263.8122,
+      "end_ns": 301720180.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 301720180.0,
+      "end_ns": 301722250.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 301722250.0,
+      "end_ns": 301723050.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 301724090.0,
+      "end_ns": 301726312.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 301726312.5,
+      "end_ns": 305931876.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 305931988.3122,
+      "end_ns": 305936392.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 305936392.5,
+      "end_ns": 305939237.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 305939760.0,
+      "end_ns": 307521110.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 307521110.5,
+      "end_ns": 310321976.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 310321976.3122,
+      "end_ns": 310325012.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 310325012.5,
+      "end_ns": 318481670.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 318481670.0,
+      "end_ns": 318521563.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 318521563.8122,
+      "end_ns": 323267480.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 323267480.0,
+      "end_ns": 323269550.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 323269550.0,
+      "end_ns": 323270350.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 323271390.0,
+      "end_ns": 323273612.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 323273612.5,
+      "end_ns": 327479176.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 327479288.3122,
+      "end_ns": 327483692.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 327483692.5,
+      "end_ns": 327486537.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 327487060.0,
+      "end_ns": 329068410.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 329068410.5,
+      "end_ns": 331869276.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 331869276.3122,
+      "end_ns": 331872312.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 331872312.5,
+      "end_ns": 340028970.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 340028970.0,
+      "end_ns": 340068863.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 340068863.8122,
+      "end_ns": 344814780.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 344814780.0,
+      "end_ns": 344816850.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 344816850.0,
+      "end_ns": 344817650.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 344818690.0,
+      "end_ns": 344820912.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 344820912.5,
+      "end_ns": 349026476.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 349026588.3122,
+      "end_ns": 349030992.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 349030992.5,
+      "end_ns": 349033837.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 349034360.0,
+      "end_ns": 350615710.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 350615710.5,
+      "end_ns": 353416576.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 353416576.3122,
+      "end_ns": 353419612.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 353419612.5,
+      "end_ns": 361576270.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 361576270.0,
+      "end_ns": 361616163.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 361616163.8122,
+      "end_ns": 366362080.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 366362080.0,
+      "end_ns": 366364150.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 366364150.0,
+      "end_ns": 366364950.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 366365990.0,
+      "end_ns": 366368212.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 366368212.5,
+      "end_ns": 370573776.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 370573888.3122,
+      "end_ns": 370578292.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 370578292.5,
+      "end_ns": 370581137.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 370581660.0,
+      "end_ns": 372163010.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 372163010.5,
+      "end_ns": 374963876.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 374963876.3122,
+      "end_ns": 374966912.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 374966912.5,
+      "end_ns": 383123570.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 383123570.0,
+      "end_ns": 383163463.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 383163463.8122,
+      "end_ns": 387909380.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 387909380.0,
+      "end_ns": 387911450.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 387911450.0,
+      "end_ns": 387912250.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 387913290.0,
+      "end_ns": 387915512.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 387915512.5,
+      "end_ns": 392121076.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 392121188.3122,
+      "end_ns": 392125592.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 392125592.5,
+      "end_ns": 392128437.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 392128960.0,
+      "end_ns": 393710310.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 393710310.5,
+      "end_ns": 396511176.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 396511176.3122,
+      "end_ns": 396514212.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 396514212.5,
+      "end_ns": 404670870.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 404670870.0,
+      "end_ns": 404710763.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 404710763.8122,
+      "end_ns": 409456680.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 409456680.0,
+      "end_ns": 409458750.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 409458750.0,
+      "end_ns": 409459550.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 409460590.0,
+      "end_ns": 409462812.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 409462812.5,
+      "end_ns": 413668376.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 413668488.3122,
+      "end_ns": 413672892.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 413672892.5,
+      "end_ns": 413675737.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 413676260.0,
+      "end_ns": 415257610.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 415257610.5,
+      "end_ns": 418058476.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 418058476.3122,
+      "end_ns": 418061512.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 418061512.5,
+      "end_ns": 426218170.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 426218170.0,
+      "end_ns": 426258063.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 426258063.8122,
+      "end_ns": 431003980.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 431003980.0,
+      "end_ns": 431006050.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 431006050.0,
+      "end_ns": 431006850.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 431007890.0,
+      "end_ns": 431010112.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 431010112.5,
+      "end_ns": 435215676.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 435215788.3122,
+      "end_ns": 435220192.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 435220192.5,
+      "end_ns": 435223037.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 435223560.0,
+      "end_ns": 436804910.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 436804910.5,
+      "end_ns": 439605776.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 439605776.3122,
+      "end_ns": 439608812.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 439608812.5,
+      "end_ns": 447765470.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 447765470.0,
+      "end_ns": 447805363.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 447805363.8122,
+      "end_ns": 452551280.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 452551280.0,
+      "end_ns": 452553350.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 452553350.0,
+      "end_ns": 452554150.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 452555190.0,
+      "end_ns": 452557412.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 452557412.5,
+      "end_ns": 456762976.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 456763088.3122,
+      "end_ns": 456767492.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 456767492.5,
+      "end_ns": 456770337.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 456770860.0,
+      "end_ns": 458352210.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 458352210.5,
+      "end_ns": 461153076.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 461153076.3122,
+      "end_ns": 461156112.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 461156112.5,
+      "end_ns": 469312770.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 469312770.0,
+      "end_ns": 469352663.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 469352663.8122,
+      "end_ns": 474098580.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 474098580.0,
+      "end_ns": 474100650.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 474100650.0,
+      "end_ns": 474101450.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 474102490.0,
+      "end_ns": 474104712.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 474104712.5,
+      "end_ns": 478310276.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 478310388.3122,
+      "end_ns": 478314792.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 478314792.5,
+      "end_ns": 478317637.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 478318160.0,
+      "end_ns": 479899510.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 479899510.5,
+      "end_ns": 482700376.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 482700376.3122,
+      "end_ns": 482703412.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 482703412.5,
+      "end_ns": 490860070.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 490860070.0,
+      "end_ns": 490899963.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 490899963.8122,
+      "end_ns": 495645880.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 495645880.0,
+      "end_ns": 495647950.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 495647950.0,
+      "end_ns": 495648750.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 495649790.0,
+      "end_ns": 495652012.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 495652012.5,
+      "end_ns": 499857576.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 499857688.3122,
+      "end_ns": 499862092.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 499862092.5,
+      "end_ns": 499864937.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 499865460.0,
+      "end_ns": 501446810.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 501446810.5,
+      "end_ns": 504247676.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 504247676.3122,
+      "end_ns": 504250712.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 504250712.5,
+      "end_ns": 512407370.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 512407370.0,
+      "end_ns": 512447263.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 512447263.8122,
+      "end_ns": 517193180.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 517193180.0,
+      "end_ns": 517195250.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 517195250.0,
+      "end_ns": 517196050.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 517197090.0,
+      "end_ns": 517199312.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 517199312.5,
+      "end_ns": 521404876.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 521404988.3122,
+      "end_ns": 521409392.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 521409392.5,
+      "end_ns": 521412237.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 521412760.0,
+      "end_ns": 522994110.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 522994110.5,
+      "end_ns": 525794976.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 525794976.3122,
+      "end_ns": 525798012.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 525798012.5,
+      "end_ns": 533954670.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 533954670.0,
+      "end_ns": 533994563.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 533994563.8122,
+      "end_ns": 538740480.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 538740480.0,
+      "end_ns": 538742550.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 538742550.0,
+      "end_ns": 538743350.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 538744390.0,
+      "end_ns": 538746612.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 538746612.5,
+      "end_ns": 542952176.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 542952288.3122,
+      "end_ns": 542956692.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 542956692.5,
+      "end_ns": 542959537.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 542960060.0,
+      "end_ns": 544541410.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 544541410.5,
+      "end_ns": 547342276.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 547342276.3122,
+      "end_ns": 547345312.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 547345312.5,
+      "end_ns": 555501970.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 555501970.0,
+      "end_ns": 555541863.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 555541863.8122,
+      "end_ns": 560287780.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 560287780.0,
+      "end_ns": 560289850.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 560289850.0,
+      "end_ns": 560290650.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 560291690.0,
+      "end_ns": 560293912.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 560293912.5,
+      "end_ns": 564499476.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 564499588.3122,
+      "end_ns": 564503992.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 564503992.5,
+      "end_ns": 564506837.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 564507360.0,
+      "end_ns": 566088710.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 566088710.5,
+      "end_ns": 568889576.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 568889576.3122,
+      "end_ns": 568892612.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 568892612.5,
+      "end_ns": 577049270.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 577049270.0,
+      "end_ns": 577089163.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 577089163.8122,
+      "end_ns": 581835080.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 581835080.0,
+      "end_ns": 581837150.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 581837150.0,
+      "end_ns": 581837950.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 581838990.0,
+      "end_ns": 581841212.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 581841212.5,
+      "end_ns": 586046776.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 586046888.3122,
+      "end_ns": 586051292.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 586051292.5,
+      "end_ns": 586054137.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 586054660.0,
+      "end_ns": 587636010.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 587636010.5,
+      "end_ns": 590436876.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 590436876.3122,
+      "end_ns": 590439912.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 590439912.5,
+      "end_ns": 598596570.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 598596570.0,
+      "end_ns": 598636463.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 598636463.8122,
+      "end_ns": 603382380.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 603382380.0,
+      "end_ns": 603384450.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 603384450.0,
+      "end_ns": 603385250.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 603386290.0,
+      "end_ns": 603388512.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 603388512.5,
+      "end_ns": 607594076.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 607594188.3122,
+      "end_ns": 607598592.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 607598592.5,
+      "end_ns": 607601437.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 607601960.0,
+      "end_ns": 609183310.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 609183310.5,
+      "end_ns": 611984176.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 611984176.3122,
+      "end_ns": 611987212.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 611987212.5,
+      "end_ns": 620143870.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 620143870.0,
+      "end_ns": 620183763.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 620183763.8122,
+      "end_ns": 624929680.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 624929680.0,
+      "end_ns": 624931750.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 624931750.0,
+      "end_ns": 624932550.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 624933590.0,
+      "end_ns": 624935812.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 624935812.5,
+      "end_ns": 629141376.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 629141488.3122,
+      "end_ns": 629145892.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 629145892.5,
+      "end_ns": 629148737.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 629149260.0,
+      "end_ns": 630730610.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 630730610.5,
+      "end_ns": 633531476.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 633531476.3122,
+      "end_ns": 633534512.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 633534512.5,
+      "end_ns": 641691170.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 641691170.0,
+      "end_ns": 641731063.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 641731063.8122,
+      "end_ns": 646476980.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 646476980.0,
+      "end_ns": 646479050.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 646479050.0,
+      "end_ns": 646479850.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 646480890.0,
+      "end_ns": 646483112.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 646483112.5,
+      "end_ns": 650688676.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 650688788.3122,
+      "end_ns": 650693192.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 650693192.5,
+      "end_ns": 650696037.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 650696560.0,
+      "end_ns": 652277910.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 652277910.5,
+      "end_ns": 655078776.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 655078776.3122,
+      "end_ns": 655081812.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 655081812.5,
+      "end_ns": 663238470.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 663238470.0,
+      "end_ns": 663278363.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 663278363.8122,
+      "end_ns": 668024280.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 668024280.0,
+      "end_ns": 668026350.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 668026350.0,
+      "end_ns": 668027150.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 668028190.0,
+      "end_ns": 668030412.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 668030412.5,
+      "end_ns": 672235976.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 672236088.3122,
+      "end_ns": 672240492.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 672240492.5,
+      "end_ns": 672243337.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 672243860.0,
+      "end_ns": 673825210.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 673825210.5,
+      "end_ns": 676626076.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 676626076.3122,
+      "end_ns": 676629112.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 676629112.5,
+      "end_ns": 684785770.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 684785770.0,
+      "end_ns": 684825663.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 684825663.8122,
+      "end_ns": 689571580.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 689571580.0,
+      "end_ns": 689573650.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 689573650.0,
+      "end_ns": 689574450.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 689575490.0,
+      "end_ns": 689577712.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 689577712.5,
+      "end_ns": 693783276.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 693783388.3122,
+      "end_ns": 693787792.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 693787792.5,
+      "end_ns": 693790637.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 693791160.0,
+      "end_ns": 695372510.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 695372510.5,
+      "end_ns": 698173376.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 698173376.3122,
+      "end_ns": 698176412.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 698176412.5,
+      "end_ns": 706333070.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 706333070.0,
+      "end_ns": 706372963.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 706372963.8122,
+      "end_ns": 711118880.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 711118880.0,
+      "end_ns": 711120950.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 711120950.0,
+      "end_ns": 711121750.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 711122790.0,
+      "end_ns": 711125012.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 711125012.5,
+      "end_ns": 715330576.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 715330688.3122,
+      "end_ns": 715335092.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 715335092.5,
+      "end_ns": 715337937.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 715338460.0,
+      "end_ns": 716919810.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 716919810.5,
+      "end_ns": 719720676.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 719720676.3122,
+      "end_ns": 719723712.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 719723712.5,
+      "end_ns": 727880370.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 727880370.0,
+      "end_ns": 727920263.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 727920263.8122,
+      "end_ns": 732666180.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 732666180.0,
+      "end_ns": 732668250.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 732668250.0,
+      "end_ns": 732669050.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 732670090.0,
+      "end_ns": 732672312.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 732672312.5,
+      "end_ns": 736877876.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 736877988.3122,
+      "end_ns": 736882392.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 736882392.5,
+      "end_ns": 736885237.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 736885760.0,
+      "end_ns": 738467110.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 738467110.5,
+      "end_ns": 741267976.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 741267976.3122,
+      "end_ns": 741271012.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 741271012.5,
+      "end_ns": 749427670.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 749427670.0,
+      "end_ns": 749467563.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 749467563.8122,
+      "end_ns": 754213480.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 754213480.0,
+      "end_ns": 754215550.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 754215550.0,
+      "end_ns": 754216350.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 754217390.0,
+      "end_ns": 754219612.5
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 754219612.5,
+      "end_ns": 758425176.3122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 758425288.3122,
+      "end_ns": 758429692.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 758429692.5,
+      "end_ns": 758432537.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 758433060.0,
+      "end_ns": 760014410.5
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 760014410.5,
+      "end_ns": 762815276.3122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 762815276.3122,
+      "end_ns": 762818312.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 762818312.5,
+      "end_ns": 770974970.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 770974970.0,
+      "end_ns": 771014863.8122
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 771014863.8122,
+      "end_ns": 775760780.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 775760780.0,
+      "end_ns": 775762850.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 775762850.0,
+      "end_ns": 775763650.0
+    },
+    {
+      "name": "final_norm",
+      "token": 0,
+      "layer": null,
+      "start_ns": 775764210.0,
+      "end_ns": 775766220.0
+    },
+    {
+      "name": "lm_head_and_argmax",
+      "token": 0,
+      "layer": null,
+      "start_ns": 775766220.0,
+      "end_ns": 879747880.0
+    }
+  ],
+  "resource_busy_ns": {
+    "dram_dma": 581490944.0,
+    "sram_bank:0": 196698837.55526412,
+    "sram_bank:1": 196698781.6552641,
+    "sram_bank:10": 195986771.1119889,
+    "sram_bank:11": 195986771.1119889,
+    "sram_bank:12": 195986771.1119889,
+    "sram_bank:13": 195986771.1119889,
+    "sram_bank:14": 195986771.1119889,
+    "sram_bank:15": 195986771.1119889,
+    "sram_bank:16": 195986771.1119889,
+    "sram_bank:17": 195986771.1119889,
+    "sram_bank:18": 195986771.1119889,
+    "sram_bank:19": 195986771.1119889,
+    "sram_bank:2": 196698781.6552641,
+    "sram_bank:20": 195986771.1119889,
+    "sram_bank:21": 195986771.1119889,
+    "sram_bank:22": 195985664.1119889,
+    "sram_bank:23": 195985664.1119889,
+    "sram_bank:24": 200573936.11191124,
+    "sram_bank:25": 200573936.11191124,
+    "sram_bank:26": 195985664.1119889,
+    "sram_bank:27": 195985664.1119889,
+    "sram_bank:28": 196066160.11198723,
+    "sram_bank:29": 196066160.11198723,
+    "sram_bank:3": 195991031.75518864,
+    "sram_bank:30": 196066160.11198723,
+    "sram_bank:31": 196066160.11198723,
+    "sram_bank:32": 196066160.11198723,
+    "sram_bank:33": 196066160.11198723,
+    "sram_bank:34": 196066160.11198723,
+    "sram_bank:35": 196066160.11198723,
+    "sram_bank:36": 195985664.1119889,
+    "sram_bank:37": 195985664.1119889,
+    "sram_bank:38": 195985664.1119889,
+    "sram_bank:39": 195985664.1119889,
+    "sram_bank:4": 195991031.75518864,
+    "sram_bank:40": 195985664.1119889,
+    "sram_bank:41": 195985664.1119889,
+    "sram_bank:42": 195985664.1119889,
+    "sram_bank:43": 195982510.46878913,
+    "sram_bank:44": 195982510.46878913,
+    "sram_bank:45": 195982510.46878913,
+    "sram_bank:46": 195982510.46878913,
+    "sram_bank:47": 195982510.46878913,
+    "sram_bank:48": 195982510.46878913,
+    "sram_bank:49": 195982510.46878913,
+    "sram_bank:5": 195986771.1119889,
+    "sram_bank:50": 195982510.46878913,
+    "sram_bank:51": 195982510.46878913,
+    "sram_bank:52": 195982510.46878913,
+    "sram_bank:53": 195982510.46878913,
+    "sram_bank:54": 195982510.46878913,
+    "sram_bank:55": 195982510.46878913,
+    "sram_bank:56": 195982510.46878913,
+    "sram_bank:57": 195982510.46878913,
+    "sram_bank:58": 195982510.46878913,
+    "sram_bank:59": 195982510.46878913,
+    "sram_bank:6": 195986771.1119889,
+    "sram_bank:60": 195982510.46878913,
+    "sram_bank:61": 195982510.46878913,
+    "sram_bank:62": 195982510.46878913,
+    "sram_bank:63": 195982510.46878913,
+    "sram_bank:7": 195986771.1119889,
+    "sram_bank:8": 195986771.1119889,
+    "sram_bank:9": 195986771.1119889,
+    "sram_fabric": 202760404.8031777,
+    "vector": 5374910.0,
+    "mac": 38861880.0,
+    "ffn_SC_fixed4_P8_encode": 43200.0,
+    "sc_weight_local_port": 44938800.0,
+    "rng_control": 561600.0,
+    "sc:0": 77976000.0,
+    "sc:1": 77976000.0,
+    "sc:2": 77976000.0,
+    "sc:3": 77976000.0,
+    "sc:4": 77976000.0,
+    "sc:5": 77976000.0,
+    "sc:6": 77976000.0,
+    "sc:7": 77976000.0,
+    "ffn_SC_bucket_shift_reduce": 34473600.0,
+    "ffn_SC_coefficient16_restore": 30369600.0,
+    "ffn_SC_cross_tile_add64": 13690440.0,
+    "ffn_SC_fixed4_GU_P8_encode": 218880.0,
+    "ffn_SC_true_g_signed8": 109440.0,
+    "ffn_SC_sigmoid_ROM9": 218880.0,
+    "ffn_SC_sign_and_exponent_sum": 54720.0,
+    "rng_nl_seed_port": 60050.0,
+    "rng_nl_control": 656640.0,
+    "AND_comparator_array": 37483200.0,
+    "rng_nl_stream": 37483200.0,
+    "ffn_SC_wide_RNE_BF16": 58320.0
+  },
+  "wait_ns": {
+    "dram_embedding": 0.0,
+    "sram_embedding": 2.5,
+    "sram_initial_residual": 0.0,
+    "dram_norm_weights": 0.0,
+    "sram_RMSNorm_input": 360.0,
+    "RMSNorm": 7.5,
+    "sram_RMSNorm_output": 185.0,
+    "sram_matrix_activation": 77.0,
+    "dram_weights": 0.0,
+    "sram_weight_fill": 831737.6262860335,
+    "sram_weight_consume": 753767.5,
+    "matrix_qkv": 69120.0,
+    "matrix_FP32_to_BF16": 0.0,
+    "sram_matrix_result": 278587.5,
+    "sram_QK_RMSNorm_input": 420.7608003905043,
+    "QK_RMSNorm": 2.5,
+    "sram_QK_RMSNorm_output": 87.5,
+    "sram_RoPE_bias_input": 270.0,
+    "RoPE_bias": 280.5,
+    "sram_RoPE_bias_output": 175.0,
+    "sram_KV_append_operand": 108.0,
+    "dram_KV_append": 0.0,
+    "dram_KV_fused": 0.0,
+    "sram_KV_fill": 45804.5,
+    "sram_KV_operand": 27648.0,
+    "attention_QK": 34860.5,
+    "attention_score_scale": 0.0,
+    "online_softmax": 0.0,
+    "attention_PV_exact": 0.0,
+    "online_normalize": 0.0,
+    "sram_attention_output": 90.0,
+    "matrix_o": 11520.0,
+    "sram_residual_operand": 402.7608003746718,
+    "sram_BF16_residual_input": 0.0,
+    "BF16_residual": 90.0,
+    "sram_BF16_residual_output": 360.0,
+    "sram_residual_commit": 0.0,
+    "dram_ffn_fixed_scale_table": 0.0,
+    "sram_ffn_fixed_scale_table": 252.0,
+    "sram_SC_output_exponents_to_local": 306.0,
+    "sram_SC_BF16_x": 8433.0,
+    "sram_SC_fixed_x_scale": 11393.567976448685,
+    "SC_fixed4_P8_encode": 5543.567976448685,
+    "sram_SC_x_code": 4950.0,
+    "sram_SC_x_code_to_local": 16110.432014901191,
+    "SC_local_weight_program": 398610.0,
+    "dram_weight_scales": 0.0,
+    "sram_weight_scales": 1463604.624867376,
+    "rng_ffn_save": 6443.567976448685,
+    "SC_gate_up": 0.0,
+    "SC_gate_up_source_backpressure": 0.0,
+    "SC_bucket_shift_reduce": 0.0,
+    "SC_coefficient16_restore": 0.0,
+    "sram_SC_wide_partial": 872550.0,
+    "rng_ffn_restore": 243992.01512839645,
+    "rng_ffn_release": 6120.0,
+    "SC_cross_tile_add64": 308952.0,
+    "sram_SC_g_wide": 60996.88085616939,
+    "sram_SC_u_wide": 43295.558309584856,
+    "sram_SC_fixed_gu_scale": 43295.558309584856,
+    "SC_fixed4_GU_P8_encode": 22775.558309584856,
+    "SC_true_g_signed8": 0.0,
+    "SC_sigmoid_ROM9": 0.0,
+    "SC_sign_and_exponent_sum": 0.0,
+    "sram_SC_joint_codes": 34200.0,
+    "sram_SC_joint_codes_to_local": 34332.76080037281,
+    "AND_rng_seed_and_warmup": 0.4122000001370907,
+    "AND_rng_save": 22505.14610958472,
+    "SC_AND_direct_Wd": 0.0,
+    "AND_rng_restore": 118462.23323833942,
+    "AND_rng_release": 12312.0,
+    "sram_SC_final_wide": 270.0,
+    "SC_wide_RNE_BF16": 90.0,
+    "sram_SC_final_BF16": 0.0,
+    "final_RMSNorm": 0.0,
+    "matrix_lm_head": 47487.5,
+    "sram_stream_argmax_input": 141659.92423033714,
+    "stream_argmax": 60616.77607154846
+  },
+  "events": [
+    {
+      "id": 1,
+      "stage": "dram_embedding",
+      "ready_ns": 0.0,
+      "start_ns": 0.0,
+      "end_ns": 208.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 2,
+      "stage": "dram_embedding",
+      "ready_ns": 208.0,
+      "start_ns": 208.0,
+      "end_ns": 416.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 3,
+      "stage": "dram_embedding",
+      "ready_ns": 416.0,
+      "start_ns": 416.0,
+      "end_ns": 560.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 1024,
+      "pending_bursts": 16,
+      "write": false
+    },
+    {
+      "id": 4,
+      "stage": "sram_embedding",
+      "ready_ns": 560.0,
+      "start_ns": 562.5,
+      "end_ns": 662.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:16",
+        "sram_bank:17",
+        "sram_bank:18",
+        "sram_bank:19",
+        "sram_bank:2",
+        "sram_bank:20",
+        "sram_bank:21",
+        "sram_bank:22",
+        "sram_bank:23",
+        "sram_bank:24",
+        "sram_bank:25",
+        "sram_bank:26",
+        "sram_bank:27",
+        "sram_bank:28",
+        "sram_bank:29",
+        "sram_bank:3",
+        "sram_bank:30",
+        "sram_bank:31",
+        "sram_bank:32",
+        "sram_bank:33",
+        "sram_bank:34",
+        "sram_bank:35",
+        "sram_bank:36",
+        "sram_bank:37",
+        "sram_bank:38",
+        "sram_bank:39",
+        "sram_bank:4",
+        "sram_bank:40",
+        "sram_bank:41",
+        "sram_bank:42",
+        "sram_bank:43",
+        "sram_bank:44",
+        "sram_bank:45",
+        "sram_bank:46",
+        "sram_bank:47",
+        "sram_bank:48",
+        "sram_bank:49",
+        "sram_bank:5",
+        "sram_bank:50",
+        "sram_bank:51",
+        "sram_bank:52",
+        "sram_bank:53",
+        "sram_bank:54",
+        "sram_bank:55",
+        "sram_bank:56",
+        "sram_bank:57",
+        "sram_bank:58",
+        "sram_bank:59",
+        "sram_bank:6",
+        "sram_bank:60",
+        "sram_bank:61",
+        "sram_bank:62",
+        "sram_bank:63",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "id": 5,
+      "stage": "sram_initial_residual",
+      "ready_ns": 662.5,
+      "start_ns": 662.5,
+      "end_ns": 762.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:16",
+        "sram_bank:17",
+        "sram_bank:18",
+        "sram_bank:19",
+        "sram_bank:2",
+        "sram_bank:20",
+        "sram_bank:21",
+        "sram_bank:22",
+        "sram_bank:23",
+        "sram_bank:24",
+        "sram_bank:25",
+        "sram_bank:26",
+        "sram_bank:27",
+        "sram_bank:28",
+        "sram_bank:29",
+        "sram_bank:3",
+        "sram_bank:30",
+        "sram_bank:31",
+        "sram_bank:32",
+        "sram_bank:33",
+        "sram_bank:34",
+        "sram_bank:35",
+        "sram_bank:36",
+        "sram_bank:37",
+        "sram_bank:38",
+        "sram_bank:39",
+        "sram_bank:4",
+        "sram_bank:40",
+        "sram_bank:41",
+        "sram_bank:42",
+        "sram_bank:43",
+        "sram_bank:44",
+        "sram_bank:45",
+        "sram_bank:46",
+        "sram_bank:47",
+        "sram_bank:48",
+        "sram_bank:49",
+        "sram_bank:5",
+        "sram_bank:50",
+        "sram_bank:51",
+        "sram_bank:52",
+        "sram_bank:53",
+        "sram_bank:54",
+        "sram_bank:55",
+        "sram_bank:56",
+        "sram_bank:57",
+        "sram_bank:58",
+        "sram_bank:59",
+        "sram_bank:6",
+        "sram_bank:60",
+        "sram_bank:61",
+        "sram_bank:62",
+        "sram_bank:63",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "id": 6,
+      "stage": "dram_norm_weights",
+      "ready_ns": 762.5,
+      "start_ns": 762.5,
+      "end_ns": 970.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 7,
+      "stage": "dram_norm_weights",
+      "ready_ns": 970.5,
+      "start_ns": 970.5,
+      "end_ns": 1178.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 8,
+      "stage": "dram_norm_weights",
+      "ready_ns": 1178.5,
+      "start_ns": 1178.5,
+      "end_ns": 1386.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 9,
+      "stage": "dram_norm_weights",
+      "ready_ns": 1386.5,
+      "start_ns": 1386.5,
+      "end_ns": 1594.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 10,
+      "stage": "dram_norm_weights",
+      "ready_ns": 1594.5,
+      "start_ns": 1594.5,
+      "end_ns": 1802.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 11,
+      "stage": "sram_RMSNorm_input",
+      "ready_ns": 1802.5,
+      "start_ns": 1812.5,
+      "end_ns": 1912.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:16",
+        "sram_bank:17",
+        "sram_bank:18",
+        "sram_bank:19",
+        "sram_bank:2",
+        "sram_bank:20",
+        "sram_bank:21",
+        "sram_bank:22",
+        "sram_bank:23",
+        "sram_bank:24",
+        "sram_bank:25",
+        "sram_bank:26",
+        "sram_bank:27",
+        "sram_bank:28",
+        "sram_bank:29",
+        "sram_bank:3",
+        "sram_bank:30",
+        "sram_bank:31",
+        "sram_bank:32",
+        "sram_bank:33",
+        "sram_bank:34",
+        "sram_bank:35",
+        "sram_bank:36",
+        "sram_bank:37",
+        "sram_bank:38",
+        "sram_bank:39",
+        "sram_bank:4",
+        "sram_bank:40",
+        "sram_bank:41",
+        "sram_bank:42",
+        "sram_bank:43",
+        "sram_bank:44",
+        "sram_bank:45",
+        "sram_bank:46",
+        "sram_bank:47",
+        "sram_bank:48",
+        "sram_bank:49",
+        "sram_bank:5",
+        "sram_bank:50",
+        "sram_bank:51",
+        "sram_bank:52",
+        "sram_bank:53",
+        "sram_bank:54",
+        "sram_bank:55",
+        "sram_bank:56",
+        "sram_bank:57",
+        "sram_bank:58",
+        "sram_bank:59",
+        "sram_bank:6",
+        "sram_bank:60",
+        "sram_bank:61",
+        "sram_bank:62",
+        "sram_bank:63",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": false,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "id": 12,
+      "stage": "RMSNorm",
+      "ready_ns": 1912.5,
+      "start_ns": 1920.0,
+      "end_ns": 3930.0,
+      "resources": [
+        "vector"
+      ],
+      "vector_ops": 12800,
+      "nonlinear_ops": 1
+    },
+    {
+      "id": 13,
+      "stage": "sram_RMSNorm_output",
+      "ready_ns": 3930.0,
+      "start_ns": 3937.5,
+      "end_ns": 4037.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:16",
+        "sram_bank:17",
+        "sram_bank:18",
+        "sram_bank:19",
+        "sram_bank:2",
+        "sram_bank:20",
+        "sram_bank:21",
+        "sram_bank:22",
+        "sram_bank:23",
+        "sram_bank:24",
+        "sram_bank:25",
+        "sram_bank:26",
+        "sram_bank:27",
+        "sram_bank:28",
+        "sram_bank:29",
+        "sram_bank:3",
+        "sram_bank:30",
+        "sram_bank:31",
+        "sram_bank:32",
+        "sram_bank:33",
+        "sram_bank:34",
+        "sram_bank:35",
+        "sram_bank:36",
+        "sram_bank:37",
+        "sram_bank:38",
+        "sram_bank:39",
+        "sram_bank:4",
+        "sram_bank:40",
+        "sram_bank:41",
+        "sram_bank:42",
+        "sram_bank:43",
+        "sram_bank:44",
+        "sram_bank:45",
+        "sram_bank:46",
+        "sram_bank:47",
+        "sram_bank:48",
+        "sram_bank:49",
+        "sram_bank:5",
+        "sram_bank:50",
+        "sram_bank:51",
+        "sram_bank:52",
+        "sram_bank:53",
+        "sram_bank:54",
+        "sram_bank:55",
+        "sram_bank:56",
+        "sram_bank:57",
+        "sram_bank:58",
+        "sram_bank:59",
+        "sram_bank:6",
+        "sram_bank:60",
+        "sram_bank:61",
+        "sram_bank:62",
+        "sram_bank:63",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "id": 14,
+      "stage": "sram_matrix_activation",
+      "ready_ns": 4037.5,
+      "start_ns": 4037.5,
+      "end_ns": 4137.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:16",
+        "sram_bank:17",
+        "sram_bank:18",
+        "sram_bank:19",
+        "sram_bank:2",
+        "sram_bank:20",
+        "sram_bank:21",
+        "sram_bank:22",
+        "sram_bank:23",
+        "sram_bank:24",
+        "sram_bank:25",
+        "sram_bank:26",
+        "sram_bank:27",
+        "sram_bank:28",
+        "sram_bank:29",
+        "sram_bank:3",
+        "sram_bank:30",
+        "sram_bank:31",
+        "sram_bank:32",
+        "sram_bank:33",
+        "sram_bank:34",
+        "sram_bank:35",
+        "sram_bank:36",
+        "sram_bank:37",
+        "sram_bank:38",
+        "sram_bank:39",
+        "sram_bank:4",
+        "sram_bank:40",
+        "sram_bank:41",
+        "sram_bank:42",
+        "sram_bank:43",
+        "sram_bank:44",
+        "sram_bank:45",
+        "sram_bank:46",
+        "sram_bank:47",
+        "sram_bank:48",
+        "sram_bank:49",
+        "sram_bank:5",
+        "sram_bank:50",
+        "sram_bank:51",
+        "sram_bank:52",
+        "sram_bank:53",
+        "sram_bank:54",
+        "sram_bank:55",
+        "sram_bank:56",
+        "sram_bank:57",
+        "sram_bank:58",
+        "sram_bank:59",
+        "sram_bank:6",
+        "sram_bank:60",
+        "sram_bank:61",
+        "sram_bank:62",
+        "sram_bank:63",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": false,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "id": 15,
+      "stage": "dram_weights",
+      "ready_ns": 4137.5,
+      "start_ns": 4137.5,
+      "end_ns": 4345.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 16,
+      "stage": "dram_weights",
+      "ready_ns": 4345.5,
+      "start_ns": 4345.5,
+      "end_ns": 4553.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 17,
+      "stage": "dram_weights",
+      "ready_ns": 4553.5,
+      "start_ns": 4553.5,
+      "end_ns": 4761.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 18,
+      "stage": "dram_weights",
+      "ready_ns": 4761.5,
+      "start_ns": 4761.5,
+      "end_ns": 4969.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 19,
+      "stage": "dram_weights",
+      "ready_ns": 4969.5,
+      "start_ns": 4969.5,
+      "end_ns": 5177.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 20,
+      "stage": "dram_weights",
+      "ready_ns": 5177.5,
+      "start_ns": 5177.5,
+      "end_ns": 5385.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 21,
+      "stage": "dram_weights",
+      "ready_ns": 5385.5,
+      "start_ns": 5385.5,
+      "end_ns": 5593.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 22,
+      "stage": "dram_weights",
+      "ready_ns": 5593.5,
+      "start_ns": 5593.5,
+      "end_ns": 5801.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 23,
+      "stage": "dram_weights",
+      "ready_ns": 5801.5,
+      "start_ns": 5801.5,
+      "end_ns": 6009.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 24,
+      "stage": "dram_weights",
+      "ready_ns": 6009.5,
+      "start_ns": 6009.5,
+      "end_ns": 6217.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 25,
+      "stage": "dram_weights",
+      "ready_ns": 6217.5,
+      "start_ns": 6217.5,
+      "end_ns": 6425.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 26,
+      "stage": "dram_weights",
+      "ready_ns": 6425.5,
+      "start_ns": 6425.5,
+      "end_ns": 6633.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 27,
+      "stage": "dram_weights",
+      "ready_ns": 6633.5,
+      "start_ns": 6633.5,
+      "end_ns": 6841.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 28,
+      "stage": "dram_weights",
+      "ready_ns": 6841.5,
+      "start_ns": 6841.5,
+      "end_ns": 7049.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 29,
+      "stage": "dram_weights",
+      "ready_ns": 7049.5,
+      "start_ns": 7049.5,
+      "end_ns": 7257.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 30,
+      "stage": "dram_weights",
+      "ready_ns": 7257.5,
+      "start_ns": 7257.5,
+      "end_ns": 7465.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 31,
+      "stage": "dram_weights",
+      "ready_ns": 7465.5,
+      "start_ns": 7465.5,
+      "end_ns": 7673.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 32,
+      "stage": "dram_weights",
+      "ready_ns": 7673.5,
+      "start_ns": 7673.5,
+      "end_ns": 7881.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 33,
+      "stage": "dram_weights",
+      "ready_ns": 7881.5,
+      "start_ns": 7881.5,
+      "end_ns": 8089.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 34,
+      "stage": "dram_weights",
+      "ready_ns": 8089.5,
+      "start_ns": 8089.5,
+      "end_ns": 8297.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 35,
+      "stage": "dram_weights",
+      "ready_ns": 8297.5,
+      "start_ns": 8297.5,
+      "end_ns": 8505.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 36,
+      "stage": "dram_weights",
+      "ready_ns": 8505.5,
+      "start_ns": 8505.5,
+      "end_ns": 8713.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 37,
+      "stage": "dram_weights",
+      "ready_ns": 8713.5,
+      "start_ns": 8713.5,
+      "end_ns": 8921.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 38,
+      "stage": "dram_weights",
+      "ready_ns": 8921.5,
+      "start_ns": 8921.5,
+      "end_ns": 9129.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 39,
+      "stage": "dram_weights",
+      "ready_ns": 9129.5,
+      "start_ns": 9129.5,
+      "end_ns": 9337.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 40,
+      "stage": "dram_weights",
+      "ready_ns": 9337.5,
+      "start_ns": 9337.5,
+      "end_ns": 9545.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 41,
+      "stage": "dram_weights",
+      "ready_ns": 9545.5,
+      "start_ns": 9545.5,
+      "end_ns": 9753.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 42,
+      "stage": "dram_weights",
+      "ready_ns": 9753.5,
+      "start_ns": 9753.5,
+      "end_ns": 9961.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 43,
+      "stage": "dram_weights",
+      "ready_ns": 9961.5,
+      "start_ns": 9961.5,
+      "end_ns": 10169.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 44,
+      "stage": "dram_weights",
+      "ready_ns": 10169.5,
+      "start_ns": 10169.5,
+      "end_ns": 10377.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 45,
+      "stage": "sram_weight_fill",
+      "ready_ns": 10377.5,
+      "start_ns": 10387.5,
+      "end_ns": 11367.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:16",
+        "sram_bank:17",
+        "sram_bank:18",
+        "sram_bank:19",
+        "sram_bank:2",
+        "sram_bank:20",
+        "sram_bank:21",
+        "sram_bank:22",
+        "sram_bank:23",
+        "sram_bank:24",
+        "sram_bank:25",
+        "sram_bank:26",
+        "sram_bank:27",
+        "sram_bank:28",
+        "sram_bank:29",
+        "sram_bank:3",
+        "sram_bank:30",
+        "sram_bank:31",
+        "sram_bank:32",
+        "sram_bank:33",
+        "sram_bank:34",
+        "sram_bank:35",
+        "sram_bank:36",
+        "sram_bank:37",
+        "sram_bank:38",
+        "sram_bank:39",
+        "sram_bank:4",
+        "sram_bank:40",
+        "sram_bank:41",
+        "sram_bank:42",
+        "sram_bank:43",
+        "sram_bank:44",
+        "sram_bank:45",
+        "sram_bank:46",
+        "sram_bank:47",
+        "sram_bank:48",
+        "sram_bank:49",
+        "sram_bank:5",
+        "sram_bank:50",
+        "sram_bank:51",
+        "sram_bank:52",
+        "sram_bank:53",
+        "sram_bank:54",
+        "sram_bank:55",
+        "sram_bank:56",
+        "sram_bank:57",
+        "sram_bank:58",
+        "sram_bank:59",
+        "sram_bank:6",
+        "sram_bank:60",
+        "sram_bank:61",
+        "sram_bank:62",
+        "sram_bank:63",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 61440,
+      "physical_bytes": 61440,
+      "bank_words": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ]
+    },
+    {
+      "id": 46,
+      "stage": "sram_weight_consume",
+      "ready_ns": 11367.5,
+      "start_ns": 11375.0,
+      "end_ns": 12355.0,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:16",
+        "sram_bank:17",
+        "sram_bank:18",
+        "sram_bank:19",
+        "sram_bank:2",
+        "sram_bank:20",
+        "sram_bank:21",
+        "sram_bank:22",
+        "sram_bank:23",
+        "sram_bank:24",
+        "sram_bank:25",
+        "sram_bank:26",
+        "sram_bank:27",
+        "sram_bank:28",
+        "sram_bank:29",
+        "sram_bank:3",
+        "sram_bank:30",
+        "sram_bank:31",
+        "sram_bank:32",
+        "sram_bank:33",
+        "sram_bank:34",
+        "sram_bank:35",
+        "sram_bank:36",
+        "sram_bank:37",
+        "sram_bank:38",
+        "sram_bank:39",
+        "sram_bank:4",
+        "sram_bank:40",
+        "sram_bank:41",
+        "sram_bank:42",
+        "sram_bank:43",
+        "sram_bank:44",
+        "sram_bank:45",
+        "sram_bank:46",
+        "sram_bank:47",
+        "sram_bank:48",
+        "sram_bank:49",
+        "sram_bank:5",
+        "sram_bank:50",
+        "sram_bank:51",
+        "sram_bank:52",
+        "sram_bank:53",
+        "sram_bank:54",
+        "sram_bank:55",
+        "sram_bank:56",
+        "sram_bank:57",
+        "sram_bank:58",
+        "sram_bank:59",
+        "sram_bank:6",
+        "sram_bank:60",
+        "sram_bank:61",
+        "sram_bank:62",
+        "sram_bank:63",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": false,
+      "bytes": 61440,
+      "physical_bytes": 61440,
+      "bank_words": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ]
+    },
+    {
+      "id": 47,
+      "stage": "matrix_qkv",
+      "ready_ns": 12355.0,
+      "start_ns": 12360.0,
+      "end_ns": 12980.0,
+      "resources": [
+        "mac"
+      ],
+      "macs": 30720
+    },
+    {
+      "id": 48,
+      "stage": "matrix_FP32_to_BF16",
+      "ready_ns": 12980.0,
+      "start_ns": 12980.0,
+      "end_ns": 12990.0,
+      "resources": [
+        "vector"
+      ],
+      "vector_ops": 12,
+      "nonlinear_ops": 0
+    },
+    {
+      "id": 49,
+      "stage": "sram_matrix_result",
+      "ready_ns": 12990.0,
+      "start_ns": 13000.0,
+      "end_ns": 13026.3122,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 24,
+      "physical_bytes": 32,
+      "bank_words": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 50,
+      "stage": "dram_weights",
+      "ready_ns": 12355.0,
+      "start_ns": 12355.0,
+      "end_ns": 12563.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 51,
+      "stage": "dram_weights",
+      "ready_ns": 12563.0,
+      "start_ns": 12563.0,
+      "end_ns": 12771.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 52,
+      "stage": "dram_weights",
+      "ready_ns": 12771.0,
+      "start_ns": 12771.0,
+      "end_ns": 12979.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 53,
+      "stage": "dram_weights",
+      "ready_ns": 12979.0,
+      "start_ns": 12979.0,
+      "end_ns": 13187.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 54,
+      "stage": "dram_weights",
+      "ready_ns": 13187.0,
+      "start_ns": 13187.0,
+      "end_ns": 13395.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 55,
+      "stage": "dram_weights",
+      "ready_ns": 13395.0,
+      "start_ns": 13395.0,
+      "end_ns": 13603.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 56,
+      "stage": "dram_weights",
+      "ready_ns": 13603.0,
+      "start_ns": 13603.0,
+      "end_ns": 13811.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 57,
+      "stage": "dram_weights",
+      "ready_ns": 13811.0,
+      "start_ns": 13811.0,
+      "end_ns": 14019.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 58,
+      "stage": "dram_weights",
+      "ready_ns": 14019.0,
+      "start_ns": 14019.0,
+      "end_ns": 14227.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 59,
+      "stage": "dram_weights",
+      "ready_ns": 14227.0,
+      "start_ns": 14227.0,
+      "end_ns": 14435.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 60,
+      "stage": "dram_weights",
+      "ready_ns": 14435.0,
+      "start_ns": 14435.0,
+      "end_ns": 14643.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 61,
+      "stage": "dram_weights",
+      "ready_ns": 14643.0,
+      "start_ns": 14643.0,
+      "end_ns": 14851.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 62,
+      "stage": "dram_weights",
+      "ready_ns": 14851.0,
+      "start_ns": 14851.0,
+      "end_ns": 15059.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 63,
+      "stage": "dram_weights",
+      "ready_ns": 15059.0,
+      "start_ns": 15059.0,
+      "end_ns": 15267.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 64,
+      "stage": "dram_weights",
+      "ready_ns": 15267.0,
+      "start_ns": 15267.0,
+      "end_ns": 15475.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 65,
+      "stage": "dram_weights",
+      "ready_ns": 15475.0,
+      "start_ns": 15475.0,
+      "end_ns": 15683.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 66,
+      "stage": "dram_weights",
+      "ready_ns": 15683.0,
+      "start_ns": 15683.0,
+      "end_ns": 15891.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 67,
+      "stage": "dram_weights",
+      "ready_ns": 15891.0,
+      "start_ns": 15891.0,
+      "end_ns": 16099.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 68,
+      "stage": "dram_weights",
+      "ready_ns": 16099.0,
+      "start_ns": 16099.0,
+      "end_ns": 16307.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 69,
+      "stage": "dram_weights",
+      "ready_ns": 16307.0,
+      "start_ns": 16307.0,
+      "end_ns": 16515.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 70,
+      "stage": "dram_weights",
+      "ready_ns": 16515.0,
+      "start_ns": 16515.0,
+      "end_ns": 16723.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 71,
+      "stage": "dram_weights",
+      "ready_ns": 16723.0,
+      "start_ns": 16723.0,
+      "end_ns": 16931.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 72,
+      "stage": "dram_weights",
+      "ready_ns": 16931.0,
+      "start_ns": 16931.0,
+      "end_ns": 17139.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 73,
+      "stage": "dram_weights",
+      "ready_ns": 17139.0,
+      "start_ns": 17139.0,
+      "end_ns": 17347.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 74,
+      "stage": "dram_weights",
+      "ready_ns": 17347.0,
+      "start_ns": 17347.0,
+      "end_ns": 17555.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 75,
+      "stage": "dram_weights",
+      "ready_ns": 17555.0,
+      "start_ns": 17555.0,
+      "end_ns": 17763.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 76,
+      "stage": "dram_weights",
+      "ready_ns": 17763.0,
+      "start_ns": 17763.0,
+      "end_ns": 17971.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 77,
+      "stage": "dram_weights",
+      "ready_ns": 17971.0,
+      "start_ns": 17971.0,
+      "end_ns": 18179.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 78,
+      "stage": "dram_weights",
+      "ready_ns": 18179.0,
+      "start_ns": 18179.0,
+      "end_ns": 18387.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 79,
+      "stage": "dram_weights",
+      "ready_ns": 18387.0,
+      "start_ns": 18387.0,
+      "end_ns": 18595.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 80,
+      "stage": "sram_weight_fill",
+      "ready_ns": 18595.0,
+      "start_ns": 18600.0,
+      "end_ns": 19580.0,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:16",
+        "sram_bank:17",
+        "sram_bank:18",
+        "sram_bank:19",
+        "sram_bank:2",
+        "sram_bank:20",
+        "sram_bank:21",
+        "sram_bank:22",
+        "sram_bank:23",
+        "sram_bank:24",
+        "sram_bank:25",
+        "sram_bank:26",
+        "sram_bank:27",
+        "sram_bank:28",
+        "sram_bank:29",
+        "sram_bank:3",
+        "sram_bank:30",
+        "sram_bank:31",
+        "sram_bank:32",
+        "sram_bank:33",
+        "sram_bank:34",
+        "sram_bank:35",
+        "sram_bank:36",
+        "sram_bank:37",
+        "sram_bank:38",
+        "sram_bank:39",
+        "sram_bank:4",
+        "sram_bank:40",
+        "sram_bank:41",
+        "sram_bank:42",
+        "sram_bank:43",
+        "sram_bank:44",
+        "sram_bank:45",
+        "sram_bank:46",
+        "sram_bank:47",
+        "sram_bank:48",
+        "sram_bank:49",
+        "sram_bank:5",
+        "sram_bank:50",
+        "sram_bank:51",
+        "sram_bank:52",
+        "sram_bank:53",
+        "sram_bank:54",
+        "sram_bank:55",
+        "sram_bank:56",
+        "sram_bank:57",
+        "sram_bank:58",
+        "sram_bank:59",
+        "sram_bank:6",
+        "sram_bank:60",
+        "sram_bank:61",
+        "sram_bank:62",
+        "sram_bank:63",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 61440,
+      "physical_bytes": 61440,
+      "bank_words": [
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60,
+        60
+      ]
+    }
+  ],
+  "event_count": 4199355,
+  "stage_busy_ns": {
+    "dram_embedding": 560.0,
+    "sram_embedding": 100.0,
+    "sram_initial_residual": 100.0,
+    "dram_norm_weights": 42032.0,
+    "sram_RMSNorm_input": 7200.0,
+    "RMSNorm": 144720.0,
+    "sram_RMSNorm_output": 7200.0,
+    "sram_matrix_activation": 9028.0,
+    "dram_weights": 543861760.0,
+    "sram_weight_fill": 86164920.0,
+    "sram_weight_consume": 86164920.0,
+    "matrix_qkv": 11427840.0,
+    "matrix_FP32_to_BF16": 299520.0,
+    "sram_matrix_result": 1121268.090800786,
+    "sram_QK_RMSNorm_input": 6480.0,
+    "QK_RMSNorm": 145080.0,
+    "sram_QK_RMSNorm_output": 6480.0,
+    "sram_RoPE_bias_input": 7632.0,
+    "RoPE_bias": 86400.0,
+    "sram_RoPE_bias_output": 7632.0,
+    "sram_KV_append_operand": 3744.0,
+    "dram_KV_append": 14976.0,
+    "dram_KV_fused": 30670848.0,
+    "sram_KV_fill": 4810752.0,
+    "sram_KV_operand": 4810752.0,
+    "attention_QK": 5990400.0,
+    "attention_score_scale": 368640.0,
+    "online_softmax": 4147200.0,
+    "attention_PV_exact": 5990400.0,
+    "online_normalize": 25920.0,
+    "sram_attention_output": 5328.0,
+    "matrix_o": 7603200.0,
+    "sram_residual_operand": 7200.0,
+    "sram_BF16_residual_input": 7200.0,
+    "BF16_residual": 28800.0,
+    "sram_BF16_residual_output": 7200.0,
+    "sram_residual_commit": 7200.0,
+    "dram_ffn_fixed_scale_table": 6048.0,
+    "sram_ffn_fixed_scale_table": 1494.0,
+    "sram_SC_output_exponents_to_local": 1107.0,
+    "sram_SC_BF16_x": 42606.43200000085,
+    "sram_SC_fixed_x_scale": 42606.43200000085,
+    "SC_fixed4_P8_encode": 43200.0,
+    "sram_SC_x_code": 37889.56800000038,
+    "sram_SC_x_code_to_local": 42606.43200000085,
+    "SC_local_weight_program": 44938800.0,
+    "dram_weight_scales": 6894720.0,
+    "sram_weight_scales": 4588271.999995223,
+    "rng_ffn_save": 14400.0,
+    "SC_gate_up": 39398400.0,
+    "SC_gate_up_source_backpressure": 1094400.0,
+    "SC_bucket_shift_reduce": 34473600.0,
+    "SC_coefficient16_restore": 30369600.0,
+    "sram_SC_wide_partial": 13659408.0,
+    "rng_ffn_restore": 532800.0,
+    "rng_ffn_release": 14400.0,
+    "SC_cross_tile_add64": 13690440.0,
+    "sram_SC_g_wide": 161904.44159999696,
+    "sram_SC_u_wide": 161904.44159999696,
+    "sram_SC_fixed_gu_scale": 161904.44159999696,
+    "SC_fixed4_GU_P8_encode": 218880.0,
+    "SC_true_g_signed8": 109440.0,
+    "SC_sigmoid_ROM9": 218880.0,
+    "SC_sign_and_exponent_sum": 54720.0,
+    "sram_SC_joint_codes": 143980.35839999447,
+    "sram_SC_joint_codes_to_local": 161904.44159999696,
+    "AND_rng_seed_and_warmup": 60050.0,
+    "AND_rng_save": 109440.0,
+    "SC_AND_direct_Wd": 37483200.0,
+    "AND_rng_restore": 437760.0,
+    "AND_rng_release": 109440.0,
+    "sram_SC_final_wide": 12240.0,
+    "SC_wide_RNE_BF16": 58320.0,
+    "sram_SC_final_BF16": 3600.0,
+    "final_RMSNorm": 2010.0,
+    "matrix_lm_head": 7850040.0,
+    "sram_stream_argmax_input": 374640.7235999469,
+    "stream_argmax": 126620.0
+  },
+  "sampler_audit": [],
+  "trace_truncated": true,
+  "random_interface": {
+    "backend": "integrated_issue95_q256_same_clock",
+    "clock_ns": 10.0,
+    "clock_hz": 100000000.0,
+    "random_stream_SRAM_bytes": 0,
+    "extra_probability_copy_bytes": 0,
+    "extra_random_FIFO_bytes": 0,
+    "actual_backend_executed": true,
+    "source_counts": {
+      "ffn_saves": 1440,
+      "ffn_streams": 54720,
+      "ffn_samples_consumed": 3502080,
+      "ffn_threshold_bits_used": 7004160,
+      "ffn_shared64_comparisons": 224133120,
+      "stratum_counter_updates": 3502080,
+      "ffn_restores": 53280,
+      "ffn_releases": 1440
+    },
+    "max_parallel_lanes": {},
+    "frame_output_sha256": "0eb42b7b8a02878bbaa76101b22e2eaefe4dabb55b8acf620ec9d5d72886371b",
+    "network": {
+      "clock_ns": 10.0,
+      "cycles": 87974788,
+      "elapsed_ns": 879747880.0,
+      "ports": {
+        "ffn": {
+          "kind": "lfsr32",
+          "profile": {
+            "state_bits": 32,
+            "lanes": 1,
+            "steps": 16,
+            "warmup": 0,
+            "correlation": "single_word_lfsr; temporal dependence"
+          },
+          "cycles": 87974788,
+          "counts": {
+            "clock_edges": 87974788,
+            "seed_wait_cycles": 12,
+            "output_stall_cycles": 0,
+            "request_stall_cycles": 0,
+            "reseed_deferred_cycles": 0,
+            "seed_loads": 1,
+            "seed_state_bits_loaded": 32,
+            "checkpoint_bits_written": 46080,
+            "commands": 56160,
+            "frames_generated": 3502080,
+            "prng_updates": 3502080,
+            "recurrence_steps": 56033280,
+            "random_word_bits_generated": 28016640,
+            "threshold_comparisons": 3502080,
+            "output_register_bits_written": 31518720,
+            "shared_mapping_evaluations": 0,
+            "responses_consumed": 3502080,
+            "restore_bits_loaded": 1704960
+          },
+          "energy_J": null,
+          "area_mm2": null,
+          "status": "operation counts only; calibrate with delivered RTL"
+        }
+      },
+      "seed_transport": {
+        "ffn": {
+          "bus_beats": 1,
+          "bus_bits": 32,
+          "padding_bits_discarded": 0,
+          "packets_delivered": 1
+        }
+      },
+      "seed_events": [
+        {
+          "cycle": 11,
+          "port": "ffn",
+          "epoch": 1,
+          "seed_hex": "0xd82c07cd",
+          "rejected": false,
+          "provenance": "explicit deterministic TLM seed fixture; not physical entropy"
+        }
+      ],
+      "seed_source": "explicit deterministic TLM seed fixture; not physical entropy",
+      "seed_word_transcript": [
+        {
+          "cycle": 10,
+          "word": 3626764237
+        }
+      ],
+      "energy_J": null,
+      "area_mm2": null
+    },
+    "simulated_idle_edges_jumped": 84361825,
+    "calibrated_endpoint_two_state_energy_J": 0.00010598697460533334,
+    "calibrated_endpoint_area_mm2": 0.003154320000000011,
+    "endpoint_costs": [
+      {
+        "port": "ffn",
+        "kind": "lfsr32",
+        "active_cycles": 3502080,
+        "idle_cycles": 84472708,
+        "conditional_energy_J": 0.00010598697460533334,
+        "area_mm2": 0.003154320000000011
+      }
+    ],
+    "ppa_provenance": {
+      "job": "38322118",
+      "node_nm": 55,
+      "corner": "SS",
+      "voltage_V": 1.08,
+      "temperature_C": 125,
+      "clock_MHz": 100,
+      "status": "CALCULATED_PROVISIONAL",
+      "source_pr": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/111",
+      "source_directory": "digital_circuit_simulation_registry/records",
+      "warnings": [
+        "PWR-981/vector mapping and library table extrapolation",
+        "zero-delay gate/PT; no CTS/SPEF/SDF",
+        "stream/idle two-state interpolation; seed-event incremental work not calibrated",
+        "FFN uses LFSR endpoint only; shared64 frontend remains separately unpriced"
+      ]
+    },
+    "full_random_energy_J": null,
+    "full_random_area_mm2": null,
+    "limitations": [
+      "native Issue95 ports persist across all layers/queries; original protocol unchanged",
+      "8-bit q/256 sigmoid table alters numerical response; no inherited model PPL",
+      "endpoint stream/idle interpolation is conditional, not new PT or per-action calibration",
+      "FFN64 frontend/stratum logic, LUT/threshold programming, global seed arbiter/material and wires unpriced",
+      "fixture seed material is reproducible simulation input, not certified physical entropy",
+      "FFN timing consumes actual source words but matrix/activation tensors are still macro TLM, not inference"
+    ]
+  },
+  "SRAM": {
+    "traffic": {
+      "write_logical_bytes": 6001038208,
+      "write_physical_bytes": 6001185664,
+      "write_words": 375074104,
+      "read_logical_bytes": 6000738176,
+      "read_physical_bytes": 6000824000,
+      "read_words": 375051500
+    },
+    "calibrated_macro": {
+      "area_mm2": 0.312163310025,
+      "read_internal_pJ": 23.0831,
+      "write_internal_pJ": 50.6157,
+      "ce_off_leakage_W": 4.520772e-05,
+      "ce_on_leakage_W": 4.5226079999999996e-05,
+      "read_access_ns": 9.5878,
+      "write_access_ns": 6.3122,
+      "read_cycle_ns": 10.9192,
+      "write_cycle_ns": 11.0613,
+      "source": "exact_vendor_library",
+      "id": "F",
+      "corner": "SS",
+      "energy_boundary": "macro internal dynamic; Q load/clock tree/wrapper excluded",
+      "Q_hold": "not newly verified",
+      "slew_ns": 0.1,
+      "Q_load_pF": 0.02,
+      "requested_clock_hz": 80000000,
+      "period_only_eligible": true,
+      "minimum_cycle_ns": 11.0613,
+      "clock_note": "period screening only; no interface STA guarantee"
+    },
+    "banks": 64,
+    "macros": 128,
+    "configured_bytes": 8388608,
+    "word_bytes": 16,
+    "clock_hz": 80000000,
+    "bank_peak_GBs": 81.92,
+    "fabric_combined_read_write_GBs": 64.0,
+    "macros_per_bank": 2,
+    "physical_bytes": 8388608,
+    "area_mm2": 39.9569036832,
+    "leakage_J": 0.005090738666193101,
+    "scheduling": "blocking descriptor per addressed banks + shared fabric",
+    "exclusions": [
+      "wrapper/mux/CTS",
+      "verified CDC implementation",
+      "optimized bank interleaving"
+    ],
+    "layout": {
+      "weight_ping": {
+        "address": 0,
+        "bytes": 65536
+      },
+      "weight_pong": {
+        "address": 65536,
+        "bytes": 65536
+      },
+      "normalized_activation_and_attention_output": {
+        "address": 131072,
+        "bytes": 65536
+      },
+      "matrix_output_and_wide_partials": {
+        "address": 196608,
+        "bytes": 155648
+      },
+      "nonlinear_P8_sign_exponent_codes": {
+        "address": 352256,
+        "bytes": 65536
+      },
+      "frozen_FFN_scale_tables": {
+        "address": 417792,
+        "bytes": 1376
+      },
+      "FFN_tile_coefficients": {
+        "address": 419200,
+        "bytes": 32
+      },
+      "live_BF16_residual": {
+        "address": 419264,
+        "bytes": 5120
+      },
+      "one_shared_encoded_input_group": {
+        "address": 424384,
+        "bytes": 128
+      },
+      "one_KV_group_summary": {
+        "address": 424512,
+        "bytes": 66048
+      },
+      "one_KV_group_logits": {
+        "address": 490560,
+        "bytes": 16
+      },
+      "candidate_maps": {
+        "address": 490624,
+        "bytes": 16
+      },
+      "one_head_histogram": {
+        "address": 490688,
+        "bytes": 16
+      },
+      "sampler_output_indices_word_stride": {
+        "address": 490752,
+        "bytes": 16
+      },
+      "GQA_sorted_V_worklists": {
+        "address": 490816,
+        "bytes": 16
+      },
+      "K_V_tile": {
+        "address": 490880,
+        "bytes": 65536
+      }
+    },
+    "reserved_peak_bytes": 556416
+  },
+  "DRAM": {
+    "backend": "link_estimate_NOT_DRAMSys",
+    "traffic": {
+      "embedding_logical_bytes": 5120,
+      "embedding_physical_bytes": 5120,
+      "embedding_bursts": 80,
+      "DMA_descriptors": 211564,
+      "legacy_link_drain_windows": 2844586,
+      "norm_weights_logical_bytes": 392192,
+      "norm_weights_physical_bytes": 392192,
+      "norm_weights_bursts": 6128,
+      "weights_logical_bytes": 5354946560,
+      "weights_physical_bytes": 5354946560,
+      "weights_bursts": 83671040,
+      "KV_append_logical_bytes": 147456,
+      "KV_append_physical_bytes": 147456,
+      "KV_append_bursts": 2304,
+      "KV_fused_logical_bytes": 301989888,
+      "KV_fused_physical_bytes": 301989888,
+      "KV_fused_bursts": 4718592,
+      "ffn_fixed_scale_table_logical_bytes": 49536,
+      "ffn_fixed_scale_table_physical_bytes": 50688,
+      "ffn_fixed_scale_table_bursts": 792,
+      "weight_scales_logical_bytes": 2626560,
+      "weight_scales_physical_bytes": 5253120,
+      "weight_scales_bursts": 82080
+    },
+    "max_pending": 32,
+    "queue_policy": "bounded windows; DMA barriers",
+    "energy_status": "configured pJ/byte + background; not a new DRAMPower run"
+  },
+  "attention_activity": {
+    "possible_QK_positions": 2359296,
+    "possible_K_group_positions": 589824,
+    "possible_V_group_positions": 589824,
+    "QK_logical_positions": 2359296,
+    "K_unique_group_positions": 589824,
+    "V_unique_group_positions": 589824
+  },
+  "row_receipts": [],
+  "FFN_activity": {
+    "fixed_x_encoded_values": 92160,
+    "SC_64x64_tiles": 656640,
+    "SC_product_trials": 172134236160,
+    "SC_accepted_stream_samples": 5253120,
+    "SC_4bucket_tiles": 437760,
+    "wide_partial_values": 42024960,
+    "fixed_gu_encoded_values": 700416,
+    "online_absmax_calls": 0,
+    "SC_7bucket_tiles": 218880
+  },
+  "input_provenance": {
+    "kind": "SYNTHETIC_GAUSSIAN_LOGITS",
+    "model_ppl_validated": false,
+    "warning": "routing/memory scenario only; NOT measured Qwen attention or PPL"
+  },
+  "FFN_contract": {
+    "contract": "fixed4_and_direct",
+    "numerical_status": "GU fixed-point coefficient/rounding macro pending bit-exact validation; no inherited PPL",
+    "integer_bound_condition": "offline compiler must fold tile scales into unsigned16 coefficient and output-group common exponent; compiler/rounding equivalence pending",
+    "local_state": {
+      "weight_hold_bytes": 32768,
+      "dma_prefetch_buffer_bytes": 0,
+      "weight_response_buffer_bytes": 2048,
+      "tile_coefficient_and_exponent_bits": 256,
+      "output_group_exponent_bits": 5504,
+      "temporal_counter_bits": 71680,
+      "reduction_pipeline_bits": 262144,
+      "input_probability_state_bits": 1024,
+      "nonlinear_probability_state_bits": 2048,
+      "sigmoid_ROM_bits": 36864,
+      "full_area_mm2": null,
+      "full_energy_J": null
+    },
+    "nonlinear_random": {
+      "kind": "finite_local_independent_R8_macro",
+      "actual_endpoint_executed": false,
+      "counts": {
+        "seed_beats": 60,
+        "warmup_endpoint_cycles": 50,
+        "save": 5472,
+        "streams": 27360,
+        "samples": 1751040,
+        "R8_words": 336199680,
+        "useful_random_low_bits": 2129264640,
+        "joint_cell_visits": 1751040,
+        "producer_batches": 1751040,
+        "native_generated_R8_words": 350208000,
+        "discarded_R8_words": 14008320,
+        "restore": 21888,
+        "release": 5472
+      },
+      "config": {
+        "words_per_cycle": 192,
+        "response_latency": 2,
+        "stream_II": 2,
+        "command_cycles": 2,
+        "state_bits_per_endpoint": 177,
+        "words_per_endpoint": 20,
+        "seed_word_bits": 32,
+        "seed_word_interval_cycles": 100,
+        "warmup_cycles": 5,
+        "reseed_interval_cycles": 100000000
+      },
+      "clock_hz": 100000000,
+      "endpoint_count": 10,
+      "live_and_saved_PRNG_state_bits": 3540,
+      "partial_response_register_bits": 0,
+      "random_stream_SRAM_bytes": 0,
+      "probability_storage": "one live encoded64 group, charged separately",
+      "area_mm2": null,
+      "energy_J": null,
+      "replay": "same saved frame for every Wd output wave; reseed only between frames",
+      "limitations": [
+        "independent per-lane/axis outputs are a statistical interface requirement",
+        "new nonlinear endpoint mapping/seed-port implementation and PPA not validated",
+        "separate finite seed service macro; shared global seed arbitration not connected",
+        "not an unlimited-rate source and not the existing shared64 input source"
+      ]
+    },
+    "weight_pipeline": {
+      "schedule": "legacy",
+      "counts": {},
+      "records": [],
+      "pending": false,
+      "overlap": "next DMA only; SRAM fill/program after previous restore; one local weight bank",
+      "buffer": "one explicit full-wave DMA response macro; unknown PPA"
+    },
+    "unknown_macro_ppa": [
+      "fixed4 encoders",
+      "GU fixed-point restore/rounding",
+      "signed8 field/ROM",
+      "weighted compressor and 4/7 bucket counters",
+      "local weight interface",
+      "direct AND fanout",
+      "coefficient multiplier / wide accumulators / BF16 RNE",
+      "nonlinear local RNG"
+    ],
+    "scale_policy": "offline frozen x/g/u tables; no token absmax; channel order unchanged",
+    "weight_policy": "fixed sign+magnitude W8, one packed byte per weight; offline tables",
+    "stream_policy": "no z materialization; same event replayed for all Wd output waves",
+    "gu_width_bound": 48,
+    "down_width_bound": 58
+  },
+  "sampler_local_state": {},
+  "calibration_sha256": "3f3f3b2bfbc16a0b97fbf14766c6f94b6a45cd3001702089a728b805c98b09a6",
+  "limitations": [
+    "regular arithmetic timing is configured, not calibrated whole-core timing",
+    "SC B4/short-stream counter/scale-restoration power and area not characterized",
+    "stationary weight tile interface is an unverified macro contract, not free DFF replacement",
+    "FFN input-group-major gu/encoding/AND-direct-down barriers; not optimality claim",
+    "one KV group at a time; no head/group parallelism inferred from array size",
+    "actual finite Issue95 backend with q/256 response; complete random PPA still incomplete",
+    "parallel sampling sink owns SRAM fabric for complete FSM; conservative blocking mapping",
+    "SRAM blocking descriptors and DRAM bounded windows, no arbitrary multi-DMA reorder",
+    "warm K summaries live in DRAM; context prefill/build cost excluded, steady updates included",
+    "all published timing/traffic cases synthetic unless complete user logit trace supplied",
+    "no new PPL, GPU performance, RTL/PT or silicon measurements"
+  ],
+  "wall_seconds": 104.5,
+  "execution_commit": "0855eab497659964a594c91c5358b4729f4e5476",
+  "case": "sram64_link"
+}

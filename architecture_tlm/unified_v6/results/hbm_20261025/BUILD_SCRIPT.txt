@@ -1,0 +1,18 @@
+import hashlib,json,pathlib,shlex,subprocess
+root=pathlib.Path('/home/Hongjie_Zeng/projects/pbit-scheduling-issue186-20261025/hbm_e7505ee4');old=pathlib.Path('/home/Hongjie_Zeng/projects/pbit-pv-stream-v6-20261016/build');out=root/'build';out.mkdir(exist_ok=False)
+source=root/'source/architecture_tlm/unified_v6/probes/dramsys_bridge/bridge_sg_v6_audit.cpp'
+flags={}
+for l in (old/'CMakeFiles/pbit_dram_bridge_sg_v6_audit.dir/flags.make').read_text().splitlines():
+ if ' = ' in l:
+  k,v=l.split(' = ',1);flags[k]=shlex.split(v)
+obj=out/'bridge.o';exe=out/'pbit_hbm_bridge'
+cc=['/usr/bin/c++']+flags['CXX_DEFINES']+flags['CXX_INCLUDES']+flags['CXX_FLAGS']+['-c',str(source),'-o',str(obj)]
+subprocess.run(cc,check=True)
+link=shlex.split((old/'CMakeFiles/pbit_dram_bridge_sg_v6_audit.dir/link.txt').read_text())
+link=[str(obj) if x.endswith('bridge_sg_v6_audit.cpp.o') else x for x in link]
+link[link.index('-o')+1]=str(exe)
+subprocess.run(link,cwd=old,check=True)
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+libs=[old/'upstream/src/libdramsys.so',old/'_deps/systemclanguage-build/src/libsystemc.so.3.0.2',old/'_deps/drampower-build/src/DRAMPower/libDRAMPower.so']
+(out/'MANIFEST.json').write_text(json.dumps(dict(status='completed',compile=cc,link=link,cwd=str(old),source_sha256=sha(source),executable_sha256=sha(exe),dependencies={str(p):sha(p) for p in libs}),indent=2)+'\n')
+subprocess.run(['/usr/bin/python3','-B','work/jieruiz/186/probe_hbm.py','--bridge',str(exe),'--old-bridge',str(old/'pbit_dram_bridge_sg_v6_audit'),'--output',str(root/'probe')],cwd=root/'source',check=True)

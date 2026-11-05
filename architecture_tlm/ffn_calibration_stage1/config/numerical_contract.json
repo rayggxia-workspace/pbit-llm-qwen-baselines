@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "issue": 193,
+  "boundary": "binary input events through exact counting, integer scale restore and local signed64 partial sum; no PRNG/comparator/SRAM/nonlinearity/BF16",
+  "reset": "synchronous active-low; no timing false path",
+  "weights": {
+    "encoding": "7-bit unsigned magnitude plus independent sign",
+    "range": [
+      -127,
+      127
+    ],
+    "stable_for": "frame acceptance through output acceptance",
+    "stored_inside": false
+  },
+  "counter": {
+    "N": 64,
+    "M": [
+      1,
+      8
+    ],
+    "BINS": [
+      4,
+      7
+    ],
+    "T": [
+      64,
+      128
+    ],
+    "bin_id_bits": 3,
+    "operation": "C[m,b] = sum_t sum_i (sample[t,i] * w_mag7[m,i] * (-1)^(w_sign[m,i] XOR x_sign[i]) * (bin_id[i]==b))",
+    "count_widths": {
+      "T64": 20,
+      "T128": 21
+    },
+    "arithmetic": "exact, no OR grouping",
+    "reduction": "six registered pairwise levels",
+    "sample_II_cycles": 1,
+    "sample_edge_to_count_update_cycles": 6
+  },
+  "restore": {
+    "operation": "S=sum_b C[b] << (2*(BINS-1-b)); delta=RNE_signed(S*coeff16 / 2^rshift6)",
+    "relative_shifts": {
+      "B4": [
+        6,
+        4,
+        2,
+        0
+      ],
+      "B7": [
+        12,
+        10,
+        8,
+        6,
+        4,
+        2,
+        0
+      ]
+    },
+    "output": "signed64",
+    "rounding": "nearest, ties to even",
+    "latency_input_to_earliest_output_handshake": {
+      "B4_C20": 8,
+      "B7_C21": 10
+    },
+    "II_no_stall": 1,
+    "coeff_compiler": "not supplied: calibration/quantization scales and 1/T must be mapped to coeff/rshift and quality-verified separately"
+  },
+  "accumulator": {
+    "width": 64,
+    "overflow": "saturate plus per-result and sticky flags",
+    "clear": "new sum starts from delta",
+    "II_no_stall": 1,
+    "feedback_cycles": 1
+  },
+  "chain": {
+    "M": 1,
+    "frames_outstanding": 1,
+    "no_stall_last_sample_to_output_handshake": {
+      "B4_T64": 16,
+      "B7_T128": 18
+    },
+    "no_stall_frame_accept_to_output_handshake": {
+      "B4_T64": 80,
+      "B7_T128": 146
+    }
+  },
+  "technology_status": "Functional only until user DC/STA results received; all stated II/latencies are register/handshake counts, not proof of 100MHz"
+}

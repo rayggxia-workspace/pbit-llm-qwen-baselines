@@ -1,0 +1,6800 @@
+{
+  "schema_version": 6,
+  "model": {
+    "architectures": [
+      "Qwen3ForCausalLM"
+    ],
+    "vocab_size": 151936,
+    "hidden_size": 2560,
+    "intermediate_size": 9728,
+    "num_hidden_layers": 36,
+    "num_attention_heads": 32,
+    "num_key_value_heads": 8,
+    "head_dim": 128,
+    "attention_bias": false,
+    "max_position_embeddings": 40960,
+    "tie_word_embeddings": true,
+    "model_type": "qwen3",
+    "qk_norm": true
+  },
+  "config": {
+    "core_hz": 100000000,
+    "context_tokens": 2048,
+    "decode_tokens": 1,
+    "seed": 0,
+    "macs_per_cycle": 512,
+    "mac_startup_cycles": 2,
+    "vector_lanes": 64,
+    "nonlinear_lanes": 16,
+    "weight_chunk_bytes": 65536,
+    "double_buffer": true,
+    "trace_event_limit": 80,
+    "row_receipt_limit": 16,
+    "ffn": {
+      "mode": "sc",
+      "bins": 4,
+      "samples": 64,
+      "strata": 64,
+      "engines": 8,
+      "startup_cycles": 1,
+      "sample_II_cycles": 1,
+      "drain_cycles": 8,
+      "algorithm": "fixed4_and_direct",
+      "nonlinear_samples": 64,
+      "joint_strata": [
+        4,
+        2,
+        4
+      ],
+      "weight_bits": 8,
+      "x_scale_offsets": [
+        0,
+        2,
+        4,
+        6
+      ],
+      "gu_scale_offsets": [
+        1,
+        3,
+        5,
+        7
+      ],
+      "encoder_lanes": 64,
+      "encoder_latency": 3,
+      "encoder_II": 1,
+      "field_lanes": 64,
+      "field_latency": 2,
+      "lut_lanes": 16,
+      "lut_latency": 1,
+      "restore_lanes": 16,
+      "restore_latency": 6,
+      "restore_II": 1,
+      "accumulate_lanes": 32,
+      "accumulate_latency": 2,
+      "bf16_lanes": 16,
+      "bf16_latency": 3,
+      "local_weight_bytes": 32768,
+      "local_weight_load_bytes_per_cycle": 256,
+      "weight_feed": "resident_macro",
+      "weight_schedule": "dma_prefetch",
+      "counter_pipeline_bits_per_lane": 512,
+      "wide_bits": 64,
+      "coefficient_bits": 16,
+      "rng_nl": {
+        "words_per_cycle": 192,
+        "response_latency": 2,
+        "stream_II": 2,
+        "command_cycles": 2,
+        "state_bits_per_endpoint": 177,
+        "words_per_endpoint": 20,
+        "seed_word_bits": 32,
+        "seed_word_interval_cycles": 100,
+        "warmup_cycles": 5,
+        "reseed_interval_cycles": 100000000
+      },
+      "numeric_status": "GU fixed-point coefficient/rounding macro pending bit-exact validation; no inherited PPL"
+    },
+    "attention": {
+      "mode": "exact",
+      "tile_tokens": 128,
+      "samples": null,
+      "sample_ratio": 0.0625,
+      "minimum_samples": 1,
+      "winner_update_multiplier": 8,
+      "candidate_blocks": 8,
+      "selection": "fixed_budget",
+      "selector_bias": -1.5,
+      "selector_temperature": 1.0,
+      "synthetic_logit_std": 1.5,
+      "trace_file": null,
+      "selector_calibration": null,
+      "serial_burn": 16,
+      "serial_spacing": 4,
+      "serial_cycles_per_attempt": 6
+    },
+    "random": {
+      "backend": "integrated_service",
+      "clock_hz": 100000000,
+      "reseed_cycles": 100000000,
+      "seed_word_interval_cycles": 100,
+      "seed_startup_cycles": 10,
+      "sigmoid_step": 0.125,
+      "lut_lanes": 16,
+      "config_lanes": 64,
+      "cpu_fast": true,
+      "startup_cycles": 1,
+      "frame_cycles": 1,
+      "restore_cycles": 1
+    },
+    "sampler_v5": {
+      "drive_bits": 32,
+      "drive_step": null,
+      "max_proposals_per_sample": 128,
+      "offset_update_mode": "per_candidate",
+      "source_command_cycles": 1,
+      "source_settle_cycles": 2,
+      "source_capture_cycles": 1,
+      "source_min_interval_cycles": 1,
+      "tree_levels_per_cycle": 2,
+      "burn_updates": 0,
+      "record_events": false,
+      "energy_pJ": {},
+      "idle_W": null,
+      "area": {}
+    },
+    "sram": {
+      "capacity_bytes": 8388608,
+      "banks": 16,
+      "word_bytes": 16,
+      "macro_depth": 4096,
+      "corner": "SS",
+      "clock_hz": 80000000,
+      "fabric_GBs": 16.0,
+      "cdc_ns": 20.0,
+      "calibration": "llama7b/runtime/results/sram_calibration_v1_20261016/calibration.json"
+    },
+    "dram": {
+      "backend": "link",
+      "bandwidth_GBs": 16.0,
+      "latency_ns": 80.0,
+      "burst_bytes": 64,
+      "max_pending": 32
+    },
+    "prices_pJ": {
+      "bf16_mac": 2.0,
+      "fp32_mac": null,
+      "vector_op": 1.0,
+      "nonlinear_op": 10.0,
+      "dram_read": 64.0,
+      "dram_write": 64.0,
+      "dram_background_ns": 50.0,
+      "FP32_to_BF16": null,
+      "weight_scale_op": null,
+      "SC_encode_op": null,
+      "SC_restore_op": null,
+      "digital_idle_ns": null,
+      "sc_idle_ns": null,
+      "control_interconnect_ns": null,
+      "rng_seed": null,
+      "rng_frame": null,
+      "rng_restore": null,
+      "rng_uniform_bit": null,
+      "rng_biased_response": null,
+      "selector_compare": null,
+      "budget_compare_exchange": null,
+      "candidate_compact": null,
+      "V_selection_add": 0.0
+    },
+    "cost_policy": {
+      "full_physical_PPA": "unknown",
+      "measured_anchor": "55nm SS SRAM macro internal energy/area/timing table",
+      "conditional_prices": "legacy digital 2pJ BF16 MAC,1pJ vector,10pJ nonlinear; DRAM64pJ/B,50mW background",
+      "null_prices": "uncharacterized components, NOT zero energy",
+      "V_selection_add": "activity alias only: energy already in vector_op; do not price twice",
+      "SC_restore": "counts signed bit-plane reconstruction/bin alignment/W scale application; no duplicate conversion fee",
+      "SRAM": "internal energy only; do not overlap with a whole-memory measured price",
+      "memory_hierarchy": "DRAM -> shared banked SRAM ping/pong -> full-width local SC weight macro -> counters; no entire-layer residency assumption"
+    },
+    "model_record": {
+      "model": "qwen3_4b",
+      "model_id": "Qwen/Qwen3-4B",
+      "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+      "source_sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-4B/blob/1cfa9a7208912126459214e8b04321603b3df60c/config.json",
+      "posttrained": true,
+      "scope": "architecture shape only; no new weight/data/PPL run",
+      "shape": {
+        "architectures": [
+          "Qwen3ForCausalLM"
+        ],
+        "vocab_size": 151936,
+        "hidden_size": 2560,
+        "intermediate_size": 9728,
+        "num_hidden_layers": 36,
+        "num_attention_heads": 32,
+        "num_key_value_heads": 8,
+        "head_dim": 128,
+        "attention_bias": false,
+        "max_position_embeddings": 40960,
+        "tie_word_embeddings": true,
+        "model_type": "qwen3",
+        "qk_norm": true
+      }
+    },
+    "memory_profile": "prefetch"
+  },
+  "scope": "batch1 full decoder decode + embedding/final norm/lm_head/greedy selection; prior context already exists; no prefill/TTFT",
+  "implementation": "bounded tile/resource event TLM; NOT full-chip cycle-accurate simulation",
+  "metrics": {
+    "TPOT_ms": 1343.78726,
+    "token_ms": [
+      1343.78726
+    ],
+    "tokens_per_second": 0.7441654120161847,
+    "elapsed_ns": 1343787260.0,
+    "priced_subtotal_mJ_per_token": 468.5015766690187,
+    "full_physical_energy_J": null,
+    "full_physical_area_mm2": null,
+    "quality_reference_ppl": null
+  },
+  "energy_J": {
+    "DRAM_dynamic": 0.36241824153620744,
+    "SRAM_internal": 0.027641989605546795,
+    "digital": 0.0033149551619988775,
+    "random_new_macro": 0.0,
+    "RNG_endpoint_calibrated": 0.0001610839169906667,
+    "DRAM_background": 0.067189363,
+    "SRAM_leakage": 0.007775943448274842
+  },
+  "unpriced_actions": {
+    "FP32_to_BF16": 313344,
+    "fp32_mac": 301989888,
+    "SC_fixed4_P8_encode": 92160,
+    "SC_DMA_response_buffer_write_byte": 2689597440,
+    "SC_DMA_response_buffer_read_byte": 2689597440,
+    "SC_local_weight_program_byte": 2689597440,
+    "SC_W8_magnitude_AND": 1204939653120,
+    "SC_product_sign_XOR": 172134236160,
+    "SC_weighted_bitplane_compress_bit_work": 11296309248000,
+    "SC_signed_temporal_accumulate": 13447987200,
+    "SC_bucket_route": 172134236160,
+    "SC_local_weight_feed_cycle": 42024960,
+    "SC_bucket_shift_reduce": 210124800,
+    "SC_coefficient16_restore": 42024960,
+    "SC_cross_tile_add64": 41232384,
+    "SC_fixed4_GU_P8_encode": 700416,
+    "SC_true_g_signed8": 350208,
+    "SC_sigmoid_ROM9": 350208,
+    "SC_sign_and_exponent_sum": 350208,
+    "AND_rng_seed_beat": 120,
+    "AND_rng_warmup_endpoint_cycle": 100,
+    "AND_rng_save": 54720,
+    "AND_rng_native_endpoint_update": 17510400,
+    "AND_threeway_comparison": 336199680,
+    "AND_two_input_gate": 224133120,
+    "AND_rng_restore": 218880,
+    "AND_rng_release": 54720,
+    "SC_wide_RNE_BF16": 92160,
+    "rng_FFN_shared64_compare": 224133120,
+    "rng_stratum_counter_update": 3502080,
+    "rng_seed_bus_beat": 2,
+    "digital_idle_ns": 1343787260.0,
+    "sc_idle_ns": 1343787260.0,
+    "control_interconnect_ns": 1343787260.0
+  },
+  "actions": {
+    "dram_read": 5662637568,
+    "sram_write": 375074104,
+    "sram_read": 375051500,
+    "vector_op": 21822336,
+    "nonlinear_op": 2380393,
+    "bf16_mac": 1634664448,
+    "FP32_to_BF16": 313344,
+    "dram_write": 147456,
+    "fp32_mac": 301989888,
+    "SC_fixed4_P8_encode": 92160,
+    "SC_DMA_response_buffer_write_byte": 2689597440,
+    "SC_DMA_response_buffer_read_byte": 2689597440,
+    "SC_local_weight_program_byte": 2689597440,
+    "SC_W8_magnitude_AND": 1204939653120,
+    "SC_product_sign_XOR": 172134236160,
+    "SC_weighted_bitplane_compress_bit_work": 11296309248000,
+    "SC_signed_temporal_accumulate": 13447987200,
+    "SC_bucket_route": 172134236160,
+    "SC_local_weight_feed_cycle": 42024960,
+    "SC_bucket_shift_reduce": 210124800,
+    "SC_coefficient16_restore": 42024960,
+    "SC_cross_tile_add64": 41232384,
+    "SC_fixed4_GU_P8_encode": 700416,
+    "SC_true_g_signed8": 350208,
+    "SC_sigmoid_ROM9": 350208,
+    "SC_sign_and_exponent_sum": 350208,
+    "AND_rng_seed_beat": 120,
+    "AND_rng_warmup_endpoint_cycle": 100,
+    "AND_rng_save": 54720,
+    "AND_rng_native_endpoint_update": 17510400,
+    "AND_rng_R8_word_demand": 336199680,
+    "AND_threeway_comparison": 336199680,
+    "AND_two_input_gate": 224133120,
+    "AND_rng_restore": 218880,
+    "AND_rng_release": 54720,
+    "SC_wide_RNE_BF16": 92160,
+    "rng_calibrated_endpoint_energy_pJ": 161083916.99066672,
+    "rng_FFN_shared64_compare": 224133120,
+    "rng_stratum_counter_update": 3502080,
+    "rng_sigmoid_lut_lookup": 0,
+    "rng_threshold_config_bit": 0,
+    "rng_seed_bus_beat": 2,
+    "dram_background_ns": 1343787260.0,
+    "digital_idle_ns": 1343787260.0,
+    "sc_idle_ns": 1343787260.0,
+    "control_interconnect_ns": 1343787260.0
+  },
+  "phase_ns": {
+    "embedding": 560.0,
+    "attention_norm": 97547.5,
+    "QKV_projection": 257393657.23919952,
+    "QK_head_norm": 193380.76080046874,
+    "RoPE_bias_KV_append": 143658.0,
+    "attention_core": 85237661.0,
+    "O_projection": 171693245.23919952,
+    "residual_and_ffn_norm": 162492.7608004678,
+    "FFN_gate_up": 422924850.0,
+    "FFN_nonlinear_encoding": 1710306.0,
+    "FFN_AND_direct_down": 227191954.0,
+    "ffn_output_conversion": 117540.0,
+    "ffn_residual": 64800.0,
+    "final_norm": 2015.0,
+    "lm_head_and_argmax": 176784570.0,
+    "other_explicit_memory": 69022.5
+  },
+  "phases": [
+    {
+      "name": "embedding",
+      "token": 0,
+      "layer": null,
+      "start_ns": 0.0,
+      "end_ns": 560.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 2292.5,
+      "end_ns": 4990.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 4990.0,
+      "end_ns": 7154813.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 7154925.8122,
+      "end_ns": 7160297.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 7160297.5,
+      "end_ns": 7164288.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 7165018.5,
+      "end_ns": 9532707.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 9532707.0,
+      "end_ns": 14301963.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 14301963.8122,
+      "end_ns": 14306477.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 14306477.5,
+      "end_ns": 26054390.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 26054390.0,
+      "end_ns": 26101898.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 26101898.5,
+      "end_ns": 32469500.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 32469500.0,
+      "end_ns": 32472765.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 0,
+      "start_ns": 32472765.0,
+      "end_ns": 32474565.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 32475605.0,
+      "end_ns": 32478315.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 32478315.0,
+      "end_ns": 39628138.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 39628250.8122,
+      "end_ns": 39633622.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 39633622.5,
+      "end_ns": 39637613.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 39638343.5,
+      "end_ns": 42006057.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 42006057.0,
+      "end_ns": 46775313.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 46775313.8122,
+      "end_ns": 46779827.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 46779827.5,
+      "end_ns": 58527740.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 58527740.0,
+      "end_ns": 58575248.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 58575248.5,
+      "end_ns": 64882800.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 64882800.0,
+      "end_ns": 64886065.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 1,
+      "start_ns": 64886065.0,
+      "end_ns": 64887865.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 64888905.0,
+      "end_ns": 64891615.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 64891615.0,
+      "end_ns": 72041438.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 72041550.8122,
+      "end_ns": 72046922.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 72046922.5,
+      "end_ns": 72050913.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 72051643.5,
+      "end_ns": 74419357.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 74419357.0,
+      "end_ns": 79188613.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 79188613.8122,
+      "end_ns": 79193127.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 79193127.5,
+      "end_ns": 90941040.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 90941040.0,
+      "end_ns": 90988548.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 90988548.5,
+      "end_ns": 97296100.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 97296100.0,
+      "end_ns": 97299365.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 2,
+      "start_ns": 97299365.0,
+      "end_ns": 97301165.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 97302205.0,
+      "end_ns": 97304915.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 97304915.0,
+      "end_ns": 104454738.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 104454850.8122,
+      "end_ns": 104460222.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 104460222.5,
+      "end_ns": 104464213.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 104464943.5,
+      "end_ns": 106832657.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 106832657.0,
+      "end_ns": 111601913.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 111601913.8122,
+      "end_ns": 111606427.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 111606427.5,
+      "end_ns": 123354340.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 123354340.0,
+      "end_ns": 123401848.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 123401848.5,
+      "end_ns": 129709400.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 129709400.0,
+      "end_ns": 129712665.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 3,
+      "start_ns": 129712665.0,
+      "end_ns": 129714465.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 129715505.0,
+      "end_ns": 129718215.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 129718215.0,
+      "end_ns": 136868038.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 136868150.8122,
+      "end_ns": 136873522.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 136873522.5,
+      "end_ns": 136877513.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 136878243.5,
+      "end_ns": 139245957.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 139245957.0,
+      "end_ns": 144015213.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 144015213.8122,
+      "end_ns": 144019727.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 144019727.5,
+      "end_ns": 155767640.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 155767640.0,
+      "end_ns": 155815148.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 155815148.5,
+      "end_ns": 162122700.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 162122700.0,
+      "end_ns": 162125965.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 4,
+      "start_ns": 162125965.0,
+      "end_ns": 162127765.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 162128805.0,
+      "end_ns": 162131515.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 162131515.0,
+      "end_ns": 169281338.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 169281450.8122,
+      "end_ns": 169286822.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 169286822.5,
+      "end_ns": 169290813.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 169291543.5,
+      "end_ns": 171659257.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 171659257.0,
+      "end_ns": 176428513.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 176428513.8122,
+      "end_ns": 176433027.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 176433027.5,
+      "end_ns": 188180940.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 188180940.0,
+      "end_ns": 188228448.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 188228448.5,
+      "end_ns": 194536000.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 194536000.0,
+      "end_ns": 194539265.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 5,
+      "start_ns": 194539265.0,
+      "end_ns": 194541065.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 194542105.0,
+      "end_ns": 194544815.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 194544815.0,
+      "end_ns": 201694638.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 201694750.8122,
+      "end_ns": 201700122.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 201700122.5,
+      "end_ns": 201704113.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 201704843.5,
+      "end_ns": 204072557.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 204072557.0,
+      "end_ns": 208841813.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 208841813.8122,
+      "end_ns": 208846327.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 208846327.5,
+      "end_ns": 220594240.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 220594240.0,
+      "end_ns": 220641748.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 220641748.5,
+      "end_ns": 226949300.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 226949300.0,
+      "end_ns": 226952565.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 6,
+      "start_ns": 226952565.0,
+      "end_ns": 226954365.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 226955405.0,
+      "end_ns": 226958115.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 226958115.0,
+      "end_ns": 234107938.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 234108050.8122,
+      "end_ns": 234113422.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 234113422.5,
+      "end_ns": 234117413.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 234118143.5,
+      "end_ns": 236485857.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 236485857.0,
+      "end_ns": 241255113.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 241255113.8122,
+      "end_ns": 241259627.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 241259627.5,
+      "end_ns": 253007540.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 253007540.0,
+      "end_ns": 253055048.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 253055048.5,
+      "end_ns": 259362600.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 259362600.0,
+      "end_ns": 259365865.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 7,
+      "start_ns": 259365865.0,
+      "end_ns": 259367665.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 259368705.0,
+      "end_ns": 259371415.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 259371415.0,
+      "end_ns": 266521238.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 266521350.8122,
+      "end_ns": 266526722.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 266526722.5,
+      "end_ns": 266530713.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 266531443.5,
+      "end_ns": 268899157.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 268899157.0,
+      "end_ns": 273668413.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 273668413.8122,
+      "end_ns": 273672927.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 273672927.5,
+      "end_ns": 285420840.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 285420840.0,
+      "end_ns": 285468348.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 285468348.5,
+      "end_ns": 291775900.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 291775900.0,
+      "end_ns": 291779165.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 8,
+      "start_ns": 291779165.0,
+      "end_ns": 291780965.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 291782005.0,
+      "end_ns": 291784715.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 291784715.0,
+      "end_ns": 298934538.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 298934650.8122,
+      "end_ns": 298940022.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 298940022.5,
+      "end_ns": 298944013.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 298944743.5,
+      "end_ns": 301312457.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 301312457.0,
+      "end_ns": 306081713.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 306081713.8122,
+      "end_ns": 306086227.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 306086227.5,
+      "end_ns": 317834140.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 317834140.0,
+      "end_ns": 317881648.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 317881648.5,
+      "end_ns": 324189200.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 324189200.0,
+      "end_ns": 324192465.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 9,
+      "start_ns": 324192465.0,
+      "end_ns": 324194265.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 324195305.0,
+      "end_ns": 324198015.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 324198015.0,
+      "end_ns": 331347838.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 331347950.8122,
+      "end_ns": 331353322.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 331353322.5,
+      "end_ns": 331357313.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 331358043.5,
+      "end_ns": 333725757.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 333725757.0,
+      "end_ns": 338495013.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 338495013.8122,
+      "end_ns": 338499527.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 338499527.5,
+      "end_ns": 350247440.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 350247440.0,
+      "end_ns": 350294948.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 350294948.5,
+      "end_ns": 356602500.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 356602500.0,
+      "end_ns": 356605765.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 10,
+      "start_ns": 356605765.0,
+      "end_ns": 356607565.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 356608605.0,
+      "end_ns": 356611315.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 356611315.0,
+      "end_ns": 363761138.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 363761250.8122,
+      "end_ns": 363766622.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 363766622.5,
+      "end_ns": 363770613.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 363771343.5,
+      "end_ns": 366139057.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 366139057.0,
+      "end_ns": 370908313.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 370908313.8122,
+      "end_ns": 370912827.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 370912827.5,
+      "end_ns": 382660740.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 382660740.0,
+      "end_ns": 382708248.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 382708248.5,
+      "end_ns": 389015800.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 389015800.0,
+      "end_ns": 389019065.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 11,
+      "start_ns": 389019065.0,
+      "end_ns": 389020865.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 389021905.0,
+      "end_ns": 389024615.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 389024615.0,
+      "end_ns": 396174438.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 396174550.8122,
+      "end_ns": 396179922.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 396179922.5,
+      "end_ns": 396183913.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 396184643.5,
+      "end_ns": 398552357.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 398552357.0,
+      "end_ns": 403321613.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 403321613.8122,
+      "end_ns": 403326127.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 403326127.5,
+      "end_ns": 415074040.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 415074040.0,
+      "end_ns": 415121548.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 415121548.5,
+      "end_ns": 421429100.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 421429100.0,
+      "end_ns": 421432365.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 12,
+      "start_ns": 421432365.0,
+      "end_ns": 421434165.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 421435205.0,
+      "end_ns": 421437915.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 421437915.0,
+      "end_ns": 428587738.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 428587850.8122,
+      "end_ns": 428593222.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 428593222.5,
+      "end_ns": 428597213.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 428597943.5,
+      "end_ns": 430965657.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 430965657.0,
+      "end_ns": 435734913.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 435734913.8122,
+      "end_ns": 435739427.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 435739427.5,
+      "end_ns": 447487340.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 447487340.0,
+      "end_ns": 447534848.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 447534848.5,
+      "end_ns": 453842400.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 453842400.0,
+      "end_ns": 453845665.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 13,
+      "start_ns": 453845665.0,
+      "end_ns": 453847465.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 453848505.0,
+      "end_ns": 453851215.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 453851215.0,
+      "end_ns": 461001038.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 461001150.8122,
+      "end_ns": 461006522.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 461006522.5,
+      "end_ns": 461010513.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 461011243.5,
+      "end_ns": 463378957.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 463378957.0,
+      "end_ns": 468148213.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 468148213.8122,
+      "end_ns": 468152727.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 468152727.5,
+      "end_ns": 479900640.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 479900640.0,
+      "end_ns": 479948148.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 479948148.5,
+      "end_ns": 486255700.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 486255700.0,
+      "end_ns": 486258965.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 14,
+      "start_ns": 486258965.0,
+      "end_ns": 486260765.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 486261805.0,
+      "end_ns": 486264515.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 486264515.0,
+      "end_ns": 493414338.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 493414450.8122,
+      "end_ns": 493419822.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 493419822.5,
+      "end_ns": 493423813.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 493424543.5,
+      "end_ns": 495792257.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 495792257.0,
+      "end_ns": 500561513.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 500561513.8122,
+      "end_ns": 500566027.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 500566027.5,
+      "end_ns": 512313940.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 512313940.0,
+      "end_ns": 512361448.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 512361448.5,
+      "end_ns": 518669000.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 518669000.0,
+      "end_ns": 518672265.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 15,
+      "start_ns": 518672265.0,
+      "end_ns": 518674065.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 518675105.0,
+      "end_ns": 518677815.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 518677815.0,
+      "end_ns": 525827638.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 525827750.8122,
+      "end_ns": 525833122.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 525833122.5,
+      "end_ns": 525837113.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 525837843.5,
+      "end_ns": 528205557.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 528205557.0,
+      "end_ns": 532974813.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 532974813.8122,
+      "end_ns": 532979327.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 532979327.5,
+      "end_ns": 544727240.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 544727240.0,
+      "end_ns": 544774748.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 544774748.5,
+      "end_ns": 551082300.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 551082300.0,
+      "end_ns": 551085565.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 16,
+      "start_ns": 551085565.0,
+      "end_ns": 551087365.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 551088405.0,
+      "end_ns": 551091115.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 551091115.0,
+      "end_ns": 558240938.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 558241050.8122,
+      "end_ns": 558246422.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 558246422.5,
+      "end_ns": 558250413.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 558251143.5,
+      "end_ns": 560618857.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 560618857.0,
+      "end_ns": 565388113.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 565388113.8122,
+      "end_ns": 565392627.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 565392627.5,
+      "end_ns": 577140540.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 577140540.0,
+      "end_ns": 577188048.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 577188048.5,
+      "end_ns": 583495600.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 583495600.0,
+      "end_ns": 583498865.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 17,
+      "start_ns": 583498865.0,
+      "end_ns": 583500665.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 583501705.0,
+      "end_ns": 583504415.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 583504415.0,
+      "end_ns": 590654238.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 590654350.8122,
+      "end_ns": 590659722.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 590659722.5,
+      "end_ns": 590663713.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 590664443.5,
+      "end_ns": 593032157.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 593032157.0,
+      "end_ns": 597801413.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 597801413.8122,
+      "end_ns": 597805927.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 597805927.5,
+      "end_ns": 609553840.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 609553840.0,
+      "end_ns": 609601348.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 609601348.5,
+      "end_ns": 615908900.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 615908900.0,
+      "end_ns": 615912165.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 18,
+      "start_ns": 615912165.0,
+      "end_ns": 615913965.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 615915005.0,
+      "end_ns": 615917715.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 615917715.0,
+      "end_ns": 623067538.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 623067650.8122,
+      "end_ns": 623073022.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 623073022.5,
+      "end_ns": 623077013.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 623077743.5,
+      "end_ns": 625445457.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 625445457.0,
+      "end_ns": 630214713.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 630214713.8122,
+      "end_ns": 630219227.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 630219227.5,
+      "end_ns": 641967140.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 641967140.0,
+      "end_ns": 642014648.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 642014648.5,
+      "end_ns": 648322200.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 648322200.0,
+      "end_ns": 648325465.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 19,
+      "start_ns": 648325465.0,
+      "end_ns": 648327265.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 648328305.0,
+      "end_ns": 648331015.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 648331015.0,
+      "end_ns": 655480838.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 655480950.8122,
+      "end_ns": 655486322.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 655486322.5,
+      "end_ns": 655490313.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 655491043.5,
+      "end_ns": 657858757.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 657858757.0,
+      "end_ns": 662628013.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 662628013.8122,
+      "end_ns": 662632527.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 662632527.5,
+      "end_ns": 674380440.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 674380440.0,
+      "end_ns": 674427948.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 674427948.5,
+      "end_ns": 680735500.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 680735500.0,
+      "end_ns": 680738765.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 20,
+      "start_ns": 680738765.0,
+      "end_ns": 680740565.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 680741605.0,
+      "end_ns": 680744315.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 680744315.0,
+      "end_ns": 687894138.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 687894250.8122,
+      "end_ns": 687899622.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 687899622.5,
+      "end_ns": 687903613.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 687904343.5,
+      "end_ns": 690272057.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 690272057.0,
+      "end_ns": 695041313.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 695041313.8122,
+      "end_ns": 695045827.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 695045827.5,
+      "end_ns": 706793740.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 706793740.0,
+      "end_ns": 706841248.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 706841248.5,
+      "end_ns": 713148800.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 713148800.0,
+      "end_ns": 713152065.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 21,
+      "start_ns": 713152065.0,
+      "end_ns": 713153865.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 713154905.0,
+      "end_ns": 713157615.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 713157615.0,
+      "end_ns": 720307438.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 720307550.8122,
+      "end_ns": 720312922.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 720312922.5,
+      "end_ns": 720316913.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 720317643.5,
+      "end_ns": 722685357.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 722685357.0,
+      "end_ns": 727454613.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 727454613.8122,
+      "end_ns": 727459127.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 727459127.5,
+      "end_ns": 739207040.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 739207040.0,
+      "end_ns": 739254548.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 739254548.5,
+      "end_ns": 745562100.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 745562100.0,
+      "end_ns": 745565365.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 22,
+      "start_ns": 745565365.0,
+      "end_ns": 745567165.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 745568205.0,
+      "end_ns": 745570915.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 745570915.0,
+      "end_ns": 752720738.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 752720850.8122,
+      "end_ns": 752726222.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 752726222.5,
+      "end_ns": 752730213.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 752730943.5,
+      "end_ns": 755098657.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 755098657.0,
+      "end_ns": 759867913.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 759867913.8122,
+      "end_ns": 759872427.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 759872427.5,
+      "end_ns": 771620340.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 771620340.0,
+      "end_ns": 771667848.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 771667848.5,
+      "end_ns": 777975400.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 777975400.0,
+      "end_ns": 777978665.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 23,
+      "start_ns": 777978665.0,
+      "end_ns": 777980465.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 777981505.0,
+      "end_ns": 777984215.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 777984215.0,
+      "end_ns": 785134038.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 785134150.8122,
+      "end_ns": 785139522.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 785139522.5,
+      "end_ns": 785143513.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 785144243.5,
+      "end_ns": 787511957.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 787511957.0,
+      "end_ns": 792281213.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 792281213.8122,
+      "end_ns": 792285727.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 792285727.5,
+      "end_ns": 804033640.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 804033640.0,
+      "end_ns": 804081148.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 804081148.5,
+      "end_ns": 810388700.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 810388700.0,
+      "end_ns": 810391965.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 24,
+      "start_ns": 810391965.0,
+      "end_ns": 810393765.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 810394805.0,
+      "end_ns": 810397515.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 810397515.0,
+      "end_ns": 817547338.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 817547450.8122,
+      "end_ns": 817552822.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 817552822.5,
+      "end_ns": 817556813.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 817557543.5,
+      "end_ns": 819925257.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 819925257.0,
+      "end_ns": 824694513.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 824694513.8122,
+      "end_ns": 824699027.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 824699027.5,
+      "end_ns": 836446940.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 836446940.0,
+      "end_ns": 836494448.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 836494448.5,
+      "end_ns": 842802000.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 842802000.0,
+      "end_ns": 842805265.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 25,
+      "start_ns": 842805265.0,
+      "end_ns": 842807065.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 842808105.0,
+      "end_ns": 842810815.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 842810815.0,
+      "end_ns": 849960638.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 849960750.8122,
+      "end_ns": 849966122.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 849966122.5,
+      "end_ns": 849970113.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 849970843.5,
+      "end_ns": 852338557.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 852338557.0,
+      "end_ns": 857107813.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 857107813.8122,
+      "end_ns": 857112327.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 857112327.5,
+      "end_ns": 868860240.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 868860240.0,
+      "end_ns": 868907748.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 868907748.5,
+      "end_ns": 875215300.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 875215300.0,
+      "end_ns": 875218565.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 26,
+      "start_ns": 875218565.0,
+      "end_ns": 875220365.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 875221405.0,
+      "end_ns": 875224115.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 875224115.0,
+      "end_ns": 882373938.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 882374050.8122,
+      "end_ns": 882379422.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 882379422.5,
+      "end_ns": 882383413.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 882384143.5,
+      "end_ns": 884751857.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 884751857.0,
+      "end_ns": 889521113.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 889521113.8122,
+      "end_ns": 889525627.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 889525627.5,
+      "end_ns": 901273540.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 901273540.0,
+      "end_ns": 901321048.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 901321048.5,
+      "end_ns": 907628600.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 907628600.0,
+      "end_ns": 907631865.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 27,
+      "start_ns": 907631865.0,
+      "end_ns": 907633665.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 907634705.0,
+      "end_ns": 907637415.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 907637415.0,
+      "end_ns": 914787238.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 914787350.8122,
+      "end_ns": 914792722.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 914792722.5,
+      "end_ns": 914796713.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 914797443.5,
+      "end_ns": 917165157.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 917165157.0,
+      "end_ns": 921934413.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 921934413.8122,
+      "end_ns": 921938927.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 921938927.5,
+      "end_ns": 933686840.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 933686840.0,
+      "end_ns": 933734348.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 933734348.5,
+      "end_ns": 940041900.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 940041900.0,
+      "end_ns": 940045165.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 28,
+      "start_ns": 940045165.0,
+      "end_ns": 940046965.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 940048005.0,
+      "end_ns": 940050715.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 940050715.0,
+      "end_ns": 947200538.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 947200650.8122,
+      "end_ns": 947206022.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 947206022.5,
+      "end_ns": 947210013.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 947210743.5,
+      "end_ns": 949578457.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 949578457.0,
+      "end_ns": 954347713.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 954347713.8122,
+      "end_ns": 954352227.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 954352227.5,
+      "end_ns": 966100140.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 966100140.0,
+      "end_ns": 966147648.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 966147648.5,
+      "end_ns": 972455200.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 972455200.0,
+      "end_ns": 972458465.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 29,
+      "start_ns": 972458465.0,
+      "end_ns": 972460265.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 972461305.0,
+      "end_ns": 972464015.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 972464015.0,
+      "end_ns": 979613838.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 979613950.8122,
+      "end_ns": 979619322.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 979619322.5,
+      "end_ns": 979623313.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 979624043.5,
+      "end_ns": 981991757.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 981991757.0,
+      "end_ns": 986761013.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 986761013.8122,
+      "end_ns": 986765527.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 986765527.5,
+      "end_ns": 998513440.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 998513440.0,
+      "end_ns": 998560948.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 998560948.5,
+      "end_ns": 1004868500.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 1004868500.0,
+      "end_ns": 1004871765.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 30,
+      "start_ns": 1004871765.0,
+      "end_ns": 1004873565.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1004874605.0,
+      "end_ns": 1004877315.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1004877315.0,
+      "end_ns": 1012027138.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1012027250.8122,
+      "end_ns": 1012032622.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1012032622.5,
+      "end_ns": 1012036613.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1012037343.5,
+      "end_ns": 1014405057.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1014405057.0,
+      "end_ns": 1019174313.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1019174313.8122,
+      "end_ns": 1019178827.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1019178827.5,
+      "end_ns": 1030926740.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1030926740.0,
+      "end_ns": 1030974248.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1030974248.5,
+      "end_ns": 1037341850.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1037341850.0,
+      "end_ns": 1037345115.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 31,
+      "start_ns": 1037345115.0,
+      "end_ns": 1037346915.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1037347955.0,
+      "end_ns": 1037350665.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1037350665.0,
+      "end_ns": 1044500488.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1044500600.8122,
+      "end_ns": 1044505972.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1044505972.5,
+      "end_ns": 1044509963.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1044510693.5,
+      "end_ns": 1046878407.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1046878407.0,
+      "end_ns": 1051647663.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1051647663.8122,
+      "end_ns": 1051652177.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1051652177.5,
+      "end_ns": 1063400090.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1063400090.0,
+      "end_ns": 1063447598.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1063447598.5,
+      "end_ns": 1069755150.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1069755150.0,
+      "end_ns": 1069758415.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 32,
+      "start_ns": 1069758415.0,
+      "end_ns": 1069760215.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1069761255.0,
+      "end_ns": 1069763965.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1069763965.0,
+      "end_ns": 1076913788.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1076913900.8122,
+      "end_ns": 1076919272.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1076919272.5,
+      "end_ns": 1076923263.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1076923993.5,
+      "end_ns": 1079291707.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1079291707.0,
+      "end_ns": 1084060963.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1084060963.8122,
+      "end_ns": 1084065477.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1084065477.5,
+      "end_ns": 1095813390.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1095813390.0,
+      "end_ns": 1095860898.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1095860898.5,
+      "end_ns": 1102168450.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1102168450.0,
+      "end_ns": 1102171715.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 33,
+      "start_ns": 1102171715.0,
+      "end_ns": 1102173515.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1102174555.0,
+      "end_ns": 1102177265.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1102177265.0,
+      "end_ns": 1109327088.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1109327200.8122,
+      "end_ns": 1109332572.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1109332572.5,
+      "end_ns": 1109336563.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1109337293.5,
+      "end_ns": 1111705007.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1111705007.0,
+      "end_ns": 1116474263.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1116474263.8122,
+      "end_ns": 1116478777.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1116478777.5,
+      "end_ns": 1128226690.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1128226690.0,
+      "end_ns": 1128274198.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1128274198.5,
+      "end_ns": 1134581750.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1134581750.0,
+      "end_ns": 1134585015.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 34,
+      "start_ns": 1134585015.0,
+      "end_ns": 1134586815.0
+    },
+    {
+      "name": "attention_norm",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1134587855.0,
+      "end_ns": 1134590565.0
+    },
+    {
+      "name": "QKV_projection",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1134590565.0,
+      "end_ns": 1141740388.8122
+    },
+    {
+      "name": "QK_head_norm",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1141740500.8122,
+      "end_ns": 1141745872.5
+    },
+    {
+      "name": "RoPE_bias_KV_append",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1141745872.5,
+      "end_ns": 1141749863.0
+    },
+    {
+      "name": "attention_core",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1141750593.5,
+      "end_ns": 1144118307.0
+    },
+    {
+      "name": "O_projection",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1144118307.0,
+      "end_ns": 1148887563.8122
+    },
+    {
+      "name": "residual_and_ffn_norm",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1148887563.8122,
+      "end_ns": 1148892077.5
+    },
+    {
+      "name": "FFN_gate_up",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1148892077.5,
+      "end_ns": 1160639990.0
+    },
+    {
+      "name": "FFN_nonlinear_encoding",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1160639990.0,
+      "end_ns": 1160687498.5
+    },
+    {
+      "name": "FFN_AND_direct_down",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1160687498.5,
+      "end_ns": 1166995050.0
+    },
+    {
+      "name": "ffn_output_conversion",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1166995050.0,
+      "end_ns": 1166998315.0
+    },
+    {
+      "name": "ffn_residual",
+      "token": 0,
+      "layer": 35,
+      "start_ns": 1166998315.0,
+      "end_ns": 1167000115.0
+    },
+    {
+      "name": "final_norm",
+      "token": 0,
+      "layer": null,
+      "start_ns": 1167000675.0,
+      "end_ns": 1167002690.0
+    },
+    {
+      "name": "lm_head_and_argmax",
+      "token": 0,
+      "layer": null,
+      "start_ns": 1167002690.0,
+      "end_ns": 1343787260.0
+    }
+  ],
+  "resource_busy_ns": {
+    "dram_dma": 581490944.0,
+    "sram_bank:0": 759420246.1133282,
+    "sram_bank:1": 759420190.2133282,
+    "sram_bank:10": 758625253.2384074,
+    "sram_bank:11": 758620992.5952053,
+    "sram_bank:12": 758703919.0272261,
+    "sram_bank:13": 758703919.0272261,
+    "sram_bank:14": 758703919.0272261,
+    "sram_bank:15": 758703919.0272261,
+    "sram_bank:2": 759420190.2133284,
+    "sram_bank:3": 758712440.3136303,
+    "sram_bank:4": 758629513.8816096,
+    "sram_bank:5": 758625253.2384075,
+    "sram_bank:6": 758625253.2384075,
+    "sram_bank:7": 758625253.2384075,
+    "sram_bank:8": 763213525.2392763,
+    "sram_bank:9": 763213525.2392763,
+    "sram_fabric": 764925824.5525887,
+    "vector": 5374910.0,
+    "mac": 38861880.0,
+    "ffn_SC_fixed4_P8_encode": 43200.0,
+    "sc_weight_local_port": 249112800.0,
+    "rng_control": 561600.0,
+    "sc:0": 77976000.0,
+    "sc:1": 77976000.0,
+    "sc:2": 77976000.0,
+    "sc:3": 77976000.0,
+    "sc:4": 77976000.0,
+    "sc:5": 77976000.0,
+    "sc:6": 77976000.0,
+    "sc:7": 77976000.0,
+    "ffn_SC_bucket_shift_reduce": 34473600.0,
+    "ffn_SC_coefficient16_restore": 30369600.0,
+    "ffn_SC_cross_tile_add64": 13690440.0,
+    "ffn_SC_fixed4_GU_P8_encode": 218880.0,
+    "ffn_SC_true_g_signed8": 109440.0,
+    "ffn_SC_sigmoid_ROM9": 218880.0,
+    "ffn_SC_sign_and_exponent_sum": 54720.0,
+    "rng_nl_seed_port": 120100.0,
+    "rng_nl_control": 656640.0,
+    "AND_comparator_array": 37483200.0,
+    "rng_nl_stream": 37483200.0,
+    "ffn_SC_wide_RNE_BF16": 58320.0
+  },
+  "wait_ns": {
+    "dram_embedding": 0.0,
+    "sram_embedding": 2.5,
+    "sram_initial_residual": 10.0,
+    "dram_norm_weights": 0.0,
+    "sram_RMSNorm_input": 630.0,
+    "RMSNorm": 442.5,
+    "sram_RMSNorm_output": 445.0,
+    "sram_matrix_activation": 568.0,
+    "dram_weights": 0.0,
+    "sram_weight_fill": 613493.0679717362,
+    "sram_weight_consume": 755972.5,
+    "matrix_qkv": 69120.0,
+    "matrix_FP32_to_BF16": 0.0,
+    "sram_matrix_result": 249087.5,
+    "sram_QK_RMSNorm_input": 420.7608004687354,
+    "QK_RMSNorm": 265.0,
+    "sram_QK_RMSNorm_output": 95.0,
+    "sram_RoPE_bias_input": 90.0,
+    "RoPE_bias": 247.0,
+    "sram_RoPE_bias_output": 185.0,
+    "sram_KV_append_operand": 666.0,
+    "dram_KV_append": 0.0,
+    "dram_KV_fused": 0.0,
+    "sram_KV_fill": 26201.0,
+    "sram_KV_operand": 41472.0,
+    "attention_QK": 24192.0,
+    "attention_score_scale": 0.0,
+    "online_softmax": 0.0,
+    "attention_PV_exact": 0.0,
+    "online_normalize": 0.0,
+    "sram_attention_output": 180.0,
+    "matrix_o": 74880.0,
+    "sram_residual_operand": 762.7608004678041,
+    "sram_BF16_residual_input": 720.0,
+    "BF16_residual": 360.0,
+    "sram_BF16_residual_output": 360.0,
+    "sram_residual_commit": 720.0,
+    "dram_ffn_fixed_scale_table": 0.0,
+    "sram_ffn_fixed_scale_table": 162.0,
+    "sram_SC_output_exponents_to_local": 234.0,
+    "sram_SC_BF16_x": 14472.0,
+    "sram_SC_fixed_x_scale": 11393.567971736193,
+    "SC_fixed4_P8_encode": 4283.567971736193,
+    "sram_SC_x_code": 360.0,
+    "sram_SC_x_code_to_local": 13680.0,
+    "SC_local_weight_program": 473040.0,
+    "dram_weight_scales": 0.0,
+    "sram_weight_scales": 1512294.6251761634,
+    "rng_ffn_save": 4193.567971736193,
+    "SC_gate_up": 0.0,
+    "SC_gate_up_source_backpressure": 0.0,
+    "SC_bucket_shift_reduce": 0.0,
+    "SC_coefficient16_restore": 0.0,
+    "sram_SC_wide_partial": 814140.0,
+    "rng_ffn_restore": 194762.01495423913,
+    "rng_ffn_release": 5760.0,
+    "SC_cross_tile_add64": 298458.0,
+    "sram_SC_g_wide": 8514.0,
+    "sram_SC_u_wide": 57456.0,
+    "sram_SC_fixed_gu_scale": 57456.0,
+    "SC_fixed4_GU_P8_encode": 22775.558292597532,
+    "SC_true_g_signed8": 0.0,
+    "SC_sigmoid_ROM9": 0.0,
+    "SC_sign_and_exponent_sum": 0.0,
+    "sram_SC_joint_codes": 34200.0,
+    "sram_SC_joint_codes_to_local": 54.0,
+    "AND_rng_seed_and_warmup": 15.82439997419715,
+    "AND_rng_save": 43279.733892623335,
+    "SC_AND_direct_Wd": 0.0,
+    "AND_rng_restore": 118462.23317039013,
+    "AND_rng_release": 21888.0,
+    "sram_SC_final_wide": 0.0,
+    "SC_wide_RNE_BF16": 0.0,
+    "sram_SC_final_BF16": 180.0,
+    "final_RMSNorm": 5.0,
+    "matrix_lm_head": 47475.0,
+    "sram_stream_argmax_input": 141659.92272090912,
+    "stream_argmax": 52706.77607154846
+  },
+  "events": [
+    {
+      "id": 1,
+      "stage": "dram_embedding",
+      "ready_ns": 0.0,
+      "start_ns": 0.0,
+      "end_ns": 208.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 2,
+      "stage": "dram_embedding",
+      "ready_ns": 208.0,
+      "start_ns": 208.0,
+      "end_ns": 416.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 3,
+      "stage": "dram_embedding",
+      "ready_ns": 416.0,
+      "start_ns": 416.0,
+      "end_ns": 560.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 1024,
+      "pending_bursts": 16,
+      "write": false
+    },
+    {
+      "id": 4,
+      "stage": "sram_embedding",
+      "ready_ns": 560.0,
+      "start_ns": 562.5,
+      "end_ns": 902.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ]
+    },
+    {
+      "id": 5,
+      "stage": "sram_initial_residual",
+      "ready_ns": 902.5,
+      "start_ns": 912.5,
+      "end_ns": 1252.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ]
+    },
+    {
+      "id": 6,
+      "stage": "dram_norm_weights",
+      "ready_ns": 1252.5,
+      "start_ns": 1252.5,
+      "end_ns": 1460.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 7,
+      "stage": "dram_norm_weights",
+      "ready_ns": 1460.5,
+      "start_ns": 1460.5,
+      "end_ns": 1668.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 8,
+      "stage": "dram_norm_weights",
+      "ready_ns": 1668.5,
+      "start_ns": 1668.5,
+      "end_ns": 1876.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 9,
+      "stage": "dram_norm_weights",
+      "ready_ns": 1876.5,
+      "start_ns": 1876.5,
+      "end_ns": 2084.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 10,
+      "stage": "dram_norm_weights",
+      "ready_ns": 2084.5,
+      "start_ns": 2084.5,
+      "end_ns": 2292.5,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 11,
+      "stage": "sram_RMSNorm_input",
+      "ready_ns": 2292.5,
+      "start_ns": 2300.0,
+      "end_ns": 2640.0,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": false,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ]
+    },
+    {
+      "id": 12,
+      "stage": "RMSNorm",
+      "ready_ns": 2640.0,
+      "start_ns": 2640.0,
+      "end_ns": 4650.0,
+      "resources": [
+        "vector"
+      ],
+      "vector_ops": 12800,
+      "nonlinear_ops": 1
+    },
+    {
+      "id": 13,
+      "stage": "sram_RMSNorm_output",
+      "ready_ns": 4650.0,
+      "start_ns": 4650.0,
+      "end_ns": 4990.0,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ]
+    },
+    {
+      "id": 14,
+      "stage": "sram_matrix_activation",
+      "ready_ns": 4990.0,
+      "start_ns": 5000.0,
+      "end_ns": 5340.0,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": false,
+      "bytes": 5120,
+      "physical_bytes": 5120,
+      "bank_words": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ]
+    },
+    {
+      "id": 15,
+      "stage": "dram_weights",
+      "ready_ns": 5340.0,
+      "start_ns": 5340.0,
+      "end_ns": 5548.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 16,
+      "stage": "dram_weights",
+      "ready_ns": 5548.0,
+      "start_ns": 5548.0,
+      "end_ns": 5756.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 17,
+      "stage": "dram_weights",
+      "ready_ns": 5756.0,
+      "start_ns": 5756.0,
+      "end_ns": 5964.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 18,
+      "stage": "dram_weights",
+      "ready_ns": 5964.0,
+      "start_ns": 5964.0,
+      "end_ns": 6172.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 19,
+      "stage": "dram_weights",
+      "ready_ns": 6172.0,
+      "start_ns": 6172.0,
+      "end_ns": 6380.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 20,
+      "stage": "dram_weights",
+      "ready_ns": 6380.0,
+      "start_ns": 6380.0,
+      "end_ns": 6588.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 21,
+      "stage": "dram_weights",
+      "ready_ns": 6588.0,
+      "start_ns": 6588.0,
+      "end_ns": 6796.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 22,
+      "stage": "dram_weights",
+      "ready_ns": 6796.0,
+      "start_ns": 6796.0,
+      "end_ns": 7004.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 23,
+      "stage": "dram_weights",
+      "ready_ns": 7004.0,
+      "start_ns": 7004.0,
+      "end_ns": 7212.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 24,
+      "stage": "dram_weights",
+      "ready_ns": 7212.0,
+      "start_ns": 7212.0,
+      "end_ns": 7420.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 25,
+      "stage": "dram_weights",
+      "ready_ns": 7420.0,
+      "start_ns": 7420.0,
+      "end_ns": 7628.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 26,
+      "stage": "dram_weights",
+      "ready_ns": 7628.0,
+      "start_ns": 7628.0,
+      "end_ns": 7836.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 27,
+      "stage": "dram_weights",
+      "ready_ns": 7836.0,
+      "start_ns": 7836.0,
+      "end_ns": 8044.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 28,
+      "stage": "dram_weights",
+      "ready_ns": 8044.0,
+      "start_ns": 8044.0,
+      "end_ns": 8252.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 29,
+      "stage": "dram_weights",
+      "ready_ns": 8252.0,
+      "start_ns": 8252.0,
+      "end_ns": 8460.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 30,
+      "stage": "dram_weights",
+      "ready_ns": 8460.0,
+      "start_ns": 8460.0,
+      "end_ns": 8668.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 31,
+      "stage": "dram_weights",
+      "ready_ns": 8668.0,
+      "start_ns": 8668.0,
+      "end_ns": 8876.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 32,
+      "stage": "dram_weights",
+      "ready_ns": 8876.0,
+      "start_ns": 8876.0,
+      "end_ns": 9084.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 33,
+      "stage": "dram_weights",
+      "ready_ns": 9084.0,
+      "start_ns": 9084.0,
+      "end_ns": 9292.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 34,
+      "stage": "dram_weights",
+      "ready_ns": 9292.0,
+      "start_ns": 9292.0,
+      "end_ns": 9500.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 35,
+      "stage": "dram_weights",
+      "ready_ns": 9500.0,
+      "start_ns": 9500.0,
+      "end_ns": 9708.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 36,
+      "stage": "dram_weights",
+      "ready_ns": 9708.0,
+      "start_ns": 9708.0,
+      "end_ns": 9916.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 37,
+      "stage": "dram_weights",
+      "ready_ns": 9916.0,
+      "start_ns": 9916.0,
+      "end_ns": 10124.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 38,
+      "stage": "dram_weights",
+      "ready_ns": 10124.0,
+      "start_ns": 10124.0,
+      "end_ns": 10332.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 39,
+      "stage": "dram_weights",
+      "ready_ns": 10332.0,
+      "start_ns": 10332.0,
+      "end_ns": 10540.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 40,
+      "stage": "dram_weights",
+      "ready_ns": 10540.0,
+      "start_ns": 10540.0,
+      "end_ns": 10748.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 41,
+      "stage": "dram_weights",
+      "ready_ns": 10748.0,
+      "start_ns": 10748.0,
+      "end_ns": 10956.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 42,
+      "stage": "dram_weights",
+      "ready_ns": 10956.0,
+      "start_ns": 10956.0,
+      "end_ns": 11164.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 43,
+      "stage": "dram_weights",
+      "ready_ns": 11164.0,
+      "start_ns": 11164.0,
+      "end_ns": 11372.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 44,
+      "stage": "dram_weights",
+      "ready_ns": 11372.0,
+      "start_ns": 11372.0,
+      "end_ns": 11580.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 45,
+      "stage": "sram_weight_fill",
+      "ready_ns": 11580.0,
+      "start_ns": 11587.5,
+      "end_ns": 15447.5,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 61440,
+      "physical_bytes": 61440,
+      "bank_words": [
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240
+      ]
+    },
+    {
+      "id": 46,
+      "stage": "sram_weight_consume",
+      "ready_ns": 15447.5,
+      "start_ns": 15450.0,
+      "end_ns": 19310.0,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": false,
+      "bytes": 61440,
+      "physical_bytes": 61440,
+      "bank_words": [
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240
+      ]
+    },
+    {
+      "id": 47,
+      "stage": "matrix_qkv",
+      "ready_ns": 19310.0,
+      "start_ns": 19310.0,
+      "end_ns": 19930.0,
+      "resources": [
+        "mac"
+      ],
+      "macs": 30720
+    },
+    {
+      "id": 48,
+      "stage": "matrix_FP32_to_BF16",
+      "ready_ns": 19930.0,
+      "start_ns": 19930.0,
+      "end_ns": 19940.0,
+      "resources": [
+        "vector"
+      ],
+      "vector_ops": 12,
+      "nonlinear_ops": 0
+    },
+    {
+      "id": 49,
+      "stage": "sram_matrix_result",
+      "ready_ns": 19940.0,
+      "start_ns": 19950.0,
+      "end_ns": 19976.3122,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 24,
+      "physical_bytes": 32,
+      "bank_words": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 50,
+      "stage": "dram_weights",
+      "ready_ns": 19310.0,
+      "start_ns": 19310.0,
+      "end_ns": 19518.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 51,
+      "stage": "dram_weights",
+      "ready_ns": 19518.0,
+      "start_ns": 19518.0,
+      "end_ns": 19726.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 52,
+      "stage": "dram_weights",
+      "ready_ns": 19726.0,
+      "start_ns": 19726.0,
+      "end_ns": 19934.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 53,
+      "stage": "dram_weights",
+      "ready_ns": 19934.0,
+      "start_ns": 19934.0,
+      "end_ns": 20142.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 54,
+      "stage": "dram_weights",
+      "ready_ns": 20142.0,
+      "start_ns": 20142.0,
+      "end_ns": 20350.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 55,
+      "stage": "dram_weights",
+      "ready_ns": 20350.0,
+      "start_ns": 20350.0,
+      "end_ns": 20558.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 56,
+      "stage": "dram_weights",
+      "ready_ns": 20558.0,
+      "start_ns": 20558.0,
+      "end_ns": 20766.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 57,
+      "stage": "dram_weights",
+      "ready_ns": 20766.0,
+      "start_ns": 20766.0,
+      "end_ns": 20974.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 58,
+      "stage": "dram_weights",
+      "ready_ns": 20974.0,
+      "start_ns": 20974.0,
+      "end_ns": 21182.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 59,
+      "stage": "dram_weights",
+      "ready_ns": 21182.0,
+      "start_ns": 21182.0,
+      "end_ns": 21390.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 60,
+      "stage": "dram_weights",
+      "ready_ns": 21390.0,
+      "start_ns": 21390.0,
+      "end_ns": 21598.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 61,
+      "stage": "dram_weights",
+      "ready_ns": 21598.0,
+      "start_ns": 21598.0,
+      "end_ns": 21806.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 62,
+      "stage": "dram_weights",
+      "ready_ns": 21806.0,
+      "start_ns": 21806.0,
+      "end_ns": 22014.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 63,
+      "stage": "dram_weights",
+      "ready_ns": 22014.0,
+      "start_ns": 22014.0,
+      "end_ns": 22222.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 64,
+      "stage": "dram_weights",
+      "ready_ns": 22222.0,
+      "start_ns": 22222.0,
+      "end_ns": 22430.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 65,
+      "stage": "dram_weights",
+      "ready_ns": 22430.0,
+      "start_ns": 22430.0,
+      "end_ns": 22638.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 66,
+      "stage": "dram_weights",
+      "ready_ns": 22638.0,
+      "start_ns": 22638.0,
+      "end_ns": 22846.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 67,
+      "stage": "dram_weights",
+      "ready_ns": 22846.0,
+      "start_ns": 22846.0,
+      "end_ns": 23054.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 68,
+      "stage": "dram_weights",
+      "ready_ns": 23054.0,
+      "start_ns": 23054.0,
+      "end_ns": 23262.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 69,
+      "stage": "dram_weights",
+      "ready_ns": 23262.0,
+      "start_ns": 23262.0,
+      "end_ns": 23470.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 70,
+      "stage": "dram_weights",
+      "ready_ns": 23470.0,
+      "start_ns": 23470.0,
+      "end_ns": 23678.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 71,
+      "stage": "dram_weights",
+      "ready_ns": 23678.0,
+      "start_ns": 23678.0,
+      "end_ns": 23886.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 72,
+      "stage": "dram_weights",
+      "ready_ns": 23886.0,
+      "start_ns": 23886.0,
+      "end_ns": 24094.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 73,
+      "stage": "dram_weights",
+      "ready_ns": 24094.0,
+      "start_ns": 24094.0,
+      "end_ns": 24302.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 74,
+      "stage": "dram_weights",
+      "ready_ns": 24302.0,
+      "start_ns": 24302.0,
+      "end_ns": 24510.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 75,
+      "stage": "dram_weights",
+      "ready_ns": 24510.0,
+      "start_ns": 24510.0,
+      "end_ns": 24718.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 76,
+      "stage": "dram_weights",
+      "ready_ns": 24718.0,
+      "start_ns": 24718.0,
+      "end_ns": 24926.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 77,
+      "stage": "dram_weights",
+      "ready_ns": 24926.0,
+      "start_ns": 24926.0,
+      "end_ns": 25134.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 78,
+      "stage": "dram_weights",
+      "ready_ns": 25134.0,
+      "start_ns": 25134.0,
+      "end_ns": 25342.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 79,
+      "stage": "dram_weights",
+      "ready_ns": 25342.0,
+      "start_ns": 25342.0,
+      "end_ns": 25550.0,
+      "resources": [
+        "dram_dma"
+      ],
+      "bytes": 2048,
+      "pending_bursts": 32,
+      "write": false
+    },
+    {
+      "id": 80,
+      "stage": "sram_weight_fill",
+      "ready_ns": 25550.0,
+      "start_ns": 25550.0,
+      "end_ns": 29410.0,
+      "resources": [
+        "sram_bank:0",
+        "sram_bank:1",
+        "sram_bank:10",
+        "sram_bank:11",
+        "sram_bank:12",
+        "sram_bank:13",
+        "sram_bank:14",
+        "sram_bank:15",
+        "sram_bank:2",
+        "sram_bank:3",
+        "sram_bank:4",
+        "sram_bank:5",
+        "sram_bank:6",
+        "sram_bank:7",
+        "sram_bank:8",
+        "sram_bank:9",
+        "sram_fabric"
+      ],
+      "write": true,
+      "bytes": 61440,
+      "physical_bytes": 61440,
+      "bank_words": [
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240,
+        240
+      ]
+    }
+  ],
+  "event_count": 4199356,
+  "stage_busy_ns": {
+    "dram_embedding": 560.0,
+    "sram_embedding": 340.0,
+    "sram_initial_residual": 340.0,
+    "dram_norm_weights": 42032.0,
+    "sram_RMSNorm_input": 24480.0,
+    "RMSNorm": 144720.0,
+    "sram_RMSNorm_output": 24480.0,
+    "sram_matrix_activation": 31732.0,
+    "dram_weights": 543861760.0,
+    "sram_weight_fill": 337178040.0,
+    "sram_weight_consume": 337178040.0,
+    "matrix_qkv": 11427840.0,
+    "matrix_FP32_to_BF16": 299520.0,
+    "sram_matrix_result": 1121268.090800786,
+    "sram_QK_RMSNorm_input": 23760.0,
+    "QK_RMSNorm": 145080.0,
+    "sram_QK_RMSNorm_output": 23760.0,
+    "sram_RoPE_bias_input": 28368.0,
+    "RoPE_bias": 86400.0,
+    "sram_RoPE_bias_output": 28368.0,
+    "sram_KV_append_operand": 10656.0,
+    "dram_KV_append": 14976.0,
+    "dram_KV_fused": 30670848.0,
+    "sram_KV_fill": 18966528.0,
+    "sram_KV_operand": 18966528.0,
+    "attention_QK": 5990400.0,
+    "attention_score_scale": 368640.0,
+    "online_softmax": 4147200.0,
+    "attention_PV_exact": 5990400.0,
+    "online_normalize": 25920.0,
+    "sram_attention_output": 19152.0,
+    "matrix_o": 7603200.0,
+    "sram_residual_operand": 24480.0,
+    "sram_BF16_residual_input": 24480.0,
+    "BF16_residual": 28800.0,
+    "sram_BF16_residual_output": 24480.0,
+    "sram_residual_commit": 24480.0,
+    "dram_ffn_fixed_scale_table": 6048.0,
+    "sram_ffn_fixed_scale_table": 3816.0,
+    "sram_SC_output_exponents_to_local": 2268.0,
+    "sram_SC_BF16_x": 42606.43200000085,
+    "sram_SC_fixed_x_scale": 42606.43200000085,
+    "SC_fixed4_P8_encode": 43200.0,
+    "sram_SC_x_code": 40320.0,
+    "sram_SC_x_code_to_local": 42606.43200000085,
+    "SC_local_weight_program": 171136800.0,
+    "dram_weight_scales": 6894720.0,
+    "sram_weight_scales": 4588271.999995223,
+    "rng_ffn_save": 14400.0,
+    "SC_gate_up": 39398400.0,
+    "SC_gate_up_source_backpressure": 1094400.0,
+    "SC_bucket_shift_reduce": 34473600.0,
+    "SC_coefficient16_restore": 30369600.0,
+    "sram_SC_wide_partial": 44880912.0,
+    "rng_ffn_restore": 532800.0,
+    "rng_ffn_release": 14400.0,
+    "SC_cross_tile_add64": 13690440.0,
+    "sram_SC_g_wide": 284544.0,
+    "sram_SC_u_wide": 284544.0,
+    "sram_SC_fixed_gu_scale": 161904.44159999696,
+    "SC_fixed4_GU_P8_encode": 218880.0,
+    "SC_true_g_signed8": 109440.0,
+    "SC_sigmoid_ROM9": 218880.0,
+    "SC_sign_and_exponent_sum": 54720.0,
+    "sram_SC_joint_codes": 196992.0,
+    "sram_SC_joint_codes_to_local": 196992.0,
+    "AND_rng_seed_and_warmup": 120100.0,
+    "AND_rng_save": 109440.0,
+    "SC_AND_direct_Wd": 37483200.0,
+    "AND_rng_restore": 437760.0,
+    "AND_rng_release": 109440.0,
+    "sram_SC_final_wide": 46800.0,
+    "SC_wide_RNE_BF16": 58320.0,
+    "sram_SC_final_BF16": 12240.0,
+    "final_RMSNorm": 2010.0,
+    "matrix_lm_head": 7850040.0,
+    "sram_stream_argmax_input": 374640.7235999469,
+    "stream_argmax": 126620.0
+  },
+  "sampler_audit": [],
+  "trace_truncated": true,
+  "random_interface": {
+    "backend": "integrated_issue95_q256_same_clock",
+    "clock_ns": 10.0,
+    "clock_hz": 100000000.0,
+    "random_stream_SRAM_bytes": 0,
+    "extra_probability_copy_bytes": 0,
+    "extra_random_FIFO_bytes": 0,
+    "actual_backend_executed": true,
+    "source_counts": {
+      "ffn_saves": 1440,
+      "ffn_streams": 54720,
+      "ffn_samples_consumed": 3502080,
+      "ffn_threshold_bits_used": 7004160,
+      "ffn_shared64_comparisons": 224133120,
+      "stratum_counter_updates": 3502080,
+      "ffn_restores": 53280,
+      "ffn_releases": 1440
+    },
+    "max_parallel_lanes": {},
+    "frame_output_sha256": "0f50095138a2f83d08e32c2cfd99ccd45b0a1450def468ca4ac80b538bccb3b6",
+    "network": {
+      "clock_ns": 10.0,
+      "cycles": 134378726,
+      "elapsed_ns": 1343787260.0,
+      "ports": {
+        "ffn": {
+          "kind": "lfsr32",
+          "profile": {
+            "state_bits": 32,
+            "lanes": 1,
+            "steps": 16,
+            "warmup": 0,
+            "correlation": "single_word_lfsr; temporal dependence"
+          },
+          "cycles": 134378726,
+          "counts": {
+            "clock_edges": 134378726,
+            "seed_wait_cycles": 14,
+            "output_stall_cycles": 0,
+            "request_stall_cycles": 0,
+            "reseed_deferred_cycles": 0,
+            "seed_loads": 2,
+            "seed_state_bits_loaded": 64,
+            "checkpoint_bits_written": 46080,
+            "commands": 56160,
+            "frames_generated": 3502080,
+            "prng_updates": 3502080,
+            "recurrence_steps": 56033280,
+            "random_word_bits_generated": 28016640,
+            "threshold_comparisons": 3502080,
+            "output_register_bits_written": 31518720,
+            "shared_mapping_evaluations": 0,
+            "responses_consumed": 3502080,
+            "restore_bits_loaded": 1704960
+          },
+          "energy_J": null,
+          "area_mm2": null,
+          "status": "operation counts only; calibrate with delivered RTL"
+        }
+      },
+      "seed_transport": {
+        "ffn": {
+          "bus_beats": 2,
+          "bus_bits": 64,
+          "padding_bits_discarded": 0,
+          "packets_delivered": 2
+        }
+      },
+      "seed_events": [
+        {
+          "cycle": 11,
+          "port": "ffn",
+          "epoch": 1,
+          "seed_hex": "0xd82c07cd",
+          "rejected": false,
+          "provenance": "explicit deterministic TLM seed fixture; not physical entropy"
+        },
+        {
+          "cycle": 100000013,
+          "port": "ffn",
+          "epoch": 2,
+          "seed_hex": "0x629f6fbe",
+          "rejected": false,
+          "provenance": "explicit deterministic TLM seed fixture; not physical entropy"
+        }
+      ],
+      "seed_source": "explicit deterministic TLM seed fixture; not physical entropy",
+      "seed_word_transcript": [
+        {
+          "cycle": 10,
+          "word": 3626764237
+        },
+        {
+          "cycle": 100000012,
+          "word": 1654615998
+        }
+      ],
+      "energy_J": null,
+      "area_mm2": null
+    },
+    "simulated_idle_edges_jumped": 130765761,
+    "calibrated_endpoint_two_state_energy_J": 0.0001610839169906667,
+    "calibrated_endpoint_area_mm2": 0.003154320000000011,
+    "endpoint_costs": [
+      {
+        "port": "ffn",
+        "kind": "lfsr32",
+        "active_cycles": 3502080,
+        "idle_cycles": 130876646,
+        "conditional_energy_J": 0.0001610839169906667,
+        "area_mm2": 0.003154320000000011
+      }
+    ],
+    "ppa_provenance": {
+      "job": "38322118",
+      "node_nm": 55,
+      "corner": "SS",
+      "voltage_V": 1.08,
+      "temperature_C": 125,
+      "clock_MHz": 100,
+      "status": "CALCULATED_PROVISIONAL",
+      "source_pr": "https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/111",
+      "source_directory": "digital_circuit_simulation_registry/records",
+      "warnings": [
+        "PWR-981/vector mapping and library table extrapolation",
+        "zero-delay gate/PT; no CTS/SPEF/SDF",
+        "stream/idle two-state interpolation; seed-event incremental work not calibrated",
+        "FFN uses LFSR endpoint only; shared64 frontend remains separately unpriced"
+      ]
+    },
+    "full_random_energy_J": null,
+    "full_random_area_mm2": null,
+    "limitations": [
+      "native Issue95 ports persist across all layers/queries; original protocol unchanged",
+      "8-bit q/256 sigmoid table alters numerical response; no inherited model PPL",
+      "endpoint stream/idle interpolation is conditional, not new PT or per-action calibration",
+      "FFN64 frontend/stratum logic, LUT/threshold programming, global seed arbiter/material and wires unpriced",
+      "fixture seed material is reproducible simulation input, not certified physical entropy",
+      "FFN timing consumes actual source words but matrix/activation tensors are still macro TLM, not inference"
+    ]
+  },
+  "SRAM": {
+    "traffic": {
+      "write_logical_bytes": 6001038208,
+      "write_physical_bytes": 6001185664,
+      "write_words": 375074104,
+      "read_logical_bytes": 6000738176,
+      "read_physical_bytes": 6000824000,
+      "read_words": 375051500
+    },
+    "calibrated_macro": {
+      "area_mm2": 0.312163310025,
+      "read_internal_pJ": 23.0831,
+      "write_internal_pJ": 50.6157,
+      "ce_off_leakage_W": 4.520772e-05,
+      "ce_on_leakage_W": 4.5226079999999996e-05,
+      "read_access_ns": 9.5878,
+      "write_access_ns": 6.3122,
+      "read_cycle_ns": 10.9192,
+      "write_cycle_ns": 11.0613,
+      "source": "exact_vendor_library",
+      "id": "F",
+      "corner": "SS",
+      "energy_boundary": "macro internal dynamic; Q load/clock tree/wrapper excluded",
+      "Q_hold": "not newly verified",
+      "slew_ns": 0.1,
+      "Q_load_pF": 0.02,
+      "requested_clock_hz": 80000000,
+      "period_only_eligible": true,
+      "minimum_cycle_ns": 11.0613,
+      "clock_note": "period screening only; no interface STA guarantee"
+    },
+    "banks": 16,
+    "macros": 128,
+    "configured_bytes": 8388608,
+    "word_bytes": 16,
+    "clock_hz": 80000000,
+    "bank_peak_GBs": 20.48,
+    "fabric_combined_read_write_GBs": 16.0,
+    "macros_per_bank": 8,
+    "physical_bytes": 8388608,
+    "area_mm2": 39.9569036832,
+    "leakage_J": 0.007775943448274842,
+    "scheduling": "blocking descriptor per addressed banks + shared fabric",
+    "exclusions": [
+      "wrapper/mux/CTS",
+      "verified CDC implementation",
+      "optimized bank interleaving"
+    ],
+    "layout": {
+      "weight_ping": {
+        "address": 0,
+        "bytes": 65536
+      },
+      "weight_pong": {
+        "address": 65536,
+        "bytes": 65536
+      },
+      "normalized_activation_and_attention_output": {
+        "address": 131072,
+        "bytes": 65536
+      },
+      "matrix_output_and_wide_partials": {
+        "address": 196608,
+        "bytes": 155648
+      },
+      "nonlinear_P8_sign_exponent_codes": {
+        "address": 352256,
+        "bytes": 65536
+      },
+      "frozen_FFN_scale_tables": {
+        "address": 417792,
+        "bytes": 1376
+      },
+      "FFN_tile_coefficients": {
+        "address": 419200,
+        "bytes": 32
+      },
+      "live_BF16_residual": {
+        "address": 419264,
+        "bytes": 5120
+      },
+      "one_shared_encoded_input_group": {
+        "address": 424384,
+        "bytes": 128
+      },
+      "one_KV_group_summary": {
+        "address": 424512,
+        "bytes": 66048
+      },
+      "one_KV_group_logits": {
+        "address": 490560,
+        "bytes": 16
+      },
+      "candidate_maps": {
+        "address": 490624,
+        "bytes": 16
+      },
+      "one_head_histogram": {
+        "address": 490688,
+        "bytes": 16
+      },
+      "sampler_output_indices_word_stride": {
+        "address": 490752,
+        "bytes": 16
+      },
+      "GQA_sorted_V_worklists": {
+        "address": 490816,
+        "bytes": 16
+      },
+      "K_V_tile": {
+        "address": 490880,
+        "bytes": 65536
+      }
+    },
+    "reserved_peak_bytes": 556416
+  },
+  "DRAM": {
+    "backend": "link_estimate_NOT_DRAMSys",
+    "traffic": {
+      "embedding_logical_bytes": 5120,
+      "embedding_physical_bytes": 5120,
+      "embedding_bursts": 80,
+      "DMA_descriptors": 211564,
+      "legacy_link_drain_windows": 2844586,
+      "norm_weights_logical_bytes": 392192,
+      "norm_weights_physical_bytes": 392192,
+      "norm_weights_bursts": 6128,
+      "weights_logical_bytes": 5354946560,
+      "weights_physical_bytes": 5354946560,
+      "weights_bursts": 83671040,
+      "KV_append_logical_bytes": 147456,
+      "KV_append_physical_bytes": 147456,
+      "KV_append_bursts": 2304,
+      "KV_fused_logical_bytes": 301989888,
+      "KV_fused_physical_bytes": 301989888,
+      "KV_fused_bursts": 4718592,
+      "ffn_fixed_scale_table_logical_bytes": 49536,
+      "ffn_fixed_scale_table_physical_bytes": 50688,
+      "ffn_fixed_scale_table_bursts": 792,
+      "weight_scales_logical_bytes": 2626560,
+      "weight_scales_physical_bytes": 5253120,
+      "weight_scales_bursts": 82080
+    },
+    "max_pending": 32,
+    "queue_policy": "bounded windows; DMA barriers",
+    "energy_status": "configured pJ/byte + background; not a new DRAMPower run"
+  },
+  "attention_activity": {
+    "possible_QK_positions": 2359296,
+    "possible_K_group_positions": 589824,
+    "possible_V_group_positions": 589824,
+    "QK_logical_positions": 2359296,
+    "K_unique_group_positions": 589824,
+    "V_unique_group_positions": 589824
+  },
+  "row_receipts": [],
+  "FFN_activity": {
+    "fixed_x_encoded_values": 92160,
+    "SC_64x64_tiles": 656640,
+    "SC_product_trials": 172134236160,
+    "SC_accepted_stream_samples": 5253120,
+    "SC_4bucket_tiles": 437760,
+    "wide_partial_values": 42024960,
+    "fixed_gu_encoded_values": 700416,
+    "online_absmax_calls": 0,
+    "SC_7bucket_tiles": 218880
+  },
+  "input_provenance": {
+    "kind": "SYNTHETIC_GAUSSIAN_LOGITS",
+    "model_ppl_validated": false,
+    "warning": "routing/memory scenario only; NOT measured Qwen attention or PPL"
+  },
+  "FFN_contract": {
+    "contract": "fixed4_and_direct",
+    "numerical_status": "GU fixed-point coefficient/rounding macro pending bit-exact validation; no inherited PPL",
+    "integer_bound_condition": "offline compiler must fold tile scales into unsigned16 coefficient and output-group common exponent; compiler/rounding equivalence pending",
+    "local_state": {
+      "weight_hold_bytes": 32768,
+      "dma_prefetch_buffer_bytes": 32768,
+      "weight_response_buffer_bytes": 512,
+      "tile_coefficient_and_exponent_bits": 256,
+      "output_group_exponent_bits": 5504,
+      "temporal_counter_bits": 71680,
+      "reduction_pipeline_bits": 262144,
+      "input_probability_state_bits": 1024,
+      "nonlinear_probability_state_bits": 2048,
+      "sigmoid_ROM_bits": 36864,
+      "full_area_mm2": null,
+      "full_energy_J": null
+    },
+    "nonlinear_random": {
+      "kind": "finite_local_independent_R8_macro",
+      "actual_endpoint_executed": false,
+      "counts": {
+        "seed_beats": 120,
+        "warmup_endpoint_cycles": 100,
+        "save": 5472,
+        "streams": 27360,
+        "samples": 1751040,
+        "R8_words": 336199680,
+        "useful_random_low_bits": 2129264640,
+        "joint_cell_visits": 1751040,
+        "producer_batches": 1751040,
+        "native_generated_R8_words": 350208000,
+        "discarded_R8_words": 14008320,
+        "restore": 21888,
+        "release": 5472
+      },
+      "config": {
+        "words_per_cycle": 192,
+        "response_latency": 2,
+        "stream_II": 2,
+        "command_cycles": 2,
+        "state_bits_per_endpoint": 177,
+        "words_per_endpoint": 20,
+        "seed_word_bits": 32,
+        "seed_word_interval_cycles": 100,
+        "warmup_cycles": 5,
+        "reseed_interval_cycles": 100000000
+      },
+      "clock_hz": 100000000,
+      "endpoint_count": 10,
+      "live_and_saved_PRNG_state_bits": 3540,
+      "partial_response_register_bits": 0,
+      "random_stream_SRAM_bytes": 0,
+      "probability_storage": "one live encoded64 group, charged separately",
+      "area_mm2": null,
+      "energy_J": null,
+      "replay": "same saved frame for every Wd output wave; reseed only between frames",
+      "limitations": [
+        "independent per-lane/axis outputs are a statistical interface requirement",
+        "new nonlinear endpoint mapping/seed-port implementation and PPA not validated",
+        "separate finite seed service macro; shared global seed arbitration not connected",
+        "not an unlimited-rate source and not the existing shared64 input source"
+      ]
+    },
+    "weight_pipeline": {
+      "schedule": "dma_prefetch",
+      "counts": {
+        "waves": 82080,
+        "prefetch_bytes": 2689597440,
+        "prefetch_during_previous_array": 75168
+      },
+      "records": [
+        {
+          "wave_id": 1,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 0,
+          "n": 8,
+          "slot": 0,
+          "generation": 1,
+          "issue_ns": 14307017.0878,
+          "dram_done_ns": 14310345.0878,
+          "fill_done_ns": 14312418.0,
+          "program_start_ns": 14312418.0,
+          "program_done_ns": 14314505.0,
+          "coeff_done_ns": 14314667.0878,
+          "array_start_ns": 14314680.0,
+          "array_done_ns": 14315420.0,
+          "restore_done_ns": 14316413.5
+        },
+        {
+          "wave_id": 2,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 8,
+          "n": 8,
+          "slot": 1,
+          "generation": 1,
+          "issue_ns": 14314680.0,
+          "dram_done_ns": 14318008.0,
+          "fill_done_ns": 14320080.5,
+          "program_start_ns": 14320080.5,
+          "program_done_ns": 14322175.0,
+          "coeff_done_ns": 14322329.5878,
+          "array_start_ns": 14322340.0,
+          "array_done_ns": 14323080.0,
+          "restore_done_ns": 14324076.0
+        },
+        {
+          "wave_id": 3,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 16,
+          "n": 8,
+          "slot": 0,
+          "generation": 2,
+          "issue_ns": 14322340.0,
+          "dram_done_ns": 14325668.0,
+          "fill_done_ns": 14327743.0,
+          "program_start_ns": 14327743.0,
+          "program_done_ns": 14329835.0,
+          "coeff_done_ns": 14329992.0878,
+          "array_start_ns": 14330010.0,
+          "array_done_ns": 14330750.0,
+          "restore_done_ns": 14331738.5
+        },
+        {
+          "wave_id": 4,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 24,
+          "n": 8,
+          "slot": 1,
+          "generation": 2,
+          "issue_ns": 14330010.0,
+          "dram_done_ns": 14333338.0,
+          "fill_done_ns": 14335418.0,
+          "program_start_ns": 14335418.0,
+          "program_done_ns": 14337505.0,
+          "coeff_done_ns": 14337667.0878,
+          "array_start_ns": 14337680.0,
+          "array_done_ns": 14338420.0,
+          "restore_done_ns": 14339413.5
+        },
+        {
+          "wave_id": 5,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 32,
+          "n": 8,
+          "slot": 0,
+          "generation": 3,
+          "issue_ns": 14337680.0,
+          "dram_done_ns": 14341008.0,
+          "fill_done_ns": 14343080.5,
+          "program_start_ns": 14343080.5,
+          "program_done_ns": 14345175.0,
+          "coeff_done_ns": 14345329.5878,
+          "array_start_ns": 14345340.0,
+          "array_done_ns": 14346080.0,
+          "restore_done_ns": 14347076.0
+        },
+        {
+          "wave_id": 6,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 40,
+          "n": 8,
+          "slot": 1,
+          "generation": 3,
+          "issue_ns": 14345340.0,
+          "dram_done_ns": 14348668.0,
+          "fill_done_ns": 14350743.0,
+          "program_start_ns": 14350743.0,
+          "program_done_ns": 14352835.0,
+          "coeff_done_ns": 14352992.0878,
+          "array_start_ns": 14353010.0,
+          "array_done_ns": 14353750.0,
+          "restore_done_ns": 14354738.5
+        },
+        {
+          "wave_id": 7,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 48,
+          "n": 8,
+          "slot": 0,
+          "generation": 4,
+          "issue_ns": 14353010.0,
+          "dram_done_ns": 14356338.0,
+          "fill_done_ns": 14358418.0,
+          "program_start_ns": 14358418.0,
+          "program_done_ns": 14360505.0,
+          "coeff_done_ns": 14360667.0878,
+          "array_start_ns": 14360680.0,
+          "array_done_ns": 14361420.0,
+          "restore_done_ns": 14362413.5
+        },
+        {
+          "wave_id": 8,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 56,
+          "n": 8,
+          "slot": 1,
+          "generation": 4,
+          "issue_ns": 14360680.0,
+          "dram_done_ns": 14364008.0,
+          "fill_done_ns": 14366080.5,
+          "program_start_ns": 14366080.5,
+          "program_done_ns": 14368175.0,
+          "coeff_done_ns": 14368329.5878,
+          "array_start_ns": 14368340.0,
+          "array_done_ns": 14369080.0,
+          "restore_done_ns": 14370076.0
+        },
+        {
+          "wave_id": 9,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 64,
+          "n": 8,
+          "slot": 0,
+          "generation": 5,
+          "issue_ns": 14368340.0,
+          "dram_done_ns": 14371668.0,
+          "fill_done_ns": 14373743.0,
+          "program_start_ns": 14373743.0,
+          "program_done_ns": 14375835.0,
+          "coeff_done_ns": 14375992.0878,
+          "array_start_ns": 14376010.0,
+          "array_done_ns": 14376750.0,
+          "restore_done_ns": 14377738.5
+        },
+        {
+          "wave_id": 10,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 72,
+          "n": 8,
+          "slot": 1,
+          "generation": 5,
+          "issue_ns": 14376010.0,
+          "dram_done_ns": 14379338.0,
+          "fill_done_ns": 14381418.0,
+          "program_start_ns": 14381418.0,
+          "program_done_ns": 14383505.0,
+          "coeff_done_ns": 14383667.0878,
+          "array_start_ns": 14383680.0,
+          "array_done_ns": 14384420.0,
+          "restore_done_ns": 14385413.5
+        },
+        {
+          "wave_id": 11,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 80,
+          "n": 8,
+          "slot": 0,
+          "generation": 6,
+          "issue_ns": 14383680.0,
+          "dram_done_ns": 14387008.0,
+          "fill_done_ns": 14389080.5,
+          "program_start_ns": 14389080.5,
+          "program_done_ns": 14391175.0,
+          "coeff_done_ns": 14391329.5878,
+          "array_start_ns": 14391340.0,
+          "array_done_ns": 14392080.0,
+          "restore_done_ns": 14393076.0
+        },
+        {
+          "wave_id": 12,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 88,
+          "n": 8,
+          "slot": 1,
+          "generation": 6,
+          "issue_ns": 14391340.0,
+          "dram_done_ns": 14394668.0,
+          "fill_done_ns": 14396743.0,
+          "program_start_ns": 14396743.0,
+          "program_done_ns": 14398835.0,
+          "coeff_done_ns": 14398992.0878,
+          "array_start_ns": 14399010.0,
+          "array_done_ns": 14399750.0,
+          "restore_done_ns": 14400738.5
+        },
+        {
+          "wave_id": 13,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 96,
+          "n": 8,
+          "slot": 0,
+          "generation": 7,
+          "issue_ns": 14399010.0,
+          "dram_done_ns": 14402338.0,
+          "fill_done_ns": 14404418.0,
+          "program_start_ns": 14404418.0,
+          "program_done_ns": 14406505.0,
+          "coeff_done_ns": 14406667.0878,
+          "array_start_ns": 14406680.0,
+          "array_done_ns": 14407420.0,
+          "restore_done_ns": 14408413.5
+        },
+        {
+          "wave_id": 14,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 104,
+          "n": 8,
+          "slot": 1,
+          "generation": 7,
+          "issue_ns": 14406680.0,
+          "dram_done_ns": 14410008.0,
+          "fill_done_ns": 14412080.5,
+          "program_start_ns": 14412080.5,
+          "program_done_ns": 14414175.0,
+          "coeff_done_ns": 14414329.5878,
+          "array_start_ns": 14414340.0,
+          "array_done_ns": 14415080.0,
+          "restore_done_ns": 14416076.0
+        },
+        {
+          "wave_id": 15,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 112,
+          "n": 8,
+          "slot": 0,
+          "generation": 8,
+          "issue_ns": 14414340.0,
+          "dram_done_ns": 14417668.0,
+          "fill_done_ns": 14419743.0,
+          "program_start_ns": 14419743.0,
+          "program_done_ns": 14421835.0,
+          "coeff_done_ns": 14421992.0878,
+          "array_start_ns": 14422010.0,
+          "array_done_ns": 14422750.0,
+          "restore_done_ns": 14423738.5
+        },
+        {
+          "wave_id": 16,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 120,
+          "n": 8,
+          "slot": 1,
+          "generation": 8,
+          "issue_ns": 14422010.0,
+          "dram_done_ns": 14425338.0,
+          "fill_done_ns": 14427418.0,
+          "program_start_ns": 14427418.0,
+          "program_done_ns": 14429505.0,
+          "coeff_done_ns": 14429667.0878,
+          "array_start_ns": 14429680.0,
+          "array_done_ns": 14430420.0,
+          "restore_done_ns": 14431413.5
+        },
+        {
+          "wave_id": 17,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 128,
+          "n": 8,
+          "slot": 0,
+          "generation": 9,
+          "issue_ns": 14429680.0,
+          "dram_done_ns": 14433008.0,
+          "fill_done_ns": 14435080.5,
+          "program_start_ns": 14435080.5,
+          "program_done_ns": 14437175.0,
+          "coeff_done_ns": 14437329.5878,
+          "array_start_ns": 14437340.0,
+          "array_done_ns": 14438080.0,
+          "restore_done_ns": 14439076.0
+        },
+        {
+          "wave_id": 18,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 136,
+          "n": 8,
+          "slot": 1,
+          "generation": 9,
+          "issue_ns": 14437340.0,
+          "dram_done_ns": 14440668.0,
+          "fill_done_ns": 14442743.0,
+          "program_start_ns": 14442743.0,
+          "program_done_ns": 14444835.0,
+          "coeff_done_ns": 14444992.0878,
+          "array_start_ns": 14445010.0,
+          "array_done_ns": 14445750.0,
+          "restore_done_ns": 14446738.5
+        },
+        {
+          "wave_id": 19,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 144,
+          "n": 8,
+          "slot": 0,
+          "generation": 10,
+          "issue_ns": 14445010.0,
+          "dram_done_ns": 14448338.0,
+          "fill_done_ns": 14450418.0,
+          "program_start_ns": 14450418.0,
+          "program_done_ns": 14452505.0,
+          "coeff_done_ns": 14452667.0878,
+          "array_start_ns": 14452680.0,
+          "array_done_ns": 14453420.0,
+          "restore_done_ns": 14454413.5
+        },
+        {
+          "wave_id": 20,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 152,
+          "n": 8,
+          "slot": 1,
+          "generation": 10,
+          "issue_ns": 14452680.0,
+          "dram_done_ns": 14456008.0,
+          "fill_done_ns": 14458080.5,
+          "program_start_ns": 14458080.5,
+          "program_done_ns": 14460175.0,
+          "coeff_done_ns": 14460329.5878,
+          "array_start_ns": 14460340.0,
+          "array_done_ns": 14461080.0,
+          "restore_done_ns": 14462076.0
+        },
+        {
+          "wave_id": 21,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 160,
+          "n": 8,
+          "slot": 0,
+          "generation": 11,
+          "issue_ns": 14460340.0,
+          "dram_done_ns": 14463668.0,
+          "fill_done_ns": 14465743.0,
+          "program_start_ns": 14465743.0,
+          "program_done_ns": 14467835.0,
+          "coeff_done_ns": 14467992.0878,
+          "array_start_ns": 14468010.0,
+          "array_done_ns": 14468750.0,
+          "restore_done_ns": 14469738.5
+        },
+        {
+          "wave_id": 22,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 168,
+          "n": 8,
+          "slot": 1,
+          "generation": 11,
+          "issue_ns": 14468010.0,
+          "dram_done_ns": 14471338.0,
+          "fill_done_ns": 14473418.0,
+          "program_start_ns": 14473418.0,
+          "program_done_ns": 14475505.0,
+          "coeff_done_ns": 14475667.0878,
+          "array_start_ns": 14475680.0,
+          "array_done_ns": 14476420.0,
+          "restore_done_ns": 14477413.5
+        },
+        {
+          "wave_id": 23,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 176,
+          "n": 8,
+          "slot": 0,
+          "generation": 12,
+          "issue_ns": 14475680.0,
+          "dram_done_ns": 14479008.0,
+          "fill_done_ns": 14481080.5,
+          "program_start_ns": 14481080.5,
+          "program_done_ns": 14483175.0,
+          "coeff_done_ns": 14483329.5878,
+          "array_start_ns": 14483340.0,
+          "array_done_ns": 14484080.0,
+          "restore_done_ns": 14485076.0
+        },
+        {
+          "wave_id": 24,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 184,
+          "n": 8,
+          "slot": 1,
+          "generation": 12,
+          "issue_ns": 14483340.0,
+          "dram_done_ns": 14486668.0,
+          "fill_done_ns": 14488743.0,
+          "program_start_ns": 14488743.0,
+          "program_done_ns": 14490835.0,
+          "coeff_done_ns": 14490992.0878,
+          "array_start_ns": 14491010.0,
+          "array_done_ns": 14491750.0,
+          "restore_done_ns": 14492738.5
+        },
+        {
+          "wave_id": 25,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 192,
+          "n": 8,
+          "slot": 0,
+          "generation": 13,
+          "issue_ns": 14491010.0,
+          "dram_done_ns": 14494338.0,
+          "fill_done_ns": 14496418.0,
+          "program_start_ns": 14496418.0,
+          "program_done_ns": 14498505.0,
+          "coeff_done_ns": 14498667.0878,
+          "array_start_ns": 14498680.0,
+          "array_done_ns": 14499420.0,
+          "restore_done_ns": 14500413.5
+        },
+        {
+          "wave_id": 26,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 200,
+          "n": 8,
+          "slot": 1,
+          "generation": 13,
+          "issue_ns": 14498680.0,
+          "dram_done_ns": 14502008.0,
+          "fill_done_ns": 14504080.5,
+          "program_start_ns": 14504080.5,
+          "program_done_ns": 14506175.0,
+          "coeff_done_ns": 14506329.5878,
+          "array_start_ns": 14506340.0,
+          "array_done_ns": 14507080.0,
+          "restore_done_ns": 14508076.0
+        },
+        {
+          "wave_id": 27,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 208,
+          "n": 8,
+          "slot": 0,
+          "generation": 14,
+          "issue_ns": 14506340.0,
+          "dram_done_ns": 14509668.0,
+          "fill_done_ns": 14511743.0,
+          "program_start_ns": 14511743.0,
+          "program_done_ns": 14513835.0,
+          "coeff_done_ns": 14513992.0878,
+          "array_start_ns": 14514010.0,
+          "array_done_ns": 14514750.0,
+          "restore_done_ns": 14515738.5
+        },
+        {
+          "wave_id": 28,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 216,
+          "n": 8,
+          "slot": 1,
+          "generation": 14,
+          "issue_ns": 14514010.0,
+          "dram_done_ns": 14517338.0,
+          "fill_done_ns": 14519418.0,
+          "program_start_ns": 14519418.0,
+          "program_done_ns": 14521505.0,
+          "coeff_done_ns": 14521667.0878,
+          "array_start_ns": 14521680.0,
+          "array_done_ns": 14522420.0,
+          "restore_done_ns": 14523413.5
+        },
+        {
+          "wave_id": 29,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 224,
+          "n": 8,
+          "slot": 0,
+          "generation": 15,
+          "issue_ns": 14521680.0,
+          "dram_done_ns": 14525008.0,
+          "fill_done_ns": 14527080.5,
+          "program_start_ns": 14527080.5,
+          "program_done_ns": 14529175.0,
+          "coeff_done_ns": 14529329.5878,
+          "array_start_ns": 14529340.0,
+          "array_done_ns": 14530080.0,
+          "restore_done_ns": 14531076.0
+        },
+        {
+          "wave_id": 30,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 232,
+          "n": 8,
+          "slot": 1,
+          "generation": 15,
+          "issue_ns": 14529340.0,
+          "dram_done_ns": 14532668.0,
+          "fill_done_ns": 14534743.0,
+          "program_start_ns": 14534743.0,
+          "program_done_ns": 14536835.0,
+          "coeff_done_ns": 14536992.0878,
+          "array_start_ns": 14537010.0,
+          "array_done_ns": 14537750.0,
+          "restore_done_ns": 14538738.5
+        },
+        {
+          "wave_id": 31,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 240,
+          "n": 8,
+          "slot": 0,
+          "generation": 16,
+          "issue_ns": 14537010.0,
+          "dram_done_ns": 14540338.0,
+          "fill_done_ns": 14542418.0,
+          "program_start_ns": 14542418.0,
+          "program_done_ns": 14544505.0,
+          "coeff_done_ns": 14544667.0878,
+          "array_start_ns": 14544680.0,
+          "array_done_ns": 14545420.0,
+          "restore_done_ns": 14546413.5
+        },
+        {
+          "wave_id": 32,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 248,
+          "n": 8,
+          "slot": 1,
+          "generation": 16,
+          "issue_ns": 14544680.0,
+          "dram_done_ns": 14548008.0,
+          "fill_done_ns": 14550080.5,
+          "program_start_ns": 14550080.5,
+          "program_done_ns": 14552175.0,
+          "coeff_done_ns": 14552329.5878,
+          "array_start_ns": 14552340.0,
+          "array_done_ns": 14553080.0,
+          "restore_done_ns": 14554076.0
+        },
+        {
+          "wave_id": 33,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 256,
+          "n": 8,
+          "slot": 0,
+          "generation": 17,
+          "issue_ns": 14552340.0,
+          "dram_done_ns": 14555668.0,
+          "fill_done_ns": 14557743.0,
+          "program_start_ns": 14557743.0,
+          "program_done_ns": 14559835.0,
+          "coeff_done_ns": 14559992.0878,
+          "array_start_ns": 14560010.0,
+          "array_done_ns": 14560750.0,
+          "restore_done_ns": 14561738.5
+        },
+        {
+          "wave_id": 34,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 264,
+          "n": 8,
+          "slot": 1,
+          "generation": 17,
+          "issue_ns": 14560010.0,
+          "dram_done_ns": 14563338.0,
+          "fill_done_ns": 14565418.0,
+          "program_start_ns": 14565418.0,
+          "program_done_ns": 14567505.0,
+          "coeff_done_ns": 14567667.0878,
+          "array_start_ns": 14567680.0,
+          "array_done_ns": 14568420.0,
+          "restore_done_ns": 14569413.5
+        },
+        {
+          "wave_id": 35,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 272,
+          "n": 8,
+          "slot": 0,
+          "generation": 18,
+          "issue_ns": 14567680.0,
+          "dram_done_ns": 14571008.0,
+          "fill_done_ns": 14573080.5,
+          "program_start_ns": 14573080.5,
+          "program_done_ns": 14575175.0,
+          "coeff_done_ns": 14575329.5878,
+          "array_start_ns": 14575340.0,
+          "array_done_ns": 14576080.0,
+          "restore_done_ns": 14577076.0
+        },
+        {
+          "wave_id": 36,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 280,
+          "n": 8,
+          "slot": 1,
+          "generation": 18,
+          "issue_ns": 14575340.0,
+          "dram_done_ns": 14578668.0,
+          "fill_done_ns": 14580743.0,
+          "program_start_ns": 14580743.0,
+          "program_done_ns": 14582835.0,
+          "coeff_done_ns": 14582992.0878,
+          "array_start_ns": 14583010.0,
+          "array_done_ns": 14583750.0,
+          "restore_done_ns": 14584738.5
+        },
+        {
+          "wave_id": 37,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 288,
+          "n": 8,
+          "slot": 0,
+          "generation": 19,
+          "issue_ns": 14583010.0,
+          "dram_done_ns": 14586338.0,
+          "fill_done_ns": 14588418.0,
+          "program_start_ns": 14588418.0,
+          "program_done_ns": 14590505.0,
+          "coeff_done_ns": 14590667.0878,
+          "array_start_ns": 14590680.0,
+          "array_done_ns": 14591420.0,
+          "restore_done_ns": 14592413.5
+        },
+        {
+          "wave_id": 38,
+          "name": "L0/gu",
+          "k": 0,
+          "j": 296,
+          "n": 8,
+          "slot": 1,
+          "generation": 19,
+          "issue_ns": 14590680.0,
+          "dram_done_ns": 14594008.0,
+          "fill_done_ns": 14596080.5,
+          "program_start_ns": 14596080.5,
+          "program_done_ns": 14598175.0,
+          "coeff_done_ns": 14598329.5878,
+          "array_start_ns": 14598340.0,
+          "array_done_ns": 14599080.0,
+          "restore_done_ns": 14600076.0
+        },
+        {
+          "wave_id": 39,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 0,
+          "n": 8,
+          "slot": 0,
+          "generation": 20,
+          "issue_ns": 14600267.0878,
+          "dram_done_ns": 14603595.0878,
+          "fill_done_ns": 14605668.0,
+          "program_start_ns": 14605668.0,
+          "program_done_ns": 14607755.0,
+          "coeff_done_ns": 14607917.0878,
+          "array_start_ns": 14607930.0,
+          "array_done_ns": 14608670.0,
+          "restore_done_ns": 14610126.0
+        },
+        {
+          "wave_id": 40,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 8,
+          "n": 8,
+          "slot": 1,
+          "generation": 20,
+          "issue_ns": 14607930.0,
+          "dram_done_ns": 14611258.0,
+          "fill_done_ns": 14613330.5,
+          "program_start_ns": 14613330.5,
+          "program_done_ns": 14615425.0,
+          "coeff_done_ns": 14615579.5878,
+          "array_start_ns": 14615590.0,
+          "array_done_ns": 14616330.0,
+          "restore_done_ns": 14617776.0
+        },
+        {
+          "wave_id": 41,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 16,
+          "n": 8,
+          "slot": 0,
+          "generation": 21,
+          "issue_ns": 14615590.0,
+          "dram_done_ns": 14618918.0,
+          "fill_done_ns": 14620993.0,
+          "program_start_ns": 14620993.0,
+          "program_done_ns": 14623085.0,
+          "coeff_done_ns": 14623242.0878,
+          "array_start_ns": 14623260.0,
+          "array_done_ns": 14624000.0,
+          "restore_done_ns": 14625438.5
+        },
+        {
+          "wave_id": 42,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 24,
+          "n": 8,
+          "slot": 1,
+          "generation": 21,
+          "issue_ns": 14623260.0,
+          "dram_done_ns": 14626588.0,
+          "fill_done_ns": 14628668.0,
+          "program_start_ns": 14628668.0,
+          "program_done_ns": 14630755.0,
+          "coeff_done_ns": 14630917.0878,
+          "array_start_ns": 14630930.0,
+          "array_done_ns": 14631670.0,
+          "restore_done_ns": 14633126.0
+        },
+        {
+          "wave_id": 43,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 32,
+          "n": 8,
+          "slot": 0,
+          "generation": 22,
+          "issue_ns": 14630930.0,
+          "dram_done_ns": 14634258.0,
+          "fill_done_ns": 14636330.5,
+          "program_start_ns": 14636330.5,
+          "program_done_ns": 14638425.0,
+          "coeff_done_ns": 14638579.5878,
+          "array_start_ns": 14638590.0,
+          "array_done_ns": 14639330.0,
+          "restore_done_ns": 14640776.0
+        },
+        {
+          "wave_id": 44,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 40,
+          "n": 8,
+          "slot": 1,
+          "generation": 22,
+          "issue_ns": 14638590.0,
+          "dram_done_ns": 14641918.0,
+          "fill_done_ns": 14643993.0,
+          "program_start_ns": 14643993.0,
+          "program_done_ns": 14646085.0,
+          "coeff_done_ns": 14646242.0878,
+          "array_start_ns": 14646260.0,
+          "array_done_ns": 14647000.0,
+          "restore_done_ns": 14648438.5
+        },
+        {
+          "wave_id": 45,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 48,
+          "n": 8,
+          "slot": 0,
+          "generation": 23,
+          "issue_ns": 14646260.0,
+          "dram_done_ns": 14649588.0,
+          "fill_done_ns": 14651668.0,
+          "program_start_ns": 14651668.0,
+          "program_done_ns": 14653755.0,
+          "coeff_done_ns": 14653917.0878,
+          "array_start_ns": 14653930.0,
+          "array_done_ns": 14654670.0,
+          "restore_done_ns": 14656126.0
+        },
+        {
+          "wave_id": 46,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 56,
+          "n": 8,
+          "slot": 1,
+          "generation": 23,
+          "issue_ns": 14653930.0,
+          "dram_done_ns": 14657258.0,
+          "fill_done_ns": 14659330.5,
+          "program_start_ns": 14659330.5,
+          "program_done_ns": 14661425.0,
+          "coeff_done_ns": 14661579.5878,
+          "array_start_ns": 14661590.0,
+          "array_done_ns": 14662330.0,
+          "restore_done_ns": 14663776.0
+        },
+        {
+          "wave_id": 47,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 64,
+          "n": 8,
+          "slot": 0,
+          "generation": 24,
+          "issue_ns": 14661590.0,
+          "dram_done_ns": 14664918.0,
+          "fill_done_ns": 14666993.0,
+          "program_start_ns": 14666993.0,
+          "program_done_ns": 14669085.0,
+          "coeff_done_ns": 14669242.0878,
+          "array_start_ns": 14669260.0,
+          "array_done_ns": 14670000.0,
+          "restore_done_ns": 14671438.5
+        },
+        {
+          "wave_id": 48,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 72,
+          "n": 8,
+          "slot": 1,
+          "generation": 24,
+          "issue_ns": 14669260.0,
+          "dram_done_ns": 14672588.0,
+          "fill_done_ns": 14674668.0,
+          "program_start_ns": 14674668.0,
+          "program_done_ns": 14676755.0,
+          "coeff_done_ns": 14676917.0878,
+          "array_start_ns": 14676930.0,
+          "array_done_ns": 14677670.0,
+          "restore_done_ns": 14679126.0
+        },
+        {
+          "wave_id": 49,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 80,
+          "n": 8,
+          "slot": 0,
+          "generation": 25,
+          "issue_ns": 14676930.0,
+          "dram_done_ns": 14680258.0,
+          "fill_done_ns": 14682330.5,
+          "program_start_ns": 14682330.5,
+          "program_done_ns": 14684425.0,
+          "coeff_done_ns": 14684579.5878,
+          "array_start_ns": 14684590.0,
+          "array_done_ns": 14685330.0,
+          "restore_done_ns": 14686776.0
+        },
+        {
+          "wave_id": 50,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 88,
+          "n": 8,
+          "slot": 1,
+          "generation": 25,
+          "issue_ns": 14684590.0,
+          "dram_done_ns": 14687918.0,
+          "fill_done_ns": 14689993.0,
+          "program_start_ns": 14689993.0,
+          "program_done_ns": 14692085.0,
+          "coeff_done_ns": 14692242.0878,
+          "array_start_ns": 14692260.0,
+          "array_done_ns": 14693000.0,
+          "restore_done_ns": 14694438.5
+        },
+        {
+          "wave_id": 51,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 96,
+          "n": 8,
+          "slot": 0,
+          "generation": 26,
+          "issue_ns": 14692260.0,
+          "dram_done_ns": 14695588.0,
+          "fill_done_ns": 14697668.0,
+          "program_start_ns": 14697668.0,
+          "program_done_ns": 14699755.0,
+          "coeff_done_ns": 14699917.0878,
+          "array_start_ns": 14699930.0,
+          "array_done_ns": 14700670.0,
+          "restore_done_ns": 14702126.0
+        },
+        {
+          "wave_id": 52,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 104,
+          "n": 8,
+          "slot": 1,
+          "generation": 26,
+          "issue_ns": 14699930.0,
+          "dram_done_ns": 14703258.0,
+          "fill_done_ns": 14705330.5,
+          "program_start_ns": 14705330.5,
+          "program_done_ns": 14707425.0,
+          "coeff_done_ns": 14707579.5878,
+          "array_start_ns": 14707590.0,
+          "array_done_ns": 14708330.0,
+          "restore_done_ns": 14709776.0
+        },
+        {
+          "wave_id": 53,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 112,
+          "n": 8,
+          "slot": 0,
+          "generation": 27,
+          "issue_ns": 14707590.0,
+          "dram_done_ns": 14710918.0,
+          "fill_done_ns": 14712993.0,
+          "program_start_ns": 14712993.0,
+          "program_done_ns": 14715085.0,
+          "coeff_done_ns": 14715242.0878,
+          "array_start_ns": 14715260.0,
+          "array_done_ns": 14716000.0,
+          "restore_done_ns": 14717438.5
+        },
+        {
+          "wave_id": 54,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 120,
+          "n": 8,
+          "slot": 1,
+          "generation": 27,
+          "issue_ns": 14715260.0,
+          "dram_done_ns": 14718588.0,
+          "fill_done_ns": 14720668.0,
+          "program_start_ns": 14720668.0,
+          "program_done_ns": 14722755.0,
+          "coeff_done_ns": 14722917.0878,
+          "array_start_ns": 14722930.0,
+          "array_done_ns": 14723670.0,
+          "restore_done_ns": 14725126.0
+        },
+        {
+          "wave_id": 55,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 128,
+          "n": 8,
+          "slot": 0,
+          "generation": 28,
+          "issue_ns": 14722930.0,
+          "dram_done_ns": 14726258.0,
+          "fill_done_ns": 14728330.5,
+          "program_start_ns": 14728330.5,
+          "program_done_ns": 14730425.0,
+          "coeff_done_ns": 14730579.5878,
+          "array_start_ns": 14730590.0,
+          "array_done_ns": 14731330.0,
+          "restore_done_ns": 14732776.0
+        },
+        {
+          "wave_id": 56,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 136,
+          "n": 8,
+          "slot": 1,
+          "generation": 28,
+          "issue_ns": 14730590.0,
+          "dram_done_ns": 14733918.0,
+          "fill_done_ns": 14735993.0,
+          "program_start_ns": 14735993.0,
+          "program_done_ns": 14738085.0,
+          "coeff_done_ns": 14738242.0878,
+          "array_start_ns": 14738260.0,
+          "array_done_ns": 14739000.0,
+          "restore_done_ns": 14740438.5
+        },
+        {
+          "wave_id": 57,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 144,
+          "n": 8,
+          "slot": 0,
+          "generation": 29,
+          "issue_ns": 14738260.0,
+          "dram_done_ns": 14741588.0,
+          "fill_done_ns": 14743668.0,
+          "program_start_ns": 14743668.0,
+          "program_done_ns": 14745755.0,
+          "coeff_done_ns": 14745917.0878,
+          "array_start_ns": 14745930.0,
+          "array_done_ns": 14746670.0,
+          "restore_done_ns": 14748126.0
+        },
+        {
+          "wave_id": 58,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 152,
+          "n": 8,
+          "slot": 1,
+          "generation": 29,
+          "issue_ns": 14745930.0,
+          "dram_done_ns": 14749258.0,
+          "fill_done_ns": 14751330.5,
+          "program_start_ns": 14751330.5,
+          "program_done_ns": 14753425.0,
+          "coeff_done_ns": 14753579.5878,
+          "array_start_ns": 14753590.0,
+          "array_done_ns": 14754330.0,
+          "restore_done_ns": 14755776.0
+        },
+        {
+          "wave_id": 59,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 160,
+          "n": 8,
+          "slot": 0,
+          "generation": 30,
+          "issue_ns": 14753590.0,
+          "dram_done_ns": 14756918.0,
+          "fill_done_ns": 14758993.0,
+          "program_start_ns": 14758993.0,
+          "program_done_ns": 14761085.0,
+          "coeff_done_ns": 14761242.0878,
+          "array_start_ns": 14761260.0,
+          "array_done_ns": 14762000.0,
+          "restore_done_ns": 14763438.5
+        },
+        {
+          "wave_id": 60,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 168,
+          "n": 8,
+          "slot": 1,
+          "generation": 30,
+          "issue_ns": 14761260.0,
+          "dram_done_ns": 14764588.0,
+          "fill_done_ns": 14766668.0,
+          "program_start_ns": 14766668.0,
+          "program_done_ns": 14768755.0,
+          "coeff_done_ns": 14768917.0878,
+          "array_start_ns": 14768930.0,
+          "array_done_ns": 14769670.0,
+          "restore_done_ns": 14771126.0
+        },
+        {
+          "wave_id": 61,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 176,
+          "n": 8,
+          "slot": 0,
+          "generation": 31,
+          "issue_ns": 14768930.0,
+          "dram_done_ns": 14772258.0,
+          "fill_done_ns": 14774330.5,
+          "program_start_ns": 14774330.5,
+          "program_done_ns": 14776425.0,
+          "coeff_done_ns": 14776579.5878,
+          "array_start_ns": 14776590.0,
+          "array_done_ns": 14777330.0,
+          "restore_done_ns": 14778776.0
+        },
+        {
+          "wave_id": 62,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 184,
+          "n": 8,
+          "slot": 1,
+          "generation": 31,
+          "issue_ns": 14776590.0,
+          "dram_done_ns": 14779918.0,
+          "fill_done_ns": 14781993.0,
+          "program_start_ns": 14781993.0,
+          "program_done_ns": 14784085.0,
+          "coeff_done_ns": 14784242.0878,
+          "array_start_ns": 14784260.0,
+          "array_done_ns": 14785000.0,
+          "restore_done_ns": 14786438.5
+        },
+        {
+          "wave_id": 63,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 192,
+          "n": 8,
+          "slot": 0,
+          "generation": 32,
+          "issue_ns": 14784260.0,
+          "dram_done_ns": 14787588.0,
+          "fill_done_ns": 14789668.0,
+          "program_start_ns": 14789668.0,
+          "program_done_ns": 14791755.0,
+          "coeff_done_ns": 14791917.0878,
+          "array_start_ns": 14791930.0,
+          "array_done_ns": 14792670.0,
+          "restore_done_ns": 14794126.0
+        },
+        {
+          "wave_id": 64,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 200,
+          "n": 8,
+          "slot": 1,
+          "generation": 32,
+          "issue_ns": 14791930.0,
+          "dram_done_ns": 14795258.0,
+          "fill_done_ns": 14797330.5,
+          "program_start_ns": 14797330.5,
+          "program_done_ns": 14799425.0,
+          "coeff_done_ns": 14799579.5878,
+          "array_start_ns": 14799590.0,
+          "array_done_ns": 14800330.0,
+          "restore_done_ns": 14801776.0
+        },
+        {
+          "wave_id": 65,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 208,
+          "n": 8,
+          "slot": 0,
+          "generation": 33,
+          "issue_ns": 14799590.0,
+          "dram_done_ns": 14802918.0,
+          "fill_done_ns": 14804993.0,
+          "program_start_ns": 14804993.0,
+          "program_done_ns": 14807085.0,
+          "coeff_done_ns": 14807242.0878,
+          "array_start_ns": 14807260.0,
+          "array_done_ns": 14808000.0,
+          "restore_done_ns": 14809438.5
+        },
+        {
+          "wave_id": 66,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 216,
+          "n": 8,
+          "slot": 1,
+          "generation": 33,
+          "issue_ns": 14807260.0,
+          "dram_done_ns": 14810588.0,
+          "fill_done_ns": 14812668.0,
+          "program_start_ns": 14812668.0,
+          "program_done_ns": 14814755.0,
+          "coeff_done_ns": 14814917.0878,
+          "array_start_ns": 14814930.0,
+          "array_done_ns": 14815670.0,
+          "restore_done_ns": 14817126.0
+        },
+        {
+          "wave_id": 67,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 224,
+          "n": 8,
+          "slot": 0,
+          "generation": 34,
+          "issue_ns": 14814930.0,
+          "dram_done_ns": 14818258.0,
+          "fill_done_ns": 14820330.5,
+          "program_start_ns": 14820330.5,
+          "program_done_ns": 14822425.0,
+          "coeff_done_ns": 14822579.5878,
+          "array_start_ns": 14822590.0,
+          "array_done_ns": 14823330.0,
+          "restore_done_ns": 14824776.0
+        },
+        {
+          "wave_id": 68,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 232,
+          "n": 8,
+          "slot": 1,
+          "generation": 34,
+          "issue_ns": 14822590.0,
+          "dram_done_ns": 14825918.0,
+          "fill_done_ns": 14827993.0,
+          "program_start_ns": 14827993.0,
+          "program_done_ns": 14830085.0,
+          "coeff_done_ns": 14830242.0878,
+          "array_start_ns": 14830260.0,
+          "array_done_ns": 14831000.0,
+          "restore_done_ns": 14832438.5
+        },
+        {
+          "wave_id": 69,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 240,
+          "n": 8,
+          "slot": 0,
+          "generation": 35,
+          "issue_ns": 14830260.0,
+          "dram_done_ns": 14833588.0,
+          "fill_done_ns": 14835668.0,
+          "program_start_ns": 14835668.0,
+          "program_done_ns": 14837755.0,
+          "coeff_done_ns": 14837917.0878,
+          "array_start_ns": 14837930.0,
+          "array_done_ns": 14838670.0,
+          "restore_done_ns": 14840126.0
+        },
+        {
+          "wave_id": 70,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 248,
+          "n": 8,
+          "slot": 1,
+          "generation": 35,
+          "issue_ns": 14837930.0,
+          "dram_done_ns": 14841258.0,
+          "fill_done_ns": 14843330.5,
+          "program_start_ns": 14843330.5,
+          "program_done_ns": 14845425.0,
+          "coeff_done_ns": 14845579.5878,
+          "array_start_ns": 14845590.0,
+          "array_done_ns": 14846330.0,
+          "restore_done_ns": 14847776.0
+        },
+        {
+          "wave_id": 71,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 256,
+          "n": 8,
+          "slot": 0,
+          "generation": 36,
+          "issue_ns": 14845590.0,
+          "dram_done_ns": 14848918.0,
+          "fill_done_ns": 14850993.0,
+          "program_start_ns": 14850993.0,
+          "program_done_ns": 14853085.0,
+          "coeff_done_ns": 14853242.0878,
+          "array_start_ns": 14853260.0,
+          "array_done_ns": 14854000.0,
+          "restore_done_ns": 14855438.5
+        },
+        {
+          "wave_id": 72,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 264,
+          "n": 8,
+          "slot": 1,
+          "generation": 36,
+          "issue_ns": 14853260.0,
+          "dram_done_ns": 14856588.0,
+          "fill_done_ns": 14858668.0,
+          "program_start_ns": 14858668.0,
+          "program_done_ns": 14860755.0,
+          "coeff_done_ns": 14860917.0878,
+          "array_start_ns": 14860930.0,
+          "array_done_ns": 14861670.0,
+          "restore_done_ns": 14863126.0
+        },
+        {
+          "wave_id": 73,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 272,
+          "n": 8,
+          "slot": 0,
+          "generation": 37,
+          "issue_ns": 14860930.0,
+          "dram_done_ns": 14864258.0,
+          "fill_done_ns": 14866330.5,
+          "program_start_ns": 14866330.5,
+          "program_done_ns": 14868425.0,
+          "coeff_done_ns": 14868579.5878,
+          "array_start_ns": 14868590.0,
+          "array_done_ns": 14869330.0,
+          "restore_done_ns": 14870776.0
+        },
+        {
+          "wave_id": 74,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 280,
+          "n": 8,
+          "slot": 1,
+          "generation": 37,
+          "issue_ns": 14868590.0,
+          "dram_done_ns": 14871918.0,
+          "fill_done_ns": 14873993.0,
+          "program_start_ns": 14873993.0,
+          "program_done_ns": 14876085.0,
+          "coeff_done_ns": 14876242.0878,
+          "array_start_ns": 14876260.0,
+          "array_done_ns": 14877000.0,
+          "restore_done_ns": 14878438.5
+        },
+        {
+          "wave_id": 75,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 288,
+          "n": 8,
+          "slot": 0,
+          "generation": 38,
+          "issue_ns": 14876260.0,
+          "dram_done_ns": 14879588.0,
+          "fill_done_ns": 14881668.0,
+          "program_start_ns": 14881668.0,
+          "program_done_ns": 14883755.0,
+          "coeff_done_ns": 14883917.0878,
+          "array_start_ns": 14883930.0,
+          "array_done_ns": 14884670.0,
+          "restore_done_ns": 14886126.0
+        },
+        {
+          "wave_id": 76,
+          "name": "L0/gu",
+          "k": 1,
+          "j": 296,
+          "n": 8,
+          "slot": 1,
+          "generation": 38,
+          "issue_ns": 14883930.0,
+          "dram_done_ns": 14887258.0,
+          "fill_done_ns": 14889330.5,
+          "program_start_ns": 14889330.5,
+          "program_done_ns": 14891425.0,
+          "coeff_done_ns": 14891579.5878,
+          "array_start_ns": 14891590.0,
+          "array_done_ns": 14892330.0,
+          "restore_done_ns": 14893776.0
+        },
+        {
+          "wave_id": 77,
+          "name": "L0/gu",
+          "k": 2,
+          "j": 0,
+          "n": 8,
+          "slot": 0,
+          "generation": 39,
+          "issue_ns": 14893967.0878,
+          "dram_done_ns": 14897295.0878,
+          "fill_done_ns": 14899368.0,
+          "program_start_ns": 14899368.0,
+          "program_done_ns": 14901455.0,
+          "coeff_done_ns": 14901617.0878,
+          "array_start_ns": 14901630.0,
+          "array_done_ns": 14902370.0,
+          "restore_done_ns": 14903826.0
+        },
+        {
+          "wave_id": 78,
+          "name": "L0/gu",
+          "k": 2,
+          "j": 8,
+          "n": 8,
+          "slot": 1,
+          "generation": 39,
+          "issue_ns": 14901630.0,
+          "dram_done_ns": 14904958.0,
+          "fill_done_ns": 14907030.5,
+          "program_start_ns": 14907030.5,
+          "program_done_ns": 14909125.0,
+          "coeff_done_ns": 14909279.5878,
+          "array_start_ns": 14909290.0,
+          "array_done_ns": 14910030.0,
+          "restore_done_ns": 14911476.0
+        },
+        {
+          "wave_id": 79,
+          "name": "L0/gu",
+          "k": 2,
+          "j": 16,
+          "n": 8,
+          "slot": 0,
+          "generation": 40,
+          "issue_ns": 14909290.0,
+          "dram_done_ns": 14912618.0,
+          "fill_done_ns": 14914693.0,
+          "program_start_ns": 14914693.0,
+          "program_done_ns": 14916785.0,
+          "coeff_done_ns": 14916942.0878,
+          "array_start_ns": 14916960.0,
+          "array_done_ns": 14917700.0,
+          "restore_done_ns": 14919138.5
+        },
+        {
+          "wave_id": 80,
+          "name": "L0/gu",
+          "k": 2,
+          "j": 24,
+          "n": 8,
+          "slot": 1,
+          "generation": 40,
+          "issue_ns": 14916960.0,
+          "dram_done_ns": 14920288.0,
+          "fill_done_ns": 14922368.0,
+          "program_start_ns": 14922368.0,
+          "program_done_ns": 14924455.0,
+          "coeff_done_ns": 14924617.0878,
+          "array_start_ns": 14924630.0,
+          "array_done_ns": 14925370.0,
+          "restore_done_ns": 14926826.0
+        }
+      ],
+      "pending": false,
+      "overlap": "next DMA only; SRAM fill/program after previous restore; one local weight bank",
+      "buffer": "one explicit full-wave DMA response macro; unknown PPA"
+    },
+    "unknown_macro_ppa": [
+      "fixed4 encoders",
+      "GU fixed-point restore/rounding",
+      "signed8 field/ROM",
+      "weighted compressor and 4/7 bucket counters",
+      "local weight interface",
+      "direct AND fanout",
+      "coefficient multiplier / wide accumulators / BF16 RNE",
+      "nonlinear local RNG"
+    ],
+    "scale_policy": "offline frozen x/g/u tables; no token absmax; channel order unchanged",
+    "weight_policy": "fixed sign+magnitude W8, one packed byte per weight; offline tables",
+    "stream_policy": "no z materialization; same event replayed for all Wd output waves",
+    "gu_width_bound": 48,
+    "down_width_bound": 58
+  },
+  "sampler_local_state": {},
+  "calibration_sha256": "3f3f3b2bfbc16a0b97fbf14766c6f94b6a45cd3001702089a728b805c98b09a6",
+  "limitations": [
+    "regular arithmetic timing is configured, not calibrated whole-core timing",
+    "SC B4/short-stream counter/scale-restoration power and area not characterized",
+    "stationary weight tile interface is an unverified macro contract, not free DFF replacement",
+    "FFN input-group-major gu/encoding/AND-direct-down barriers; not optimality claim",
+    "one KV group at a time; no head/group parallelism inferred from array size",
+    "actual finite Issue95 backend with q/256 response; complete random PPA still incomplete",
+    "parallel sampling sink owns SRAM fabric for complete FSM; conservative blocking mapping",
+    "SRAM blocking descriptors and DRAM bounded windows, no arbitrary multi-DMA reorder",
+    "warm K summaries live in DRAM; context prefill/build cost excluded, steady updates included",
+    "all published timing/traffic cases synthetic unless complete user logit trace supplied",
+    "no new PPL, GPU performance, RTL/PT or silicon measurements"
+  ],
+  "wall_seconds": 90.01600000000326,
+  "execution_commit": "0855eab497659964a594c91c5358b4729f4e5476",
+  "case": "prefetch_link"
+}

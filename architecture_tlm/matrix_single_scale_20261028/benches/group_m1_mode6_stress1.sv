@@ -1,0 +1,45 @@
+`timescale 1ns/1ps
+module tb;
+localparam N=64,M=1,T=32,F=16,MODE=6,STRESS=1;
+reg clk=0;always #5 clk=~clk;
+reg rst_n=0,frame_valid=0,sample_valid=0,out_ready=0;
+reg [N*M*8-1:0] w8=0;reg [N*8-1:0] x8=0;reg [N-1:0] sample_bits=0;
+wire frame_ready,sample_ready,out_valid;wire [M*32-1:0] out_sum;
+ssg_s6_m1 dut(.*);
+reg [N*M*8-1:0] wm[0:F-1];reg [N*8-1:0] xm[0:F-1];
+reg [N-1:0] events[0:F*T-1];reg [M*32-1:0] expected[0:F-1];
+integer f,t,c=0,fc,latency;real start_ns,end_ns,idle_start,idle_end;
+always @(posedge clk) c=c+1;
+initial begin #2000000;$fatal(1,"timeout");end
+initial begin
+ $dumpfile("activity.vcd");$dumpvars(0,tb);
+ $readmemh("w8.hex",wm);$readmemh("x8.hex",xm);$readmemh("samples.hex",events);$readmemh("expect6.hex",expected);
+ repeat(4) @(negedge clk);rst_n=1;frame_valid=1;@(negedge clk);frame_valid=0;
+ if(MODE!=4 && MODE!=5) begin sample_valid=1;sample_bits=~64'b0;repeat(4) @(negedge clk);end
+ rst_n=0;frame_valid=0;sample_valid=0;repeat(3) @(negedge clk);rst_n=1;
+ repeat(2) @(negedge clk);start_ns=$realtime;
+ for(f=0;f<F;f=f+1) begin
+  while(!frame_ready) @(negedge clk);
+  w8=wm[f];x8=xm[f];frame_valid=1;fc=c;@(negedge clk);frame_valid=0;
+  if(MODE!=4 && MODE!=5) begin
+   for(t=0;t<T;t=t+1) begin
+    if(STRESS && t%7==3) begin sample_valid=0;repeat(2) @(negedge clk);end
+    while(!sample_ready) @(negedge clk);
+    sample_valid=1;sample_bits=events[f*T+t];@(negedge clk);
+   end
+   sample_valid=0;sample_bits=0;
+  end
+  while(!out_valid) @(negedge clk);latency=c-fc;
+  if(out_sum!==expected[f]) $fatal(1,"mismatch f=%d got=%h expected=%h",f,out_sum,expected[f]);
+  if(sample_ready) $fatal(1,"sample_ready while output pending");
+  if(STRESS) repeat(3) begin @(negedge clk);if(!out_valid || out_sum!==expected[f]) $fatal(1,"stall unstable");end
+  $display("FRAME %0d %0d",f,latency);out_ready=1;@(negedge clk);out_ready=0;
+ end
+ end_ns=$realtime;idle_start=end_ns+20;repeat(2) @(negedge clk);
+ repeat(64) begin @(negedge clk);if(out_valid || !frame_ready) $fatal(1,"idle handshake");end
+ idle_end=$realtime;
+ $display("WINDOW active %0.3f %0.3f %0d",start_ns,end_ns,F);
+ $display("WINDOW idle %0.3f %0.3f 0",idle_start,idle_end);
+ $display("FUNCTION_PASS mode=%0d M=%0d frames=%0d stress=%0d",MODE,M,F,STRESS);$finish;
+end
+endmodule

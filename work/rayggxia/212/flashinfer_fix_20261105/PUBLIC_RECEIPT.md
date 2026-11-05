@@ -15,3 +15,9 @@ v4源码包SHA-256：a1516504096ffedf566caed7efe413ed59b4e5124a8919b54505fb66914
 同后训练Qwen3-4B/BF16/B1/2K及8K，原模型/数据/配置保持。新增HF_ORIGINAL_NATIVE.json测未安装Attention Adapter的官方HF SDPA/DynamicCache连续256步；展开KV、直接GQA、FlashInfer CUDA/Tensor分别测量和标识。核心回放、固定Graph与连续生成不混称，prefill不计入decode。
 
 保留原relative-L2≤1%且top1相同、真实HND步幅/连续两步、FP32核心oracle等检查。部分直接GQA/FlashInfer整模型门槛未通过时不晋升正式整机成绩；支持失败不会隐藏成零能耗。未宣称新PPL、最优服务引擎、GPU节能倍数或ASIC PPA，PR未合并。
+
+## 最终实际回执
+
+正式4608已结束，47个原件大小/SHA、10执行源、42窗口W×秒=J和14类/36层Profiler覆盖通过。39个小原件已收集，大轨迹留服务器。官方HF连续生成：2K22.964ms/5.516J每token，8K27.035ms/8.718J。36层核心回放：展开KV1.821/6.187ms，直接GQA0.459/1.133ms，FlashInfer CUDA0.431/0.837ms，Tensor0.340/0.906ms（2K/8K）。这些核心成绩不当作整机token时间。
+
+直接GQA/FlashInfer部分整模型logits仍超过1%门槛（探测top1相同），所以未接受其整机正式成绩，无新PPL/质量无损主张。没有本轮运行中作业。完整分口径报告和统计见results/gpu_decode_energy_20261029/flashinfer_20261105/REPORT_ZH.md及RESULTS.json；旧历史结果与环境未改。

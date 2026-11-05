@@ -4,8 +4,8 @@ No training, quantization or PPL. Failed numerical gates remain visible and do
 not get promoted to accepted full-model energy/performance results.
 """
 from pathlib import Path
-import argparse,contextlib,gc,hashlib,importlib.metadata,json,os,sys,time,types
-from contract import BACKENDS,validate,guard_values,flashinfer_scale
+import argparse,contextlib,gc,hashlib,importlib.metadata,json,math,os,sys,time,types
+from contract import BACKENDS,validate,guard_values,flashinfer_scale,whole_measurement_class
 
 
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -105,7 +105,7 @@ def profile(c,fn,folder):
     return dict(kernel_names=names,flash_kernel_observed=any('flash' in n.lower() for n in names))
 
 
-def native(c,fi,model,legacy,token,backend,meter,context,steps,repeats):
+def native(c,fi,model,legacy,token,backend,meter,context,steps,repeats,require_repeat_ids=True):
     rows=[]
     for rep in range(repeats):
         op=Adapter(c,fi,model,legacy,context,backend,capacity=context+steps-1)
@@ -126,14 +126,17 @@ def native(c,fi,model,legacy,token,backend,meter,context,steps,repeats):
                    growing_KV=True,cuda_graph=False)
         rows.append(row);emit(event='native',backend=backend,context=context,repeat=rep,ms=row['wall_ms_per_item'])
         del op,out,next_id,generated;gc.collect();c.torch.cuda.empty_cache()
-    assert len({r['generated_ids_sha256'] for r in rows})==1
-    return dict(repeats=rows,summary=c.summarize(rows),scope='B1 continuous autoregressive decode;256 steps;static capacity,valid prefix only;includes argmax and growing KV')
+    deterministic=len({r['generated_ids_sha256'] for r in rows})==1
+    if require_repeat_ids:assert deterministic
+    return dict(repeats=rows,summary=c.summarize(rows),deterministic_generated_ids=deterministic,
+        scope='B1 continuous autoregressive decode;256 steps;static capacity,valid prefix only;includes argmax and growing KV')
 
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--prepared',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--root',type=Path,required=True)
     p.add_argument('--preflight-only',action='store_true',help='Only support/numerical gates;no formal performance windows')
+    p.add_argument('--exploratory-whole',action='store_true',help='User-authorized full-model timing despite failed whole-logit gate;acceptance stays false')
     a=p.parse_args();root=a.root.resolve();cfg=validate(json.loads((root/'CONFIG.json').read_bytes()))
     c=load(root);torch=c.torch
     assert 'SLURM_JOB_ID' in os.environ and torch.cuda.device_count()==1
@@ -236,7 +239,13 @@ def main():
                 if not support_ok:support_failures.append(dict(context=context,backend=backend))
                 save(out/'STATUS.json',row);statuses.append(row)
                 continue
-            if row['module_gate']:
+            support_ok=all('error' not in g for g in guards[backend]+module_guards[backend])
+            finite_outputs=all(math.isfinite(g.get('relative_L2',float('inf'))) and math.isfinite(g.get('max_abs',float('inf'))) for g in guards[backend])
+            measurement_class=whole_measurement_class(row['whole_gate'],row['module_gate'],support_ok,
+                finite_outputs,a.exploratory_whole)
+            row.update(measurement_class=measurement_class,exploratory_whole_authorized=a.exploratory_whole,
+                numerical_equivalence_accepted=row['whole_gate'] and row['module_gate'])
+            if row['module_gate'] and not a.exploratory_whole:
                 def module_work():
                     for q,k,v,scale in captures:result=core(c,fi,backend,q,k,v,scale)
                     return result
@@ -245,7 +254,19 @@ def main():
                 result['scope']='isolated attention-core replay,36 real layer inputs;not additive whole-model rail energy'
                 save(out/'ATTENTION_CORE_GRAPH.json',result);save(out/'KERNELS.json',profile(c,module_work,out))
                 del mg,mo,module_work;gc.collect();torch.cuda.empty_cache()
-            if row['whole_gate'] and row['module_gate']:
+            if measurement_class!='blocked':
+                # Continuous decode is the primary full-model workload. Keep
+                # numerical gate results visible even when timing is allowed.
+                if a.exploratory_whole:
+                    warm=Adapter(c,fi,model,legacy,context,backend,capacity=context+cfg['native_steps']-1)
+                    with warm:thermal=c.warm_stable(lambda:warm.run(token),meter,8.,25.)
+                    del warm;gc.collect();torch.cuda.empty_cache()
+                    result=native(c,fi,model,legacy,token,backend,meter,context,cfg['native_steps'],cfg['repeats'],
+                        require_repeat_ids=measurement_class=='accepted_numerical_control')
+                    result.update(measurement_class=measurement_class,
+                        numerical_equivalence_accepted=row['numerical_equivalence_accepted'],
+                        exploratory_whole_authorized=True,thermal=thermal)
+                    save(out/'NATIVE_GREEDY.json',result)
                 op=Adapter(c,fi,model,legacy,context,backend)
                 with op:
                     work=lambda:op.run(token)
@@ -253,13 +274,19 @@ def main():
                     assert torch.equal(expected,y.logits),'same-backend Graph/eager mismatch'
                     result=c.series(graph.replay,meter,cfg['whole_window_s'],cfg['repeats'],15.,60.,telemetry=True)
                     result['scope']='fixed single-token full-model CUDA Graph forward;no argmax or KV growth'
+                    result.update(measurement_class=measurement_class,
+                        numerical_equivalence_accepted=row['numerical_equivalence_accepted'],
+                        exploratory_whole_authorized=a.exploratory_whole)
                     save(out/'WHOLE_FIXED_GRAPH.json',result)
                     # Profile outside the primary energy/time window.
-                    save(out/'WHOLE_MODULE_TIMES.json',c.profile(model,work,expected,out,steps=3))
+                    if not a.exploratory_whole:
+                        save(out/'WHOLE_MODULE_TIMES.json',c.profile(model,work,expected,out,steps=3))
                     del graph,y,expected,work
                 del op;gc.collect();torch.cuda.empty_cache()
-                save(out/'NATIVE_GREEDY.json',native(c,fi,model,legacy,token,backend,meter,context,cfg['native_steps'],cfg['repeats']))
-                row['status']='completed'
+                if not a.exploratory_whole:
+                    save(out/'NATIVE_GREEDY.json',native(c,fi,model,legacy,token,backend,meter,context,cfg['native_steps'],cfg['repeats']))
+                row['status']='completed' if row['numerical_equivalence_accepted'] else 'exploratory_measured_numerical_gate_failed'
+                row['whole_formal_measurement_skipped']=False
             else:row['status']='numerical_or_support_gate_failed';row['whole_formal_measurement_skipped']=True
             save(out/'STATUS.json',row);statuses.append(row)
             c.exclusive(uuid)
@@ -271,7 +298,8 @@ def main():
         manifest_sha256=sha(a.output/'ARTIFACT_MANIFEST.json'),cases=statuses,
         failed_cases=[r for r in statuses if not (r['whole_gate'] and r['module_gate'])],
         support_failures=support_failures,preflight_only=a.preflight_only,
-        note='failed numerical candidates are not accepted energy/performance results;no vLLM/SGLang or PPL claim'))
+        exploratory_whole_authorized=a.exploratory_whole,
+        note='failed numerical candidates retain failed status;explicit exploratory timings are not accepted quality baselines;no vLLM/SGLang or PPL claim'))
     emit(event='all_finished',cases=statuses)
     if a.preflight_only and support_failures:raise SystemExit(2)
 

@@ -1,0 +1,29 @@
+{
+  "parent_commit": "7a0d4c82125c812e26728ca66f1d17928e53948b",
+  "source_sha256": {
+    "analyze.py": "bb11b1aa8d65cac407e17a756e8f4690bad74d3c561c56f8f76c9a4e51784f47",
+    "permutation.py": "76c7c6f97e5a21e08a7390273aca6fc812555d2dd8a8480c2f8e1d20182a4f10",
+    "prepare.py": "d1c5bd558abd2f1b279cc5fc3eff59ef58f6085f6c2925fc2c88adfd5aa2bee9",
+    "sim.cpp": "6cfb0e083c2f92d1b8e7e80051d07d72abd24e48639979b5f6697a33c09a6e08"
+  },
+  "input_manifest_sha256": "ad159527d4d6b2d8b05c1fe71f14b46380cd2f4088ccc0d18bf95bce8881d7c1",
+  "binary_sha256": "a5a05571f611e02ef8439c8e37ced635da7992245c42b3bed0cad1d96ef6e01d",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.3.5",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "compiler": "MinGW.org GCC 6.3.0-1; -O3 -std=c++11 -static",
+  "commands": [
+    "python prepare.py",
+    "g++ -O3 -std=c++11 -static sim.cpp -o ARCHIVE/sim.exe",
+    "sim.exe ARCHIVE verify",
+    "sim.exe ARCHIVE short",
+    "sim.exe ARCHIVE long",
+    "python analyze.py",
+    "python permutation.py prepare",
+    "sim.exe ARCHIVE/permutation long",
+    "python permutation.py analyze"
+  ],
+  "scope": "CPU behavioral fixed-score sampling diagnostic; no hardware costs",
+  "seed_rule": "mix(rep + 0x198050000 + row*0x100000), source tags in sim.cpp, nonzero only",
+  "status": "completed"
+}

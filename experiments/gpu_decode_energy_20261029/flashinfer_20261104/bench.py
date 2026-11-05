@@ -5,7 +5,7 @@ not get promoted to accepted full-model energy/performance results.
 """
 from pathlib import Path
 import argparse,contextlib,gc,hashlib,importlib.metadata,json,os,sys,time,types
-from contract import BACKENDS,validate,guard_values
+from contract import BACKENDS,validate,guard_values,flashinfer_scale
 
 
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -26,8 +26,13 @@ def load(root):
 def core(c,fi,backend,q,k,v,scale):
     """Q[Hq,D], K/V[Hkv,L,D]; already QK-normalized and RoPE-applied."""
     if backend.startswith('flashinfer'):
+        if backend=='flashinfer_cuda':
+            #0.2.5 single_decode requires compact K/V. A growing HND prefix
+            # has padded head strides; pay the actual copy inside every call.
+            k=k.contiguous();v=v.contiguous()
         return fi.single_decode_with_kv_cache(q,k,v,kv_layout='HND',
-            pos_encoding_mode='NONE',use_tensor_cores=backend.endswith('tensor'),sm_scale=scale)
+            pos_encoding_mode='NONE',use_tensor_cores=backend.endswith('tensor'),
+            sm_scale=flashinfer_scale(scale,q.shape[-1]))
     from torch.nn.attention import SDPBackend,sdpa_kernel
     if backend=='sdpa_expanded':
         factor=q.shape[0]//k.shape[0]
@@ -128,6 +133,7 @@ def native(c,fi,model,legacy,token,backend,meter,context,steps,repeats):
 def main():
     p=argparse.ArgumentParser();p.add_argument('--prepared',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--root',type=Path,required=True)
+    p.add_argument('--preflight-only',action='store_true',help='Only support/numerical gates;no formal performance windows')
     a=p.parse_args();root=a.root.resolve();cfg=validate(json.loads((root/'CONFIG.json').read_bytes()))
     c=load(root);torch=c.torch
     assert 'SLURM_JOB_ID' in os.environ and torch.cuda.device_count()==1
@@ -148,11 +154,12 @@ def main():
         config_sha256=sha(root/'CONFIG.json'),source_manifest_sha256=sha(root/'SOURCE_MANIFEST.json'),
         model_files_sha256={x['name']:x['sha256'] for x in prepared['files']},
         isolation='Only the single Slurm-allocated GPU;refuse foreign compute processes',
+        flashinfer_cuda_layout='K/V contiguous conversion is INSIDE timed core,including growing cache',
         no_quantization=True,prefill_in_decode_window=False,whole_energy='NVML cumulative board energy including on-board memory',
         engine_scope=cfg['scope'])
     save(a.output/'ENVIRONMENT.json',env)
     model=AutoModelForCausalLM.from_pretrained(str(model_path),torch_dtype=torch.bfloat16,attn_implementation='sdpa',local_files_only=True).eval().to('cuda')
-    statuses=[]
+    statuses=[];support_failures=[]
     with torch.inference_mode():
       for context in cfg['contexts']:
         folder=a.output/str(context);folder.mkdir();guards={b:[] for b in BACKENDS};captures=None;benchmark_prefix=None
@@ -210,10 +217,25 @@ def main():
                 except Exception as e:module_guards[backend].append(dict(layer=layer,accepted=False,error=str(e)))
         save(folder/'MODULE_GUARDS.json',module_guards)
         legacy,token=benchmark_prefix
+        # An actual unmodified HF/DynamicCache decode control, separate from
+        # the static-cache adapter and fixed CUDA Graph experiments.
+        if not a.preflight_only:
+            c.exclusive(uuid)
+            thermal=c.warm_stable(lambda:c.one(model,legacy,token),meter,8.,25.)
+            original=c.native_greedy(model,legacy,token,meter,context,cfg['native_steps'],cfg['repeats'])
+            original.update(thermal=thermal,scope='unmodified HF SDPA/DynamicCache;continuous256-token decode;prefill excluded',
+                attention_adapter_installed=False,accepted_control=True)
+            save(folder/'HF_ORIGINAL_NATIVE.json',original)
         for backend in BACKENDS:
             row=dict(context=context,backend=backend,whole_gate=all(g['accepted'] for g in guards[backend]),module_gate=all(g['accepted'] for g in module_guards[backend]))
             out=folder/backend;out.mkdir();emit(event='backend_start',**row)
             c.exclusive(uuid)
+            if a.preflight_only:
+                support_ok=all('error' not in g for g in guards[backend]+module_guards[backend])
+                row.update(status='preflight_only',support_ok=support_ok,formal_measurement=False)
+                if not support_ok:support_failures.append(dict(context=context,backend=backend))
+                save(out/'STATUS.json',row);statuses.append(row)
+                continue
             if row['module_gate']:
                 def module_work():
                     for q,k,v,scale in captures:result=core(c,fi,backend,q,k,v,scale)
@@ -245,11 +267,13 @@ def main():
     c.exclusive(uuid)
     files={str(f.relative_to(a.output)):dict(sha256=sha(f),bytes=f.stat().st_size) for f in a.output.rglob('*') if f.is_file()}
     save(a.output/'ARTIFACT_MANIFEST.json',files)
-    save(a.output/'COMPLETED.json',dict(status='completed_with_documented_gates',job=os.environ['SLURM_JOB_ID'],
+    save(a.output/'COMPLETED.json',dict(status='preflight_completed' if a.preflight_only else 'completed_with_documented_gates',job=os.environ['SLURM_JOB_ID'],
         manifest_sha256=sha(a.output/'ARTIFACT_MANIFEST.json'),cases=statuses,
-        failed_cases=[r for r in statuses if r['status']!='completed'],
+        failed_cases=[r for r in statuses if not (r['whole_gate'] and r['module_gate'])],
+        support_failures=support_failures,preflight_only=a.preflight_only,
         note='failed numerical candidates are not accepted energy/performance results;no vLLM/SGLang or PPL claim'))
     emit(event='all_finished',cases=statuses)
+    if a.preflight_only and support_failures:raise SystemExit(2)
 
 
 if __name__=='__main__':main()

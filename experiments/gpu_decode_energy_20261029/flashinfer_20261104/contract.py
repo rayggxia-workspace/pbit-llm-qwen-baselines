@@ -24,6 +24,16 @@ def guard_values(relative_l2,top1,limit=.01):
                 threshold_relative_L2=limit,accepted=relative_l2<=limit and bool(top1))
 
 
+def whole_measurement_class(whole_gate, module_gate, support_ok, finite_outputs,
+                            exploratory=False):
+    """Explicit exploratory timing never changes the numerical acceptance."""
+    if not (module_gate and support_ok and finite_outputs):
+        return 'blocked'
+    if whole_gate:
+        return 'accepted_numerical_control'
+    return 'exploratory_numerical_gate_failed' if exploratory else 'blocked'
+
+
 def flashinfer_scale(scale, head_dim):
     """Use the identical default scale without triggering FlashInfer0.2.5's bug.
 

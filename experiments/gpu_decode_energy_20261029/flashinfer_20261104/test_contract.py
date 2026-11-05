@@ -1,6 +1,8 @@
 from pathlib import Path
 import copy,json,unittest
-from contract import validate,guard_values
+from contract import validate,guard_values,flashinfer_scale
+import math
+from types import SimpleNamespace
 
 
 class Tests(unittest.TestCase):
@@ -14,6 +16,36 @@ class Tests(unittest.TestCase):
         self.assertFalse(guard_values(.0142698,True)['accepted'])
         self.assertFalse(guard_values(.001,False)['accepted'])
         self.assertTrue(guard_values(.009,True)['accepted'])
+
+    def test_default_scale_workaround_is_exact(self):
+        for d in (64,128,256):
+            self.assertIsNone(flashinfer_scale(1/math.sqrt(d),d))
+            self.assertIsNone(flashinfer_scale(d**-.5,d))
+            self.assertIsNone(flashinfer_scale(None,d))
+
+    def test_custom_scale_is_not_silently_changed(self):
+        with self.assertRaises(ValueError):flashinfer_scale(.1,128)
+        with self.assertRaises(ValueError):flashinfer_scale(None,0)
+
+    def test_cuda_and_tensor_call_real_api_contract(self):
+        from bench import core
+        calls=[]
+        def old_api(q,k,v,*,sm_scale,**kw):
+            # Reproduce the installed0.2.5 initialization branch.
+            if sm_scale is None:head_dim=q.shape[-1]
+            calls.append((head_dim,kw))
+            return 'ok'
+        fi=SimpleNamespace(single_decode_with_kv_cache=old_api)
+        q=SimpleNamespace(shape=(32,128))
+        copied=[]
+        k=SimpleNamespace(contiguous=lambda:copied.append('K') or 'compactK')
+        v=SimpleNamespace(contiguous=lambda:copied.append('V') or 'compactV')
+        for backend in ('flashinfer_cuda','flashinfer_tensor'):
+            self.assertEqual(core(None,fi,backend,q,k,v,128**-.5),'ok')
+        self.assertEqual(copied,['K','V'])
+        self.assertFalse(calls[0][1]['use_tensor_cores'])
+        self.assertTrue(calls[1][1]['use_tensor_cores'])
+        self.assertTrue(all(d==128 and kw['kv_layout']=='HND' and kw['pos_encoding_mode']=='NONE' for d,kw in calls))
 
 
 if __name__=='__main__':unittest.main()

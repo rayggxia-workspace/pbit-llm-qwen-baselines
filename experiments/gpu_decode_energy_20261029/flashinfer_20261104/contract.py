@@ -1,4 +1,5 @@
 """Dependency-free configuration checks and result conventions."""
+import math
 BACKENDS=('sdpa_expanded','sdpa_gqa','flashinfer_cuda','flashinfer_tensor')
 
 
@@ -21,3 +22,17 @@ def validate(c):
 def guard_values(relative_l2,top1,limit=.01):
     return dict(relative_L2=relative_l2,top1_equal=bool(top1),
                 threshold_relative_L2=limit,accepted=relative_l2<=limit and bool(top1))
+
+
+def flashinfer_scale(scale, head_dim):
+    """Use the identical default scale without triggering FlashInfer0.2.5's bug.
+
+    That version assigns head_dim only when sm_scale is None. Custom scales
+    must never be silently replaced or simulated by BF16 rescaling of Q.
+    """
+    if not isinstance(head_dim, int) or head_dim <= 0:
+        raise ValueError('positive integer head dimension required')
+    default = 1.0 / math.sqrt(head_dim)
+    if scale is not None and not math.isclose(float(scale), default, rel_tol=1e-12, abs_tol=0.0):
+        raise ValueError('FlashInfer0.2.5 workaround supports the exact natural scale only')
+    return None

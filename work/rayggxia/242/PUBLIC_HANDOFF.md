@@ -1,3 +1,11 @@
+## 2026-11-05 22:00：完整WT2单seed已提交
+
+用户授权只申请一个完整任务观察效果。Slurm4652已核RUNNING：联合版本/seed101、292窗/299077目标、batch8；1×5090/4CPU/48GiB，12h时限。原21文件数值快照未改，新driver仅冷启动N1检查和每128调用只读计时；GPU N1/S64门禁PASS，本地及服务器完整计划292窗/39组/40005单token调用一致。
+
+预计启动后4–8小时，待实际进度校准；尚无完整PPL。不展开其他seed/对照，不重复提交。恢复full_ops.py status→读FULL_SINGLE_STATUS及封存，不修改已提交source/driver。根服务器项目中full_single_afd284c33749；具体路径/命令/资源/SHA在FULL_SINGLE_SUBMISSION、FULL_SINGLE_MANIFEST。驱动SHA afd284c33749e7dbff8377ba41cdf38413c128326f24a55087e636252c8a2346。此前“无运行作业”仅针对后缀批次。PR243未合并，Projects待同步。
+
+---
+
 # Issue242：联合快速PPL已完成
 
 负责人rayggxia，分支task/242-t64-strat32-joint，PR243，未合并。Slurm4643七项全部封存完成，本任务没有运行作业。CPU4641六项，GPU4642 P8字节帧独立oracle、32token前缀no-op逐位等价及36层覆盖通过；源码包56df7b93d4f4fa4296f1dc3c052b93194082f1667dc60967dab439ba580a2521，gate a50b3f090d5d307079baa6906ba5101968ea626ada75202ddc048408aed30b2a。

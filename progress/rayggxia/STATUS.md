@@ -1,3 +1,11 @@
+## 2026-11-05 22:00：完整WT2单seed已提交
+
+用户授权只申请一个完整任务观察效果。Slurm4652已核RUNNING：联合版本/seed101、292窗/299077目标、batch8；1×5090/4CPU/48GiB，12h时限。原21文件数值快照未改，新driver仅冷启动N1检查和每128调用只读计时；GPU N1/S64门禁PASS，本地及服务器完整计划292窗/39组/40005单token调用一致。
+
+预计启动后4–8小时，待实际进度校准；尚无完整PPL。不展开其他seed/对照，不重复提交。恢复full_ops.py status→读FULL_SINGLE_STATUS及封存，不修改已提交source/driver。根服务器项目中full_single_afd284c33749；具体路径/命令/资源/SHA在FULL_SINGLE_SUBMISSION、FULL_SINGLE_MANIFEST。驱动SHA afd284c33749e7dbff8377ba41cdf38413c128326f24a55087e636252c8a2346。此前“无运行作业”仅针对后缀批次。PR243未合并，Projects待同步。
+
+---
+
 ## 2026-11-05 Issue242最终：七项匹配后缀PPL完成
 
 PR243/draft/open，未合并；本任务已无运行作业。CPU4641、GPU4642和正式4643七项均完成封存。固定1024个WT2后缀目标，BF16 13.580350987，FFN-only三seed13.372338299±0.224580021，联合14.297114509±0.520343413；Attention附加0.924776210 PPL/6.9156%。这是后缀，不是完整WT2，SparQ筛选为FP32行为，不能宣称整Attention位真或PPA。T64导出/non_ffn匹配及36层覆盖、原件SHA通过。

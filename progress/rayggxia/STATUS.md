@@ -1,3 +1,13 @@
+## 2026-11-05 Issue236：时间账目浮点误报修复与补跑
+
+PR244/open未合并，task/236-time-ledger-recovery-20261105。原17项6份完整健康结果逐SHA/守恒核验保留，11项同一严格==断言失败。36层原生诊断38586955复现207690与207689.99999999988ns、差1.164e-10ns。math.fsum＋1e-6ns界内记录残差，真实1ps/整拍错账仍失败；不改事件、存储或硬件能耗面积。
+
+6项回归和完整36层分配/跨层预取的首层门禁38587128通过。38587129_[1,3,5-13%8]只补11失败项，最新8RUNNING/3等待；38587130后续合并旧健康与新11项，尚未完整。旧38582749对应旧失败批次，不能当新补跑失败。预计补跑3–6h，CPU only，无新PPA/PPL。修复执行manifest7c5cb9b603ca2bd139ac6fa7b75d789e00c316acde994ff3db9bdcbb33c4bb40。
+
+入口architecture_tlm/digital_fair_20261105/recovery_time_audit_20261105/REPORT_ZH.md及限定patch；私有输入与完整旧模块不公开。工作区恢复同Issue的recovery_time_audit_20261105/status.py，禁止重复retry.py。PR244待审未合并，Issue236继续开放，Projects待维护者同步。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

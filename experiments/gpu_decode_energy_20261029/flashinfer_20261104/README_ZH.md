@@ -1,5 +1,17 @@
 # FlashInfer／SDPA decode补测（Issue212）
 
+## 2026-11-05修复与接续
+
+旧作业4392已经结束，33个产物的大小/SHA与封存manifest核验通过。FlashInfer CUDA/Tensor在2K/8K均因0.2.5的`head_dim`未初始化异常退出支持检查，没有可接受的FlashInfer性能数据。直接GQA核心数值检查通过，但部分整模型logits relative-L2超过预设1%，不能写为整模型验收通过。下方“4392排队中”为历史提交时点。
+
+修复仅针对调用接口：Qwen的scale等于`1/sqrt(head_dim)`，先严格验证这一点，再让FlashInfer使用完全相同的默认`sm_scale=None`，使其正常初始化head_dim。不改site安装文件、不改变BF16 Q/K或缩放值；遇到非默认scale明确拒绝，不静默近似。回归测试直接调用CUDA/Tensor两条包装路径，模拟旧API的初始化分支。
+
+新GPU预检4604已实际编译并运行CUDA/Tensor内核，head_dim异常消除；它暴露CUDA single_decode对带padding的增长缓存报`k must be contiguous`，故该失败快照保留，未启动的依赖4605撤回。后续v4仅在CUDA路径执行K/V.contiguous，实际复制位于计时/能量窗口内部，不免费预处理；Tensor路径继续直接接受HND stride。此处不是把KV展开为32头。
+
+新快照额外保存`HF_ORIGINAL_NATIVE.json`：未安装Attention Adapter的官方HF SDPA/DynamicCache连续256步生成，排除prefill。它与展开KV的静态缓存Adapter、直接GQA、FlashInfer两路径分开报告。固定CUDA Graph前向仍不等于连续生成。
+
+新增`--preflight-only`仅执行2K/8K的支持与数值检查，不测正式时间/能量；支持异常返回非零以阻止依赖作业。CPU测试、GPU预检、正式GPU作业通过Slurm afterok依赖串联。所有原门槛及失败清单保留，不为直接GQA或FlashInfer放宽。旧环境/旧快照/旧结果不覆盖；准确新作业和状态见本次专门回执。
+
 用户授权：编写脚本并通过Slurm提交补测。旧3399/3440/3443及其环境、源码、封存结果均不改。本次不训练、不量化、不跑PPL，不宣称最佳GPU服务引擎。
 
 ## 比较条件

@@ -37,3 +37,15 @@ embedding阶段装入第0层；第i层QKV阶段预取第i+1层，最后一层QKV
 入口：`python architecture_tlm/norm_stream_20261106/launch.py --runtime <冻结运行根> --tests`；实际回放再加`--profile stream_2m --seed 17 --out <新目录>`。新`make_model`默认stream_2m，旧统一入口/已提交任务未被静默改写；PR待审时以此候选为用户新授权方案。
 
 当前只支持已捕获Qwen3-4B的32Q/8KV/d128及既有角色。Llama/DeepSeek不能直接绕过各自头数与元数据适配。没有训练/PPL或新电路仿真，不新增数字PPA run；SRAM沿已有统一台账宏数据计价。
+
+## 已完成的原生两层预检
+
+保留36层分配、执行前两层、不含lm_head，seed17；三个任务均COMPLETED/0:0，RESULT/BUDGET/执行源SHA及队列/面积/能量守恒已核。
+
+|配置|两层时间ms|两层已计总能量mJ|覆盖面积mm²|
+|---|---:|---:|---:|
+|resident_2p5|2.36889|9.75659|67.54145|
+|stream_2p5|2.36889|9.75765|67.54145|
+|stream_2m|2.36845|9.75525|64.09655|
+
+三配置矩阵/Attention actions完全相同；流式两配置多读32256B（3个层块，第三块为有界跨层预取），其他外存读写量不变。当前两层数据表明norm新增装载被重叠隐藏，2MiB重排没有降低吞吐；不能据此替代整token或三seed最终结果。完整九项38614103自动通过依赖门禁后运行，最终数值待SEAL。详细原字节SHA见PREFIX_RESULTS.json。

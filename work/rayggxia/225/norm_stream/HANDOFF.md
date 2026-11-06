@@ -25,3 +25,7 @@ EDA冻结执行根及只读依赖在本地SUBMISSION.json；依赖Issue236 retry
 5. 正式结果回到同目录和本Issue/PR；更新根同字节阅读副本及Issue28备忘录。Projects无可用写接口，待维护者同步。
 
 未知项：新整机配对时间/能量待封存；新bank外围/布线、PHY等延续原未价边界；Llama/DeepSeek原生适配未做，不把Qwen的2008KiB或PPL直接迁移。原统一入口和在跑任务未被静默改写；新的可选入口默认2MiB供下一轮选用。
+
+追加实际回执：38614102三配置两层前缀全部COMPLETED/0:0，三份SEAL及源SHA已核。矩阵/Attention actions完全相同，流式多读32256B（含下一层预取）；2.5MiB常驻/流式同2.36889ms，2MiB为2.36845ms。两层不是整token，九项完整任务仍待封存。源六份Python未改，PR248 ready/open待审未合并，主体d428823e9e18832937a968db236b6ad5a6de15de、16文件逐内容回读一致。
+
+最新：复用runtime的93份源码逐项manifest核验通过；完整38614103已实际6RUNNING/3等待数组并发额度，0完整封存。长期备忘录canonical/root同字节更新；实际上传回执见PUBLICATION.json，不混入其他任务备忘录未提交改动。

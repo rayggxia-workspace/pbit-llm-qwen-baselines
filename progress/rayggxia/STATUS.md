@@ -1,3 +1,9 @@
+## Issue225/PR248实际发布与预检
+
+PR248 ready/open未合并，源d428823e9e18832937a968db236b6ad5a6de15de，16份文件逐内容回读。原生三配置两层预检均完成封存，actions相同，norm额外32256B已计；2.5MiB常驻/流式2.36889ms，2MiB2.36845ms。完整38614103九项待封存，不能报整机完成；只status/collect，冻结六源不改。
+
+---
+
 # 2026-11-06 Issue225：norm逐层双缓冲与2MiB候选
 
 负责人rayggxia；task/225-norm-stream-20261106；base main8cd4fba；独立tmp/norm-stream-issue225-20261106。用户确认采用无损逐层加载，不再全模型gamma常驻。正式architecture_tlm/norm_stream_20261106，默认stream_2m，旧resident_2p5及stream_2p5配对保留；源码d3acb0ee，执行identity dd115edf65dd。383KiB→32KiB，声明2008KiB/2MiB，每token多读392192B；BF16参数/数学不变，非PPL或新电路PPA。

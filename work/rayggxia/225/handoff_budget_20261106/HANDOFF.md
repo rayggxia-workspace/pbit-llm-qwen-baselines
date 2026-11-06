@@ -27,3 +27,6 @@ MAC次数不变，不乘640/1024削减动态能量；归约29,312,640→3,256,96
 先把ordinary_mapping.install(lanes640,k_parallel8,early_refillTrue)与FFN96候选接同一宿主，保留最新bank布局，完整token及lm_head回放后，用真实时间/计数替代本预算窗口和两层额外读外推。不要将各模块前缀时间相加，不接管204完整pair或修改198冻结run默认。必要时再补新增控制/连接的代表性PPA，不重做已有PRNG和SRAM单价。
 
 根报告目录是同字节阅读副本；长期备忘录canonical/root同步，但不把其他并发任务的未提交备忘录一起公开。Issue225保持open，PR待审不自动合并；Projects无写接口待维护者同步。
+
+
+公开回执：源码提交aebf0e4c86f348092886cf5a3c26bd6f79903ff2的13文件已逐内容回读一致，见PUBLICATION.json；PR248待审未合并。

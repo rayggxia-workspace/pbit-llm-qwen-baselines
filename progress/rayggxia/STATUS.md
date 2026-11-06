@@ -6,7 +6,7 @@
 
 本轮仅文档，模型revision/语料seed/训练推理参数不适用；无新模型/PPL/TLM/RTL/EDA或仿真台账run。验证和文件SHA见work/rayggxia/98/sofa_asic_20261106/VALIDATION.json，执行交接见HANDOFF.md。文献来源核实不等于外部实验复现，不改变质量阈值/默认。
 
-本地正文已完成；发布及PR实际状态以同目录PUBLICATION.json和Issue98回执为准。PR待审不自动合并，Issue保持open。当前GitHub连接器未提供Projects接口，看板待维护者同步。
+正文已上传并逐内容/Git blob回读通过，科学提交68ccc135fea89ab6b8ba5bcc427877fce762972b；PR246 ready/open待审、未合并。21项检查与git diff --cached --check通过。详细回执见同目录PUBLICATION.json和Issue98。Issue保持open，当前GitHub连接器未提供Projects接口，看板待维护者同步。
 
 ---
 

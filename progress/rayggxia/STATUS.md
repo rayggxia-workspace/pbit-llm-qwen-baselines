@@ -1,3 +1,15 @@
+## 2026-11-06 Issue98：SOFA与八项ASIC比较专题
+
+负责人rayggxia；分支task/98-sofa-asic-comparison-20261106，PR base main@8cd4fba009598184bce4f1c806f038299b011ea0。独立最小目录tmp/sofa-asic-issue98-20261106。
+
+用户要求整理并上传SOFA比较方式和相关ASIC，沿用architecture_tlm/benchmark_inventory_20261029目录命名；本次只新增SOFA_ASIC_COMPARISON_ZH.md，不改PR213作者原文件或分支。文档分开SOFA原文、对手TableII转录、算术推导、NR与建议；包含20组合、137GOP/128乘法器/1GHz的FACT复算、core/interface/DRAM边界、八篇decode协议、SpAtten-e2e与Energon整机范围。保留FACT/DTATrans全文未核，以及DOTA支持decoder但生成协议待核；ELSA表值以用户v1PDF522ms为准，记录HTML252ms差异。
+
+本轮仅文档，模型revision/语料seed/训练推理参数不适用；无新模型/PPL/TLM/RTL/EDA或仿真台账run。验证和文件SHA见work/rayggxia/98/sofa_asic_20261106/VALIDATION.json，执行交接见HANDOFF.md。文献来源核实不等于外部实验复现，不改变质量阈值/默认。
+
+正文已上传并逐内容/Git blob回读通过，科学提交68ccc135fea89ab6b8ba5bcc427877fce762972b；PR246 ready/open待审、未合并。21项检查与git diff --cached --check通过。详细回执见同目录PUBLICATION.json和Issue98。Issue保持open，当前GitHub连接器未提供Projects接口，看板待维护者同步。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

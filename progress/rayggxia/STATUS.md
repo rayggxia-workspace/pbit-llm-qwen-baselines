@@ -1,3 +1,11 @@
+# 2026-11-06 Issue245：Llama3.2/DeepSeek固定硬件初步预算
+
+负责人rayggxia；task/245-cross-model-estimate；base main8cd4fba；独立tmp/cross-model245-20261106。已本地完成解析预算、12份正式文件及6项CPU检查；未进行新模型原生TLM/PPL/EDA，不重跑236。Llama约39.92ms/159.50mJ，DeepSeek约83.45ms/333.76mJ，固定覆盖面积67.541mm²；4pJ/bit、100MHz/2.5MiB/12C20 T64、B1/2K、K128/S64。完整方法/代理边界见architecture_tlm/model_scaling_20261106/REPORT_ZH.md。
+
+容量检查及初估已处理DeepSeek逐层norm双缓冲并计读取；元数据33024B及Q/KV映射须在原生TLM落实。没有新模型质量结果或数字节能比例。证据SHA、验证和下一步见work/rayggxia/245/{SOURCE_MANIFEST.json,VALIDATION.json,HANDOFF.md}。远端阶段以PUBLICATION.json/Issue245为准；无此回执不表示已上传/合并。Projects待维护者同步。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

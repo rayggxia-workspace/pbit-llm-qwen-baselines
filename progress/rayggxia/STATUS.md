@@ -1,3 +1,9 @@
+## Issue225/PR248紧凑预检完成
+
+502bank前缀38615021已COMPLETED/0:0封存，14项EDA检查通过。计算/采样actions及外存字节同旧512bank，时间2.36845→2.38926ms（+0.879%），前缀能量9.75525→9.75733mJ，覆盖面积64.09655→63.82742mm²；不冒充完整token。Attention交接与紧凑源码d10ed86c已公开，11文件逐字回读；PR248待审未合并。旧完整任务不动，后续只读COMPACT_PREFIX_RESULTS和交接。
+
+---
+
 ## 2026-11-06 Issue225：Attention缓冲交接与删除40KiB空闲
 
 沿task/225-norm-stream-20261106 / PR248，新Attention任务文件在architecture_tlm/module_handoff/attention_buffer_compaction_20261106/HANDOFF_ZH.md；只交接不接管198，不预扣其512KiB目标。COMPACT_ZH.md说明数字/CIM、激活和152KiB宽状态的分步优化。

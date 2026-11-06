@@ -37,3 +37,5 @@ EDA冻结执行根及只读依赖在本地SUBMISSION.json；依赖Issue236 retry
 已实现compact.make_model：旧2MiB/2008KiB声明的40KiB空闲实际删10颗4KiB宏，前端246bank＋Attention256bank＝502bank/2008KiB，无未分配字节；所有区域大小/逻辑地址不变，bank内行地址完整无别名，模拟少10个真实前端端口。覆盖宏价预计63.827419mm²，未价的新译码/互连边界保留，不叫完整新PPA。新候选入口launch_compact.py，旧六执行源及38614103不改。纠正compact结果中原common_FFN固定state_bank_range陈旧字段，以实际映射为准。
 
 本地14项通过，EDA gate38615020 COMPLETED/0:0也14项；单项两层原生prefix38615021正在运行，identity0578fe2e2b1e，COMPACT_SUBMISSION/STATUS/VALIDATION绑定9份冻结Python源。恢复compact_ops.py status，不重复submit或修改九源；封存后对比旧stream_2m的2.36845ms/相同actions与外存字节。它不是新完整token结果。旧norm任务仍用原2MiB设计，不能把其最终时间直接配给502bank面积。
+
+紧凑最终前缀回执：38615021已COMPLETED/0:0并SEAL校验。相同actions/外存字节，502bank2.38926ms对512bank2.36845ms（+0.879%），9.75733对9.75525mJ，覆盖63.82742对64.09655mm²。只前两层，无完整compact token。公开d10ed86c505dd0b1693d9a88ebc053e4f14e4601的11文件已逐内容核验；旧6源与新9执行源均不改。最新结果/源索引见COMPACT_PREFIX_RESULTS/COMPACT_SOURCE_MANIFEST，恢复已完成前缀只读，不重复提交。

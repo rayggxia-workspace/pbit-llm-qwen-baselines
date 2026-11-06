@@ -1,3 +1,11 @@
+## 2026-11-06 Issue225：按最新交接重计功耗面积
+
+沿PR248/task225，正式architecture_tlm/current_handoff_budget_20261106。实际计入640/8-K/提前补货、norm32KiB及GU96KiB候选/1952KiB/488宏；128个归约器和独立QK/PV/8×128KiB Attention保持。覆盖57.573748mm²；50ms假定窗口片上24.204832mJ/0.484097W，含4pJ外存197.369327mJ/3.947387W。非联合native时延/新PPA/PPL；45/55ms仅敏感性。
+
+6检查与16旧分项重建、12来源SHA通过；普通MAC次数不乘640/1024折扣、ADD63→7按动作、SRAM不按容量折扣动态；RNG已在C20内。未预扣Attention64、共享QK、激活128、CIM24或DOT8。96完整pair与640整token仍待组合验证，新增仲裁/供数/连接PPA缺项保留。未修改198/204源码/任务，旧6/9norm完整封存仅只读核验，3缺项不冒充完成。精确源码/验证/回执见work/rayggxia/225/handoff_budget_20261106；发布以PUBLICATION.json/PR为准。Projects待维护者同步。
+
+---
+
 ## Issue225/PR248紧凑预检完成
 
 502bank前缀38615021已COMPLETED/0:0封存，14项EDA检查通过。计算/采样actions及外存字节同旧512bank，时间2.36845→2.38926ms（+0.879%），前缀能量9.75525→9.75733mJ，覆盖面积64.09655→63.82742mm²；不冒充完整token。Attention交接与紧凑源码d10ed86c已公开，11文件逐字回读；PR248待审未合并。旧完整任务不动，后续只读COMPACT_PREFIX_RESULTS和交接。

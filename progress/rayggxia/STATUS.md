@@ -1,3 +1,13 @@
+## 2026-11-06：单seed完整WT2结果已核验
+
+4652已完成，PPL11.3008280526，292窗/299077目标、36层计分采样覆盖与11原件SHA/逐窗NLL重算通过。实际计分4.099672小时、allocated峰值18.4125GiB。T64训练权重部署GU32/AND4×2×4共32，K128/S64/WH/S12-gap-P8/独立R8；准确Attention前缀，全部计分query36层替换，SparQ仍FP32行为。
+
+单部署seed101，不是昨天1024后缀14.2971；本轮未跑cached完整匹配FFN-only/原BF16多seed控制。旧10.698和未续训父BF16约11.54仅参考，不归因随机计算提升质量。不把C20/T64 TLM能耗赋给T32质量。
+
+FULL_WT2_REPORT_ZH.md及FULL_WT2_RESULT.json位于experiments/joint_t64_strat32_20261105/results；同Issue FULL_SINGLE_COLLECTION/FINAL_VALIDATION记录可恢复原件。不重跑4652，无本任务运行作业。PR243未合并，Projects待维护者同步。下方running为历史快照。
+
+---
+
 ## 2026-11-05 22:00：完整WT2单seed已提交
 
 用户授权只申请一个完整任务观察效果。Slurm4652已核RUNNING：联合版本/seed101、292窗/299077目标、batch8；1×5090/4CPU/48GiB，12h时限。原21文件数值快照未改，新driver仅冷启动N1检查和每128调用只读计时；GPU N1/S64门禁PASS，本地及服务器完整计划292窗/39组/40005单token调用一致。

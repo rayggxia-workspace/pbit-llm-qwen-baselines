@@ -1,3 +1,15 @@
+## 2026-11-06 Issue236：BF16整机近等面积对照已实际开跑
+
+用户要求补齐全BF16近等面积对照。原17项W8/SC结果不重跑。新BF16共享1888路FMA给QKV/O/g/u/down/lm_head，FP32/c4反馈、K32/K128；稠密在线Softmax/PV保持当前数字Attention。覆盖67.39315824mm²，目标67.54144608mm²，差−0.21955%；100MHz/2.5MiB/B1/2K/36层及embedding/lm_head、同原生LPDDR5-derived8533/DMA/端口。删去W8 GU/解码预算，使用已标定BF16 FMA面积/活动/整token idle，各一次；面积不重复乘.81。
+
+本地四项和EDA四项检查通过；原生首层门禁38612072已COMPLETED/0:0、4分38秒，完整36层分配/跨层预取/字节/时间审计通过，四原件SHA已收。完整38612073实际RUNNING，尚无完整时间/能量；预计约3～4小时，后续以封存结果为准。请求1CPU/12GiB/0GPU，平台实际3CPU但模拟单线程。冻结执行35a6f91a466f70624e19f0c7d218936f24a7b536，manifest311d6bc9301ffba1e695e27dbffd7bc080af45bb42d86e14755cee8f784eaceb。
+
+PR244新增源码/配置/回执九文件已推送并逐字回读，科学head f5b649edd85ca6db115e3280c58af9dbb19c84ce；未合并，Projects仍待维护者同步。正式architecture_tlm/bf16_equal_area_20261106，根镜像同字节。完整旧依赖保留在授权EDA快照，main单独拷本目录不可运行。没有新增RTL/PT/PPL或GPU任务，非芯片实测/同质量验收。
+
+恢复tmp/digital-fair-issue236-20261105/work/rayggxia/236/bf16_equal_area_20261106/ops.py status；完成后collect，不能重复prepare或改冻结源码。运行根tlm236_joint_20261105/bf16_equal_area_1d645d789c21；预检原件project_archives/bf16_equal_area236_20261106/1d645d789c21/gate。HANDOFF含准确路径/命令/验收。完整结果必须核对36层＋lm_head、MAC/权重字节、队列/原生返回、能量/面积守恒，再与原17项并表；不能用首层外推当完整结果。
+
+---
+
 ## 2026-11-06：17项完整数字/概率TLM均核验完成
 
 原6健康＋11补跑共17/17，0缺项/失败；74原件SHA、本地36层/字节/MAC/队列/面积/能量守恒通过。38587129及38587130已结束，无运行任务，不重跑。审计只修复浮点尾差。

@@ -29,3 +29,11 @@ EDA冻结执行根及只读依赖在本地SUBMISSION.json；依赖Issue236 retry
 追加实际回执：38614102三配置两层前缀全部COMPLETED/0:0，三份SEAL及源SHA已核。矩阵/Attention actions完全相同，流式多读32256B（含下一层预取）；2.5MiB常驻/流式同2.36889ms，2MiB为2.36845ms。两层不是整token，九项完整任务仍待封存。源六份Python未改，PR248 ready/open待审未合并，主体d428823e9e18832937a968db236b6ad5a6de15de、16文件逐内容回读一致。
 
 最新：复用runtime的93份源码逐项manifest核验通过；完整38614103已实际6RUNNING/3等待数组并发额度，0完整封存。长期备忘录canonical/root同字节更新；实际上传回执见PUBLICATION.json，不混入其他任务备忘录未提交改动。
+
+## 2026-11-06 缓冲任务与零空闲配置追加
+
+用户要求Attention交接给另一对话，其他缓冲分析，并直接删未分配容量。正式交接architecture_tlm/module_handoff/attention_buffer_compaction_20261106/HANDOFF_ZH.md，先128→64KiB/组，保持K/S/数制和8组吞吐；此项只交接，未实施或预扣512KiB。其他缓冲的512/256/152KiB原因、分步目标见norm_stream_20261106/COMPACT_ZH.md，数字/CIM、激活及跨K缩减也尚未实施。
+
+已实现compact.make_model：旧2MiB/2008KiB声明的40KiB空闲实际删10颗4KiB宏，前端246bank＋Attention256bank＝502bank/2008KiB，无未分配字节；所有区域大小/逻辑地址不变，bank内行地址完整无别名，模拟少10个真实前端端口。覆盖宏价预计63.827419mm²，未价的新译码/互连边界保留，不叫完整新PPA。新候选入口launch_compact.py，旧六执行源及38614103不改。纠正compact结果中原common_FFN固定state_bank_range陈旧字段，以实际映射为准。
+
+本地14项通过，EDA gate38615020 COMPLETED/0:0也14项；单项两层原生prefix38615021正在运行，identity0578fe2e2b1e，COMPACT_SUBMISSION/STATUS/VALIDATION绑定9份冻结Python源。恢复compact_ops.py status，不重复submit或修改九源；封存后对比旧stream_2m的2.36845ms/相同actions与外存字节。它不是新完整token结果。旧norm任务仍用原2MiB设计，不能把其最终时间直接配给502bank面积。

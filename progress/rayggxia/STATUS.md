@@ -1,3 +1,11 @@
+## 2026-11-06 Issue225：Attention缓冲交接与删除40KiB空闲
+
+沿task/225-norm-stream-20261106 / PR248，新Attention任务文件在architecture_tlm/module_handoff/attention_buffer_compaction_20261106/HANDOFF_ZH.md；只交接不接管198，不预扣其512KiB目标。COMPACT_ZH.md说明数字/CIM、激活和152KiB宽状态的分步优化。
+
+compact.py已将40KiB空闲实际删为2008KiB/502bank（不是保留512免费端口）；14项本地及EDA38615020通过，原生两层38615021运行。新9份源identity0578fe2e2b1e冻结，旧norm6源及38614103原样保留；新完整性能未知。只compact_ops status，未封存不称完成；出处/映射/所有物理word无别名与宏面积见COMPACT_VALIDATION/COMPACT_SOURCE_MANIFEST/HANDOFF。实际上传增量以COMPACT_PUBLICATION为准，Projects待维护者同步。
+
+---
+
 ## Issue225/PR248实际发布与预检
 
 PR248 ready/open未合并，源d428823e9e18832937a968db236b6ad5a6de15de，16份文件逐内容回读。原生三配置两层预检均完成封存，actions相同，norm额外32256B已计；2.5MiB常驻/流式2.36889ms，2MiB2.36845ms。完整38614103九项待封存，不能报整机完成；只status/collect，冻结六源不改。

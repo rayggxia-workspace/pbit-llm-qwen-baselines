@@ -27,3 +27,5 @@ Llama匿名HF原始config不可读，使用官方公开Meta SKU及精确总参�
 ## 发布与待同步
 
 通过独立任务分支和PR交付；PR待审不等于已合并，Issue保持open。Projects连接器无更新接口，待有权限维护者同步；不因此省略Issue/PR/STATUS。保持原始估算及负面检查，不覆盖其他成员的STATUS或Issue28并发备忘录内容。
+
+实际发布：PR247 ready/open待审、未合并；主体1335f69da2a3d014773adecb685ba6bdcfd37400，20文件远端逐内容一致。6项CPU通过；长期备忘录根/Issue28阅读镜像已更新同字节，未混入发布其他任务的备忘录改动。精确回执见PUBLICATION.json。

@@ -1,3 +1,9 @@
+## Issue245发布回执
+
+PR247待审未合并，源1335f69da2a3d014773adecb685ba6bdcfd37400。20文件逐内容回读一致，根报告镜像/长期备忘录已更新；未新增远端仿真任务。Issue245保留open，Projects待维护者同步。
+
+---
+
 # 2026-11-06 Issue245：Llama3.2/DeepSeek固定硬件初步预算
 
 负责人rayggxia；task/245-cross-model-estimate；base main8cd4fba；独立tmp/cross-model245-20261106。已本地完成解析预算、12份正式文件及6项CPU检查；未进行新模型原生TLM/PPL/EDA，不重跑236。Llama约39.92ms/159.50mJ，DeepSeek约83.45ms/333.76mJ，固定覆盖面积67.541mm²；4pJ/bit、100MHz/2.5MiB/12C20 T64、B1/2K、K128/S64。完整方法/代理边界见architecture_tlm/model_scaling_20261106/REPORT_ZH.md。

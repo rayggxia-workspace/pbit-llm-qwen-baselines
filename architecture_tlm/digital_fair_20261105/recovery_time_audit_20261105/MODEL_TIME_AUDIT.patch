@@ -1,0 +1,24 @@
+diff --git a/architecture_tlm/digital_fair_20261105/model.py b/architecture_tlm/digital_fair_20261105/model.py
+index d8e8f8dd..a0afcd3f 100644
+--- a/architecture_tlm/digital_fair_20261105/model.py
++++ b/architecture_tlm/digital_fair_20261105/model.py
+@@ -5,6 +5,7 @@ keep the original execution resources. Extra Wd lanes are physical instances,
+ not an increase to a free throughput parameter. No numeric/PPL claim is made.
+ """
+ import math
++from .time_audit import check_exclusive_time
+ from dataclasses import asdict, dataclass
+ 
+ from architecture_tlm.digital_baselines_20261104.factory import make_model as original_model
+@@ -215,10 +216,7 @@ class FairDigitalDecode(BaselineDecode):
+ 
+         yield from self._managed(driver(), loaders)
+         audit['elapsed_ns'] = self.h.now - begin
+-        audit['exclusive_sum_ns'] = sum(audit[k] for k in (
+-            'input_init_ns', 'weight_ready_wait_ns', 'operand_service_ns',
+-            'arithmetic_tail_ns', 'reduction_output_ns'))
+-        assert audit['elapsed_ns'] == audit['exclusive_sum_ns']
++        check_exclusive_time(audit)
+         self.matrix_audit.append(audit)
+ 
+     def run(self):

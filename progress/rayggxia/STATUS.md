@@ -1,3 +1,13 @@
+# 2026-11-06 Issue225：norm逐层双缓冲与2MiB候选
+
+负责人rayggxia；task/225-norm-stream-20261106；base main8cd4fba；独立tmp/norm-stream-issue225-20261106。用户确认采用无损逐层加载，不再全模型gamma常驻。正式architecture_tlm/norm_stream_20261106，默认stream_2m，旧resident_2p5及stream_2p5配对保留；源码d3acb0ee，执行identity dd115edf65dd。383KiB→32KiB，声明2008KiB/2MiB，每token多读392192B；BF16参数/数学不变，非PPL或新电路PPA。
+
+本地8项和EDA38614101八项通过；prefix38614102三配置两层门禁运行，full38614103九项依赖门禁，尚无完整封存结论。512个16B/1RW bank及12核/T64、1024FMA、8Attention组不减。共同显式展开旧宏内QK-headnorm gamma读取，不能声称新参考逐拍等于旧49.563ms。
+
+交接/来源/命令/作业在work/rayggxia/225/norm_stream。恢复只status/collect，不重复submit或改冻结源；原225/236目录和健康任务保留。上传及PR状态以PUBLICATION.json为准；Projects待维护者同步。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

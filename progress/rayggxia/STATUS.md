@@ -1,3 +1,11 @@
+## 2026-11-07 Issue245：原生跨模型单层pilot已提交
+
+负责人rayggxia；tmp/cross-model245-20261106，task/245-cross-model-estimate / PR247 base main，起点25e950b5。EDA数组38625522_[0-23%2]：24项三模型×100/250MHz×概率/BF16dense/W8dense/W8screen，1CPU10GiB2h每项，最多2并发，无GPU。首Qwen100SC单层native完成，127139840B权重守恒和队列排空通过；其他看实时STATUS。四项本地Gates通过，覆盖24布局、12全形状FFN分包、三seed参考地址键及面积配额。执行目录/冻结SHA见work/rayggxia/245/execute_20261107/SUBMISSION.json和HANDOFF。
+
+这是跨模型试接门禁，不是整模型PPA。250 r32须对齐主线r16，供数/PV重叠及norm/RoPE/残差访存/计费待对齐，之后Qwen回归再全层含head。没有下载大权重或启动PPL/训练/RTL/PT，两版默认和owner源码不变；250合格短T PPA待收。胶合、材料来源及回执本地完成；发布看PUBLICATION.json，PR未合并，Projects待维护者同步。
+
+---
+
 ## 2026-11-07 Issue245：用户明确跨模型只做硬件时间/功耗，不需准确率基线
 
 本阶段目的为Qwen3-4B、Llama3.2-3B-Instruct、DeepSeek-LLM-7B-Chat在当前概率硬件及等面积数字对照上的PPA/TLM，不要求下载权重、tokenizer、PPL、任务准确率或GPU基线；不取消其他已授权质量任务。CPU/EDA Slurm跑TLM即可。真实模型权重不是shape工作量的前置条件；数据依赖部分可使用明确标注的参考/合成轨迹与情景敏感性，不宣称真实文本功耗。

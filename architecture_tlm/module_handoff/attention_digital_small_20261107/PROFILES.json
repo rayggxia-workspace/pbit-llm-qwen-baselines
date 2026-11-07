@@ -1,0 +1,3450 @@
+{
+  "100": {
+    "dense_g2": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 100,
+      "SRAM_KiB": 1088,
+      "mode": "dense",
+      "concurrent_groups": 2,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.1947823848,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.21051576000000266,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.039478238480000004,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        }
+      ],
+      "fixed_area55_mm2": 0.4447763832800027,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2448702252
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 128,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 2,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 98304,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "dense_g4": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 100,
+      "SRAM_KiB": 1088,
+      "mode": "dense",
+      "concurrent_groups": 4,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.3895647696,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.4210315200000053,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.07895647696000001,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        }
+      ],
+      "fixed_area55_mm2": 0.8895527665600054,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2448702252
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 256,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 4,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 196608,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "dense_g8": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 100,
+      "SRAM_KiB": 1088,
+      "mode": "dense",
+      "concurrent_groups": 8,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.7791295392,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.8420630400000106,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.15791295392000002,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        }
+      ],
+      "fixed_area55_mm2": 1.7791055331200107,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2448702252
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 512,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 8,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 393216,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "screen_full_g2": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 100,
+      "SRAM_KiB": 1088,
+      "mode": "screen_full",
+      "concurrent_groups": 2,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.1947823848,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.21051576000000266,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.039478238480000004,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        },
+        {
+          "resource_id": "digital_attention_SparQ_shared_selector",
+          "area55_mm2": 0.08623486800001738,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "one shared measured top16+norm16; local32/r32/K128 probability_sum; no new bitwise equivalence claim"
+        }
+      ],
+      "fixed_area55_mm2": 0.53101125128002,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2448702252
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 128,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 2,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 98304,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "screen_full_g4": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 100,
+      "SRAM_KiB": 1088,
+      "mode": "screen_full",
+      "concurrent_groups": 4,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.3895647696,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.4210315200000053,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.07895647696000001,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        },
+        {
+          "resource_id": "digital_attention_SparQ_shared_selector",
+          "area55_mm2": 0.08623486800001738,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "one shared measured top16+norm16; local32/r32/K128 probability_sum; no new bitwise equivalence claim"
+        }
+      ],
+      "fixed_area55_mm2": 0.9757876345600227,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2448702252
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 256,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 4,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 196608,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "screen_full_g8": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 100,
+      "SRAM_KiB": 1088,
+      "mode": "screen_full",
+      "concurrent_groups": 8,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.7791295392,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.8420630400000106,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.15791295392000002,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        },
+        {
+          "resource_id": "digital_attention_SparQ_shared_selector",
+          "area55_mm2": 0.08623486800001738,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "one shared measured top16+norm16; local32/r32/K128 probability_sum; no new bitwise equivalence claim"
+        }
+      ],
+      "fixed_area55_mm2": 1.865340401120028,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2448702252
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 512,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 8,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 393216,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    }
+  },
+  "250": {
+    "dense_g2": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 250,
+      "SRAM_KiB": 960,
+      "mode": "dense",
+      "concurrent_groups": 2,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.1947823848,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.21051576000000266,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.039478238480000004,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        }
+      ],
+      "fixed_area55_mm2": 0.4447763832800027,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2487972024
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 128,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 2,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 98304,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "dense_g4": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 250,
+      "SRAM_KiB": 960,
+      "mode": "dense",
+      "concurrent_groups": 4,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.3895647696,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.4210315200000053,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.07895647696000001,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        }
+      ],
+      "fixed_area55_mm2": 0.8895527665600054,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2487972024
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 256,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 4,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 196608,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "dense_g8": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 250,
+      "SRAM_KiB": 960,
+      "mode": "dense",
+      "concurrent_groups": 8,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.7791295392,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.8420630400000106,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.15791295392000002,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        }
+      ],
+      "fixed_area55_mm2": 1.7791055331200107,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2487972024
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 512,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 8,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 393216,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "screen_full_g2": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 250,
+      "SRAM_KiB": 960,
+      "mode": "screen_full",
+      "concurrent_groups": 2,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.1947823848,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.21051576000000266,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.039478238480000004,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        },
+        {
+          "resource_id": "digital_attention_SparQ_shared_selector",
+          "area55_mm2": 0.093349908,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "one shared measured top16+norm16; local32/r32/K128 probability_sum; no new bitwise equivalence claim"
+        }
+      ],
+      "fixed_area55_mm2": 0.5381262912800027,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2487972024
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 128,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 2,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 98304,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "screen_full_g4": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 250,
+      "SRAM_KiB": 960,
+      "mode": "screen_full",
+      "concurrent_groups": 4,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.3895647696,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.4210315200000053,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.07895647696000001,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        },
+        {
+          "resource_id": "digital_attention_SparQ_shared_selector",
+          "area55_mm2": 0.093349908,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "one shared measured top16+norm16; local32/r32/K128 probability_sum; no new bitwise equivalence claim"
+        }
+      ],
+      "fixed_area55_mm2": 0.9829026745600054,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2487972024
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 256,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 4,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 196608,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    },
+    "screen_full_g8": {
+      "status": "ready_for_conditional_TLM_integration",
+      "clock_MHz": 250,
+      "SRAM_KiB": 960,
+      "mode": "screen_full",
+      "concurrent_groups": 8,
+      "entry_point": "architecture_tlm.attention_digital_small_20261107.adapter.Attention",
+      "fixed_components": [
+        {
+          "resource_id": "digital_attention_scalar_pool",
+          "area55_mm2": 0.7791295392,
+          "roles": [
+            "reduction",
+            "attention_control",
+            "output_format"
+          ],
+          "detail": "per slot8FP32 ADD (shared QK reduction/softmax),4exp,1FP32 MUL,1recseed,1BF16 converter; SS100 proxies at250"
+        },
+        {
+          "resource_id": "digital_attention_QK_staging",
+          "area55_mm2": 0.8420630400000106,
+          "roles": [
+            "QK_staging"
+          ],
+          "detail": "2176B per slot of bounded input/transpose/stat scratch, not full KV"
+        },
+        {
+          "resource_id": "digital_attention_control_reserve",
+          "area55_mm2": 0.15791295392000002,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "explicit estimate:10% scalar +0.01mm2/slot;0.5x/2x sensitivity, not measured RTL"
+        },
+        {
+          "resource_id": "digital_attention_SparQ_shared_selector",
+          "area55_mm2": 0.093349908,
+          "roles": [
+            "attention_control"
+          ],
+          "detail": "one shared measured top16+norm16; local32/r32/K128 probability_sum; no new bitwise equivalence claim"
+        }
+      ],
+      "fixed_area55_mm2": 1.8724554411200107,
+      "pool": {
+        "resource_id": "ordinary_BF16_FMA_pool",
+        "lanes_per_slice": 16,
+        "area55_mm2_per_slice": 0.2487972024
+      },
+      "legal_pool_slices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128
+      ],
+      "maximum_simultaneous_Attention_lanes": 512,
+      "legal_policy": "64lane leases;4..128 FMA16 slices accepted; excess lanes available to host clients, not fabricated Attention speedup",
+      "timing_contract": {
+        "FMA": {
+          "latency_cycles": 4,
+          "II_cycles": 1,
+          "contexts": 4,
+          "lanes_per_lease": 64
+        },
+        "exact_QK": {
+          "Kparallel": 4,
+          "tokens_per_context": 4,
+          "head_count": 4,
+          "feedback_clear_cycles": 16
+        },
+        "PV": {
+          "dimensions_per_pass": 64,
+          "passes": 2,
+          "context_clear_cycles": 16,
+          "final_context_capture_cycles": 4,
+          "tile_partial_merge": "8FP32 ADD lanes, L4,4x32B read/modify/write credits; no FMA state load port"
+        },
+        "scalar": {
+          "FP32_ADD_L": 4,
+          "FP32_MUL_L": 4,
+          "II": 1,
+          "exp_gap_L": 7,
+          "reciprocal_seed_L": 2,
+          "reciprocal_Newton_steps": 2,
+          "final_BF16_L": 1,
+          "TT250_STA": false
+        },
+        "input_fifo_words": 4,
+        "input_word_bytes": 32,
+        "slots": 8,
+        "tile_tokens": 32,
+        "root_clock_gating": "inactive units input-isolated/clock-off; leakage retained; active clock allowance retained"
+      },
+      "SRAM": {
+        "bytes_per_slot": 49152,
+        "banks_per_slot": 12,
+        "total_bytes": 393216,
+        "physical_word_bytes": 16,
+        "ports": "1RW",
+        "lifetime": [
+          {
+            "name": "K_pingpong",
+            "range": [
+              0,
+              16384
+            ],
+            "release": "after last QK operand and packing read"
+          },
+          {
+            "name": "V_pingpong",
+            "range": [
+              16384,
+              32768
+            ],
+            "release": "after PV tile partial merge"
+          },
+          {
+            "name": "K_pack_scratch",
+            "range": [
+              32768,
+              40960
+            ],
+            "release": "after exact QK reduction"
+          },
+          {
+            "name": "FP32_PV_state_and_IDs",
+            "range": [
+              40960,
+              45056
+            ],
+            "release": "after normalized output consumed"
+          },
+          {
+            "name": "Q",
+            "range": [
+              45056,
+              46080
+            ],
+            "release": "end group"
+          },
+          {
+            "name": "score_weight_pingpong",
+            "range": [
+              46080,
+              49152
+            ],
+            "release": "after PV consumes weights"
+          }
+        ],
+        "overlay": "coarse phase uses0..16384 for input,16384..32768 for BF16 logits; only then exact K/V phase",
+        "allocation": "host chooses physical banks; no extra SRAM area; test hub unused16KiB reservation is inside total"
+      },
+      "numerical_contract": {
+        "QKV": "BF16",
+        "QK_feedback": "FP32,4 partial dimensions then FP32 tree,scale1/sqrt128",
+        "softmax": "FP32 running max/l; FP32 gap; UQ12 range reduction /BF16 exp table; seed plus2 FP32 Newton steps",
+        "PV": "BF16 exp weight x BF16 V with FP32 tile-local feedback; FP32 merge/rescale into SRAM output; final BF16 RNE",
+        "score_quantization": "no absolute signed8 Ising front in this digital path",
+        "selection": "same r32 L1 temperature / sum four coarse softmax probabilities / mandatory local32 / K128",
+        "coarse_storage": "BF16 coarse logits cost proxy; algorithm candidate metadata supplied externally; not new quality acceptance",
+        "fallback": "N<=128 or zero Q L1: caller marks fallback_dense; no full-N^2 scores",
+        "reallocation": false
+      },
+      "exclusions": [
+        "host SRAM/DMA/PHY/projection/FFN/head prices are separate, not zero",
+        "250 scalar softmax is SS100 area/action proxy with explicit L/II, not new TT250 STA",
+        "root gates/interconnect/configuration priced by reserve; not integrated physical validation",
+        "final36layer nativeDRAMSys and equal-area allocation belong to Issue236"
+      ]
+    }
+  }
+}

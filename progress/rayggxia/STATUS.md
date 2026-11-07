@@ -1,3 +1,47 @@
+## 2026-11-07 Issue236：当前100/250数字等面积基线准备与模块交接
+
+用户要求两版最新概率硬件建立等面积数字基线，宿主可做部分先做、专门模块需求写文件。复用Issue236/PR244、task/236-fair-digital-20261105原checkout，不重跑/覆盖旧67.5mm²、2.5MiB、17项及1888BF16成果。新目标1001088KiB/33.284710mm²；250960KiB/20.872325旧TT参考，修复PPA待收后按17.963887+3A重算。选BF16dense、W8dense、W8同SparQ K128准确PV三类×两频率，整机总面积匹配，SRAM/DMA/外存/计费边界一致。
+
+已完成预算与源SHA冻结、全形状work/权重流量审计、合法FMA16配额工具与4测试、六项待接配置。源architecture_tlm/equal_area_100_250_20261107，PLAN明确pending/无时间能量；未接真实数字执行适配，不把旧基线结果缩放冒充新结果。FFN每层74,711,040MAC，36层含head权重BF16约8.044544GB、W8约5.354947GB；136.4606GB/s理想纯权重流下界58.95/39.24ms，不是新TPOT，量化节省与随机收益分开。
+
+唯一给模块文件module_handoff/DIGITAL_BASELINES_100_250_NEXT_ZH_20261107.md：204提供BF16/W8 GU/NL/Wd数制/端点、共享池/固定组件、L/II/context/合法配置与小SRAM映射；198提供dense/同SparQ准确数字Softmax/PV，共享池实际租用/在线有限tile/GQA/不同并发组、状态控制面积与事件成本。复用已验收16lane PPA，未要求所有电路重做；缺物理细节可用显式宏/代理，不假填0。旧512QK+512PV/2.5MiB/1728或1888lane不能原搬。
+
+模块返回后由宿主配总面积、接公共后端做单层门禁，再提交EDA CPU原生36层+head；本轮没有新TLM任务/GPU/训练/PPL/RTL/PT或电路台账run。不接管204正在运行TT门限缓存修复；未将其失败映射当有效价。公开与回读以PUBLICATION.json为准，PR244待审不合并，Projects待同步。
+
+---
+
+## 2026-11-06 Issue236：BF16整机近等面积对照已实际开跑
+
+用户要求补齐全BF16近等面积对照。原17项W8/SC结果不重跑。新BF16共享1888路FMA给QKV/O/g/u/down/lm_head，FP32/c4反馈、K32/K128；稠密在线Softmax/PV保持当前数字Attention。覆盖67.39315824mm²，目标67.54144608mm²，差−0.21955%；100MHz/2.5MiB/B1/2K/36层及embedding/lm_head、同原生LPDDR5-derived8533/DMA/端口。删去W8 GU/解码预算，使用已标定BF16 FMA面积/活动/整token idle，各一次；面积不重复乘.81。
+
+本地四项和EDA四项检查通过；原生首层门禁38612072已COMPLETED/0:0、4分38秒，完整36层分配/跨层预取/字节/时间审计通过，四原件SHA已收。完整38612073实际RUNNING，尚无完整时间/能量；预计约3～4小时，后续以封存结果为准。请求1CPU/12GiB/0GPU，平台实际3CPU但模拟单线程。冻结执行35a6f91a466f70624e19f0c7d218936f24a7b536，manifest311d6bc9301ffba1e695e27dbffd7bc080af45bb42d86e14755cee8f784eaceb。
+
+PR244新增源码/配置/回执九文件已推送并逐字回读，科学head f5b649edd85ca6db115e3280c58af9dbb19c84ce；未合并，Projects仍待维护者同步。正式architecture_tlm/bf16_equal_area_20261106，根镜像同字节。完整旧依赖保留在授权EDA快照，main单独拷本目录不可运行。没有新增RTL/PT/PPL或GPU任务，非芯片实测/同质量验收。
+
+恢复tmp/digital-fair-issue236-20261105/work/rayggxia/236/bf16_equal_area_20261106/ops.py status；完成后collect，不能重复prepare或改冻结源码。运行根tlm236_joint_20261105/bf16_equal_area_1d645d789c21；预检原件project_archives/bf16_equal_area236_20261106/1d645d789c21/gate。HANDOFF含准确路径/命令/验收。完整结果必须核对36层＋lm_head、MAC/权重字节、队列/原生返回、能量/面积守恒，再与原17项并表；不能用首层外推当完整结果。
+
+---
+
+## 2026-11-06：17项完整数字/概率TLM均核验完成
+
+原6健康＋11补跑共17/17，0缺项/失败；74原件SHA、本地36层/字节/MAC/队列/面积/能量守恒通过。38587129及38587130已结束，无运行任务，不重跑。审计只修复浮点尾差。
+
+100MHz/2.5MiB/B1/2K/36层＋embedding/lm_head，LPDDR5-derived8533时序、外存4pJ/bit条件：W8稠密55.198ms/216.542mJ总；筛选准确PV50.967/204.587；W8＋Ising50.402/204.942；C20 T64＋Ising49.563/198.088。概率方案相对W8稠密时间−10.21%、片上−29.71%、已计总能量−8.52%；同Ising只换FFN则片上−21.56%、总−3.34%。面积均约67.35–67.78mm²已覆盖预算，外存共同成本占概率总能量87.41%。
+
+正式architecture_tlm/digital_fair_20261105/joint_final_20261106/REPORT_ZH.md与公开SUMMARY；私有原件索引FINAL_COLLECTION，17项三seed与分项在工作区RESULTS。条件TLM/覆盖面积非芯片实测，三捕获层mod3复用，数字FFN是W8，概率TLM是C20/T64，不能与T32 PPL混称同一验收配置。PR244未合并，Projects待同步。下方running为历史快照。
+
+---
+
+## 2026-11-05 Issue236：时间账目浮点误报修复与补跑
+
+PR244/open未合并，task/236-time-ledger-recovery-20261105。原17项6份完整健康结果逐SHA/守恒核验保留，11项同一严格==断言失败。36层原生诊断38586955复现207690与207689.99999999988ns、差1.164e-10ns。math.fsum＋1e-6ns界内记录残差，真实1ps/整拍错账仍失败；不改事件、存储或硬件能耗面积。
+
+6项回归和完整36层分配/跨层预取的首层门禁38587128通过。38587129_[1,3,5-13%8]只补11失败项，最新8RUNNING/3等待；38587130后续合并旧健康与新11项，尚未完整。旧38582749对应旧失败批次，不能当新补跑失败。预计补跑3–6h，CPU only，无新PPA/PPL。修复执行manifest7c5cb9b603ca2bd139ac6fa7b75d789e00c316acde994ff3db9bdcbb33c4bb40。
+
+入口architecture_tlm/digital_fair_20261105/recovery_time_audit_20261105/REPORT_ZH.md及限定patch；私有输入与完整旧模块不公开。工作区恢复同Issue的recovery_time_audit_20261105/status.py，禁止重复retry.py。PR244待审未合并，Issue236继续开放，Projects待维护者同步。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

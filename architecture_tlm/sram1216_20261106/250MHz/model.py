@@ -49,6 +49,11 @@ def make_model(backend,cores=3,front_allowance=False,ingress_kib=16,**kwargs):
         Wd_input_payload_B=128,GU_normalization_shift=-4,Wd_normalization_shift=-5,
         RNG='local GF64 inside measured predecessor core; no extra threshold SRAM',
         scope='transactional contracts, not numerical Qwen or physical signoff')
+    from architecture_tlm.module_refresh_20261107.bindings import core_budget
+    evidence=core_budget({},0,cores,250)
+    m.short_FFN_contract.update(implementation_evidence_status=evidence['status'],
+        target_clock_physically_closed=evidence.get('ready_for_TLM_default',False),
+        setup_slack_ns=evidence.get('setup_slack_ns'))
     # Explicit per-head score preparation replaces both old65cycles and the
     # additional5.2us/layer allowance; no independent front delay is installed.
     m.unified_clock_contract.update(whole_model_enabled=True,GU_samples=16,Wd_samples=32,

@@ -106,6 +106,8 @@ def price(r):
      'C19/T16-T32 PPA null; C20 area and unchanged measuredT64 incremental work/frame reference, not time-scaled power')
  ffn_label='FFN_shared_pool_T64_frame_energy_PROXY'
  ffn_measured=core_budget(frames,T,cores,250)
+ if ffn_measured['total_mJ'] is None:
+  statuses[ffn_label]=ffn_measured['reason']+'; predecessor T64 reference only'
  if ffn_measured['total_mJ'] is not None:
   area.pop(ffn_label);dynamic.pop(ffn_label);background.pop(ffn_label);statuses.pop(ffn_label)
   ffn_label='FFN_shared_pool_C19_shortT_measured'
@@ -142,6 +144,8 @@ def price(r):
  bykind=m['by_kind'];projected_BW={k:bykind[k+'_weights']['issued_bytes']/(phases[k]*1000) for k in ('QKV','O') if k in phases}
  totals=dict(attention_plus_pool_logic_mm2=area_logic,attention_pool_plus672KiB_mm2=sum(area.values()),standalone_with_shared_support_mm2=sum(area.values())+sum(shared_area.values()),onchip_uJ=onchip,onchip_average_W=onchip/time_us,external_uJ_by_pJ_per_bit=external,total_uJ_at4pJ=onchip+external['4.0'],total_average_W_at4pJ=(onchip+external['4.0'])/time_us)
  totals=dict(covered_area55_mm2=sum(area.values())+sum(shared_area.values()),
+     FFN_target_clock_implementation_status=ffn_measured['status'],
+     FFN_target_clock_physically_closed=ffn_measured.get('ready_for_TLM_default',False),
      onchip_mJ_with_FFN_reference_proxy=onchip/1000,
      priced_onchip_mJ_excluding_unknown_short_FFN=(onchip-dynamic[ffn_label]-background[ffn_label])/1000,
      short_FFN_measured_energy_mJ=ffn_measured['total_mJ'],whole_chip_measured_energy_mJ=None,

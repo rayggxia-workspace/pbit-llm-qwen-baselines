@@ -42,11 +42,20 @@ def ffn_profile():
 def core_budget(frames, wall_ns, cores, clock_MHz):
     """Gross service energy + stopped-clock residency, without double billing."""
     profile = ffn_profile()
-    core = profile['versions'][str(clock_MHz)+'MHz']['core']
+    version = profile['versions'][str(clock_MHz)+'MHz']
+    core = version['core']
     if core is None:
-        return dict(status='shortT_C19_PPA_pending', clock_MHz=clock_MHz,
+        provisional = version.get('provisional_measured_core')
+        failed = bool(provisional and provisional.get('timing_pass') is False)
+        return dict(status='shortT_C19_timing_failed' if failed else 'shortT_C19_PPA_pending', clock_MHz=clock_MHz,
             cores=cores, area55_mm2=None, total_mJ=None,
-            reason='Do not transpose SS100 or TT250 T64 energy into shortT250')
+            ready_for_TLM_default=False,
+            setup_slack_ns=provisional.get('setup_slack_ns') if failed else None,
+            provisional_area55_mm2_per_core=provisional.get('area55_mm2') if failed else None,
+            reason='4ns setup failed; provisional mapping is not an accepted250MHz core' if failed else
+                   'Do not transpose SS100 or TT250 T64 energy into shortT250')
+    if core.get('timing_pass') is False or version.get('ready_for_TLM_default') is False:
+        raise ValueError('Timing-failed FFN evidence cannot be billed as an accepted core')
     assert core['clock_MHz'] == clock_MHz
     active_ns = 0
     gross_pJ = 0
@@ -61,6 +70,7 @@ def core_budget(frames, wall_ns, cores, clock_MHz):
     wait_ns = max(0,residency_ns-active_ns)
     wait_pJ = wait_ns*core['waiting_total_W']*1000
     return dict(status=core['status'], clock_MHz=clock_MHz, cores=cores,
+        ready_for_TLM_default=True,
         area55_mm2=cores*core['area55_mm2'],
         active_core_ns=active_ns, waiting_core_ns=wait_ns,
         active_gross_mJ=gross_pJ/1e9, waiting_mJ=wait_pJ/1e9,

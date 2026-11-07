@@ -6,7 +6,7 @@ Changing sample count still contends for finite slots, cores and state ports.
 """
 from collections import deque
 from pathlib import Path
-import argparse,heapq,itertools,json,time
+import argparse,heapq,itertools,json,math,time
 
 def order(groups,blocks,batch):
     if batch:
@@ -65,7 +65,12 @@ def stage(samples,*,groups,blocks,batch=0,cores=12,slots=32,state_ports=2,
         dominant_floor=max(floors,key=floors.get),samples=samples)
 
 def estimate(profile,gu_samples,wd_samples,bandwidth_GBs=None):
-    bw=bandwidth_GBs or profile['bandwidth_GBs']
+    # The phase offsets are calibrated at the recorded reference bandwidth.
+    # Recalibrating both sides at a new bandwidth cancels the memory penalty.
+    # Other stages also depend on bandwidth, so reject that unsupported scan.
+    bw=profile['bandwidth_GBs']
+    if bandwidth_GBs is not None and not math.isclose(bandwidth_GBs,bw,rel_tol=1e-12,abs_tol=1e-12):
+        raise ValueError('sample-only estimator requires the reference bandwidth; use a new memory replay for bandwidth changes')
     layers=profile['layers'];hidden=profile['hidden'];ffn=profile['ffn']
     stages={};reference=profile.get('reference_samples',64)
     for mode,t,groups,blocks,batch,preload in (

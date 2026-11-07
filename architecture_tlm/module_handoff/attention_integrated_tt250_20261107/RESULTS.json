@@ -1,0 +1,1987 @@
+{
+  "status": "native11_complete",
+  "model": "Qwen3-4B geometry only; no numeric inference",
+  "batch": 1,
+  "context": 2048,
+  "K": 128,
+  "S": 64,
+  "compute_MHz": 250,
+  "SRAM_MHz": 100,
+  "memory": "LPDDR5X derived8533;136.4606GB/s nominal;256global credits;24KiB direct return holding;1216KiB SRAM",
+  "default_changed": false,
+  "new_RTL_PPA": false,
+  "rows": [
+    {
+      "case": "m640_v4_s8_n8_tbig_r32",
+      "seed": 17,
+      "native_result_sha256": "95d32a265bca75102bab56d8e1aabea2b735f0f905a358a4ef77426596c0c165",
+      "config": {
+        "lanes": 640,
+        "pv": 4,
+        "sampler": 8,
+        "norm": 8,
+        "transpose": "big",
+        "reduction": 32
+      },
+      "time_us": 547.86,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 17.248037280399558,
+          "attention_pool_plus672KiB_mm2": 21.769461576963554,
+          "standalone_with_shared_support_mm2": 25.366738011867568,
+          "onchip_uJ": 365.5574832372524,
+          "onchip_average_W": 0.6672461636864389,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.806912,
+            "6.6": 2852.5314047999996,
+            "8.0": 3457.613824
+          },
+          "total_uJ_at4pJ": 2094.364395237252,
+          "total_average_W_at4pJ": 3.8228094681802873
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 9.955177343998622,
+          "final_FP32_reduction": 0.2967974784,
+          "SparQ_top_and_norm": 0.746799264,
+          "Ising_sampler": 0.3778996032,
+          "PV_ADD_state_and_word_buffers": 3.020192179200927,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 1.2072613248000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.3855640384000003,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0010873764
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.37283444543333333,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.6880723282066012,
+          "V_address_cache_descriptor_control": 0.2527406410826667,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.1919096672,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913418548622222,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 7.0410967200000005,
+          "final_FP32_reduction": 0.3071522304,
+          "SparQ_top_and_norm": 1.1568611759999998,
+          "Ising_sampler": 0.3967529072,
+          "PV_ADD_state_and_word_buffers": 0.8761317332487389,
+          "V_address_cache_descriptor_control": 0.029159300639999997,
+          "QK_transpose_input_buffers": 0.6048471797333334,
+          "output_normalize_BF16": 8.303862886400001,
+          "wide_score_front_reserve": 0.017789622933333332,
+          "ordinary_activation_holding": 0.3024235898666667,
+          "attention512_weight160_SRAM": 0.713718698112,
+          "shared_DMA24KiB": 0.8539019008000001,
+          "shared_vector_norm_DMA_SRAM": 0.20391962803199998,
+          "shared_vector_codec_reserve": 0.9129234394065615
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 4.093540639466667,
+          "PV_ADD_state_and_word_buffers": 0.5223009420953402,
+          "ab_both": 0.3749979627189755,
+          "screen_top16": 0.3935389452362622,
+          "screen_norm16": 0.7103450979199999,
+          "V_address_cache_descriptor_control": 0.008875282808888885,
+          "output_normalize_BF16": 8.056911899989332
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 547.86,
+          "phases_us": {
+            "embedding": 0.33,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 277.98,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 81.86,
+            "attention_gather": 0.64,
+            "O": 184.45
+          },
+          "wide_score_front_extra_us_allowance": 2.6,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 98.61135326543277,
+          "QKV_O_logical_GBs": {
+            "QKV": 113.16382473559248,
+            "O": 113.6975874220656
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 320.0,
+          "external_bytes_excluding_GU_prefetch": 54025216
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 379.7179940074879,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.3855640384000003
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 0.0,
+        "sampler_wait_us": 0.0,
+        "norm_wait_us": 0.0,
+        "PV_backpressure_us": 28.616
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 60928,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 484,
+        "V_fetch_reuse": 1564,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m320_v4_s8_n8_tbig_r32",
+      "seed": 17,
+      "native_result_sha256": "252d9fd8a70286f1dca1c4715ddbdc6d20f06d41c2c560814e6ddfcdadf3ae2a",
+      "config": {
+        "lanes": 320,
+        "pv": 4,
+        "sampler": 8,
+        "norm": 8,
+        "transpose": "big",
+        "reduction": 32
+      },
+      "time_us": 581.15,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 12.270256152400245,
+          "attention_pool_plus672KiB_mm2": 16.791680448964243,
+          "standalone_with_shared_support_mm2": 20.388956883868257,
+          "onchip_uJ": 365.2799548464133,
+          "onchip_average_W": 0.6285467690723795,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.806912,
+            "6.6": 2852.5314047999996,
+            "8.0": 3457.613824
+          },
+          "total_uJ_at4pJ": 2094.086866846413,
+          "total_average_W_at4pJ": 3.6033500246862484
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 4.977588671999311,
+          "final_FP32_reduction": 0.2967974784,
+          "SparQ_top_and_norm": 0.746799264,
+          "Ising_sampler": 0.3778996032,
+          "PV_ADD_state_and_word_buffers": 3.020192179200927,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 1.2072613248000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.3855640384000003,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0008949204000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.6880723282066012,
+          "V_address_cache_descriptor_control": 0.2527406410826667,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.1919096672,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913418548622222,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 3.7344699,
+          "final_FP32_reduction": 0.32581593600000003,
+          "SparQ_top_and_norm": 1.22715634,
+          "Ising_sampler": 0.42086108133333333,
+          "PV_ADD_state_and_word_buffers": 0.9293687379576984,
+          "V_address_cache_descriptor_control": 0.0309311276,
+          "QK_transpose_input_buffers": 0.6415999315555556,
+          "output_normalize_BF16": 8.808436309333333,
+          "wide_score_front_reserve": 0.01887058622222222,
+          "ordinary_activation_holding": 0.3207999657777778,
+          "attention512_weight160_SRAM": 0.7570868860799999,
+          "shared_DMA24KiB": 0.9057881386666666,
+          "shared_vector_norm_DMA_SRAM": 0.21631053887999996,
+          "shared_vector_codec_reserve": 0.9683960442651831
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 1.1302006188,
+          "PV_ADD_state_and_word_buffers": 0.5545306252042996,
+          "ab_both": 0.3978768037323089,
+          "screen_top16": 0.4176235944362622,
+          "screen_norm16": 0.75406046064,
+          "V_address_cache_descriptor_control": 0.009417687875555553,
+          "output_normalize_BF16": 8.546631626752
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 581.15,
+          "phases_us": {
+            "embedding": 0.33,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 296.39,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 87.57,
+            "attention_gather": 0.64,
+            "O": 193.62
+          },
+          "wide_score_front_extra_us_allowance": 2.6,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 92.96260173793341,
+          "QKV_O_logical_GBs": {
+            "QKV": 106.13475488376801,
+            "O": 108.31277760561926
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 160.0,
+          "external_bytes_excluding_GU_prefetch": 54025216
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 377.09029626385376,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.3855640384000003
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 65.4463399999981,
+        "sampler_wait_us": 0.0,
+        "norm_wait_us": 0.0,
+        "PV_backpressure_us": 28.648
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 484,
+        "V_fetch_reuse": 1564,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m256_v4_s8_n8_tbig_r32",
+      "seed": 17,
+      "native_result_sha256": "c309f098ed3853cf8251b92e3fa811f5c12909458a4fbfd4e8e4d076f0fa9523",
+      "config": {
+        "lanes": 256,
+        "pv": 4,
+        "sampler": 8,
+        "norm": 8,
+        "transpose": "big",
+        "reduction": 32
+      },
+      "time_us": 605.81,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 11.274699926800382,
+          "attention_pool_plus672KiB_mm2": 15.796124223364382,
+          "standalone_with_shared_support_mm2": 19.393400658268398,
+          "onchip_uJ": 365.42210480334296,
+          "onchip_average_W": 0.6031958944278618,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.806912,
+            "6.6": 2852.5314047999996,
+            "8.0": 3457.613824
+          },
+          "total_uJ_at4pJ": 2094.229016803343,
+          "total_average_W_at4pJ": 3.4569073088977453
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 3.982070937599449,
+          "final_FP32_reduction": 0.2967974784,
+          "SparQ_top_and_norm": 0.746799264,
+          "Ising_sampler": 0.3778996032,
+          "PV_ADD_state_and_word_buffers": 3.020192179200927,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 1.2072613248000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.3855640384000003,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0008564292000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.6880723282066012,
+          "V_address_cache_descriptor_control": 0.2527406410826667,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.1919096672,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913418548622222,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 3.1143480479999996,
+          "final_FP32_reduction": 0.33964131840000006,
+          "SparQ_top_and_norm": 1.279228396,
+          "Ising_sampler": 0.43871952453333335,
+          "PV_ADD_state_and_word_buffers": 0.9688047408451402,
+          "V_address_cache_descriptor_control": 0.032243631440000003,
+          "QK_transpose_input_buffers": 0.6688250099555556,
+          "output_normalize_BF16": 9.182205627733332,
+          "wide_score_front_reserve": 0.019671323822222222,
+          "ordinary_activation_holding": 0.3344125049777778,
+          "attention512_weight160_SRAM": 0.7892124347519999,
+          "shared_DMA24KiB": 0.9442235434666667,
+          "shared_vector_norm_DMA_SRAM": 0.22548926707199998,
+          "shared_vector_codec_reserve": 1.0094880970081572
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 0.5744584677333333,
+          "PV_ADD_state_and_word_buffers": 0.5784051816917415,
+          "ab_both": 0.41482460245230884,
+          "screen_top16": 0.43546461123626223,
+          "screen_norm16": 0.78644318352,
+          "V_address_cache_descriptor_control": 0.009819481475555551,
+          "output_normalize_BF16": 8.909397876736
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 605.81,
+          "phases_us": {
+            "embedding": 0.33,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 305.29,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 91.98,
+            "attention_gather": 0.64,
+            "O": 204.97
+          },
+          "wide_score_front_extra_us_allowance": 2.6,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 89.17848170218386,
+          "QKV_O_logical_GBs": {
+            "QKV": 103.0406498738904,
+            "O": 102.31507049812167
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 128.0,
+          "external_bytes_excluding_GU_prefetch": 54025216
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 377.1309182081882,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.3855640384000003
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 121.9502099999988,
+        "sampler_wait_us": 0.0,
+        "norm_wait_us": 0.0,
+        "PV_backpressure_us": 28.748
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 484,
+        "V_fetch_reuse": 1564,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m192_v4_s8_n8_tbig_r32",
+      "seed": 17,
+      "native_result_sha256": "e6057af1559da3314cc510c1e58fc87da3cd47e9a11a2da15b1ac11777f7471e",
+      "config": {
+        "lanes": 192,
+        "pv": 4,
+        "sampler": 8,
+        "norm": 8,
+        "transpose": "big",
+        "reduction": 32
+      },
+      "time_us": 745.83,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 10.279143701200521,
+          "attention_pool_plus672KiB_mm2": 14.800567997764519,
+          "standalone_with_shared_support_mm2": 18.397844432668535,
+          "onchip_uJ": 366.5700005524011,
+          "onchip_average_W": 0.49149270014936525,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.806912,
+            "6.6": 2852.5314047999996,
+            "8.0": 3457.613824
+          },
+          "total_uJ_at4pJ": 2095.3769125524013,
+          "total_average_W_at4pJ": 2.8094564613281863
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 2.9865532031995867,
+          "final_FP32_reduction": 0.2967974784,
+          "SparQ_top_and_norm": 0.746799264,
+          "Ising_sampler": 0.3778996032,
+          "PV_ADD_state_and_word_buffers": 3.020192179200927,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 1.2072613248000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.3855640384000003,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0008179380000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.6880723282066012,
+          "V_address_cache_descriptor_control": 0.2527406410826667,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.1919096672,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913418548622222,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 2.8756221479999997,
+          "final_FP32_reduction": 0.41814213120000004,
+          "SparQ_top_and_norm": 1.574894628,
+          "Ising_sampler": 0.5401201416,
+          "PV_ADD_state_and_word_buffers": 1.1927231968183605,
+          "V_address_cache_descriptor_control": 0.03969605592,
+          "QK_transpose_input_buffers": 0.8234095792,
+          "output_normalize_BF16": 11.304475699200001,
+          "wide_score_front_reserve": 0.0242179288,
+          "ordinary_activation_holding": 0.4117047896,
+          "attention512_weight160_SRAM": 0.9716219775359999,
+          "shared_DMA24KiB": 1.1624605824,
+          "shared_vector_norm_DMA_SRAM": 0.27760627929599996,
+          "shared_vector_codec_reserve": 1.242809638981849
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 0.3605165710666667,
+          "PV_ADD_state_and_word_buffers": 0.7139654168649617,
+          "ab_both": 0.5110545609589755,
+          "screen_top16": 0.5367662808362622,
+          "screen_norm16": 0.97031296688,
+          "V_address_cache_descriptor_control": 0.012100874008888885,
+          "output_normalize_BF16": 10.969192293717333
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 745.83,
+          "phases_us": {
+            "embedding": 0.33,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 375.51,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 103.95,
+            "attention_gather": 0.64,
+            "O": 262.8
+          },
+          "wide_score_front_extra_us_allowance": 2.6,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 72.43636753683815,
+          "QKV_O_logical_GBs": {
+            "QKV": 83.77214987616841,
+            "O": 79.80030441400305
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 96.0,
+          "external_bytes_excluding_GU_prefetch": 54025216
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 380.6439095167342,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.3855640384000003
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 230.0043939999988,
+        "sampler_wait_us": 0.0,
+        "norm_wait_us": 0.0,
+        "PV_backpressure_us": 28.752
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 484,
+        "V_fetch_reuse": 1564,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m320_v4_s8_n8_tmicro4_r32",
+      "seed": 17,
+      "native_result_sha256": "5e171e4a56deaaa4ae2a6c005c98492d62deb2718899acc10b4392bcdbf9f194",
+      "config": {
+        "lanes": 320,
+        "pv": 4,
+        "sampler": 8,
+        "norm": 8,
+        "transpose": "micro4",
+        "reduction": 32
+      },
+      "time_us": 585.58,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 11.407596043600245,
+          "attention_pool_plus672KiB_mm2": 15.929020340164245,
+          "standalone_with_shared_support_mm2": 19.52629677506826,
+          "onchip_uJ": 364.8636654868586,
+          "onchip_average_W": 0.6230808181407469,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.806912,
+            "6.6": 2852.5314047999996,
+            "8.0": 3457.613824
+          },
+          "total_uJ_at4pJ": 2093.6705774868587,
+          "total_average_W_at4pJ": 3.575379243633421
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 4.977588671999311,
+          "final_FP32_reduction": 0.2967974784,
+          "SparQ_top_and_norm": 0.746799264,
+          "Ising_sampler": 0.3778996032,
+          "PV_ADD_state_and_word_buffers": 3.020192179200927,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 0.3446012160000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.3855640384000003,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0008949204000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.6880723282066012,
+          "V_address_cache_descriptor_control": 0.2527406410826667,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.1919096672,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913418548622222,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 3.76293708,
+          "final_FP32_reduction": 0.3282995712000001,
+          "SparQ_top_and_norm": 1.236510728,
+          "Ising_sampler": 0.4240692282666667,
+          "PV_ADD_state_and_word_buffers": 0.9364531456134716,
+          "V_address_cache_descriptor_control": 0.03116690992,
+          "QK_transpose_input_buffers": 0.19014433244444442,
+          "output_normalize_BF16": 8.875581405866665,
+          "wide_score_front_reserve": 0.019014433244444445,
+          "ordinary_activation_holding": 0.3232453651555556,
+          "attention512_weight160_SRAM": 0.762858020736,
+          "shared_DMA24KiB": 0.9126927957333334,
+          "shared_vector_norm_DMA_SRAM": 0.21795943449599997,
+          "shared_vector_codec_reserve": 0.975777949928256
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 1.1557123981333335,
+          "PV_ADD_state_and_word_buffers": 0.5588195256600729,
+          "ab_both": 0.4009213596256422,
+          "screen_top16": 0.4208286108362622,
+          "screen_norm16": 0.75987779488,
+          "V_address_cache_descriptor_control": 0.009489867342222218,
+          "output_normalize_BF16": 8.611800097450667
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 585.58,
+          "phases_us": {
+            "embedding": 0.33,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 296.39,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 91.09,
+            "attention_gather": 0.64,
+            "O": 194.53
+          },
+          "wide_score_front_extra_us_allowance": 2.6,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 92.25932579664607,
+          "QKV_O_logical_GBs": {
+            "QKV": 106.13475488376801,
+            "O": 107.80609674600319
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 160.0,
+          "external_bytes_excluding_GU_prefetch": 54025216
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 376.7811151407868,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.3855640384000003
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 65.4463399999981,
+        "sampler_wait_us": 0.0,
+        "norm_wait_us": 0.0,
+        "PV_backpressure_us": 28.776
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 484,
+        "V_fetch_reuse": 1564,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m320_v2_s4_n4_tmicro4_r32",
+      "seed": 17,
+      "native_result_sha256": "055d8f668d29f39717cb80f80c662ff38f91bdad8f73c9804ddad0d11e19fafd",
+      "config": {
+        "lanes": 320,
+        "pv": 2,
+        "sampler": 4,
+        "norm": 4,
+        "transpose": "micro4",
+        "reduction": 32
+      },
+      "time_us": 599.3,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 10.23840924699224,
+          "attention_pool_plus672KiB_mm2": 14.759833543556242,
+          "standalone_with_shared_support_mm2": 18.357109978460258,
+          "onchip_uJ": 364.8896673748329,
+          "onchip_average_W": 0.6088597820370982,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.806912,
+            "6.6": 2852.5314047999996,
+            "8.0": 3457.613824
+          },
+          "total_uJ_at4pJ": 2093.696579374833,
+          "total_average_W_at4pJ": 3.4935701307772957
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 4.977588671999311,
+          "final_FP32_reduction": 0.2967974784,
+          "SparQ_top_and_norm": 0.373399632,
+          "Ising_sampler": 0.1889498016,
+          "PV_ADD_state_and_word_buffers": 2.6062523089929246,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 0.3446012160000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.19278201920000015,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0007794468000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.689908186546228,
+          "V_address_cache_descriptor_control": 0.2527406410826667,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.1919096672,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913418548622222,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 3.8511018000000004,
+          "final_FP32_reduction": 0.335991552,
+          "SparQ_top_and_norm": 0.63274094,
+          "Ising_sampler": 0.21700253466666666,
+          "PV_ADD_state_and_word_buffers": 0.8270389693941897,
+          "V_address_cache_descriptor_control": 0.0318971432,
+          "QK_transpose_input_buffers": 0.19459936888888887,
+          "output_normalize_BF16": 9.083534165333333,
+          "wide_score_front_reserve": 0.009729968444444443,
+          "ordinary_activation_holding": 0.3308189271111111,
+          "attention512_weight160_SRAM": 0.78073160256,
+          "shared_DMA24KiB": 0.9340769706666666,
+          "shared_vector_norm_DMA_SRAM": 0.22306617216,
+          "shared_vector_codec_reserve": 0.9986401950066666
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 1.2347240488,
+          "PV_ADD_state_and_word_buffers": 0.4866938229911254,
+          "ab_both": 0.2044134890656422,
+          "screen_top16": 0.21396397443626217,
+          "screen_norm16": 0.38440366864,
+          "V_address_cache_descriptor_control": 0.009713411875555552,
+          "output_normalize_BF16": 8.813631117312
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 599.3,
+          "phases_us": {
+            "embedding": 0.33,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 296.39,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 104.64,
+            "attention_gather": 0.64,
+            "O": 194.7
+          },
+          "wide_score_front_extra_us_allowance": 5.2,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 90.14719839813115,
+          "QKV_O_logical_GBs": {
+            "QKV": 106.13475488376801,
+            "O": 107.71196712891629
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 160.0,
+          "external_bytes_excluding_GU_prefetch": 54025216
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 376.2372109079535,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0.422477046636557,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.19278201920000015
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 65.4463399999981,
+        "sampler_wait_us": 10.628,
+        "norm_wait_us": 6.862,
+        "PV_backpressure_us": 65.72
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 484,
+        "V_fetch_reuse": 1564,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m256_v2_s4_n4_tmicro4_r16",
+      "seed": 17,
+      "native_result_sha256": "111dc251908ca4c2dbb19d16721baddfa3297d1011a03be7d3e7d4e1d4edb96a",
+      "config": {
+        "lanes": 256,
+        "pv": 2,
+        "sampler": 4,
+        "norm": 4,
+        "transpose": "micro4",
+        "reduction": 16
+      },
+      "time_us": 626.78,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 9.094454282192379,
+          "attention_pool_plus672KiB_mm2": 13.61587857875638,
+          "standalone_with_shared_support_mm2": 17.213155013660394,
+          "onchip_uJ": 364.85304402568767,
+          "onchip_average_W": 0.5821070296207405,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.806912,
+            "6.6": 2852.5314047999996,
+            "8.0": 3457.613824
+          },
+          "total_uJ_at4pJ": 2093.6599560256877,
+          "total_average_W_at4pJ": 3.340342633819981
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 3.982070937599449,
+          "final_FP32_reduction": 0.1483987392,
+          "SparQ_top_and_norm": 0.373399632,
+          "Ising_sampler": 0.1889498016,
+          "PV_ADD_state_and_word_buffers": 2.6062523089929246,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 0.3446012160000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.19278201920000015,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0007409556000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.689908186546228,
+          "V_address_cache_descriptor_control": 0.2527406410826667,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.1919096672,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913418548622222,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 3.2221506239999997,
+          "final_FP32_reduction": 0.17569896960000003,
+          "SparQ_top_and_norm": 0.661754324,
+          "Ising_sampler": 0.22695285946666666,
+          "PV_ADD_state_and_word_buffers": 0.8649615972582851,
+          "V_address_cache_descriptor_control": 0.03335973872,
+          "QK_transpose_input_buffers": 0.2035224302222222,
+          "output_normalize_BF16": 9.500045960533333,
+          "wide_score_front_reserve": 0.010176121511111112,
+          "ordinary_activation_holding": 0.3459881313777778,
+          "attention512_weight160_SRAM": 0.8165308757759999,
+          "shared_DMA24KiB": 0.9769076650666666,
+          "shared_vector_norm_DMA_SRAM": 0.233294535936,
+          "shared_vector_codec_reserve": 1.0444313389392264
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 0.6710692149333334,
+          "PV_ADD_state_and_word_buffers": 0.5096521822264093,
+          "ab_both": 0.21385642314564215,
+          "screen_top16": 0.22390458963626217,
+          "screen_norm16": 0.40244659695999996,
+          "V_address_cache_descriptor_control": 0.010161152675555552,
+          "output_normalize_BF16": 9.217881585664
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 626.78,
+          "phases_us": {
+            "embedding": 0.33,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 306.95,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 110.7,
+            "attention_gather": 0.64,
+            "O": 205.56
+          },
+          "wide_score_front_extra_us_allowance": 5.2,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 86.19486263122627,
+          "QKV_O_logical_GBs": {
+            "QKV": 102.48340120540804,
+            "O": 102.02140494259584
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 128.0,
+          "external_bytes_excluding_GU_prefetch": 54025216
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 376.10201577092886,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0.422477046636557,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.19278201920000015
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 122.8009739999987,
+        "sampler_wait_us": 10.48,
+        "norm_wait_us": 8.264706000000006,
+        "PV_backpressure_us": 65.82
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 484,
+        "V_fetch_reuse": 1564,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m320_v2_s4_n4_tmicro4_r32",
+      "seed": 503,
+      "native_result_sha256": "56c815762c0982625fb907161cce8bacad169ad069c5ed64fb85686e82898750",
+      "config": {
+        "lanes": 320,
+        "pv": 2,
+        "sampler": 4,
+        "norm": 4,
+        "transpose": "micro4",
+        "reduction": 32
+      },
+      "time_us": 599.38,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 10.23840924699224,
+          "attention_pool_plus672KiB_mm2": 14.759833543556242,
+          "standalone_with_shared_support_mm2": 18.357109978460258,
+          "onchip_uJ": 364.89218610700107,
+          "onchip_average_W": 0.608782718987956,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.864256,
+            "6.6": 2852.6260224,
+            "8.0": 3457.728512
+          },
+          "total_uJ_at4pJ": 2093.756442107001,
+          "total_average_W_at4pJ": 3.493203714016152
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 4.977588671999311,
+          "final_FP32_reduction": 0.2967974784,
+          "SparQ_top_and_norm": 0.373399632,
+          "Ising_sampler": 0.1889498016,
+          "PV_ADD_state_and_word_buffers": 2.6062523089929246,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 0.3446012160000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.19278201920000015,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0007794468000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.689908186546228,
+          "V_address_cache_descriptor_control": 0.25278503877182223,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.193473176,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913681034311111,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 3.85161588,
+          "final_FP32_reduction": 0.33603640320000006,
+          "SparQ_top_and_norm": 0.632825404,
+          "Ising_sampler": 0.21703150213333333,
+          "PV_ADD_state_and_word_buffers": 0.8271493700575495,
+          "V_address_cache_descriptor_control": 0.03190140112,
+          "QK_transpose_input_buffers": 0.19462534577777776,
+          "output_normalize_BF16": 9.084746717866667,
+          "wide_score_front_reserve": 0.009731267288888889,
+          "ordinary_activation_holding": 0.33086308782222223,
+          "attention512_weight160_SRAM": 0.780835821696,
+          "shared_DMA24KiB": 0.9342016597333332,
+          "shared_vector_norm_DMA_SRAM": 0.22309594905599997,
+          "shared_vector_codec_reserve": 0.9987735025581441
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 1.2351847581333333,
+          "PV_ADD_state_and_word_buffers": 0.48676065955367354,
+          "ab_both": 0.20444097941230885,
+          "screen_top16": 0.21399291363626216,
+          "screen_norm16": 0.38445619536,
+          "V_address_cache_descriptor_control": 0.009714715342222218,
+          "output_normalize_BF16": 8.814807974570666
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 599.38,
+          "phases_us": {
+            "embedding": 0.33,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 296.39,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 104.7,
+            "attention_gather": 0.64,
+            "O": 194.72
+          },
+          "wide_score_front_extra_us_allowance": 5.2,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 90.13815609463111,
+          "QKV_O_logical_GBs": {
+            "QKV": 106.13475488376801,
+            "O": 107.70090386195562
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 160.0,
+          "external_bytes_excluding_GU_prefetch": 54027008
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 376.24154430300956,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0.422477046636557,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.19278201920000015
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 65.4463399999981,
+        "sampler_wait_us": 10.828,
+        "norm_wait_us": 6.862,
+        "PV_backpressure_us": 66.044
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 491,
+        "V_fetch_reuse": 1557,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m320_v2_s4_n4_tmicro4_r32",
+      "seed": 1009,
+      "native_result_sha256": "c0342996df4a76dc95d6467073e4ef0cd63b2f6c0b6c17902c8810cbc7eb7c62",
+      "config": {
+        "lanes": 320,
+        "pv": 2,
+        "sampler": 4,
+        "norm": 4,
+        "transpose": "micro4",
+        "reduction": 32
+      },
+      "time_us": 598.62,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 10.23840924699224,
+          "attention_pool_plus672KiB_mm2": 14.759833543556242,
+          "standalone_with_shared_support_mm2": 18.357109978460258,
+          "onchip_uJ": 364.88469088268255,
+          "onchip_average_W": 0.6095431006025234,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.823296,
+            "6.6": 2852.5584383999994,
+            "8.0": 3457.646592
+          },
+          "total_uJ_at4pJ": 2093.7079868826827,
+          "total_average_W_at4pJ": 3.4975576941677238
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 4.977588671999311,
+          "final_FP32_reduction": 0.2967974784,
+          "SparQ_top_and_norm": 0.373399632,
+          "Ising_sampler": 0.1889498016,
+          "PV_ADD_state_and_word_buffers": 2.6062523089929246,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 0.3446012160000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.19278201920000015,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0007794468000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.689908186546228,
+          "V_address_cache_descriptor_control": 0.25275332613671114,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.192356384,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913493544533334,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 3.84673212,
+          "final_FP32_reduction": 0.33561031680000003,
+          "SparQ_top_and_norm": 0.632022996,
+          "Ising_sampler": 0.2167563112,
+          "PV_ADD_state_and_word_buffers": 0.8261005637556313,
+          "V_address_cache_descriptor_control": 0.031860950879999995,
+          "QK_transpose_input_buffers": 0.1943785653333333,
+          "output_normalize_BF16": 9.073227468799999,
+          "wide_score_front_reserve": 0.009718928266666666,
+          "ordinary_activation_holding": 0.33044356106666667,
+          "attention512_weight160_SRAM": 0.779845739904,
+          "shared_DMA24KiB": 0.9330171136000001,
+          "shared_vector_norm_DMA_SRAM": 0.222813068544,
+          "shared_vector_codec_reserve": 0.9975070808191068
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 1.2308080194666668,
+          "PV_ADD_state_and_word_buffers": 0.48612571220946627,
+          "ab_both": 0.2041798211189755,
+          "screen_top16": 0.21371799123626217,
+          "screen_norm16": 0.38395719151999996,
+          "V_address_cache_descriptor_control": 0.009702332408888886,
+          "output_normalize_BF16": 8.803627830613333
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 598.62,
+          "phases_us": {
+            "embedding": 0.4,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 296.58,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 104.2,
+            "attention_gather": 0.64,
+            "O": 194.2
+          },
+          "wide_score_front_extra_us_allowance": 5.2,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 90.2504560489125,
+          "QKV_O_logical_GBs": {
+            "QKV": 106.06676107626947,
+            "O": 107.98928939237899
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 160.0,
+          "external_bytes_excluding_GU_prefetch": 54025728
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 376.21680978125613,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0.422477046636557,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.19278201920000015
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 66.22901399999793,
+        "sampler_wait_us": 10.688,
+        "norm_wait_us": 6.982,
+        "PV_backpressure_us": 66.24
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 486,
+        "V_fetch_reuse": 1562,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m256_v2_s4_n4_tmicro4_r16",
+      "seed": 503,
+      "native_result_sha256": "1b7078d0ac40b7a41d5a658be472d95988dfd85cae50eaa9e3a5a60e51107988",
+      "config": {
+        "lanes": 256,
+        "pv": 2,
+        "sampler": 4,
+        "norm": 4,
+        "transpose": "micro4",
+        "reduction": 16
+      },
+      "time_us": 626.78,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 9.094454282192379,
+          "attention_pool_plus672KiB_mm2": 13.61587857875638,
+          "standalone_with_shared_support_mm2": 17.213155013660394,
+          "onchip_uJ": 364.85491441786576,
+          "onchip_average_W": 0.5821100137494268,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.864256,
+            "6.6": 2852.6260224,
+            "8.0": 3457.728512
+          },
+          "total_uJ_at4pJ": 2093.719170417866,
+          "total_average_W_at4pJ": 3.340437107785612
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 3.982070937599449,
+          "final_FP32_reduction": 0.1483987392,
+          "SparQ_top_and_norm": 0.373399632,
+          "Ising_sampler": 0.1889498016,
+          "PV_ADD_state_and_word_buffers": 2.6062523089929246,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 0.3446012160000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.19278201920000015,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0007409556000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.689908186546228,
+          "V_address_cache_descriptor_control": 0.25278503877182223,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.193473176,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913681034311111,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 3.2221506239999997,
+          "final_FP32_reduction": 0.17569896960000003,
+          "SparQ_top_and_norm": 0.661754324,
+          "Ising_sampler": 0.22695285946666666,
+          "PV_ADD_state_and_word_buffers": 0.8649615972582851,
+          "V_address_cache_descriptor_control": 0.03335973872,
+          "QK_transpose_input_buffers": 0.2035224302222222,
+          "output_normalize_BF16": 9.500045960533333,
+          "wide_score_front_reserve": 0.010176121511111112,
+          "ordinary_activation_holding": 0.3459881313777778,
+          "attention512_weight160_SRAM": 0.8165308757759999,
+          "shared_DMA24KiB": 0.9769076650666666,
+          "shared_vector_norm_DMA_SRAM": 0.233294535936,
+          "shared_vector_codec_reserve": 1.0444313389392264
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 0.6710692149333334,
+          "PV_ADD_state_and_word_buffers": 0.5096521822264093,
+          "ab_both": 0.21385642314564215,
+          "screen_top16": 0.22390458963626217,
+          "screen_norm16": 0.40244659695999996,
+          "V_address_cache_descriptor_control": 0.010161152675555552,
+          "output_normalize_BF16": 9.217881585664
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 626.78,
+          "phases_us": {
+            "embedding": 0.33,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 306.95,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 110.78,
+            "attention_gather": 0.64,
+            "O": 205.48
+          },
+          "wide_score_front_extra_us_allowance": 5.2,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 86.19772168863078,
+          "QKV_O_logical_GBs": {
+            "QKV": 102.48340120540804,
+            "O": 102.06112517033289
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 128.0,
+          "external_bytes_excluding_GU_prefetch": 54027008
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 376.10388616310695,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0.422477046636557,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.19278201920000015
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 122.8009739999987,
+        "sampler_wait_us": 10.568,
+        "norm_wait_us": 8.264706000000006,
+        "PV_backpressure_us": 65.808
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 491,
+        "V_fetch_reuse": 1557,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    },
+    {
+      "case": "m256_v2_s4_n4_tmicro4_r16",
+      "seed": 1009,
+      "native_result_sha256": "8949a82013717b8029b0ec8191a518d9ee9dad87749bf03c8cc3900b9c5b4183",
+      "config": {
+        "lanes": 256,
+        "pv": 2,
+        "sampler": 4,
+        "norm": 4,
+        "transpose": "micro4",
+        "reduction": 16
+      },
+      "time_us": 626.95,
+      "cost": {
+        "totals": {
+          "attention_plus_pool_logic_mm2": 9.094454282192379,
+          "attention_pool_plus672KiB_mm2": 13.61587857875638,
+          "standalone_with_shared_support_mm2": 17.213155013660394,
+          "onchip_uJ": 364.8548858089984,
+          "onchip_average_W": 0.5819521266592206,
+          "external_uJ_by_pJ_per_bit": {
+            "4.0": 1728.823296,
+            "6.6": 2852.5584383999994,
+            "8.0": 3457.646592
+          },
+          "total_uJ_at4pJ": 2093.6781818089985,
+          "total_average_W_at4pJ": 3.3394659571082195
+        },
+        "areas55_mm2": {
+          "shared_FMA_pool": 3.982070937599449,
+          "final_FP32_reduction": 0.1483987392,
+          "SparQ_top_and_norm": 0.373399632,
+          "Ising_sampler": 0.1889498016,
+          "PV_ADD_state_and_word_buffers": 2.6062523089929246,
+          "V_address_cache_descriptor_control": 0.5322539808,
+          "QK_transpose_input_buffers": 0.3446012160000001,
+          "output_normalize_BF16": 0.3039731712000005,
+          "wide_score_front_reserve": 0.19278201920000015,
+          "ordinary_activation_holding": 0.4210315200000053,
+          "attention512_weight160_SRAM": 4.521424296564,
+          "additional_root_ICG_count_reserve": 0.0007409556000000002
+        },
+        "shared_support_area55_mm2": {
+          "DMA24KiB_holding": 1.188794880000015,
+          "vector128_norm32_DMAreserve32_SRAM": 1.2918355133039998,
+          "vector_codec_RMSNorm_RoPE_reserve": 1.1166460416000001
+        },
+        "dynamic_uJ": {
+          "shared_FMA_pool": 264.13128763733334,
+          "final_FP32_reduction": 0.15978619089999999,
+          "SparQ_top_and_norm": 0.28982629402692744,
+          "Ising_sampler": 0.034503115743520336,
+          "PV_ADD_state_and_word_buffers": 1.689908186546228,
+          "V_address_cache_descriptor_control": 0.25275332613671114,
+          "QK_transpose_input_buffers": 0.46077487786666665,
+          "output_normalize_BF16": 0.0034125482666666667,
+          "wide_score_front_reserve": 0.05423514435555555,
+          "ordinary_activation_holding": 0.001949893688888889,
+          "SRAM_all_attention_used_events": 82.192356384,
+          "wide_score_extra_SRAM_read_reserve": 0.0102939648,
+          "shared_DMA_capture": 7.913493544533334,
+          "RMSNorm_RoPE_vector_proxy": 0.5885680555555555,
+          "projection_BF16_rounding": 0.003625832533333333
+        },
+        "background_uJ_before_root_gating": {
+          "shared_FMA_pool": 3.22302456,
+          "final_FP32_reduction": 0.17574662400000002,
+          "SparQ_top_and_norm": 0.66193381,
+          "Ising_sampler": 0.22701441533333336,
+          "PV_ADD_state_and_word_buffers": 0.8651961986679247,
+          "V_address_cache_descriptor_control": 0.033368786799999994,
+          "QK_transpose_input_buffers": 0.2035776311111111,
+          "output_normalize_BF16": 9.502622634666666,
+          "wide_score_front_reserve": 0.010178881555555555,
+          "ordinary_activation_holding": 0.3460819728888889,
+          "attention512_weight160_SRAM": 0.8167523414399999,
+          "shared_DMA24KiB": 0.9771726293333334,
+          "shared_vector_norm_DMA_SRAM": 0.23335781183999998,
+          "shared_vector_codec_reserve": 1.0447146174861164
+        },
+        "root_gating_savings_uJ": {
+          "shared_FMA_pool": 0.6718524208,
+          "PV_ADD_state_and_word_buffers": 0.509794209921824,
+          "ab_both": 0.21391484013230883,
+          "screen_top16": 0.22396608543626217,
+          "screen_norm16": 0.40255821624,
+          "V_address_cache_descriptor_control": 0.010163922542222219,
+          "output_normalize_BF16": 9.220382407338667
+        },
+        "price_status": {
+          "shared_FMA_pool": "TT250 wrapper active; sameTT FMA16 idle_hold proxy; pool area counted once",
+          "final_FP32_reduction": "SS100 FP32 ADD proxy;250MHz II/latency contract not new STA",
+          "SparQ_top_and_norm": "TT250 calibrated activity; component composition estimate",
+          "Ising_sampler": "TT250 calibrated activity; component composition estimate",
+          "PV_ADD_state_and_word_buffers": "PV4 measured; PV2/1 lane-only area subtraction plus1%selector reserve; perADD energy held atPV4 with25%sensitivity",
+          "V_address_cache_descriptor_control": "TT250 calibrated activity; component composition estimate",
+          "QK_transpose_input_buffers": "cell-count area;2xexisting holding capture energy allowance covers capture+selection, SS100 proxy,0.5x–2x sensitivity",
+          "output_normalize_BF16": "existing SS100 output conversion proxy; no new250 STA",
+          "wide_score_front_reserve": "unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported",
+          "ordinary_activation_holding": "existing holding proxy; not extra weight or threshold array"
+        },
+        "source_calibration": "CALIBRATION.json; OTHER_PRICES.json",
+        "latency": {
+          "native_prefix_us": 626.95,
+          "phases_us": {
+            "embedding": 0.4,
+            "save_attention_residual": 0.4,
+            "norm": 0.49,
+            "QKV": 306.88,
+            "RoPE_headnorm": 1.69,
+            "pool_mode_switch": 0.01,
+            "attention": 110.76,
+            "attention_gather": 0.64,
+            "O": 205.67
+          },
+          "wide_score_front_extra_us_allowance": 5.2,
+          "front_allowance_not_native": true
+        },
+        "bandwidth": {
+          "logical_all_attention_GBs": 86.17230720153123,
+          "QKV_O_logical_GBs": {
+            "QKV": 102.50677789363921,
+            "O": 101.96684008362911
+          },
+          "link_peak_GBs": 136.4606,
+          "ideal_weight_supply_from_FMA_GBs": 128.0,
+          "external_bytes_excluding_GU_prefetch": 54025728
+        },
+        "sensitivity": {
+          "no_added_root_gate_onchip_uJ": 376.1075179114097,
+          "PV2_or1_unmeasured_energy_plusminus25_uJ": 0.422477046636557,
+          "QK_buffer_energy_half_to_double_uJ": [
+            0.23038743893333333,
+            0.9215497557333333
+          ],
+          "front_reserve_area55_mm2": 0.19278201920000015
+        },
+        "limitations": [
+          "conditional activity-derived module budget, not integrated chip PPA",
+          "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+          "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+          "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+          "shared support counted once; remove standalone support if host already owns it",
+          "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+          "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+          "finite memory/native timing does not prove final placed routed250MHz"
+        ]
+      },
+      "resource_audit_summary": {
+        "QK_wait_us": 122.8009739999987,
+        "sampler_wait_us": 10.448,
+        "norm_wait_us": 8.264706000000006,
+        "PV_backpressure_us": 66.032
+      },
+      "actions": {
+        "digital_BF16_MAC": 26214400,
+        "digital_FP32_reduce_ADD": 26112,
+        "attention_QK_MAC": 2621440,
+        "selected_K_reorder_read_bytes": 262144,
+        "selected_K_reorder_write_bytes": 262144,
+        "sampler_queries": 32,
+        "FP32_to_S12": 4096,
+        "samples": 2048,
+        "sample_output_BF16": 4096,
+        "unique_V": 486,
+        "V_fetch_reuse": 1562,
+        "PV_ADD": 262144,
+        "sample_queue_peak_capacity": 128,
+        "ordinary_prefetch_hits": 2
+      }
+    }
+  ],
+  "groups": [
+    {
+      "case": "m192_v4_s8_n8_tbig_r32",
+      "seeds": [
+        17
+      ],
+      "mean_us": 745.83,
+      "min_us": 745.83,
+      "max_us": 745.83,
+      "area_mm2": 14.800567997764519,
+      "mean_onchip_uJ": 366.5700005524011
+    },
+    {
+      "case": "m256_v2_s4_n4_tmicro4_r16",
+      "seeds": [
+        17,
+        503,
+        1009
+      ],
+      "mean_us": 626.8366666666667,
+      "min_us": 626.78,
+      "max_us": 626.95,
+      "area_mm2": 13.61587857875638,
+      "mean_onchip_uJ": 364.85428141751726
+    },
+    {
+      "case": "m256_v4_s8_n8_tbig_r32",
+      "seeds": [
+        17
+      ],
+      "mean_us": 605.81,
+      "min_us": 605.81,
+      "max_us": 605.81,
+      "area_mm2": 15.796124223364382,
+      "mean_onchip_uJ": 365.42210480334296
+    },
+    {
+      "case": "m320_v2_s4_n4_tmicro4_r32",
+      "seeds": [
+        17,
+        503,
+        1009
+      ],
+      "mean_us": 599.1,
+      "min_us": 598.62,
+      "max_us": 599.38,
+      "area_mm2": 14.759833543556242,
+      "mean_onchip_uJ": 364.88884812150553
+    },
+    {
+      "case": "m320_v4_s8_n8_tbig_r32",
+      "seeds": [
+        17
+      ],
+      "mean_us": 581.15,
+      "min_us": 581.15,
+      "max_us": 581.15,
+      "area_mm2": 16.791680448964243,
+      "mean_onchip_uJ": 365.2799548464133
+    },
+    {
+      "case": "m320_v4_s8_n8_tmicro4_r32",
+      "seeds": [
+        17
+      ],
+      "mean_us": 585.58,
+      "min_us": 585.58,
+      "max_us": 585.58,
+      "area_mm2": 15.929020340164245,
+      "mean_onchip_uJ": 364.8636654868586
+    },
+    {
+      "case": "m640_v4_s8_n8_tbig_r32",
+      "seeds": [
+        17
+      ],
+      "mean_us": 547.86,
+      "min_us": 547.86,
+      "max_us": 547.86,
+      "area_mm2": 21.769461576963554,
+      "mean_onchip_uJ": 365.5574832372524
+    }
+  ],
+  "validation": {
+    "exact_prior320_640_time_reproduced": true,
+    "same_seed_DRAM_byte_address_summary_and_SRAM_tag_actions_equal": true,
+    "only_K_parallel_reduction_counts_differ": true,
+    "all_resource_queues_drained": true,
+    "three_seed_compact_candidates": true
+  },
+  "scope": "one complete first-layer Attention path including QKV/O and headnorm/RoPE; not36layer whole-token or lm_head"
+}

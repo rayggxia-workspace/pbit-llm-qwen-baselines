@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "id": "attention-integrated-tt250-198-20261107",
+  "name": "250MHz整体Attention资源扫描与面积功耗预算",
+  "family": "Attention calibrated TLM",
+  "registered_on": "2026-11-07",
+  "owner": "rayggxia",
+  "issue": 198,
+  "evidence_level": "CALIBRATED_ESTIMATE",
+  "status": "12analytic_11native_complete_candidate256",
+  "stages": {
+    "functional": "TLMlayout/resources/actions checked; not newRTL",
+    "synthesis": "not_run",
+    "sta": "not_run",
+    "power": "not_run",
+    "postlayout": "not_run"
+  },
+  "boundary": "QKV-through-O Attention prefix; full shared pool once;512KiB Attention+160KiB weight SRAM; shared supports separate",
+  "conditions": {
+    "compute_MHz": 250,
+    "SRAM_MHz": 100,
+    "PVT": "TT250 circuit calibration plus explicitly markedSS100 proxies",
+    "area_factor": 0.81,
+    "N": 2048,
+    "K": 128,
+    "S": 64,
+    "seeds": [
+      17,
+      503,
+      1009
+    ],
+    "DRAM": "nativeLPDDR5X derived8533"
+  },
+  "source": {
+    "public_index": "architecture_tlm/module_handoff/attention_integrated_tt250_20261107/SHA_INDEX.json",
+    "execution_manifest_sha256": "09c031b064a986a50516d353eb00bfc863ff6682847635510550c3116977dcbf",
+    "private_evidence": "Existing authorized project archive; paths intentionally omitted from public index"
+  },
+  "artifacts": [
+    {
+      "path": "architecture_tlm/module_handoff/attention_integrated_tt250_20261107/SHA_INDEX.json",
+      "bytes": 4546,
+      "sha256": "53b892eb16b2fe7f549b09fd393d8c6945dc699788e5cd199b71a0d20448fd7e",
+      "present_at_registration": true,
+      "role": "public SHA-only evidence index"
+    }
+  ],
+  "cases": [
+    {
+      "case": "m640_v4_s8_n8_tbig_r32",
+      "seed": 17,
+      "time_us": 547.86,
+      "area55_mm2": 21.769461576963554,
+      "onchip_uJ": 365.5574832372524
+    },
+    {
+      "case": "m320_v4_s8_n8_tbig_r32",
+      "seed": 17,
+      "time_us": 581.15,
+      "area55_mm2": 16.791680448964243,
+      "onchip_uJ": 365.2799548464133
+    },
+    {
+      "case": "m256_v4_s8_n8_tbig_r32",
+      "seed": 17,
+      "time_us": 605.81,
+      "area55_mm2": 15.796124223364382,
+      "onchip_uJ": 365.42210480334296
+    },
+    {
+      "case": "m192_v4_s8_n8_tbig_r32",
+      "seed": 17,
+      "time_us": 745.83,
+      "area55_mm2": 14.800567997764519,
+      "onchip_uJ": 366.5700005524011
+    },
+    {
+      "case": "m320_v4_s8_n8_tmicro4_r32",
+      "seed": 17,
+      "time_us": 585.58,
+      "area55_mm2": 15.929020340164245,
+      "onchip_uJ": 364.8636654868586
+    },
+    {
+      "case": "m320_v2_s4_n4_tmicro4_r32",
+      "seed": 17,
+      "time_us": 599.3,
+      "area55_mm2": 14.759833543556242,
+      "onchip_uJ": 364.8896673748329
+    },
+    {
+      "case": "m256_v2_s4_n4_tmicro4_r16",
+      "seed": 17,
+      "time_us": 626.78,
+      "area55_mm2": 13.61587857875638,
+      "onchip_uJ": 364.85304402568767
+    },
+    {
+      "case": "m320_v2_s4_n4_tmicro4_r32",
+      "seed": 503,
+      "time_us": 599.38,
+      "area55_mm2": 14.759833543556242,
+      "onchip_uJ": 364.89218610700107
+    },
+    {
+      "case": "m320_v2_s4_n4_tmicro4_r32",
+      "seed": 1009,
+      "time_us": 598.62,
+      "area55_mm2": 14.759833543556242,
+      "onchip_uJ": 364.88469088268255
+    },
+    {
+      "case": "m256_v2_s4_n4_tmicro4_r16",
+      "seed": 503,
+      "time_us": 626.78,
+      "area55_mm2": 13.61587857875638,
+      "onchip_uJ": 364.85491441786576
+    },
+    {
+      "case": "m256_v2_s4_n4_tmicro4_r16",
+      "seed": 1009,
+      "time_us": 626.95,
+      "area55_mm2": 13.61587857875638,
+      "onchip_uJ": 364.8548858089984
+    }
+  ],
+  "limitations": [
+    "conditional activity-derived module budget, not integrated chip PPA",
+    "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and unchanged100MHz SRAM",
+    "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+    "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+    "shared support counted once; remove standalone support if host already owns it",
+    "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+    "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+    "finite memory/native timing does not prove final placed routed250MHz",
+    "PV2andmicrotile/gating modifications are estimates against measuredPV4/sharedFMA, not newly synthesized",
+    "score front latency allowance not part of native replay",
+    "256lane complete lm_head not newly replayed; do not infer whole-chip TPOT"
+  ],
+  "next_action": "Opt-in host integration; no default overwrite. Review PV2/microtile/clock-gate proxy costs; wide-score front latency and fullhead remain separate"
+}

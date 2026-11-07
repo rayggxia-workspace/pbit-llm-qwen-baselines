@@ -22,7 +22,7 @@
 
 ## 存储/调度合同
 
-保持宿主1216KiB SRAM、304×4KiB bank、1RW、16B字、100MHz，以及LPDDR5X derived8533、256在途credit和该宿主现有32KiB返回FIFO。仅计算时钟250MHz，未把SRAM/DRAM一起加速。详细结果和守恒检查见[NATIVE_TLM_ZH.md](NATIVE_TLM_ZH.md)。
+保持宿主1216KiB SRAM、304×4KiB bank、1RW、16B字、100MHz，以及LPDDR5X derived8533、256在途credit和该宿主24KiB实际返回保持（另有32KiB SRAM预留区）。仅计算时钟250MHz，未把SRAM/DRAM一起加速。详细结果和守恒检查见[NATIVE_TLM_ZH.md](NATIVE_TLM_ZH.md)。
 
 粗K按64token/4KiB两槽流水。selected K按64token加载；每组32KiB现有缓冲分16KiB原始＋16KiB转置。显式2KiB暂存转置、16store credits、4×32B读credit、XOR bank映射及半字交换；每层已多计256KiB SRAM读及256KiB写。布局全8192值及token顺序检查通过。8组共17KiB额外局部暂存/输入寄存器单列，按本次单元计数估算约1.187554mm²，确切值见WRAPPER_PPA.json；尚未综合，也尚无其动态能量，禁止免费或重复计为主SRAM容量。PV另含16KiB部分和、2KiB缓冲，已在PV4实测面积内。
 

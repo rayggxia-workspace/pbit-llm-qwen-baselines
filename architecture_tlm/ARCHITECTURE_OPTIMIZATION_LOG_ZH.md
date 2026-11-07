@@ -143,3 +143,9 @@ Issue204/PR209，[方案](../digital_circuit_simulation_registry/12_双随机分
 ## 2026-10-29 双随机SRAM存内比较主架构与旧估算延续
 
 Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内比较估算口径与证据.md)。用户要求保留SRAM驻留/本地比较，双全局LFSR不变，DFF仅对照。沿旧宏本体+邻近SNG/分发+存储节点带载增量估算；普通预读保持及M1单seed前端数据各保留边界，不能当完整定制CIM。新W7比较与接口动态待测，不每拍重复收费普通全读，也不把缺项当0。无新RTL/EDA/SPICE/PPL，旧run未改。
+
+
+## 2026-11-07｜Issue225：共享QK的有限转置与bank供数
+
+在1216KiB/640路/100MHz宿主新增显式候选qk_supply_100mhz_20261107，接现有物理bank服务；精K每组1KiB双缓冲、128B微块暂存，粗K另有四槽32B操作数FIFO。粗K按64token跨32维、精K按16x16块和四context供数，外存地址多重集/工作量不变。单/八组三seed配对与两敏感性完成；八组128.43→154.62us，36层供数增量投影.943ms，覆盖面积41.463→41.562mm²。SRAM动态增.01416mJ/36层，捕获和已知背景合计约.06717mJ，未知控制/布线仍宏标注。条件整机约54.0ms含head/46.5ms扣head，非新整机原生。原100MHz与250文件不变，无新PPA/PPL/服务器作业。细节/假设与源SHA见architecture_tlm/qk_supply_100mhz_20261107/README_ZH.md、RESULTS.json和work/rayggxia/225/qk_supply_100mhz_20261107/。
+

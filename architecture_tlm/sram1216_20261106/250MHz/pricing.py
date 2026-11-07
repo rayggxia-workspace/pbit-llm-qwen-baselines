@@ -77,14 +77,20 @@ def price(r):
   add('projection_FIFO_payload',fifo*other['holding_area55_per_byte'],
       a.get('ordinary_FIFO_capture_bytes',0)/64*capture*2,0,
       'register payload area and2xcapture selection proxy; leakage/control unpriced')
- # Shared ingress payload storage24KiB is distinct from the existing32KiB
+ # Shared ingress payload storage is distinct from the existing32KiB
  # SRAM reservation. Allocate once only when estimating standalone ownership.
  ext_bytes=sum(v['issued_bytes'] for v in m['by_kind'].values())
  dynamic['shared_DMA_capture']=ext_bytes/64*capture/1e6
- background['shared_DMA24KiB']=other['DMA24_idle_W']*T/1000
+ holding_B=m.get('ingress',{}).get('holding_bytes',24576)
+ assert holding_B in (16384,24576)
+ holding_scale=holding_B/24576
+ holding_name='DMA%dKiB_holding'%(holding_B//1024)
+ background['shared_'+holding_name]=other['DMA24_idle_W']*holding_scale*T/1000
  dynamic['RMSNorm_RoPE_vector_proxy']=layers*other['vector_uJ_per_layer']
  dynamic['projection_BF16_rounding']=8704*layers*other['fp32_to_bf16_pJ']/1e6 if fm_count else 0
- shared_area=dict(DMA24KiB_holding=other['DMA24_area55_mm2'],vector128_norm32_DMAreserve32_SRAM=48*.03322622205*.81,vector_codec_RMSNorm_RoPE_reserve=other['format_area55_mm2'])
+ shared_area={holding_name:other['DMA24_area55_mm2']*holding_scale,
+     'vector128_norm32_DMAreserve32_SRAM':48*.03322622205*.81,
+     'vector_codec_RMSNorm_RoPE_reserve':other['format_area55_mm2']}
  background['shared_vector_norm_DMA_SRAM']=48*sram_leak*T/1000
  background['shared_vector_codec_reserve']=other['format_idle_W']*T/1000
  # Complete compact1216 ownership:168 Attention/weight +48 support +88 FFN.

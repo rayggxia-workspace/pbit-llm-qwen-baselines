@@ -1,3 +1,5 @@
+> 2026-11-07最新默认：250MHz返回保持也改为16KiB，24KiB保留显式对照。3/2核单层1.085980/1.114144ms，面积代理22.594773/21.625293mm²；见DMA16_ZH.md与DMA16_RESULTS.json。32KiB历史SRAM预留不变，下面24KiB数据保留为历史参考。
+
 > 2026-11-07最新接合：默认安装新交接的有限FIFO、离线交错投影权重与显式宽分数前端，替换旧v1，不叠加5.2µs预算。真实返回4ns整数周期审计、同宏TT SRAM事件价格已接入。3/2核完整冷单层解析回放1.085992/1.114148ms，见REFRESH_RESULTS.json；短T/C19 TT250 PPA仍待收，旧T64参考单列。下文LOCAL_RESULTS与旧四项原生作业属于前一冻结快照，不替代本版全token结果。完整对照见architecture_tlm/module_refresh_20261107/README_ZH.md。
 
 # 统一250MHz整机TLM

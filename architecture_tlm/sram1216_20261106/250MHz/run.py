@@ -11,6 +11,7 @@ def main():
     p.add_argument('--runtime',type=Path,required=True);p.add_argument('--dependencies',type=Path,required=True)
     p.add_argument('--backend',choices=('analytic','native'),default='native')
     p.add_argument('--cores',type=int,choices=(2,3),default=3)
+    p.add_argument('--ingress-kib',type=int,choices=(16,24),default=16)
     p.add_argument('--seed',type=int,choices=(17,503,1009),default=17)
     p.add_argument('--scope',choices=('full','layer','prefix','ffn'),default='full')
     p.add_argument('--out',type=Path,required=True)
@@ -36,7 +37,7 @@ def main():
         inputs=a.inputs or a.runtime/'inputs'
         representative=load(inputs/'representative.json');samples=load(inputs/'SAMPLES.json')
         identity['input_sha256']={n:sha(inputs/n) for n in ('representative.json','SAMPLES.json')}
-        h,m=make_model(backend,cores=a.cores,mode='ising',ffn='sc',samples=samples,
+        h,m=make_model(backend,cores=a.cores,ingress_kib=a.ingress_kib,mode='ising',ffn='sc',samples=samples,
             layers=36,include_lm=a.scope=='full',seed=a.seed,attention_input=representative)
         if a.scope!='full':m.model['layers']=1
         class PrefixDone(Exception):pass
@@ -64,6 +65,7 @@ def main():
             ordinary_pool_contract=m.ordinary_pool_contract,matrix_audit=m.ordinary_pool_audit,
             unified_clock_contract=m.unified_clock_contract,compact_memory=m.compact_memory,
             short_FFN_contract=m.short_FFN_contract,common_FFN_stages=m.common_stats,
+            ingress_capacity_contract=m.ingress_capacity_contract,
             whole_token=a.scope=='full',numeric_inference=False,new_PPA=False,
             explicit_front=m.explicit_front,ordinary_contract=m.ordinary_pool_contract,
             projection_supply_audit=m.ordinary_pool_audit,

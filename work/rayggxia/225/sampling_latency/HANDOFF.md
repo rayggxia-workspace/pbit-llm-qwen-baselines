@@ -1,3 +1,9 @@
+## 2026-11-07 完整结果已收齐，覆盖下方运行中记录
+38617087两项完整36层＋lm_head已status=completed，RESULT/SEAL/冻结源SHA核验。T64/64为51.43301ms含头、7.07502头、44.35799扣头；T8/32为51.40648/7.07546/44.33102ms。8个prefix/full原件已逐字节归档；COMPLETED_RESULTS_ZH.md和JSON为最新结果，未重跑。此结果不含新Attention PV128/归约32/QK共享。新完整T64profile快估T8误差单点约−.02531ms/−.0492%，不泛化为通用精度保证。无须继续等待原数组或重交；旧SOURCE_MANIFEST保留历史字节身份。
+新Attention候选的接入及条件面积另见work/rayggxia/225/attention_candidate_20261107/HANDOFF.md。
+
+---
+
 # Issue225：可调采样时间与lm_head分列
 
 2026-11-06，负责人rayggxia；task/225-norm-stream-20261106、PR248，工作目录tmp/norm-stream-issue225-20261106。用户要求前级Wg/Wu T8、非线性三AND直连Wd T32的时间预估、可快速扫采样次数的脚本，并检查恢复后的服务器。现已完成脚本、原生两层配对与旧完整结果核验；新完整两项正在运行，不冒充完成。

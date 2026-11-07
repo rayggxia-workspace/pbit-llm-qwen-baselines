@@ -15,7 +15,8 @@ def main():
     p.add_argument('--scope',choices=('full','layer','prefix','ffn'),default='full')
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--inputs',type=Path,help='captured inputs; defaults to runtime/inputs')
-    a=p.parse_args();identity=bootstrap(a.runtime,a.dependencies)
+    p.add_argument('--attention-source',type=Path,help='pinned finite-supply owner execution package')
+    a=p.parse_args();identity=bootstrap(a.runtime,a.dependencies,a.attention_source)
     from whole250.model import make_model
     from whole250.pricing import price
     load=lambda path:json.loads(Path(path).read_bytes())
@@ -64,6 +65,8 @@ def main():
             unified_clock_contract=m.unified_clock_contract,compact_memory=m.compact_memory,
             short_FFN_contract=m.short_FFN_contract,common_FFN_stages=m.common_stats,
             whole_token=a.scope=='full',numeric_inference=False,new_PPA=False,
+            explicit_front=m.explicit_front,ordinary_contract=m.ordinary_pool_contract,
+            projection_supply_audit=m.ordinary_pool_audit,
             wall_seconds=time.time()-started)
         assert not h.mem.queue and not h.events
         assert not result['memory']['final_pending'] and not result['memory']['final_response_occupied']

@@ -6,6 +6,7 @@ once by the host. All areas in this output already include the0.81 factor.
 """
 import json,math
 from pathlib import Path
+from architecture_tlm.module_refresh_20261107.bindings import core_budget
 HERE=Path(__file__).parent/'vendor_attention'
 def price(r):
  c=r['resource_contract']['configuration'];a=r['actions'];m=r['memory'];T=r['time_ns'];ms=T/1e6
@@ -50,7 +51,8 @@ def price(r):
  # Explicit budget for wide-score max -> difference -> fixed/LUT address.
  # Does not relabel earlier absoluteS12 hardware as this implementation.
  front_area=4*fpadd_area+.008+64*other['holding_area55_per_byte']
- front_ops=a.get('FP32_to_S12',0)
+ explicit_front=r.get('explicit_front',False)
+ front_ops=a.get('wide_score_quantize',0) if explicit_front else a.get('FP32_to_S12',0)
  front_dynamic=front_ops*(2*fpadd+other['fp32_to_bf16_pJ'])+front_ops*4/64*capture
  add('wide_score_front_reserve',c['sampler']*front_area,front_dynamic,c['sampler']*64*hold_idle,'unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported')
  activation_bytes=read_bytes(('QKV_activation_to_local','O_activation_to_local','lm_head_activation_to_local'))
@@ -61,11 +63,20 @@ def price(r):
  # Whole-run accounting includes FFN state, metadata and prefetch events once.
  sr=sum(v.get('read_words',0) for v in tags.values())
  sw=sum(v.get('write_words',0) for v in tags.values())
- sram_pJ=sr*10.0527+sw*13.9599
+ sram_read,sram_write,sram_leak=(12.0293,16.2931,1.9734e-6) if explicit_front else (10.0527,13.9599,7.7544e-6)
+ sram_pJ=sr*sram_read+sw*sram_write
  dynamic['SRAM_all_attention_used_events']=sram_pJ/1e6
- background['attention512_weight160_SRAM']=sram_macros*7.7544e-6*T/1000
+ background['attention512_weight160_SRAM']=sram_macros*sram_leak*T/1000
  # Correct inputmax extra read has not been issued by the old trace actor.
- dynamic['wide_score_extra_SRAM_read_reserve']=front_ops*4/16*10.0527/1e6
+ if not explicit_front:
+  dynamic['wide_score_extra_SRAM_read_reserve']=front_ops*4/16*sram_read/1e6
+ # Explicit front emits both SRAM passes already. One finite projection FIFO
+ # serves QKV/O/lm_head; charge actual captures and retain unknown control/leak.
+ fifo=r.get('ordinary_contract',{}).get('FIFO_payload_bytes',0)
+ if fifo:
+  add('projection_FIFO_payload',fifo*other['holding_area55_per_byte'],
+      a.get('ordinary_FIFO_capture_bytes',0)/64*capture*2,0,
+      'register payload area and2xcapture selection proxy; leakage/control unpriced')
  # Shared ingress payload storage24KiB is distinct from the existing32KiB
  # SRAM reservation. Allocate once only when estimating standalone ownership.
  ext_bytes=sum(v['issued_bytes'] for v in m['by_kind'].values())
@@ -74,12 +85,12 @@ def price(r):
  dynamic['RMSNorm_RoPE_vector_proxy']=layers*other['vector_uJ_per_layer']
  dynamic['projection_BF16_rounding']=8704*layers*other['fp32_to_bf16_pJ']/1e6 if fm_count else 0
  shared_area=dict(DMA24KiB_holding=other['DMA24_area55_mm2'],vector128_norm32_DMAreserve32_SRAM=48*.03322622205*.81,vector_codec_RMSNorm_RoPE_reserve=other['format_area55_mm2'])
- background['shared_vector_norm_DMA_SRAM']=48*7.7544e-6*T/1000
+ background['shared_vector_norm_DMA_SRAM']=48*sram_leak*T/1000
  background['shared_vector_codec_reserve']=other['format_idle_W']*T/1000
  # Complete compact1216 ownership:168 Attention/weight +48 support +88 FFN.
  # All per-event SRAM energy above already covers the entire executed trace.
  area['FFN_CIM256_state96_SRAM']=88*.03322622205*.81
- background['FFN_CIM256_state96_SRAM']=88*7.7544e-6*T/1000
+ background['FFN_CIM256_state96_SRAM']=88*sram_leak*T/1000
  cores=r['short_FFN_contract']['physical_cores'];frames=r.get('kernel_active',{})
  # Short-T/C19 has no PPA yet. Retain predecessor C20/T64 *per-frame work*
  # as a separately labelled reference scenario, granting no T/64 energy saving.
@@ -87,6 +98,15 @@ def price(r):
  ffn_reference_pJ=frames.get('GU_frames',0)*(9926.4-1.288e-3*264*1000)+frames.get('Wd_M128_frames',0)*(5544-1.288e-3*264*1000)
  add('FFN_shared_pool_T64_frame_energy_PROXY',cores*.9694793124,ffn_reference_pJ,cores*1.288e-3,
      'C19/T16-T32 PPA null; C20 area and unchanged measuredT64 incremental work/frame reference, not time-scaled power')
+ ffn_label='FFN_shared_pool_T64_frame_energy_PROXY'
+ ffn_measured=core_budget(frames,T,cores,250)
+ if ffn_measured['total_mJ'] is not None:
+  area.pop(ffn_label);dynamic.pop(ffn_label);background.pop(ffn_label);statuses.pop(ffn_label)
+  ffn_label='FFN_shared_pool_C19_shortT_measured'
+  area[ffn_label]=ffn_measured['area55_mm2']
+  dynamic[ffn_label]=ffn_measured['active_gross_mJ']*1000
+  background[ffn_label]=ffn_measured['waiting_mJ']*1000
+  statuses[ffn_label]='matchingTT250 shortT gross service plus stopped-clock waiting residency'
  vectors=a.get('common_state32_vectors',0)
  add('FFN_crossK_state32_arithmetic',2*.0524072268,
      vectors*(52.0366013072-.1372e-3*4*1000),2*.1372e-3,
@@ -117,17 +137,20 @@ def price(r):
  totals=dict(attention_plus_pool_logic_mm2=area_logic,attention_pool_plus672KiB_mm2=sum(area.values()),standalone_with_shared_support_mm2=sum(area.values())+sum(shared_area.values()),onchip_uJ=onchip,onchip_average_W=onchip/time_us,external_uJ_by_pJ_per_bit=external,total_uJ_at4pJ=onchip+external['4.0'],total_average_W_at4pJ=(onchip+external['4.0'])/time_us)
  totals=dict(covered_area55_mm2=sum(area.values())+sum(shared_area.values()),
      onchip_mJ_with_FFN_reference_proxy=onchip/1000,
-     priced_onchip_mJ_excluding_unknown_short_FFN=(onchip-dynamic['FFN_shared_pool_T64_frame_energy_PROXY']-background['FFN_shared_pool_T64_frame_energy_PROXY'])/1000,
-     short_FFN_measured_energy_mJ=None,whole_chip_measured_energy_mJ=None,
+     priced_onchip_mJ_excluding_unknown_short_FFN=(onchip-dynamic[ffn_label]-background[ffn_label])/1000,
+     short_FFN_measured_energy_mJ=ffn_measured['total_mJ'],whole_chip_measured_energy_mJ=None,
      proxy_total_mJ_at4pJ=(onchip+external['4.0'])/1000,
      proxy_onchip_average_W=onchip/time_us,proxy_system_average_W_at4pJ=(onchip+external['4.0'])/time_us,
      external_mJ_by_pJ_per_bit={k:v/1000 for k,v in external.items()})
  assert all(v>=0 for v in list(area.values())+list(dynamic.values())+list(background.values()))
  return dict(totals=totals,areas55_mm2=area,shared_support_area55_mm2=shared_area,
+     FFN_core_calibration=ffn_measured,
      dynamic_uJ=dynamic,background_uJ_before_root_gating=background,root_gating_savings_uJ=gated_savings,
      price_status=statuses,source_calibration='vendor_attention/CALIBRATION.json; OTHER_PRICES.json; FFN TT250 handoff',
      latency=dict(executed_us=time_us,phases_us=phases,
-         wide_score_front_allowance_us_included=phases.get('wide_score_front_allowance',0)),
+         explicit_per_head_front=explicit_front,
+         wide_score_front_allowance_us_included=phases.get('wide_score_front_allowance',0),
+         legacy_front_and_extra_read_reserve_replaced=explicit_front),
      bandwidth=dict(logical_all_GBs=ext_bytes/T,QKV_O_logical_GBs=projected_BW,
          link_peak_GBs=136.4606,ideal_weight_supply_from_FMA_GBs=c['lanes']*.5,external_bytes=ext_bytes),
      sensitivity=dict(no_added_root_gate_onchip_uJ=onchip_idle_clock,
@@ -135,9 +158,10 @@ def price(r):
          QK_buffer_energy_half_to_double_uJ=[.5*dynamic['QK_transpose_input_buffers'],2*dynamic['QK_transpose_input_buffers']]),
      limitations=['conditional action budget, not integrated chip PPA',
          'shortT/C19 area and energy unknown; predecessor area/frame energy reference explicitly retained',
-         'TT250 arithmetic/sampling mixed with legacySS100 vector/reduction/converter/holding and SRAM event proxies',
+         'TT250 arithmetic/sampling/SRAM with legacySS100 vector/reduction/converter/holding proxies',
          'root gating assumed; global CTS/NoC/PHY/pads and physical CIM interface not characterized',
-         'score max/difference front uses 5.2us/layer explicit macro; not tested numerical-equivalence circuit',
+         'score max/difference uses explicit73cycle uncontended macro per head, not new STA or PPL',
+         'projection FIFO payload priced, control/selector detail/leakage unpriced; old sampler prep retained as small energy upper bound',
          'three captured Attention layers cycle across36: conditional workload replay, no new PPL',
          'external4/6.6/8pJ/bit sensitivity includes all bytes, not LPDDR measured background model',
          '1216KiB/304 physical4KiB banks, pool/ingress supports counted once'])

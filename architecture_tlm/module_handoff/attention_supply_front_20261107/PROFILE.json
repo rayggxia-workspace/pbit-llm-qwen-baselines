@@ -1,0 +1,166 @@
+{
+  "id": "attention_finite_supply_widefront_20261107",
+  "status": "module_validated_opt_in_not_host_default",
+  "owner": "Issue198/PR199",
+  "private_execution_source": "C:\\Users\\86134\\Documents\\a_P_BIT\\tmp\\attention-compare-issue198-20261027\\architecture_tlm\\attention_supply_front_20261107",
+  "profiles": {
+    "250MHz": {
+      "installer": "architecture_tlm.attention_supply_front_20261107.model.install",
+      "arguments": {
+        "name": "m256_v2_s4_n4_tmicro4_r16",
+        "credits": 8,
+        "policy": "fair",
+        "supply": "finite",
+        "front": true,
+        "word_interleaved": true
+      },
+      "install_order": "replace old v2.install on unstarted100MHz base model; installer sets all onchip clocks4ns once",
+      "FMA": 256,
+      "PV_ADD": 64,
+      "reduction_ADD": 16,
+      "sampler": 4,
+      "top": 4,
+      "norm": 4,
+      "SRAM_KiB": 1216,
+      "owned_SRAM_KiB": 672,
+      "banks": 304,
+      "word_bytes": 16,
+      "bank_ports": "1RW",
+      "period_ns": 4,
+      "FIFO_payload_bytes": 8192,
+      "inflight_and_ready_packet_credits": 8,
+      "packet_bytes": 1024,
+      "max_read_word_credits": 512,
+      "reference_scope": "native LPDDR first layer through O; seed17 fixed traces; not whole token",
+      "native_time_us": 593.236,
+      "legacy_front_allowance_us": 0,
+      "area55_mm2_including_FIFO": 14.012143538756385,
+      "onchip_uJ_upper_before_unmeasured_control": 393.97426633733875,
+      "onchip_uJ_sampler_prepare_overlap_interval": [
+        393.93815778622763,
+        393.97426633733875
+      ],
+      "average_W_upper_before_unmeasured_control": 0.6641105164510225,
+      "sampler_prepare_overlap_bound_uJ": 0.03610855111111111,
+      "area_includes_retained_old_sampler_prep_conservative": true,
+      "FIFO_leakage_and_control_pending": true,
+      "external_energy_unchanged_by_FIFO": true
+    },
+    "100MHz": {
+      "installer": "architecture_tlm.attention_supply_front_20261107.adapter100.install",
+      "arguments": {
+        "credits": 8,
+        "policy": "fair",
+        "supply": "finite",
+        "front": false,
+        "word_interleaved": true
+      },
+      "install_order": "after current FFN6 owner and qk_supply100 installs, before any event",
+      "FFN_cores": 6,
+      "GU_samples": 16,
+      "Wd_samples": 32,
+      "FMA": 640,
+      "PV_ADD": 128,
+      "reduction_ADD": 32,
+      "sampler": 8,
+      "SRAM_KiB": 1216,
+      "banks": 304,
+      "word_bytes": 16,
+      "bank_ports": "1RW",
+      "period_ns": 10,
+      "FIFO_payload_bytes": 10240,
+      "inflight_and_ready_packet_credits": 8,
+      "packet_bytes": 1280,
+      "max_read_word_credits": 640,
+      "QK_owner_preserved": true,
+      "TT250_prices_used": false,
+      "analytic_prefix_us": 641.23,
+      "explicit_front_status": "supported and standalone8group tested154.860us; not included in this prefix number",
+      "incremental_cost": {
+        "FIFO_payload_bytes": 10240,
+        "area55_mm2": 0.49533120000000624,
+        "capture_count_64B": 819200.0,
+        "capture_pJ_per64B": 9.374488888888889,
+        "capture_dynamic_uJ": 7.679581297777777,
+        "capture_plus_select_proxy_uJ": 15.359162595555555,
+        "capture_plus_select_sensitivity_uJ": [
+          7.679581297777777,
+          30.71832519111111
+        ],
+        "held_clock_dynamic_uJ": 0,
+        "held_clock_policy": "clock and input gating; no constant clocked-hold power billed",
+        "unseparated_idle_leakage_upper_uJ": 0.4164290115555555,
+        "leakage_uJ": null,
+        "credit_and_arbiter_area55_mm2": null,
+        "credit_and_arbiter_dynamic_uJ": null,
+        "control_sensitivity_only": {
+          "area55_mm2": [
+            0.001,
+            0.01
+          ],
+          "energy_pJ_per_tile": [
+            1,
+            100
+          ]
+        },
+        "area_factor_already_applied": 0.81,
+        "source": "existing SS100 holding/capture proxy; not TT250 RTL",
+        "allocation": "one shared projection FIFO, not per tile or per head",
+        "physical_routing": "existing bank network assumed; additional selector/control not measured"
+      }
+    }
+  },
+  "weight_format": {
+    "name": "offline_tile_word_interleaved",
+    "word": "8consecutive BF16 K values for one output row",
+    "order": "outputTile then Ktile; within tile [Kblock8][outputRow][8BF16]",
+    "SRAM_word_index": "(k//8)*tile_outputs+row",
+    "runtime_transpose": false,
+    "requirement": "regenerate static projection weights for each tile geometry before inference; original row-major files cannot be reinterpreted",
+    "projection_only": [
+      "QKV",
+      "O",
+      "lm_head"
+    ],
+    "FFN_weight_layout_changed": false
+  },
+  "arithmetic": {
+    "BF16_weight": true,
+    "activation": "BF16 input held and broadcast",
+    "accumulator": "FP32",
+    "contexts": 4,
+    "FMA_feedback_cycles": 4,
+    "FMA_II_cycles": 1,
+    "last_tile_refill": "after last actual FMA consumption",
+    "reduction": "existing balanced FP32 reduction; finalRNE or streamingargmax retained"
+  },
+  "front": {
+    "input": "128 FP32 scaled QK scores per Qhead; scaling1/sqrt(d) belongs upstream",
+    "algorithm": "FP32 maximum; FP32 max-score gap; RNE(gap*16); saturate0..255; floor(256*sigmoid(-address/16))",
+    "absolute_score_quantization": false,
+    "intermediate_signed_fixed": false,
+    "address": "unsigned8 F4 nonnegative gap",
+    "output": "P8 threshold; random8 < threshold",
+    "zero": "threshold0",
+    "one": "separate force_one bypass, unused for gap>=0 sigmoid",
+    "invalid": "mask separate; reject nonfinite valid scores; all-invalid query unsupported",
+    "lanes": 4,
+    "per_core_input_FIFO_bytes": 32,
+    "partial_max_state_bytes": 16,
+    "two_pass_SRAM_read_bytes_per_query": 1024,
+    "uncontended_cycles": 73,
+    "II_cycles": 1,
+    "timing_status": "macro max pipeline2+finalreduction2; gap/quant/LUT tail5; not RTLSTA",
+    "threshold_registers": "existing128x8 per sampler; loaded once then gated",
+    "replaced_legacy_front_cycles_per_query": 65,
+    "trace_status": "historical S12 indices retained for timing; not new FP32-front PPL",
+    "cost_status": "reuse existing wide-front reserve; actual2pass reads; old sampler prep residual only bounded, not separately measured"
+  },
+  "ownership": "replace prior module area/latency, do not add full FMA/SRAM twice; standalone shared support stays host-owned once",
+  "area_factor": 0.81,
+  "area_factor_applied_once": true,
+  "energy_frequency_scaling": false,
+  "default_changed": false,
+  "new_RTL_PT": false,
+  "new_PPL": false
+}

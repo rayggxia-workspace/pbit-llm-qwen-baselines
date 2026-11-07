@@ -1,3 +1,13 @@
+## 2026-11-07 Issue225：两频率接合FFN补测与Attention有限供数
+
+当前100MHz入口改为module_refresh_20261107.host100.make_model，保持6核/GU16-Wd32/16KiB入口/1216KiB。SS100短T C19实测每核1.306552mm²，GU25.40625/Wd26.06844pJ/DOT64，等待2.267mW；按gross活动＋非活动驻留去重，GF64/SNG已含。新增10KiB投影FIFO、离线word-interleaved权重、显式两遍读max差值u8F4/P8前端，保留原100QK供数。当前单层解析回放1.19475→1.20762ms（+1.077%），动作/外存地址守恒；面积小计33.76037，加前端宏预留0.38556为34.14593mm²，旧采样器准备面积未拆，非die。
+
+独立250仍3核/2核、256FMA/PV64/r16/24KiB入口；新Attention替代旧v1，返回4ns/TT SRAM、8KiB有限FIFO、显式前端替代旧65拍并删除5.2µs/层预算与额外读费。3/2核新完整冷单层解析1.085992/1.114148ms，覆盖面积22.99104/22.02156mm²含旧C20面积参考，TT250短T功耗仍null。父循环1e-6ns容差触发模块1e-7ns检查的负例保留，宿主改整数周期审计，重复服务/离边沿拒绝；私有源和健康任务不改。
+
+正式报告architecture_tlm/module_refresh_20261107/README_ZH.md；100结果RESULTS_100.json、250 REFRESH_RESULTS.json。外部10源码SHA锁定，公开只接合/数值/摘要/索引，不复制私有执行包/轨迹/库。100与250工作树/PR248、249分开，发布以PUBLICATION.json为准，未合并。无新GPU/训练/PPL/RTL/PT/台账run，两版完整原生新TPOT待后续快照；Projects待同步。
+
+---
+
 ## 2026-11-07 Issue225：用户选定100MHz DMA16KiB
 
 当前100MHz默认6核/GU16-Wd32/共享QK/1216KiB，返回数据保持24→16KiB；CURRENT_100MHZ.json指向ffn6_100mhz_20261107.ingress16.make_model。原24KiB model/PROFILE/RESULTS与250MHz不改。全冷单层（36层地址分配、含embedding无head）解析136.4606GB/s/30ns、seed17：1.19425→1.19475ms，+0.04187%/50拍；算术/采样/外存字节和地址sum/xor一致、队列排空。非原生LPDDR整token；历史0.26%是旧DDR4完整单层增幅。覆盖面积33.692039→33.295774mm²，保持1.188795→0.792530mm²，沿原bank校准缩容量，无新PT，不按容量缩捕获动态能量。32KiB DMA SRAM预留保留，控制器/PHY/路由未知成本不置零。报告architecture_tlm/ffn6_100mhz_20261107/INGRESS16_ZH.md，原件/SEAL位于work/rayggxia/225/ingress16_20261107/replay。

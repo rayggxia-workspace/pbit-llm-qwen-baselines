@@ -1,0 +1,117 @@
+{
+  "id": "ising_k128_s64_unified250_compact256_v2",
+  "status": "v2_ingress_fixed_TT_SRAM_module_ready_opt_in",
+  "case": "m256_v2_s4_n4_tmicro4_r16",
+  "alternative": "m320_v2_s4_n4_tmicro4_r32",
+  "configuration": {
+    "lanes": 256,
+    "pv": 2,
+    "sampler": 4,
+    "norm": 4,
+    "transpose": "micro4",
+    "reduction": 16
+  },
+  "resource_counts": {
+    "ordinary_FMA": 256,
+    "independent_QK": 0,
+    "QK_lanes_per_KVgroup": 64,
+    "QK_simultaneous_groups": 4,
+    "PV_ADD": 64,
+    "PV_ADD_per_head": 2,
+    "PV_FP32_state_bytes": 16384,
+    "PV_word_buffers_bytes": 2048,
+    "sampler_cores": 4,
+    "top16_cores": 4,
+    "norm16_cores": 4,
+    "final_FP32_reduce_ADD": 16,
+    "QK_microtile_bytes": 4096,
+    "QK_read_FIFO_bytes": 1024
+  },
+  "clocks": {
+    "compute_MHz": 250,
+    "SRAM_MHz": 250,
+    "DMA_front_MHz": 250,
+    "return_ingress_MHz": 250
+  },
+  "memory": {
+    "total_SRAM_KiB": 1216,
+    "physical_banks": 304,
+    "word_bytes": 16,
+    "ports": "1RW",
+    "Attention_SRAM_KiB": 512,
+    "ordinary_weight_SRAM_KiB": 160,
+    "DRAM": "LPDDR5X derived8533",
+    "link_peak_GBs": 136.4606,
+    "global_credit": 256,
+    "actual_return_holding_KiB": 24,
+    "DMA_SRAM_reservation_KiB": 32,
+    "direct_to_target": true
+  },
+  "geometry": {
+    "model": "Qwen3-4B",
+    "context": 2048,
+    "K": 128,
+    "S": 64,
+    "batch": 1,
+    "Q_heads": 32,
+    "KV_heads": 8,
+    "dimension": 128
+  },
+  "area": {
+    "attention_plus_pool_logic_mm2": 9.094454282192379,
+    "attention_pool_plus672KiB_mm2": 13.61587857875638,
+    "standalone_with_shared_support_mm2": 17.213155013660394,
+    "onchip_uJ": 378.5693669105981,
+    "onchip_average_W": 0.6458729150070941,
+    "external_uJ_by_pJ_per_bit": {
+      "4.0": 1728.806912,
+      "6.6": 2852.5314047999996,
+      "8.0": 3457.613824
+    },
+    "total_uJ_at4pJ": 2107.376278910598,
+    "total_average_W_at4pJ": 3.5953708335788934
+  },
+  "native_timing": {
+    "seed17_prefix_us": 586.136,
+    "three_seed_prefix_us": {
+      "mean": 586.136,
+      "min": 586.136,
+      "max": 586.136
+    },
+    "phases": {
+      "embedding": 0.316,
+      "save_attention_residual": 0.16,
+      "norm": 0.196,
+      "QKV": 297.36,
+      "RoPE_headnorm": 0.676,
+      "pool_mode_switch": 0.008,
+      "attention": 89.416,
+      "attention_gather": 0.256,
+      "O": 197.74
+    },
+    "scope": "first-layer throughO"
+  },
+  "front_latency_allowance_us": 5.2,
+  "cost_function": "architecture_tlm.attention_unified250_v2_20261107.pricing.price",
+  "ownership": "ordinary pool included once and borrowed byQK; sharedSRAM/DMA/vector supports not re-added when host already owns them",
+  "idle_policy": "root clock off+input hold outside service windows; keep leakage; root gate cells reserved; idle-clock upper sensitivity inRESULTS",
+  "limits": [
+    "conditional activity-derived module budget, not integrated chip PPA",
+    "TT250 arithmetic/sampling mixed with explicitly marked legacy proxies and 250MHz SRAM using same-macroTT event-library prices; legacy peripheral proxies remain",
+    "root-clock-off plus input isolation assumed for inactive service windows; ICG cell area reserved but CTS unmeasured",
+    "input front max/difference budget does not claim numerical equivalence of historicalS12 traces",
+    "shared support counted once; remove standalone support if host already owns it",
+    "no global interconnect/PHY/CTS/pads/CDC physical implementation",
+    "no DRAM background/refresh power beyond4/6.6/8pJ-per-bit sensitivity",
+    "finite memory/native timing does not prove final placed routed250MHz",
+    "PV2andmicrotile/gating modifications are estimates against measuredPV4/sharedFMA, not newly synthesized",
+    "score front latency allowance not part of native replay",
+    "256lane complete lm_head not newly replayed; do not infer whole-chip TPOT",
+    "same physical SRAM ports and fabric width per cycle; DMA issue24requests per4ns",
+    "4ns admissible against library minimum3.468ns; not routed SRAM/controller timing signoff",
+    "supersedes mixed-clock250compute/100SRAM as latest250 requirement",
+    "v1 used10ns return ingress wake; v2 explicit4ns callback audit",
+    "projection bulk-read/compute overlap is a service envelope; finite operand FIFO/pacing not implemented",
+    "physical return-port mapping/interconnect/CTS not fully priced"
+  ]
+}

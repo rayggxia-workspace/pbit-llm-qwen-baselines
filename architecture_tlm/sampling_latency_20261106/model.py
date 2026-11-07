@@ -39,7 +39,7 @@ def install_samples(model,gu_samples=8,wd_samples=32):
     model.run=MethodType(run,model)
     return model
 
-def make_model(backend,gu_samples=8,wd_samples=32,**kwargs):
-    h,m=compact_model(backend,configuration='compact1216',**kwargs)
+def make_model(backend,gu_samples=8,wd_samples=32,sram_configuration='compact1216',**kwargs):
+    h,m=compact_model(backend,configuration=sram_configuration,**kwargs)
     install_samples(m,gu_samples,wd_samples)
     return h,m

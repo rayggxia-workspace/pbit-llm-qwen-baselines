@@ -12,6 +12,7 @@ def main():
     p.add_argument('--backend',choices=('analytic','native'),default='native')
     p.add_argument('--cores',type=int,choices=(2,3),default=3)
     p.add_argument('--ingress-kib',type=int,choices=(16,24),default=16)
+    p.add_argument('--sram-profile',choices=('reference1216','compact1088','compact960'),default='compact960')
     p.add_argument('--seed',type=int,choices=(17,503,1009),default=17)
     p.add_argument('--scope',choices=('full','layer','prefix','ffn'),default='full')
     p.add_argument('--out',type=Path,required=True)
@@ -37,7 +38,7 @@ def main():
         inputs=a.inputs or a.runtime/'inputs'
         representative=load(inputs/'representative.json');samples=load(inputs/'SAMPLES.json')
         identity['input_sha256']={n:sha(inputs/n) for n in ('representative.json','SAMPLES.json')}
-        h,m=make_model(backend,cores=a.cores,ingress_kib=a.ingress_kib,mode='ising',ffn='sc',samples=samples,
+        h,m=make_model(backend,cores=a.cores,ingress_kib=a.ingress_kib,sram_profile=a.sram_profile,mode='ising',ffn='sc',samples=samples,
             layers=36,include_lm=a.scope=='full',seed=a.seed,attention_input=representative)
         if a.scope!='full':m.model['layers']=1
         class PrefixDone(Exception):pass

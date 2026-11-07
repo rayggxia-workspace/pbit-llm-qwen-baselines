@@ -154,4 +154,11 @@ Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内
 
 用户选择6核，8回退/12对照，CURRENT_100MHZ.json指向ffn6_100mhz_20261107。保留32×8KiB槽、写并行、96KiB宽状态及1216KiB实际SRAM。峰值136.46GB/s下Wd34拍每8KiB，理论至少6核；5/6容量120.47/144.56GB/s。四次本地同bank完整形状FFN、解析外存：5/6/8/12为589.06/566.26/568.40/576.48us，算术/外存守恒，输入缓存读变化入账。覆盖面积33.692mm²，按旧C20核价无新C19优惠。完整TPOT、新PPA/PPL未跑；96→80KiB仅潜在省.108mm²未实施。12类检查通过；旧参考/250不改。另修fastsim异带宽抵消P2：拒绝不同profile带宽，固定带宽保持。详见新README/RESULTS及work/rayggxia/225/ffn6_100mhz_20261107交接。
 
+## 2026-11-07 Issue225 / PR249：250MHz SRAM1216→960KiB
+
+机制：投影tile32KiB匹配双缓冲80→32KiB、回收未使用DMA SRAM32KiB、Attention每组64→48KiB并按生命周期搬移输出；真实304→240个4KiB/1RW bank，未保留被删端口。16KiB返回寄存器及3核/FFN权重256KiB/状态96KiB不变，100MHz隔离。
+
+证据：四项布局/字节图样/真实服务测试；三版完整冷单层（同源/seed17）1216/1088/960分别1.085980/1.086184/1.085700ms。动作/核帧/外存地址与字节一致、队列排空、4ns检查。面积22.59477→20.87233mm²是旧TT核参考；短T250 setup−.421007ns仍未过。能量基本不变，主要省1.72245mm² SRAM面积。未跑新RTL/PT/PPL/原生整token。
+
+正式说明：architecture_tlm/sram1216_20261106/250MHz/SRAM_COMPACT_ZH.md、SRAM_COMPACT_RESULTS.json；执行源a63cf1de246fb59a6da939cacfca3b76940d4f14及封存SHA/命令见work/rayggxia/225/sram_compact250_20261107。PR249待审未合并，不把本项作为已验证物理4ns芯片。
 

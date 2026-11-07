@@ -1,17 +1,17 @@
 """Compose the native banked Attention model and GU16/Wd32 shared FFN."""
 from types import MethodType
 from collections import deque
-from architecture_tlm.sram1216_20261106.model import make_model as compact_model
+from .sram_layout import make_model as compact_model
 from architecture_tlm.attention_supply_front_20261107.model import install as attention_install
 from .ffn_actor import common_stage
 
 ATTENTION='m256_v2_s4_n4_tmicro4_r16'
 
-def make_model(backend,cores=3,front_allowance=False,ingress_kib=16,**kwargs):
+def make_model(backend,cores=3,front_allowance=False,ingress_kib=16,sram_profile='compact960',**kwargs):
     if cores not in (2,3):raise ValueError('evaluate recommended3 or sensitivity2 shared cores')
     if front_allowance:raise ValueError('Explicit score front replaces old5.2us allowance')
     if ingress_kib not in (16,24):raise ValueError('current16 or reference24KiB ingress')
-    h,m=compact_model(backend,configuration='compact1216',**kwargs)
+    h,m=compact_model(backend,profile=sram_profile,**kwargs)
     assert not h.now and not h.events and not h.pending and not h.return_occupied
     assert h.response_bytes==24576 and len(h.free_slots)==384
     h.response_bytes=ingress_kib*1024
@@ -34,8 +34,10 @@ def make_model(backend,cores=3,front_allowance=False,ingress_kib=16,**kwargs):
         slots64B=len(h.free_slots),max_pending_requests=h.credit,
         return_lanes_per_channel=h.per_channel,
         reservation='pending64B+returned_not_landed<=holding_bytes',
-        SRAM_KiB=1216,SRAM_banks=304,return_SRAM_reservation_KiB=32,
-        unused_return_SRAM_reclaimed=False,physical_data_storage='existing gated-register proxy')
+        SRAM_KiB=m.compact_memory['capacity_KiB'],SRAM_banks=h.mem.nbank,
+        return_SRAM_reservation_KiB=m.compact_memory['return_SRAM_reservation_KiB'],
+        unused_return_SRAM_reclaimed=sram_profile!='reference1216',
+        physical_data_storage='existing gated-register proxy')
     m.short_FFN_contract=dict(GU_samples=16,Wd_samples=32,GU_frame_cycles=18,Wd_frame_cycles=34,
         GU_frame_ns=72,Wd_frame_ns=136,common_count_bits=19,external_count_bits=20,
         normalize_shifts=dict(GU=-4,Wd=-5),physical_cores=cores,weight_slots=32,

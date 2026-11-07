@@ -57,16 +57,21 @@ def price(r):
  add('wide_score_front_reserve',c['sampler']*front_area,front_dynamic,c['sampler']*64*hold_idle,'unmeasured wide max/subtract/quantize reserve:4 FP32 add-class lanes pluscompare/convert/control; outside tested numerical trace; latency allowance separately reported')
  activation_bytes=read_bytes(('QKV_activation_to_local','O_activation_to_local','lm_head_activation_to_local'))
  add('ordinary_activation_holding',other['activation_hold_bytes']*other['holding_area55_per_byte'],activation_bytes/64*capture,other['activation_hold_bytes']*hold_idle,'existing holding proxy; actual full-run captures; not extra weight or threshold array')
- # Dedicated512KiB Attention plus shared160KiB ordinary weight slots.
- area_logic=sum(area.values());sram_macros=(512+160)//4
- area['attention512_weight160_SRAM']=sram_macros*.03322622205*.81
+ # Charge actual physical regions, including removal of their real ports.
+ regions=r['compact_memory']['regions']
+ att_kib=sum(v for k,v in regions.items() if k.startswith('Attention_KVgroup'))//1024
+ weight_kib=sum(regions[k] for k in ('operand_ping','operand_pong'))//1024
+ support_kib=sum(regions.get(k,0) for k in ('activations_and_codes','norm_double_buffer','DMA_return_FIFO'))//1024
+ attention_label='attention%d_weight%d_SRAM'%(att_kib,weight_kib)
+ area_logic=sum(area.values());sram_macros=(att_kib+weight_kib)//4
+ area[attention_label]=sram_macros*.03322622205*.81
  # Whole-run accounting includes FFN state, metadata and prefetch events once.
  sr=sum(v.get('read_words',0) for v in tags.values())
  sw=sum(v.get('write_words',0) for v in tags.values())
  sram_read,sram_write,sram_leak=(12.0293,16.2931,1.9734e-6) if explicit_front else (10.0527,13.9599,7.7544e-6)
  sram_pJ=sr*sram_read+sw*sram_write
  dynamic['SRAM_all_attention_used_events']=sram_pJ/1e6
- background['attention512_weight160_SRAM']=sram_macros*sram_leak*T/1000
+ background[attention_label]=sram_macros*sram_leak*T/1000
  # Correct inputmax extra read has not been issued by the old trace actor.
  if not explicit_front:
   dynamic['wide_score_extra_SRAM_read_reserve']=front_ops*4/16*sram_read/1e6
@@ -89,11 +94,11 @@ def price(r):
  dynamic['RMSNorm_RoPE_vector_proxy']=layers*other['vector_uJ_per_layer']
  dynamic['projection_BF16_rounding']=8704*layers*other['fp32_to_bf16_pJ']/1e6 if fm_count else 0
  shared_area={holding_name:other['DMA24_area55_mm2']*holding_scale,
-     'vector128_norm32_DMAreserve32_SRAM':48*.03322622205*.81,
+     'vector_norm_DMAreserve%dKiB_SRAM'%support_kib:(support_kib//4)*.03322622205*.81,
      'vector_codec_RMSNorm_RoPE_reserve':other['format_area55_mm2']}
- background['shared_vector_norm_DMA_SRAM']=48*sram_leak*T/1000
+ background['shared_vector_norm_DMA_SRAM']=(support_kib//4)*sram_leak*T/1000
  background['shared_vector_codec_reserve']=other['format_idle_W']*T/1000
- # Complete compact1216 ownership:168 Attention/weight +48 support +88 FFN.
+ # FFN physical storage unchanged; other ownership follows live region sizes.
  # All per-event SRAM energy above already covers the entire executed trace.
  area['FFN_CIM256_state96_SRAM']=88*.03322622205*.81
  background['FFN_CIM256_state96_SRAM']=88*sram_leak*T/1000
@@ -167,11 +172,11 @@ def price(r):
          PV2_unmeasured_energy_plusminus25_uJ=.25*dynamic['PV_ADD_state_and_word_buffers'],
          QK_buffer_energy_half_to_double_uJ=[.5*dynamic['QK_transpose_input_buffers'],2*dynamic['QK_transpose_input_buffers']]),
      limitations=['conditional action budget, not integrated chip PPA',
-         'shortT/C19 area and energy unknown; predecessor area/frame energy reference explicitly retained',
+         'shortT/C19 TT250 setup failed; no accepted core price; predecessor area/frame energy reference explicitly retained',
          'TT250 arithmetic/sampling/SRAM with legacySS100 vector/reduction/converter/holding proxies',
          'root gating assumed; global CTS/NoC/PHY/pads and physical CIM interface not characterized',
          'score max/difference uses explicit73cycle uncontended macro per head, not new STA or PPL',
          'projection FIFO payload priced, control/selector detail/leakage unpriced; old sampler prep retained as small energy upper bound',
          'three captured Attention layers cycle across36: conditional workload replay, no new PPL',
          'external4/6.6/8pJ/bit sensitivity includes all bytes, not LPDDR measured background model',
-         '1216KiB/304 physical4KiB banks, pool/ingress supports counted once'])
+         '%dKiB/%d physical4KiB banks, pool/ingress supports counted once'%(r['compact_memory']['capacity_KiB'],r['compact_memory']['physical_4KiB_banks'])])

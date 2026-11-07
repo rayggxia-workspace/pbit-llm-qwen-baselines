@@ -1,3 +1,5 @@
+> 2026-11-07更新：用户选定DMA返回保持16KiB。当前100MHz工厂改为本目录`ingress16.make_model`，通过宿主CURRENT_100MHZ.json选择；默认6核/16-32采样、1216KiB SRAM和全部端口不变。原`model.make_model`、下方核数对照、RESULTS.json与封存回放仍是24KiB参考，不改写历史。当前面积/单层对照见[INGRESS16_ZH.md](INGRESS16_ZH.md)及INGRESS16_RESULTS.json；250MHz不变。
+
 # 当前100MHz：FFN六核、前16／后32
 
 2026-11-07，Issue225/PR248，用户确认先用6核。新入口本目录`model.make_model`默认6核，并组合当前100MHz共享QK/有限转置供数；8核保性能回退，12核旧对照。宿主选择索引为`architecture_tlm/sram1216_20261106/CURRENT_100MHZ.json`。旧冻结运行、原参考入口和250MHz目录不改。

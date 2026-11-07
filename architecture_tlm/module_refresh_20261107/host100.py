@@ -2,15 +2,19 @@
 from types import MethodType
 from .bindings import bind_attention, core_budget
 
-def make_model(backend, *, owner_install, attention_source=None, **kwargs):
+def make_model(backend, *, owner_install, attention_source=None,
+               sram_configuration='compact1088bw', **kwargs):
     from architecture_tlm.ffn6_100mhz_20261107.ingress16 import make_model as parent
     identity = bind_attention(attention_source)
     from architecture_tlm.attention_supply_front_20261107.adapter100 import install
-    h,m = parent(backend, owner_install=owner_install, **kwargs)
+    h,m = parent(backend, owner_install=owner_install,
+                 sram_configuration=sram_configuration, **kwargs)
     install(m, credits=8, policy='fair', supply='finite', front=True,
             word_interleaved=True)
     assert h.mem.period == 10 and h.response_bytes == 16384
     assert m.common_cores == 6 and m.mac_lanes == 640
+    m.supply_front100_contract.update(SRAM_KiB=h.mem.capacity//1024,
+        SRAM_banks=h.mem.nbank)
     m.ffn6_contract.update(actual_new_C19_RTL=True,
         area_basis='SS100 shortT/C19 measured complete M128; raw area x0.81 once',
         actual_new_C19_implemented_in_transaction_actor=False,
@@ -23,6 +27,7 @@ def make_model(backend, *, owner_install, attention_source=None, **kwargs):
     def run(self):
         result = original()
         result['FFN_core_budget'] = core_budget(self.kernel_active, h.now, 6, 100)
+        result['ffn_sram_batch_contract']['memory']=self.compact_memory
         result['module_refresh_contract'] = dict(clock_MHz=100,
             external_attention_source=identity, finite_projection_FIFO_KiB=10,
             static_weight_format='[Kblock8][outputRow][8BF16]',
@@ -30,6 +35,9 @@ def make_model(backend, *, owner_install, attention_source=None, **kwargs):
             removed_legacy_sampler_front_cycles_per_query=65,
             score_gap='FP32 max-score -> RNE/sat u8F4 -> floor sigmoid LUT -> P8',
             stored_scores_are_FP32=True, FIFO_depth_packets=8,
+            SRAM_configuration=sram_configuration,
+            SRAM_KiB=self.h.mem.capacity//1024,
+            SRAM_banks=self.h.mem.nbank,
             old_24KiB_and_250MHz_defaults_changed=False,
             numerical_model_or_new_PPL=False)
         return result

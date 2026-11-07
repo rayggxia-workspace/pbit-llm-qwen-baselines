@@ -25,7 +25,8 @@ def make_model(backend, *, ingress_kib=DEFAULT_INGRESS_KIB, **kwargs):
         slots64B=len(h.free_slots), max_pending_requests=h.credit,
         return_lanes_per_channel=h.per_channel,
         reservation='pending64B+returned_not_landed<=holding_bytes',
-        SRAM_KiB=1216, SRAM_banks=304, unused_return_SRAM_reclaimed=False,
+        SRAM_KiB=h.mem.capacity//1024, SRAM_banks=h.mem.nbank,
+        unused_return_SRAM_reclaimed=h.response is None,
         physical_implementation='existing gated-register data-holding proxy',
         new_DMA_RTL_or_PPA=False, TT250_changed=False)
     m.ingress_capacity_contract = contract

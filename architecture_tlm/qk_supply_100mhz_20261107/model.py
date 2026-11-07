@@ -19,6 +19,12 @@ def install(model, feedback_cycles=4, operand_credits=4):
         raise ValueError('positive FMA feedback latency')
     if model.resource_contract['independent_QK_lanes'] != 0:
         raise ValueError('install the shared QK candidate first')
+    capacities={r.size for r in model.att}
+    if capacities not in ({65536},{49152}):raise ValueError('unsupported QK scratch layout')
+    # SelectedK0..32KiB and scores32..34KiB are disjoint from34..35KiB
+    # scratch; coarse scores have been consumed before selected transposition.
+    scratch=34816 if capacities=={49152} else SCRATCH
+    assert scratch+1024<=min(capacities)
     model.qk_supply_audit=[]
     model.qk_supply_active=set()
     model.qk_supply_contract=dict(clock_MHz=100, SRAM_clock_MHz=100,
@@ -27,7 +33,7 @@ def install(model, feedback_cycles=4, operand_credits=4):
         transpose_register_bytes_per_group=128, operand_capture='existing FMA input register',
         coarse_operand_credits=operand_credits,
         coarse_operand_FIFO_bytes_per_group=128 if operand_credits==4 else 0,
-        SRAM_capacity_added=0, scratch_offset=SCRATCH, ports='existing16B/1RW physical banks',
+        SRAM_capacity_added=0, scratch_offset=scratch, ports='existing16B/1RW physical banks',
         default_changed=False, new_PPA=False, new_PPL=False,
         scope='bounded transaction timing; no numerical data stored in simulator')
     model.resource_contract.update(QK_transpose_SRAM_bytes=8192,
@@ -178,7 +184,7 @@ def install(model, feedback_cycles=4, operand_credits=4):
                             stats['transpose_read_bytes']+=128
                             writes=[Signal() for _ in range(8)]
                             for j in range(8):
-                                off=SCRATCH+slot*512+(cc+j)*32+rr*2
+                                off=scratch+slot*512+(cc+j)*32+rr*2
                                 h.mem.submit(r,off,16,True,'qksupply_transpose_store',writes[j].set)
                             yield lambda:all(s() for s in writes)
                             stats['transpose_write_bytes']+=128
@@ -196,7 +202,7 @@ def install(model, feedback_cycles=4, operand_credits=4):
                         if s and s['ready'] and s['d0']+s['next']==next_dimension[s['context']]]
                     _,slot,state=min(choices,key=lambda v:(v[0],v[1]))
                     c=state['context'];j=state['next']
-                    yield from issue(self,r,SCRATCH+slot*512+j*32,c,feedback,stats)
+                    yield from issue(self,r,scratch+slot*512+j*32,c,feedback,stats)
                     state['next']+=1;next_dimension[c]+=1
                     if state['next']==16:slots[slot]=None;completed+=1
                 assert next_dimension==[128]*4 and not any(slots)

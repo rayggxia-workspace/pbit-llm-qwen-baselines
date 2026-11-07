@@ -1,0 +1,21 @@
+{
+  "status": "FULL_WT2_PREPARED_NOT_RUN",
+  "checkpoint": "same trained100M T64 export and non_ffn as prior diagnostic",
+  "deployment_seeds": [101, 102, 103],
+  "window": 2048,
+  "stride": 1024,
+  "targets": 299077,
+  "windows": 292,
+  "max_parallel_GPUs": 2,
+  "new_training": false,
+  "cases": [
+    {"id": "iid64", "input_law": "original_IID", "T_x": 64, "and_law": "original_IID", "T_and": 64},
+    {"id": "iid32", "input_law": "original_IID", "T_x": 32, "and_law": "original_IID", "T_and": 32},
+    {"id": "front32", "input_law": "stratified_T", "T_x": 32, "and_law": "original_IID", "T_and": 64},
+    {"id": "strat32_coarse_sig", "input_law": "stratified_T", "T_x": 32, "and_law": "joint_grid", "grid_g_sig_u": [4, 2, 4], "T_and": 32},
+    {"id": "strat64_hardware_grid_control", "input_law": "stratified_T", "T_x": 64, "and_law": "joint_grid", "grid_g_sig_u": [4, 4, 4], "T_and": 64}
+  ],
+  "reference": "unchanged BF16 parent fullWT2 in this environment;not the trained100M BF16 control",
+  "sampler_scope": "algorithmic stratification with independent jitter,not correlated GF64 bitwise hardware playback",
+  "preserve": ["weightcodes", "weight/activation scales", "sigmoid LUT", "RNE boundaries", "AND event counts directly into Wd", "original fullWT2 score function"]
+}

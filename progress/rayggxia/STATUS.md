@@ -1,3 +1,39 @@
+## 2026-11-06：单seed完整WT2结果已核验
+
+4652已完成，PPL11.3008280526，292窗/299077目标、36层计分采样覆盖与11原件SHA/逐窗NLL重算通过。实际计分4.099672小时、allocated峰值18.4125GiB。T64训练权重部署GU32/AND4×2×4共32，K128/S64/WH/S12-gap-P8/独立R8；准确Attention前缀，全部计分query36层替换，SparQ仍FP32行为。
+
+单部署seed101，不是昨天1024后缀14.2971；本轮未跑cached完整匹配FFN-only/原BF16多seed控制。旧10.698和未续训父BF16约11.54仅参考，不归因随机计算提升质量。不把C20/T64 TLM能耗赋给T32质量。
+
+FULL_WT2_REPORT_ZH.md及FULL_WT2_RESULT.json位于experiments/joint_t64_strat32_20261105/results；同Issue FULL_SINGLE_COLLECTION/FINAL_VALIDATION记录可恢复原件。不重跑4652，无本任务运行作业。PR243未合并，Projects待维护者同步。下方running为历史快照。
+
+---
+
+## 2026-11-05 22:00：完整WT2单seed已提交
+
+用户授权只申请一个完整任务观察效果。Slurm4652已核RUNNING：联合版本/seed101、292窗/299077目标、batch8；1×5090/4CPU/48GiB，12h时限。原21文件数值快照未改，新driver仅冷启动N1检查和每128调用只读计时；GPU N1/S64门禁PASS，本地及服务器完整计划292窗/39组/40005单token调用一致。
+
+预计启动后4–8小时，待实际进度校准；尚无完整PPL。不展开其他seed/对照，不重复提交。恢复full_ops.py status→读FULL_SINGLE_STATUS及封存，不修改已提交source/driver。根服务器项目中full_single_afd284c33749；具体路径/命令/资源/SHA在FULL_SINGLE_SUBMISSION、FULL_SINGLE_MANIFEST。驱动SHA afd284c33749e7dbff8377ba41cdf38413c128326f24a55087e636252c8a2346。此前“无运行作业”仅针对后缀批次。PR243未合并，Projects待同步。
+
+---
+
+## 2026-11-05 Issue242最终：七项匹配后缀PPL完成
+
+PR243/draft/open，未合并；本任务已无运行作业。CPU4641、GPU4642和正式4643七项均完成封存。固定1024个WT2后缀目标，BF16 13.580350987，FFN-only三seed13.372338299±0.224580021，联合14.297114509±0.520343413；Attention附加0.924776210 PPL/6.9156%。这是后缀，不是完整WT2，SparQ筛选为FP32行为，不能宣称整Attention位真或PPA。T64导出/non_ffn匹配及36层覆盖、原件SHA通过。
+
+恢复work/rayggxia/242/HANDOFF.md及FINAL_VALIDATION，原件在project_archives/joint_quality242_20261105/result_7eb9a57acccb。可运行finalize.py从原件汇总，不重复提交模型作业。科学报告experiments/joint_t64_strat32_20261105/results/REPORT_ZH.md、RESULTS.json。PR已发布代码，结果已发布12cb6fa7261c7c96845e5080e55f1537ed1d8450，26文件回读一致；最后进度同步见PUBLICATION_FINAL；Projects待维护者同步。下面旧running/待PR是历史快照。
+
+---
+
+## 2026-11-05 Issue242：T64分层32＋max-gap P8 Attention联合PPL
+
+负责人rayggxia；task/242-t64-strat32-joint，base main@2aab624068d2de84c88704bf2e03363234cf3be9；独立tmp/joint-quality-issue242-20261105，PR待创建。用户最新确认S12/F4分数先max和差，再饱和U8/F4查P8，SparQ K128/recent32/r32、赢家保持S64/burn0/slot0，独立IID R8。FFN实际T64训练100M权重、匹配non_ffn，GU32分层/AND4×2×4共32、直接Wd。
+
+CPU4641六项PASS；GPU4642字节帧oracle/原logits no-op逐位一致/36层覆盖/权重不变PASS。首版CPU4635缺依赖失败原件保留，未执行4636仅因死依赖撤回。正式4643七项、最多两GPU，固定WT2后缀1024目标；BF16已完成13.580350987，FFN-only和联合三seed尚未完成。无完整联合WT2结果、无训练/PPA。
+
+恢复work/rayggxia/242/HANDOFF.md及ops.py results；只从COMPLETE及原件SHA统计，勿重复stage/evaluate。不动204健康下载/六模型评估。代码/小报告在experiments/joint_t64_strat32_20261105；任务快照源7eb9a57acccb，准确哈希在EXECUTION/EVALUATION_SUBMISSION。GitHub Issue242已同步，PR未合并/Projects未操作。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

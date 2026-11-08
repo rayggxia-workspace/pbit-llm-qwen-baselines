@@ -1,3 +1,7 @@
+## 本地A适配器消费（2026-11-08）
+
+补充源来自根local_integration_A，已25输入SHA核验并在adapter_review_runtime隔离复跑，VALIDATION与提供方字节一致。正式原4文件及复核REVIEW/INTAKE已收录，父交接保留侧对话新增入口。数值ready，全链PPA仍false；不改默认/冻结任务，不重复GPU/EDA。发布看LOCAL_ADAPTER_PUBLICATION；新CPU日志及ADAPTER_REVIEW保留，本机root/任务目录更新同字节。
+
 ## 新PPA消费补充（2026-11-08）
 
 当前PPL明确对应A=s12_max_gap，后续主线应显式传A；提供方forward/card默认B不是PPL配置。新版四张独立前端价卡已核，旧“B仅宏价”历史结论已更新；完整采样器去重尚未ready，不改冻结运行。正式HANDOFF/AUDIT_FACTS/SOURCE_INDEX/VALIDATION同步；不重复producer测试或原始归档全审计。

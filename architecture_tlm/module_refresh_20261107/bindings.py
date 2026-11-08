@@ -39,6 +39,22 @@ def ffn_profile():
     return json.loads((HERE/'FFN_PROFILE.json').read_bytes())
 
 
+def core_contract(clock_MHz):
+    """Single timing/price authority; samples and service cycles are distinct."""
+    version=ffn_profile()['versions'][str(clock_MHz)+'MHz'];core=version['core']
+    if core is None or not version.get('ready_for_TLM_default',True):
+        raise ValueError('No accepted FFN implementation for this clock')
+    assert core['clock_MHz']==clock_MHz and core.get('timing_pass',True)
+    modes={}
+    for name in ('GU','Wd'):
+        z=core['modes'][name]
+        assert z['frame_ns']==z['frame_cycles']*1000/clock_MHz
+        assert z['frame_cycles']>=z['T'] and z['DOT64_per_frame']==128
+        modes[name]=dict(samples=z['T'],frame_cycles=z['frame_cycles'],frame_ns=z['frame_ns'])
+    return dict(clock_MHz=clock_MHz,modes=modes,profile_sha256=hashlib.sha256((HERE/'FFN_PROFILE.json').read_bytes()).hexdigest(),
+                implementation=version.get('selected_implementation',core['status']))
+
+
 def core_budget(frames, wall_ns, cores, clock_MHz):
     """Gross service energy + stopped-clock residency, without double billing."""
     profile = ffn_profile()
@@ -69,12 +85,20 @@ def core_budget(frames, wall_ns, cores, clock_MHz):
         raise ValueError('Core service exceeds available residency')
     wait_ns = max(0,residency_ns-active_ns)
     wait_pJ = wait_ns*core['waiting_total_W']*1000
+    incremental_pJ=gross_pJ-core['waiting_total_W']*active_ns*1000
+    idle_full_pJ=core['waiting_total_W']*residency_ns*1000
+    assert abs((incremental_pJ+idle_full_pJ)-(gross_pJ+wait_pJ))<=max(1e-5,abs(gross_pJ+wait_pJ)*1e-12)
     return dict(status=core['status'], clock_MHz=clock_MHz, cores=cores,
         ready_for_TLM_default=True,
         area55_mm2=cores*core['area55_mm2'],
         active_core_ns=active_ns, waiting_core_ns=wait_ns,
         active_gross_mJ=gross_pJ/1e9, waiting_mJ=wait_pJ/1e9,
         total_mJ=(gross_pJ+wait_pJ)/1e9,
+        incremental_active_mJ=incremental_pJ/1e9,
+        idle_full_residency_mJ=idle_full_pJ/1e9,
+        equivalent_incremental_plus_idle_mJ=(incremental_pJ+idle_full_pJ)/1e9,
+        idle_already_inside_active_gross_mJ=core['waiting_total_W']*active_ns/1e6,
+        accounting='active gross + idle only on remaining core-time; equivalent incremental + full idle checked',
         stopped_waiting_reference_seed=core['waiting_reference_seed'],
         area_factor_already_applied=0.81,
         includes_GF64_SNG_nonlinear_weighted_tree_C19_results_ICG=True,

@@ -22,4 +22,7 @@ def bootstrap(runtime,dependencies,attention_source=None):
     identity['overlay_files_sha256']={p.relative_to(HERE).as_posix():sha(p)
         for p in sorted(HERE.rglob('*')) if p.is_file() and p.suffix in ('.py','.json')
         and p.name not in ('VALIDATION.json','ASSEMBLY_STATUS.json') and 'results' not in p.parts}
+    common=HERE.parents[1]/'module_refresh_20261107'
+    identity['shared_calibration_files_sha256']={name:sha(common/name) for name in
+        ('bindings.py','FFN_PROFILE.json','energy_ledger.py','ATTENTION_SOURCE.json')}
     return identity

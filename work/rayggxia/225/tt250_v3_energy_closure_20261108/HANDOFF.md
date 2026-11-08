@@ -1,0 +1,15 @@
+# Issue225 / PR249：有效TT250接入与能量账本
+
+负责人rayggxia；复用tmp/tlm-unified250-issue225-20261107、task/225-tlm-unified250-20261107。开工远端PR249为4b68739ca7c09eede55ba8a7379123dc63a407e9，base为PR248的task/225-norm-stream-20261106；100/250仍隔离，不自动合并。已核对身份rayggxia、Issue225、249/248/244/247及本分支STATUS/交接；不动其他目录untracked材料。
+
+已完成9个源/校准文件接合，FFN_PROFILE绑定delta_pipeline_v3（输入profile SHA c4be790270d496177bb6a5a0c33cc6700b636f840840523bbd92559683dc747f）。单一合同驱动76/140ns服务和19/35拍，SS100参数保持；原负结果与provisional证据保留。新增energy_ledger，按资源唯一归属、SRAM全物理容量、root gating逐项核对，FFN gross+剩余idle与增量+全idle等价。旧FFN已有正确口径，没有发现该项重复计费；物理CIM接口/全NoC/PHY等仍是明确未标定边界，不伪称芯片全实测。
+
+四项测试通过。local_layer是解析136.46GB/s30ns完整尺寸单层，1.085720ms；执行时run/bootstrap最后账本导出字段尚未添加，原始结果不重写，来源SHA照存。正式最终执行代码在新冻结snapshot.zip/MANIFEST，增加5件封存校验。38629484原生单层门禁COMPLETED，1.195020ms、22.086073mm²、4.671014mJ（含外存4pJ/bit）；5件+SEAL逐SHA复核，归档project_archives/tlm_energy225_20261108/gate，索引COLLECTION.json。
+
+完整36层＋head为38629485_[0-2%2]，seed17/503/1009；各1CPU12GiB8h，最多2并行，0GPU。精确执行目录/manifest/runtime/dependencies SHA见SUBMISSION.json/MANIFEST.json；快照c1820e20bc73不可改写，不重交健康作业。当前完整结果尚未结束。
+
+重要纠正：配置m256_v2_s4_n4_tmicro4_r16的r16是16路FP32归约，不是SparQ维数。SparQ仍32维，QK单层2621440MAC、投影26214400MAC；完整L层另加head389M MAC。ops.collect只收completed封存件，并独立核对这两项。旧跨模型文档的r32→r16所谓缺口是误读，应按本条纠正，而非改变筛选算法。
+
+恢复：Codex附带Python运行本目录ops.py status / collect；collect保留同SHA结果，不覆盖其他输入。执行后已整理profile的job/status/ICG文字，并补派生incremental/frame兼容字段；EXECUTED_FFN_PROFILE保留原字节，PROFILE_NORMALIZATION列两SHA，原数值输入和SS100保持。ASSEMBLY_STATUS同步960KiB及当前作业；原catalog不改。上传前按实际文件清单add，公开接合代码/数值/小汇总/SHA，私有owner执行包/轨迹和PDK不复制。
+
+正式说明ENERGY_CLOSURE_ZH.md。根阅读镜像9文件已同步ROOT_SYNC，长期记忆/STATUS和PR发布需按最终PUBLICATION同步。尚无完整token最终数、不宣称PR合并；Projects无写接口待维护者同步。

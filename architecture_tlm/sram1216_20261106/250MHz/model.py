@@ -38,22 +38,25 @@ def make_model(backend,cores=3,front_allowance=False,ingress_kib=16,sram_profile
         return_SRAM_reservation_KiB=m.compact_memory['return_SRAM_reservation_KiB'],
         unused_return_SRAM_reclaimed=sram_profile!='reference1216',
         physical_data_storage='existing gated-register proxy')
-    m.short_FFN_contract=dict(GU_samples=16,Wd_samples=32,GU_frame_cycles=18,Wd_frame_cycles=34,
-        GU_frame_ns=72,Wd_frame_ns=136,common_count_bits=19,external_count_bits=20,
+    from architecture_tlm.module_refresh_20261107.bindings import core_contract
+    timing=core_contract(250);gu,wd=timing['modes']['GU'],timing['modes']['Wd']
+    m.short_FFN_contract=dict(GU_samples=gu['samples'],Wd_samples=wd['samples'],GU_frame_cycles=gu['frame_cycles'],Wd_frame_cycles=wd['frame_cycles'],
+        GU_frame_ns=gu['frame_ns'],Wd_frame_ns=wd['frame_ns'],common_count_bits=19,external_count_bits=20,
         normalize_shifts=dict(GU=-4,Wd=-5),physical_cores=cores,weight_slots=32,
         programming_parallelism=32,result_credits_per_core=2,state_ports32=2,
         state32_II_cycles=1,state32_updates_per_frame=4,crossK_bits=64,
-        exact_weighted_tree=True,OR=False,new_short_T_PPA=False,
+        exact_weighted_tree=True,OR=False,new_short_T_PPA=True,
         GU_output_quant_cycles=4,Wd_BF16_cycles=3,conversion_latency_is_macro=True,
         GU_input_bits=10,GU_input_payload_B=80,
         g8_encoding='signed two-complement; G/8 directly drives sigmoid',
         u8_encoding='independent sign plus7bit magnitude',
         Wd_input_payload_B=128,GU_normalization_shift=-4,Wd_normalization_shift=-5,
-        RNG='local GF64 inside measured predecessor core; no extra threshold SRAM',
+        RNG='local GF64 and loading-side threshold cache inside accepted delta_pipeline_v3 core; no extra probability SRAM',
         scope='transactional contracts, not numerical Qwen or physical signoff')
     from architecture_tlm.module_refresh_20261107.bindings import core_budget
     evidence=core_budget({},0,cores,250)
     m.short_FFN_contract.update(implementation_evidence_status=evidence['status'],
+        selected_implementation=timing['implementation'],profile_sha256=timing['profile_sha256'],
         target_clock_physically_closed=evidence.get('ready_for_TLM_default',False),
         setup_slack_ns=evidence.get('setup_slack_ns'))
     # Explicit per-head score preparation replaces both old65cycles and the

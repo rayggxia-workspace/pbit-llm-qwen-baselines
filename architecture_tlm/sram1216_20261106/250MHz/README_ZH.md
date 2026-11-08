@@ -1,4 +1,6 @@
-> 2026-11-07当前默认：SRAM已实际改为960KiB/240bank，投影双缓冲2×32KiB、八组Attention各48KiB、删除未使用DMA SRAM32KiB；返回寄存器保持16KiB。1216/1088/960三版完整冷单层为1.085980/1.086184/1.085700ms，时间持平，旧TT核参考覆盖面积22.59477→20.87233mm²。见[本轮报告](SRAM_COMPACT_ZH.md)与SRAM_COMPACT_RESULTS.json；显式`--sram-profile reference1216`可恢复容量对照。100MHz不改。
+> 2026-11-08当前版本：已接入delta_pipeline_v3有效TT250核价及19/35拍，采样仍16/32；960KiB、3核、16KiB返回、256FMA和64PV ADD不变。新增逐资源能量账本与gross/idle等价校验。原生冷单层1.195020ms，覆盖模块面积22.086073mm²，已计边界内单层能量4.671014mJ（外存4pJ/bit）。完整36层＋head三seed已提交38629485，待封存。见[接入与能量对账](ENERGY_CLOSURE_ZH.md)。r16为归约单元数，不是SparQ维数；筛选仍32维。下方旧周期/失败门禁/面积引用仅保留为对应历史快照，当前以本条及新报告为准。
+
+> 2026-11-07当时默认：SRAM已实际改为960KiB/240bank，投影双缓冲2×32KiB、八组Attention各48KiB、删除未使用DMA SRAM32KiB；返回寄存器保持16KiB。1216/1088/960三版完整冷单层为1.085980/1.086184/1.085700ms，时间持平，旧TT核参考覆盖面积22.59477→20.87233mm²。见[本轮报告](SRAM_COMPACT_ZH.md)与SRAM_COMPACT_RESULTS.json；显式`--sram-profile reference1216`可恢复容量对照。100MHz不改。
 
 > 最新电路证据：短T/C19 TT250报告已收，但setup为−0.421007ns，未闭合4ns；有效核价继续null，当前周期和旧核价只作条件参考。下方早期快照、旧面积审查与原生任务保留原历史范围，不代表当前容量或完整token结果。
 

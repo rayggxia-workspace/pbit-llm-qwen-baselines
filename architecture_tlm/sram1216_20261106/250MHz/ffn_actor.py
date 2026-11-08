@@ -6,6 +6,8 @@ from collections import Counter,deque
 from architecture_tlm.unified_v6.shared_memory import Signal,align_time
 
 def common_stage(self,layer,mode):
+    from architecture_tlm.module_refresh_20261107.bindings import core_contract
+    contract=core_contract(250);service=contract['modes'][mode]
     tiles,outs,blocks=self._tiles(mode);tasks=deque(enumerate(tiles));n=len(tiles)
     h=self.h;ready={};retire=deque();expected=[0]*outs;occupied=set();credits=[0]*self.common_cores
     state_slots=min(self.output_batch,outs) if mode=='GU' else outs
@@ -50,9 +52,9 @@ def common_stage(self,layer,mode):
                 t=h.now;yield from h.transfer(self.vector,offset,size,False,'GU_x_codes' if mode=='GU' else 'NL_gu_codes')
                 if mode=='Wd':yield from h.transfer(self.vector,65536+20000+k,1,False,'NL_gu_scale')
                 stats['input_load_core_ns']+=h.now-t;stats['input_cache_loads']+=1;input_key[core]=k
-            samples=16 if mode=='GU' else 32
-            yield from self.delay((samples+2)*10,'common_'+mode+'_core')
-            stats['sample_core_ns']+=(samples+2)*4;stats['sample_frames']+=1
+            samples=service['samples']
+            yield from self.delay(service['frame_cycles']*10,'common_'+mode+'_core')
+            stats['sample_core_ns']+=service['frame_ns'];stats['sample_frames']+=1
             self.kernel_active['GU_frames' if mode=='GU' else 'Wd_M128_frames']+=1
             self.actions['GU_logical_R8_ports' if mode=='GU' else 'NL_logical_R8_ports']+=64*samples*(1 if mode=='GU' else 3)
             self.actions['common_R8_words']+=samples*(1 if mode=='GU' else 3)
@@ -88,4 +90,6 @@ def common_stage(self,layer,mode):
     elapsed=h.now-started
     row=dict(layer=layer,mode=mode,state_slots=state_slots,state_capacity_bytes=self.common_state.size,output_batch=self.output_batch,frames=n,output_groups=outs,Kblocks=blocks,physical_common_cores=self.common_cores,elapsed_ns=elapsed,
         core_sampling_utilization=stats['sample_core_ns']/(self.common_cores*elapsed),**dict(stats))
+    row.update(frame_cycles=service['frame_cycles'],samples_per_frame=service['samples'],
+               frame_service_ns=service['frame_ns'],profile_sha256=contract['profile_sha256'])
     self.common_stats.append(row)

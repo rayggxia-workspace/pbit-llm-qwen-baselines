@@ -1,6 +1,6 @@
 """Unified250MHz complete decode, with finite SRAM/DMA and native LPDDR option."""
 from pathlib import Path
-import argparse, collections, hashlib, json, time
+import argparse, collections, csv, hashlib, json, time
 from bootstrap import bootstrap,sha
 
 def save(path,value):
@@ -80,7 +80,8 @@ def main():
         # Audit executed frames and exact count boundaries, independently of wall time.
         for row in m.common_stats:
             assert row['frames']==(6080 if row['mode']=='GU' else 3040)
-            assert row['sample_core_ns']==row['frames']*(72 if row['mode']=='GU' else 136)
+            expected=m.short_FFN_contract['GU_frame_ns' if row['mode']=='GU' else 'Wd_frame_ns']
+            assert row['sample_core_ns']==row['frames']*expected
             assert row['peak_core_reserved_results']<=2
         if a.scope in ('layer','full','ffn'):
             L=36 if a.scope=='full' else 1
@@ -92,9 +93,23 @@ def main():
         for row in m.phases:phases[row['stage']]+=row['duration_ns']
         result['phase_totals_ms']={k:v/1e6 for k,v in phases.items()}
         budget=price(result)
+        config=dict(model=result['model'],scope=a.scope,cores=a.cores,seed=a.seed,
+            short_FFN_contract=result['short_FFN_contract'],SRAM_profile=a.sram_profile,
+            ingress_KiB=a.ingress_kib,backend=a.backend,input_sha256=identity['input_sha256'])
+        result['configuration_sha256']=hashlib.sha256(json.dumps(config,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         save(a.out/'RESULT.json',result);save(a.out/'BUDGET.json',budget)
+        save(a.out/'ENERGY_LEDGER.json',budget['energy_ledger'])
+        with (a.out/'ENERGY_LEDGER.csv').open('w',encoding='utf-8',newline='') as f:
+            fields=('resource_id','area55_mm2','activity_or_service_uJ','residence_before_root_gating_uJ',
+                    'root_gating_savings_uJ','residence_after_root_gating_uJ','total_uJ','billing','basis')
+            writer=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');writer.writeheader();writer.writerows(budget['energy_ledger']['components'])
+        save(a.out/'VALIDATION.json',dict(status='PASS',energy_sum_closed=budget['energy_ledger']['numerical_sum_closed'],
+            FFN_gross_idle_equivalence_checked=True,FFN_predecessor_reference_used=False,
+            core_frames=dict(result['kernel_active']),frame_cycles=dict(GU=m.short_FFN_contract['GU_frame_cycles'],Wd=m.short_FFN_contract['Wd_frame_cycles']),
+            configuration_sha256=result['configuration_sha256'],scope=a.scope,all_physical_costs_measured=False))
         save(a.out/'SEAL.json',dict(result_sha256=sha(a.out/'RESULT.json'),budget_sha256=sha(a.out/'BUDGET.json'),
-            source_identity=identity,status='completed'))
+            source_identity=identity,status='completed',configuration_sha256=result['configuration_sha256'],
+            files_sha256={name:sha(a.out/name) for name in ('RESULT.json','BUDGET.json','ENERGY_LEDGER.json','ENERGY_LEDGER.csv','VALIDATION.json')}))
         print(json.dumps(dict(status='completed',scope=a.scope,cores=a.cores,ms=result['simulated_ms'],
             area55_mm2=budget['totals']['covered_area55_mm2'],energy_mJ_proxy=budget['totals']['proxy_total_mJ_at4pJ'],
             wall_seconds=time.time()-started)),flush=True)

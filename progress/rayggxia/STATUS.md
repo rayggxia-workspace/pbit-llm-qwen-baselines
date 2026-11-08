@@ -1,3 +1,13 @@
+# 2026-11-08 Issue250 Fig.9最终测试集清单
+
+负责人rayggxia；Issue250 / PR251；task/250-figure-references-20261108；PR base main@206bf81f18ea88c4c625ce8d32edd18a58edd1cd；工作目录tmp/figure-references-issue250-20261108。本轮起点3a0282692ffa076e03505c7a888f53778adeeda6，远端Issue/PR、main和任务分支规则、身份均核验；PR仍open/unmerged。
+
+用户确认经典六项＋完整MMLU＋LAMBADA，另GSM8K生成与WT2 PPL。正式单文件architecture_tlm/paper_figure_references_20261108/QWEN3_ACCURACY_BENCHMARK_PLAN_ZH.md，已有图规划主文件新增入口，更新早先只补两项任务的最终覆盖建议。WiC/ANLI可选、MMLU三科不重复；shot/生成预算为建议待冻结，实际随机路径、同权重/训练控制、模型/文本SHA、seed授权、短题与长上下文边界明确。
+
+阶段：本地文档与同字节阅读镜像已完成，准备随既有PR发布；正式SHA/检查见BENCHMARK_VALIDATION.json，实际发布回执见BENCHMARK_PUBLICATION.json（存在时）。无新模型/PPL/GPU/Slurm/TLM/RTL/EDA；旧43/12项验证及其正文SHA保留历史时点，当前文件以本轮验证为准。不修改98/213或其他成员实现/STATUS。Projects和Issue28唯一记忆接入待维护者同步。
+
+下一步：审核此清单后由已有实验负责人冻结执行manifest，复用相符结果，不自动扩大单seed授权或启动昂贵任务。本次文档不含新准确率结果。
+
 # 2026-11-08 Issue250 追加逐图实验缺口
 
 接续PR251，追加主文件第14节：按11份最新源和远端PR核实，区分已有、已提交待收齐和新增实验。重点最终GU16/Wd32联合质量、S12/FP32前端差异、实际共享源、两项任务与二因素消融、完整成本；已有K/S扫描与GPU不重复。12项文档/源检查通过，GAP_EVIDENCE/GAP_VALIDATION记录来源和新正文SHA。只读审阅，无新GPU/EDA/TLM或作业变更。发布以PR251最新head为准，未合并；Projects/Issue28待维护者同步。

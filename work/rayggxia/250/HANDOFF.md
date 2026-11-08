@@ -1,3 +1,11 @@
+## 2026-11-08 追加：Qwen3最终质量测试集
+
+用户已确认八项理解/预测任务（PIQA/HellaSwag/WinoGrande/BoolQ/ARC-E/ARC-C/完整MMLU/LAMBADA），另GSM8K生成和完整WT2 PPL。主文件同目录QWEN3_ACCURACY_BENCHMARK_PLAN_ZH.md，主README入口说明已更新早先两任务覆盖建议。WiC/ANLI可选；MMLU最后三科不重复；协议、路径覆盖、manifest和图表均在单文件。
+
+本轮基线PR251 head3a028269；复用同一分支与稀疏目录，未接管Issue98/213。实际检查/文件SHA见BENCHMARK_VALIDATION.json；发布与远端回读见BENCHMARK_PUBLICATION.json（存在时）。模型/数据/seed/PVT/PPA执行字段不适用，因为本轮仅文档，无新运行任务。协议参数仍是建议，不等于已运行结果。根architecture_tlm阅读镜像与正式文件同字节；恢复先核PR251最新head，不重复运行已完成/健康任务。
+
+唯一记忆目录仍避免并发覆盖，MEMORY_APPEND_ZH.md供Issue28接入；Projects缺可用写接口，待维护者同步。PR待审不关闭Issue250。
+
 # Issue250 论文原图参考交接
 
 负责人 rayggxia；2026-11-08。仓库 rayggxia-workspace/pbit-llm-qwen-baselines，基线 main@206bf81f18ea88c4c625ce8d32edd18a58edd1cd，分支 task/250-figure-references-20261108。独立最小工作目录 tmp/figure-references-issue250-20261108。

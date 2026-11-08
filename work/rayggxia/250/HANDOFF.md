@@ -13,3 +13,5 @@
 恢复：先核Issue250/PR最新状态和PUBLICATION，阅读README与SOURCES；按SHA复用现有原PDF。不需重复下载或运行硬件/模型。PR待审仅保留必要小工作目录，无运行作业。最终根architecture_tlm同目录为正式文档同字节阅读副本。
 
 已发布：科学提交1c84d72f30740385cb60231eae94786678463787，PR251 ready/open未合并；6文件远端内容一致、tree与本地index一致。实际摘要入口PUBLICATION.json；无运行任务。
+
+2026-11-08追加实验缺口：主文件§14及GAP_EVIDENCE/GAP_VALIDATION。11份源/12项检查，单seed联合与36case系统批次以既有回执为准，未重交作业。早先43项定位验证和其初版正文SHA保持历史；新正文SHA见GAP_VALIDATION。PR251最新commit包含本追加，不误用旧PUBLICATION的科学源为最新正文。

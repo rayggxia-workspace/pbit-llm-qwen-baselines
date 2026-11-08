@@ -4,7 +4,7 @@
 
 用户确认经典六项＋完整MMLU＋LAMBADA，另GSM8K生成与WT2 PPL。正式单文件architecture_tlm/paper_figure_references_20261108/QWEN3_ACCURACY_BENCHMARK_PLAN_ZH.md，已有图规划主文件新增入口，更新早先只补两项任务的最终覆盖建议。WiC/ANLI可选、MMLU三科不重复；shot/生成预算为建议待冻结，实际随机路径、同权重/训练控制、模型/文本SHA、seed授权、短题与长上下文边界明确。
 
-阶段：本地文档与同字节阅读镜像已完成，准备随既有PR发布；正式SHA/检查见BENCHMARK_VALIDATION.json，实际发布回执见BENCHMARK_PUBLICATION.json（存在时）。无新模型/PPL/GPU/Slurm/TLM/RTL/EDA；旧43/12项验证及其正文SHA保留历史时点，当前文件以本轮验证为准。不修改98/213或其他成员实现/STATUS。Projects和Issue28唯一记忆接入待维护者同步。
+阶段：文档与同字节阅读镜像已完成，已推送PR251待审、未合并；正式SHA/检查见BENCHMARK_VALIDATION.json，实际发布回执见BENCHMARK_PUBLICATION.json（存在时）。无新模型/PPL/GPU/Slurm/TLM/RTL/EDA；旧43/12项验证及其正文SHA保留历史时点，当前文件以本轮验证为准。不修改98/213或其他成员实现/STATUS。Projects和Issue28唯一记忆接入待维护者同步。
 
 下一步：审核此清单后由已有实验负责人冻结执行manifest，复用相符结果，不自动扩大单seed授权或启动昂贵任务。本次文档不含新准确率结果。
 

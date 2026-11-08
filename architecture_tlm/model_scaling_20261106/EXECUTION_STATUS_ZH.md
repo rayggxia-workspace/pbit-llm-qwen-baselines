@@ -1,3 +1,5 @@
+> 当前执行入口已更新为 [CURRENT_MAINLINE_ZH.md](CURRENT_MAINLINE_ZH.md)：已接主线、有效250v3价格和36项完整任务DAG。下文为旧适配阶段历史；r16是归约器路数，SparQ始终r32，旧空价/串行项不代表本轮状态。
+
 # 三模型硬件评估：材料已齐，24项原生单层验证通过
 
 **2026-11-08更新：** 数组38625522的24项单层pilot已全部完成；RESULT、WORK_GATE和SEAL逐SHA复核通过。原始JSON归档`project_archives/cross245_20261108/SEALED_PILOTS.tar.gz`，219990B，SHA-256 `6e0198f2460989ef40ba24ca9a6969b4581d6b6b36dd1b9bd3c918e19a0f86e2`。这是事务/工作量门禁，未改变下方“整机结果尚未完成”的边界。数组已自然结束，不重交。

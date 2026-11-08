@@ -1,3 +1,19 @@
+## 当前运行回执：full38631668 / aggregate38631676，8/8门禁通过（2026-11-08）
+
+完整8worker均已运行；36case尚未收齐。正式交付CURRENT_MAINLINE_ZH.md；delivery/PILOT_SUMMARY及FULL_SUBMISSION、AGGREGATE_JOB已收，未把单层当整机。下述“安排”阶段现已进入执行。
+
+## 2026-11-08 Issue245：接回100/250主线，36完整case DAG已安排
+
+负责人rayggxia；task/245-cross-model-estimate / PR247 base main；工作目录tmp/cross-model245-20261106。新入口CURRENT_MAINLINE_ZH.md，完整模型Qwen3-4B/Llama3.2-3B-Instruct/DeepSeek7BChat ×100/250 ×SC/BF16dense/W8dense/W8screen，共24配置、36case。SC3seed，数字单seed；含/不含head阶段。当前6核1088KiB/3核960KiB，250用有效delta_v3价格/面积22.086073mm²；不混28nm。
+
+保留有限FIFO、早补货、PV生产消费重叠；数字共享FMA真租约、GU四K64合包、有限NL流水。逻辑KV地址/元数据36KiB/Norm及动态数制访存已适配。r16指归约器，不是SparQ维数。SS100控制/转换及250部分代理成本显式保留，非全片物理验收。
+
+冻结revision2 manifest982f9303785c364ed7c7ac5384927f0a12f98388433708306878e5f14fbae925。pilot38631497，成功后协调38631505提交8worker共36case；汇总协调38631640再afterok全worker。提交回执及最新状态见work/rayggxia/245/mainline_20261108/delivery/。旧直接36数组因提交配额未建立，已保留失败回执，无重复full提交；revision1原始结果保留作诊断，不作为最终结果。5项本地前驱预检；revision2远端门禁数量看STATUS时间戳和退出码。
+
+阶段：完整执行已安排，尚未收齐36个完整结果，不宣布整机PPA完成，不将单层乘层数；不新开GPU/训练/PT，不改变默认，不合并PR。发布以PUBLICATION_CURRENT.json为准；Projects无写接口，待维护者同步。下一步检查revision2门禁、full worker和汇总；失败在独立新快照修复，禁止改已提交源/重跑健康case。
+
+---
+
 ## 2026-11-08 Issue245：24/24原生单层pilot通过，单项预算完成
 
 负责人rayggxia，task/245-cross-model-estimate，PR247 base main。38625522数组全部自然完成，24项封存SHA和WORK_GATE实际复核通过，原始JSON归档project_archives/cross245_20261108/SEALED_PILOTS.tar.gz（219990B/SHA6e0198f2460989ef40ba24ca9a6969b4581d6b6b36dd1b9bd3c918e19a0f86e2）。三模型配置/模块资料已齐，不需大权重。component_budget.py及JSON已给出静态权重流下界/有效核增量；3模型计数/TT250空价检查通过。

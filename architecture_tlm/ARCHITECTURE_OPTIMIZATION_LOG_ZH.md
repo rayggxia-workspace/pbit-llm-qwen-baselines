@@ -143,3 +143,11 @@ Issue204/PR209，[方案](../digital_circuit_simulation_registry/12_双随机分
 ## 2026-10-29 双随机SRAM存内比较主架构与旧估算延续
 
 Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内比较估算口径与证据.md)。用户要求保留SRAM驻留/本地比较，双全局LFSR不变，DFF仅对照。沿旧宏本体+邻近SNG/分发+存储节点带载增量估算；普通预读保持及M1单seed前端数据各保留边界，不能当完整定制CIM。新W7比较与接口动态待测，不每拍重复收费普通全读，也不把缺项当0。无新RTL/EDA/SPICE/PPL，旧run未改。
+
+## CM245-current：跨模型接回当前100/250主线（2026-11-08）
+
+问题：旧三模型试接仍为串行相加，不能继承主线优化/有效250v3价格。实现：current_mainline.py保留有限FIFO/早补货、PV生产消费重叠、公共FFN；数字共享FMA真租约，W8 GU四K64合包、有限双包FIFO、NL五级II1；参数化3Q组与MHA四波、36KiB元数据/Norm真实bank读写。资源：1001088KiB/6核、250960KiB/3核，数字同总面积上限，离散切片缺口显式报。有效v3价仅55，28候选不混。
+
+证据：8/8原生/解析单层门禁与5本地前驱检查；Qwen250解析逐周期一致，100差12拍（0.010%）保留，容差0.1%而字节/MAC/帧/容量严格；未把未归因差异称为已解释。完整36case（24配置）EDA38631668已启动，汇总38631676 afterok；成果入口[CURRENT_MAINLINE_ZH.md](model_scaling_20261106/CURRENT_MAINLINE_ZH.md)，Issue245/PR247。改进是本任务硬件映射，不修改全项目默认，不宣称全局最优或真实文本质量。原串行结果/严格相等失败/配额失败仍保留。
+
+口径：r16是归约加法器路数，SparQ始终r32；当前已标定GU16/Wd32而非未标定GU8。SRAM动作与全物理漏电一次、共享FMA一次、gross服务＋余时等待；外存4/6.6/8pJ/bit独立情景。SS/TT代理、CIM接口/NoC/CTS/PHY未全片标定，完整报告待收，不从冷层外推最终收益。

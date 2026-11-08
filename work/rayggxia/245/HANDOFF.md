@@ -1,3 +1,27 @@
+## 当前作业ID补充（2026-11-08）
+
+8/8门禁退出码0:0，full worker38631668_[0-7%8]均已RUNNING；aggregate38631676 afterok等待。最新STATUS及8项单层封存摘要见mainline_20261108/delivery；完整结果尚未收齐。禁止重交或改快照。
+
+## 2026-11-08 当前主线完整评估恢复
+
+本节优先于下方旧阶段。Issue245/PR247，rayggxia，task/245-cross-model-estimate；未合并。完整说明architecture_tlm/model_scaling_20261106/CURRENT_MAINLINE_ZH.md。正式新源码current_mainline.py/current_run.py/current_pricing.py/prepare_current.py/aggregate_current.py；执行源SHA在delivery/SOURCE_INDEX与CHECKS。
+
+本地：C:/Users/86134/Documents/a_P_BIT/tmp/cross-model245-20261106。网络操作用Codex附带Python，系统3.8 SSH依赖不兼容。只执行读状态，不再次prepare/dispatch/finalize_submit：
+
+`python -X utf8 -B work/rayggxia/245/mainline_20261108/launcher_r2.py status`
+
+主root `/public3/home/t6s011227/pbit_chimera_pipeline_20260920/tlm245_current_3a7dd5e0679e`，manifest982f9303785c364ed7c7ac5384927f0a12f98388433708306878e5f14fbae925，zip3a7dd5e0679ed56cdb60e37ef54c3c787d62e4470a7436e414f6348a63ab0bbf。详细8门禁/36full计划、源码SHA与执行环境来自冻结manifest；私有源/fixture仅本地和EDA保留，Git只小索引和本任务胶合，不发布整个快照。
+
+pilot38631497；coordinator38631505及`_dispatch_v3/FULL_SUBMISSION.json`；8worker%8每人4/5case，1逻辑线程12GiB48h，实际CPU看sacct。聚合协调38631640，root`_aggregate_2fe4732df6`，`AGGREGATE_JOB.json`记录依赖full worker的最终汇总ID。full目录sealed JSON+VALIDATION+退出码齐全才计完成。聚合仅接受36个唯一全层含head原生case。绝不能重复提交已健康/完成的case。
+
+revision1 root`tlm245_current_0af9dd179a3c`/pilot38631345保留：100MHz锚点严格相等门禁失败12拍，且后续查出逻辑KV输入偏移/显式输入读取待修。其SEAL不等于driver门禁通过；不用作最终版。旧pending协调38631395已在确认pending/名称后取消，RETIRED_DISPATCH有回执；未启动full。revision2独立修正源并记录锚点0.1%容差，工作量仍严格。原始36数组因AssocMaxSubmitJobLimit未创建，不能当full_job。恢复先看SUBMISSION+DISPATCH+FINALIZER+STATUS，再读各root回执，不重执行prepare。
+
+校验：5项前驱本地冷层；5源AST和36缺项拒绝汇总通过；当前门禁成功数看delivery/STATUS_CURRENT。Qwen解析锚点100MHz实际1.206270 vs本地1.206150（12拍，不归因未验证原因）、2501.085720一致。模型PPL不在范围。100SS/250TT角点不同；SS100控制/格式宏及250标量代理未全片测量；28nm保持候选。
+
+交付/待做：本轮代码、状态、交接已本地整理；上传SHA以PUBLICATION_CURRENT.json为准，未写该回执前不能称远端已完成。收齐full后下载封存小JSON/summary，逐SHA核对，发布同一PR247/Issue245、更新STATUS/HANDOFF及长期备忘录；不合并。Projects待维护者同步。未改owner和默认100/250，不重跑225健康Qwen任务。
+
+---
+
 # Issue245：固定硬件跨模型初步预算
 
 2026-11-06；负责人 rayggxia。Issue245；分支 task/245-cross-model-estimate；base main@8cd4fba009598184bce4f1c806f038299b011ea0。独立最小工作目录 C:/Users/86134/Documents/a_P_BIT/tmp/cross-model245-20261106。实际提交、PR和远端读取回执以 PUBLICATION.json 及 Issue 为准，尚无该文件时只表示本地完成。

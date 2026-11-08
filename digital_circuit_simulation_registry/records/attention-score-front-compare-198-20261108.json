@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "id": "attention-score-front-compare-198-20261108",
+  "name": "S12先量化与FP32先max-gap独立前端配对PPA",
+  "family": "Attention score frontend",
+  "registered_on": "2026-11-08",
+  "owner": "rayggxia",
+  "issue": 198,
+  "evidence_level": "DC_GATE_PT_PRELAYOUT",
+  "status": "complete",
+  "stages": {
+    "functional": "35921 arithmetic pairs per version + 12 RTL checks; gate checks in archives",
+    "synthesis": "completed",
+    "sta": "see per case; original250 failure retained",
+    "power": "calculated",
+    "postlayout": "not_run"
+  },
+  "boundary": "FP32 scores/mask to U8/F4 gaps/mask,4lane128candidates; no sigmoid/P8 RNG arbiter SRAM or PV",
+  "conditions": {
+    "frequencies_MHz": [
+      100,
+      250
+    ],
+    "PVT": [
+      "SS1.08V125C",
+      "TT1.2V25C"
+    ],
+    "area_factor": 0.81,
+    "seeds": [
+      17,
+      503,
+      1009
+    ],
+    "synthetic_queries_per_seed": 64,
+    "power_queries_per_seed": 8,
+    "input_FIFO": "100v3 none;250v5 two132bit input words plus two43bit output words",
+    "rounding": "FP32 RNE subtraction followed by U8/F4 RNE"
+  },
+  "source": {
+    "index": "architecture_tlm/module_handoff/attention_score_front_ppa_20261108/SHA_INDEX.json",
+    "sha256": "450f3917a5da95239a71a982066c891e5d6e2ee22c86c23974690d9736ed6e12"
+  },
+  "artifacts": [
+    {
+      "path": "architecture_tlm/module_handoff/attention_score_front_ppa_20261108/SHA_INDEX.json",
+      "sha256": "450f3917a5da95239a71a982066c891e5d6e2ee22c86c23974690d9736ed6e12",
+      "bytes": 35195,
+      "present_at_registration": true,
+      "role": "SHA_INDEX.json"
+    },
+    {
+      "path": "architecture_tlm/module_handoff/attention_score_front_ppa_20261108/PPA_SUMMARY.json",
+      "sha256": "02603186ca513ccecfda156179115d3902bd2eb92f12eed0bc168c612c47a80e",
+      "bytes": 10115,
+      "present_at_registration": true,
+      "role": "PPA_SUMMARY.json"
+    }
+  ],
+  "cases": [
+    {
+      "name": "front_s12_100",
+      "frontend_kind": "s12_max_gap",
+      "MHz": 100,
+      "PVT": "SS1.08V125C",
+      "area55_mm2": 0.0164663604,
+      "raw_area_um2": 20328.84,
+      "cell_area55": {
+        "register": 0.009910317600000003,
+        "icg": 0.0006447276000000001,
+        "logic": 0.0059113152
+      },
+      "register_cells": 1692,
+      "ICG_cells": 67,
+      "work_mW": 0.27163333333333334,
+      "gross_query_nJ": 0.17656166666666667,
+      "dynamic_query_nJ": 0.16157266666666667,
+      "query_cycles": 65,
+      "output_II_cycles": 1,
+      "lanes": 4,
+      "slacks_ns": {
+        "setup": 0.090006,
+        "hold": 0.235224,
+        "gate_setup": 2.644241,
+        "gate_hold": 0.474584
+      },
+      "timing_pass": true,
+      "input_score_read_bytes": 512,
+      "input_score_read_words16": 32,
+      "local_score_payload_bits": 1536,
+      "external_score_live_bytes": 512,
+      "common_P8_threshold_bits": 1024,
+      "warnings": [
+        "Warning: Partial mapping of VCD vector out_base[6:0] encountered, which may cause incorrect annotation. (PWR-981)",
+        "Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)",
+        "Warning: There are 67 out_of_range ramps."
+      ],
+      "hold_mW": 0.06606999999999999,
+      "hold_leak_mW": 0.023010000000000003,
+      "idle_mW": 0.18086666666666668,
+      "idle_leak_mW": 0.022956666666666667,
+      "gated_idle_mW": 0.023253333333333334,
+      "gated_idle_leak_mW": 0.02292,
+      "with_input_SRAM_proxy_nJ": 0.49824806666666666,
+      "SRAM_proxy_pJ_per16B": 10.0527
+    },
+    {
+      "name": "front_fp32_100",
+      "frontend_kind": "fp32_max_gap",
+      "MHz": 100,
+      "PVT": "SS1.08V125C",
+      "area55_mm2": 0.0181369368,
+      "raw_area_um2": 22391.28,
+      "cell_area55": {
+        "register": 0.0058465800000000005,
+        "icg": 0.0005292540000000002,
+        "logic": 0.011761102800000003
+      },
+      "register_cells": 984,
+      "ICG_cells": 55,
+      "work_mW": 0.6772666666666667,
+      "gross_query_nJ": 0.4808593333333333,
+      "dynamic_query_nJ": 0.460861,
+      "query_cycles": 71,
+      "output_II_cycles": 1,
+      "lanes": 4,
+      "slacks_ns": {
+        "setup": 0.105521,
+        "hold": 0.135448,
+        "gate_setup": 2.813593,
+        "gate_hold": 0.36351
+      },
+      "timing_pass": true,
+      "input_score_read_bytes": 1024,
+      "input_score_read_words16": 64,
+      "local_score_payload_bits": 0,
+      "external_score_live_bytes": 512,
+      "common_P8_threshold_bits": 1024,
+      "warnings": [
+        "Warning: Partial mapping of VCD vector out_base[6:0] encountered, which may cause incorrect annotation. (PWR-981)",
+        "Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)",
+        "Warning: There are 57 out_of_range ramps."
+      ],
+      "hold_mW": 0.07538,
+      "hold_leak_mW": 0.02811,
+      "idle_mW": 0.11789999999999999,
+      "idle_leak_mW": 0.027956666666666668,
+      "gated_idle_mW": 0.02843,
+      "gated_idle_leak_mW": 0.02791,
+      "with_input_SRAM_proxy_nJ": 1.1242321333333334,
+      "SRAM_proxy_pJ_per16B": 10.0527
+    },
+    {
+      "name": "front_s12buf_250",
+      "frontend_kind": "s12_max_gap",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area55_mm2": 0.019028066399999998,
+      "raw_area_um2": 23491.44,
+      "cell_area55": {
+        "register": 0.0120433716,
+        "icg": 0.0007890696000000002,
+        "logic": 0.006195625200000001
+      },
+      "register_cells": 2054,
+      "ICG_cells": 82,
+      "work_mW": 1.1276666666666666,
+      "gross_query_nJ": 0.30221466666666663,
+      "dynamic_query_nJ": 0.30159826666666667,
+      "query_cycles": 67,
+      "output_II_cycles": 1,
+      "lanes": 4,
+      "slacks_ns": {
+        "setup": 0.062101,
+        "hold": 0.071343,
+        "gate_setup": 0.101504,
+        "gate_hold": 0.15239
+      },
+      "timing_pass": true,
+      "input_score_read_bytes": 512,
+      "input_score_read_words16": 32,
+      "local_score_payload_bits": 1536,
+      "external_score_live_bytes": 512,
+      "common_P8_threshold_bits": 1024,
+      "warnings": [
+        "Warning: Partial mapping of VCD vector out_base[6:0] encountered, which may cause incorrect annotation. (PWR-981)",
+        "Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)",
+        "Warning: There are 2123 out_of_range ramps."
+      ],
+      "hold_mW": 0.1985,
+      "hold_leak_mW": 0.002183,
+      "idle_mW": 0.3894666666666666,
+      "idle_leak_mW": 0.002201,
+      "gated_idle_mW": 0.002769666666666667,
+      "gated_idle_leak_mW": 0.002172333333333333,
+      "with_input_SRAM_proxy_nJ": 0.6871522666666666,
+      "SRAM_proxy_pJ_per16B": 12.0293
+    },
+    {
+      "name": "front_fp32buf_250",
+      "frontend_kind": "fp32_max_gap",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area55_mm2": 0.0212523912,
+      "raw_area_um2": 26237.52,
+      "cell_area55": {
+        "register": 0.00798255,
+        "icg": 0.0006735960000000002,
+        "logic": 0.012596245200000002
+      },
+      "register_cells": 1346,
+      "ICG_cells": 70,
+      "work_mW": 2.8643333333333336,
+      "gross_query_nJ": 0.8363853333333334,
+      "dynamic_query_nJ": 0.8356066666666667,
+      "query_cycles": 73,
+      "output_II_cycles": 1,
+      "lanes": 4,
+      "slacks_ns": {
+        "setup": 0.041839,
+        "hold": 0.050994,
+        "gate_setup": 0.076157,
+        "gate_hold": 0.154169
+      },
+      "timing_pass": true,
+      "input_score_read_bytes": 1024,
+      "input_score_read_words16": 64,
+      "local_score_payload_bits": 0,
+      "external_score_live_bytes": 512,
+      "common_P8_threshold_bits": 1024,
+      "warnings": [
+        "Warning: Partial mapping of VCD vector out_base[6:0] encountered, which may cause incorrect annotation. (PWR-981)",
+        "Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)",
+        "Warning: There are 743 out_of_range ramps."
+      ],
+      "hold_mW": 0.2731,
+      "hold_leak_mW": 0.0022069999999999998,
+      "idle_mW": 0.47176666666666667,
+      "idle_leak_mW": 0.002171666666666667,
+      "gated_idle_mW": 0.0029993333333333335,
+      "gated_idle_leak_mW": 0.0021453333333333333,
+      "with_input_SRAM_proxy_nJ": 1.6062605333333333,
+      "SRAM_proxy_pJ_per16B": 12.0293
+    },
+    {
+      "name": "front_s12_100",
+      "MHz": 100,
+      "PVT": "SS1.08V125C",
+      "area55_mm2": 0.016865852400000002,
+      "gross_query_nJ": 0.230945,
+      "query_cycles": 65,
+      "slacks_ns": {
+        "setup": 0.104153,
+        "hold": 0.252494,
+        "gate_setup": 2.541031,
+        "gate_hold": 0.468077
+      },
+      "timing_pass": true
+    },
+    {
+      "name": "front_fp32_100",
+      "MHz": 100,
+      "PVT": "SS1.08V125C",
+      "area55_mm2": 0.01821771,
+      "gross_query_nJ": 0.5316716666666667,
+      "query_cycles": 71,
+      "slacks_ns": {
+        "setup": 0.103838,
+        "hold": 0.135448,
+        "gate_setup": 2.554932,
+        "gate_hold": 0.36351
+      },
+      "timing_pass": true
+    },
+    {
+      "name": "front_s12_250",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area55_mm2": 0.019275343200000003,
+      "gross_query_nJ": 0.4257066666666667,
+      "query_cycles": 65,
+      "slacks_ns": {
+        "setup": -0.918342,
+        "hold": 0.114217,
+        "gate_setup": 0.046926,
+        "gate_hold": 0.226303
+      },
+      "timing_pass": false
+    },
+    {
+      "name": "front_fp32_250",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area55_mm2": 0.020611162800000003,
+      "gross_query_nJ": 0.8748146666666666,
+      "query_cycles": 71,
+      "slacks_ns": {
+        "setup": -0.738518,
+        "hold": 0.050994,
+        "gate_setup": 0.115754,
+        "gate_hold": 0.171654
+      },
+      "timing_pass": false
+    },
+    {
+      "name": "front_s12_250",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area55_mm2": 0.019573941600000002,
+      "gross_query_nJ": 0.35108666666666666,
+      "query_cycles": 65,
+      "slacks_ns": {
+        "setup": -0.902061,
+        "hold": 0.109829,
+        "gate_setup": 0.048985,
+        "gate_hold": 0.23542
+      },
+      "timing_pass": false
+    },
+    {
+      "name": "front_fp32_250",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area55_mm2": 0.021405772800000004,
+      "gross_query_nJ": 0.7811893333333333,
+      "query_cycles": 71,
+      "slacks_ns": {
+        "setup": -0.725129,
+        "hold": 0.050994,
+        "gate_setup": 0.175598,
+        "gate_hold": 0.171654
+      },
+      "timing_pass": false
+    },
+    {
+      "name": "front_s12buf_250",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area55_mm2": 0.0184533228,
+      "gross_query_nJ": 0.275968,
+      "query_cycles": 66,
+      "slacks_ns": {
+        "setup": 0.062954,
+        "hold": 0.092396,
+        "gate_setup": 0.100849,
+        "gate_hold": 0.205246
+      },
+      "timing_pass": true
+    },
+    {
+      "name": "front_fp32buf_250",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area55_mm2": 0.02384559,
+      "gross_query_nJ": 0.883008,
+      "query_cycles": 72,
+      "slacks_ns": {
+        "setup": -0.738006,
+        "hold": 0.050994,
+        "gate_setup": 0.007054,
+        "gate_hold": 0.171654
+      },
+      "timing_pass": false
+    }
+  ],
+  "limitations": [
+    "standalone, no integrated-sampler subtraction",
+    "input SRAM separately charged",
+    "zero-delay prelayout; warnings retained",
+    "no new PPL/model trace"
+  ],
+  "next_action": "Use qualified standalone profiles; integrate gap input sampler before claiming exact full-chain net cost"
+}

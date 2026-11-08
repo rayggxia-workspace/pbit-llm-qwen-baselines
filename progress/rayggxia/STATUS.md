@@ -1,3 +1,7 @@
+## 2026-11-08 28nm目录已发布
+
+源23807efcfc338d214047b574103a7b033a8bb8a0，10文件逐内容回读一致；Issue225评论6720845666及PR249已同步。PUBLICATION.json记录回执，PR仍draft/open/unmerged，整机TLM未启动、整机值仍null；Projects待维护者同步。
+
 ## 2026-11-08 Issue225：建立独立28nm准备目录，未运行完整TLM
 
 用户要求先建对应工艺文件夹。新增architecture_tlm/process_28nm：250MHz已标定FFN/BF16/同步A9组件、500MHz诊断及零uncertainty条件索引、缺项与来源SHA。28HPC+ TT0.9V，面积×1，不套55的.81；28原C19门限缓存18/34拍与55delta_v3隔离。PROCESS_PROFILE整机时间/面积/能量null、full_system_ready/default_enabled均false，无整机运行入口。四来源SHA/三组件PVT/面积/同步A9/无整机值核验通过。

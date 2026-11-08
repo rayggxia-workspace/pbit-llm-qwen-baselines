@@ -1,3 +1,7 @@
+## 新PPA消费补充（2026-11-08）
+
+当前PPL明确对应A=s12_max_gap，后续主线应显式传A；提供方forward/card默认B不是PPL配置。新版四张独立前端价卡已核，旧“B仅宏价”历史结论已更新；完整采样器去重尚未ready，不改冻结运行。正式HANDOFF/AUDIT_FACTS/SOURCE_INDEX/VALIDATION同步；不重复producer测试或原始归档全审计。
+
 # Attention分数前端成本审计交接
 
 2026-11-08，Issue225 / PR249，rayggxia，task/225-tlm-unified250-20261107，base task/225-norm-stream-20261106；关联Issue198/PR199，只读owner源码/结果，不接管或修改其文件。

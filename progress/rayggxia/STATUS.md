@@ -1,3 +1,9 @@
+## 2026-11-08 Issue225：新前端PPA已核，当前PPL对应A
+
+已读取198/199新交接55e06025，公开profile blob及四张价卡单位/STA/读字检查通过。当前完整PPL明确S12/F4先量化→整数max-gap→U8/P8，后续接入依据选A=s12_max_gap，B仅对照；新版A100/250面积.016466/.019028mm²、gross.176562/.302215nJ、65/67拍。旧审计“B仅宏价”已更新为新实测，旧原文保留。
+
+旧ab_both已有S12 scores/max/gap，优先复用其后端并接FP32/S12转换；不得整块加A或扣A。提供方全链replacement_ready=false，净价待去重；本轮仅消费核验和文档，不改runtime/default/冻结作业，无新TLM/PPL/PT。公开及交接见score_front_audit_20261108/LATEST_PPA_PUBLICATION.json；PR249不合并，Projects待同步。
+
 ## 2026-11-08 Issue225：Attention分数前端成本审计已整理
 
 用户要求给其他对话的文件已写：module_handoff/attention_score_front_compare_20261108/HANDOFF_ZH.md。关键：S12后整数差转U8只是clip；已有A的SS100独立PPA为.015050059mm²/.166291667nJ/65拍；B仍宏价，比较／减法／专用转换／存储组织／旧准备资源／代理价卡未配对。FP32差→U8可专用融合，不能直接断言需完整FPU或固定面积倍率。四正式文件、13来源SHA及单位校验通过，根同字节镜像；发布见本任务PUBLICATION。

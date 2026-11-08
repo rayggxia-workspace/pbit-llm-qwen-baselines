@@ -1,0 +1,537 @@
+{
+  "schema_version": 1,
+  "id": "attention-k256-tlm-198-20261108",
+  "name": "K256/S64 100/250MHz备用Attention模块及配对价格迁移",
+  "family": "Attention calibrated TLM",
+  "registered_on": "2026-11-08",
+  "owner": "rayggxia",
+  "issue": 198,
+  "evidence_level": "CALIBRATED_ESTIMATE",
+  "status": "local_module_pass_host_pending",
+  "stages": {
+    "functional": "5tests +14local bank/DMA replays PASS; not RTL",
+    "synthesis": "not_run",
+    "sta": "not_run",
+    "power": "not_run",
+    "postlayout": "not_run"
+  },
+  "boundary": "post-SparQ exact QK/max-gap/sampling-index cache/PV event adapter; incremental costcard; no QKVO FFN or wholechip",
+  "conditions": {
+    "clocks_MHz": [
+      100,
+      250
+    ],
+    "K": [
+      128,
+      256
+    ],
+    "S": 64,
+    "r": 32,
+    "local": 32,
+    "N": 2048,
+    "heads_per_KV": 4,
+    "dimension": 128,
+    "area_factor": 0.81,
+    "cache": "32KiB2way64sets128slots",
+    "workspace_KiB": 48,
+    "PVT": "SS100 old paired K128/K256 plus latest128SS100/TT250; new256proxy",
+    "seeds": [
+      17,
+      503,
+      1009
+    ],
+    "backend": "analytic136.4606GB/s60ns, real host SRAM/bank/DMA scheduler; not nativeLPDDR"
+  },
+  "source": {
+    "index": "architecture_tlm/module_handoff/attention_k256_20261108/SHA_INDEX.json",
+    "sha256": "842c67fbedd86b8ad601cdbd7767036242cce256018e41a3e0599470a910268c",
+    "base_commit": "640d8542c827acdf921288f14d08f179ab17c35c"
+  },
+  "artifacts": [
+    {
+      "path": "architecture_tlm/module_handoff/attention_k256_20261108/SHA_INDEX.json",
+      "sha256": "842c67fbedd86b8ad601cdbd7767036242cce256018e41a3e0599470a910268c",
+      "bytes": 2619,
+      "present_at_registration": true,
+      "role": "SHA_INDEX.json"
+    },
+    {
+      "path": "architecture_tlm/module_handoff/attention_k256_20261108/PROFILE_AND_RESULTS.json",
+      "sha256": "c30cf22934eabad5a62fd1d68a3bcd2b8bf5aac285b19f21105ddbd73944cc81",
+      "bytes": 28291,
+      "present_at_registration": true,
+      "role": "PROFILE_AND_RESULTS.json"
+    }
+  ],
+  "cases": [
+    {
+      "configuration": {
+        "clock_MHz": 100,
+        "candidates": 128,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 17,
+      "conflict_fixture": false,
+      "time_ns": 60950,
+      "actions": {
+        "exact_QK_MAC": 65536,
+        "sampler_queries": 4,
+        "max_compare": 508,
+        "subtract": 512,
+        "quantize": 512,
+        "LUT": 512,
+        "threshold_write": 512,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 113,
+        "V_hits": 143,
+        "cache_conflict_retries": 0
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 128,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 100,
+        "candidates": 128,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 503,
+      "conflict_fixture": false,
+      "time_ns": 61050,
+      "actions": {
+        "exact_QK_MAC": 65536,
+        "sampler_queries": 4,
+        "max_compare": 508,
+        "subtract": 512,
+        "quantize": 512,
+        "LUT": 512,
+        "threshold_write": 512,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 111,
+        "V_hits": 145,
+        "cache_conflict_retries": 0
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 128,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 100,
+        "candidates": 128,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 1009,
+      "conflict_fixture": false,
+      "time_ns": 61020,
+      "actions": {
+        "exact_QK_MAC": 65536,
+        "sampler_queries": 4,
+        "max_compare": 508,
+        "subtract": 512,
+        "quantize": 512,
+        "LUT": 512,
+        "threshold_write": 512,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 109,
+        "V_hits": 147,
+        "cache_conflict_retries": 0
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 128,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 100,
+        "candidates": 256,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 17,
+      "conflict_fixture": false,
+      "time_ns": 108060,
+      "actions": {
+        "exact_QK_MAC": 131072,
+        "sampler_queries": 4,
+        "max_compare": 1020,
+        "subtract": 1024,
+        "quantize": 1024,
+        "LUT": 1024,
+        "threshold_write": 1024,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 179,
+        "V_hits": 77,
+        "cache_conflict_retries": 14
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 82,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 100,
+        "candidates": 256,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 503,
+      "conflict_fixture": false,
+      "time_ns": 115400,
+      "actions": {
+        "exact_QK_MAC": 131072,
+        "sampler_queries": 4,
+        "max_compare": 1020,
+        "subtract": 1024,
+        "quantize": 1024,
+        "LUT": 1024,
+        "threshold_write": 1024,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 178,
+        "V_hits": 78,
+        "cache_conflict_retries": 14
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 80,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 100,
+        "candidates": 256,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 1009,
+      "conflict_fixture": false,
+      "time_ns": 127290,
+      "actions": {
+        "exact_QK_MAC": 131072,
+        "sampler_queries": 4,
+        "max_compare": 1020,
+        "subtract": 1024,
+        "quantize": 1024,
+        "LUT": 1024,
+        "threshold_write": 1024,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 177,
+        "V_hits": 79,
+        "cache_conflict_retries": 16
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 68,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 100,
+        "candidates": 256,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 17,
+      "conflict_fixture": true,
+      "time_ns": 157350,
+      "actions": {
+        "exact_QK_MAC": 131072,
+        "sampler_queries": 4,
+        "max_compare": 1020,
+        "subtract": 1024,
+        "quantize": 1024,
+        "LUT": 1024,
+        "threshold_write": 1024,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 256,
+        "V_hits": 0,
+        "cache_conflict_retries": 248
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 2,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 250,
+        "candidates": 128,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 17,
+      "conflict_fixture": false,
+      "time_ns": 24516,
+      "actions": {
+        "exact_QK_MAC": 65536,
+        "sampler_queries": 4,
+        "max_compare": 508,
+        "subtract": 512,
+        "quantize": 512,
+        "LUT": 512,
+        "threshold_write": 512,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 113,
+        "V_hits": 143,
+        "cache_conflict_retries": 0
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 128,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 250,
+        "candidates": 128,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 503,
+      "conflict_fixture": false,
+      "time_ns": 24436,
+      "actions": {
+        "exact_QK_MAC": 65536,
+        "sampler_queries": 4,
+        "max_compare": 508,
+        "subtract": 512,
+        "quantize": 512,
+        "LUT": 512,
+        "threshold_write": 512,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 111,
+        "V_hits": 145,
+        "cache_conflict_retries": 0
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 128,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 250,
+        "candidates": 128,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 1009,
+      "conflict_fixture": false,
+      "time_ns": 24456,
+      "actions": {
+        "exact_QK_MAC": 65536,
+        "sampler_queries": 4,
+        "max_compare": 508,
+        "subtract": 512,
+        "quantize": 512,
+        "LUT": 512,
+        "threshold_write": 512,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 109,
+        "V_hits": 147,
+        "cache_conflict_retries": 0
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 128,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 250,
+        "candidates": 256,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 17,
+      "conflict_fixture": false,
+      "time_ns": 43308,
+      "actions": {
+        "exact_QK_MAC": 131072,
+        "sampler_queries": 4,
+        "max_compare": 1020,
+        "subtract": 1024,
+        "quantize": 1024,
+        "LUT": 1024,
+        "threshold_write": 1024,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 179,
+        "V_hits": 77,
+        "cache_conflict_retries": 14
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 82,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 250,
+        "candidates": 256,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 503,
+      "conflict_fixture": false,
+      "time_ns": 46272,
+      "actions": {
+        "exact_QK_MAC": 131072,
+        "sampler_queries": 4,
+        "max_compare": 1020,
+        "subtract": 1024,
+        "quantize": 1024,
+        "LUT": 1024,
+        "threshold_write": 1024,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 178,
+        "V_hits": 78,
+        "cache_conflict_retries": 14
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 80,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 250,
+        "candidates": 256,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 1009,
+      "conflict_fixture": false,
+      "time_ns": 51056,
+      "actions": {
+        "exact_QK_MAC": 131072,
+        "sampler_queries": 4,
+        "max_compare": 1020,
+        "subtract": 1024,
+        "quantize": 1024,
+        "LUT": 1024,
+        "threshold_write": 1024,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 177,
+        "V_hits": 79,
+        "cache_conflict_retries": 16
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 68,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    },
+    {
+      "configuration": {
+        "clock_MHz": 250,
+        "candidates": 256,
+        "samples": 64,
+        "context": 2048,
+        "heads": 4,
+        "dimension": 128,
+        "coarse_dimensions": 32,
+        "local_tokens": 32,
+        "cache_slots": 128
+      },
+      "seed": 17,
+      "conflict_fixture": true,
+      "time_ns": 63112,
+      "actions": {
+        "exact_QK_MAC": 131072,
+        "sampler_queries": 4,
+        "max_compare": 1020,
+        "subtract": 1024,
+        "quantize": 1024,
+        "LUT": 1024,
+        "threshold_write": 1024,
+        "sampled_PV_ADD": 32768,
+        "output_BF16_elements": 512,
+        "V_misses": 256,
+        "V_hits": 0,
+        "cache_conflict_retries": 248
+      },
+      "peak_input_words": 4,
+      "peak_descriptors": 2,
+      "validation": "PASS: queues drain; finite credits; MAC/PV/DRAM conservation; no pinned replacement"
+    }
+  ],
+  "limitations": [
+    "new K256 optimized core is scaled estimate; no250STA",
+    "native host integration pending",
+    "wholeAttention power/time null until host prices actual events",
+    "no new PPL/GPU/RTL/PT; frontend energy overlap not separately windowed"
+  ],
+  "next_action": "Host opt-in K256/keep224 selected actor + real GF traces and nativeLPDDR; latest256 gate/hold STA/PT if primary design"
+}

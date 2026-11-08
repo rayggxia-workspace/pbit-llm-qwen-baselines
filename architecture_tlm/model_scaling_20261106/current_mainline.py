@@ -44,6 +44,23 @@ def vector_decoder(meta):
         raise ValueError(('unmapped cross-model vector',offset,size,meta))
     return address
 
+def bind_wrapped_vector_decoder(submit,decoder):
+    """Reach the real compact-SRAM function beneath the100MHz QK wrapper."""
+    pending=[submit];seen=set();bound={}
+    while pending:
+        item=pending.pop();fn=getattr(item,'__func__',item)
+        if id(fn) in seen:continue
+        seen.add(id(fn))
+        if not hasattr(fn,'__code__'):continue
+        g=fn.__globals__
+        if 'vector_address' in fn.__code__.co_names and callable(g.get('vector_address')):
+            g['vector_address']=decoder;bound[id(g)]=g.get('__name__','unknown')
+        for cell in fn.__closure__ or ():
+            value=cell.cell_contents
+            if hasattr(getattr(value,'__func__',value),'__code__'):pending.append(value)
+    assert len(bound)==1,('expected one compact vector decoder',bound)
+    return list(bound.values())
+
 def rebuild(model,shape,logical_layers,scheme):
     """Hardware remains fixed; new external tensor sizes and live-object map."""
     from architecture_tlm.unified_v6.shared_decode import AddressSpace
@@ -67,6 +84,8 @@ def rebuild(model,shape,logical_layers,scheme):
     if scheme=='SC_ising':
         # The existing decoder is retained, with wider metadata/residual bounds.
         m.h.mem.submit.__globals__['vector_address']=vector_decoder(m.cross_meta)
+        if m.cross_clock==100 and H>2560:
+            m.cross_decoder_bindings=bind_wrapped_vector_decoder(m.h.mem.submit,vector_decoder(m.cross_meta))
     else:
         # Digital module uses physical local offsets. Reuse the exact same
         # banks/ports, bypass only the SC semantic address decoder.

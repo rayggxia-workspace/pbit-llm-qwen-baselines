@@ -1,3 +1,11 @@
+## 2026-11-08 22:38：7/36完整结果，跨模型SC100地址绑定修复已恢复
+
+首检三worker进入Llama100 SC时被旧Qwen5KiB残差边界拒绝；并非前端PPA近似问题。真实闭包decoder绑定已修正，不增加SRAM/端口/价格，Qwen4928旧映射字不变，三模型本地内存包装预检通过。独立冻结修复161da0452c99/e0dab7ae；Llama/DeepSeek100冷单层38634043两门禁通过并核SEAL。当前7完整case逐SHA核验、原5健康worker保留，3恢复worker38634114运行，38634115/16/17待原对应worker结束；新汇总38634118。仅取消无效且仍pending的旧聚合38631676，旧源/失败输出/成功结果不改。
+
+正式DECODER_REPAIR_ZH.md与delivery/DECODER_REPAIR_RECEIPT、REPAIR_STATUS。只读恢复用repair_status.py，不再prepare/repair_submit。6个指定SC100使用修复manifest，其他30个保留原源，聚合严格36唯一case；未收齐、未合并，Projects待同步。发布SHA见DECODER_REPAIR_PUBLICATION。前端成本可以先沿旧非零宏预算，不触发健康重跑；A数值证据不能冒充B质量。
+
+---
+
 ## 2026-11-08 当前交付已发布，完整任务继续运行
 
 源e6e534d6eb5ecf0d733d38c40383aae99bb00900已发布PR247，33文件逐内容回读一致；Issue245与PR说明已同步。8/8校验通过；full38631668八worker在18:15北京时间仍健康运行，汇总38631676等待afterok，完整结果未收齐，PR未合并。PUBLICATION_CURRENT.json记录源和回读SHA。

@@ -3,11 +3,23 @@ from pathlib import Path
 from collections import defaultdict
 import argparse,csv,hashlib,json,statistics
 
-def aggregate(root,out):
+def aggregate(root,out,repair_root=None):
     plan=json.loads((root/'PLAN.json').read_bytes());expected={(p['model'],p['clock'],p['scheme'],p['seed']) for p in plan}
     assert len(expected)==36
     groups=defaultdict(list);index=[];seen=set();components=[];phases=[];allocations=[]
-    for folder in sorted((root/'results/full').glob('*')):
+    original_sha=hashlib.sha256((root/'SNAPSHOT_MANIFEST.json').read_bytes()).hexdigest()
+    repaired_keys=set();repair_sha=None;folders=list((root/'results/full').glob('*'))
+    if repair_root:
+        original=json.loads((root/'SNAPSHOT_MANIFEST.json').read_bytes());repair=json.loads((repair_root/'SNAPSHOT_MANIFEST.json').read_bytes())
+        assert repair['repair_parent_manifest_sha256']==original_sha
+        changes={n for n in set(original['sources'])|set(repair['sources']) if original['sources'].get(n,{}).get('sha256')!=repair['sources'].get(n,{}).get('sha256')}
+        assert changes=={'glue/current_mainline.py','PILOTS.json'},changes
+        assert repair['repair_scope']=='SC100_large_model_vector_decoder_binding_only'
+        repaired_keys={k for k in expected if k[0] in ('llama32_3b','deepseek_7b') and k[1]==100 and k[2]=='SC_ising'}
+        assert len(repaired_keys)==6
+        repair_sha=hashlib.sha256((repair_root/'SNAPSHOT_MANIFEST.json').read_bytes()).hexdigest()
+        folders+=list((repair_root/'results/full').glob('*'))
+    for folder in sorted(folders):
         seal=folder/'SEAL.json'
         if not seal.exists():continue
         manifest=json.loads(seal.read_bytes())
@@ -19,9 +31,11 @@ def aggregate(root,out):
         assert r['status']=='completed' and v['status']=='PASS' and r['includes_head']
         assert r['layers']==r['shape']['layers'] and r['backend']=='native'
         assert b['energy_sum_closed'] and b['no_28nm_mixing']
-        assert r['snapshot_manifest_sha256']==hashlib.sha256((root/'SNAPSHOT_MANIFEST.json').read_bytes()).hexdigest()
+        corrected=key in repaired_keys
+        assert folder.parent==(repair_root/'results/full' if corrected else root/'results/full')
+        assert r['snapshot_manifest_sha256']==(repair_sha if corrected else original_sha)
         groups[key[:3]].append((r,b))
-        index.append(dict(case=key,path=str(folder),files_sha256=manifest['files_sha256']))
+        index.append(dict(case=key,path=str(folder),files_sha256=manifest['files_sha256'],source_manifest_sha256=r['snapshot_manifest_sha256']))
         identity=dict(model=key[0],clock_MHz=key[1],scheme=key[2],seed=key[3])
         for component in b['components']:components.append(dict(identity,**component))
         for name,ns in r['phase_totals_ns'].items():phases.append(dict(identity,stage=name,duration_ms=ns/1e6))
@@ -55,6 +69,7 @@ def aggregate(root,out):
     def save(name,data):(out/name).write_bytes((json.dumps(data,indent=2)+'\n').encode())
     save('SUMMARY.json',dict(status='ALL36_FULL_CASES_VERIFIED_24_CONFIGURATIONS',rows=rows,ratios=ratios,
         source_manifest_sha256=hashlib.sha256((root/'SNAPSHOT_MANIFEST.json').read_bytes()).hexdigest(),
+        repair_manifest_sha256=repair_sha,repair_scope='SC100_large_model_vector_decoder_binding_only' if repair_sha else None,
         PPA_scope='calibrated/modelled55nm components;not full-chip measurement',quality_verified=False,
         head_exclusion='stage boundary;retains finalnorm and already-issuedhead-prefetch',
         random_uncertainty='3deployment reference-address seeds,not3trainingseeds or real-text switching distributions'))
@@ -74,5 +89,5 @@ def aggregate(root,out):
     return rows
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
-    rows=aggregate(a.root,a.out);print(json.dumps(dict(status='completed',rows=len(rows))))
+    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);p.add_argument('--repair-root',type=Path);a=p.parse_args()
+    rows=aggregate(a.root,a.out,a.repair_root);print(json.dumps(dict(status='completed',rows=len(rows))))

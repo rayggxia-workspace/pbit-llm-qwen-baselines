@@ -1,3 +1,9 @@
+## 2026-11-08 Issue225：建立独立28nm准备目录，未运行完整TLM
+
+用户要求先建对应工艺文件夹。新增architecture_tlm/process_28nm：250MHz已标定FFN/BF16/同步A9组件、500MHz诊断及零uncertainty条件索引、缺项与来源SHA。28HPC+ TT0.9V，面积×1，不套55的.81；28原C19门限缓存18/34拍与55delta_v3隔离。PROCESS_PROFILE整机时间/面积/能量null、full_system_ready/default_enabled均false，无整机运行入口。四来源SHA/三组件PVT/面积/同步A9/无整机值核验通过。
+
+沿Issue225/PR249/task/225-tlm-unified250-20261107，未改55默认或38629485/38631668冻结运行；无新TLM/EDA/GPU/PT。源与公开状态见work/rayggxia/225/process28_setup_20261108/PUBLICATION.json，未有回执前仅本地完成。Projects待维护者同步，PR不合并。
+
 ## 2026-11-08 Issue225：28nm250MHz 44功耗窗口消费端复核
 
 用户问新矩阵结果是否需调TLM；确认44窗口为28HPC+ TT0.9V250MHz，非55nm新价格。复核3主归档及1715报告成员SHA通过：FFN8/BF1615/A921窗口，A9 PT hold−.099703仅诊断。合格FFN .373801302mm²、GU/Wd10.1625/9.254021pJ/DOT64，18/34拍、72/136ns，停源等待.6209mW（漏电.279mW）；28面积×1，不套.81。BF16/FMA16/C4 .06245379mm²、continuous3.304622pJ/FMA；mixed QK wrapper及其他系统模块需独立边界。

@@ -11,3 +11,5 @@
 长期备忘录：唯一维护目录tmp/project-memory-issue28-20261018在本轮核对时存在其他未提交增量，不修改其工作树。MEMORY_APPEND_ZH.md为供Issue28维护者接入的任务摘要，不是另一本独立备忘录；发布后将结果入口同步至Issue28。
 
 恢复：先核Issue250/PR最新状态和PUBLICATION，阅读README与SOURCES；按SHA复用现有原PDF。不需重复下载或运行硬件/模型。PR待审仅保留必要小工作目录，无运行作业。最终根architecture_tlm同目录为正式文档同字节阅读副本。
+
+已发布：科学提交1c84d72f30740385cb60231eae94786678463787，PR251 ready/open未合并；6文件远端内容一致、tree与本地index一致。实际摘要入口PUBLICATION.json；无运行任务。

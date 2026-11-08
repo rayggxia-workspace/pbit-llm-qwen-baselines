@@ -1,3 +1,7 @@
+# 2026-11-08 Issue250 已发布 PR251 待审
+
+科学源1c84d72f30740385cb60231eae94786678463787，6文件逐字远端回读一致，tree5649404b与本地index一致；43检查通过。PR251 ready/open、未合并，Issue250继续开放；主文件SHA189eac525b550b332d90e87e90d85a7624cf5134be8715a8e0e376dd947414e1。后续仅审核与Issue28摘要接入，无运行作业。
+
 # 2026-11-08 Issue250 白板图原图参考
 
 负责人rayggxia；Issue250；task/250-figure-references-20261108；base main@206bf81f18ea88c4c625ce8d32edd18a58edd1cd。独立目录tmp/figure-references-issue250-20261108，当前本地整理完成，发布回执见work/rayggxia/250/PUBLICATION.json。

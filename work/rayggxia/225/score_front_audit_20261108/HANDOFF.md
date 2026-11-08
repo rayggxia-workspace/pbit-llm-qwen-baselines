@@ -1,3 +1,11 @@
+## 2026-11-08 用户决定：小前端成本缺口先沿用，不阻塞现有任务
+
+当前FP32→S12/握手尚未独立拆净的增量PPA可以先用宏预算；已完成结果保留，健康任务继续，不因本项重跑PPL/训练/全TLM。以整个实测A作偏大的额外情景（非严格物理上界），100/250MHz面积.131731/.076112mm²，占当前覆盖.396%/.345%；全程工作逻辑压力计入输入读约占整机能量.061%/.115%。全部服务额外串行.7488/.308736ms，按现8/4实例均摊.0936/.077184ms，非集成延时保证。当前已经有前端非零预留，不再叠加整块A。
+
+正式local_integration_A/PROVISIONAL_USE_ZH.md和PROVISIONAL_BUDGET.json，数值路径A仍S12/F4→整数max-gap→U8/P8；冻结较宽前端时序/成本＋S12地址轨迹的组合标签保留。ready=false只表示未整链PPA，不再作为禁止宏级评估的门槛；不宣称B继承A的PPL。没有改默认/冻结源码或重跑健康任务。另有245残差地址执行bug独立修复，不混为成本近似。发布见PROVISIONAL_PUBLICATION，PR249未合并，Projects待同步。
+
+---
+
 ## 本地A适配器消费（2026-11-08）
 
 补充源来自根local_integration_A，已25输入SHA核验并在adapter_review_runtime隔离复跑，VALIDATION与提供方字节一致。正式原4文件及复核REVIEW/INTAKE已收录，父交接保留侧对话新增入口。数值ready，全链PPA仍false；不改默认/冻结任务，不重复GPU/EDA。发布看LOCAL_ADAPTER_PUBLICATION；新CPU日志及ADAPTER_REVIEW保留，本机root/任务目录更新同字节。

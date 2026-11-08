@@ -1,3 +1,11 @@
+## 2026-11-08 Issue245：24/24原生单层pilot通过，单项预算完成
+
+负责人rayggxia，task/245-cross-model-estimate，PR247 base main。38625522数组全部自然完成，24项封存SHA和WORK_GATE实际复核通过，原始JSON归档project_archives/cross245_20261108/SEALED_PILOTS.tar.gz（219990B/SHA6e0198f2460989ef40ba24ca9a6969b4581d6b6b36dd1b9bd3c918e19a0f86e2）。三模型配置/模块资料已齐，不需大权重。component_budget.py及JSON已给出静态权重流下界/有效核增量；3模型计数/TT250空价检查通过。
+
+已完成的是跨模型事务门禁和单项预算，并非24整模型PPA。主线供数/PV重叠、250 r16、norm/RoPE/残差访存/计价仍待对齐，TT250合格SC价格外部待收；之后Qwen锚点和全层含head。未重复任务/改默认/改owner源，无新GPU/PPL/RTL/PT。正式文档EXECUTION_STATUS_ZH.md，原件SHA和恢复HANDOFF齐；本轮交付见PUBLICATION_NOV8.json，PR未合并，Projects待维护者同步。
+
+---
+
 ## 2026-11-07 Issue245：原生跨模型单层pilot已提交
 
 负责人rayggxia；tmp/cross-model245-20261106，task/245-cross-model-estimate / PR247 base main，起点25e950b5。EDA数组38625522_[0-23%2]：24项三模型×100/250MHz×概率/BF16dense/W8dense/W8screen，1CPU10GiB2h每项，最多2并发，无GPU。首Qwen100SC单层native完成，127139840B权重守恒和队列排空通过；其他看实时STATUS。四项本地Gates通过，覆盖24布局、12全形状FFN分包、三seed参考地址键及面积配额。执行目录/冻结SHA见work/rayggxia/245/execute_20261107/SUBMISSION.json和HANDOFF。

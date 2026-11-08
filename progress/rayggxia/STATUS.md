@@ -1,3 +1,5 @@
+Published source 07bc39de3f75b3a10628862879921bfde8ae91a4;30 explicit files content-readback verified. PR249 open/draft/unmerged;full38629485 pending. Issue225 comment6718333560,PR247 r16 correction6718334719. Projects pending maintainer sync.
+
 ## 2026-11-08 Issue225：TT250 v3已接主线，能量账本在声明边界内闭合
 
 用户要求接入最新核并核对整机能量。复用PR249原250主线，3核/960KiB/16KiB入口及有限FIFO、预取、回压、真实bank/DMA不变；FFN delta_pipeline_v3已验收，单核1.374062065mm²（raw×.81一次），GU16/Wd32服务19/35拍、76/140ns，共覆盖22.086073mm²。原SS100配置语义不变，历史失败及旧封存不改。活动gross＋剩余核时idle，本来已正确；没有查出旧FFN gross/idle重复计费。本轮补逐资源26行、两种FFN等价公式、门控归属、外存和总和校验，ENERGY_LEDGER明确CLOSED_WITHIN_DECLARED_MODEL_BOUNDARY、silicon_complete=false。

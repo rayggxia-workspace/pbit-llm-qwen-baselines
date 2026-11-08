@@ -12,4 +12,4 @@
 
 恢复：Codex附带Python运行本目录ops.py status / collect；collect保留同SHA结果，不覆盖其他输入。执行后已整理profile的job/status/ICG文字，并补派生incremental/frame兼容字段；EXECUTED_FFN_PROFILE保留原字节，PROFILE_NORMALIZATION列两SHA，原数值输入和SS100保持。ASSEMBLY_STATUS同步960KiB及当前作业；原catalog不改。上传前按实际文件清单add，公开接合代码/数值/小汇总/SHA，私有owner执行包/轨迹和PDK不复制。
 
-正式说明ENERGY_CLOSURE_ZH.md。根阅读镜像9文件已同步ROOT_SYNC，长期记忆/STATUS和PR发布需按最终PUBLICATION同步。尚无完整token最终数、不宣称PR合并；Projects无写接口待维护者同步。
+正式说明ENERGY_CLOSURE_ZH.md。根阅读镜像13文件已同步ROOT_SYNC，长期记忆/STATUS已同步。源07bc39de3f75b3a10628862879921bfde8ae91a4共30文件远端回读一致，PR249正文与Issue225已更新；PUBLICATION记录回执。PR仍open/draft未合并，完整token尚未封存；Projects待维护者同步。

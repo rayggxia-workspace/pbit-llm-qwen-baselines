@@ -1,3 +1,9 @@
+## 2026-11-08 Issue225：Attention分数前端成本审计已整理
+
+用户要求给其他对话的文件已写：module_handoff/attention_score_front_compare_20261108/HANDOFF_ZH.md。关键：S12后整数差转U8只是clip；已有A的SS100独立PPA为.015050059mm²/.166291667nJ/65拍；B仍宏价，比较／减法／专用转换／存储组织／旧准备资源／代理价卡未配对。FP32差→U8可专用融合，不能直接断言需完整FPU或固定面积倍率。四正式文件、13来源SHA及单位校验通过，根同字节镜像；发布见本任务PUBLICATION。
+
+没有改默认/冻结任务/owner源码，没有新TLM/RTL/PT/GPU/PPL；保留S12为参考是建议，非用户已授权切回。Issue225/PR249接续，关联198/199；PR不合并，Projects待维护者同步。
+
 ## 2026-11-08 28nm目录已发布
 
 源23807efcfc338d214047b574103a7b033a8bb8a0，10文件逐内容回读一致；Issue225评论6720845666及PR249已同步。PUBLICATION.json记录回执，PR仍draft/open/unmerged，整机TLM未启动、整机值仍null；Projects待维护者同步。

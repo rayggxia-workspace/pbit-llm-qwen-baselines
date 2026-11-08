@@ -60,3 +60,5 @@ SS100 V控制仍有10%组合储备；数制/尺度转换、向量宏采用现有
 ### 已启动回执（2026-11-08 18:04北京时间）
 
 8/8门禁已通过driver及Slurm退出码；完整worker数组 **38631668_[0-7%8]** 已全部进入RUNNING，共执行36case；最终汇总 **38631676** 等待afterok。完整结果尚未收齐。PILOT_SUMMARY为单层预检，不能当整token；STATUS_CURRENT留存实际时点。按已观测每冷层约4～11分钟及最长模型30/36层，完整批次初估12～24小时，受共享CPU实际性能影响，不能承诺精确结束时间。
+
+发布：源码与执行索引已上传[PR247](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/247)，源`e6e534d6eb5ecf0d733d38c40383aae99bb00900`，33文件逐字回读通过；PR未合并。完整任务仍在运行，最终结果待收。

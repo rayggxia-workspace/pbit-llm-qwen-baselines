@@ -1,3 +1,9 @@
+## 2026-11-08 当前交付已发布，完整任务继续运行
+
+源e6e534d6eb5ecf0d733d38c40383aae99bb00900已发布PR247，33文件逐内容回读一致；Issue245与PR说明已同步。8/8校验通过；full38631668八worker在18:15北京时间仍健康运行，汇总38631676等待afterok，完整结果未收齐，PR未合并。PUBLICATION_CURRENT.json记录源和回读SHA。
+
+CLI git fetch本次无法连接github.com:443；发布使用身份已核验的GitHub连接器完成。当前本地HEAD仍d2b22f7，index/工作文件保留已发布内容，不能把HEAD旧点当未发布，也不要reset覆盖。恢复优先核对远端PR247，再在网络恢复后取回提交与索引做字节核验后同步HEAD。无权限的Projects待维护者同步。
+
 ## 当前作业ID补充（2026-11-08）
 
 8/8门禁退出码0:0，full worker38631668_[0-7%8]均已RUNNING；aggregate38631676 afterok等待。最新STATUS及8项单层封存摘要见mainline_20261108/delivery；完整结果尚未收齐。禁止重交或改快照。

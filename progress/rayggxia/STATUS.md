@@ -1,3 +1,11 @@
+# 2026-11-08 Issue250 白板图原图参考
+
+负责人rayggxia；Issue250；task/250-figure-references-20261108；base main@206bf81f18ea88c4c625ce8d32edd18a58edd1cd。独立目录tmp/figure-references-issue250-20261108，当前本地整理完成，发布回执见work/rayggxia/250/PUBLICATION.json。
+
+11篇论文37处图/页逐项核对，43项文档/定位检查通过；Fig.8依用户回复留空。成果architecture_tlm/paper_figure_references_20261108/README_ZH.md与SOURCES.json；仅参考画法，不把别人的局部结果用作本项目整机证据。无新模型/训练/TLM/RTL/EDA，其他任务实现/STATUS不改。下一步独立分支PR交付待审；Projects待维护者同步，Issue28唯一记忆目录有其他增量，仅提交摘要待其接入。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

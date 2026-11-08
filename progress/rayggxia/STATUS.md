@@ -1,3 +1,11 @@
+## 2026-11-08：28nm已有数据足够先搭组件接合版
+
+用户询问现有28nm数据可否先搭TLM、等待补测确认。已只读消费204/198最新5份JSON，新增process_28nm/prepare_bindings.py与250/500 BINDINGS：FFN18/34拍、250/500服务72/136和36/68ns、同一GU/Wd后端；state/codec/scale、1KiB暂存代理及13/12张Attention合格卡已收。显式A前端＋gap输入Ising，32加载握手不双计，旧ab_both仅参照；不暗用55价格、28面积×1。已补4项CPU集成验证，无新TLM整机/RTL/PT/EDA/GPU任务。
+
+后续可沿成熟bank/DMA/credit/重叠执行器，存储与公共服务先给显式宏，再用PPA替换；不用等全部PT才能搭。当前缺SRAM28组织/2或4ns/价、DMA向量、PV紧凑价与共享FMA新流水绑定，整机值保持null。250可用旧合格FMA16/C4，500仍待合格数字结果；FFN0setupunc与Attention10%period分别标注。未确定最佳核数、未宣称完整28芯片结果，不改55默认和健康冻结任务。正式process_28nm/README_ZH.md；4检查及输入SHA见VALIDATION；发布以本目录PUBLICATION为准，PR249待审不合并，Projects待同步。
+
+---
+
 ## 2026-11-08 22:51：独立250MHz完整评估2/3seed已完成
 
 38629485的seed17/503已完整36层＋head并0:0完成，SEAL/VALIDATION/工作量/账本与原字节SHA通过，已归档project_archives/tlm_energy225_20261108/0和1。时间均50.418948ms，片上25.206577/25.206643mJ，外存4pJ情景总198.370253/198.372088mJ，覆盖22.086073mm²。末seed1009已完成36层及finalnorm、head运行，预计CPU墙钟20～60分钟，不承诺。

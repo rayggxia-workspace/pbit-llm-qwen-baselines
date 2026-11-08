@@ -1,3 +1,11 @@
+## 2026-11-08 22:51：独立250MHz完整评估2/3seed已完成
+
+38629485的seed17/503已完整36层＋head并0:0完成，SEAL/VALIDATION/工作量/账本与原字节SHA通过，已归档project_archives/tlm_energy225_20261108/0和1。时间均50.418948ms，片上25.206577/25.206643mJ，外存4pJ情景总198.370253/198.372088mJ，覆盖22.086073mm²。末seed1009已完成36层及finalnorm、head运行，预计CPU墙钟20～60分钟，不承诺。
+
+正式250MHz/FULL_PARTIAL_20261108.md/JSON，仅部分结果、未算三seed最终汇总；不与245不同胶合源混seed。三模型245目前7/36已核，5健康＋3恢复worker运行，暂无新错误。未重提/改冻结源，无新GPU/RTL/PT/PPL。PR249仍draft/open未合并，Projects待同步。
+
+---
+
 # Issue225 / PR249：有效TT250接入与能量账本
 
 负责人rayggxia；复用tmp/tlm-unified250-issue225-20261107、task/225-tlm-unified250-20261107。开工远端PR249为4b68739ca7c09eede55ba8a7379123dc63a407e9，base为PR248的task/225-norm-stream-20261106；100/250仍隔离，不自动合并。已核对身份rayggxia、Issue225、249/248/244/247及本分支STATUS/交接；不动其他目录untracked材料。

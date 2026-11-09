@@ -1,3 +1,9 @@
+## 2026-11-09 SRAM校准待办
+
+[给EDA方的28nm SRAM最小提取/仿真清单](SRAM_CHARACTERIZATION_REQUEST_ZH_20261109.md)：目前没有接入真实28nm宏数据，粗估来自CACTI＋55nm残差迁移；最少先给256×128、1RW的TT/SS库资料，并对一个代表宏检查250/500MHz读写和两种idle。需求文档不代表新增PPA或改默认。
+
+---
+
 ## 2026-11-09 条件整机初估
 
 [Qwen3-4B粗估报告](rough_estimate_20261109/REPORT_ZH.md)：250/500MHz核心面积中心约6.9mm²，含head45.90/40.99ms；外存4pJ/bit情景约183mJ/token。六小型head回放＋双工艺CACTI已完成，36层/完整head仍为外推。500FMA、PV及SRAM残差迁移/控制预留明确分开；严格缺价null和55默认保持。不是芯片签核或完整原生LPDDR结果。

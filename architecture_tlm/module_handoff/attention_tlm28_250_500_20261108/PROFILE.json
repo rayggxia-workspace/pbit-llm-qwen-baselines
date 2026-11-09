@@ -245,6 +245,120 @@
       "clock_period_ns": 4.0,
       "operation_definition": "one accepted FP32 scalar operation / LUT lookup; excludes full online-softmax control"
     },
+    "bf_explut_500": {
+      "version": "cv5",
+      "top": "bf_explut",
+      "MHz": 500,
+      "area_factor": 1,
+      "PVT": "TT0.9V25C",
+      "runner_status": "calculated",
+      "functional_gate_pass": true,
+      "source_manifest_sha256": "d8ed0688a8f01caf9d451f31b5b7e4d5f8d32f0e5fee063b8e7e4aaa6c51e896",
+      "reports_sha256": "587e6d0fa306416b4444176b7a87e3b3e6b384d8724ee3f563952566cf95a7bb",
+      "source_archive_sha256": "72ddf41cff08c01d87a6e0c5855561425a07e7bd7f8d5ae8eaa7b51a4102c0f6",
+      "slacks_ns": {
+        "setup": 0.209308,
+        "hold": 0.0302288,
+        "gate_setup": 0.493119,
+        "gate_hold": 0.051814
+      },
+      "raw_area_um2": 962.01,
+      "area28_mm2": 0.00096201,
+      "cell_area28_mm2": {
+        "register": 0.00020374200000000003,
+        "icg": 1.89e-06,
+        "other_logic": 0.000756378
+      },
+      "modes": {
+        "accept_pause": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.31376666666666664,
+          "leakage_mW": 0.0007011,
+          "window_gross_nJ_mean": 0.6501245333333333,
+          "window_cycles_mean": 1036.0,
+          "operations": [
+            512,
+            512,
+            512
+          ],
+          "gross_pJ_per_operation": 1.2697744791666665,
+          "cycles_per_operation": 2.0234375
+        },
+        "burst25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.15233333333333335,
+          "leakage_mW": 0.0007028333333333333,
+          "window_gross_nJ_mean": 1.2515706666666668,
+          "window_cycles_mean": 4108.0,
+          "operations": [
+            1024,
+            1024,
+            1024
+          ],
+          "gross_pJ_per_operation": 1.2222369791666667,
+          "cycles_per_operation": 4.01171875
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.01032,
+          "leakage_mW": 0.0006984000000000001,
+          "window_gross_nJ_mean": 0.02138304,
+          "window_cycles_mean": 1036.0
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.08091666666666666,
+          "leakage_mW": 0.0007036333333333333,
+          "window_gross_nJ_mean": 0.16765933333333333,
+          "window_cycles_mean": 1036.0
+        },
+        "stream": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.5660999999999999,
+          "leakage_mW": 0.0006964333333333334,
+          "window_gross_nJ_mean": 1.1729592,
+          "window_cycles_mean": 1036.0,
+          "operations": [
+            1024,
+            1024,
+            1024
+          ],
+          "gross_pJ_per_operation": 1.14546796875,
+          "cycles_per_operation": 1.01171875
+        }
+      },
+      "timing_pass": true,
+      "price_available": true,
+      "qualified_module_price": true,
+      "warnings": [
+        "UNCHARACTERIZED_TIE_POWER",
+        "checks.rpt",
+        "model_checks.rpt"
+      ],
+      "price_kind": "measured_component_pre_layout",
+      "clock_period_ns": 2.0,
+      "operation_definition": "one accepted FP32 scalar operation / LUT lookup; excludes full online-softmax control"
+    },
     "bf_recseed_500": {
       "version": "cv5",
       "top": "bf_recseed",
@@ -2197,7 +2311,7 @@
   "shared_FMA_reference": "../ffn_tlm28_250_500_20261108/profile.json",
   "SRAM_price": null,
   "shared_DMA_price": null,
-  "source_summary_sha256": "6845707698bcc280c1fff5a733b24ed815b3832856fa0dbba9c7bcda471f17b7",
+  "source_summary_sha256": "f2b8dad3a7ce2af31e9f4f11ace0ff30238e1c13943efb365cc682e4e3af9935",
   "accounting": {
     "area": "per physical instance, shared pool counted once",
     "energy": "work gross once per query/op; add only non-overlapping idle intervals",
@@ -2207,8 +2321,8 @@
     "sampling_S": "S64 measured; do not claim other S measured by linear scaling"
   },
   "pending": [
-    "PV accumulator/control final qualification and compact-state/ADD separation",
-    "scalar online-softmax primitives final qualification; controller estimate boundary",
+    "PV measurements complete but all4 configurations timing fail; repair setup/hold, then qualify compact-state/ADD split",
+    "FP32 ADD250 and MUL500 timing repair remains; scalar LUTs and ADD500/MUL250 qualified; online controller boundary remains estimated",
     "same-trace frontend/backend integrated handshake and activity windows if claiming full-chain measured PPA",
     "shared FMA500 exact latency/context binding",
     "28nm SRAM bank/port/clock/energy/area binding",

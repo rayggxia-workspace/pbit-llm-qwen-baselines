@@ -1,3 +1,19 @@
+## 2026-11-09 最新运行结果
+
+之前提交的标量、PV原任务及超时恢复任务均已结束。500MHz exp LUT新增合格价格：面积0.00096201mm²、三seed平均1.145468pJ/查表。四个PV配置已完成能耗计算，但setup/hold仍有负slack，仅保留诊断价，不进入PROFILE.cards；具体数值见PPA_TABLE最新PV段，完整模式见NEW_RESULTS_20261109.json。当前没有本轮新提交的修复综合作业。
+
+PV原报告500MHz项的频率字段误标250；派生汇总按执行manifest及真实纳秒窗口修正，原字节保留。28nm面积系数1；不修改55nm/100MHz历史配置。下方11月8日“运行中”为历史记录，以本节及RUN_STATUS为准。
+
+---
+
+## 2026-11-08 23:47 PV超时恢复与工期估计
+
+用户询问剩余工期、允许定时检查。实时查到PV250两项及500vacc被U.run固定3500s超时终止，非许可证/RTL功能失败；500Vctrl仍跑PT，已有setup−.240952/hold−.263134ns，不能认定时序通过。新不可变pvtimeout快照只选终态超时案例，恢复38634807三项，DC时限10800s、显式set_host_options4核，Slurm5h、并行上限已由2调3；原500Vctrl健康执行保持，没有重复提交。准备38634805/源码SHA21b1174b668c2d0719906e6c52f819a3a92591f397d9d688b6bf32c87b1c37f3，恢复回执见work/rayggxia/198/attention_tlm28_20261108/PV_TIMEOUT_RECOVERY.json。
+
+预计当前500Vctrl剩余窗口/取数30～60分钟；PV补测加一轮修复复测先预算3～6小时，若500控制需RTL流水切分可延到半天，不承诺一次闭合或整机完成时刻。无后台自动提醒创建；当前任务按间隔查状态。原失败证据保留，不改变RTL/周期/IO/uncertainty/55nm默认，定价仍按实测合格项；本次恢复状态先保留本地，公开7文件仍是83cd3863阶段快照。
+
+---
+
 # Attention 28nm / 250、500MHz TLM补充交接
 
 2026-11-08，Issue198 / PR199，rayggxia。**采样、两种分数前端和SparQ筛选已提供250/500MHz合格价卡；PV与部分在线Softmax原语仍在收尾。** 机器接口见[PROFILE.json](PROFILE.json)，分项表见[PPA_TABLE_ZH.md](PPA_TABLE_ZH.md)，每次更新的任务状态见[RUN_STATUS.json](RUN_STATUS.json)。与55nm 100/250MHz主线隔离，不修改原默认和冻结结果。

@@ -7,6 +7,7 @@ once by the host. All areas in this output already include the0.81 factor.
 import json,math
 from pathlib import Path
 from architecture_tlm.module_refresh_20261107.bindings import core_budget
+from .cim_weight_policy import weight_read_cost
 HERE=Path(__file__).parent/'vendor_attention'
 def price(r):
  c=r['resource_contract']['configuration'];a=r['actions'];m=r['memory'];T=r['time_ns'];ms=T/1e6
@@ -71,6 +72,11 @@ def price(r):
  sram_read,sram_write,sram_leak=(12.0293,16.2931,1.9734e-6) if explicit_front else (10.0527,13.9599,7.7544e-6)
  sram_pJ=sr*sram_read+sw*sram_write
  dynamic['SRAM_all_attention_used_events']=sram_pJ/1e6
+ # CIM still presents resident weights in parallel. Use ordinary SRAM energy
+ # per tile read; keep writes/area/leakage in the existing memory account.
+ cim_weights=weight_read_cost(r,sram_read)
+ dynamic['CIM_weight_presentation_SRAM_proxy']=cim_weights['additional_uJ']
+ statuses['CIM_weight_presentation_SRAM_proxy']=cim_weights['status']
  background[attention_label]=sram_macros*sram_leak*T/1000
  # Correct inputmax extra read has not been issued by the old trace actor.
  if not explicit_front:
@@ -166,6 +172,7 @@ def price(r):
      energy_accounting_closed=True,physical_coverage_complete=False,FFN_predecessor_reference_used=False)
  return dict(totals=totals,areas55_mm2=area,shared_support_area55_mm2=shared_area,
      energy_ledger=ledger,
+     CIM_weight_energy_policy=cim_weights,
      FFN_core_calibration=ffn_measured,
      dynamic_uJ=dynamic,background_uJ_before_root_gating=background,root_gating_savings_uJ=gated_savings,
      price_status=statuses,source_calibration='vendor_attention/CALIBRATION.json; OTHER_PRICES.json; FFN TT250 handoff',
@@ -181,7 +188,7 @@ def price(r):
      limitations=['conditional action budget, not integrated chip PPA',
          'delta_pipeline_v3 accepted prelayout, tiny3.1/4.8ps timing margins and library-table-range flags retained;not physical signoff',
          'TT250 arithmetic/sampling/SRAM with legacySS100 vector/reduction/converter/holding proxies',
-         'root gating assumed; global CTS/NoC/PHY/pads and physical CIM interface not characterized',
+         'root gating assumed; global CTS/NoC/PHY/pads uncharacterized; CIM weight interface uses user-selected ordinary SRAM read/write energy and resident reuse',
          'score max/difference uses explicit73cycle uncontended macro per head, not new STA or PPL',
          'projection FIFO payload priced, control/selector detail/leakage unpriced; old sampler prep retained as small energy upper bound',
          'three captured Attention layers cycle across36: conditional workload replay, no new PPL',

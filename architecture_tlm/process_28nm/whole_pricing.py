@@ -1,5 +1,6 @@
 """28nm known-component ledger. Missing costs are null, never silently55nm."""
 import math
+from sram_characterization import budget as sram_budget
 
 def price(m,r,binding):
     wall=r['time_ns'];mhz=binding['clock_MHz'];period=1000/mhz;counts=r['process28_counts'];rows=[]
@@ -38,20 +39,27 @@ def price(m,r,binding):
         inc=sum(n*(c['modes'][mode]['window_gross_nJ_mean']*1000-idle*c['modes'][mode]['window_cycles_mean']*period*1000) for mode,n in operations)
         slots=m.norm_pool.slots if name=='SparQ_norm' else m.top_pool.slots
         row(name,c['area28_mm2']*slots,inc,idle,slots,'norm group=4heads;feature=1head;token=1KVgroup')
+    sram=sram_budget(r,r.get('macro_config',{}).get('SRAM',{}))
+    if sram is not None:
+        cfg=r['macro_config']['SRAM'];banks=r['SRAM']['physical_banks']
+        row('SRAM28_real_S0_macros',sram['area_mm2'],sram['ordinary_incremental_mJ']*1e9,
+            cfg['leak_W_per4KiB'],banks,'real28HPC+ S0 TT;clock-off baseline increments + one full residency')
+        row('CIM_weight_presentation_SRAM_proxy',0,sram['CIM_weight_read_mJ']*1e9,0,1,
+            'user-selected ordinary SRAM read per resident tile;no added per-sample reread or physical port')
     fma=binding['shared_FMA'];ops=r['actions']['digital_BF16_MAC']+r['actions']['attention_QK_MAC'];n=16
     if mhz==250 and fma.get('gross_pJ_per_FMA') is not None:
         # Continuous characterization4096FMA/1052ns;idle per physical FMA16.
         idle=fma['idle_W'];inc=ops*(fma['gross_pJ_per_FMA']-idle*1052/4096*1000)
         row('shared_FMA256',n*fma['area_mm2'],inc,idle,n,'qualified older FMA16/C4;4cycle timing retained explicit')
     else:row('shared_FMA256',None,None,None,n,'500MHz pipeline/price macro pending;4contexts/II1/latency4 assumption')
-    missing=[dict(component='SRAM28',action_counts=r['SRAM']['counts'],area_mm2=None,energy_mJ=None),
-        dict(component='PV_ADD_fixedstate_Vcontrol_and_output',scalar_ADDs=r['actions']['PV_ADD'],area_mm2=None,energy_mJ=None),
-        dict(component='DMA_FIFOs_vectors_RMSNorm_RoPE_residual_reduction_and_CIMinterface',area_mm2=None,energy_mJ=None),
+    missing=[dict(component='PV_ADD_fixedstate_Vcontrol_and_output',scalar_ADDs=r['actions']['PV_ADD'],area_mm2=None,energy_mJ=None),
+        dict(component='DMA_FIFOs_vectors_RMSNorm_RoPE_residual_reduction',area_mm2=None,energy_mJ=None),
         dict(component='CTS_PHY_NoC_TIE_and_remaining_control',area_mm2=None,energy_mJ=None)]
+    if sram is None:missing.insert(0,dict(component='SRAM28',action_counts=r['SRAM']['counts'],area_mm2=None,energy_mJ=None))
     external=r['memory']['by_kind'];bytes_=sum(x.get('issued_bytes',0) for x in external.values())
     known_area=sum(x['area_mm2'] for x in rows if x['area_mm2'] is not None)
     known_energy=sum(x['energy_mJ'] for x in rows if x['energy_mJ'] is not None)
-    return dict(status='PARTIAL28NM_COMPONENT_LEDGER_WITH_EXPLICIT_UNPRICED_ACTIONS',rows=rows,unpriced=missing,
+    return dict(status='PARTIAL28NM_COMPONENT_LEDGER_WITH_EXPLICIT_UNPRICED_ACTIONS',rows=rows,unpriced=missing,SRAM_calibration=sram,
         covered_component_area_mm2=known_area,covered_component_energy_mJ=known_energy,
         external_bytes=bytes_,external_mJ_by_pJbit={str(e):bytes_*8*e/1e9 for e in (4.,6.6,8.)},
         full_system_area_mm2=None,full_system_energy_mJ_token=None,full_system_average_W=None,

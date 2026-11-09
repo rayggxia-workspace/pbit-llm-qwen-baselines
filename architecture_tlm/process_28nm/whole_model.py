@@ -1,7 +1,7 @@
 """28nm overlay on the frozen finite-bank/DMA/credit execution model.
 
 Run in a fresh Python process: runtime patches are confined to that process.
-Uncharacterized SRAM energy stays unknown, while requests and waits still run.
+SRAM tariffs may be bound to characterized macros; requests and waits still run.
 """
 from pathlib import Path
 from types import MethodType
@@ -39,7 +39,8 @@ def unknown_sram_prices():
             by_tag={k:dict(v) for k,v in self.by_tag.items()},dynamic_mJ=None if unknown else self.energy_pJ/1e9,
             leakage_mJ=None if self.leak_W is None else self.nbank*self.leak_W*end/1e6,
             area_mm2=None if getattr(self,'area28_per_macro',None) is None else self.nbank*self.area28_per_macro,
-            area_multiplier=1,energy_status='UNPRICED_ACTIONS_RETAINED' if unknown else 'EXPLICIT_MACRO_PRICE',
+            area_multiplier=1,energy_status='UNPRICED_ACTIONS_RETAINED' if unknown else getattr(self,'characterization_status','EXPLICIT_MACRO_PRICE'),
+            characterization_sha256=getattr(self,'characterization_sha256',None),
             regions=[dict(name=r.name,base=r.base,size=r.size,banks=list(r.banks)) for r in self.regions.values()])
     BeatSRAM.report=report
 
@@ -53,6 +54,8 @@ def retime(m,mhz,sram_cycles,macros):
     prices=macros['SRAM']
     h.mem.prices={k:prices.get(k+'_pJ_per16B') for k in ('read','write')}
     h.mem.leak_W=prices.get('leak_W_per4KiB');h.mem.area28_per_macro=prices.get('area_mm2_per4KiB')
+    h.mem.characterization_status=prices.get('price_status','EXPLICIT_MACRO_PRICE')
+    h.mem.characterization_sha256=prices.get('characterization_sha256')
     a=h.ingress_clock_audit;a.update(ticks=0,off_edge_ticks=0,last_cycle=None,last_tick_ns=None,min_spacing_cycles=None,min_spacing_ns=None,
         ledger='integer'+str(p)+'ns cycles;parent dispatcher tolerance retained')
     def wake(self):

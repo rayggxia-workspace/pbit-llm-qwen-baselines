@@ -1,3 +1,5 @@
+> 2026-11-09更新：真实28nm SRAM宏已接入250/500配置。见[SRAM接入结果](SRAM_INTAKE_20261109_ZH.md)。下方此前SRAM未表征/跨工艺估值均为历史状态，其它模块限制仍保留。
+
 # 28nm整机TLM运行入口
 
 2026-11-09，Issue225 / PR249，rayggxia。`run_whole.py`现在可以运行完整decode流程：embedding→各层Norm/QKV/RoPE→SparQ/QK→S12前端/Ising/PV→O/残差→随机GU→跨K/尺度转换→随机非线性-Wd→残差→最终Norm/lm_head。当前支持Qwen3-4B B1/2K、K128/S64，250/500MHz分开，不改55nm默认。

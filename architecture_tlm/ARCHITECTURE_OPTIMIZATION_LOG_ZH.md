@@ -1,5 +1,14 @@
 # 概率计算架构优化记录本
 
+## 2026-11-10｜Issue225：28nm250完整Qwen原生外存任务已启动
+
+门禁38644763已COMPLETED/EXIT0/SEAL，单层+384head原生时序1.237040ms、墙钟约5分钟；全量数组38644764的seed17/503已启动（实际job38644798/38644799），seed1009按并行2限制等待。全量明确36层/151936词表、3seeds、28nm250/GU16Wd32/K128S64/S12、3核/832KiB。源码包9e0125325e3aaae6151786ef16645159f4a82d20c58aa175dd9f9dad12f8bf87，MFf69df7db841445d52d9572732824709130d5cdedacaff99981dbdd957490fd8b；原生LPDDR derived8533时序，能量仍独立pJbit情景。未完成全量，不把旧46ms外推改成新结果。每case独立CWD避免DRAM统计覆盖，未改旧快照/55/500，无GPU和新电路PPA。
+
+数字主线跟随最新决定，优先GU/Wd两级量化整数MAC/CIM；旧浮点Wd参考不称最强数字。给FFN确认z25位尾数/指数→每64共享P8的格式/周期/计费与Wd复用/跨K状态边界；给Attention确认完整PV概率数制与RNE，以及补充R8可变数量的归一化合同。其余数字执行、总面积约6.4803配平、SRAM/外存调度由TLM消费端完成。未向其他对话发送消息，未提交数字任务。
+
+正式[提交记录](process_28nm/250MHz/FULL_RUN_20261110_ZH.md)、[数字确认清单](process_28nm/250MHz/DIGITAL_BASELINE_COORDINATION_20261110_ZH.md)；恢复work/rayggxia/225/full250_20261109/ops.py status及HANDOFF，精确SHA/EXIT/SEAL按同目录记录。仅任务提交和接口交接，不新增数字电路run。
+
+
 ## 2026-11-09｜Issue225：28nm250新价卡、PV与条件账本闭合
 
 采用三项零余量重映射的SC/FMA/整数GU价，数字主对照6项72PT/9旧STA及17张Attention卡已可用。当前概率主线保留原Ising/R8映射、S12优先分数前端；PV按保留固定状态的宽度参考代理及实际miss/reuse计价，DMA/FIFO/向量/接口具名宏，避免gross与驻留idle重复。六CPU封存回放＋六检查通过；250两层2.2118ms与原动作、访存/地址、bank活动完全一致，500单层.99729ms连BUDGET也不变。旧prepare不会覆盖新默认。

@@ -1,3 +1,21 @@
+## 2026-11-10 完整概率版已启动
+
+门禁38644763已通过（EXIT0/SEAL/Slurm COMPLETED）；数组38644764_0/1已RUNNING，实际job38644798/38644799；_2依并行限制等待。全量仍未完成。精确观测见OBSERVATION_20261110.json，后续只查状态、不重复提交。数字接口待确认清单已写，未发消息或提交数字任务。
+
+---
+
+## 2026-11-10 28nm250完整概率版已提交：本地回执待发布
+
+Issue225/PR249，rayggxia；沿task/225-tlm-unified250-20261107。北京时间00:46提交EDA门禁38644763与完整三seed数组38644764，afterok依赖、最多2并行；请求1CPU/12GiB，实际Slurm可能分配3CPU，无GPU。36层/151936词表、GU16/Wd32/K128/S64/S12、3核/832KiB保持；原生LPDDR derived8533后端。不是仅跑2层或缩小head的全量任务；门禁本身仍一层/384head。
+
+服务器根/public3/home/t6s011227/pbit_chimera_pipeline_20260920/tlm28p250_full225_3c811d6efe58；源码包SHA9e0125325e3aaae6151786ef16645159f4a82d20c58aa175dd9f9dad12f8bf87，MFf69df7db841445d52d9572732824709130d5cdedacaff99981dbdd957490fd8b。各case独立work防止DRAM统计互相覆盖。现已提交，不把门禁运行/全量依赖等待写成完成；最新状态见本work/STATUS。冻结源码不修改，binary64等值兼容补丁与六检查另存。55/500不变，无新EDA电路/GPU/PPL。
+
+数字新决定：两级量化整数MAC/CIM优先，z25位尾数/指数到共享P8、Wd复用/状态位宽及计费边界需FFN确认；Attention只确认完整PV概率数制/转换和可选R8实际数量归一化。现有参考价格已够，不能再用旧浮点Wd的7.9x/21x称最强数字优势。详细转发文件process_28nm/250MHz/DIGITAL_BASELINE_COORDINATION_20261110_ZH.md；未向其他对话发消息。等面积/数字执行/内存排布由TLM端负责，确认不阻塞概率作业。
+
+恢复本work/ops.py status，完成只认EXIT=0与SEAL/原件SHA；需要修复则独立新快照，不重复提交健康任务。本地提交回执已齐，GitHub同步看本work/PUBLICATION；PR未合并，Projects待维护者同步。
+
+---
+
 ## 2026-11-09 28nm250 TLM最新更新已发布
 
 PR249源b64cbb3241dc2f0e6d6bdb5b3ce5269e3cb06d02，31文件远端完整回读一致，Issue225评论6743216455。新零余量FFN/FMA、PV参考与平台宏已接，条件面积6.480303mm²；六CPU回放及六检查通过，250时间/访存未变、500 BUDGET不变。完整46.01856ms/核心15.016133mJ仍为明确外推，不是完整36层实跑；扣head阶段39.408936ms。S12主线、832KiB、55/500默认保持，宏/PV hold限制保留。原件zip/SHA与恢复在本work，PR待审未合并，Projects待维护者同步。

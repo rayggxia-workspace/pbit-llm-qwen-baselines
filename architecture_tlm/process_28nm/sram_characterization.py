@@ -22,7 +22,7 @@ def mixed_budget(result,config):
     # The event engine repeatedly adds positive binary64 prices, whereas this
     # audit multiplies exact action counts. Bound accumulation roundoff by N*u.
     events=s['counts']['read_words']+s['counts']['write_words']
-    roundoff_bound=max(1e-12,2*events*math.ulp(1.0))
+    roundoff_bound=max(1e-12,2*events*(2.0**-52)) # binary64 epsilon;also Python3.6 on EDA
     error=(s['dynamic_mJ']-dynamic/1e9)/(dynamic/1e9) if dynamic else 0.
     assert abs(error)<=roundoff_bound,dict(event_mJ=s['dynamic_mJ'],count_mJ=dynamic/1e9,
         relative_error=error,binary64_bound=roundoff_bound,events=events)

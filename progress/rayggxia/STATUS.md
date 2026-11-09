@@ -1,3 +1,9 @@
+## 2026-11-09 混合宏默认已发布
+
+PR249源d5fe6e97333ba53fbaf925ea8ec990d2a53aa6ea，25文件远端完整回读一致，Issue225评论6738309665。两频默认832KiB/178混合宏，前端共享106、Attention72端口；小配对250/500慢0.133826%/0.016848%，SRAM宏面积减少0.192107mm²，能量估计约+2.4%。S2动态仅库差估价，不是新PT；完整token未重跑，55nm保持。原件zip/SHA与交接在本work，PR待审未合并，Projects待维护者同步。
+
+---
+
 ## 2026-11-09 28nm混合宏默认：本地完成，待本次PR同步
 
 Issue225/PR249，rayggxia；分支task/225-tlm-unified250-20261107，PR base task/225-norm-stream-20261106；工作目录tmp/tlm-unified250-issue225-20261107，恢复前确认PR最新head。用户决定30×8KiB＋4×4KiB CIM容量份额；两频832KiB总计30×8KiB＋148×4KiB/178真实宏，前端106共享端口、Attention72，不是独占34端口测量。55nm保持。

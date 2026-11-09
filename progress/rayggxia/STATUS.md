@@ -1,3 +1,15 @@
+## 2026-11-09 用户决策：55nm以250MHz为主线，剩余收尾已审计
+
+Issue225/PR249。主结果按55nm250；100仅低频参考，28独立，不取消健康任务、不自动改全局CLI或合并。当前3FFN核/960KiB/16KiB返回保持/256FMA，GU16/Wd32、19/35拍，K128/S64；Qwen/Llama已齐。15:53核全批31/36，250已14/18，仅余4个DeepSeek250；32/33/34运行且无新Traceback，35在健康原worker链。
+
+剩余重点：接最新TT250价卡并核GU/NL/FMA边界和近等面积预算；冻结最终算法/TLM/电路合同；CIM权重并行读出/装载/保持与未表征平台给宏成本/敏感性；将数字Softmax+R8/systematic采样PV接当前小SRAM共享池，不能拿旧2.5MiB结果直接用；原任务自然收齐后固定主表。不是缺PRNG/SRAM/DMA/计数器整套数据，也不要求全片逐门签核。独立ADD新55批DC失败但项目已有Attention250ADD，可先核合同复用。
+
+共享FMA已采用实测TT250价，不仍是2pJ；新旧FMA16面积仅约.04%差，不因此推倒全部结果。只改单价先原动作重计；改变II/延迟/合法FMA切片数再重放。当前W8screen总能量优势仅5.35%，CIM特有未知成本要敏感性，不把小中心差当已验证硅片优势。最新联合质量仍在对应模块核查；数据备齐不等于评测完成。
+
+正式250MHz/PRIMARY_READINESS_ZH_20261109.md，来源SHA/状态为本work/AUDIT.json；无新EDA/TLM/GPU、无默认/旧封存更改。本地未全部公开的新价卡只引用索引，不重新发布原件。PR249待审未合并，Projects待维护者同步，发布看本work/PUBLICATION.json。
+
+---
+
 ## 2026-11-09：28nm SRAM仍为估计，最小工艺库校准需求已写
 
 Issue225/PR249，核当前250/500 WHOLE_CONFIG及CACTI来源：没有接入真实28nm SRAM宏PPA，严格价仍null；粗估960KiB约1.6735mm²/2.41mJ来自CACTI＋55nm残差迁移。4/2ns服务仍是假设。没有因已有28nm逻辑PPA就宣称SRAM真实。正式process_28nm/SRAM_CHARACTERIZATION_REQUEST_ZH_20261109.md供用户EDA方执行。

@@ -1,3 +1,9 @@
+## 2026-11-09 条件整机初估
+
+[Qwen3-4B粗估报告](rough_estimate_20261109/REPORT_ZH.md)：250/500MHz核心面积中心约6.9mm²，含head45.90/40.99ms；外存4pJ/bit情景约183mJ/token。六小型head回放＋双工艺CACTI已完成，36层/完整head仍为外推。500FMA、PV及SRAM残差迁移/控制预留明确分开；严格缺价null和55默认保持。不是芯片签核或完整原生LPDDR结果。
+
+---
+
 ## 2026-11-09 最新结果接入核对
 
 [最新交接使用表](LATEST_INTAKE_20261109_ZH.md)区分实际运行、已登记可用、条件卡和未采用诊断价。本次补500exp及两项250数字FFN，保留两张hold待修条件卡和四PV setup失败诊断。当前概率路径实际成本/服务未变，三原封存BUDGET新绑定重计价全等，未重跑。来源/检查见LATEST_INTAKE_20261109.json，原WHOLE_VALIDATION保持原执行绑定。

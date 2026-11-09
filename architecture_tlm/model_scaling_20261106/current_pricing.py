@@ -27,6 +27,11 @@ def price(r,snapshot):
     add('DMA16KiB_capture_and_hold',ext/64*other['capture_pJ_per64B']/1e6,other['DMA24_idle_W']*(16/24)*T/1000,'measured SS holding/capture proxy; controller/PHY separate')
     lanes=(640 if c==100 else 256) if scheme=='SC_ising' else r['allocation']['lanes']
     if scheme=='SC_ising':
+        if c==250:
+            from whole250.cim_weight_policy import weight_read_cost
+            weight_proxy=weight_read_cost(r,12.0293)
+            add('CIM_weight_presentation_SRAM_proxy',weight_proxy['additional_uJ'],0,
+                'user-selected ordinary TT SRAM read per resident 8KiB tile;writes/area/leakage already in SRAM ledger;no per-sample reread')
         core=core_budget(r['kernel_active'],T,6 if c==100 else 3,c)
         add('FFN_common_core',core['active_gross_mJ']*1000,core['waiting_mJ']*1000,'matched gross service+remaining physical core-time waiting;RNG/nonlinear included')
         prices=old['common']['ab_state32'] if c==100 else dict(active_pJ=52.0366013072,idle_W=.0001372)
@@ -126,7 +131,7 @@ def price(r,snapshot):
         average_W_by_pJbit={k:v/(T/1e6) for k,v in total.items()},components=rows,
         no_28nm_mixing=True,new_circuit_PPA=False,all_physical_costs_measured=False,
         boundary=['native LPDDR timing;external pJbit energy sensitivity,not native power',
-          'CIM interface/PHY/fullCTS/NoC outside calibrated boundary',
+          'CIM weight interface at250 uses ordinary SRAM energy proxy;PHY/fullCTS/NoC outside calibrated boundary',
           'SS scalar/vector/conversion proxies retained at250',
           'sampled control and format macro energy explicitly estimated,0.5x/2x sensitivity',
           'logical QK/PV4-slot padding work preserved; no quality claim or maximal mapping claim'])

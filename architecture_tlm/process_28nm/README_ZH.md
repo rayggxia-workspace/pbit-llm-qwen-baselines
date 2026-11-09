@@ -1,4 +1,4 @@
-> **2026-11-09用户已接受：28nm250/500MHz默认832KiB/208bank。** 当前面积预算6.758447/6.784987mm²，无统一15%预留；55nm保持。960KiB及原全token时间为历史参考。见[新默认说明](DEFAULT_SRAM832_20261109_ZH.md)。
+> **2026-11-09更新：28nm250/500MHz默认832KiB/178个混合宏。** 前端106共享端口＋Attention72端口；条件面积预算6.566340/6.592880mm²。见[混合宏验证](SRAM_MIXED34_VALIDATION_20261109_ZH.md)。55nm保持。
 
 > 2026-11-09：宿主已独立完成832KiB两频小配对，见[验证结果](SRAM832_VALIDATION_20261109_ZH.md)。此前默认960KiB，现已接受832KiB；[需其它模块确认的清单](../module_handoff/SRAM_REDUCTION_COORDINATION_ZH_20261109.md)。
 

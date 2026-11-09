@@ -12,7 +12,9 @@ def install(model, config):
               'activation96_attention36':(832,208,96,36)}
     if profile not in expected:raise ValueError('unknown smaller SRAM layout')
     capacity,banks,vector_kib,attention_kib=expected[profile]
-    assert (config['capacity_KiB'],config['bank_count'])==(capacity,banks)
+    mixed=config.get('mixed_CIM_30x8_4x4',False)
+    assert (config['capacity_KiB'],config['bank_count'])==(capacity,178 if mixed else banks)
+    if mixed:assert profile=='activation96_attention36'
     if profile=='compact960':
         model.candidate_sram_contract=dict(profile=profile,active=False,capacity_KiB=capacity,bank_count=banks)
         return
@@ -44,3 +46,6 @@ def install(model, config):
         output_offset_bytes=(34 if attention_kib==36 else 47)*1024,
         weight_slots=32,FFN_state_KiB=96,V_cache_entries=128,
         samples=64,candidates=128,no_extra_ports=True,no_sampler_change=True)
+    if mixed:
+        from mixed_sram import install as install_mixed
+        install_mixed(model,config)

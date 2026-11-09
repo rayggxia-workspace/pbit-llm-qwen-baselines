@@ -1,4 +1,4 @@
-> **2026-11-09用户已接受：28nm250/500MHz默认832KiB/208bank。** 当前面积预算6.758447/6.784987mm²，无统一15%预留；55nm保持。960KiB及原全token时间为历史参考。见[新默认说明](DEFAULT_SRAM832_20261109_ZH.md)。
+> **2026-11-09更新：28nm250/500MHz默认832KiB/178个混合宏。** 前端106共享端口＋Attention72端口；条件面积预算6.566340/6.592880mm²。见[混合宏验证](SRAM_MIXED34_VALIDATION_20261109_ZH.md)。55nm保持。
 
 > 2026-11-09：宿主已独立完成832KiB两频小配对，见[验证结果](SRAM832_VALIDATION_20261109_ZH.md)。此前默认960KiB，现已接受832KiB；[需其它模块确认的清单](../module_handoff/SRAM_REDUCTION_COORDINATION_ZH_20261109.md)。
 
@@ -20,7 +20,7 @@
 
 ## 目前显式保留的假设
 
-`250MHz/WHOLE_CONFIG.json`与`500MHz/WHOLE_CONFIG.json`是可调宏入口。初始同一片上时钟4/2ns，SRAM每bank1RW、208bank/832KiB、访问延迟1拍；S0宏TT时序已确认，bank互连沿有限执行模型。`--sram-latency-cycles 2`改变返回延迟，bank仍每核心拍接受一次操作，不等价于把bank时钟减半。
+`250MHz/WHOLE_CONFIG.json`与`500MHz/WHOLE_CONFIG.json`是可调宏入口。初始同一片上时钟4/2ns，SRAM每bank1RW、178混合宏/832KiB、访问延迟1拍；S0宏TT时序已确认，bank互连沿有限执行模型。`--sram-latency-cycles 2`改变返回延迟，bank仍每核心拍接受一次操作，不等价于把bank时钟减半。
 
 共享数字池初始256FMA、4上下文、II1、4拍反馈/尾部；500MHz的新数字实现仍待最终绑定。PV初始每头2ADD、7拍反馈，输出归一化/格式宏16拍。Norm/RoPE/残差及部分控制保留原命名周期数。上述未确认项目分别标宏，不冒称已通过28nm STA；FFN零setupunc与Attention10%period的表征标签保留。
 

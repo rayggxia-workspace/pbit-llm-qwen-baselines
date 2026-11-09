@@ -1,5 +1,14 @@
 # 概率计算架构优化记录本
 
+## 2026-11-09｜Issue225：832KiB混合宏减少外围面积
+
+用户选择拆分两个8KiB宏，CIM容量份额为30×8KiB＋4×4KiB。28nm两频默认总计30×8KiB＋148×4KiB＝832KiB/178真实1RW宏；共享前端136→106端口，Attention72保持，非CIM独占34端口验证。物理53248字无别名/越界，四个完成case核帧/算术/采样/转换/外存字节与地址守恒。250两层＋384head时间2.208844→2.211800ms（+0.1338%），500一层＋384head .997122→.997290ms（+0.01685%）。
+
+SRAM宏2.471065→2.278958mm²（-7.77%），条件子系统250/500为6.566340/6.592880mm²，无15%统一预留；S2读写仅按S0_PT＋同库CLK差估计，局部SRAM能量约+2.4%，不是节能同比下降。保留首次未封存能量舍入断言失败，修订按事件数×binary64误差界审计，执行调度不变。完整token/nativeLPDDR/新PPL/RTL/PT/布局未做，55不变。
+
+正式[验证与限制](process_28nm/SRAM_MIXED34_VALIDATION_20261109_ZH.md)、[机器结果](process_28nm/SRAM_MIXED34_VALIDATION_20261109.json)、[默认](process_28nm/DEFAULT_SRAM832_20261109_ZH.md)；原件zip及SHA见work/rayggxia/225/mixed34_20261109/ARCHIVE_INDEX.json，冻结PLAN是可执行复现入口。Issue225/PR249交付，不改已有冻结作业。
+
+
 维护入口：Issue186 / PR190；负责人jieruiz；建立于2026-10-25。这是论文准备的**机制与证据索引**。具体电路结果仍只登记在 `digital_circuit_simulation_registry/`，不在这里另造功耗台账。历史记录不因新方案出现而删除。
 
 ## 当前可以说到什么程度

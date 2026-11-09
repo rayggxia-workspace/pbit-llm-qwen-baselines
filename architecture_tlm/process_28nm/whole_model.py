@@ -30,6 +30,17 @@ def unknown_sram_prices():
     original=BeatSRAM._tick;s=inspect.getsource(original)
     old='self.energy_pJ+=self.prices[kind]';assert s.count(old)==1
     s=s.replace(old,"if self.prices[kind] is None:self.count['unpriced_'+kind+'_words']+=1\n            else:self.energy_pJ+=self.prices[kind]")
+    bankline="job=self.queue.popleft();r=job['r'];bank=r.banks[job['next']%len(r.banks)]"
+    assert bankline in s
+    s=s.replace(bankline,"job=self.queue.popleft();r=job['r'];bank=self.physical_bank_resolver(r,job['next']) if hasattr(self,'physical_bank_resolver') else r.banks[job['next']%len(r.banks)]")
+    scalar="if self.prices[kind] is None:self.count['unpriced_'+kind+'_words']+=1\n            else:self.energy_pJ+=self.prices[kind]"
+    s=s.replace(scalar,"""price=self.bank_prices[kind][bank] if hasattr(self,'bank_prices') else self.prices[kind]
+            if price is None:self.count['unpriced_'+kind+'_words']+=1
+            else:self.energy_pJ+=price
+            if hasattr(self,'bank_activity'):
+                self.bank_activity[bank][kind]+=1
+                if tag in ('GU_weights_fill','down_weights_fill'):self.bank_activity[bank]['CIM_write']+=1
+                if tag in ('CIM_weight_presentation_read','GU_weight_presentation_read','Wd_weight_presentation_read'):self.bank_activity[bank]['CIM_read']+=1""")
     env=dict(original.__globals__);exec(compile(textwrap.dedent(s),'<28nm optional SRAM event price>','exec'),env);BeatSRAM._tick=env['_tick']
     def report(self,end):
         unknown=any(v is None for v in self.prices.values())
@@ -37,8 +48,10 @@ def unknown_sram_prices():
             word_bytes=self.word,clock_hz=1e9/self.period,access_ns=self.access_ns,
             fabric_GBs=self.fabric_words*self.word/self.period,counts=dict(self.count),
             by_tag={k:dict(v) for k,v in self.by_tag.items()},dynamic_mJ=None if unknown else self.energy_pJ/1e9,
-            leakage_mJ=None if self.leak_W is None else self.nbank*self.leak_W*end/1e6,
-            area_mm2=None if getattr(self,'area28_per_macro',None) is None else self.nbank*self.area28_per_macro,
+            leakage_mJ=(sum(self.bank_idle_W)*end/1e6 if hasattr(self,'bank_idle_W') else None if self.leak_W is None else self.nbank*self.leak_W*end/1e6),
+            area_mm2=(sum(self.bank_area_mm2) if hasattr(self,'bank_area_mm2') else None if getattr(self,'area28_per_macro',None) is None else self.nbank*self.area28_per_macro),
+            bank_model_ids=list(self.bank_model_ids) if hasattr(self,'bank_model_ids') else None,
+            bank_activity=[dict(x) for x in self.bank_activity] if hasattr(self,'bank_activity') else None,
             area_multiplier=1,energy_status='UNPRICED_ACTIONS_RETAINED' if unknown else getattr(self,'characterization_status','EXPLICIT_MACRO_PRICE'),
             characterization_sha256=getattr(self,'characterization_sha256',None),
             regions=[dict(name=r.name,base=r.base,size=r.size,banks=list(r.banks)) for r in self.regions.values()])
@@ -56,6 +69,11 @@ def retime(m,mhz,sram_cycles,macros):
     h.mem.leak_W=prices.get('leak_W_per4KiB');h.mem.area28_per_macro=prices.get('area_mm2_per4KiB')
     h.mem.characterization_status=prices.get('price_status','EXPLICIT_MACRO_PRICE')
     h.mem.characterization_sha256=prices.get('characterization_sha256')
+    if getattr(h.mem,'bank_model_ids',None):
+        cards=prices['macro_models'];ids=h.mem.bank_model_ids
+        h.mem.bank_prices={kind:tuple(cards[k][kind+'_pJ_per16B'] for k in ids) for kind in ('read','write')}
+        h.mem.bank_idle_W=tuple(cards[k]['idle_W'] for k in ids)
+        h.mem.bank_area_mm2=tuple(cards[k]['area_mm2'] for k in ids)
     a=h.ingress_clock_audit;a.update(ticks=0,off_edge_ticks=0,last_cycle=None,last_tick_ns=None,min_spacing_cycles=None,min_spacing_ns=None,
         ledger='integer'+str(p)+'ns cycles;parent dispatcher tolerance retained')
     def wake(self):

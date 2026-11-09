@@ -42,8 +42,10 @@ def price(m,r,binding):
     sram=sram_budget(r,r.get('macro_config',{}).get('SRAM',{}))
     if sram is not None:
         cfg=r['macro_config']['SRAM'];banks=r['SRAM']['physical_banks']
-        row('SRAM28_real_S0_macros',sram['area_mm2'],sram['ordinary_incremental_mJ']*1e9,
-            cfg['leak_W_per4KiB'],banks,'real28HPC+ S0 TT;clock-off baseline increments + one full residency')
+        mixed=bool(r['SRAM'].get('bank_model_ids'))
+        row('SRAM28_mixed_S0_S2_macros' if mixed else 'SRAM28_real_S0_macros',sram['area_mm2'],sram['ordinary_incremental_mJ']*1e9,
+            sram.get('mean_idle_W',cfg['leak_W_per4KiB']),banks,
+            'S0 measured;S2 lib area/timing plus CLK-delta energy estimate' if mixed else 'real28HPC+ S0 TT;clock-off baseline increments + one full residency')
         row('CIM_weight_presentation_SRAM_proxy',0,sram['CIM_weight_read_mJ']*1e9,0,1,
             'user-selected ordinary SRAM read per resident tile;no added per-sample reread or physical port')
     fma=binding['shared_FMA'];ops=r['actions']['digital_BF16_MAC']+r['actions']['attention_QK_MAC'];n=16

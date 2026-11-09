@@ -1,3 +1,21 @@
+## 2026-11-09 28nm混合宏默认：本地完成，待本次PR同步
+
+Issue225/PR249，rayggxia；分支task/225-tlm-unified250-20261107，PR base task/225-norm-stream-20261106；工作目录tmp/tlm-unified250-issue225-20261107，恢复前确认PR最新head。用户决定30×8KiB＋4×4KiB CIM容量份额；两频832KiB总计30×8KiB＋148×4KiB/178真实宏，前端106共享端口、Attention72，不是独占34端口测量。55nm保持。
+
+本机四case完成封存，250三核两层+384head 2.208844→2.211800ms(+.133826%)；500两核一层+384head .997122→.997290ms(+.016848%)。53248物理字无别名，真实端口、排空、核帧/转换/尺度/算术/采样/外存字节与地址SHA校验通过。首次混合未封存energy断言失败保留，确认binary64累计误差约3.1e-10；按N*epsilon界修复审计，调度不变。
+
+SRAM宏2.471065→2.278958mm²(-7.77%)，条件250/500面积6.566340/6.592880mm²；S2用库面积时序漏电、动态S0_PT＋CLK库差估计，局部SRAM能量约+2.4%，不是新S2PT。新默认执行字段匹配冻结混合配置，四个说明字段纠正；208全4K/960参考保留。完整token、新PPL、nativeLPDDR、芯片PPA未重做，不用旧960时间改标签。无健康服务器任务变动。
+
+正式process_28nm/SRAM_MIXED34_VALIDATION_20261109_ZH.md/json与DEFAULT_SRAM832；原件归档project_archives/mixed34_issue225_20261109/finite_pairs_and_failed_audit.zip/SHA见本work/ARCHIVE_INDEX.json。当前本地完成，发布结果以本work/PUBLICATION.json为准，PR待审未合并；Projects无已核实写接口，待维护者同步。下一步如需完整832 token，使用新WHOLE_CONFIG与独立输出；复现局部测试用归档冻结PLAN命令，不重写旧快照。
+
+---
+
+## 2026-11-09 SRAM端口分析已发布
+
+PR249源0fd26cff0d10bd976bf76190ee724cbc28e54110，5文件远端完整回读一致，Issue225评论6737064311。CIM采样读端口与装载写端口分开：现行约135GB/s装载，32个8KiB独占区250仅128GB/s、500为256GB/s；250可先试40端口混合宏。Norm/元数据/残差优先减，数字权重/热K-V保留供数，状态按RMW突发。分析不是新布局时序/PPA，832默认不变，PR未合并，Projects待同步。
+
+---
+
 ## 2026-11-09 SRAM端口削减分析：CIM分计算与装载两阶段
 
 Issue225/PR249。832默认不变，无新时序/PPA。前端136bank条带共享，容量份额不等于专属端口。Norm/冷元数据/残差最适合先减端口；CIM采样驻留不逐拍读，但GU/Wd装载实际约135GB/s。独立256KiB用32×8KiB端口在250MHz只有128GB/s，低于当前需求；500MHz256GB/s有余量。250建议试24×8K＋16×4K=256K/40端口160GB/s，宏面积份额.606642mm²；500可试32×8K=.555413mm²。不是已完成新整机结果。

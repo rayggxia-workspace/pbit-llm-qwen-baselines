@@ -35,13 +35,13 @@ CIM权重接口沿用户刚确定的普通SRAM代理：每个使用的8KiB权重
 
 下面是此前“小规模TLM＋36层/全词表外推”条件估计，仅更新SRAM及其权重读代理；其他平台宏和500MHz FMA代理仍保持原范围。**不是新完成的36层原生LPDDR仿真或完整芯片PPA。**
 
-|版本|覆盖子系统面积，含原15%布局预留|含head时间|片上能量|总能量，外存4pJ/bit|
+|版本|覆盖子系统面积，无统一布局预留|含head时间|片上能量|总能量，外存4pJ/bit|
 |---|---:|---:|---:|---:|
 '''
 for r in x['cases']:
     report+=f"|{r['clock_MHz']}MHz|{r['area_mm2']:.3f}mm²|{r['time_ms']:.3f}ms|{r['chip_energy_mJ']:.3f}mJ|{r['total_energy_mJ_at4pJbit']:.3f}mJ|\n"
 report+='''
-面积中心比旧值各增加约1.354mm²（实际宏差额×既有1.15布局系数）。片上能量增加来自实测读写价格高于旧迁移估计，以及显式补计CIM权重等效读；时间没有变化，因为1拍返回和II1没有改变。外存字节/带宽/能量情景不变。
+用户决定暂不考虑统一15%布局/控制预留，因此面积按已计模块与SRAM直接相加，统一系数为1。已有具名控制模块与寄存器面积保留，不与百分比预留混淆。片上能量增加来自实测读写价格高于旧迁移估计，以及显式补计CIM权重等效读；时间没有变化，因为1拍返回和II1没有改变。外存字节/带宽/能量情景不变。
 
 机器接口：`SRAM_CALIBRATION_20261109.json`、两频`WHOLE_CONFIG.json`；执行：`whole_model.py`/`run_whole.py`，计费：`whole_pricing.py`/`sram_characterization.py`。`SRAM_INTAKE_20261109.json`含所有来源SHA、三原回放重计和条件整机数值。严格完整整机值仍保留null，因为其他模块尚有明确宏价/缺项；SRAM已从未计列表移除。
 
@@ -56,7 +56,7 @@ Issue225/PR249，rayggxia接入，原表征jieruiz。S0真实4KiB/128bit/1RW、T
 
 两频WHOLE_CONFIG已写真实随机读写价格与停钟增量基线，1拍返回/II1保持。whole_model/run_whole/whole_pricing已实际接接口，SRAM从未计列表移除。普通SRAM代理也用于驻留CIM权重每tile一次读；写入/面积/泄漏不重复。未改55nm或冻结任务，无新EDA/长时序回放。
 
-原条件整机估计只更新SRAM后，250/500中心面积8.209/8.240mm²、时间45.901/40.991ms、片上15.013/15.050mJ，总4pJ情景188.208/188.268mJ。仍是小TLM＋36层/完整head外推，500FMA/PV/平台等原宏限制保留，不能写新完整芯片或原生全层结果。正式process_28nm/SRAM_INTAKE_20261109_ZH.md/json与SRAM_CALIBRATION；历史粗估原件不改。
+原条件整机估计接入SRAM并按用户决定取消15%统一预留后，250/500中心面积7.139/7.165mm²、时间45.901/40.991ms、片上15.013/15.050mJ，总4pJ情景188.208/188.268mJ。仍是小TLM＋36层/完整head外推，500FMA/PV/平台等原宏限制保留，不能写新完整芯片或原生全层结果。正式process_28nm/SRAM_INTAKE_20261109_ZH.md/json与SRAM_CALIBRATION；历史粗估原件不改。
 
 受限1.5MB完整库表JSON保留本机/授权服务器，只公开所需标量、说明和SHA。中央记录sram28-s0-225-20261109沿原run归档，owner不改。发布状态看本次work/PUBLICATION.json，PR未合并；Projects待维护者同步。
 '''

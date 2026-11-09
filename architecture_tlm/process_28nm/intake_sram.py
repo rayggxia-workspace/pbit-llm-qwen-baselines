@@ -115,14 +115,18 @@ def main():
             CIM_weight_SRAM_proxy_mJ=s['CIM_weight_read_mJ'],SRAM_calibration=s,
             chip_energy_mJ=prev['chip_energy_mJ']+de,
             total_energy_mJ_at4pJbit=prev['total_energy_mJ_at4pJbit']+de,
-            area_mm2=prev['area_mm2']+1.15*da,
+            area_mm2=prev['area_mm2']/1.15+da,
             chip_average_W=(prev['chip_energy_mJ']+de)/prev['time_ms'],
             system_average_W_at4pJbit=(prev['total_energy_mJ_at4pJbit']+de)/prev['time_ms'],
             external_bytes=prev['external_bytes'],external_mJ=prev['external_mJ'],
             energy_scenarios_mJ={k:v+de for k,v in prev['energy_scenarios_mJ'].items()},
             retained_non_SRAM_energy_mJ=prev['chip_energy_mJ']-prev['SRAM_energy_mJ'],
             other_blocks_remain_previous_conditional_estimates=True,
-            added_area_placement_factor=1.15)
+            added_area_placement_factor=1.0,
+            area_placement_factor=1.0,
+            historical_source_area_factor=1.15,
+            area_without_SRAM_mm2=prev['area_mm2']/1.15-prev['SRAM_area_mm2'])
+        assert math.isclose(new['area_mm2'],new['area_without_SRAM_mm2']+s['area_mm2'],abs_tol=1e-12)
         assert math.isclose(new['chip_energy_mJ'],new['retained_non_SRAM_energy_mJ']+s['total_including_CIM_mJ'],abs_tol=1e-12)
         assert math.isclose(new['energy_scenarios_mJ']['4.0'],new['total_energy_mJ_at4pJbit'],abs_tol=1e-12)
         full.append(new)

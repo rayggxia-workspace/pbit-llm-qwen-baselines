@@ -29,7 +29,7 @@ def main():
         raw=gzip.decompress(z); assert digest(raw)==item['payload_sha256']
         batch=json.loads(raw); assert len(batch['results'])==item['cases']
         assert batch['source_identity']==item['source_identity'] and len(item['source_identity'])==64
-        decode=256 if item['batch'].startswith('joint_qkvo') else 1024
+        decode=256 if item['batch'].startswith('joint_') else 1024
         expected=plan(item['context'],item['full_WT2'],decode)
         targets=sum(x['scored_tokens'] for x in expected)
         assert targets==(299077 if item['full_WT2'] else decode*8)
@@ -44,8 +44,8 @@ def main():
                 if key in r: assert r[key]==[targets]*36,(item['batch'],key)
             counts[0 if item['full_WT2'] else 1]+=1
         print(item['batch'],len(batch['results']),'PASS',len(expected),'windows',targets,'targets')
-    assert counts==[index['full_cases'],index['short_cases']]==[58,18]
-    assert sum(counts)==index['accepted_cases']==76
-    print('PASS: 76 entries (58 full WT2, 18 short), exact plan coverage, hashes and NLL-to-PPL')
+    assert counts==[index['full_cases'],index['short_cases']]==[58,23]
+    assert sum(counts)==index['accepted_cases']==81
+    print('PASS: 81 entries (58 full WT2, 23 short), exact plan coverage, hashes and NLL-to-PPL')
 
 if __name__=='__main__':main()

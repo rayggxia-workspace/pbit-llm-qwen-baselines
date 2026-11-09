@@ -1,3 +1,109 @@
+## 2026-11-09 用户决定：CIM权重接口采用普通SRAM功耗
+
+Issue225/PR249；55nm250主线的CIM权重并行接口直接采用普通SRAM读写事件价格，不再列待补仿真。写入/物理容量面积/泄漏沿原账本，新增每8KiB驻留tile一次等效读，16B为12.0293pJ，跨GU16/Wd32采样复用；保持并行供数时序，无逐采样重读、无额外权重DFF。已计读事件可去重。
+
+225原三seed实际价格函数重放通过：328320帧/168099840读，新增2.022123mJ，片上均值27.228731mJ、总4pJ情景200.393226mJ，时间50.418948ms、面积22.086073mm²不变。原件SHA、时序、带宽和核价格逐项不变；不是新时序/RTL/PT，冻结任务不改。正式250MHz/CIM_SRAM_POLICY_20261109.md/json及helper/pricing.py；245新价格函数已接同接口，健康冻结任务旧价封存后另派生重计，不能假称已经刷新原表。
+
+这是用户选择的架构成本假设，不宣称定制CIM联合PPA。100MHz/28nm本轮不改，CTS/PHY/NoC沿原平台边界。发布状态看本次PUBLICATION.json，未发布前只能称本地；看板待维护者同步。
+
+---
+
+## 2026-11-09：Qwen12项完成后的近等面积数字对照已总结
+
+Issue245/PR247，沿同一冻结胶合源12完整Qwen/8配置，三SC seed及三个数字单seed；不混225独立三seed。250MHz SC/BF16dense/W8dense/W8screen面积22.086/21.712/21.827/21.920mm²，含head时间50.428/103.839/95.515/85.732ms、总4pJ能量198.714/330.952/223.480/209.938mJ，平均总功率3.941/3.187/2.340/2.449W。SC相对W8screen快1.700×、片上节30.15%、总节5.35%。100MHz完整表已给，SC54.216ms/194.493mJ。
+
+此前50.419包含head。直接消费finalnorm时刻动作/存储快照重计价：250SC去head43.005ms/片上20.058mJ/总168.331mJ；数字三项去head95.406/89.279/79.496ms及300.584/193.121/179.579mJ。保留embedding/finalnorm和此前重叠head预取，非删除head硬件重跑、面积不减。数字实际比SC小.75–2.48%，仅近似等面积；W8是FFN权重，QKVO/head仍BF16，W8screen不采样PV。
+
+正式model_scaling_20261106/qwen_comparison_20261109/REPORT_ZH.md、SUMMARY/CSV、RATIOS及PHASE_TIME；12原件远端SEAL/SHA和本地11类计数/时间/能量/比率检查通过，无新TLM/GPU/PPL。数字250标量/转换代理、算法质量不对等已标，不宣称最优数字ASIC普遍优势或全36完成。PR247待审未合并，Projects待同步；发布以本work/PUBLICATION.json为准。
+
+---
+
+## 2026-11-09：55nm三模型TLM已封存28/36，漏接三尾项已补交
+
+北京时间11:47实核，Qwen12/12、Llama12/12、DeepSeek4/12，全部计入项有全层+head、VALIDATION及SEAL逐SHA；原历史失败6项与当前待做分开。剩8项：24/27/30/31及32/33/34运行，35由健康worker3随后执行。Qwen100概率约54.216ms，250约50.428ms；本批动态数制访存成本较225独立批略不同，不能混seed。
+
+发现原恢复只补24/25/26而漏其后32/33/34。三项从未启动、原worker0/1/2失败及无输出目录已核实；新CPU数组38638359三项已RUNNING且无Traceback，沿原冻结driver/manifest，不改算法/硬件/价格，不重跑健康case。旧等待汇总38634118已核名/状态后取消，改38638371等待所有活跃任务；首汇总依赖含已被控制器回收的完成job而拒绝，依durable receipt仅补汇总，没有重复tail。
+
+按已有DeepSeek约7h/项及数字工作量估计全批再8–12h CPU墙钟，非保证。当前不是36项最终结果，不宣布PR合并。正式RUN_STATUS_20261109.json和STATUS_20261109_ZH.md；恢复tail_status_20261109.py与repair_status.py两者结合，不能只读旧聚合ID。Issue245/PR247发布以tail_recovery_20261109/PUBLICATION.json为准，Projects待维护者同步。
+
+---
+
+## 2026-11-08 22:38：7/36完整结果，跨模型SC100地址绑定修复已恢复
+
+首检三worker进入Llama100 SC时被旧Qwen5KiB残差边界拒绝；并非前端PPA近似问题。真实闭包decoder绑定已修正，不增加SRAM/端口/价格，Qwen4928旧映射字不变，三模型本地内存包装预检通过。独立冻结修复161da0452c99/e0dab7ae；Llama/DeepSeek100冷单层38634043两门禁通过并核SEAL。当前7完整case逐SHA核验、原5健康worker保留，3恢复worker38634114运行，38634115/16/17待原对应worker结束；新汇总38634118。仅取消无效且仍pending的旧聚合38631676，旧源/失败输出/成功结果不改。
+
+正式DECODER_REPAIR_ZH.md与delivery/DECODER_REPAIR_RECEIPT、REPAIR_STATUS。只读恢复用repair_status.py，不再prepare/repair_submit。6个指定SC100使用修复manifest，其他30个保留原源，聚合严格36唯一case；未收齐、未合并，Projects待同步。发布SHA见DECODER_REPAIR_PUBLICATION。前端成本可以先沿旧非零宏预算，不触发健康重跑；A数值证据不能冒充B质量。
+
+---
+
+## 2026-11-08 19:11北京时间：三模型批次健康，0/36完整case
+
+实际SSH核38631668八worker均RUNNING（已1:09:04），无失败；8/8前置门禁保留。首轮Qwen当前第9～18层/36层，后续同worker继续Llama/DeepSeek；不是三个模型都已经出完整结果。汇总38631676等待afterok。状态小索引delivery/STATUS_CHECK_20261108T111153Z.json，未重提/改源/取消健康任务。12～24h整批初估暂保留，不承诺结束时刻。
+
+## 2026-11-08 当前交付已发布，完整任务继续运行
+
+源e6e534d6eb5ecf0d733d38c40383aae99bb00900已发布PR247，33文件逐内容回读一致；Issue245与PR说明已同步。8/8校验通过；full38631668八worker在18:15北京时间仍健康运行，汇总38631676等待afterok，完整结果未收齐，PR未合并。PUBLICATION_CURRENT.json记录源和回读SHA。
+
+CLI git fetch本次无法连接github.com:443；发布使用身份已核验的GitHub连接器完成。当前本地HEAD仍d2b22f7，index/工作文件保留已发布内容，不能把HEAD旧点当未发布，也不要reset覆盖。恢复优先核对远端PR247，再在网络恢复后取回提交与索引做字节核验后同步HEAD。无权限的Projects待维护者同步。
+
+## 当前运行回执：full38631668 / aggregate38631676，8/8门禁通过（2026-11-08）
+
+完整8worker均已运行；36case尚未收齐。正式交付CURRENT_MAINLINE_ZH.md；delivery/PILOT_SUMMARY及FULL_SUBMISSION、AGGREGATE_JOB已收，未把单层当整机。下述“安排”阶段现已进入执行。
+
+## 2026-11-08 Issue245：接回100/250主线，36完整case DAG已安排
+
+负责人rayggxia；task/245-cross-model-estimate / PR247 base main；工作目录tmp/cross-model245-20261106。新入口CURRENT_MAINLINE_ZH.md，完整模型Qwen3-4B/Llama3.2-3B-Instruct/DeepSeek7BChat ×100/250 ×SC/BF16dense/W8dense/W8screen，共24配置、36case。SC3seed，数字单seed；含/不含head阶段。当前6核1088KiB/3核960KiB，250用有效delta_v3价格/面积22.086073mm²；不混28nm。
+
+保留有限FIFO、早补货、PV生产消费重叠；数字共享FMA真租约、GU四K64合包、有限NL流水。逻辑KV地址/元数据36KiB/Norm及动态数制访存已适配。r16指归约器，不是SparQ维数。SS100控制/转换及250部分代理成本显式保留，非全片物理验收。
+
+冻结revision2 manifest982f9303785c364ed7c7ac5384927f0a12f98388433708306878e5f14fbae925。pilot38631497，成功后协调38631505提交8worker共36case；汇总协调38631640再afterok全worker。提交回执及最新状态见work/rayggxia/245/mainline_20261108/delivery/。旧直接36数组因提交配额未建立，已保留失败回执，无重复full提交；revision1原始结果保留作诊断，不作为最终结果。5项本地前驱预检；revision2远端门禁数量看STATUS时间戳和退出码。
+
+阶段：完整执行已安排，尚未收齐36个完整结果，不宣布整机PPA完成，不将单层乘层数；不新开GPU/训练/PT，不改变默认，不合并PR。发布以PUBLICATION_CURRENT.json为准；Projects无写接口，待维护者同步。下一步检查revision2门禁、full worker和汇总；失败在独立新快照修复，禁止改已提交源/重跑健康case。
+
+---
+
+## 2026-11-08 Issue245：24/24原生单层pilot通过，单项预算完成
+
+负责人rayggxia，task/245-cross-model-estimate，PR247 base main。38625522数组全部自然完成，24项封存SHA和WORK_GATE实际复核通过，原始JSON归档project_archives/cross245_20261108/SEALED_PILOTS.tar.gz（219990B/SHA6e0198f2460989ef40ba24ca9a6969b4581d6b6b36dd1b9bd3c918e19a0f86e2）。三模型配置/模块资料已齐，不需大权重。component_budget.py及JSON已给出静态权重流下界/有效核增量；3模型计数/TT250空价检查通过。
+
+已完成的是跨模型事务门禁和单项预算，并非24整模型PPA。主线供数/PV重叠、250 r16、norm/RoPE/残差访存/计价仍待对齐，TT250合格SC价格外部待收；之后Qwen锚点和全层含head。未重复任务/改默认/改owner源，无新GPU/PPL/RTL/PT。正式文档EXECUTION_STATUS_ZH.md，原件SHA和恢复HANDOFF齐；本轮交付见PUBLICATION_NOV8.json，PR未合并，Projects待维护者同步。
+
+---
+
+## 2026-11-07 Issue245：原生跨模型单层pilot已提交
+
+负责人rayggxia；tmp/cross-model245-20261106，task/245-cross-model-estimate / PR247 base main，起点25e950b5。EDA数组38625522_[0-23%2]：24项三模型×100/250MHz×概率/BF16dense/W8dense/W8screen，1CPU10GiB2h每项，最多2并发，无GPU。首Qwen100SC单层native完成，127139840B权重守恒和队列排空通过；其他看实时STATUS。四项本地Gates通过，覆盖24布局、12全形状FFN分包、三seed参考地址键及面积配额。执行目录/冻结SHA见work/rayggxia/245/execute_20261107/SUBMISSION.json和HANDOFF。
+
+这是跨模型试接门禁，不是整模型PPA。250 r32须对齐主线r16，供数/PV重叠及norm/RoPE/残差访存/计费待对齐，之后Qwen回归再全层含head。没有下载大权重或启动PPL/训练/RTL/PT，两版默认和owner源码不变；250合格短T PPA待收。胶合、材料来源及回执本地完成；发布看PUBLICATION.json，PR未合并，Projects待维护者同步。
+
+---
+
+## 2026-11-07 Issue245：用户明确跨模型只做硬件时间/功耗，不需准确率基线
+
+本阶段目的为Qwen3-4B、Llama3.2-3B-Instruct、DeepSeek-LLM-7B-Chat在当前概率硬件及等面积数字对照上的PPA/TLM，不要求下载权重、tokenizer、PPL、任务准确率或GPU基线；不取消其他已授权质量任务。CPU/EDA Slurm跑TLM即可。真实模型权重不是shape工作量的前置条件；数据依赖部分可使用明确标注的参考/合成轨迹与情景敏感性，不宣称真实文本功耗。
+
+固定1001088KiB/6核与250960KiB/3核两种芯片，三模型改变层/矩阵/头/波数，不按模型复制面积。三模型×两频率×概率、BF16dense、W8dense、W8同SparQ准确PV＝24主配置。当前compile_current_hardware.py已生成CURRENT_WORKLOAD_PLAN.json，校验Llama3Q/KV、DeepSeek4波及33024B尺度元数据；只是工作量/执行清单，非完成仿真。旧67.5mm²解析预算保留历史来源，不能改名成当前结果。
+
+Attention主表固定带SHA的参考驱动，screen数字与概率同候选；补集中/均匀/分散访问情景、随机三seed，实际记录提议/更新/有效样本及V去重命中，不将S64当64周期。静态FFN/投影/权重字节可直接算，onlineSoftmax重缩放与Ising采样延迟不能只凭shape认定。当前还须参数化Qwen硬编码、g/u及元数据地址、QK norm开关、小SRAM及数字共享池，单层门禁后再完整28/30/36层CPU任务。
+
+正式model_scaling_20261106/CURRENT_HARDWARE_ONLY_ZH.md、compile_current_hardware.py及CURRENT_WORKLOAD_PLAN.json；配额/数字模块接口沿Issue236/PR244，不新造整机模拟器。250合格核PPA待收仍条件。当前无新TLM/GPU/训练/PPL/RTL/PT任务；Issue245/PR247交付见PUBLICATION.json，待审不合并，Projects待同步。
+
+---
+
+## Issue245发布回执
+
+PR247待审未合并，源1335f69da2a3d014773adecb685ba6bdcfd37400。20文件逐内容回读一致，根报告镜像/长期备忘录已更新；未新增远端仿真任务。Issue245保留open，Projects待维护者同步。
+
+---
+
+# 2026-11-06 Issue245：Llama3.2/DeepSeek固定硬件初步预算
+
+负责人rayggxia；task/245-cross-model-estimate；base main8cd4fba；独立tmp/cross-model245-20261106。已本地完成解析预算、12份正式文件及6项CPU检查；未进行新模型原生TLM/PPL/EDA，不重跑236。Llama约39.92ms/159.50mJ，DeepSeek约83.45ms/333.76mJ，固定覆盖面积67.541mm²；4pJ/bit、100MHz/2.5MiB/12C20 T64、B1/2K、K128/S64。完整方法/代理边界见architecture_tlm/model_scaling_20261106/REPORT_ZH.md。
+
+容量检查及初估已处理DeepSeek逐层norm双缓冲并计读取；元数据33024B及Q/KV映射须在原生TLM落实。没有新模型质量结果或数字节能比例。证据SHA、验证和下一步见work/rayggxia/245/{SOURCE_MANIFEST.json,VALIDATION.json,HANDOFF.md}。远端阶段以PUBLICATION.json/Issue245为准；无此回执不表示已上传/合并。Projects待维护者同步。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

@@ -43,4 +43,24 @@ class Contracts(unittest.TestCase):
                 self.assertTrue(all(x>=0 for x in c['slacks_ns'].values() if x is not None))
             self.assertTrue(all(c['timing_qualified'] for c in v['accepted_digital_components'].values()))
 
+    def test_conditional_hold_does_not_waive_setup(self):
+        for v in self.models.values():
+            self.assertEqual(len(v['diagnostic_PV_cards']),2)
+            for c in v['diagnostic_PV_cards']:
+                self.assertLess(c['slacks_ns']['setup'],0)
+                self.assertFalse(c['selected_by_SC_whole_model'])
+            for c in v['conditional_attention_hold_cards'].values():
+                self.assertGreaterEqual(c['slacks_ns']['setup'],0)
+                self.assertGreaterEqual(c['slacks_ns']['gate_setup'],0)
+                self.assertFalse(c['qualified_module_price'])
+                self.assertFalse(c['hold_repaired'])
+            self.assertFalse(set(v['conditional_attention_hold_cards']) & set(v['attention_cards']))
+
+    def test_new_results_are_available_without_changing_random_path(self):
+        self.assertIn('bf_explut_500',self.models['500']['attention_cards'])
+        self.assertEqual(set(self.models['250']['accepted_digital_components']),
+            {'integer_gu_250','nl_code8_250','w8_wd_250'})
+        self.assertEqual(self.models['500']['FFN_core']['area_mm2'],0.564451146001)
+        self.assertEqual(self.models['500']['shared_FMA']['status'],'NO_QUALIFIED_FMA500_PRICE')
+
 if __name__=='__main__':unittest.main()

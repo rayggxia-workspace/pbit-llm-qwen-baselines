@@ -12,7 +12,28 @@ INPUTS={
  'digital':'architecture_tlm/module_handoff/ffn_tlm28_250_500_20261108/DIGITAL_RESULTS.json',
  'attention':'architecture_tlm/module_handoff/attention_tlm28_250_500_20261108/PROFILE.json',
  'earlier':'architecture_tlm/module_handoff/ffn_tsmc28_three_classes_20261107/POWER_RESULTS_20261108.json',
+ 'attention_summary':'architecture_tlm/module_handoff/attention_tlm28_250_500_20261108/PPA_SUMMARY.json',
+ 'attention_update':'architecture_tlm/module_handoff/attention_tlm28_250_500_20261108/NEW_RESULTS_20261109.json',
+ 'attention_status':'architecture_tlm/module_handoff/attention_tlm28_250_500_20261108/RUN_STATUS.json',
+ 'ffn_status':'architecture_tlm/module_handoff/ffn_tlm28_250_500_20261108/RUN_STATUS_20261109.json',
 }
+
+def hold_only_candidates(summary,mhz):
+    """User allows Attention hold-pending estimates;never waive setup or FFN."""
+    out={}
+    for c in summary['rows']:
+        if c.get('MHz')!=mhz or c.get('top') not in ('bf_fpadd','bf_fpmul'):continue
+        s=c.get('slacks_ns',{})
+        if not c.get('functional_gate_pass') or c.get('runner_status')!='calculated':continue
+        if s.get('setup',-1)<0 or s.get('gate_setup',-1)<0:continue
+        if not any(s.get(k,0)<0 for k in ('hold','gate_hold')):continue
+        if c.get('modes',{}).get('stream',{}).get('gross_pJ_per_operation') is None:continue
+        out[c['top']+'_'+str(mhz)]={k:c.get(k) for k in ('version','top','MHz','area28_mm2',
+            'slacks_ns','modes','source_manifest_sha256','reports_sha256')}|dict(
+                status='CONDITIONAL_ATTENTION_HOLD_REPAIR_PENDING',qualified_module_price=False,
+                setup_pass=True,hold_repaired=False,hold_buffer_increment_area_mm2=None,
+                hold_buffer_increment_energy_pJ=None,selected_by_SC_whole_model=False)
+    return out
 
 def short_aux(c):
     return {k:c.get(k) for k in ('status','timing_qualified','clock_MHz','area_mm2',
@@ -75,8 +96,9 @@ def prepare(workspace):
                 note='pipeline/context facts must be bound,not inferred fromwindowlength')
         else:
             candidates={k:v for k,v in accepted_digital.items() if 'bf16' in k}
-            shared_fma=dict(status='CURRENT_NEW_CARD_AVAILABLE_BINDING_PENDING' if candidates else 'PPA_PENDING',
-                current_candidates=list(candidates),area_mm2=None,gross_pJ_per_FMA=None,latency_cycles=None)
+            shared_fma=dict(status='CURRENT_NEW_CARD_AVAILABLE_BINDING_PENDING' if candidates else 'NO_QUALIFIED_FMA500_PRICE',
+                current_candidates=list(candidates),area_mm2=None,gross_pJ_per_FMA=None,latency_cycles=None,
+                note='missingacceptedprice doesnotmeanjobsstillrunning;seeownerterminalstatus')
         required=['SRAM28_geometry_ports_access_cycle_energy_area','shared_DMA_FIFO_and_vector_RMSNorm_RoPE_residual',
             'CIM_programming_interface_and_physical_interconnect','shared_FMA_exact_latency_context_resource_binding',
             'finite_memory_credit_backpressure_scheduler_replay','qualified_compact_PV_and_output_codec_binding']
@@ -89,6 +111,16 @@ def prepare(workspace):
             FFN_staging_proxy=f['estimated_shared_staging'][n],
             FFN_candidate_core_counts=f['candidate_core_counts'][n],FFN_selected_core_count=None,
             attention_cards=cards,accepted_digital_components=accepted_digital,shared_FMA=shared_fma,
+            conditional_attention_hold_cards={k:v for k,v in hold_only_candidates(d['attention_summary'],mhz).items()
+                if k not in cards},
+            diagnostic_PV_cards=[dict(top=c['top'],MHz=c['MHz'],area28_mm2=c['area28_mm2'],
+                slacks_ns=c['slacks_ns'],modes=c['modes'],source_manifest_sha256=c['source_manifest_sha256'],
+                status='MEASURED_SETUP_FAILED_NOT_SELECTED',selected_by_SC_whole_model=False)
+                for c in d['attention_update']['rows'] if c['MHz']==mhz and c['top'] in ('bf_vctrl4','bf_vacc16')],
+            owner_handoff_status=dict(attention_all_submitted_compute_terminal=d['attention_status']['all_compute_jobs_terminal'],
+                FFN_status=d['ffn_status']['status'],FFN_running_jobs_at_handoff=d['ffn_status']['running_jobs'],
+                FFN_pending_jobs_at_handoff=d['ffn_status']['pending_jobs'],
+                note='handoffobservation,not currentserverpoll'),
             front_sampler_link=dict(front_cycles=front['query_latency_cycles'],
                 backend_query_cycles_observed_mean=sampler['mean_query_cycles_excluding_interquery_gap'],
                 shared_load_handshakes=32,shared_handshake_must_not_be_double_counted=True,

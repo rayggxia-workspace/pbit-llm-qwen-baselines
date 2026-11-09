@@ -1,84 +1,80 @@
-## 2026-11-09 最新终态：11项结束，9项通过
+# 55nm Attention：100/250MHz对照范围与最新修复
 
-全部作业终态，10项完整功耗、1项中途失败。11份报告包逐成员及RESULT SHA通过；9项完整功耗且setup/门控setup通过（这9项hold也通过）。归档齐全不等于电路全通过。
+2026-11-09，Issue198 / PR199。55nm等效面积＝本项目raw65面积×0.81一次；能量、功率不缩放。旧SS100参考保留，新TT100/250因果配对独立列出。
 
-|新增算子|MHz|面积mm²|stream能量pJ/op|setup ns|状态|
-|---|---:|---:|---:|---:|---|
-|bf_fpadd|100|0.00802629|7.063483|1.256253|通过，3seed/15窗|
-|bf_fpmul|100|0.00893579|8.950676|3.559358|通过，3seed/15窗|
-|bf_explut|100|0.00268797|2.627434|2.542470|通过，3seed/15窗|
-|bf_recseed|100|0.00095616|0.958907|4.221810|通过，3seed/15窗|
-|bf_fpadd|250|0.00890255|7.536630|0.001915|通过，3seed/15窗|
-|bf_fpmul|250|0.00976452|9.299719|0.002530|仅seed17两窗，未完成|
-|bf_explut|250|0.00320760|2.868560|0.294851|通过，3seed/15窗|
-|bf_recseed|250|0.00095616|0.958435|1.221810|通过，3seed/15窗|
+## 本轮修复
 
-新增Bivium100：4.8413575nJ/query、.1190941056mm²，时序通过。Bivium250：4.900987nJ/query、.12343428mm²，但setup−.004028ns；不能写成达标。R8GF250修复版仍1.749046889nJ/query、.0805620816mm²、setup+.050210ns。
-MUL250功能和时序通过（setup+.002530ns），第三功耗窗口accept_pause_17触发Incomplete cell power inventory；cells.rpt的power_greater_than0筛选后3309cells，inventory实际3310。需要检查遗漏单元并修报告生成/解析后补剩余窗口，不能丢弃清单校验。当前未启动新的修复作业。
-所有价格TT1.2V25C、面积raw*.81一次；旧100SS默认和冻结TLM不改。其余完整数字控制/小SRAM整层接合缺项仍按下文，不宣称全Attention闭合。
+独立FP32乘法器的功能与4ns时序原本通过；失败来自功耗报告默认只列正功耗单元，3309行少于3310个实际单元。修复后确认遗漏单元的工具报告值约−4.4pW（数值模型结果，不是物理负耗电），原默认筛选将其删去。已改为显式包含零/负报告值，保留严格清单校验；复用原网表、原始三seed激励和已完成两窗，补剩余13窗。不改变算术RTL、周期或验收约束。
+这与已通过的BF16×BF16＋FP32累加FMA16/FMA64不是同一个模块；原250MHz乘加对照继续有效。
+Bivium250仅在综合映射时收紧至3.9ns，正式STA仍4ns；RTL/输入不改，原−4ps负结果保留。
 
----
+恢复数组 `38639075`。尚未全部完成；以下是本次实际查询快照，不能把已提交写成通过。
 
-## 2026-11-09 新补测回收（2/11）
+|恢复项|功耗窗口|状态|setup ns|
+|---|---:|---|---:|
+|bf_fpmul|15|calculated|0.002531|
+|softmax_r8_bivium|0|running|待测|
 
-250MHz R8 GF64已修复原4.089ps setup违例：原RTL/输入不变，仅综合目标3.9ns，正式PT仍4ns。三seed/六功耗窗齐，面积0.08056208mm²、工作2.051000mW、1.749047nJ/query、212.278拍，setup/gate-setup+0.050210ns、hold+0.106584ns。已用新行更新COMPARISON.rows；旧行保留historical_rows，下方旧表为历史证据。与现有Ising相比：Ising能量少35.49%、面积少41.37%、延迟少35.16%。
+## 100MHz应保留哪些对照，250MHz能做到哪里
 
-另TT100 ADD完成15窗，面积0.00802629mm²、stream gross7.063483pJ/op，setup+1.256253ns。仍待其余9配置；不把这两项回收写成全部补测完成。原件/成员SHA校验通过。自动收集38638257依赖两个数组结束执行，完整线上数字控制器仍为原语组合估算。
+主线保留四条数字对照及一条本方案。主配置K128/S64；独立R8输出数可变，记录实际结果数，不能将其自动称为固定S64或等质量。
 
----
+|方案|100MHz已有证据|250MHz已有证据|
+|---|---|---|
+|稠密QK＋在线Softmax＋完整PV|旧原生模块＋当前小SRAM共享池局部回放|共享池局部回放和FMA/标量成本；标量补齐状态见价卡|
+|SparQ K128＋数字Softmax＋完整PV|当前小SRAM局部回放；筛选与PV算术已测|对应局部回放；筛选与FMA已测，标量见价卡|
+|SparQ K128＋数字Softmax＋独立R8 GF64＋PV采样|采样核实测，旧2.5MiB独立阵列整链回放|核已测且修复setup；最新小SRAM整链待接合|
+|SparQ K128＋数字Softmax＋systematic S64＋PV采样|核实测及旧整链回放|核实测；最新小SRAM整链待接合|
+|SparQ K128＋Ising GF64 S64＋PV加法|关钟/提前保持核＋当前模块合同|关钟/提前保持核＋当前模块合同|
 
-# 55nm Attention数字对照：100/250MHz库存与补充
+Top64/128（含候选内Top64）作为确定性稀疏补充；Bivium作为随机前端消融；K256是备用。它们不需要阻塞K128主表，但估算与实测分栏。
+**250MHz所需主要原语和采样核已基本覆盖；当前还不能称最新整层对照全部闭合。** 最主要剩余项是将数字R8/systematic接入最新小SRAM、共享FMA池和相同V缓存调度，并用真实采样地址回放。旧2.5MiB/独立QK-PV阵列的100MHz整层结果不可直接除以2.5。
 
-2026-11-09，Issue198 / PR199。本页只讨论本项目raw65面积×0.81的55nm等效流程，功耗/能量不折算；与28nm结果隔离。
+## 同TT条件下已可比较的采样核
 
-## 已有同条件采样核对照
+共同TT1.2V25C、额外setup/hold uncertainty0、IO max1ns/min0.02ns、20fF负载。K128旧S12/F4输入合同内做max-gap，输出采样结果；不含新FP32 max-gap前端、SRAM、QK或PV。用户允许hold暂缓闭合，原负hold仍保留。
 
-K128/S64、S12/F4输入先整数max-gap、共享LUT/P8、采样输出。Ising为关钟＋提前赢家保持，无histogram。共同TT1.2V25C、setup/hold额外uncertainty0；三seed17/503/1009，原RTL与输入轨迹相同。新的FP32 max-gap前端及SRAM、QK、PV均不在本表。hold按用户决定暂缓闭合，setup违例仍显式保留。
+|核|MHz|周期/query|nJ/query|面积mm²|setup ns|
+|---|---:|---:|---:|---:|---:|
+|ab_both|100|137.639|1.112228|0.04565494|0.349700|
+|ab_both|250|137.639|1.128392|0.04723745|0.000938|
+|softmax_r8_gf64|100|212.278|1.715504|0.07843953|0.253041|
+|softmax_r8_gf64|250|212.278|1.749047|0.08056208|0.050210|
+|softmax_systematic|100|166.000|1.209311|0.08074142|0.290508|
+|softmax_systematic|250|166.000|1.248759|0.08322177|0.002174|
 
-|核|MHz|周期/query|时间ns|工作mW|nJ/query|面积mm²|setup ns|
-|---|---:|---:|---:|---:|---:|---:|---:|
-|ab_both|100|137.639|1376.389|0.8027|1.112228|0.04565494|0.349700|
-|ab_both|250|137.639|550.556|2.0360|1.128392|0.04723745|0.000938|
-|softmax_r8_gf64|100|212.278|2122.778|0.8047|1.715504|0.07843953|0.253041|
-|softmax_r8_gf64|250|212.278|849.111|2.0520|1.749900|0.08090967|-0.004089|
-|softmax_systematic|100|166.000|1660.000|0.7245|1.209311|0.08074142|0.290508|
-|softmax_systematic|250|166.000|664.000|1.8703|1.248759|0.08322177|0.002174|
+R8 GF64已采用修复后的合格行。旧失败值保存在COMPARISON.historical_rows，不再用作当前表。TT100/250与历史SS100的0.879nJ等值不是同PVT，不能互相替换。
 
-工作能量按实际窗口总能量/查询数，包含窗内间隔；不能用平均工作mW乘去间隔周期要求末位相同。250 R8仅4.089ps setup违例，原结果保留为诊断，已提交3.9ns综合、4ns正式STA的独立修复；不放宽验收。
+## 在线Softmax标量价卡
 
-|时钟|数字对照|Ising能量降低|Ising面积降低|Ising延迟降低|
-|---|---|---:|---:|---:|
-|100|softmax_r8_gf64|35.17%|41.80%|35.16%|
-|100|softmax_systematic|8.03%|43.46%|17.09%|
-|250|softmax_r8_gf64|35.52%|41.62%|35.16%|
-|250|softmax_systematic|9.64%|43.24%|17.09%|
+SCALAR_CARDS.json给出原始面积、一次折算面积、三seed/15窗、setup/hold、stream gross、扣idle增量pJ及单独漏电/活动时钟功率。可用频率：[100, 250]MHz。未完成项ready=false，不填成零或有效价。
 
-这是模块/旧输入合同的成本比较，不是匹配PPL后的整Attention优势；R8输出数可变，Ising/systematic固定64。
+|单元|MHz|面积mm²|gross pJ/op|增量pJ/op|
+|---|---:|---:|---:|---:|
+|fpadd|100|0.00802629|7.063483|7.004139|
+|fpmul|100|0.00893579|8.950676|8.889173|
+|explut|100|0.00268797|2.627434|2.572649|
+|recseed|100|0.00095616|0.958907|0.906426|
+|fpadd|250|0.00890255|7.536630|7.481309|
+|fpmul|250|0.00976452|9.307813|9.251291|
+|explut|250|0.00320760|2.868560|2.815330|
+|recseed|250|0.00095616|0.958435|0.906392|
 
-## 哪些已做、哪些仍需补
+接入方式：`architecture_tlm/attention55_compare_20261109/tt250_scalar_override/CALIBRATION.json`在250四算子全部合格后生成，仅替换units.fpadd/fpmul/explut/recseed；原共享FMA/筛选/转换/保持价格保留。100MHz另有TT敏感性价卡，不覆盖SS100默认。
+SCALAR_REPRICING.json将既有局部回放原动作重新计价，时间、DRAM/SRAM字节和FMA资源不变；不是新调度仿真。转换、保持、控制预留仍有代理，不能称全数字链逐门PPA。
+100MHz TT标量重计价仍保留原SS100 FMA/筛选价格，只是混合PVT敏感性分析；不能用来声称整个模块都已做同TT100配对。
+能量按动作增量＋实例漏电×时间＋实际活动时钟成本；未工作单元根时钟关闭，不能再全时段收取idle动态，更不能把gross pJ与同一份背景重复相加。
 
-|对照|100MHz证据|250MHz证据|当前处理|
-|---|---|---|---|
-|Ising vs Softmax+R8 GF64/systematic|SS100主表及TT100配对|TT250三核已测|本页已整理，R8小setup违例补修|
-|Softmax+R8 Bivium|SS100实测|此前未做同TT配对|补TT100/250两配置；随机前端参考|
-|采样PV ADD vs数字完整PV FMA|实测|FMA16/64、vacc16、PV4包装已测|复用PAIRED_PPA/WRAPPER，不重测|
-|稠密在线Softmax+完整PV|旧原生LPDDR模块、当前小SRAM局部回放|当前共享池/48KiB槽的12点双频局部回放已做|标量SS100代理待TT补测替换|
-|同SparQ+数字完整PV|同上|同上，筛选/FMA已用TT价格|同上|
-|同SparQ+数字PV采样|旧2.5MiB/独立计算配置原生LPDDR已做|采样核TT已测；当前小SRAM共享池整链尚未同边界回放|不把旧100整层数除2.5冒充250|
-|全局Top64/128、候选内Top64|旧100算法/选择RTL功能及成本估计|选择原语可用TT；没有相同最新整层映射验收|历史参考，不能称250完整PPA已测|
-|K256备用|旧核100实测，新核迁移估算|当前是K128→256校准估算|保留估算标签，不当实测|
+## 后续与证据入口
 
-## 补测范围与避免重复
+1. 收齐修复结果并回填TT标量价格；随后供宿主显式采用，冻结结果不自动改写。
+2. 数字R8/systematic与Ising统一当前缓存、GQA复用、端口/突发及实际地址，补局部整链回放；整机验收由宿主完成。
+3. 论文使用Top64/128或最新K256时，再补对应资源映射/质量与标记为估算的核数据。
 
-在线Softmax补FP32 ADD、MUL、exp LUT、reciprocal seed，TT100/250八配置；原算术RTL/三seed激励不变，真实周期和窗口纳秒重新对应，不以频率比例算能量。现有55 FMA/PV/筛选/前端结果复用。Issue204正在补另一套FFN ADD250，其负载1fF、setup uncertainty0.5ns；本任务沿Attention已用20fF/0ns配对合同，二者不混用。
-用户允许暂缓hold闭合，新scalar不运行激进hold修复；原RTL内已有4个enable延迟单元保留。所有min路径继续记录，修buffer成本未来随实际后端回填。
-新增任务/阶段/SHA见RUN_STATUS.json；结果未回收前不把价格填入TLM，也不改冻结100/250整机默认。
+- 核及PV实测：../attention_tt250_followup_20261107/PAIRED_PPA_ZH.md、WRAPPER_PPA_ZH.md
+- 当前共享池合同：../attention_digital_small_20261107/HANDOFF_ZH.md
+- FP32宽分数先max-gap再量化：../attention_score_front_ppa_20261108/HANDOFF_ZH.md
+- 新标量与修复：COMPARISON.json、RUN_STATUS.json、SOURCES.json、VALIDATION.json；原报告私有。
+- 恢复命令：work/rayggxia/198/attention55_compare_20261109/recovery_status.py、collect_recovery.py；build_scalar_cards.py生成价卡。
 
-## 结果入口
-
-- 已有核配对：../attention_tt250_followup_20261107/PAIRED_PPA_ZH.md
-- PV/QK包装：../attention_tt250_followup_20261107/WRAPPER_PPA_ZH.md
-- 旧整层模块：../attention_digital_paths_20261105/REPORT_ZH.md
-- 当前小SRAM数字合同：../attention_digital_small_20261107/HANDOFF_ZH.md
-- FP32前端A/B：../attention_score_front_ppa_20261108/HANDOFF_ZH.md
-- K256估算：../attention_k256_20261108/HANDOFF_ZH.md
+本交接为前布局模块实测＋条件TLM估算；不代表芯片实测、后布局签核、等PPL或PR已合并。

@@ -1069,5 +1069,1379 @@
     "all_PPA_qualified": false,
     "qualified_cases": 9,
     "completed_PPA_cases": 10
-  }
+  },
+  "coverage": [
+    {
+      "id": "dense",
+      "role": "主对照：完整Attention",
+      "method": "稠密QK＋在线Softmax＋完整PV",
+      "at100": "旧原生模块＋当前小SRAM共享池局部回放",
+      "at250": "共享池局部回放和FMA/标量成本；标量补齐状态见价卡",
+      "whole_layer_current": "local_conditional_replay",
+      "next": "宿主采用新TT标量价；保留GQA广播/分块在线归一化和有限端口"
+    },
+    {
+      "id": "sparq_full",
+      "role": "主对照：分离SparQ收益",
+      "method": "SparQ K128＋数字Softmax＋完整PV",
+      "at100": "当前小SRAM局部回放；筛选与PV算术已测",
+      "at250": "对应局部回放；筛选与FMA已测，标量见价卡",
+      "whole_layer_current": "local_conditional_replay",
+      "next": "同上，不将局部回放称为新36层整机验收"
+    },
+    {
+      "id": "sparq_r8",
+      "role": "主对照：分离采样与p-bit收益",
+      "method": "SparQ K128＋数字Softmax＋独立R8 GF64＋PV采样",
+      "at100": "采样核实测，旧2.5MiB独立阵列整链回放",
+      "at250": "核已测且修复setup；最新小SRAM整链待接合",
+      "whole_layer_current": "pending_current_shared_pool_replay",
+      "next": "接同一候选/真实输出地址/缓存后端；记录实际样本数，不能默认等于64"
+    },
+    {
+      "id": "sparq_systematic",
+      "role": "主对照：高效数字采样",
+      "method": "SparQ K128＋数字Softmax＋systematic S64＋PV采样",
+      "at100": "核实测及旧整链回放",
+      "at250": "核实测；最新小SRAM整链待接合",
+      "whole_layer_current": "pending_current_shared_pool_replay",
+      "next": "与Ising统一S64、地址与GQA复用统计，但不宣称随机统计性质相同"
+    },
+    {
+      "id": "ising",
+      "role": "本方案",
+      "method": "SparQ K128＋Ising GF64 S64＋PV加法",
+      "at100": "关钟/提前保持核＋当前模块合同",
+      "at250": "关钟/提前保持核＋当前模块合同",
+      "whole_layer_current": "host_profile_dependent",
+      "next": "共同前端采用宽FP32先max-gap再u8；旧核输入S12/F4合同单列，不继承PPL"
+    },
+    {
+      "id": "topk",
+      "role": "补充确定性稀疏对照",
+      "method": "全局Top64/128；SparQ候选内Top64",
+      "at100": "旧算法/选择RTL功能＋成本估计",
+      "at250": "选择原语可复用；最新整层映射未验收",
+      "whole_layer_current": "estimate_only",
+      "next": "论文使用时补同资源映射/质量；不必重做所有原语"
+    },
+    {
+      "id": "k256",
+      "role": "备用配置",
+      "method": "K256候选及采样数扫描",
+      "at100": "旧参数化核实测＋新核迁移估算",
+      "at250": "当前新核迁移估算",
+      "whole_layer_current": "estimate_only",
+      "next": "算法选定K256后再补最新优化核实测；不混称K256已测"
+    },
+    {
+      "id": "bivium",
+      "role": "随机前端消融",
+      "method": "数字Softmax＋独立R8 Bivium",
+      "at100": "TT100三seed实测",
+      "at250": "3.9ns映射/4ns验收修复运行中",
+      "whole_layer_current": "kernel_only",
+      "next": "仅前端消融，不作为最省能数字主对照"
+    }
+  ],
+  "recovery_results": {
+    "rows": [
+      {
+        "top": "bf_fpmul",
+        "MHz": 250,
+        "PVT": "TT1.2V25C",
+        "area_factor": 0.81,
+        "raw_area_um2": 12054.96,
+        "area55_mm2": 0.0097645176,
+        "status": "calculated",
+        "slacks_ns": {
+          "setup": 0.002531,
+          "hold": 0.063587,
+          "gate_setup": 1.324591,
+          "gate_hold": 0.088718
+        },
+        "modes": {
+          "stream": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "power_mW": 2.3000000000000003,
+            "leak_W": 1.18e-06,
+            "window_cycles": 1036.0,
+            "gross_pJ_per_operation": 9.3078125
+          },
+          "burst25": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "power_mW": 0.6140333333333333,
+            "leak_W": 1.19e-06,
+            "window_cycles": 4108.0,
+            "gross_pJ_per_operation": 9.853316145833334
+          },
+          "accept_pause": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "power_mW": 1.2843333333333333,
+            "leak_W": 1.1843333333333334e-06,
+            "window_cycles": 1036.0,
+            "gross_pJ_per_operation": 10.395072916666667
+          },
+          "idle_hold": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "power_mW": 0.013966666666666667,
+            "leak_W": 1.182e-06,
+            "window_cycles": 1036.0
+          },
+          "idle_toggle": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "power_mW": 0.018376666666666666,
+            "leak_W": 1.1873333333333332e-06,
+            "window_cycles": 1036.0
+          }
+        },
+        "setup_pass": true,
+        "hold_pass": true,
+        "hold_deferred": true,
+        "source_manifest_sha256": "d65b34adfdab184e53c4fc10906c0d5f6315c9125ce949684a5b0f187b389550",
+        "result_sha256": "a7d9b54d65d4541dbb77f04915b98ebc87dfd96a990f6b81dcee2c954aa2a454"
+      }
+    ],
+    "complete": false,
+    "expected_cases": 2,
+    "evidence": "local archive member and RESULT SHA verified; originals private",
+    "area_factor": 0.81
+  },
+  "scalar_cards": {
+    "status": "opt_in_TT_scalar_calibration",
+    "cards": {
+      "100": {
+        "fpadd": {
+          "ready": true,
+          "clock_MHz": 100,
+          "PVT": "TT1.2V25C",
+          "area_factor": 0.81,
+          "raw_area_um2": 9909.0,
+          "area55_mm2": 0.00802629,
+          "pJ": 7.0041390234375,
+          "stream_gross_pJ": 7.063483072916666,
+          "idle_W": 5.865666666666666e-06,
+          "leak_W": 7.516e-07,
+          "slacks_ns": {
+            "setup": 1.256253,
+            "hold": 0.0698937,
+            "gate_setup": 4.324592,
+            "gate_hold": 0.088718
+          },
+          "hold_deferred": true,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "PT_windows": 15,
+          "status": "measured prelayout; incremental stream-minus-idle tariff; leakage separately",
+          "archive_sha256": "8df3a601d35e9e4016468c7d0a4d921c5eed9ae530a862a01433ca479749a7b7",
+          "result_sha256": "23de8dbaec0e7fb6983d331ae38b52e108c22f807321f74f1ecb01e88c49d04b",
+          "energy_rule": "E=operations*pJ + instantiated_units*leak_W*time + active_clock_time*(idle_W-leak_W); inactive root clocks off; do not also charge stream_gross"
+        },
+        "fpmul": {
+          "ready": true,
+          "clock_MHz": 100,
+          "PVT": "TT1.2V25C",
+          "area_factor": 0.81,
+          "raw_area_um2": 11031.84,
+          "area55_mm2": 0.0089357904,
+          "pJ": 8.889173398437501,
+          "stream_gross_pJ": 8.95067578125,
+          "idle_W": 6.079e-06,
+          "leak_W": 9.655666666666667e-07,
+          "slacks_ns": {
+            "setup": 3.559358,
+            "hold": 0.060555,
+            "gate_setup": 4.324592,
+            "gate_hold": 0.088718
+          },
+          "hold_deferred": true,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "PT_windows": 15,
+          "status": "measured prelayout; incremental stream-minus-idle tariff; leakage separately",
+          "archive_sha256": "37612a2be32f84ffaf06206825a87735d989b0167be90d6efcbcb335dd74606a",
+          "result_sha256": "83fe9f19bba922e834263ab7477b9cdcc2c0707fb92291620fac22d7f422cc62",
+          "energy_rule": "E=operations*pJ + instantiated_units*leak_W*time + active_clock_time*(idle_W-leak_W); inactive root clocks off; do not also charge stream_gross"
+        },
+        "explut": {
+          "ready": true,
+          "clock_MHz": 100,
+          "PVT": "TT1.2V25C",
+          "area_factor": 0.81,
+          "raw_area_um2": 3318.48,
+          "area55_mm2": 0.0026879688,
+          "pJ": 2.5726490234375,
+          "stream_gross_pJ": 2.62743359375,
+          "idle_W": 5.415e-06,
+          "leak_W": 3.011e-07,
+          "slacks_ns": {
+            "setup": 2.54247,
+            "hold": 0.060555,
+            "gate_setup": 4.2271,
+            "gate_hold": 0.138117
+          },
+          "hold_deferred": true,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "PT_windows": 15,
+          "status": "measured prelayout; incremental stream-minus-idle tariff; leakage separately",
+          "archive_sha256": "1413eb4388eaa9da6c606bb375a4190e4c599d01c3d239a41aa5160308f67f02",
+          "result_sha256": "ac60be59bb21cf7ee40bde2642c5b440f7d8174ef8c740695672183fa633319a",
+          "energy_rule": "E=operations*pJ + instantiated_units*leak_W*time + active_clock_time*(idle_W-leak_W); inactive root clocks off; do not also charge stream_gross"
+        },
+        "recseed": {
+          "ready": true,
+          "clock_MHz": 100,
+          "PVT": "TT1.2V25C",
+          "area_factor": 0.81,
+          "raw_area_um2": 1180.44,
+          "area55_mm2": 0.0009561564,
+          "pJ": 0.9064258072916667,
+          "stream_gross_pJ": 0.95890703125,
+          "idle_W": 5.187333333333333e-06,
+          "leak_W": 7.345333333333333e-08,
+          "slacks_ns": {
+            "setup": 4.22181,
+            "hold": 0.060555,
+            "gate_setup": 4.221814,
+            "gate_hold": 0.144649
+          },
+          "hold_deferred": true,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "PT_windows": 15,
+          "status": "measured prelayout; incremental stream-minus-idle tariff; leakage separately",
+          "archive_sha256": "58c1aee7edc295f385afaeb4425593114ce60fb4adc601ba3bd1f44c35544b66",
+          "result_sha256": "18dcb96bba3878bbfa2fc6db07faddb8d2eefccb8b1cffd160534903defbd9b7",
+          "energy_rule": "E=operations*pJ + instantiated_units*leak_W*time + active_clock_time*(idle_W-leak_W); inactive root clocks off; do not also charge stream_gross"
+        }
+      },
+      "250": {
+        "fpadd": {
+          "ready": true,
+          "clock_MHz": 250,
+          "PVT": "TT1.2V25C",
+          "area_factor": 0.81,
+          "raw_area_um2": 10990.8,
+          "area55_mm2": 0.008902548000000001,
+          "pJ": 7.481309427083334,
+          "stream_gross_pJ": 7.536630208333333,
+          "idle_W": 1.367e-05,
+          "leak_W": 8.825333333333333e-07,
+          "slacks_ns": {
+            "setup": 0.00191474,
+            "hold": 0.0635868,
+            "gate_setup": 1.324591,
+            "gate_hold": 0.088718
+          },
+          "hold_deferred": true,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "PT_windows": 15,
+          "status": "measured prelayout; incremental stream-minus-idle tariff; leakage separately",
+          "archive_sha256": "eb7280a08a64afbd5c033a95b21cfc23e67ff5c4e57cc2deebcea9dbd0905d85",
+          "result_sha256": "41c97b8594a07ee3652fd4ce780004397ae9d2659f261617248fecbad925b3bc",
+          "energy_rule": "E=operations*pJ + instantiated_units*leak_W*time + active_clock_time*(idle_W-leak_W); inactive root clocks off; do not also charge stream_gross"
+        },
+        "fpmul": {
+          "ready": true,
+          "clock_MHz": 250,
+          "PVT": "TT1.2V25C",
+          "area_factor": 0.81,
+          "raw_area_um2": 12054.96,
+          "area55_mm2": 0.0097645176,
+          "pJ": 9.251291145833335,
+          "stream_gross_pJ": 9.3078125,
+          "idle_W": 1.3966666666666666e-05,
+          "leak_W": 1.182e-06,
+          "slacks_ns": {
+            "setup": 0.002531,
+            "hold": 0.063587,
+            "gate_setup": 1.324591,
+            "gate_hold": 0.088718
+          },
+          "hold_deferred": true,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "PT_windows": 15,
+          "status": "measured prelayout; incremental stream-minus-idle tariff; leakage separately",
+          "archive_sha256": "42bbb6c49290b9d1c3a0d0cf1acdf505984bafa35dca768b52b0cf3f73593bbf",
+          "result_sha256": "a7d9b54d65d4541dbb77f04915b98ebc87dfd96a990f6b81dcee2c954aa2a454",
+          "energy_rule": "E=operations*pJ + instantiated_units*leak_W*time + active_clock_time*(idle_W-leak_W); inactive root clocks off; do not also charge stream_gross"
+        },
+        "explut": {
+          "ready": true,
+          "clock_MHz": 250,
+          "PVT": "TT1.2V25C",
+          "area_factor": 0.81,
+          "raw_area_um2": 3960.0,
+          "area55_mm2": 0.0032076000000000006,
+          "pJ": 2.8153300000000003,
+          "stream_gross_pJ": 2.8685598958333336,
+          "idle_W": 1.3153333333333333e-05,
+          "leak_W": 3.696666666666667e-07,
+          "slacks_ns": {
+            "setup": 0.294851,
+            "hold": 0.0635868,
+            "gate_setup": 1.227101,
+            "gate_hold": 0.138117
+          },
+          "hold_deferred": true,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "PT_windows": 15,
+          "status": "measured prelayout; incremental stream-minus-idle tariff; leakage separately",
+          "archive_sha256": "640bdd22bf4f99938eb20f713d15ba1962517e846facc7f4b44edc62e1c4ad59",
+          "result_sha256": "5d2c1f3199a03638389dcdfb1860e19d3fcec9f1b08c1fb1904c1cbd11869edf",
+          "energy_rule": "E=operations*pJ + instantiated_units*leak_W*time + active_clock_time*(idle_W-leak_W); inactive root clocks off; do not also charge stream_gross"
+        },
+        "recseed": {
+          "ready": true,
+          "clock_MHz": 250,
+          "PVT": "TT1.2V25C",
+          "area_factor": 0.81,
+          "raw_area_um2": 1180.44,
+          "area55_mm2": 0.0009561564,
+          "pJ": 0.9063920833333333,
+          "stream_gross_pJ": 0.9584348958333333,
+          "idle_W": 1.286e-05,
+          "leak_W": 7.345333333333333e-08,
+          "slacks_ns": {
+            "setup": 1.22181,
+            "hold": 0.060555,
+            "gate_setup": 1.221814,
+            "gate_hold": 0.144649
+          },
+          "hold_deferred": true,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "PT_windows": 15,
+          "status": "measured prelayout; incremental stream-minus-idle tariff; leakage separately",
+          "archive_sha256": "a4b87e061cb4d233a1d1f1b714e6a8620dbfd97adbfc9cb87b704bfa539f1bff",
+          "result_sha256": "f787f28f429d14bf37197b9fbe3a55b784c168b91d9ee9b796c60538995272da",
+          "energy_rule": "E=operations*pJ + instantiated_units*leak_W*time + active_clock_time*(idle_W-leak_W); inactive root clocks off; do not also charge stream_gross"
+        }
+      }
+    },
+    "ready_clocks": [
+      100,
+      250
+    ],
+    "default_changed": false,
+    "no_power_frequency_scaling": true,
+    "boundary": "four scalar primitives only; converter/holding/control/whole-layer mapping remain separately qualified"
+  },
+  "scalar_repricing": {
+    "status": "same_actions_repriced_not_new_TLM",
+    "default_unchanged": true,
+    "source_sha256": "9d6ef81e626914482a7b58ab158c8bb77bb47248d69e4ebb78384fbe7b297c4f",
+    "cases": [
+      {
+        "configuration": {
+          "clock_MHz": 100,
+          "mode": "dense",
+          "concurrent_groups": 2,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 3743540.0,
+        "old_logic_uJ": 134.94362986696552,
+        "new_logic_uJ": 134.66148510733436,
+        "old_fixed_area_mm2": 0.4447763832800027,
+        "new_fixed_area_mm2": 0.41850100712000265
+      },
+      {
+        "configuration": {
+          "clock_MHz": 100,
+          "mode": "dense",
+          "concurrent_groups": 4,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 1892900.0,
+        "old_logic_uJ": 135.09906758366756,
+        "new_logic_uJ": 134.80436697589025,
+        "old_fixed_area_mm2": 0.8895527665600054,
+        "new_fixed_area_mm2": 0.8370020142400053
+      },
+      {
+        "configuration": {
+          "clock_MHz": 100,
+          "mode": "dense",
+          "concurrent_groups": 8,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 951660.0,
+        "old_logic_uJ": 135.17571978471042,
+        "new_logic_uJ": 134.87482741461966,
+        "old_fixed_area_mm2": 1.7791055331200107,
+        "new_fixed_area_mm2": 1.6740040284800106
+      },
+      {
+        "configuration": {
+          "clock_MHz": 100,
+          "mode": "screen_full",
+          "concurrent_groups": 2,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 1017490.0,
+        "old_logic_uJ": 26.15812038987456,
+        "new_logic_uJ": 25.937420279579403,
+        "old_fixed_area_mm2": 0.53101125128002,
+        "new_fixed_area_mm2": 0.50473587512002
+      },
+      {
+        "configuration": {
+          "clock_MHz": 100,
+          "mode": "screen_full",
+          "concurrent_groups": 4,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 584600.0,
+        "old_logic_uJ": 26.659692552117495,
+        "new_logic_uJ": 26.393917957149974,
+        "old_fixed_area_mm2": 0.9757876345600227,
+        "new_fixed_area_mm2": 0.9232368822400228
+      },
+      {
+        "configuration": {
+          "clock_MHz": 100,
+          "mode": "screen_full",
+          "concurrent_groups": 8,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 443390.0,
+        "old_logic_uJ": 28.86419655223998,
+        "new_logic_uJ": 28.418860850182703,
+        "old_fixed_area_mm2": 1.865340401120028,
+        "new_fixed_area_mm2": 1.7602388964800282
+      },
+      {
+        "configuration": {
+          "clock_MHz": 250,
+          "mode": "dense",
+          "concurrent_groups": 2,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 1496572.0,
+        "old_logic_uJ": 169.76130260856314,
+        "new_logic_uJ": 170.52950932991695,
+        "old_fixed_area_mm2": 0.4447763832800027,
+        "new_fixed_area_mm2": 0.4403191023200027
+      },
+      {
+        "configuration": {
+          "clock_MHz": 250,
+          "mode": "dense",
+          "concurrent_groups": 4,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 756784.0,
+        "old_logic_uJ": 169.77649060777298,
+        "new_logic_uJ": 170.53970516969034,
+        "old_fixed_area_mm2": 0.8895527665600054,
+        "new_fixed_area_mm2": 0.8806382046400054
+      },
+      {
+        "configuration": {
+          "clock_MHz": 250,
+          "mode": "dense",
+          "concurrent_groups": 8,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 381300.0,
+        "old_logic_uJ": 169.7868852186702,
+        "new_logic_uJ": 170.54668316499772,
+        "old_fixed_area_mm2": 1.7791055331200107,
+        "new_fixed_area_mm2": 1.7612764092800108
+      },
+      {
+        "configuration": {
+          "clock_MHz": 250,
+          "mode": "screen_full",
+          "concurrent_groups": 2,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 414048.0,
+        "old_logic_uJ": 31.60593209959284,
+        "new_logic_uJ": 31.596126426409395,
+        "old_fixed_area_mm2": 0.5381262912800027,
+        "new_fixed_area_mm2": 0.5336690103200027
+      },
+      {
+        "configuration": {
+          "clock_MHz": 250,
+          "mode": "screen_full",
+          "concurrent_groups": 4,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 237528.0,
+        "old_logic_uJ": 31.658630992016256,
+        "new_logic_uJ": 31.63090571051908,
+        "old_fixed_area_mm2": 0.9829026745600054,
+        "new_fixed_area_mm2": 0.9739881126400054
+      },
+      {
+        "configuration": {
+          "clock_MHz": 250,
+          "mode": "screen_full",
+          "concurrent_groups": 8,
+          "n": 2048,
+          "tile": 32,
+          "k": 128,
+          "r": 32,
+          "local": 32,
+          "rescale": "trace"
+        },
+        "time_ns": 179724.0,
+        "old_logic_uJ": 31.875936053917723,
+        "new_logic_uJ": 31.776588734471105,
+        "old_fixed_area_mm2": 1.8724554411200107,
+        "new_fixed_area_mm2": 1.8546263172800108
+      }
+    ],
+    "remaining_proxies": [
+      "BF16 converter",
+      "holding",
+      "control reserve"
+    ]
+  },
+  "recovery_complete_qualified": false,
+  "missing_after_recovery": [
+    "当前小SRAM/共享池数字PV采样整链同边界回放",
+    "Top64/128最新资源映射",
+    "最新K256核独立PPA（目前估算）",
+    "转换/保持/控制部分仍有代理；后布局/整合时序未签核"
+  ],
+  "current_selected_supplements": [
+    {
+      "top": "bf_fpadd",
+      "MHz": 100,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 9909.0,
+      "area55_mm2": 0.00802629,
+      "status": "calculated",
+      "slacks_ns": {
+        "setup": 1.256253,
+        "hold": 0.0698937,
+        "gate_setup": 4.324592,
+        "gate_hold": 0.088718
+      },
+      "modes": {
+        "stream": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.6981666666666667,
+          "leak_W": 7.643333333333333e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 7.063483072916666
+        },
+        "burst25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.18923333333333334,
+          "leak_W": 7.628e-07,
+          "window_cycles": 4108.0,
+          "gross_pJ_per_operation": 7.591509114583333
+        },
+        "accept_pause": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.40796666666666664,
+          "leak_W": 7.614e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 8.254950520833333
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.005865666666666667,
+          "leak_W": 7.516e-07,
+          "window_cycles": 1036.0
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.005993666666666667,
+          "leak_W": 7.519333333333334e-07,
+          "window_cycles": 1036.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "9cf1faa1d670c0264159ba442af4ee79c7454198b5d4f57a26337b19f4b5200f",
+      "result_sha256": "23de8dbaec0e7fb6983d331ae38b52e108c22f807321f74f1ecb01e88c49d04b"
+    },
+    {
+      "top": "bf_fpmul",
+      "MHz": 100,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 11031.84,
+      "area55_mm2": 0.0089357904,
+      "status": "calculated",
+      "slacks_ns": {
+        "setup": 3.559358,
+        "hold": 0.060555,
+        "gate_setup": 4.324592,
+        "gate_hold": 0.088718
+      },
+      "modes": {
+        "stream": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.8846999999999999,
+          "leak_W": 9.635666666666666e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 8.95067578125
+        },
+        "burst25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.23656666666666665,
+          "leak_W": 9.676666666666667e-07,
+          "window_cycles": 4108.0,
+          "gross_pJ_per_operation": 9.490389322916666
+        },
+        "accept_pause": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.495,
+          "leak_W": 9.639e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 10.016015625
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.006079,
+          "leak_W": 9.655666666666667e-07,
+          "window_cycles": 1036.0
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.006191,
+          "leak_W": 9.664e-07,
+          "window_cycles": 1036.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "48bc458c99c5263a92b435258fa0ca02e15c662ee9e2ebb4fcc3b7c1cfb78bfd",
+      "result_sha256": "83fe9f19bba922e834263ab7477b9cdcc2c0707fb92291620fac22d7f422cc62"
+    },
+    {
+      "top": "bf_explut",
+      "MHz": 100,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 3318.48,
+      "area55_mm2": 0.0026879688,
+      "status": "calculated",
+      "slacks_ns": {
+        "setup": 2.54247,
+        "hold": 0.060555,
+        "gate_setup": 4.2271,
+        "gate_hold": 0.138117
+      },
+      "modes": {
+        "stream": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.2597,
+          "leak_W": 3.0186666666666667e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 2.62743359375
+        },
+        "burst25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.07175333333333334,
+          "leak_W": 3.0033333333333336e-07,
+          "window_cycles": 4108.0,
+          "gross_pJ_per_operation": 2.8785419270833335
+        },
+        "accept_pause": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.1448,
+          "leak_W": 3.006e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 2.9299375000000003
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.005415,
+          "leak_W": 3.011e-07,
+          "window_cycles": 1036.0
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.00547,
+          "leak_W": 3.0143333333333334e-07,
+          "window_cycles": 1036.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "f57ee9a03287ad57b5dbb8323f9121c4bdafec3df6e450a3b98cb1760671a1c2",
+      "result_sha256": "ac60be59bb21cf7ee40bde2642c5b440f7d8174ef8c740695672183fa633319a"
+    },
+    {
+      "top": "bf_recseed",
+      "MHz": 100,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 1180.44,
+      "area55_mm2": 0.0009561564,
+      "status": "calculated",
+      "slacks_ns": {
+        "setup": 4.22181,
+        "hold": 0.060555,
+        "gate_setup": 4.221814,
+        "gate_hold": 0.144649
+      },
+      "modes": {
+        "stream": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.09478,
+          "leak_W": 7.89e-08,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 0.95890703125
+        },
+        "burst25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.029446666666666666,
+          "leak_W": 7.807333333333333e-08,
+          "window_cycles": 4108.0,
+          "gross_pJ_per_operation": 1.1813174479166666
+        },
+        "accept_pause": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.05915666666666667,
+          "leak_W": 7.839e-08,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 1.1969981770833333
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.005187333333333333,
+          "leak_W": 7.345333333333333e-08,
+          "window_cycles": 1036.0
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.005222666666666667,
+          "leak_W": 7.44e-08,
+          "window_cycles": 1036.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "6792c2ee5a9d9cfebd5eb79a9af339a790b6f99fc9f7e10ca6c0a056f064ee49",
+      "result_sha256": "18dcb96bba3878bbfa2fc6db07faddb8d2eefccb8b1cffd160534903defbd9b7"
+    },
+    {
+      "top": "bf_fpadd",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 10990.8,
+      "area55_mm2": 0.008902548000000001,
+      "status": "calculated",
+      "slacks_ns": {
+        "setup": 0.00191474,
+        "hold": 0.0635868,
+        "gate_setup": 1.324591,
+        "gate_hold": 0.088718
+      },
+      "modes": {
+        "stream": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 1.8623333333333334,
+          "leak_W": 8.856333333333333e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 7.536630208333333
+        },
+        "burst25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.5038,
+          "leak_W": 9.017e-07,
+          "window_cycles": 4108.0,
+          "gross_pJ_per_operation": 8.084415625
+        },
+        "accept_pause": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 1.0793333333333335,
+          "leak_W": 8.930333333333334e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 8.735854166666668
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.01367,
+          "leak_W": 8.825333333333333e-07,
+          "window_cycles": 1036.0
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.01604,
+          "leak_W": 8.850666666666667e-07,
+          "window_cycles": 1036.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "da3a07a823ea7cf1648b1a545b2a002ebfc514829ede0dea42c0a402cf7eb734",
+      "result_sha256": "41c97b8594a07ee3652fd4ce780004397ae9d2659f261617248fecbad925b3bc"
+    },
+    {
+      "top": "bf_fpmul",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 12054.96,
+      "area55_mm2": 0.0097645176,
+      "status": "calculated",
+      "slacks_ns": {
+        "setup": 0.002531,
+        "hold": 0.063587,
+        "gate_setup": 1.324591,
+        "gate_hold": 0.088718
+      },
+      "modes": {
+        "stream": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 2.3000000000000003,
+          "leak_W": 1.18e-06,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 9.3078125
+        },
+        "burst25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.6140333333333333,
+          "leak_W": 1.19e-06,
+          "window_cycles": 4108.0,
+          "gross_pJ_per_operation": 9.853316145833334
+        },
+        "accept_pause": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 1.2843333333333333,
+          "leak_W": 1.1843333333333334e-06,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 10.395072916666667
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.013966666666666667,
+          "leak_W": 1.182e-06,
+          "window_cycles": 1036.0
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.018376666666666666,
+          "leak_W": 1.1873333333333332e-06,
+          "window_cycles": 1036.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "d65b34adfdab184e53c4fc10906c0d5f6315c9125ce949684a5b0f187b389550",
+      "result_sha256": "a7d9b54d65d4541dbb77f04915b98ebc87dfd96a990f6b81dcee2c954aa2a454"
+    },
+    {
+      "top": "bf_explut",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 3960.0,
+      "area55_mm2": 0.0032076000000000006,
+      "status": "calculated",
+      "slacks_ns": {
+        "setup": 0.294851,
+        "hold": 0.0635868,
+        "gate_setup": 1.227101,
+        "gate_hold": 0.138117
+      },
+      "modes": {
+        "stream": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.7088333333333333,
+          "leak_W": 3.7193333333333334e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 2.8685598958333336
+        },
+        "burst25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.19453333333333334,
+          "leak_W": 3.731e-07,
+          "window_cycles": 4108.0,
+          "gross_pJ_per_operation": 3.1216520833333337
+        },
+        "accept_pause": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.3922333333333333,
+          "leak_W": 3.724666666666667e-07,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 3.174638541666667
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.013153333333333333,
+          "leak_W": 3.696666666666667e-07,
+          "window_cycles": 1036.0
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.015479999999999999,
+          "leak_W": 3.724e-07,
+          "window_cycles": 1036.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "067dc41d7477a5ba226c33fb7956ce8a7c17bfef228b0809e0fb4c1dd66ed63f",
+      "result_sha256": "5d2c1f3199a03638389dcdfb1860e19d3fcec9f1b08c1fb1904c1cbd11869edf"
+    },
+    {
+      "top": "bf_recseed",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 1180.44,
+      "area55_mm2": 0.0009561564,
+      "status": "calculated",
+      "slacks_ns": {
+        "setup": 1.22181,
+        "hold": 0.060555,
+        "gate_setup": 1.221814,
+        "gate_hold": 0.144649
+      },
+      "modes": {
+        "stream": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.23683333333333334,
+          "leak_W": 7.89e-08,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 0.9584348958333333
+        },
+        "burst25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.07349666666666667,
+          "leak_W": 7.807333333333333e-08,
+          "window_cycles": 4108.0,
+          "gross_pJ_per_operation": 1.1793918229166667
+        },
+        "accept_pause": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.14776666666666669,
+          "leak_W": 7.839e-08,
+          "window_cycles": 1036.0,
+          "gross_pJ_per_operation": 1.1959864583333335
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.01286,
+          "leak_W": 7.345333333333333e-08,
+          "window_cycles": 1036.0
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.012943333333333333,
+          "leak_W": 7.44e-08,
+          "window_cycles": 1036.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "4594073c1c5831d27b6e2a8336e1b6a603b43ae8d384f49709f76a486fd10ea4",
+      "result_sha256": "f787f28f429d14bf37197b9fbe3a55b784c168b91d9ee9b796c60538995272da"
+    },
+    {
+      "top": "softmax_r8_gf64",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 99459.3600001,
+      "area55_mm2": 0.080562081600081,
+      "status": "pass",
+      "slacks_ns": {
+        "setup": 0.05021,
+        "hold": 0.106584,
+        "gate_setup": 0.05021,
+        "gate_hold": 0.202426
+      },
+      "modes": {
+        "work": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 2.051,
+          "leak_W": 7.566e-06,
+          "window_cycles": 2558.3333333333335,
+          "gross_pJ_per_operation": 1749.0468888888888
+        },
+        "idle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.4198,
+          "leak_W": 7.994333333333332e-06,
+          "window_cycles": 64.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "58cbeda473d4caa301fd46ef5174f89ee524d0ac70aa711d055266fe0f60953d",
+      "result_sha256": "246addbb9b72390bc989d46ceadfcffcf5a8e9ea043286d0f27127a956aa2615",
+      "query_cycles": 212.27777777777777
+    },
+    {
+      "top": "softmax_r8_bivium",
+      "MHz": 100,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 147029.76,
+      "area55_mm2": 0.11909410560000001,
+      "status": "pass",
+      "slacks_ns": {
+        "setup": 0.294305,
+        "hold": 0.106582,
+        "gate_setup": 0.294305,
+        "gate_hold": 0.202426
+      },
+      "modes": {
+        "work": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 2.2783333333333333,
+          "leak_W": 1.208e-05,
+          "window_cycles": 2550.0,
+          "gross_pJ_per_operation": 4841.357499999999
+        },
+        "idle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.20909999999999998,
+          "leak_W": 1.2613333333333333e-05,
+          "window_cycles": 64.0
+        }
+      },
+      "setup_pass": true,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "b32b54c5c1621679f82215440b8cf3499acacbad26a5f63c45ce5cfa25996ae2",
+      "result_sha256": "ee118dc236724314cdcbcbf7660a0f8d66e1db07e95fcc5e4a0b1bd042abe9cd",
+      "query_cycles": 211.58333333333334
+    },
+    {
+      "top": "softmax_r8_bivium",
+      "MHz": 250,
+      "PVT": "TT1.2V25C",
+      "area_factor": 0.81,
+      "raw_area_um2": 152388.0,
+      "area55_mm2": 0.12343428000000001,
+      "status": "pass",
+      "slacks_ns": {
+        "setup": -0.004028,
+        "hold": 0.103984,
+        "gate_setup": 0.000543,
+        "gate_hold": 0.208226
+      },
+      "modes": {
+        "work": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 5.766,
+          "leak_W": 1.289e-05,
+          "window_cycles": 2550.0,
+          "gross_pJ_per_operation": 4900.987
+        },
+        "idle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "power_mW": 0.5045,
+          "leak_W": 1.3373333333333335e-05,
+          "window_cycles": 64.0
+        }
+      },
+      "setup_pass": false,
+      "hold_pass": true,
+      "hold_deferred": true,
+      "source_manifest_sha256": "f9c6f3d39d1888d5e63f20aeeaf092d24b408ef63d6922b1e3ca97198d645d40",
+      "result_sha256": "cfb72366a362263fc289bf71967cd7695541736906e0cc10ffcba0bc23f86b56",
+      "query_cycles": 211.58333333333334
+    }
+  ]
 }

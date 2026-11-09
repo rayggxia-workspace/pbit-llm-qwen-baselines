@@ -1,6 +1,6 @@
 """Conditional28nm whole decode execution using existing finite storage engine."""
 from pathlib import Path
-import argparse,hashlib,json,sys,time
+import argparse,hashlib,json,sys,time,copy
 from collections import Counter
 from whole_model import build,load
 from whole_pricing import price
@@ -26,7 +26,11 @@ def main():
     assert (macros['SRAM']['capacity_KiB'],macros['SRAM']['bank_count']) in ((960,240),(928,232),(832,208),(832,178))
     a.sram_latency_cycles=a.sram_latency_cycles or macros['SRAM']['latency_cycles_default']
     assert a.sram_latency_cycles in (1,2,3)
-    executed_code={n:sha(Path(__file__).parent/n) for n in ('run_whole.py','whole_model.py','whole_pricing.py','candidate_sram.py','sram_characterization.py','mixed_sram.py')}
+    names=['run_whole.py','whole_model.py','whole_pricing.py','candidate_sram.py','sram_characterization.py','mixed_sram.py']
+    if binding.get('refresh250_version'):
+        assert mhz==250 and macros.get('score_frontend')==binding.get('score_frontend')=='s12_max_gap'
+        names.append('pricing250.py')
+    executed_code={n:sha(Path(__file__).parent/n) for n in names}
     assert a.cores in binding['FFN_candidate_core_counts']
     assert 1<=a.layers<=36
     assert a.head_probe_rows is None or (a.head and 1<=a.head_probe_rows<=151936)
@@ -56,7 +60,13 @@ def main():
         if a.head_probe_rows is not None:m.model['vocab']=a.head_probe_rows
         head_rows=a.head_probe_rows or 151936
         fixture=[load(a.snapshot/'inputs/SHAPE_FIXTURES.json')['qwen3_4b']]*3
-        def progress(stage,l,ns):print(json.dumps(dict(stage=stage,layer=l,simulated_us=ns/1000,wall_seconds=time.time()-started)),flush=True)
+        prefix={}
+        def progress(stage,l,ns):
+            print(json.dumps(dict(stage=stage,layer=l,simulated_us=ns/1000,wall_seconds=time.time()-started)),flush=True)
+            if stage=='final_norm' and a.head and binding.get('refresh250_version'):
+                prefix.update(copy.deepcopy(dict(time_ns=h.now,time_ms=h.now/1e6,clock_MHz=mhz,scope='observed_prefix_without_lm_head',
+                    actions=dict(m.actions),process28_counts=dict(m.p28_counts),kernel_active=dict(m.kernel_active),
+                    memory=h.report(),SRAM=h.mem.report(h.now),macro_config=macros)))
         host.full_run(m,fixture,a.layers,a.head,progress)
         mem=h.report();sram=h.mem.report(h.now);L=a.layers
         assert not h.events and not h.mem.queue and not mem['final_pending'] and not mem['final_response_occupied']
@@ -92,14 +102,19 @@ def main():
             assumptions=dict(SRAM_latency_cycles=a.sram_latency_cycles,SRAM_singleRW_16B_banks=sram['physical_banks'],
                 SRAM28_characterized=macros['SRAM'].get('macro_characterized',False),
                 SRAM_energy_area=macros['SRAM'].get('price_status'),DMA_clock_MHz=mhz,
-                shared_FMA='256lanes/4contexts/II1;feedback andtail from macro_config;500timing/price pending',
-                PV='2ADD/head;feedback from macro_config;PV28control/price pending',
+                shared_FMA='zero-margin paired256lanes/4contexts/II1/feedback4' if binding.get('refresh250_version') else '256lanes/4contexts/II1;feedback andtail from macro_config;500timing/price pending',
+                PV='2ADD/head,width/control reference proxies;feedback7;hold deferred;output covered by vector macro' if binding.get('refresh250_version') else '2ADD/head;feedback from macro_config;PV28control/price pending',
                 sampler_timing='ceil measured28 mean query cycles minus32 sharedloads;not real per-query timing trace',
                 sampler_addresses='frozen reference address trace,not new p-bit simulation or PPL',
-                vector='retained named cycle counts at selected core clock;28 price pending'),
+                vector='retained named cycles;explicit28 register-area and platform power macro' if binding.get('refresh250_version') else 'retained named cycle counts at selected core clock;28 price pending'),
             numeric_model_or_PPL=False,physical_wholechip_verified=False,wall_seconds=time.time()-started)
         if a.backend=='native':result['native']=backend.finish(h.now)
         budget=price(m,result,binding)
+        if prefix:
+            from pricing250 import split_head
+            prefix_budget=price(m,prefix,binding)
+            budget['lm_head_split']=split_head(budget,prefix_budget,h.now,prefix['time_ns'])
+            result['observed_prefix_without_lm_head']=prefix
         assert all(sha(Path(__file__).parent/n)==v for n,v in executed_code.items()),'execution source changed:preserve as diagnostic,do not seal'
         validation=dict(status='PASS',queues_drained=True,FFN_frames=True,samples=True,PV_ADDs=True,
             conversions=True,S12_singlepass_reads=True,unpriced_SRAM_actions_preserved=True,weight_bytes=weights,

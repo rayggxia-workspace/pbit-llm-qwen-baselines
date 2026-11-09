@@ -136,6 +136,11 @@ def prepare(workspace):
     return results
 
 def write(workspace,out):
+    # This is the historical staging generator. Never downgrade the refreshed
+    # 250MHz default when replaying an old preparation command.
+    current=out/'250MHz/BINDINGS.json'
+    if current.exists() and json.loads(current.read_bytes()).get('refresh250_version'):
+        raise RuntimeError('250MHz has a newer accepted overlay;use refresh250.py,or a separate legacy output directory')
     d=prepare(workspace);out.mkdir(parents=True,exist_ok=True)
     for n,v in d.items():
         p=out/(n+'MHz');p.mkdir(exist_ok=True)

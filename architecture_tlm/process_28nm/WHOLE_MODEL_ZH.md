@@ -1,3 +1,5 @@
+> **2026-11-09：250MHz已接新零余量FFN/FMA、PV参考与平台宏，面积预算6.4803mm²。** 六个小回放与六项检查通过；完整token46.02ms为条件外推。500MHz保持6.5929mm²预算。见[250MHz最新报告](250MHz/UPDATED_TLM_20261109_ZH.md)。
+
 > **2026-11-09更新：28nm250/500MHz默认832KiB/178个混合宏。** 前端106共享端口＋Attention72端口；条件面积预算6.566340/6.592880mm²。见[混合宏验证](SRAM_MIXED34_VALIDATION_20261109_ZH.md)。55nm保持。
 
 > 2026-11-09：宿主已独立完成832KiB两频小配对，见[验证结果](SRAM832_VALIDATION_20261109_ZH.md)。此前默认960KiB，现已接受832KiB；[需其它模块确认的清单](../module_handoff/SRAM_REDUCTION_COORDINATION_ZH_20261109.md)。

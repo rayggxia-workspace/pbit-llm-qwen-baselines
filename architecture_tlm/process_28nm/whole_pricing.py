@@ -51,8 +51,9 @@ def price(m,r,binding):
     fma=binding['shared_FMA'];ops=r['actions']['digital_BF16_MAC']+r['actions']['attention_QK_MAC'];n=16
     if mhz==250 and fma.get('gross_pJ_per_FMA') is not None:
         # Continuous characterization4096FMA/1052ns;idle per physical FMA16.
-        idle=fma['idle_W'];inc=ops*(fma['gross_pJ_per_FMA']-idle*1052/4096*1000)
-        row('shared_FMA256',n*fma['area_mm2'],inc,idle,n,'qualified older FMA16/C4;4cycle timing retained explicit')
+        idle=fma['idle_W'];inc=ops*(fma['gross_pJ_per_FMA']-idle*fma.get('measurement_ns_per_FMA',1052/4096)*1000)
+        basis='zero-margin paired FMA16/C4;4cycle feedback/II1' if binding.get('refresh250_version') else 'qualified older FMA16/C4;4cycle timing retained explicit'
+        row('shared_FMA256',n*fma['area_mm2'],inc,idle,n,basis)
     else:row('shared_FMA256',None,None,None,n,'500MHz pipeline/price macro pending;4contexts/II1/latency4 assumption')
     missing=[dict(component='PV_ADD_fixedstate_Vcontrol_and_output',scalar_ADDs=r['actions']['PV_ADD'],area_mm2=None,energy_mJ=None),
         dict(component='DMA_FIFOs_vectors_RMSNorm_RoPE_residual_reduction',area_mm2=None,energy_mJ=None),
@@ -61,9 +62,13 @@ def price(m,r,binding):
     external=r['memory']['by_kind'];bytes_=sum(x.get('issued_bytes',0) for x in external.values())
     known_area=sum(x['area_mm2'] for x in rows if x['area_mm2'] is not None)
     known_energy=sum(x['energy_mJ'] for x in rows if x['energy_mJ'] is not None)
-    return dict(status='PARTIAL28NM_COMPONENT_LEDGER_WITH_EXPLICIT_UNPRICED_ACTIONS',rows=rows,unpriced=missing,SRAM_calibration=sram,
+    ledger=dict(status='PARTIAL28NM_COMPONENT_LEDGER_WITH_EXPLICIT_UNPRICED_ACTIONS',rows=rows,unpriced=missing,SRAM_calibration=sram,
         covered_component_area_mm2=known_area,covered_component_energy_mJ=known_energy,
         external_bytes=bytes_,external_mJ_by_pJbit={str(e):bytes_*8*e/1e9 for e in (4.,6.6,8.)},
         full_system_area_mm2=None,full_system_energy_mJ_token=None,full_system_average_W=None,
         scope='measured28 components + explicitstagingproxy;partial sum,not full chip or lowerbound under all input distributions',
         area_multiplier=1,used55nm_prices=False,gross_idle_double_counted=False)
+    if mhz==250 and binding.get('refresh250_version'):
+        from pricing250 import close
+        return close(ledger,r,binding)
+    return ledger

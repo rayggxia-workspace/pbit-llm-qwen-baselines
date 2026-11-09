@@ -235,6 +235,8 @@ def build(snapshot,runtime,deps,binding,binding_sha,backend,cores,sram_cycles,ma
     # Truncated-prefix+head probes require a matching finalnorm tag;otherwise
     # an unused next-layer prefetch can occupy the finalnorm's physical slot.
     main.rebuild(m,shape,execution_layers if include_head else shape['layers'],'SC_ising');m.p28_macros=macros
+    from candidate_sram import install as install_candidate_sram
+    install_candidate_sram(m,macros['SRAM'])
     retime(m,binding['clock_MHz'],sram_cycles,macros)
     install_ffn(m,binding,cores)
     m.compact_screen=MethodType(screen,m);m.attention_group=MethodType(sampled,m)

@@ -23,10 +23,10 @@ def main():
     a.macros=a.macros or a.bindings.parent/'WHOLE_CONFIG.json';macros=load(a.macros)
     assert macros['clock_MHz']==mhz and macros['FMA_feedback_cycles']>=1 and macros['PV_feedback_cycles']>=1
     assert (macros['FMA_lanes'],macros['FMA_contexts'],macros['PV_ADD_per_head'])==(256,4,2)
-    assert (macros['SRAM']['capacity_KiB'],macros['SRAM']['bank_count'])==(960,240)
+    assert (macros['SRAM']['capacity_KiB'],macros['SRAM']['bank_count']) in ((960,240),(928,232),(832,208))
     a.sram_latency_cycles=a.sram_latency_cycles or macros['SRAM']['latency_cycles_default']
     assert a.sram_latency_cycles in (1,2,3)
-    executed_code={n:sha(Path(__file__).parent/n) for n in ('run_whole.py','whole_model.py','whole_pricing.py')}
+    executed_code={n:sha(Path(__file__).parent/n) for n in ('run_whole.py','whole_model.py','whole_pricing.py','candidate_sram.py','sram_characterization.py')}
     assert a.cores in binding['FFN_candidate_core_counts']
     assert 1<=a.layers<=36
     assert a.head_probe_rows is None or (a.head and 1<=a.head_probe_rows<=151936)
@@ -84,6 +84,7 @@ def main():
             lm_head_stage_ms=phases['lm_head']/1e6,FFN_cores=a.cores,phases=m.phases,
             actions=dict(m.actions),process28_counts=dict(m.p28_counts),kernel_active=dict(m.kernel_active),
             memory=mem,SRAM=sram,common_FFN_stages=m.common_stats,ordinary_matrix_audit=m.ordinary_pool_audit,
+            SRAM_layout_contract=m.candidate_sram_contract,
             resource_audit=m.resource_audit,seed=a.seed,backend=a.backend,
             bindings_sha256=sha(a.bindings),snapshot_manifest_sha256=sha(a.snapshot/'SNAPSHOT_MANIFEST.json'),source_identity=identity,
             macro_config=macros,macro_config_sha256=sha(a.macros),

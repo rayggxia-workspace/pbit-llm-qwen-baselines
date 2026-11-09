@@ -1,4 +1,6 @@
-> 用户2026-11-09决定：取消统一15%面积预留；当前250/500MHz中心7.139/7.165mm²。SRAM默认仍960KiB，832KiB仅逻辑候选。见[面积和SRAM审查](AREA_SRAM_REVIEW_20261109_ZH.md)。
+> 2026-11-09：宿主已独立完成832KiB两频小配对，见[验证结果](SRAM832_VALIDATION_20261109_ZH.md)。默认960KiB保持；[需其它模块确认的清单](../module_handoff/SRAM_REDUCTION_COORDINATION_ZH_20261109.md)。
+
+> 用户2026-11-09决定：取消统一15%面积预留；当前250/500MHz中心7.139/7.165mm²。SRAM默认仍960KiB，832KiB已完成两频小配对，仍为候选。见[面积和SRAM审查](AREA_SRAM_REVIEW_20261109_ZH.md)。
 
 > 2026-11-09更新：真实28nm SRAM宏已接入250/500配置。见[SRAM接入结果](SRAM_INTAKE_20261109_ZH.md)。下方此前SRAM未表征/跨工艺估值均为历史状态，其它模块限制仍保留。
 

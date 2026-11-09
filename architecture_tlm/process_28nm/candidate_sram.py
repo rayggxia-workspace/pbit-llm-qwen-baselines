@@ -1,4 +1,4 @@
-"""Opt-in smaller layouts; retain the current960KiB production candidate.
+"""Physical layouts;28nm defaults832KiB, with960KiB retained as a reference.
 
 Repack actual physical banks before any request. This does not retain deleted
 ports, reduce V entries, change sampling, or alter a submitted frozen runtime.

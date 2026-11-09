@@ -77,6 +77,11 @@ def main():
         for n,v in json.loads((folder/'SEAL.json').read_bytes()).items():
             if isinstance(v,str) and len(v)==64 and (folder/n).is_file():assert sha(folder/n)==v
         mhz=r['clock_MHz'];cfg=json.loads((HERE/f'{mhz}MHz/WHOLE_CONFIG.json').read_bytes())
+        # These sealed probes used the historical960 layout. A later default
+        # must not relabel their physical capacity or reuse their timing as832.
+        cfg=copy.deepcopy(cfg)
+        cfg['SRAM'].update(capacity_KiB=r['SRAM']['capacity_bytes']//1024,
+            bank_count=r['SRAM']['physical_banks'],layout_profile='compact960')
         r['macro_config']=cfg
         binding=json.loads((HERE/f'{mhz}MHz/BINDINGS.json').read_bytes())
         m=NS(common_cores=r['FFN_cores'],sampler_pool=NS(slots=4),norm_pool=NS(slots=4),top_pool=NS(slots=4))
@@ -100,7 +105,8 @@ def main():
     historical=HERE/'rough_estimate_20261109/RESULTS.json'
     old=json.loads(historical.read_bytes());full=[]
     for prev in old['cases']:
-        mhz=prev['clock_MHz'];cfg=calibration['versions'][str(mhz)]
+        mhz=prev['clock_MHz'];cfg=copy.deepcopy(calibration['versions'][str(mhz)])
+        cfg.update(capacity_KiB=960,bank_count=240,layout_profile='compact960')
         r=dict(clock_MHz=mhz,time_ns=prev['time_ms']*1e6,
             kernel_active=dict(GU_frames=36*6080,Wd_M128_frames=36*3040),
             SRAM=dict(counts=prev['SRAM_counts'],physical_banks=240,word_bytes=16,capacity_bytes=960*1024))
@@ -131,6 +137,9 @@ def main():
         assert math.isclose(new['energy_scenarios_mJ']['4.0'],new['total_energy_mJ_at4pJbit'],abs_tol=1e-12)
         full.append(new)
     result=dict(status='SRAM_REAL_MACRO_REPRICING_OF_PREVIOUS_CONDITIONAL_FULL_ESTIMATE',
+        reference_capacity_KiB=960,
+        current_default_capacity_KiB=json.loads((HERE/'250MHz/WHOLE_CONFIG.json').read_bytes())['SRAM']['capacity_KiB'],
+        reference_is_not_current_default_performance=True,
         actual_full36_timing_run=False,clock250500_configs_bound=True,macro_power_windows_verified=verified,
         probes=probes,cases=full,source_sha256=dict(delivery=source_sha,archive=sha(archive),historical=sha(historical)),
         checks=['12raw_power_reports_SHA','macro_geometry_and_area_multiplier1','positive_TT_interface_slacks',

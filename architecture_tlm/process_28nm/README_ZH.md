@@ -1,12 +1,14 @@
-> 2026-11-09：宿主已独立完成832KiB两频小配对，见[验证结果](SRAM832_VALIDATION_20261109_ZH.md)。默认960KiB保持；[需其它模块确认的清单](../module_handoff/SRAM_REDUCTION_COORDINATION_ZH_20261109.md)。
+> **2026-11-09用户已接受：28nm250/500MHz默认832KiB/208bank。** 当前面积预算6.758447/6.784987mm²，无统一15%预留；55nm保持。960KiB及原全token时间为历史参考。见[新默认说明](DEFAULT_SRAM832_20261109_ZH.md)。
 
-> 用户2026-11-09决定：取消统一15%面积预留；当前250/500MHz中心7.139/7.165mm²。SRAM默认仍960KiB，832KiB已完成两频小配对，仍为候选。见[面积和SRAM审查](AREA_SRAM_REVIEW_20261109_ZH.md)。
+> 2026-11-09：宿主已独立完成832KiB两频小配对，见[验证结果](SRAM832_VALIDATION_20261109_ZH.md)。此前默认960KiB，现已接受832KiB；[需其它模块确认的清单](../module_handoff/SRAM_REDUCTION_COORDINATION_ZH_20261109.md)。
+
+> 用户2026-11-09决定：取消统一15%面积预留；当前250/500MHz中心7.139/7.165mm²。SRAM已默认832KiB，两频小配对已完成。见[面积和SRAM审查](AREA_SRAM_REVIEW_20261109_ZH.md)。
 
 > 2026-11-09更新：真实28nm SRAM宏已接入250/500配置。见[SRAM接入结果](SRAM_INTAKE_20261109_ZH.md)。下方此前SRAM未表征/跨工艺估值均为历史状态，其它模块限制仍保留。
 
-## 2026-11-09 SRAM校准待办
+## 历史：最初SRAM校准需求（S0现已完成）
 
-[给EDA方的28nm SRAM最小提取/仿真清单](SRAM_CHARACTERIZATION_REQUEST_ZH_20261109.md)：目前没有接入真实28nm宏数据，粗估来自CACTI＋55nm残差迁移；最少先给256×128、1RW的TT/SS库资料，并对一个代表宏检查250/500MHz读写和两种idle。需求文档不代表新增PPA或改默认。
+[给EDA方的28nm SRAM最小提取/仿真清单](SRAM_CHARACTERIZATION_REQUEST_ZH_20261109.md)：最初未接入真实28nm宏数据，初估来自CACTI＋55nm残差迁移；当前已采用真实S0结果；最少先给256×128、1RW的TT/SS库资料，并对一个代表宏检查250/500MHz读写和两种idle。需求文档不代表新增PPA或改默认。
 
 ---
 

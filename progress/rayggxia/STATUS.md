@@ -1,3 +1,15 @@
+## 2026-11-09：28nm条件整机TLM已实现并通过三项冻结门禁
+
+用户要求先搭建；复用既有3a7dd5e0679e有限bank/DMA/16KiB信用/预取/状态/回压模型，新增whole_model/run_whole/whole_pricing/verify_whole和两频WHOLE_CONFIG。28核18/34拍、1KiB有限暂存＋state/scale/codec，A单遍分数读取＋gap后端共用32拍加载；四头共享V miss，SparQ单位修正为每Q一次feature、每四头一次norm。所有周期重执行，不按旧总时间缩放。缺28nm SRAM/PV/DMA/向量/500FMA价格保留null，已知组件小计与完整值分开。
+
+正式冻结执行b90c17725f50：250三核2层＋384词条head2.205336ms，首层1.091888ms；500两核1层0.980398ms；同500 SRAM返回延迟2拍0.981804ms，动作/字节守恒，慢0.1434%。三case SEAL、7源/配置SHA、工作量/转换/采样/V miss字节/有限信用/未知成本及双时钟边沿核验通过。完整151936head只全部tile/字节结构检查；实际head384含128尾块。没有运行完整36层或nativeLPDDR，没有新GPU/RTL/PT/工艺仿真，不把条件时间/部分PPA当芯片实测。
+
+截断2层＋head时Norm仍按36层预取导致阻塞，已绑定截断测试真实逻辑深度，完整36语义保持；只终止本人两个本地诊断进程，服务器健康作业不动。v2一次MAC/字节预检误写也保留失败，不计有效结果。正式只认v3封存，旧源和诊断保留。
+
+入口process_28nm/WHOLE_MODEL_ZH.md，代码run_whole.py；结果WHOLE_VALIDATION.json/WHOLE_RESULTS.csv；恢复work/rayggxia/225/process28_whole_20261109的EXECUTION/SOURCE_INDEX。新PPA到齐先更新价卡；周期/端口/状态改变再改宏并重放。55默认不变，PR249待审不合并；发布看PUBLICATION，Projects待同步。
+
+---
+
 ## 2026-11-08：28nm已有数据足够先搭组件接合版
 
 用户询问现有28nm数据可否先搭TLM、等待补测确认。已只读消费204/198最新5份JSON，新增process_28nm/prepare_bindings.py与250/500 BINDINGS：FFN18/34拍、250/500服务72/136和36/68ns、同一GU/Wd后端；state/codec/scale、1KiB暂存代理及13/12张Attention合格卡已收。显式A前端＋gap输入Ising，32加载握手不双计，旧ab_both仅参照；不暗用55价格、28面积×1。已补4项CPU集成验证，无新TLM整机/RTL/PT/EDA/GPU任务。

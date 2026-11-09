@@ -1,3 +1,9 @@
+## 2026-11-09 28nm250 TLM最新更新已发布
+
+PR249源b64cbb3241dc2f0e6d6bdb5b3ce5269e3cb06d02，31文件远端完整回读一致，Issue225评论6743216455。新零余量FFN/FMA、PV参考与平台宏已接，条件面积6.480303mm²；六CPU回放及六检查通过，250时间/访存未变、500 BUDGET不变。完整46.01856ms/核心15.016133mJ仍为明确外推，不是完整36层实跑；扣head阶段39.408936ms。S12主线、832KiB、55/500默认保持，宏/PV hold限制保留。原件zip/SHA与恢复在本work，PR待审未合并，Projects待维护者同步。
+
+---
+
 ## 2026-11-09 28nm250 TLM最新价卡已接入：本地完成待发布
 
 Issue225/PR249，rayggxia；task/225-tlm-unified250-20261107，base task/225-norm-stream-20261106，工作目录tmp/tlm-unified250-issue225-20261107。新SC/FMA/整数GU零余量价、主数字参考、17Attention卡可用，选原Ising/R8，S12优先分数前端保持；PV新实测参考按保留固定状态的2/16结构代理，V控制按真实miss/reuse，平台宏显式闭合，无旧“PV缺价”。不是全芯片PPA。

@@ -1,3 +1,11 @@
+## 2026-11-11 TLM进度：新增15项已封存核验13项，余DeepSeek两项
+
+Issue225/PR249，00:42北京实核。Qwen数字3/3、Llama6/6、DeepSeek4/6；13项均COMPLETED0:0、EXIT0、SEAL原件/源/配置SHA、真实全层/head及能量行加和通过，无失败。Qwen概率3seed为此前参考，不重复计15。QwenBF16/W8dense/W8screen含head111.119648/94.998940/85.450204ms；Qwen概率51.132604ms。Llama三seed概率43.929332ms，BF16/W8dense/W8screen86.102848/74.136052/66.688448ms。面积/片上与外存能量、扣head见process_28nm/results_20261111/REPORT_ZH.md、SUMMARY.json。
+
+DeepSeek38650676概率seed17完成30层，正跑lm_head，余约1h；另两seed已完成但不当最终三seed平均。38650679 BF16已25/30层、正在第26层，预计余2–3h，整批约凌晨3点、保留到4点浮动。没有重启/重交/改冻结源，CPU并行上限保持取消。新报告本地完成，发布看本work/PUBLICATION；PR待审未合并，Projects待同步。
+
+---
+
 ## 2026-11-10 两模型发布与实际调度回执
 
 PR249源06cb57275c6aca6311f27c3c5082b4ab22d149e6，27文件远端完整回读一致，Issue225评论6760602169、Issue245评论6760604170。8解析单层检查全通过；北京时间14:20核查Llama四原生门禁COMPLETED0:0、六完整任务38650670—38650675全部RUNNING，DeepSeek四门禁运行、38650676—38650681等待对应依赖，无已发现失败。Qwen38650228已调自设%2→3且三项均RUNNING，未重启/改源。实际sacct门禁12GiB分配3CPU，完整24GiB分配6CPU（脚本均请求1CPU、单线程），覆盖早先按旧12GiB粒度写的“实际3CPU”预测。完整跨模型结果尚待收，不能把局部门禁当全模型。PR待审未合并，Projects待同步；恢复cross28_20261110/HANDOFF和ops.py status。

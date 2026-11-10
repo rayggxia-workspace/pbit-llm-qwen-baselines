@@ -1,3 +1,21 @@
+## 2026-11-11 TLM进度：新增15项已封存核验13项，余DeepSeek两项
+
+Issue225/PR249，00:42北京实核。Qwen数字3/3、Llama6/6、DeepSeek4/6；13项均COMPLETED0:0、EXIT0、SEAL原件/源/配置SHA、真实全层/head及能量行加和通过，无失败。Qwen概率3seed为此前参考，不重复计15。QwenBF16/W8dense/W8screen含head111.119648/94.998940/85.450204ms；Qwen概率51.132604ms。Llama三seed概率43.929332ms，BF16/W8dense/W8screen86.102848/74.136052/66.688448ms。面积/片上与外存能量、扣head见process_28nm/results_20261111/REPORT_ZH.md、SUMMARY.json。
+
+DeepSeek38650676概率seed17完成30层，正跑lm_head，余约1h；另两seed已完成但不当最终三seed平均。38650679 BF16已25/30层、正在第26层，预计余2–3h，整批约凌晨3点、保留到4点浮动。没有重启/重交/改冻结源，CPU并行上限保持取消。新报告本地完成，发布看本work/PUBLICATION；PR待审未合并，Projects待同步。
+
+---
+
+## 2026-11-10 CPU仿真耗时诊断（本地记录，待后续PR同步）
+
+Issue225。14:49北京只读sstat：Qwen数字38650229分配3核，墙钟55:37、AveCPU55:33；Llama概率38650670分配6核，墙钟33:52、AveCPU33:51，均约一个活跃CPU。脚本请求1CPU，实际3/6来自12/24GiB内存粒度；当前主事件驱动及nativeDRAM调度没有单case多核并行，增加cpus-per-task不会自动加速。
+
+已完成Qwen seed17完整事务51.136596ms对应CPU墙钟19424.881s；SRAM16B读194019908＋写360003008，共554022916字活动；native32请求169105152（64B逻辑84552576，不重复相加）。单核细粒度SRAM/事件与nativeDRAM循环共同造成大量软件工作；未做逐函数profile，不把某个具体模块CPU占比说成已测。当前不同模型/seed已并行；后续优化应考虑批量访存/原生热点，保持bank冲突、回压、统计和时序回归，不能直接拆层相加替代完整共享状态执行。
+
+DeepSeek BF16 gate的EXIT0/SEAL/SHA已只读确认，Slurm收尾后完整38650679已于14:48:38启动，14:49状态RUNNING，不需解除依赖或重复提交。原冻结源码/硬件时序/作业均未改。原始观测本work/CPU_USAGE_OBSERVATION.json与CPU_USAGE_FOLLOWUP.json，代码cpu_usage.py；本轮诊断辅助文件尚未发布，不把本地记录称远端已更新。
+
+---
+
 ## 2026-11-10 用户要求仿真不设人为并行上限；按实际吞吐更新ETA
 
 Issue225/PR249。用户明确本项目CPU TLM后续不人为设置%2等并行上限。已将Qwen数字38650228的ArrayTaskThrottle=0，新两模型12完整任务原本独立无人工上限；保留原生验证afterok依赖，不重启/改源。EDA资源/QOS为实际调度约束，不声称不存在。

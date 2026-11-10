@@ -1,0 +1,4094 @@
+{
+  "status": "MAIN_COMPONENT_PARITY_READY",
+  "PVT": "TT0.9V25C",
+  "frequency_MHz": 250,
+  "setup_uncertainty_ns": 0,
+  "hold_uncertainty_ns": 0,
+  "IO_max_min_ns": [
+    1,
+    0.02
+  ],
+  "output_load_fF": 1,
+  "area_multiplier": 1,
+  "source": {
+    "local": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f.zip",
+    "source_dir": "C:\\Users\\86134\\Documents\\a_P_BIT\\tmp\\matrix-t32-issue204-20261028\\architecture_tlm\\ffn28_comparison250_20261109\\v2",
+    "remote": "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f.zip",
+    "root": "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f",
+    "bytes": 1413157,
+    "sha256": "ad3dba378a98e920c1dce5c4770564945e6c41a455dda63ee61ab8fd10fe12ed",
+    "manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+    "new_PPA_cases": 6,
+    "STA_reuse_cases": 9,
+    "max_new_PT_windows": 72,
+    "resources": {
+      "native": "2CPU8GiB30min max2",
+      "STA": "1CPU12GiB30min max1",
+      "PPA": "4CPU32GiB4h max2;previous55 PPA all terminal",
+      "GPU": 0
+    },
+    "no_PDK_model_credentials": true
+  },
+  "jobs": {
+    "functional": {
+      "job": "38639520",
+      "args": [
+        "sbatch",
+        "--parsable",
+        "--partition=v6_384",
+        "--array=0-5%2",
+        "--cpus-per-task=2",
+        "--mem=8G",
+        "--time=00:30:00",
+        "--job-name=cmp28-functional",
+        "--output=/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/functional-%A_%a.out",
+        "--error=/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/functional-%A_%a.err",
+        "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/functional.sh"
+      ]
+    },
+    "sta": {
+      "job": "38639521",
+      "args": [
+        "sbatch",
+        "--parsable",
+        "--partition=v6_384",
+        "--array=0-8%1",
+        "--cpus-per-task=1",
+        "--mem=12G",
+        "--time=00:30:00",
+        "--job-name=cmp28-sta",
+        "--output=/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/sta-%A_%a.out",
+        "--error=/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/sta-%A_%a.err",
+        "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/sta.sh"
+      ]
+    },
+    "ppa": {
+      "job": "38639522",
+      "args": [
+        "sbatch",
+        "--parsable",
+        "--partition=v6_384",
+        "--array=0-5%2",
+        "--cpus-per-task=4",
+        "--mem=32G",
+        "--time=04:00:00",
+        "--job-name=cmp28-ppa",
+        "--output=/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/ppa-%A_%a.out",
+        "--error=/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/ppa-%A_%a.err",
+        "--dependency=aftercorr:38639520,afterany:38639521",
+        "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/ppa.sh"
+      ]
+    }
+  },
+  "main_component_parity_ready": true,
+  "full_system_ready": false,
+  "all_historical_ablations_ready": false,
+  "accepted_new_components": {
+    "a9_endpoint_28_250": {
+      "area_mm2": 0.012158747999999999,
+      "area_raw_um2": 12158.748,
+      "area_multiplier": 1,
+      "clock_MHz": 250,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "unit": "DOT64",
+      "boundary": "K64 signed9 plus +/-256full endpoint xW8,registered result,realICG;no scale/crossK/memory",
+      "real_ICGs": 1,
+      "modes": {
+        "continuous": {
+          "mean_whole_module_mW": 3.0266666666666664,
+          "mean_leakage_mW": 0.007554333333333333,
+          "gross_pJ_per_unit": 12.295833333333333,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "idle_hold": {
+          "mean_whole_module_mW": 0.009114333333333334,
+          "mean_leakage_mW": 0.007785666666666666,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "idle_toggle": {
+          "mean_whole_module_mW": 2.944,
+          "mean_leakage_mW": 0.007552666666666667,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        }
+      },
+      "static_PT_slacks_ns": {
+        "setup": 1.337446,
+        "hold": 0.012346,
+        "gate_setup": 2.941077,
+        "gate_hold": 0.046547
+      },
+      "mapped_sha256": "ce4b1ddbf8a0aa82502d7fcc76ba1f8fe212b1a289b5930aebffd5419e0f4c07",
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_a9_endpoint_28_250.tar.gz",
+        "sha256": "93f4bcf2dd81ee00711358f0a8c5061d4f7c71614912dc7aff479a81490ad70a"
+      },
+      "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+      "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+      "full_chip": false
+    },
+    "fma16_dual_28_250": {
+      "area_mm2": 0.060939018,
+      "area_raw_um2": 60939.018,
+      "area_multiplier": 1,
+      "clock_MHz": 250,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "unit": "DOT64",
+      "boundary": "FMA16/C4 BF16or runtimeW8PoTdecode;FP32feedback,2resultslots,ICG;no SRAM",
+      "real_ICGs": 131,
+      "modes": {
+        "bf16_continuous": {
+          "mean_whole_module_mW": 12.6,
+          "mean_leakage_mW": 0.04392666666666667,
+          "gross_pJ_per_unit": 207.1125,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "bf16_idle_hold": {
+          "mean_whole_module_mW": 0.1277,
+          "mean_leakage_mW": 0.044700000000000004,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "bf16_idle_toggle": {
+          "mean_whole_module_mW": 0.5578666666666667,
+          "mean_leakage_mW": 0.04475333333333333,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "w8_continuous": {
+          "mean_whole_module_mW": 12.733333333333333,
+          "mean_leakage_mW": 0.04411,
+          "gross_pJ_per_unit": 209.30416666666667,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "w8_idle_hold": {
+          "mean_whole_module_mW": 0.12766666666666665,
+          "mean_leakage_mW": 0.04463333333333333,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "w8_idle_toggle": {
+          "mean_whole_module_mW": 0.5557666666666666,
+          "mean_leakage_mW": 0.044706666666666665,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        }
+      },
+      "static_PT_slacks_ns": {
+        "setup": 0.020018,
+        "hold": 0.012346,
+        "gate_setup": 2.760201,
+        "gate_hold": 0.048154
+      },
+      "mapped_sha256": "04cf79409389b80366d4875149ad645d60b0129c915ba8e54aee95b853eed08f",
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_fma16_dual_28_250.tar.gz",
+        "sha256": "4722c07ba18e5070cce50a2ca37fdfc5801856afa251fe25cf7a211bcc278613"
+      },
+      "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+      "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+      "full_chip": false
+    },
+    "fpadd_28_250": {
+      "area_mm2": 0.001953756,
+      "area_raw_um2": 1953.756,
+      "area_multiplier": 1,
+      "clock_MHz": 250,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "unit": "scalar_FP32_ADD",
+      "boundary": "FixedFP32 ADD/RNE,3stages/II1,realICG;no SRAM",
+      "real_ICGs": 1,
+      "modes": {
+        "continuous": {
+          "mean_whole_module_mW": 0.5707333333333333,
+          "mean_leakage_mW": 0.0013023333333333333,
+          "gross_pJ_per_unit": 2.318604166666667,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "idle_hold": {
+          "mean_whole_module_mW": 0.0019076666666666667,
+          "mean_leakage_mW": 0.0013396666666666665,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "idle_toggle": {
+          "mean_whole_module_mW": 0.004550333333333333,
+          "mean_leakage_mW": 0.0013393333333333334,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        }
+      },
+      "static_PT_slacks_ns": {
+        "setup": 0.045026,
+        "hold": 0.007428,
+        "gate_setup": 2.909745,
+        "gate_hold": 0.048358
+      },
+      "mapped_sha256": "715f4e41fe83bc28c6a4ef95bde7a6d20baadf834c3dbf55f19f8ab92eb96976",
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_fpadd_28_250.tar.gz",
+        "sha256": "7fd625c0e0491dd5c7e331a08334ebce984021ecd1054ac88da1822f75a1e422"
+      },
+      "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+      "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+      "full_chip": false
+    },
+    "dcim_28_250": {
+      "area_mm2": 0.191802743999,
+      "area_raw_um2": 191802.743999,
+      "area_multiplier": 1,
+      "clock_MHz": 250,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "unit": "DOT64",
+      "boundary": "Exact P8mag8+sign+full endpoint W8 linear array and localK64 accumulation;SRAM cells/programming/DRAM external",
+      "real_ICGs": 128,
+      "modes": {
+        "decode_idle": {
+          "mean_whole_module_mW": 0.20729999999999998,
+          "mean_leakage_mW": 0.12966666666666668,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "decode_work": {
+          "mean_whole_module_mW": 39.2,
+          "mean_leakage_mW": 0.12483333333333332,
+          "gross_pJ_per_unit": 12.631250000000001,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "prefill_idle": {
+          "mean_whole_module_mW": 0.20726666666666665,
+          "mean_leakage_mW": 0.12966666666666668,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "prefill_work": {
+          "mean_whole_module_mW": 40.63333333333333,
+          "mean_leakage_mW": 0.125,
+          "gross_pJ_per_unit": 12.855273437500001,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        }
+      },
+      "static_PT_slacks_ns": {
+        "setup": 0.955579,
+        "hold": 0.024773,
+        "gate_setup": 2.756783,
+        "gate_hold": 0.166299
+      },
+      "mapped_sha256": "9f14194db0e2eb38b9e9d74f5bc0d0a2fa59a78bfcb6588298eb1eec799464d7",
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_dcim_28_250.tar.gz",
+        "sha256": "d87bfb2523eff2b64cd24b4c505a73dcb6844e41aa14064db7f05184a362caf4"
+      },
+      "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+      "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+      "full_chip": false,
+      "recovery_provenance": {
+        "driver_sha256": "f69bc2129022cc16f605cecda5854373d9351769a21a73cc73ff5faa83d33230",
+        "original_arrayrun_sha256": "32ce1b45df481cf6ccca06155680a027a4e0b17b0313c424c81b3112b7652704",
+        "executed_arrayrun_sha256": "cb5ee61639ae1adde088996eae6f1d87adce68916a98dae3ac7b84230267a808",
+        "patch": "Supply explicit250MHz power metadata;reuse static directory and completed PT windows",
+        "new_synthesis": false,
+        "RTL_constraints_fixtures_changed": false,
+        "mapped_sha256": "9f14194db0e2eb38b9e9d74f5bc0d0a2fa59a78bfcb6588298eb1eec799464d7",
+        "configuration_sha256": "5ec3aac3605dbf53e62eec8906e405345f3158782192fb995d3e5aaa8ed01404",
+        "preserved_originals": {
+          "RESULT.json": "4ff4bc75df9ce4efc9f4fa67daf8d866167191f992828d4d29f3bf9f2eaceefd",
+          "RETURN_MANIFEST.json": "e9a4139d5d835341dd01939e55782e935458112cb211cddb6c79cc6e61320598",
+          "reports.tar.gz": "3623563e66d9b8558b45259f977b2ebc97fc976d2e6f57a34e74ee4c6b93e285"
+        }
+      }
+    },
+    "ws_28_250": {
+      "area_mm2": 0.11813961599999999,
+      "area_raw_um2": 118139.616,
+      "area_multiplier": 1,
+      "clock_MHz": 250,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "unit": "DOT64",
+      "boundary": "Exact P8mag8+sign+full endpoint W8 linear array and localK64 accumulation;SRAM cells/programming/DRAM external",
+      "real_ICGs": 2,
+      "modes": {
+        "decode_idle": {
+          "mean_whole_module_mW": 0.08188666666666666,
+          "mean_leakage_mW": 0.08076,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "decode_work": {
+          "mean_whole_module_mW": 27.866666666666667,
+          "mean_leakage_mW": 0.08259,
+          "gross_pJ_per_unit": 504.2125,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "prefill_idle": {
+          "mean_whole_module_mW": 0.08362,
+          "mean_leakage_mW": 0.08249,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "prefill_work": {
+          "mean_whole_module_mW": 44.2,
+          "mean_leakage_mW": 0.08440666666666666,
+          "gross_pJ_per_unit": 51.27890625,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        }
+      },
+      "static_PT_slacks_ns": {
+        "setup": 0.610276,
+        "hold": 0.029033,
+        "gate_setup": 2.682055,
+        "gate_hold": 0.049391
+      },
+      "mapped_sha256": "e163c21907ca76ffa2b1f0e2e39aeff2cef358a1d3ace933e92e165a1b159f75",
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_ws_28_250.tar.gz",
+        "sha256": "7aa1cb2e6ff490f6cf09eeeeb402d871ac6df3ae6982116549a2c1510a6553d8"
+      },
+      "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+      "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+      "full_chip": false,
+      "recovery_provenance": {
+        "driver_sha256": "f69bc2129022cc16f605cecda5854373d9351769a21a73cc73ff5faa83d33230",
+        "original_arrayrun_sha256": "32ce1b45df481cf6ccca06155680a027a4e0b17b0313c424c81b3112b7652704",
+        "executed_arrayrun_sha256": "cb5ee61639ae1adde088996eae6f1d87adce68916a98dae3ac7b84230267a808",
+        "patch": "Supply explicit250MHz power metadata;reuse static directory and completed PT windows",
+        "new_synthesis": false,
+        "RTL_constraints_fixtures_changed": false,
+        "mapped_sha256": "e163c21907ca76ffa2b1f0e2e39aeff2cef358a1d3ace933e92e165a1b159f75",
+        "configuration_sha256": "de54f0809af77ed773450c42b9bb1fc71bafef83fa23aa53270f5bb067770815",
+        "preserved_originals": {
+          "RESULT.json": "776e161f6a0a76415c8bdb825f989fd33fa9af55b6c4d40b37c11a935dc127f9",
+          "RETURN_MANIFEST.json": "e6e5284c5ad98b52b3310645f3a8b7b7927b029a6ea35395c0194e15b29fd941",
+          "reports.tar.gz": "ff35c9791887d8c3abed2f8e359ca53503dcb07c02307c66ae7e118903282ee4"
+        }
+      }
+    },
+    "os_28_250": {
+      "area_mm2": 0.186696846,
+      "area_raw_um2": 186696.846,
+      "area_multiplier": 1,
+      "clock_MHz": 250,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "unit": "DOT64",
+      "boundary": "Exact P8mag8+sign+full endpoint W8 linear array and localK64 accumulation;SRAM cells/programming/DRAM external",
+      "real_ICGs": 2,
+      "modes": {
+        "decode_idle": {
+          "mean_whole_module_mW": 0.14146666666666666,
+          "mean_leakage_mW": 0.1403,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "decode_work": {
+          "mean_whole_module_mW": 50.93333333333333,
+          "mean_leakage_mW": 0.1341,
+          "gross_pJ_per_unit": 970.9166666666666,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "prefill_idle": {
+          "mean_whole_module_mW": 0.14146666666666666,
+          "mean_leakage_mW": 0.1403,
+          "gross_pJ_per_unit": null,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        },
+        "prefill_work": {
+          "mean_whole_module_mW": 70.3,
+          "mean_leakage_mW": 0.1394,
+          "gross_pJ_per_unit": 83.755859375,
+          "seeds": [
+            17,
+            503,
+            1009
+          ]
+        }
+      },
+      "static_PT_slacks_ns": {
+        "setup": 0.632062,
+        "hold": 0.027979,
+        "gate_setup": 2.754638,
+        "gate_hold": 0.049483
+      },
+      "mapped_sha256": "072cf91ac54d5087e0b4ea72d81e018400f3e853cd8914ee742c32ab0fd4d367",
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_os_28_250.tar.gz",
+        "sha256": "36e3b39a93d7ec10790d10e4c29827d57d543b52b00e548595f3dd378998c375"
+      },
+      "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+      "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+      "full_chip": false,
+      "recovery_provenance": {
+        "driver_sha256": "f69bc2129022cc16f605cecda5854373d9351769a21a73cc73ff5faa83d33230",
+        "original_arrayrun_sha256": "32ce1b45df481cf6ccca06155680a027a4e0b17b0313c424c81b3112b7652704",
+        "executed_arrayrun_sha256": "cb5ee61639ae1adde088996eae6f1d87adce68916a98dae3ac7b84230267a808",
+        "patch": "Supply explicit250MHz power metadata;reuse static directory and completed PT windows",
+        "new_synthesis": false,
+        "RTL_constraints_fixtures_changed": false,
+        "mapped_sha256": "072cf91ac54d5087e0b4ea72d81e018400f3e853cd8914ee742c32ab0fd4d367",
+        "configuration_sha256": "4e4309cdfa1b8596a7cd2855246f9bbc464e90391038076db4485fa587f5247f",
+        "preserved_originals": {
+          "RESULT.json": "0b08c3a6ff089a4d98e625e0b7a052dafab69871cedcbcec36462f96ee168f3d",
+          "RETURN_MANIFEST.json": "f90e40adb2d23334f89a61f8fb29049e0258ed08575f21a2226d09f34bbb5952",
+          "reports.tar.gz": "b2789b5b5cb398f27fc40d0e16d0468080c881a8402bacc60f126c79bbe66519"
+        }
+      }
+    }
+  },
+  "accepted_reused_components": {
+    "state_250": {
+      "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+      "timing_qualified": true,
+      "unit": "32lane_signed64_update",
+      "clock_MHz": 250,
+      "period_ns": 4.0,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "area_mm2": 0.014171976000000001,
+      "area_raw_um2": 14171.976,
+      "area_multiplier": 1,
+      "setup_slack_ns": 0.281884,
+      "hold_slack_ns": 0.050275,
+      "real_ICGs": 64,
+      "latency_cycles": 1,
+      "input_II_cycles": 1,
+      "idle_reference_mode": "idle_source_stopped",
+      "idle_W": 4.77e-05,
+      "idle_leakage_W": 1.0586666666666666e-05,
+      "modes": {
+        "idle_source_stopped": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.0477,
+          "mean_dynamic_mW": 0.03712,
+          "mean_leakage_mW": 0.010586666666666666,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "state_cont": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 5.001666666666667,
+          "mean_dynamic_mW": 4.990666666666667,
+          "mean_leakage_mW": 0.010683333333333333,
+          "gross_pJ_per_unit": 20.16296875,
+          "stdev_pJ_per_unit": 0.05901801400049347,
+          "incremental_pJ_per_unit": 19.970678125000003,
+          "measurement_ns_per_unit": 4.03125,
+          "gross_pJ_per_FMA": null
+        },
+        "state_paced": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 1.3266666666666667,
+          "mean_dynamic_mW": 1.3159333333333334,
+          "mean_leakage_mW": 0.01093,
+          "gross_pJ_per_unit": 21.3925,
+          "stdev_pJ_per_unit": 0.056629138921584776,
+          "incremental_pJ_per_unit": 20.623337499999998,
+          "measurement_ns_per_unit": 16.125,
+          "gross_pJ_per_FMA": null
+        }
+      },
+      "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+      "unknown_TIE_power_W": null,
+      "flags": [
+        "UNMODELED_CONSTANT_TIE_POWER",
+        "checks.rpt",
+        "model_checks.rpt"
+      ],
+      "native_source_manifest_sha256": "82a9d0276bc8615e108c6750de1a3633c95eb8431fdb2fe147a648ad03fd9281",
+      "mapped_sha256": "53ead905096e6600356b4dc86300f7fec542360e77cf49a4d7670fef964fc538",
+      "original_reports": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_state_250.tar.gz",
+        "sha256": "947f0b9c0114536682d3733476461dba91ca10141dd3c35af2b8f155dc043824",
+        "verified_report_members": 400
+      },
+      "boundary": "32lane signed64 + shifted signed20,64realICGs;SRAM,address/control excluded",
+      "inventory_groups_seed17": {
+        "real_icg": {
+          "cells": 64,
+          "area_um2": 193.53600000000003,
+          "watts": [
+            0.00021331200000000017,
+            0.000175616,
+            2.1932799999999978e-07,
+            0.0003891199999999998
+          ]
+        },
+        "registers": {
+          "cells": 2049,
+          "area_um2": 4130.784000000102,
+          "watts": [
+            0.002471227699999971,
+            0.00010285410999999941,
+            3.371384000000013e-06,
+            0.002577482800000009
+          ]
+        },
+        "combinational_unattributed": {
+          "cells": 10260,
+          "area_um2": 9847.403999999986,
+          "watts": [
+            0.001244900347900002,
+            0.0007850828319000125,
+            7.09204960000031e-06,
+            0.0020370686961999696
+          ]
+        },
+        "unmodeled_constant_ties": {
+          "cells": 1,
+          "area_um2": 0.252,
+          "watts": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      },
+      "new_STA_slacks_ns": {
+        "setup": 0.281884,
+        "hold": 0.050275,
+        "gate_setup": 2.726805,
+        "gate_hold": 0.151862
+      },
+      "original_clock_budget_slacks_are_historical": true,
+      "STA_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_state_250.tar.gz",
+        "sha256": "27c5f24a6e63d62400513b851bf721a18069a10ead6435964a1c8278b3669717"
+      },
+      "original_power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_state_250.tar.gz",
+        "sha256": "947f0b9c0114536682d3733476461dba91ca10141dd3c35af2b8f155dc043824"
+      },
+      "power_netlist_sha256": "53ead905096e6600356b4dc86300f7fec542360e77cf49a4d7670fef964fc538",
+      "new_power": false,
+      "power_not_frequency_scaled": true,
+      "historical_clock_budget_timing_fields": {
+        "setup_slack_ns": 0.281884,
+        "hold_slack_ns": 0.000275
+      },
+      "slacks_ns": {
+        "setup": 0.281884,
+        "hold": 0.050275,
+        "gate_setup": 2.726805,
+        "gate_hold": 0.151862
+      }
+    },
+    "codec_250": {
+      "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+      "timing_qualified": true,
+      "unit": "scalar_conversion",
+      "clock_MHz": 250,
+      "period_ns": 4.0,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "area_mm2": 0.0022619520000000002,
+      "area_raw_um2": 2261.952,
+      "area_multiplier": 1,
+      "setup_slack_ns": 0.388921,
+      "hold_slack_ns": 0.055288,
+      "real_ICGs": 2,
+      "latency_cycles": 2,
+      "input_II_cycles": 1,
+      "idle_reference_mode": "idle_source_stopped",
+      "idle_W": 4.182e-06,
+      "idle_leakage_W": 1.524e-06,
+      "modes": {
+        "bf16": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.41836666666666666,
+          "mean_dynamic_mW": 0.4168,
+          "mean_leakage_mW": 0.0015236666666666667,
+          "gross_pJ_per_unit": 1.6996145833333334,
+          "stdev_pJ_per_unit": 0.009920599491504242,
+          "incremental_pJ_per_unit": 1.6826252083333335,
+          "measurement_ns_per_unit": 4.0625,
+          "gross_pJ_per_FMA": null
+        },
+        "codec_paced": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.11046666666666667,
+          "mean_dynamic_mW": 0.10897,
+          "mean_leakage_mW": 0.0015293333333333333,
+          "gross_pJ_per_unit": 1.7950833333333334,
+          "stdev_pJ_per_unit": 0.04716234152725374,
+          "incremental_pJ_per_unit": 1.7271258333333335,
+          "measurement_ns_per_unit": 16.25,
+          "gross_pJ_per_FMA": null
+        },
+        "g8": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.4094,
+          "mean_dynamic_mW": 0.40786666666666666,
+          "mean_leakage_mW": 0.0015203333333333334,
+          "gross_pJ_per_unit": 1.6631875,
+          "stdev_pJ_per_unit": 0.012328867610713497,
+          "incremental_pJ_per_unit": 1.6461981250000002,
+          "measurement_ns_per_unit": 4.0625,
+          "gross_pJ_per_FMA": null
+        },
+        "idle_source_stopped": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.004182,
+          "mean_dynamic_mW": 0.0026579999999999998,
+          "mean_leakage_mW": 0.001524,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "u8": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.40953333333333336,
+          "mean_dynamic_mW": 0.40796666666666664,
+          "mean_leakage_mW": 0.0015193333333333333,
+          "gross_pJ_per_unit": 1.6637291666666667,
+          "stdev_pJ_per_unit": 0.016736974101770434,
+          "incremental_pJ_per_unit": 1.6467397916666668,
+          "measurement_ns_per_unit": 4.0625,
+          "gross_pJ_per_FMA": null
+        }
+      },
+      "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+      "unknown_TIE_power_W": null,
+      "flags": [
+        "UNMODELED_CONSTANT_TIE_POWER",
+        "checks.rpt",
+        "model_checks.rpt"
+      ],
+      "native_source_manifest_sha256": "82a9d0276bc8615e108c6750de1a3633c95eb8431fdb2fe147a648ad03fd9281",
+      "mapped_sha256": "f89d706aa65291c43880c2ab7a5ed3bbc9e47c2030a9c54f8b871daf21c26f3f",
+      "original_reports": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_codec_250.tar.gz",
+        "sha256": "6ef5497b279aff9d1e94752f7345f91b92e48c4c190a84842e903e2063286d64",
+        "verified_report_members": 640
+      },
+      "boundary": "Single scalar signed64 with supplied binary shift to RNE/saturatingg8,signmag7u8 orBF16;2ICG,external scale/control excluded",
+      "inventory_groups_seed17": {
+        "real_icg": {
+          "cells": 2,
+          "area_um2": 6.048,
+          "watts": [
+            6.663999999999999e-06,
+            7.639000000000001e-06,
+            6.852e-09,
+            1.431e-05
+          ]
+        },
+        "registers": {
+          "cells": 92,
+          "area_um2": 183.58199999999982,
+          "watts": [
+            0.00010852179999999997,
+            1.1341573999999997e-05,
+            1.4772000000000008e-07,
+            0.00012001219999999999
+          ]
+        },
+        "combinational_unattributed": {
+          "cells": 3858,
+          "area_um2": 2072.069999999928,
+          "watts": [
+            0.00015582905761199982,
+            0.00011945802879999969,
+            1.364775119999994e-06,
+            0.0002766517188500017
+          ]
+        },
+        "unmodeled_constant_ties": {
+          "cells": 1,
+          "area_um2": 0.252,
+          "watts": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      },
+      "new_STA_slacks_ns": {
+        "setup": 0.388921,
+        "hold": 0.055288,
+        "gate_setup": 2.78303,
+        "gate_hold": 0.055288
+      },
+      "original_clock_budget_slacks_are_historical": true,
+      "STA_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_codec_250.tar.gz",
+        "sha256": "aef48750f0516cb37c3218d631c60cd372ffacfca696703a150d877e67e9b044"
+      },
+      "original_power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_codec_250.tar.gz",
+        "sha256": "6ef5497b279aff9d1e94752f7345f91b92e48c4c190a84842e903e2063286d64"
+      },
+      "power_netlist_sha256": "f89d706aa65291c43880c2ab7a5ed3bbc9e47c2030a9c54f8b871daf21c26f3f",
+      "new_power": false,
+      "power_not_frequency_scaled": true,
+      "historical_clock_budget_timing_fields": {
+        "setup_slack_ns": 0.388921,
+        "hold_slack_ns": 0.005288
+      },
+      "slacks_ns": {
+        "setup": 0.388921,
+        "hold": 0.055288,
+        "gate_setup": 2.78303,
+        "gate_hold": 0.055288
+      }
+    },
+    "scale_250": {
+      "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+      "timing_qualified": true,
+      "unit": "64element_scale_group",
+      "clock_MHz": 250,
+      "period_ns": 4.0,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "area_mm2": 0.014928984000000001,
+      "area_raw_um2": 14928.984,
+      "area_multiplier": 1,
+      "setup_slack_ns": 0.021577,
+      "hold_slack_ns": 0.05036,
+      "real_ICGs": 41,
+      "latency_cycles": 4,
+      "input_II_cycles": 1,
+      "idle_reference_mode": "idle_source_stopped",
+      "idle_W": 3.980333333333333e-05,
+      "idle_leakage_W": 1.1093333333333334e-05,
+      "modes": {
+        "idle_source_stopped": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.039803333333333336,
+          "mean_dynamic_mW": 0.028710000000000003,
+          "mean_leakage_mW": 0.011093333333333334,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "scale_cont": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 4.815666666666667,
+          "mean_dynamic_mW": 4.804666666666667,
+          "mean_leakage_mW": 0.011229999999999999,
+          "gross_pJ_per_unit": 40.331208333333336,
+          "stdev_pJ_per_unit": 0.029412033393383757,
+          "incremental_pJ_per_unit": 39.997855416666674,
+          "measurement_ns_per_unit": 8.375,
+          "gross_pJ_per_FMA": null
+        },
+        "scale_paced": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 1.318,
+          "mean_dynamic_mW": 1.3065666666666669,
+          "mean_leakage_mW": 0.01137,
+          "gross_pJ_per_unit": 42.670249999999996,
+          "stdev_pJ_per_unit": 0.0856561986957169,
+          "incremental_pJ_per_unit": 41.38161708333333,
+          "measurement_ns_per_unit": 32.375,
+          "gross_pJ_per_FMA": null
+        }
+      },
+      "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+      "unknown_TIE_power_W": null,
+      "flags": [
+        "UNMODELED_CONSTANT_TIE_POWER",
+        "checks.rpt",
+        "model_checks.rpt"
+      ],
+      "native_source_manifest_sha256": "82a9d0276bc8615e108c6750de1a3633c95eb8431fdb2fe147a648ad03fd9281",
+      "mapped_sha256": "4b54e692434fb223ddb83a6eb40b3a1af6f1da5f525bb14cf92f51809559587d",
+      "original_reports": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_scale_250.tar.gz",
+        "sha256": "573cc270624389e4509133bc8428939ced6500d6bce3901c0ae66a670f39531f",
+        "verified_report_members": 400
+      },
+      "boundary": "Two32lane signed64 packets per64element max/leading-position group;41ICG,PoT exponent/control composition external",
+      "inventory_groups_seed17": {
+        "real_icg": {
+          "cells": 41,
+          "area_um2": 123.98400000000002,
+          "watts": [
+            0.00013425199999999993,
+            0.0002136010000000002,
+            1.4034299999999997e-07,
+            0.00034800800000000013
+          ]
+        },
+        "registers": {
+          "cells": 2631,
+          "area_um2": 4977.000000000066,
+          "watts": [
+            0.002689159999999919,
+            0.00010243627399999906,
+            3.965564000000036e-06,
+            0.002795627499999977
+          ]
+        },
+        "combinational_unattributed": {
+          "cells": 20062,
+          "area_um2": 9827.496000000563,
+          "watts": [
+            0.001066530697298026,
+            0.0005986751507000392,
+            7.1284143900004685e-06,
+            0.0016723486644799194
+          ]
+        },
+        "unmodeled_constant_ties": {
+          "cells": 2,
+          "area_um2": 0.504,
+          "watts": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      },
+      "new_STA_slacks_ns": {
+        "setup": 0.021577,
+        "hold": 0.05036,
+        "gate_setup": 2.757383,
+        "gate_hold": 0.058287
+      },
+      "original_clock_budget_slacks_are_historical": true,
+      "STA_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_scale_250.tar.gz",
+        "sha256": "a323e8a0fc65873ea4bea4f4ec8fe10ff3810d7de726503bd4b9b9b4b14d26e1"
+      },
+      "original_power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_scale_250.tar.gz",
+        "sha256": "573cc270624389e4509133bc8428939ced6500d6bce3901c0ae66a670f39531f"
+      },
+      "power_netlist_sha256": "4b54e692434fb223ddb83a6eb40b3a1af6f1da5f525bb14cf92f51809559587d",
+      "new_power": false,
+      "power_not_frequency_scaled": true,
+      "historical_clock_budget_timing_fields": {
+        "setup_slack_ns": 0.021577,
+        "hold_slack_ns": 0.00036
+      },
+      "slacks_ns": {
+        "setup": 0.021577,
+        "hold": 0.05036,
+        "gate_setup": 2.757383,
+        "gate_hold": 0.058287
+      }
+    },
+    "integer_gu_250": {
+      "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+      "timing_qualified": true,
+      "unit": "K64_integer_dot_state_update",
+      "clock_MHz": 250,
+      "period_ns": 4.0,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "area_mm2": 0.019626011999999998,
+      "area_raw_um2": 19626.012,
+      "area_multiplier": 1,
+      "setup_slack_ns": 0.390843,
+      "hold_slack_ns": 0.050054,
+      "real_ICGs": 1,
+      "latency_cycles": null,
+      "input_II_cycles": 1,
+      "idle_reference_mode": "idle_hold",
+      "idle_W": 1.4726666666666666e-05,
+      "idle_leakage_W": 1.416e-05,
+      "modes": {
+        "backpressure": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 5.208333333333333,
+          "mean_dynamic_mW": 5.194333333333334,
+          "mean_leakage_mW": 0.014106666666666667,
+          "gross_pJ_per_unit": 23.4375,
+          "stdev_pJ_per_unit": 0.009367496997597952,
+          "incremental_pJ_per_unit": 23.37123,
+          "measurement_ns_per_unit": 4.5,
+          "gross_pJ_per_FMA": null
+        },
+        "continuous": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 5.207666666666666,
+          "mean_dynamic_mW": 5.193333333333333,
+          "mean_leakage_mW": 0.014093333333333333,
+          "gross_pJ_per_unit": 23.4345,
+          "stdev_pJ_per_unit": 0.030630866784992973,
+          "incremental_pJ_per_unit": 23.368229999999997,
+          "measurement_ns_per_unit": 4.5,
+          "gross_pJ_per_FMA": null
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.014726666666666666,
+          "mean_dynamic_mW": 0.000568,
+          "mean_leakage_mW": 0.014159999999999999,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.13153333333333334,
+          "mean_dynamic_mW": 0.11727,
+          "mean_leakage_mW": 0.014253333333333333,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "paced25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 5.2203333333333335,
+          "mean_dynamic_mW": 5.206666666666667,
+          "mean_leakage_mW": 0.0141,
+          "gross_pJ_per_unit": 23.4915,
+          "stdev_pJ_per_unit": 0.06557247898318168,
+          "incremental_pJ_per_unit": 23.425229999999996,
+          "measurement_ns_per_unit": 4.5,
+          "gross_pJ_per_FMA": null
+        }
+      },
+      "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+      "unknown_TIE_power_W": null,
+      "flags": [
+        "UNMODELED_CONSTANT_TIE_POWER",
+        "checks.rpt",
+        "model_checks.rpt"
+      ],
+      "native_source_manifest_sha256": "3c9de5637208af867fd06d294982dc7f58e8b814b697328326b821c3bf46f0f6",
+      "mapped_sha256": "82fecba5912421e21bcdc10a140f74ee626e0ecd4a4b007c7c00950afc5f5fc1",
+      "original_reports": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_integer_gu_250.tar.gz",
+        "sha256": "a6b62d7166713a5337b44510a89818c3eec80109d3995cd47db61e3d0c3760d8",
+        "verified_report_members": 640
+      },
+      "boundary": "K64 signed9 plus full_one endpoint xW8;PoT shift,RNE,INT64 feedback,BF16 final andholding;no operandSRAM",
+      "inventory_groups_seed17": {
+        "real_icg": {
+          "cells": 1,
+          "area_um2": 3.024,
+          "watts": [
+            3.513e-06,
+            0.0001341,
+            3.425e-09,
+            0.0001376
+          ]
+        },
+        "registers": {
+          "cells": 1591,
+          "area_um2": 3007.241999999984,
+          "watts": [
+            0.0017510669999999957,
+            0.0002627613790000001,
+            2.4582600000000292e-06,
+            0.0020162821000000017
+          ]
+        },
+        "combinational_unattributed": {
+          "cells": 22858,
+          "area_um2": 16615.2420000037,
+          "watts": [
+            0.0017343715934959876,
+            0.0012996235732000002,
+            1.1635141889999551e-05,
+            0.003045643262210095
+          ]
+        },
+        "unmodeled_constant_ties": {
+          "cells": 2,
+          "area_um2": 0.504,
+          "watts": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      },
+      "K": 64,
+      "activation_full_one_endpoint": true,
+      "crossK_INT64_and_final_BF16_included": true,
+      "macro_latency_cycles": 4,
+      "new_STA_slacks_ns": {
+        "setup": 0.390843,
+        "hold": 0.050054,
+        "gate_setup": 2.688849,
+        "gate_hold": 0.061914
+      },
+      "original_clock_budget_slacks_are_historical": true,
+      "STA_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_integer_gu_250.tar.gz",
+        "sha256": "78076e207f071480376f76a885c089b22055c31c88d6eeb340e012e60e6f016f"
+      },
+      "original_power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_integer_gu_250.tar.gz",
+        "sha256": "a6b62d7166713a5337b44510a89818c3eec80109d3995cd47db61e3d0c3760d8"
+      },
+      "power_netlist_sha256": "82fecba5912421e21bcdc10a140f74ee626e0ecd4a4b007c7c00950afc5f5fc1",
+      "new_power": false,
+      "power_not_frequency_scaled": true,
+      "historical_clock_budget_timing_fields": {
+        "setup_slack_ns": 0.390843,
+        "hold_slack_ns": 5.4e-05
+      },
+      "slacks_ns": {
+        "setup": 0.390843,
+        "hold": 0.050054,
+        "gate_setup": 2.688849,
+        "gate_hold": 0.061914
+      }
+    },
+    "nl_bf16_250": {
+      "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+      "timing_qualified": true,
+      "unit": "SwiGLU_element",
+      "clock_MHz": 250,
+      "period_ns": 4.0,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "area_mm2": 0.006707609999999999,
+      "area_raw_um2": 6707.61,
+      "area_multiplier": 1,
+      "setup_slack_ns": 0.200149,
+      "hold_slack_ns": 0.004191,
+      "real_ICGs": 3,
+      "latency_cycles": null,
+      "input_II_cycles": 1,
+      "idle_reference_mode": "idle_hold",
+      "idle_W": 5.526e-06,
+      "idle_leakage_W": 4.958e-06,
+      "modes": {
+        "backpressure": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.7486,
+          "mean_dynamic_mW": 0.7437,
+          "mean_leakage_mW": 0.004902,
+          "gross_pJ_per_unit": 4.959475,
+          "stdev_pJ_per_unit": 0.029531453041629956,
+          "incremental_pJ_per_unit": 4.92286525,
+          "measurement_ns_per_unit": 6.625,
+          "gross_pJ_per_FMA": null
+        },
+        "continuous": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 1.2029999999999998,
+          "mean_dynamic_mW": 1.1978666666666666,
+          "mean_leakage_mW": 0.004920000000000001,
+          "gross_pJ_per_unit": 4.92478125,
+          "stdev_pJ_per_unit": 0.05353272765035848,
+          "incremental_pJ_per_unit": 4.9021591875,
+          "measurement_ns_per_unit": 4.09375,
+          "gross_pJ_per_FMA": null
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.005526,
+          "mean_dynamic_mW": 0.000568,
+          "mean_leakage_mW": 0.004958000000000001,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.010513333333333333,
+          "mean_dynamic_mW": 0.005556,
+          "mean_leakage_mW": 0.004959333333333333,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "paced25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.38366666666666666,
+          "mean_dynamic_mW": 0.3787233333333333,
+          "mean_leakage_mW": 0.0049496666666666665,
+          "gross_pJ_per_unit": 5.023635416666667,
+          "stdev_pJ_per_unit": 0.00928949041451998,
+          "incremental_pJ_per_unit": 4.951279354166667,
+          "measurement_ns_per_unit": 13.09375,
+          "gross_pJ_per_FMA": null
+        }
+      },
+      "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+      "unknown_TIE_power_W": null,
+      "flags": [
+        "TIMING_VIOLATION",
+        "UNMODELED_CONSTANT_TIE_POWER",
+        "checks.rpt",
+        "model_checks.rpt"
+      ],
+      "native_source_manifest_sha256": "3c9de5637208af867fd06d294982dc7f58e8b814b697328326b821c3bf46f0f6",
+      "mapped_sha256": "5a25b8c1cddb2e21006a57e160b3ded1dff8d2178f693c75fecf6a20baf0aa64",
+      "original_reports": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_nl_bf16_250.tar.gz",
+        "sha256": "7eeeed6a591665a146b1da78813aa9eb52e165a1263ba8b1eea8034ced36046c",
+        "verified_report_members": 642
+      },
+      "boundary": "FP32g/u toBF16RNE,exactRNE BF16sigmoid,two BF16productRNE;elastic holding andrealICGs;no externalSRAM",
+      "inventory_groups_seed17": {
+        "real_icg": {
+          "cells": 3,
+          "area_um2": 9.072,
+          "watts": [
+            1.0281999999999999e-05,
+            6.740500000000001e-05,
+            1.0278999999999999e-08,
+            7.769999999999999e-05
+          ]
+        },
+        "registers": {
+          "cells": 527,
+          "area_um2": 1439.5499999999972,
+          "watts": [
+            0.0005863135000000007,
+            1.78932772e-05,
+            1.0775669999999996e-06,
+            0.0006052847000000012
+          ]
+        },
+        "combinational_unattributed": {
+          "cells": 7916,
+          "area_um2": 5257.476000000116,
+          "watts": [
+            0.0002831651623237978,
+            0.0002239917204000003,
+            3.832370769999938e-06,
+            0.0005109914584399927
+          ]
+        },
+        "unmodeled_constant_ties": {
+          "cells": 6,
+          "area_um2": 1.512,
+          "watts": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      },
+      "macro_latency_cycles": 5,
+      "code8": false,
+      "new_STA_slacks_ns": {
+        "setup": 0.200149,
+        "hold": 0.004191,
+        "gate_setup": 2.91226,
+        "gate_hold": 0.052152
+      },
+      "original_clock_budget_slacks_are_historical": true,
+      "STA_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_nl_bf16_250.tar.gz",
+        "sha256": "8a8be91debab2d8f445fd09cdccfa362de7d945636f8f572696287c79852d02d"
+      },
+      "original_power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_nl_bf16_250.tar.gz",
+        "sha256": "7eeeed6a591665a146b1da78813aa9eb52e165a1263ba8b1eea8034ced36046c"
+      },
+      "power_netlist_sha256": "5a25b8c1cddb2e21006a57e160b3ded1dff8d2178f693c75fecf6a20baf0aa64",
+      "new_power": false,
+      "power_not_frequency_scaled": true,
+      "historical_clock_budget_timing_fields": {
+        "setup_slack_ns": 0.200149,
+        "hold_slack_ns": -0.045809
+      },
+      "slacks_ns": {
+        "setup": 0.200149,
+        "hold": 0.004191,
+        "gate_setup": 2.91226,
+        "gate_hold": 0.052152
+      }
+    },
+    "nl_code8_250": {
+      "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+      "timing_qualified": true,
+      "unit": "SwiGLU_element",
+      "clock_MHz": 250,
+      "period_ns": 4.0,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "area_mm2": 0.00163926,
+      "area_raw_um2": 1639.26,
+      "area_multiplier": 1,
+      "setup_slack_ns": 1.969173,
+      "hold_slack_ns": 0.05,
+      "real_ICGs": 1,
+      "latency_cycles": null,
+      "input_II_cycles": 1,
+      "idle_reference_mode": "idle_hold",
+      "idle_W": 1.717e-06,
+      "idle_leakage_W": 1.149e-06,
+      "modes": {
+        "backpressure": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.30546666666666666,
+          "mean_dynamic_mW": 0.3043133333333333,
+          "mean_leakage_mW": 0.0011913333333333333,
+          "gross_pJ_per_unit": 2.0237166666666666,
+          "stdev_pJ_per_unit": 0.005354923746734118,
+          "incremental_pJ_per_unit": 2.012341541666667,
+          "measurement_ns_per_unit": 6.625,
+          "gross_pJ_per_FMA": null
+        },
+        "continuous": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.48623333333333335,
+          "mean_dynamic_mW": 0.4850666666666667,
+          "mean_leakage_mW": 0.0011799999999999998,
+          "gross_pJ_per_unit": 1.9829203125,
+          "stdev_pJ_per_unit": 0.004899410788474252,
+          "incremental_pJ_per_unit": 1.975918171875,
+          "measurement_ns_per_unit": 4.078125,
+          "gross_pJ_per_FMA": null
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.001717,
+          "mean_dynamic_mW": 0.000568,
+          "mean_leakage_mW": 0.001149,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.0052703333333333335,
+          "mean_dynamic_mW": 0.0041174666666666665,
+          "mean_leakage_mW": 0.0011526666666666666,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "paced25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.16126666666666667,
+          "mean_dynamic_mW": 0.16005,
+          "mean_leakage_mW": 0.0011823333333333334,
+          "gross_pJ_per_unit": 2.109065625,
+          "stdev_pJ_per_unit": 0.00799086636807923,
+          "incremental_pJ_per_unit": 2.086610484375,
+          "measurement_ns_per_unit": 13.078125,
+          "gross_pJ_per_FMA": null
+        }
+      },
+      "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+      "unknown_TIE_power_W": null,
+      "flags": [
+        "UNMODELED_CONSTANT_TIE_POWER",
+        "checks.rpt",
+        "model_checks.rpt"
+      ],
+      "native_source_manifest_sha256": "3c9de5637208af867fd06d294982dc7f58e8b814b697328326b821c3bf46f0f6",
+      "mapped_sha256": "9e06b51fd318640279489306c62bf1cd5fa5b57b36278e7962a58ceee61d047f",
+      "original_reports": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_nl_code8_250.tar.gz",
+        "sha256": "38e87f203912ca6f3d9129cf6590321d8f4e19802922bc2089e3264c73f81999",
+        "verified_report_members": 640
+      },
+      "boundary": "g signedQ3/u signmag7,scale metadata,sigmoidP9,exact probability-product25bit mantissa andBF16 exit;no randomsampling",
+      "inventory_groups_seed17": {
+        "real_icg": {
+          "cells": 1,
+          "area_um2": 3.024,
+          "watts": [
+            3.463e-06,
+            2.16e-05,
+            3.427e-09,
+            2.507e-05
+          ]
+        },
+        "registers": {
+          "cells": 254,
+          "area_um2": 480.0599999999975,
+          "watts": [
+            0.0002683000000000002,
+            1.6948699899999994e-05,
+            3.8588599999999954e-07,
+            0.0002856401000000006
+          ]
+        },
+        "combinational_unattributed": {
+          "cells": 1900,
+          "area_um2": 1155.9239999999984,
+          "watts": [
+            0.00010075792185700028,
+            7.275645519999996e-05,
+            7.910891799999983e-07,
+            0.0001743053116500002
+          ]
+        },
+        "unmodeled_constant_ties": {
+          "cells": 1,
+          "area_um2": 0.252,
+          "watts": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      },
+      "macro_latency_cycles": 4,
+      "code8": true,
+      "new_STA_slacks_ns": {
+        "setup": 1.969173,
+        "hold": 0.05,
+        "gate_setup": 2.90297,
+        "gate_hold": 0.061683
+      },
+      "original_clock_budget_slacks_are_historical": true,
+      "STA_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_nl_code8_250.tar.gz",
+        "sha256": "ee0c9b7384a4b7dfe3d909829ba02359f20d8ae8c32d5cb85e8d94f41d90aa3c"
+      },
+      "original_power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_nl_code8_250.tar.gz",
+        "sha256": "38e87f203912ca6f3d9129cf6590321d8f4e19802922bc2089e3264c73f81999"
+      },
+      "power_netlist_sha256": "9e06b51fd318640279489306c62bf1cd5fa5b57b36278e7962a58ceee61d047f",
+      "new_power": false,
+      "power_not_frequency_scaled": true,
+      "historical_clock_budget_timing_fields": {
+        "setup_slack_ns": 1.969173,
+        "hold_slack_ns": 0.0
+      },
+      "slacks_ns": {
+        "setup": 1.969173,
+        "hold": 0.05,
+        "gate_setup": 2.90297,
+        "gate_hold": 0.061683
+      }
+    },
+    "w8_wd_250": {
+      "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+      "timing_qualified": true,
+      "unit": "DOT64",
+      "clock_MHz": 250,
+      "period_ns": 4.0,
+      "PVT": "TT0.9V25C",
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "area_mm2": 0.062648334,
+      "area_raw_um2": 62648.334,
+      "area_multiplier": 1,
+      "setup_slack_ns": 0.019857,
+      "hold_slack_ns": 0.05038,
+      "real_ICGs": 131,
+      "latency_cycles": null,
+      "input_II_cycles": null,
+      "idle_reference_mode": "idle_hold",
+      "idle_W": 0.00012996666666666666,
+      "idle_leakage_W": 4.695333333333334e-05,
+      "modes": {
+        "backpressure": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 11.833333333333332,
+          "mean_dynamic_mW": 11.789,
+          "mean_leakage_mW": 0.046503333333333334,
+          "gross_pJ_per_unit": 212.26041666666666,
+          "stdev_pJ_per_unit": 1.0356220453589011,
+          "incremental_pJ_per_unit": 209.92913958333332,
+          "measurement_ns_per_unit": 17.9375,
+          "gross_pJ_per_FMA": 3.3165690104166665
+        },
+        "continuous": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 12.9,
+          "mean_dynamic_mW": 12.873666666666667,
+          "mean_leakage_mW": 0.046246666666666665,
+          "gross_pJ_per_unit": 212.04375000000002,
+          "stdev_pJ_per_unit": 0.0,
+          "incremental_pJ_per_unit": 209.9074229166667,
+          "measurement_ns_per_unit": 16.4375,
+          "gross_pJ_per_FMA": 3.3131835937500003
+        },
+        "idle_hold": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.12996666666666667,
+          "mean_dynamic_mW": 0.08302999999999999,
+          "mean_leakage_mW": 0.04695333333333333,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "idle_toggle": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.5846666666666667,
+          "mean_dynamic_mW": 0.5376333333333333,
+          "mean_leakage_mW": 0.04703666666666667,
+          "gross_pJ_per_unit": null,
+          "stdev_pJ_per_unit": null,
+          "incremental_pJ_per_unit": null,
+          "measurement_ns_per_unit": null,
+          "gross_pJ_per_FMA": null
+        },
+        "paced25": {
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 3.4493333333333336,
+          "mean_dynamic_mW": 3.402766666666667,
+          "mean_leakage_mW": 0.04685333333333333,
+          "gross_pJ_per_unit": 221.83525,
+          "stdev_pJ_per_unit": 0.3656963552166476,
+          "incremental_pJ_per_unit": 213.47676875,
+          "measurement_ns_per_unit": 64.3125,
+          "gross_pJ_per_FMA": 3.46617578125
+        }
+      },
+      "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+      "unknown_TIE_power_W": null,
+      "flags": [
+        "UNMODELED_CONSTANT_TIE_POWER",
+        "checks.rpt",
+        "model_checks.rpt"
+      ],
+      "native_source_manifest_sha256": "3c9de5637208af867fd06d294982dc7f58e8b814b697328326b821c3bf46f0f6",
+      "mapped_sha256": "777859bd484953995e16e0a29bd94c8210761c9a2db0a8a4e8cfb74942f8e188",
+      "original_reports": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_w8_wd_250.tar.gz",
+        "sha256": "2f32dcd5dddaacdac69ab0ff2bc86b8d6037be825f8b1527eb465ed6372f5b77",
+        "verified_report_members": 642
+      },
+      "boundary": "16lane BF16 activation xW8/PoT decoded weight,FP32 feedback,C4,heldinputs,2resultslots;no operandSRAM or shared BF16/W8 modeMUX",
+      "inventory_groups_seed17": {
+        "real_icg": {
+          "cells": 131,
+          "area_um2": 396.14400000000006,
+          "watts": [
+            0.0002287505999999991,
+            0.0005935883399999989,
+            4.262359999999991e-07,
+            0.0008228028000000033
+          ]
+        },
+        "registers": {
+          "cells": 7493,
+          "area_um2": 17874.611999997636,
+          "watts": [
+            0.006016338230999903,
+            0.000234665760599998,
+            1.4215235000000162e-05,
+            0.006265173096000278
+          ]
+        },
+        "combinational_unattributed": {
+          "cells": 61815,
+          "area_um2": 44369.0100000202,
+          "watts": [
+            0.003251168934204429,
+            0.0025367767754999426,
+            3.1602932239999646e-05,
+            0.005819567298669559
+          ]
+        },
+        "unmodeled_constant_ties": {
+          "cells": 34,
+          "area_um2": 8.567999999999996,
+          "watts": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      },
+      "contexts": 4,
+      "lanes": 16,
+      "FMA_pipe_registers": 2,
+      "FMA_commit_latency_cycles": 3,
+      "same_context_min_II_cycles": 4,
+      "steady_vector_II_cycles": 1,
+      "result_slots": 2,
+      "new_STA_slacks_ns": {
+        "setup": 0.019857,
+        "hold": 0.05038,
+        "gate_setup": 2.680893,
+        "gate_hold": 0.110032
+      },
+      "original_clock_budget_slacks_are_historical": true,
+      "STA_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_w8_wd_250.tar.gz",
+        "sha256": "2fcaa5eb11173e7f2927901d03853b69b83eab87b4bb4a0e9c5b18195c09b5ea"
+      },
+      "original_power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_w8_wd_250.tar.gz",
+        "sha256": "2f32dcd5dddaacdac69ab0ff2bc86b8d6037be825f8b1527eb465ed6372f5b77"
+      },
+      "power_netlist_sha256": "777859bd484953995e16e0a29bd94c8210761c9a2db0a8a4e8cfb74942f8e188",
+      "new_power": false,
+      "power_not_frequency_scaled": true,
+      "historical_clock_budget_timing_fields": {
+        "setup_slack_ns": 0.019857,
+        "hold_slack_ns": 0.00038
+      },
+      "slacks_ns": {
+        "setup": 0.019857,
+        "hold": 0.05038,
+        "gate_setup": 2.680893,
+        "gate_hold": 0.110032
+      }
+    },
+    "ffn_250": {
+      "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+      "clock_MHz": 250,
+      "PVT": "TT0.9V25C",
+      "K": 64,
+      "M": 128,
+      "area_multiplier": 1,
+      "area_mm2": 0.373801301999,
+      "real_ICGs": 518,
+      "modes": {
+        "GU": {
+          "samples": 16,
+          "frame_cycles": 18,
+          "frame_ns": 72.0,
+          "DOT64_per_frame": 128,
+          "mean_core_power_mW": 18.066666666666666,
+          "gross_pJ_per_DOT64": 10.1625,
+          "gross_pJ_per_frame": 1300.8
+        },
+        "Wd": {
+          "samples": 32,
+          "frame_cycles": 34,
+          "frame_ns": 136.0,
+          "DOT64_per_frame": 128,
+          "mean_core_power_mW": 8.709666666666667,
+          "gross_pJ_per_DOT64": 9.254020833333334,
+          "gross_pJ_per_frame": 1184.5146666666667
+        }
+      },
+      "slacks_ns": {
+        "setup": 1.564064,
+        "hold": 0.050785,
+        "gate_setup": 2.643523,
+        "gate_hold": 0.051819
+      },
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "waiting_power_W": 0.0006209,
+      "waiting_reference_seed": 17,
+      "power_netlist_sha256": "02b90e2dda0bf27a789a644a4f6e853ad2b6ac08870347310a11811af5b30493",
+      "power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\tsmc28_ffn204_20261107\\recovered_tsmc28_power_recovery204_a891bbc0c3f5\\ffn_250.tar.gz",
+        "sha256": "255ed08ccebd4f559df2ed60b5244d4ce72b0725b678eeb4ad03e6eac02ba70b",
+        "verified_report_members": 334
+      },
+      "STA_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_ffn_250.tar.gz",
+        "sha256": "abe0a1876b67c6e72acbf3822a67333ca424c6064511bccde363b037658eb475"
+      },
+      "original_power_TIMING_VIOLATION_flag_refers_to_previous_0p5ns_constraint": false,
+      "power_frequency_not_scaled": true,
+      "timing_qualified": true,
+      "price_origin": "Original mapped core, new real zero-setup STA, same-netlist original measured power",
+      "new_STA_slacks_ns": {
+        "setup": 1.564064,
+        "hold": 0.050785,
+        "gate_setup": 2.643523,
+        "gate_hold": 0.051819
+      },
+      "original_clock_budget_slacks_are_historical": true,
+      "original_power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\tsmc28_ffn204_20261107\\recovered_tsmc28_power_recovery204_a891bbc0c3f5\\ffn_250.tar.gz",
+        "sha256": "255ed08ccebd4f559df2ed60b5244d4ce72b0725b678eeb4ad03e6eac02ba70b"
+      },
+      "new_power": false,
+      "power_not_frequency_scaled": true,
+      "historical_clock_budget_timing_fields": {}
+    },
+    "bf16_250": {
+      "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+      "PVT": "TT0.9V25C",
+      "process": "TSMC28HPC+",
+      "frequency_MHz": 250,
+      "area_multiplier": 1.0,
+      "area_um2": 62453.79,
+      "area_mm2": 0.06245379,
+      "data_setup_ns": 0.50035,
+      "data_hold_ns": 0.05002,
+      "gate_setup_ns": 2.648962,
+      "gate_hold_ns": 0.110032,
+      "PT_windows": 15,
+      "seeds": [
+        17,
+        503,
+        1009
+      ],
+      "real_ICGs": 131,
+      "modes": {
+        "backpressure": {
+          "seed_count": 3,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 11.866666666666667,
+          "mean_dynamic_mW": 11.813,
+          "mean_leakage_mW": 0.04681333333333333,
+          "gross_pJ_per_DOT64": 212.85833333333335,
+          "stdev_pJ_per_DOT64": 1.0356220453589011,
+          "operations_per_window": 4096,
+          "complete_DOT64_per_window": 64,
+          "window_ns": 1148.0,
+          "effective_window_ns_per_DOT64": 17.9375
+        },
+        "continuous": {
+          "seed_count": 3,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 12.866666666666667,
+          "mean_dynamic_mW": 12.817,
+          "mean_leakage_mW": 0.046536666666666664,
+          "gross_pJ_per_DOT64": 211.49583333333334,
+          "stdev_pJ_per_DOT64": 0.949019504980454,
+          "operations_per_window": 4096,
+          "complete_DOT64_per_window": 64,
+          "window_ns": 1052.0,
+          "effective_window_ns_per_DOT64": 16.4375
+        },
+        "idle_hold": {
+          "seed_count": 3,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.13026666666666667,
+          "mean_dynamic_mW": 0.083,
+          "mean_leakage_mW": 0.04727,
+          "gross_pJ_per_DOT64": null,
+          "stdev_pJ_per_DOT64": null,
+          "operations_per_window": 0,
+          "complete_DOT64_per_window": 0,
+          "window_ns": 256.0,
+          "effective_window_ns_per_DOT64": null
+        },
+        "idle_toggle": {
+          "seed_count": 3,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 0.5136,
+          "mean_dynamic_mW": 0.4662833333333333,
+          "mean_leakage_mW": 0.04734,
+          "gross_pJ_per_DOT64": null,
+          "stdev_pJ_per_DOT64": null,
+          "operations_per_window": 0,
+          "complete_DOT64_per_window": 0,
+          "window_ns": 256.0,
+          "effective_window_ns_per_DOT64": null
+        },
+        "paced25": {
+          "seed_count": 3,
+          "seeds": [
+            17,
+            503,
+            1009
+          ],
+          "mean_core_power_mW": 3.4363333333333332,
+          "mean_dynamic_mW": 3.3892,
+          "mean_leakage_mW": 0.0472,
+          "gross_pJ_per_DOT64": 220.9991875,
+          "stdev_pJ_per_DOT64": 0.4134715263775715,
+          "operations_per_window": 4096,
+          "complete_DOT64_per_window": 64,
+          "window_ns": 4116.0,
+          "effective_window_ns_per_DOT64": 64.3125
+        }
+      },
+      "review_flags": [
+        "UNMODELED_CONSTANT_TIE_POWER",
+        "checks.rpt",
+        "model_checks.rpt"
+      ],
+      "tie_cell_attribute_counts": [
+        34
+      ],
+      "original_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\tsmc28_ffn204_20261107\\recovered_tsmc28_power_recovery204_a891bbc0c3f5\\bf16_250.tar.gz",
+        "sha256": "80b3472697b534bdcfe0c4d5af1c36aa835dd1f52e4ea7cc0b947e0b45128810",
+        "verified_report_members": 613
+      },
+      "boundary": "BF16 FMA16,FP32 feedback,C4 context state,holding/results/ICG; no external memory/CTS/wires",
+      "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+      "unmodeled_tie_count": 34,
+      "unmodeled_tie_power_W": null,
+      "timing_qualified": true,
+      "setup_uncertainty_ns": 0,
+      "hold_uncertainty_ns": 0,
+      "new_STA_slacks_ns": {
+        "setup": 0.50035,
+        "hold": 0.05002,
+        "gate_setup": 2.648962,
+        "gate_hold": 0.110032
+      },
+      "original_clock_budget_slacks_are_historical": true,
+      "STA_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_bf16_250.tar.gz",
+        "sha256": "1cec3185d151e9a61588822c35542c08e1b2536c8e5ca587d073ef64a37547cc"
+      },
+      "original_power_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\tsmc28_ffn204_20261107\\recovered_tsmc28_power_recovery204_a891bbc0c3f5\\bf16_250.tar.gz",
+        "sha256": "80b3472697b534bdcfe0c4d5af1c36aa835dd1f52e4ea7cc0b947e0b45128810"
+      },
+      "power_netlist_sha256": "b20380ac900e2e051484353cfcf0ba181409193810c39ea8a5980386a1a1d9cd",
+      "new_power": false,
+      "power_not_frequency_scaled": true,
+      "historical_clock_budget_timing_fields": {
+        "data_setup_ns": 0.00035,
+        "data_hold_ns": 2e-05,
+        "gate_setup_ns": 2.148962,
+        "gate_hold_ns": 0.060032
+      },
+      "slacks_ns": {
+        "setup": 0.50035,
+        "hold": 0.05002,
+        "gate_setup": 2.648962,
+        "gate_hold": 0.110032
+      }
+    }
+  },
+  "cases": [
+    {
+      "case": "a9_endpoint_28_250",
+      "mode": "new_DC_gate_PT",
+      "functional": "pass",
+      "PPA": "calculated",
+      "qualified": true,
+      "core": {
+        "area_mm2": 0.012158747999999999,
+        "area_raw_um2": 12158.748,
+        "area_multiplier": 1,
+        "clock_MHz": 250,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "unit": "DOT64",
+        "boundary": "K64 signed9 plus +/-256full endpoint xW8,registered result,realICG;no scale/crossK/memory",
+        "real_ICGs": 1,
+        "modes": {
+          "continuous": {
+            "mean_whole_module_mW": 3.0266666666666664,
+            "mean_leakage_mW": 0.007554333333333333,
+            "gross_pJ_per_unit": 12.295833333333333,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "idle_hold": {
+            "mean_whole_module_mW": 0.009114333333333334,
+            "mean_leakage_mW": 0.007785666666666666,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "idle_toggle": {
+            "mean_whole_module_mW": 2.944,
+            "mean_leakage_mW": 0.007552666666666667,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          }
+        },
+        "static_PT_slacks_ns": {
+          "setup": 1.337446,
+          "hold": 0.012346,
+          "gate_setup": 2.941077,
+          "gate_hold": 0.046547
+        },
+        "mapped_sha256": "ce4b1ddbf8a0aa82502d7fcc76ba1f8fe212b1a289b5930aebffd5419e0f4c07",
+        "report_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_a9_endpoint_28_250.tar.gz",
+          "sha256": "93f4bcf2dd81ee00711358f0a8c5061d4f7c71614912dc7aff479a81490ad70a"
+        },
+        "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+        "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+        "full_chip": false
+      },
+      "area_mm2": 0.012158747999999999,
+      "PT_windows": 9,
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_a9_endpoint_28_250.tar.gz",
+        "sha256": "93f4bcf2dd81ee00711358f0a8c5061d4f7c71614912dc7aff479a81490ad70a"
+      }
+    },
+    {
+      "case": "fma16_dual_28_250",
+      "mode": "new_DC_gate_PT",
+      "functional": "pass",
+      "PPA": "calculated",
+      "qualified": true,
+      "core": {
+        "area_mm2": 0.060939018,
+        "area_raw_um2": 60939.018,
+        "area_multiplier": 1,
+        "clock_MHz": 250,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "unit": "DOT64",
+        "boundary": "FMA16/C4 BF16or runtimeW8PoTdecode;FP32feedback,2resultslots,ICG;no SRAM",
+        "real_ICGs": 131,
+        "modes": {
+          "bf16_continuous": {
+            "mean_whole_module_mW": 12.6,
+            "mean_leakage_mW": 0.04392666666666667,
+            "gross_pJ_per_unit": 207.1125,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "bf16_idle_hold": {
+            "mean_whole_module_mW": 0.1277,
+            "mean_leakage_mW": 0.044700000000000004,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "bf16_idle_toggle": {
+            "mean_whole_module_mW": 0.5578666666666667,
+            "mean_leakage_mW": 0.04475333333333333,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "w8_continuous": {
+            "mean_whole_module_mW": 12.733333333333333,
+            "mean_leakage_mW": 0.04411,
+            "gross_pJ_per_unit": 209.30416666666667,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "w8_idle_hold": {
+            "mean_whole_module_mW": 0.12766666666666665,
+            "mean_leakage_mW": 0.04463333333333333,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "w8_idle_toggle": {
+            "mean_whole_module_mW": 0.5557666666666666,
+            "mean_leakage_mW": 0.044706666666666665,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          }
+        },
+        "static_PT_slacks_ns": {
+          "setup": 0.020018,
+          "hold": 0.012346,
+          "gate_setup": 2.760201,
+          "gate_hold": 0.048154
+        },
+        "mapped_sha256": "04cf79409389b80366d4875149ad645d60b0129c915ba8e54aee95b853eed08f",
+        "report_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_fma16_dual_28_250.tar.gz",
+          "sha256": "4722c07ba18e5070cce50a2ca37fdfc5801856afa251fe25cf7a211bcc278613"
+        },
+        "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+        "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+        "full_chip": false
+      },
+      "area_mm2": 0.060939018,
+      "PT_windows": 18,
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_fma16_dual_28_250.tar.gz",
+        "sha256": "4722c07ba18e5070cce50a2ca37fdfc5801856afa251fe25cf7a211bcc278613"
+      }
+    },
+    {
+      "case": "fpadd_28_250",
+      "mode": "new_DC_gate_PT",
+      "functional": "pass",
+      "PPA": "calculated",
+      "qualified": true,
+      "core": {
+        "area_mm2": 0.001953756,
+        "area_raw_um2": 1953.756,
+        "area_multiplier": 1,
+        "clock_MHz": 250,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "unit": "scalar_FP32_ADD",
+        "boundary": "FixedFP32 ADD/RNE,3stages/II1,realICG;no SRAM",
+        "real_ICGs": 1,
+        "modes": {
+          "continuous": {
+            "mean_whole_module_mW": 0.5707333333333333,
+            "mean_leakage_mW": 0.0013023333333333333,
+            "gross_pJ_per_unit": 2.318604166666667,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "idle_hold": {
+            "mean_whole_module_mW": 0.0019076666666666667,
+            "mean_leakage_mW": 0.0013396666666666665,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "idle_toggle": {
+            "mean_whole_module_mW": 0.004550333333333333,
+            "mean_leakage_mW": 0.0013393333333333334,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          }
+        },
+        "static_PT_slacks_ns": {
+          "setup": 0.045026,
+          "hold": 0.007428,
+          "gate_setup": 2.909745,
+          "gate_hold": 0.048358
+        },
+        "mapped_sha256": "715f4e41fe83bc28c6a4ef95bde7a6d20baadf834c3dbf55f19f8ab92eb96976",
+        "report_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_fpadd_28_250.tar.gz",
+          "sha256": "7fd625c0e0491dd5c7e331a08334ebce984021ecd1054ac88da1822f75a1e422"
+        },
+        "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+        "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+        "full_chip": false
+      },
+      "area_mm2": 0.001953756,
+      "PT_windows": 9,
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_fpadd_28_250.tar.gz",
+        "sha256": "7fd625c0e0491dd5c7e331a08334ebce984021ecd1054ac88da1822f75a1e422"
+      }
+    },
+    {
+      "case": "dcim_28_250",
+      "mode": "new_DC_gate_PT",
+      "functional": "pass",
+      "PPA": "calculated",
+      "qualified": true,
+      "core": {
+        "area_mm2": 0.191802743999,
+        "area_raw_um2": 191802.743999,
+        "area_multiplier": 1,
+        "clock_MHz": 250,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "unit": "DOT64",
+        "boundary": "Exact P8mag8+sign+full endpoint W8 linear array and localK64 accumulation;SRAM cells/programming/DRAM external",
+        "real_ICGs": 128,
+        "modes": {
+          "decode_idle": {
+            "mean_whole_module_mW": 0.20729999999999998,
+            "mean_leakage_mW": 0.12966666666666668,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "decode_work": {
+            "mean_whole_module_mW": 39.2,
+            "mean_leakage_mW": 0.12483333333333332,
+            "gross_pJ_per_unit": 12.631250000000001,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "prefill_idle": {
+            "mean_whole_module_mW": 0.20726666666666665,
+            "mean_leakage_mW": 0.12966666666666668,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "prefill_work": {
+            "mean_whole_module_mW": 40.63333333333333,
+            "mean_leakage_mW": 0.125,
+            "gross_pJ_per_unit": 12.855273437500001,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          }
+        },
+        "static_PT_slacks_ns": {
+          "setup": 0.955579,
+          "hold": 0.024773,
+          "gate_setup": 2.756783,
+          "gate_hold": 0.166299
+        },
+        "mapped_sha256": "9f14194db0e2eb38b9e9d74f5bc0d0a2fa59a78bfcb6588298eb1eec799464d7",
+        "report_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_dcim_28_250.tar.gz",
+          "sha256": "d87bfb2523eff2b64cd24b4c505a73dcb6844e41aa14064db7f05184a362caf4"
+        },
+        "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+        "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+        "full_chip": false,
+        "recovery_provenance": {
+          "driver_sha256": "f69bc2129022cc16f605cecda5854373d9351769a21a73cc73ff5faa83d33230",
+          "original_arrayrun_sha256": "32ce1b45df481cf6ccca06155680a027a4e0b17b0313c424c81b3112b7652704",
+          "executed_arrayrun_sha256": "cb5ee61639ae1adde088996eae6f1d87adce68916a98dae3ac7b84230267a808",
+          "patch": "Supply explicit250MHz power metadata;reuse static directory and completed PT windows",
+          "new_synthesis": false,
+          "RTL_constraints_fixtures_changed": false,
+          "mapped_sha256": "9f14194db0e2eb38b9e9d74f5bc0d0a2fa59a78bfcb6588298eb1eec799464d7",
+          "configuration_sha256": "5ec3aac3605dbf53e62eec8906e405345f3158782192fb995d3e5aaa8ed01404",
+          "preserved_originals": {
+            "RESULT.json": "4ff4bc75df9ce4efc9f4fa67daf8d866167191f992828d4d29f3bf9f2eaceefd",
+            "RETURN_MANIFEST.json": "e9a4139d5d835341dd01939e55782e935458112cb211cddb6c79cc6e61320598",
+            "reports.tar.gz": "3623563e66d9b8558b45259f977b2ebc97fc976d2e6f57a34e74ee4c6b93e285"
+          }
+        }
+      },
+      "area_mm2": 0.191802743999,
+      "PT_windows": 12,
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_dcim_28_250.tar.gz",
+        "sha256": "d87bfb2523eff2b64cd24b4c505a73dcb6844e41aa14064db7f05184a362caf4"
+      }
+    },
+    {
+      "case": "ws_28_250",
+      "mode": "new_DC_gate_PT",
+      "functional": "pass",
+      "PPA": "calculated",
+      "qualified": true,
+      "core": {
+        "area_mm2": 0.11813961599999999,
+        "area_raw_um2": 118139.616,
+        "area_multiplier": 1,
+        "clock_MHz": 250,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "unit": "DOT64",
+        "boundary": "Exact P8mag8+sign+full endpoint W8 linear array and localK64 accumulation;SRAM cells/programming/DRAM external",
+        "real_ICGs": 2,
+        "modes": {
+          "decode_idle": {
+            "mean_whole_module_mW": 0.08188666666666666,
+            "mean_leakage_mW": 0.08076,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "decode_work": {
+            "mean_whole_module_mW": 27.866666666666667,
+            "mean_leakage_mW": 0.08259,
+            "gross_pJ_per_unit": 504.2125,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "prefill_idle": {
+            "mean_whole_module_mW": 0.08362,
+            "mean_leakage_mW": 0.08249,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "prefill_work": {
+            "mean_whole_module_mW": 44.2,
+            "mean_leakage_mW": 0.08440666666666666,
+            "gross_pJ_per_unit": 51.27890625,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          }
+        },
+        "static_PT_slacks_ns": {
+          "setup": 0.610276,
+          "hold": 0.029033,
+          "gate_setup": 2.682055,
+          "gate_hold": 0.049391
+        },
+        "mapped_sha256": "e163c21907ca76ffa2b1f0e2e39aeff2cef358a1d3ace933e92e165a1b159f75",
+        "report_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_ws_28_250.tar.gz",
+          "sha256": "7aa1cb2e6ff490f6cf09eeeeb402d871ac6df3ae6982116549a2c1510a6553d8"
+        },
+        "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+        "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+        "full_chip": false,
+        "recovery_provenance": {
+          "driver_sha256": "f69bc2129022cc16f605cecda5854373d9351769a21a73cc73ff5faa83d33230",
+          "original_arrayrun_sha256": "32ce1b45df481cf6ccca06155680a027a4e0b17b0313c424c81b3112b7652704",
+          "executed_arrayrun_sha256": "cb5ee61639ae1adde088996eae6f1d87adce68916a98dae3ac7b84230267a808",
+          "patch": "Supply explicit250MHz power metadata;reuse static directory and completed PT windows",
+          "new_synthesis": false,
+          "RTL_constraints_fixtures_changed": false,
+          "mapped_sha256": "e163c21907ca76ffa2b1f0e2e39aeff2cef358a1d3ace933e92e165a1b159f75",
+          "configuration_sha256": "de54f0809af77ed773450c42b9bb1fc71bafef83fa23aa53270f5bb067770815",
+          "preserved_originals": {
+            "RESULT.json": "776e161f6a0a76415c8bdb825f989fd33fa9af55b6c4d40b37c11a935dc127f9",
+            "RETURN_MANIFEST.json": "e6e5284c5ad98b52b3310645f3a8b7b7927b029a6ea35395c0194e15b29fd941",
+            "reports.tar.gz": "ff35c9791887d8c3abed2f8e359ca53503dcb07c02307c66ae7e118903282ee4"
+          }
+        }
+      },
+      "area_mm2": 0.11813961599999999,
+      "PT_windows": 12,
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_ws_28_250.tar.gz",
+        "sha256": "7aa1cb2e6ff490f6cf09eeeeb402d871ac6df3ae6982116549a2c1510a6553d8"
+      }
+    },
+    {
+      "case": "os_28_250",
+      "mode": "new_DC_gate_PT",
+      "functional": "pass",
+      "PPA": "calculated",
+      "qualified": true,
+      "core": {
+        "area_mm2": 0.186696846,
+        "area_raw_um2": 186696.846,
+        "area_multiplier": 1,
+        "clock_MHz": 250,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "unit": "DOT64",
+        "boundary": "Exact P8mag8+sign+full endpoint W8 linear array and localK64 accumulation;SRAM cells/programming/DRAM external",
+        "real_ICGs": 2,
+        "modes": {
+          "decode_idle": {
+            "mean_whole_module_mW": 0.14146666666666666,
+            "mean_leakage_mW": 0.1403,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "decode_work": {
+            "mean_whole_module_mW": 50.93333333333333,
+            "mean_leakage_mW": 0.1341,
+            "gross_pJ_per_unit": 970.9166666666666,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "prefill_idle": {
+            "mean_whole_module_mW": 0.14146666666666666,
+            "mean_leakage_mW": 0.1403,
+            "gross_pJ_per_unit": null,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          },
+          "prefill_work": {
+            "mean_whole_module_mW": 70.3,
+            "mean_leakage_mW": 0.1394,
+            "gross_pJ_per_unit": 83.755859375,
+            "seeds": [
+              17,
+              503,
+              1009
+            ]
+          }
+        },
+        "static_PT_slacks_ns": {
+          "setup": 0.632062,
+          "hold": 0.027979,
+          "gate_setup": 2.754638,
+          "gate_hold": 0.049483
+        },
+        "mapped_sha256": "072cf91ac54d5087e0b4ea72d81e018400f3e853cd8914ee742c32ab0fd4d367",
+        "report_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_os_28_250.tar.gz",
+          "sha256": "36e3b39a93d7ec10790d10e4c29827d57d543b52b00e548595f3dd378998c375"
+        },
+        "source_manifest_sha256": "92e49256446f3b8bab4ebeca6f2dfa625772ce9753c6c8f933b1a37182a46b87",
+        "evidence": "NEW_DC_GATE_PT_PRELAYOUT",
+        "full_chip": false,
+        "recovery_provenance": {
+          "driver_sha256": "f69bc2129022cc16f605cecda5854373d9351769a21a73cc73ff5faa83d33230",
+          "original_arrayrun_sha256": "32ce1b45df481cf6ccca06155680a027a4e0b17b0313c424c81b3112b7652704",
+          "executed_arrayrun_sha256": "cb5ee61639ae1adde088996eae6f1d87adce68916a98dae3ac7b84230267a808",
+          "patch": "Supply explicit250MHz power metadata;reuse static directory and completed PT windows",
+          "new_synthesis": false,
+          "RTL_constraints_fixtures_changed": false,
+          "mapped_sha256": "072cf91ac54d5087e0b4ea72d81e018400f3e853cd8914ee742c32ab0fd4d367",
+          "configuration_sha256": "4e4309cdfa1b8596a7cd2855246f9bbc464e90391038076db4485fa587f5247f",
+          "preserved_originals": {
+            "RESULT.json": "0b08c3a6ff089a4d98e625e0b7a052dafab69871cedcbcec36462f96ee168f3d",
+            "RETURN_MANIFEST.json": "f90e40adb2d23334f89a61f8fb29049e0258ed08575f21a2226d09f34bbb5952",
+            "reports.tar.gz": "b2789b5b5cb398f27fc40d0e16d0468080c881a8402bacc60f126c79bbe66519"
+          }
+        }
+      },
+      "area_mm2": 0.186696846,
+      "PT_windows": 12,
+      "report_archive": {
+        "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\ppa_os_28_250.tar.gz",
+        "sha256": "36e3b39a93d7ec10790d10e4c29827d57d543b52b00e548595f3dd378998c375"
+      }
+    },
+    {
+      "case": "state_250",
+      "mode": "same_map_power_reused_new_STA",
+      "STA": "calculated",
+      "qualified": true,
+      "core": {
+        "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+        "timing_qualified": true,
+        "unit": "32lane_signed64_update",
+        "clock_MHz": 250,
+        "period_ns": 4.0,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "area_mm2": 0.014171976000000001,
+        "area_raw_um2": 14171.976,
+        "area_multiplier": 1,
+        "setup_slack_ns": 0.281884,
+        "hold_slack_ns": 0.050275,
+        "real_ICGs": 64,
+        "latency_cycles": 1,
+        "input_II_cycles": 1,
+        "idle_reference_mode": "idle_source_stopped",
+        "idle_W": 4.77e-05,
+        "idle_leakage_W": 1.0586666666666666e-05,
+        "modes": {
+          "idle_source_stopped": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.0477,
+            "mean_dynamic_mW": 0.03712,
+            "mean_leakage_mW": 0.010586666666666666,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "state_cont": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 5.001666666666667,
+            "mean_dynamic_mW": 4.990666666666667,
+            "mean_leakage_mW": 0.010683333333333333,
+            "gross_pJ_per_unit": 20.16296875,
+            "stdev_pJ_per_unit": 0.05901801400049347,
+            "incremental_pJ_per_unit": 19.970678125000003,
+            "measurement_ns_per_unit": 4.03125,
+            "gross_pJ_per_FMA": null
+          },
+          "state_paced": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 1.3266666666666667,
+            "mean_dynamic_mW": 1.3159333333333334,
+            "mean_leakage_mW": 0.01093,
+            "gross_pJ_per_unit": 21.3925,
+            "stdev_pJ_per_unit": 0.056629138921584776,
+            "incremental_pJ_per_unit": 20.623337499999998,
+            "measurement_ns_per_unit": 16.125,
+            "gross_pJ_per_FMA": null
+          }
+        },
+        "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+        "unknown_TIE_power_W": null,
+        "flags": [
+          "UNMODELED_CONSTANT_TIE_POWER",
+          "checks.rpt",
+          "model_checks.rpt"
+        ],
+        "native_source_manifest_sha256": "82a9d0276bc8615e108c6750de1a3633c95eb8431fdb2fe147a648ad03fd9281",
+        "mapped_sha256": "53ead905096e6600356b4dc86300f7fec542360e77cf49a4d7670fef964fc538",
+        "original_reports": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_state_250.tar.gz",
+          "sha256": "947f0b9c0114536682d3733476461dba91ca10141dd3c35af2b8f155dc043824",
+          "verified_report_members": 400
+        },
+        "boundary": "32lane signed64 + shifted signed20,64realICGs;SRAM,address/control excluded",
+        "inventory_groups_seed17": {
+          "real_icg": {
+            "cells": 64,
+            "area_um2": 193.53600000000003,
+            "watts": [
+              0.00021331200000000017,
+              0.000175616,
+              2.1932799999999978e-07,
+              0.0003891199999999998
+            ]
+          },
+          "registers": {
+            "cells": 2049,
+            "area_um2": 4130.784000000102,
+            "watts": [
+              0.002471227699999971,
+              0.00010285410999999941,
+              3.371384000000013e-06,
+              0.002577482800000009
+            ]
+          },
+          "combinational_unattributed": {
+            "cells": 10260,
+            "area_um2": 9847.403999999986,
+            "watts": [
+              0.001244900347900002,
+              0.0007850828319000125,
+              7.09204960000031e-06,
+              0.0020370686961999696
+            ]
+          },
+          "unmodeled_constant_ties": {
+            "cells": 1,
+            "area_um2": 0.252,
+            "watts": [
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "new_STA_slacks_ns": {
+          "setup": 0.281884,
+          "hold": 0.050275,
+          "gate_setup": 2.726805,
+          "gate_hold": 0.151862
+        },
+        "original_clock_budget_slacks_are_historical": true,
+        "STA_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_state_250.tar.gz",
+          "sha256": "27c5f24a6e63d62400513b851bf721a18069a10ead6435964a1c8278b3669717"
+        },
+        "original_power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_state_250.tar.gz",
+          "sha256": "947f0b9c0114536682d3733476461dba91ca10141dd3c35af2b8f155dc043824"
+        },
+        "power_netlist_sha256": "53ead905096e6600356b4dc86300f7fec542360e77cf49a4d7670fef964fc538",
+        "new_power": false,
+        "power_not_frequency_scaled": true,
+        "historical_clock_budget_timing_fields": {
+          "setup_slack_ns": 0.281884,
+          "hold_slack_ns": 0.000275
+        },
+        "slacks_ns": {
+          "setup": 0.281884,
+          "hold": 0.050275,
+          "gate_setup": 2.726805,
+          "gate_hold": 0.151862
+        }
+      },
+      "area_mm2": 0.014171976000000001
+    },
+    {
+      "case": "codec_250",
+      "mode": "same_map_power_reused_new_STA",
+      "STA": "calculated",
+      "qualified": true,
+      "core": {
+        "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+        "timing_qualified": true,
+        "unit": "scalar_conversion",
+        "clock_MHz": 250,
+        "period_ns": 4.0,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "area_mm2": 0.0022619520000000002,
+        "area_raw_um2": 2261.952,
+        "area_multiplier": 1,
+        "setup_slack_ns": 0.388921,
+        "hold_slack_ns": 0.055288,
+        "real_ICGs": 2,
+        "latency_cycles": 2,
+        "input_II_cycles": 1,
+        "idle_reference_mode": "idle_source_stopped",
+        "idle_W": 4.182e-06,
+        "idle_leakage_W": 1.524e-06,
+        "modes": {
+          "bf16": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.41836666666666666,
+            "mean_dynamic_mW": 0.4168,
+            "mean_leakage_mW": 0.0015236666666666667,
+            "gross_pJ_per_unit": 1.6996145833333334,
+            "stdev_pJ_per_unit": 0.009920599491504242,
+            "incremental_pJ_per_unit": 1.6826252083333335,
+            "measurement_ns_per_unit": 4.0625,
+            "gross_pJ_per_FMA": null
+          },
+          "codec_paced": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.11046666666666667,
+            "mean_dynamic_mW": 0.10897,
+            "mean_leakage_mW": 0.0015293333333333333,
+            "gross_pJ_per_unit": 1.7950833333333334,
+            "stdev_pJ_per_unit": 0.04716234152725374,
+            "incremental_pJ_per_unit": 1.7271258333333335,
+            "measurement_ns_per_unit": 16.25,
+            "gross_pJ_per_FMA": null
+          },
+          "g8": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.4094,
+            "mean_dynamic_mW": 0.40786666666666666,
+            "mean_leakage_mW": 0.0015203333333333334,
+            "gross_pJ_per_unit": 1.6631875,
+            "stdev_pJ_per_unit": 0.012328867610713497,
+            "incremental_pJ_per_unit": 1.6461981250000002,
+            "measurement_ns_per_unit": 4.0625,
+            "gross_pJ_per_FMA": null
+          },
+          "idle_source_stopped": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.004182,
+            "mean_dynamic_mW": 0.0026579999999999998,
+            "mean_leakage_mW": 0.001524,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "u8": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.40953333333333336,
+            "mean_dynamic_mW": 0.40796666666666664,
+            "mean_leakage_mW": 0.0015193333333333333,
+            "gross_pJ_per_unit": 1.6637291666666667,
+            "stdev_pJ_per_unit": 0.016736974101770434,
+            "incremental_pJ_per_unit": 1.6467397916666668,
+            "measurement_ns_per_unit": 4.0625,
+            "gross_pJ_per_FMA": null
+          }
+        },
+        "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+        "unknown_TIE_power_W": null,
+        "flags": [
+          "UNMODELED_CONSTANT_TIE_POWER",
+          "checks.rpt",
+          "model_checks.rpt"
+        ],
+        "native_source_manifest_sha256": "82a9d0276bc8615e108c6750de1a3633c95eb8431fdb2fe147a648ad03fd9281",
+        "mapped_sha256": "f89d706aa65291c43880c2ab7a5ed3bbc9e47c2030a9c54f8b871daf21c26f3f",
+        "original_reports": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_codec_250.tar.gz",
+          "sha256": "6ef5497b279aff9d1e94752f7345f91b92e48c4c190a84842e903e2063286d64",
+          "verified_report_members": 640
+        },
+        "boundary": "Single scalar signed64 with supplied binary shift to RNE/saturatingg8,signmag7u8 orBF16;2ICG,external scale/control excluded",
+        "inventory_groups_seed17": {
+          "real_icg": {
+            "cells": 2,
+            "area_um2": 6.048,
+            "watts": [
+              6.663999999999999e-06,
+              7.639000000000001e-06,
+              6.852e-09,
+              1.431e-05
+            ]
+          },
+          "registers": {
+            "cells": 92,
+            "area_um2": 183.58199999999982,
+            "watts": [
+              0.00010852179999999997,
+              1.1341573999999997e-05,
+              1.4772000000000008e-07,
+              0.00012001219999999999
+            ]
+          },
+          "combinational_unattributed": {
+            "cells": 3858,
+            "area_um2": 2072.069999999928,
+            "watts": [
+              0.00015582905761199982,
+              0.00011945802879999969,
+              1.364775119999994e-06,
+              0.0002766517188500017
+            ]
+          },
+          "unmodeled_constant_ties": {
+            "cells": 1,
+            "area_um2": 0.252,
+            "watts": [
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "new_STA_slacks_ns": {
+          "setup": 0.388921,
+          "hold": 0.055288,
+          "gate_setup": 2.78303,
+          "gate_hold": 0.055288
+        },
+        "original_clock_budget_slacks_are_historical": true,
+        "STA_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_codec_250.tar.gz",
+          "sha256": "aef48750f0516cb37c3218d631c60cd372ffacfca696703a150d877e67e9b044"
+        },
+        "original_power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_codec_250.tar.gz",
+          "sha256": "6ef5497b279aff9d1e94752f7345f91b92e48c4c190a84842e903e2063286d64"
+        },
+        "power_netlist_sha256": "f89d706aa65291c43880c2ab7a5ed3bbc9e47c2030a9c54f8b871daf21c26f3f",
+        "new_power": false,
+        "power_not_frequency_scaled": true,
+        "historical_clock_budget_timing_fields": {
+          "setup_slack_ns": 0.388921,
+          "hold_slack_ns": 0.005288
+        },
+        "slacks_ns": {
+          "setup": 0.388921,
+          "hold": 0.055288,
+          "gate_setup": 2.78303,
+          "gate_hold": 0.055288
+        }
+      },
+      "area_mm2": 0.0022619520000000002
+    },
+    {
+      "case": "scale_250",
+      "mode": "same_map_power_reused_new_STA",
+      "STA": "calculated",
+      "qualified": true,
+      "core": {
+        "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+        "timing_qualified": true,
+        "unit": "64element_scale_group",
+        "clock_MHz": 250,
+        "period_ns": 4.0,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "area_mm2": 0.014928984000000001,
+        "area_raw_um2": 14928.984,
+        "area_multiplier": 1,
+        "setup_slack_ns": 0.021577,
+        "hold_slack_ns": 0.05036,
+        "real_ICGs": 41,
+        "latency_cycles": 4,
+        "input_II_cycles": 1,
+        "idle_reference_mode": "idle_source_stopped",
+        "idle_W": 3.980333333333333e-05,
+        "idle_leakage_W": 1.1093333333333334e-05,
+        "modes": {
+          "idle_source_stopped": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.039803333333333336,
+            "mean_dynamic_mW": 0.028710000000000003,
+            "mean_leakage_mW": 0.011093333333333334,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "scale_cont": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 4.815666666666667,
+            "mean_dynamic_mW": 4.804666666666667,
+            "mean_leakage_mW": 0.011229999999999999,
+            "gross_pJ_per_unit": 40.331208333333336,
+            "stdev_pJ_per_unit": 0.029412033393383757,
+            "incremental_pJ_per_unit": 39.997855416666674,
+            "measurement_ns_per_unit": 8.375,
+            "gross_pJ_per_FMA": null
+          },
+          "scale_paced": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 1.318,
+            "mean_dynamic_mW": 1.3065666666666669,
+            "mean_leakage_mW": 0.01137,
+            "gross_pJ_per_unit": 42.670249999999996,
+            "stdev_pJ_per_unit": 0.0856561986957169,
+            "incremental_pJ_per_unit": 41.38161708333333,
+            "measurement_ns_per_unit": 32.375,
+            "gross_pJ_per_FMA": null
+          }
+        },
+        "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+        "unknown_TIE_power_W": null,
+        "flags": [
+          "UNMODELED_CONSTANT_TIE_POWER",
+          "checks.rpt",
+          "model_checks.rpt"
+        ],
+        "native_source_manifest_sha256": "82a9d0276bc8615e108c6750de1a3633c95eb8431fdb2fe147a648ad03fd9281",
+        "mapped_sha256": "4b54e692434fb223ddb83a6eb40b3a1af6f1da5f525bb14cf92f51809559587d",
+        "original_reports": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_scale_250.tar.gz",
+          "sha256": "573cc270624389e4509133bc8428939ced6500d6bce3901c0ae66a670f39531f",
+          "verified_report_members": 400
+        },
+        "boundary": "Two32lane signed64 packets per64element max/leading-position group;41ICG,PoT exponent/control composition external",
+        "inventory_groups_seed17": {
+          "real_icg": {
+            "cells": 41,
+            "area_um2": 123.98400000000002,
+            "watts": [
+              0.00013425199999999993,
+              0.0002136010000000002,
+              1.4034299999999997e-07,
+              0.00034800800000000013
+            ]
+          },
+          "registers": {
+            "cells": 2631,
+            "area_um2": 4977.000000000066,
+            "watts": [
+              0.002689159999999919,
+              0.00010243627399999906,
+              3.965564000000036e-06,
+              0.002795627499999977
+            ]
+          },
+          "combinational_unattributed": {
+            "cells": 20062,
+            "area_um2": 9827.496000000563,
+            "watts": [
+              0.001066530697298026,
+              0.0005986751507000392,
+              7.1284143900004685e-06,
+              0.0016723486644799194
+            ]
+          },
+          "unmodeled_constant_ties": {
+            "cells": 2,
+            "area_um2": 0.504,
+            "watts": [
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "new_STA_slacks_ns": {
+          "setup": 0.021577,
+          "hold": 0.05036,
+          "gate_setup": 2.757383,
+          "gate_hold": 0.058287
+        },
+        "original_clock_budget_slacks_are_historical": true,
+        "STA_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_scale_250.tar.gz",
+          "sha256": "a323e8a0fc65873ea4bea4f4ec8fe10ff3810d7de726503bd4b9b9b4b14d26e1"
+        },
+        "original_power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\ffntlm28_204_d9e9d3fb9c9d\\ppa_scale_250.tar.gz",
+          "sha256": "573cc270624389e4509133bc8428939ced6500d6bce3901c0ae66a670f39531f"
+        },
+        "power_netlist_sha256": "4b54e692434fb223ddb83a6eb40b3a1af6f1da5f525bb14cf92f51809559587d",
+        "new_power": false,
+        "power_not_frequency_scaled": true,
+        "historical_clock_budget_timing_fields": {
+          "setup_slack_ns": 0.021577,
+          "hold_slack_ns": 0.00036
+        },
+        "slacks_ns": {
+          "setup": 0.021577,
+          "hold": 0.05036,
+          "gate_setup": 2.757383,
+          "gate_hold": 0.058287
+        }
+      },
+      "area_mm2": 0.014928984000000001
+    },
+    {
+      "case": "integer_gu_250",
+      "mode": "same_map_power_reused_new_STA",
+      "STA": "calculated",
+      "qualified": true,
+      "core": {
+        "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+        "timing_qualified": true,
+        "unit": "K64_integer_dot_state_update",
+        "clock_MHz": 250,
+        "period_ns": 4.0,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "area_mm2": 0.019626011999999998,
+        "area_raw_um2": 19626.012,
+        "area_multiplier": 1,
+        "setup_slack_ns": 0.390843,
+        "hold_slack_ns": 0.050054,
+        "real_ICGs": 1,
+        "latency_cycles": null,
+        "input_II_cycles": 1,
+        "idle_reference_mode": "idle_hold",
+        "idle_W": 1.4726666666666666e-05,
+        "idle_leakage_W": 1.416e-05,
+        "modes": {
+          "backpressure": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 5.208333333333333,
+            "mean_dynamic_mW": 5.194333333333334,
+            "mean_leakage_mW": 0.014106666666666667,
+            "gross_pJ_per_unit": 23.4375,
+            "stdev_pJ_per_unit": 0.009367496997597952,
+            "incremental_pJ_per_unit": 23.37123,
+            "measurement_ns_per_unit": 4.5,
+            "gross_pJ_per_FMA": null
+          },
+          "continuous": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 5.207666666666666,
+            "mean_dynamic_mW": 5.193333333333333,
+            "mean_leakage_mW": 0.014093333333333333,
+            "gross_pJ_per_unit": 23.4345,
+            "stdev_pJ_per_unit": 0.030630866784992973,
+            "incremental_pJ_per_unit": 23.368229999999997,
+            "measurement_ns_per_unit": 4.5,
+            "gross_pJ_per_FMA": null
+          },
+          "idle_hold": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.014726666666666666,
+            "mean_dynamic_mW": 0.000568,
+            "mean_leakage_mW": 0.014159999999999999,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "idle_toggle": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.13153333333333334,
+            "mean_dynamic_mW": 0.11727,
+            "mean_leakage_mW": 0.014253333333333333,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "paced25": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 5.2203333333333335,
+            "mean_dynamic_mW": 5.206666666666667,
+            "mean_leakage_mW": 0.0141,
+            "gross_pJ_per_unit": 23.4915,
+            "stdev_pJ_per_unit": 0.06557247898318168,
+            "incremental_pJ_per_unit": 23.425229999999996,
+            "measurement_ns_per_unit": 4.5,
+            "gross_pJ_per_FMA": null
+          }
+        },
+        "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+        "unknown_TIE_power_W": null,
+        "flags": [
+          "UNMODELED_CONSTANT_TIE_POWER",
+          "checks.rpt",
+          "model_checks.rpt"
+        ],
+        "native_source_manifest_sha256": "3c9de5637208af867fd06d294982dc7f58e8b814b697328326b821c3bf46f0f6",
+        "mapped_sha256": "82fecba5912421e21bcdc10a140f74ee626e0ecd4a4b007c7c00950afc5f5fc1",
+        "original_reports": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_integer_gu_250.tar.gz",
+          "sha256": "a6b62d7166713a5337b44510a89818c3eec80109d3995cd47db61e3d0c3760d8",
+          "verified_report_members": 640
+        },
+        "boundary": "K64 signed9 plus full_one endpoint xW8;PoT shift,RNE,INT64 feedback,BF16 final andholding;no operandSRAM",
+        "inventory_groups_seed17": {
+          "real_icg": {
+            "cells": 1,
+            "area_um2": 3.024,
+            "watts": [
+              3.513e-06,
+              0.0001341,
+              3.425e-09,
+              0.0001376
+            ]
+          },
+          "registers": {
+            "cells": 1591,
+            "area_um2": 3007.241999999984,
+            "watts": [
+              0.0017510669999999957,
+              0.0002627613790000001,
+              2.4582600000000292e-06,
+              0.0020162821000000017
+            ]
+          },
+          "combinational_unattributed": {
+            "cells": 22858,
+            "area_um2": 16615.2420000037,
+            "watts": [
+              0.0017343715934959876,
+              0.0012996235732000002,
+              1.1635141889999551e-05,
+              0.003045643262210095
+            ]
+          },
+          "unmodeled_constant_ties": {
+            "cells": 2,
+            "area_um2": 0.504,
+            "watts": [
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "K": 64,
+        "activation_full_one_endpoint": true,
+        "crossK_INT64_and_final_BF16_included": true,
+        "macro_latency_cycles": 4,
+        "new_STA_slacks_ns": {
+          "setup": 0.390843,
+          "hold": 0.050054,
+          "gate_setup": 2.688849,
+          "gate_hold": 0.061914
+        },
+        "original_clock_budget_slacks_are_historical": true,
+        "STA_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_integer_gu_250.tar.gz",
+          "sha256": "78076e207f071480376f76a885c089b22055c31c88d6eeb340e012e60e6f016f"
+        },
+        "original_power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_integer_gu_250.tar.gz",
+          "sha256": "a6b62d7166713a5337b44510a89818c3eec80109d3995cd47db61e3d0c3760d8"
+        },
+        "power_netlist_sha256": "82fecba5912421e21bcdc10a140f74ee626e0ecd4a4b007c7c00950afc5f5fc1",
+        "new_power": false,
+        "power_not_frequency_scaled": true,
+        "historical_clock_budget_timing_fields": {
+          "setup_slack_ns": 0.390843,
+          "hold_slack_ns": 5.4e-05
+        },
+        "slacks_ns": {
+          "setup": 0.390843,
+          "hold": 0.050054,
+          "gate_setup": 2.688849,
+          "gate_hold": 0.061914
+        }
+      },
+      "area_mm2": 0.019626011999999998
+    },
+    {
+      "case": "nl_bf16_250",
+      "mode": "same_map_power_reused_new_STA",
+      "STA": "calculated",
+      "qualified": true,
+      "core": {
+        "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+        "timing_qualified": true,
+        "unit": "SwiGLU_element",
+        "clock_MHz": 250,
+        "period_ns": 4.0,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "area_mm2": 0.006707609999999999,
+        "area_raw_um2": 6707.61,
+        "area_multiplier": 1,
+        "setup_slack_ns": 0.200149,
+        "hold_slack_ns": 0.004191,
+        "real_ICGs": 3,
+        "latency_cycles": null,
+        "input_II_cycles": 1,
+        "idle_reference_mode": "idle_hold",
+        "idle_W": 5.526e-06,
+        "idle_leakage_W": 4.958e-06,
+        "modes": {
+          "backpressure": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.7486,
+            "mean_dynamic_mW": 0.7437,
+            "mean_leakage_mW": 0.004902,
+            "gross_pJ_per_unit": 4.959475,
+            "stdev_pJ_per_unit": 0.029531453041629956,
+            "incremental_pJ_per_unit": 4.92286525,
+            "measurement_ns_per_unit": 6.625,
+            "gross_pJ_per_FMA": null
+          },
+          "continuous": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 1.2029999999999998,
+            "mean_dynamic_mW": 1.1978666666666666,
+            "mean_leakage_mW": 0.004920000000000001,
+            "gross_pJ_per_unit": 4.92478125,
+            "stdev_pJ_per_unit": 0.05353272765035848,
+            "incremental_pJ_per_unit": 4.9021591875,
+            "measurement_ns_per_unit": 4.09375,
+            "gross_pJ_per_FMA": null
+          },
+          "idle_hold": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.005526,
+            "mean_dynamic_mW": 0.000568,
+            "mean_leakage_mW": 0.004958000000000001,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "idle_toggle": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.010513333333333333,
+            "mean_dynamic_mW": 0.005556,
+            "mean_leakage_mW": 0.004959333333333333,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "paced25": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.38366666666666666,
+            "mean_dynamic_mW": 0.3787233333333333,
+            "mean_leakage_mW": 0.0049496666666666665,
+            "gross_pJ_per_unit": 5.023635416666667,
+            "stdev_pJ_per_unit": 0.00928949041451998,
+            "incremental_pJ_per_unit": 4.951279354166667,
+            "measurement_ns_per_unit": 13.09375,
+            "gross_pJ_per_FMA": null
+          }
+        },
+        "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+        "unknown_TIE_power_W": null,
+        "flags": [
+          "TIMING_VIOLATION",
+          "UNMODELED_CONSTANT_TIE_POWER",
+          "checks.rpt",
+          "model_checks.rpt"
+        ],
+        "native_source_manifest_sha256": "3c9de5637208af867fd06d294982dc7f58e8b814b697328326b821c3bf46f0f6",
+        "mapped_sha256": "5a25b8c1cddb2e21006a57e160b3ded1dff8d2178f693c75fecf6a20baf0aa64",
+        "original_reports": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_nl_bf16_250.tar.gz",
+          "sha256": "7eeeed6a591665a146b1da78813aa9eb52e165a1263ba8b1eea8034ced36046c",
+          "verified_report_members": 642
+        },
+        "boundary": "FP32g/u toBF16RNE,exactRNE BF16sigmoid,two BF16productRNE;elastic holding andrealICGs;no externalSRAM",
+        "inventory_groups_seed17": {
+          "real_icg": {
+            "cells": 3,
+            "area_um2": 9.072,
+            "watts": [
+              1.0281999999999999e-05,
+              6.740500000000001e-05,
+              1.0278999999999999e-08,
+              7.769999999999999e-05
+            ]
+          },
+          "registers": {
+            "cells": 527,
+            "area_um2": 1439.5499999999972,
+            "watts": [
+              0.0005863135000000007,
+              1.78932772e-05,
+              1.0775669999999996e-06,
+              0.0006052847000000012
+            ]
+          },
+          "combinational_unattributed": {
+            "cells": 7916,
+            "area_um2": 5257.476000000116,
+            "watts": [
+              0.0002831651623237978,
+              0.0002239917204000003,
+              3.832370769999938e-06,
+              0.0005109914584399927
+            ]
+          },
+          "unmodeled_constant_ties": {
+            "cells": 6,
+            "area_um2": 1.512,
+            "watts": [
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "macro_latency_cycles": 5,
+        "code8": false,
+        "new_STA_slacks_ns": {
+          "setup": 0.200149,
+          "hold": 0.004191,
+          "gate_setup": 2.91226,
+          "gate_hold": 0.052152
+        },
+        "original_clock_budget_slacks_are_historical": true,
+        "STA_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_nl_bf16_250.tar.gz",
+          "sha256": "8a8be91debab2d8f445fd09cdccfa362de7d945636f8f572696287c79852d02d"
+        },
+        "original_power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_nl_bf16_250.tar.gz",
+          "sha256": "7eeeed6a591665a146b1da78813aa9eb52e165a1263ba8b1eea8034ced36046c"
+        },
+        "power_netlist_sha256": "5a25b8c1cddb2e21006a57e160b3ded1dff8d2178f693c75fecf6a20baf0aa64",
+        "new_power": false,
+        "power_not_frequency_scaled": true,
+        "historical_clock_budget_timing_fields": {
+          "setup_slack_ns": 0.200149,
+          "hold_slack_ns": -0.045809
+        },
+        "slacks_ns": {
+          "setup": 0.200149,
+          "hold": 0.004191,
+          "gate_setup": 2.91226,
+          "gate_hold": 0.052152
+        }
+      },
+      "area_mm2": 0.006707609999999999
+    },
+    {
+      "case": "nl_code8_250",
+      "mode": "same_map_power_reused_new_STA",
+      "STA": "calculated",
+      "qualified": true,
+      "core": {
+        "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+        "timing_qualified": true,
+        "unit": "SwiGLU_element",
+        "clock_MHz": 250,
+        "period_ns": 4.0,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "area_mm2": 0.00163926,
+        "area_raw_um2": 1639.26,
+        "area_multiplier": 1,
+        "setup_slack_ns": 1.969173,
+        "hold_slack_ns": 0.05,
+        "real_ICGs": 1,
+        "latency_cycles": null,
+        "input_II_cycles": 1,
+        "idle_reference_mode": "idle_hold",
+        "idle_W": 1.717e-06,
+        "idle_leakage_W": 1.149e-06,
+        "modes": {
+          "backpressure": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.30546666666666666,
+            "mean_dynamic_mW": 0.3043133333333333,
+            "mean_leakage_mW": 0.0011913333333333333,
+            "gross_pJ_per_unit": 2.0237166666666666,
+            "stdev_pJ_per_unit": 0.005354923746734118,
+            "incremental_pJ_per_unit": 2.012341541666667,
+            "measurement_ns_per_unit": 6.625,
+            "gross_pJ_per_FMA": null
+          },
+          "continuous": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.48623333333333335,
+            "mean_dynamic_mW": 0.4850666666666667,
+            "mean_leakage_mW": 0.0011799999999999998,
+            "gross_pJ_per_unit": 1.9829203125,
+            "stdev_pJ_per_unit": 0.004899410788474252,
+            "incremental_pJ_per_unit": 1.975918171875,
+            "measurement_ns_per_unit": 4.078125,
+            "gross_pJ_per_FMA": null
+          },
+          "idle_hold": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.001717,
+            "mean_dynamic_mW": 0.000568,
+            "mean_leakage_mW": 0.001149,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "idle_toggle": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.0052703333333333335,
+            "mean_dynamic_mW": 0.0041174666666666665,
+            "mean_leakage_mW": 0.0011526666666666666,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "paced25": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.16126666666666667,
+            "mean_dynamic_mW": 0.16005,
+            "mean_leakage_mW": 0.0011823333333333334,
+            "gross_pJ_per_unit": 2.109065625,
+            "stdev_pJ_per_unit": 0.00799086636807923,
+            "incremental_pJ_per_unit": 2.086610484375,
+            "measurement_ns_per_unit": 13.078125,
+            "gross_pJ_per_FMA": null
+          }
+        },
+        "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+        "unknown_TIE_power_W": null,
+        "flags": [
+          "UNMODELED_CONSTANT_TIE_POWER",
+          "checks.rpt",
+          "model_checks.rpt"
+        ],
+        "native_source_manifest_sha256": "3c9de5637208af867fd06d294982dc7f58e8b814b697328326b821c3bf46f0f6",
+        "mapped_sha256": "9e06b51fd318640279489306c62bf1cd5fa5b57b36278e7962a58ceee61d047f",
+        "original_reports": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_nl_code8_250.tar.gz",
+          "sha256": "38e87f203912ca6f3d9129cf6590321d8f4e19802922bc2089e3264c73f81999",
+          "verified_report_members": 640
+        },
+        "boundary": "g signedQ3/u signmag7,scale metadata,sigmoidP9,exact probability-product25bit mantissa andBF16 exit;no randomsampling",
+        "inventory_groups_seed17": {
+          "real_icg": {
+            "cells": 1,
+            "area_um2": 3.024,
+            "watts": [
+              3.463e-06,
+              2.16e-05,
+              3.427e-09,
+              2.507e-05
+            ]
+          },
+          "registers": {
+            "cells": 254,
+            "area_um2": 480.0599999999975,
+            "watts": [
+              0.0002683000000000002,
+              1.6948699899999994e-05,
+              3.8588599999999954e-07,
+              0.0002856401000000006
+            ]
+          },
+          "combinational_unattributed": {
+            "cells": 1900,
+            "area_um2": 1155.9239999999984,
+            "watts": [
+              0.00010075792185700028,
+              7.275645519999996e-05,
+              7.910891799999983e-07,
+              0.0001743053116500002
+            ]
+          },
+          "unmodeled_constant_ties": {
+            "cells": 1,
+            "area_um2": 0.252,
+            "watts": [
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "macro_latency_cycles": 4,
+        "code8": true,
+        "new_STA_slacks_ns": {
+          "setup": 1.969173,
+          "hold": 0.05,
+          "gate_setup": 2.90297,
+          "gate_hold": 0.061683
+        },
+        "original_clock_budget_slacks_are_historical": true,
+        "STA_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_nl_code8_250.tar.gz",
+          "sha256": "ee0c9b7384a4b7dfe3d909829ba02359f20d8ae8c32d5cb85e8d94f41d90aa3c"
+        },
+        "original_power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_nl_code8_250.tar.gz",
+          "sha256": "38e87f203912ca6f3d9129cf6590321d8f4e19802922bc2089e3264c73f81999"
+        },
+        "power_netlist_sha256": "9e06b51fd318640279489306c62bf1cd5fa5b57b36278e7962a58ceee61d047f",
+        "new_power": false,
+        "power_not_frequency_scaled": true,
+        "historical_clock_budget_timing_fields": {
+          "setup_slack_ns": 1.969173,
+          "hold_slack_ns": 0.0
+        },
+        "slacks_ns": {
+          "setup": 1.969173,
+          "hold": 0.05,
+          "gate_setup": 2.90297,
+          "gate_hold": 0.061683
+        }
+      },
+      "area_mm2": 0.00163926
+    },
+    {
+      "case": "w8_wd_250",
+      "mode": "same_map_power_reused_new_STA",
+      "STA": "calculated",
+      "qualified": true,
+      "core": {
+        "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+        "timing_qualified": true,
+        "unit": "DOT64",
+        "clock_MHz": 250,
+        "period_ns": 4.0,
+        "PVT": "TT0.9V25C",
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "area_mm2": 0.062648334,
+        "area_raw_um2": 62648.334,
+        "area_multiplier": 1,
+        "setup_slack_ns": 0.019857,
+        "hold_slack_ns": 0.05038,
+        "real_ICGs": 131,
+        "latency_cycles": null,
+        "input_II_cycles": null,
+        "idle_reference_mode": "idle_hold",
+        "idle_W": 0.00012996666666666666,
+        "idle_leakage_W": 4.695333333333334e-05,
+        "modes": {
+          "backpressure": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 11.833333333333332,
+            "mean_dynamic_mW": 11.789,
+            "mean_leakage_mW": 0.046503333333333334,
+            "gross_pJ_per_unit": 212.26041666666666,
+            "stdev_pJ_per_unit": 1.0356220453589011,
+            "incremental_pJ_per_unit": 209.92913958333332,
+            "measurement_ns_per_unit": 17.9375,
+            "gross_pJ_per_FMA": 3.3165690104166665
+          },
+          "continuous": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 12.9,
+            "mean_dynamic_mW": 12.873666666666667,
+            "mean_leakage_mW": 0.046246666666666665,
+            "gross_pJ_per_unit": 212.04375000000002,
+            "stdev_pJ_per_unit": 0.0,
+            "incremental_pJ_per_unit": 209.9074229166667,
+            "measurement_ns_per_unit": 16.4375,
+            "gross_pJ_per_FMA": 3.3131835937500003
+          },
+          "idle_hold": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.12996666666666667,
+            "mean_dynamic_mW": 0.08302999999999999,
+            "mean_leakage_mW": 0.04695333333333333,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "idle_toggle": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.5846666666666667,
+            "mean_dynamic_mW": 0.5376333333333333,
+            "mean_leakage_mW": 0.04703666666666667,
+            "gross_pJ_per_unit": null,
+            "stdev_pJ_per_unit": null,
+            "incremental_pJ_per_unit": null,
+            "measurement_ns_per_unit": null,
+            "gross_pJ_per_FMA": null
+          },
+          "paced25": {
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 3.4493333333333336,
+            "mean_dynamic_mW": 3.402766666666667,
+            "mean_leakage_mW": 0.04685333333333333,
+            "gross_pJ_per_unit": 221.83525,
+            "stdev_pJ_per_unit": 0.3656963552166476,
+            "incremental_pJ_per_unit": 213.47676875,
+            "measurement_ns_per_unit": 64.3125,
+            "gross_pJ_per_FMA": 3.46617578125
+          }
+        },
+        "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+        "unknown_TIE_power_W": null,
+        "flags": [
+          "UNMODELED_CONSTANT_TIE_POWER",
+          "checks.rpt",
+          "model_checks.rpt"
+        ],
+        "native_source_manifest_sha256": "3c9de5637208af867fd06d294982dc7f58e8b814b697328326b821c3bf46f0f6",
+        "mapped_sha256": "777859bd484953995e16e0a29bd94c8210761c9a2db0a8a4e8cfb74942f8e188",
+        "original_reports": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_w8_wd_250.tar.gz",
+          "sha256": "2f32dcd5dddaacdac69ab0ff2bc86b8d6037be825f8b1527eb465ed6372f5b77",
+          "verified_report_members": 642
+        },
+        "boundary": "16lane BF16 activation xW8/PoT decoded weight,FP32 feedback,C4,heldinputs,2resultslots;no operandSRAM or shared BF16/W8 modeMUX",
+        "inventory_groups_seed17": {
+          "real_icg": {
+            "cells": 131,
+            "area_um2": 396.14400000000006,
+            "watts": [
+              0.0002287505999999991,
+              0.0005935883399999989,
+              4.262359999999991e-07,
+              0.0008228028000000033
+            ]
+          },
+          "registers": {
+            "cells": 7493,
+            "area_um2": 17874.611999997636,
+            "watts": [
+              0.006016338230999903,
+              0.000234665760599998,
+              1.4215235000000162e-05,
+              0.006265173096000278
+            ]
+          },
+          "combinational_unattributed": {
+            "cells": 61815,
+            "area_um2": 44369.0100000202,
+            "watts": [
+              0.003251168934204429,
+              0.0025367767754999426,
+              3.1602932239999646e-05,
+              0.005819567298669559
+            ]
+          },
+          "unmodeled_constant_ties": {
+            "cells": 34,
+            "area_um2": 8.567999999999996,
+            "watts": [
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "contexts": 4,
+        "lanes": 16,
+        "FMA_pipe_registers": 2,
+        "FMA_commit_latency_cycles": 3,
+        "same_context_min_II_cycles": 4,
+        "steady_vector_II_cycles": 1,
+        "result_slots": 2,
+        "new_STA_slacks_ns": {
+          "setup": 0.019857,
+          "hold": 0.05038,
+          "gate_setup": 2.680893,
+          "gate_hold": 0.110032
+        },
+        "original_clock_budget_slacks_are_historical": true,
+        "STA_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_w8_wd_250.tar.gz",
+          "sha256": "2fcaa5eb11173e7f2927901d03853b69b83eab87b4bb4a0e9c5b18195c09b5ea"
+        },
+        "original_power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn_tlm28_supplement204_20261108\\digitalffn28v2_204_5d001c15c389\\ppa_w8_wd_250.tar.gz",
+          "sha256": "2f32dcd5dddaacdac69ab0ff2bc86b8d6037be825f8b1527eb465ed6372f5b77"
+        },
+        "power_netlist_sha256": "777859bd484953995e16e0a29bd94c8210761c9a2db0a8a4e8cfb74942f8e188",
+        "new_power": false,
+        "power_not_frequency_scaled": true,
+        "historical_clock_budget_timing_fields": {
+          "setup_slack_ns": 0.019857,
+          "hold_slack_ns": 0.00038
+        },
+        "slacks_ns": {
+          "setup": 0.019857,
+          "hold": 0.05038,
+          "gate_setup": 2.680893,
+          "gate_hold": 0.110032
+        }
+      },
+      "area_mm2": 0.062648334
+    },
+    {
+      "case": "ffn_250",
+      "mode": "same_map_power_reused_new_STA",
+      "STA": "calculated",
+      "qualified": true,
+      "core": {
+        "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+        "clock_MHz": 250,
+        "PVT": "TT0.9V25C",
+        "K": 64,
+        "M": 128,
+        "area_multiplier": 1,
+        "area_mm2": 0.373801301999,
+        "real_ICGs": 518,
+        "modes": {
+          "GU": {
+            "samples": 16,
+            "frame_cycles": 18,
+            "frame_ns": 72.0,
+            "DOT64_per_frame": 128,
+            "mean_core_power_mW": 18.066666666666666,
+            "gross_pJ_per_DOT64": 10.1625,
+            "gross_pJ_per_frame": 1300.8
+          },
+          "Wd": {
+            "samples": 32,
+            "frame_cycles": 34,
+            "frame_ns": 136.0,
+            "DOT64_per_frame": 128,
+            "mean_core_power_mW": 8.709666666666667,
+            "gross_pJ_per_DOT64": 9.254020833333334,
+            "gross_pJ_per_frame": 1184.5146666666667
+          }
+        },
+        "slacks_ns": {
+          "setup": 1.564064,
+          "hold": 0.050785,
+          "gate_setup": 2.643523,
+          "gate_hold": 0.051819
+        },
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "waiting_power_W": 0.0006209,
+        "waiting_reference_seed": 17,
+        "power_netlist_sha256": "02b90e2dda0bf27a789a644a4f6e853ad2b6ac08870347310a11811af5b30493",
+        "power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\tsmc28_ffn204_20261107\\recovered_tsmc28_power_recovery204_a891bbc0c3f5\\ffn_250.tar.gz",
+          "sha256": "255ed08ccebd4f559df2ed60b5244d4ce72b0725b678eeb4ad03e6eac02ba70b",
+          "verified_report_members": 334
+        },
+        "STA_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_ffn_250.tar.gz",
+          "sha256": "abe0a1876b67c6e72acbf3822a67333ca424c6064511bccde363b037658eb475"
+        },
+        "original_power_TIMING_VIOLATION_flag_refers_to_previous_0p5ns_constraint": false,
+        "power_frequency_not_scaled": true,
+        "timing_qualified": true,
+        "price_origin": "Original mapped core, new real zero-setup STA, same-netlist original measured power",
+        "new_STA_slacks_ns": {
+          "setup": 1.564064,
+          "hold": 0.050785,
+          "gate_setup": 2.643523,
+          "gate_hold": 0.051819
+        },
+        "original_clock_budget_slacks_are_historical": true,
+        "original_power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\tsmc28_ffn204_20261107\\recovered_tsmc28_power_recovery204_a891bbc0c3f5\\ffn_250.tar.gz",
+          "sha256": "255ed08ccebd4f559df2ed60b5244d4ce72b0725b678eeb4ad03e6eac02ba70b"
+        },
+        "new_power": false,
+        "power_not_frequency_scaled": true,
+        "historical_clock_budget_timing_fields": {}
+      },
+      "area_mm2": 0.373801301999
+    },
+    {
+      "case": "bf16_250",
+      "mode": "same_map_power_reused_new_STA",
+      "STA": "calculated",
+      "qualified": true,
+      "core": {
+        "status": "NEW_SETUP_HOLD_UNC0_STA_PASS_SAME_POWER_REUSED",
+        "PVT": "TT0.9V25C",
+        "process": "TSMC28HPC+",
+        "frequency_MHz": 250,
+        "area_multiplier": 1.0,
+        "area_um2": 62453.79,
+        "area_mm2": 0.06245379,
+        "data_setup_ns": 0.50035,
+        "data_hold_ns": 0.05002,
+        "gate_setup_ns": 2.648962,
+        "gate_hold_ns": 0.110032,
+        "PT_windows": 15,
+        "seeds": [
+          17,
+          503,
+          1009
+        ],
+        "real_ICGs": 131,
+        "modes": {
+          "backpressure": {
+            "seed_count": 3,
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 11.866666666666667,
+            "mean_dynamic_mW": 11.813,
+            "mean_leakage_mW": 0.04681333333333333,
+            "gross_pJ_per_DOT64": 212.85833333333335,
+            "stdev_pJ_per_DOT64": 1.0356220453589011,
+            "operations_per_window": 4096,
+            "complete_DOT64_per_window": 64,
+            "window_ns": 1148.0,
+            "effective_window_ns_per_DOT64": 17.9375
+          },
+          "continuous": {
+            "seed_count": 3,
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 12.866666666666667,
+            "mean_dynamic_mW": 12.817,
+            "mean_leakage_mW": 0.046536666666666664,
+            "gross_pJ_per_DOT64": 211.49583333333334,
+            "stdev_pJ_per_DOT64": 0.949019504980454,
+            "operations_per_window": 4096,
+            "complete_DOT64_per_window": 64,
+            "window_ns": 1052.0,
+            "effective_window_ns_per_DOT64": 16.4375
+          },
+          "idle_hold": {
+            "seed_count": 3,
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.13026666666666667,
+            "mean_dynamic_mW": 0.083,
+            "mean_leakage_mW": 0.04727,
+            "gross_pJ_per_DOT64": null,
+            "stdev_pJ_per_DOT64": null,
+            "operations_per_window": 0,
+            "complete_DOT64_per_window": 0,
+            "window_ns": 256.0,
+            "effective_window_ns_per_DOT64": null
+          },
+          "idle_toggle": {
+            "seed_count": 3,
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 0.5136,
+            "mean_dynamic_mW": 0.4662833333333333,
+            "mean_leakage_mW": 0.04734,
+            "gross_pJ_per_DOT64": null,
+            "stdev_pJ_per_DOT64": null,
+            "operations_per_window": 0,
+            "complete_DOT64_per_window": 0,
+            "window_ns": 256.0,
+            "effective_window_ns_per_DOT64": null
+          },
+          "paced25": {
+            "seed_count": 3,
+            "seeds": [
+              17,
+              503,
+              1009
+            ],
+            "mean_core_power_mW": 3.4363333333333332,
+            "mean_dynamic_mW": 3.3892,
+            "mean_leakage_mW": 0.0472,
+            "gross_pJ_per_DOT64": 220.9991875,
+            "stdev_pJ_per_DOT64": 0.4134715263775715,
+            "operations_per_window": 4096,
+            "complete_DOT64_per_window": 64,
+            "window_ns": 4116.0,
+            "effective_window_ns_per_DOT64": 64.3125
+          }
+        },
+        "review_flags": [
+          "UNMODELED_CONSTANT_TIE_POWER",
+          "checks.rpt",
+          "model_checks.rpt"
+        ],
+        "tie_cell_attribute_counts": [
+          34
+        ],
+        "original_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\tsmc28_ffn204_20261107\\recovered_tsmc28_power_recovery204_a891bbc0c3f5\\bf16_250.tar.gz",
+          "sha256": "80b3472697b534bdcfe0c4d5af1c36aa835dd1f52e4ea7cc0b947e0b45128810",
+          "verified_report_members": 613
+        },
+        "boundary": "BF16 FMA16,FP32 feedback,C4 context state,holding/results/ICG; no external memory/CTS/wires",
+        "power_model_scope": "PT-modeled cells only;uncharacterized constant tie power unavailable",
+        "unmodeled_tie_count": 34,
+        "unmodeled_tie_power_W": null,
+        "timing_qualified": true,
+        "setup_uncertainty_ns": 0,
+        "hold_uncertainty_ns": 0,
+        "new_STA_slacks_ns": {
+          "setup": 0.50035,
+          "hold": 0.05002,
+          "gate_setup": 2.648962,
+          "gate_hold": 0.110032
+        },
+        "original_clock_budget_slacks_are_historical": true,
+        "STA_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\ffn28_comparison204_20261109\\ffn28cmp204_92e49256446f\\sta_bf16_250.tar.gz",
+          "sha256": "1cec3185d151e9a61588822c35542c08e1b2536c8e5ca587d073ef64a37547cc"
+        },
+        "original_power_archive": {
+          "path": "C:\\Users\\86134\\Documents\\a_P_BIT\\project_archives\\tsmc28_ffn204_20261107\\recovered_tsmc28_power_recovery204_a891bbc0c3f5\\bf16_250.tar.gz",
+          "sha256": "80b3472697b534bdcfe0c4d5af1c36aa835dd1f52e4ea7cc0b947e0b45128810"
+        },
+        "power_netlist_sha256": "b20380ac900e2e051484353cfcf0ba181409193810c39ea8a5980386a1a1d9cd",
+        "new_power": false,
+        "power_not_frequency_scaled": true,
+        "historical_clock_budget_timing_fields": {
+          "data_setup_ns": 0.00035,
+          "data_hold_ns": 2e-05,
+          "gate_setup_ns": 2.148962,
+          "gate_hold_ns": 0.060032
+        },
+        "slacks_ns": {
+          "setup": 0.50035,
+          "hold": 0.05002,
+          "gate_setup": 2.648962,
+          "gate_hold": 0.110032
+        }
+      },
+      "area_mm2": 0.06245379
+    }
+  ],
+  "native_collected": 6,
+  "STA_collected": 9,
+  "PPA_collected": 6,
+  "new_PT_windows": 72,
+  "current_failures": {},
+  "clock_budget_separate_from_55nm": true,
+  "no_quality_or_model_claim": true,
+  "host_default_unchanged": true,
+  "recovery": {
+    "root": "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f",
+    "driver": "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/recover_arrays_v1.py",
+    "driver_sha256": "f69bc2129022cc16f605cecda5854373d9351769a21a73cc73ff5faa83d33230",
+    "dependency": "38639522",
+    "job": "38639700",
+    "args": [
+      "sbatch",
+      "--parsable",
+      "--partition=v6_384",
+      "--array=3-5%2",
+      "--cpus-per-task=4",
+      "--mem=32G",
+      "--time=04:00:00",
+      "--job-name=cmp28-meta",
+      "--dependency=afterany:38639522",
+      "--output=/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/recovery-%A_%a.out",
+      "--error=/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/recovery-%A_%a.err",
+      "/public3/home/t6s011227/pbit_chimera_pipeline_20260920/ffn28cmp204_92e49256446f/recover_arrays_v1.sh"
+    ],
+    "UTC": "2026-11-09T07:48:42.961122Z",
+    "no_cancel_or_frozen_file_change": true
+  }
+}

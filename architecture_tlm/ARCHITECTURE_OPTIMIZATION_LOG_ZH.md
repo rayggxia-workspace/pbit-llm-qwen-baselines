@@ -1,3 +1,9 @@
+## 2026-11-10 发布与原生门禁回执
+
+PR249源8fb56f5a2e1c3e69b24bb7927f0488cd25fc3883，本轮30文件远端完整内容回读一致，Issue225评论6759993129、236评论6760001444。三组原生门禁均COMPLETED/EXIT0，SEAL所列全部原件SHA已只读复核；BF16/W8dense/W8screen分别2.763648/2.482360/2.213856ms，均仅一层＋384head，不当完整token。完整数组38650228中W8dense/ W8screen已运行（实际job38650230/38650228），BF16等待数组额度；2026-11-10 13:41北京状态，后续以STATUS为准。概率三seed完整结果已发布；原冻结未改，55/500不改。PR仍待审未合并，Projects待维护者同步。恢复本次HANDOFF、NATIVE_GATES和ops.py status。
+
+---
+
 ## 2026-11-10｜28nm250概率完整收齐；55nm式三数字基线已提交
 
 Issue225/PR249，rayggxia。用户本对话确认28nm主数字对照沿55nm的BF16_dense/W8_dense/W8_screen，新增共享尺度P8/W8数字CIM只作补充；此前“CIM唯一主对照”为先前范围，不替代本次最新决定。

@@ -34,7 +34,7 @@ Issue225/PR249，rayggxia，交叉引用245/PR247。Qwen数字数组38650228原�
 
 本地8构造及8解析一层＋384head均PASS，工作量/字节/全部逻辑KV/完整词表尾块/池排空/账本已核。2026-11-10 14:09北京提交原生门禁数组38650669（8项，无%2），完整12任务38650670—38650681各自依赖对应门禁，不再人为限制两并行；每模型SC三seed17/503/1009＋BF16dense/W8dense/W8screen单seed。完整实际28/30层＋完整词表，结果仍待收；初查8门禁RUNNING、12完整Dependency，无即时错误。
 
-远端tlm28cross250_225_e0291ed6b5a9，包227f2509a117c4673807074f23b303473dc8aea4065cc9fae905ea0db7ca83b1，MF874c258f0b87631b386a8567977f43920cf598e77e3336fd96a08191d58dec72。门禁1CPU12GiB、完整1CPU24GiB（实际按Slurm粒度3CPU），无GPU/训练/PPL/新电路。正式process_28nm/cross_models_20261110/；恢复work/rayggxia/225/cross28_20261110/HANDOFF.md、ops.py status。快照不可变，不重交健康任务；55nm与既有Qwen冻结不改，PR未合并，Projects待维护者同步。
+远端tlm28cross250_225_e0291ed6b5a9，包227f2509a117c4673807074f23b303473dc8aea4065cc9fae905ea0db7ca83b1，MF874c258f0b87631b386a8567977f43920cf598e77e3336fd96a08191d58dec72。门禁1CPU12GiB、完整1CPU24GiB（门禁实际3CPU、完整24GiB实际6CPU，均为请求1CPU后的内存粒度分配），无GPU/训练/PPL/新电路。正式process_28nm/cross_models_20261110/；恢复work/rayggxia/225/cross28_20261110/HANDOFF.md、ops.py status。快照不可变，不重交健康任务；55nm与既有Qwen冻结不改，PR未合并，Projects待维护者同步。
 
 ---
 

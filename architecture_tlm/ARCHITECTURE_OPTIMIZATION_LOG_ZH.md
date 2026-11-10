@@ -1,3 +1,9 @@
+## 2026-11-10 两模型发布与实际调度回执
+
+PR249源06cb57275c6aca6311f27c3c5082b4ab22d149e6，27文件远端完整回读一致，Issue225评论6760602169、Issue245评论6760604170。8解析单层检查全通过；北京时间14:20核查Llama四原生门禁COMPLETED0:0、六完整任务38650670—38650675全部RUNNING，DeepSeek四门禁运行、38650676—38650681等待对应依赖，无已发现失败。Qwen38650228已调自设%2→3且三项均RUNNING，未重启/改源。实际sacct门禁12GiB分配3CPU，完整24GiB分配6CPU（脚本均请求1CPU、单线程），覆盖早先按旧12GiB粒度写的“实际3CPU”预测。完整跨模型结果尚待收，不能把局部门禁当全模型。PR待审未合并，Projects待同步；恢复cross28_20261110/HANDOFF和ops.py status。
+
+---
+
 ## 2026-11-10｜28nm250两模型仿真已提交；Qwen数组取消自设两项上限
 
 Issue225/PR249，rayggxia，交叉引用245/PR247。Qwen数字数组38650228原等待原因JobArrayTaskLimit来自本脚本--array=0-2%2，不是EDA全局只有两项能力。已只调ArrayTaskThrottle=3并核用户/jobname；后续队列实核Qwen三项均RUNNING，未重启/重交/改源，THROTTLE_UPDATE留回执。不能据此宣称集群没有其他资源/QOS规则。

@@ -1,3 +1,9 @@
+## 2026-11-10 两模型发布与实际调度回执
+
+PR249源06cb57275c6aca6311f27c3c5082b4ab22d149e6，27文件远端完整回读一致，Issue225评论6760602169、Issue245评论6760604170。8解析单层检查全通过；北京时间14:20核查Llama四原生门禁COMPLETED0:0、六完整任务38650670—38650675全部RUNNING，DeepSeek四门禁运行、38650676—38650681等待对应依赖，无已发现失败。Qwen38650228已调自设%2→3且三项均RUNNING，未重启/改源。实际sacct门禁12GiB分配3CPU，完整24GiB分配6CPU（脚本均请求1CPU、单线程），覆盖早先按旧12GiB粒度写的“实际3CPU”预测。完整跨模型结果尚待收，不能把局部门禁当全模型。PR待审未合并，Projects待同步；恢复cross28_20261110/HANDOFF和ops.py status。
+
+---
+
 # 两模型28nm250 TLM：提交与恢复
 
 2026-11-10，rayggxia；Issue225 / PR249接续28nm，交叉引用245/PR247的55nm模型形状与Fixture，不改其任务。当前工作目录tmp/tlm-unified250-issue225-20261107、分支task/225-tlm-unified250-20261107；没有复制新全量checkout。
@@ -15,7 +21,7 @@
 
 门禁0—3对应Llama SC/BF16/W8dense/W8screen，4—7对应DeepSeek同顺序。每个完整case依赖对应afterok:38650669_<index>；不设置%2或其他人工完整并行上限，真实资源限制仍由Slurm决定。
 
-门禁请求1CPU12GiB，完整1CPU24GiB；集群按粒度实际分配3CPU，上限4h/24h不是预计运行时长。无GPU、PPL、训练、额外RTL/PT。
+门禁请求1CPU12GiB，完整1CPU24GiB；集群按粒度门禁实际分配3CPU、完整24GiB实际6CPU，上限4h/24h不是预计运行时长。无GPU、PPL、训练、额外RTL/PT。
 
 远端根/public3/home/t6s011227/pbit_chimera_pipeline_20260920/tlm28cross250_225_e0291ed6b5a9。包80354B，SHA227f2509a117c4673807074f23b303473dc8aea4065cc9fae905ea0db7ca83b1，manifest874c258f0b87631b386a8567977f43920cf598e77e3336fd96a08191d58dec72。旧runtime/dependencies/snapshot三manifest逐SHA核对，准确路径UPLOAD_PLAN和FROZEN_MANIFEST。
 

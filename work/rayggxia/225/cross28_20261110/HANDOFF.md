@@ -1,3 +1,9 @@
+## 2026-11-11 28nm、250MHz TLM 15/15 已核验
+
+Issue225 / PR249。北京时间 2026-11-11 11:03:50 复核，Qwen 数字 3/3、Llama 6/6、DeepSeek 6/6，全部 Slurm COMPLETED/0:0，封存与账本校验通过。DeepSeek 概率 seed17（38650676）02:05:57 完成，BF16 稠密（38650679）03:10:26 完成。概率三 seed 均值 98.984535 ms/token、片上 26.526532 mJ/token、外存 4pJ/bit 情景共 317.782038 mJ/token；BF16 含 head 207.008152 ms/token。正式结果见 architecture_tlm/process_28nm/results_20261111/REPORT_ZH.md、SUMMARY.json。Slurm 与封存回执 work/rayggxia/225/tlm_status_20261111/RECHECK_REMOTE_20261111.json，SHA-256 5fbfe6c65ec000ade42b00475f466f89d769ba330aa27d153b8dd8292e7fde2f。PR 待审，Projects 待同步。
+
+---
+
 ## 2026-11-11 TLM进度：新增15项已封存核验13项，余DeepSeek两项
 
 Issue225/PR249，00:42北京实核。Qwen数字3/3、Llama6/6、DeepSeek4/6；13项均COMPLETED0:0、EXIT0、SEAL原件/源/配置SHA、真实全层/head及能量行加和通过，无失败。Qwen概率3seed为此前参考，不重复计15。QwenBF16/W8dense/W8screen含head111.119648/94.998940/85.450204ms；Qwen概率51.132604ms。Llama三seed概率43.929332ms，BF16/W8dense/W8screen86.102848/74.136052/66.688448ms。面积/片上与外存能量、扣head见process_28nm/results_20261111/REPORT_ZH.md、SUMMARY.json。

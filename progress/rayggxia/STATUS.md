@@ -1,3 +1,359 @@
+## 2026-11-11 28nm、250MHz TLM 15/15 已核验
+
+Issue225 / PR249。北京时间 2026-11-11 11:03:50 复核，Qwen 数字 3/3、Llama 6/6、DeepSeek 6/6，全部 Slurm COMPLETED/0:0，封存与账本校验通过。DeepSeek 概率 seed17（38650676）02:05:57 完成，BF16 稠密（38650679）03:10:26 完成。概率三 seed 均值 98.984535 ms/token、片上 26.526532 mJ/token、外存 4pJ/bit 情景共 317.782038 mJ/token；BF16 含 head 207.008152 ms/token。正式结果见 architecture_tlm/process_28nm/results_20261111/REPORT_ZH.md、SUMMARY.json。Slurm 与封存回执 work/rayggxia/225/tlm_status_20261111/RECHECK_REMOTE_20261111.json，SHA-256 5fbfe6c65ec000ade42b00475f466f89d769ba330aa27d153b8dd8292e7fde2f。PR 待审，Projects 待同步。
+
+---
+
+## 2026-11-11 TLM进度：新增15项已封存核验13项，余DeepSeek两项
+
+Issue225/PR249，00:42北京实核。Qwen数字3/3、Llama6/6、DeepSeek4/6；13项均COMPLETED0:0、EXIT0、SEAL原件/源/配置SHA、真实全层/head及能量行加和通过，无失败。Qwen概率3seed为此前参考，不重复计15。QwenBF16/W8dense/W8screen含head111.119648/94.998940/85.450204ms；Qwen概率51.132604ms。Llama三seed概率43.929332ms，BF16/W8dense/W8screen86.102848/74.136052/66.688448ms。面积/片上与外存能量、扣head见process_28nm/results_20261111/REPORT_ZH.md、SUMMARY.json。
+
+DeepSeek38650676概率seed17完成30层，正跑lm_head，余约1h；另两seed已完成但不当最终三seed平均。38650679 BF16已25/30层、正在第26层，预计余2–3h，整批约凌晨3点、保留到4点浮动。没有重启/重交/改冻结源，CPU并行上限保持取消。新报告本地完成，发布看本work/PUBLICATION；PR待审未合并，Projects待同步。
+
+---
+
+## 2026-11-10 CPU仿真耗时诊断（本地记录，待后续PR同步）
+
+Issue225。14:49北京只读sstat：Qwen数字38650229分配3核，墙钟55:37、AveCPU55:33；Llama概率38650670分配6核，墙钟33:52、AveCPU33:51，均约一个活跃CPU。脚本请求1CPU，实际3/6来自12/24GiB内存粒度；当前主事件驱动及nativeDRAM调度没有单case多核并行，增加cpus-per-task不会自动加速。
+
+已完成Qwen seed17完整事务51.136596ms对应CPU墙钟19424.881s；SRAM16B读194019908＋写360003008，共554022916字活动；native32请求169105152（64B逻辑84552576，不重复相加）。单核细粒度SRAM/事件与nativeDRAM循环共同造成大量软件工作；未做逐函数profile，不把某个具体模块CPU占比说成已测。当前不同模型/seed已并行；后续优化应考虑批量访存/原生热点，保持bank冲突、回压、统计和时序回归，不能直接拆层相加替代完整共享状态执行。
+
+DeepSeek BF16 gate的EXIT0/SEAL/SHA已只读确认，Slurm收尾后完整38650679已于14:48:38启动，14:49状态RUNNING，不需解除依赖或重复提交。原冻结源码/硬件时序/作业均未改。原始观测本work/CPU_USAGE_OBSERVATION.json与CPU_USAGE_FOLLOWUP.json，代码cpu_usage.py；本轮诊断辅助文件尚未发布，不把本地记录称远端已更新。
+
+---
+
+## 2026-11-10 用户要求仿真不设人为并行上限；按实际吞吐更新ETA
+
+Issue225/PR249。用户明确本项目CPU TLM后续不人为设置%2等并行上限。已将Qwen数字38650228的ArrayTaskThrottle=0，新两模型12完整任务原本独立无人工上限；保留原生验证afterok依赖，不重启/改源。EDA资源/QOS为实际调度约束，不声称不存在。
+
+北京时间14:37观测：Qwen数字完成5/12/14层（目标36），Llama多为4–5/28，DeepSeek多为1/30；按近期实际层吞吐＋单列完整head预算，Qwen尚5–7h、Llama4–6h、DeepSeek10–13h。整批约11月11日0–4点，最慢DeepSeekBF16，属于粗ETA，非完成回执；负载/后续吞吐/失败会改变。恢复本任务cross28_20261110/ETA_ZH.md、ETA_SUMMARY.json和原始ETA_OBSERVATION。此次无新仿真/重交/取消任务。
+
+---
+
+## 2026-11-10 两模型发布与实际调度回执
+
+PR249源06cb57275c6aca6311f27c3c5082b4ab22d149e6，27文件远端完整回读一致，Issue225评论6760602169、Issue245评论6760604170。8解析单层检查全通过；北京时间14:20核查Llama四原生门禁COMPLETED0:0、六完整任务38650670—38650675全部RUNNING，DeepSeek四门禁运行、38650676—38650681等待对应依赖，无已发现失败。Qwen38650228已调自设%2→3且三项均RUNNING，未重启/改源。实际sacct门禁12GiB分配3CPU，完整24GiB分配6CPU（脚本均请求1CPU、单线程），覆盖早先按旧12GiB粒度写的“实际3CPU”预测。完整跨模型结果尚待收，不能把局部门禁当全模型。PR待审未合并，Projects待同步；恢复cross28_20261110/HANDOFF和ops.py status。
+
+---
+
+## 2026-11-10｜28nm250两模型仿真已提交；Qwen数组取消自设两项上限
+
+Issue225/PR249，rayggxia，交叉引用245/PR247。Qwen数字数组38650228原等待原因JobArrayTaskLimit来自本脚本--array=0-2%2，不是EDA全局只有两项能力。已只调ArrayTaskThrottle=3并核用户/jobname；后续队列实核Qwen三项均RUNNING，未重启/重交/改源，THROTTLE_UPDATE留回执。不能据此宣称集群没有其他资源/QOS规则。
+
+按用户要求扩展Llama-3.2-3B-Instruct（revision0cb88a4f764b7a12671c53f0838cd831a0843b95，H3072/F8192/L28/Q24/KV8/V128256）和DeepSeek-LLM-7B-Chat（afbda8b347ec881666061fa67447046fc5164ec8，H4096/F11008/L30/Q32/KV32/V102400）。同28nmTT250、832KiB/178宏、B1/2K、同LPDDR/DMA和各方案原物理资源，不按参数量缩放时间。
+
+已适配3/1Q每KV、DeepSeek4个KV波次、>32KiB尺度元数据在原96KiB激活内起点64→56KiB、无QKNorm和独立untied embedding。4Q物理issue槽时间保留，未用FMA16片增量活动门控代理，物理面积/idle保留并分列有效/物理工作量；不是最优专用映射或新模型质量验证。
+
+本地8构造及8解析一层＋384head均PASS，工作量/字节/全部逻辑KV/完整词表尾块/池排空/账本已核。2026-11-10 14:09北京提交原生门禁数组38650669（8项，无%2），完整12任务38650670—38650681各自依赖对应门禁，不再人为限制两并行；每模型SC三seed17/503/1009＋BF16dense/W8dense/W8screen单seed。完整实际28/30层＋完整词表，结果仍待收；初查8门禁RUNNING、12完整Dependency，无即时错误。
+
+远端tlm28cross250_225_e0291ed6b5a9，包227f2509a117c4673807074f23b303473dc8aea4065cc9fae905ea0db7ca83b1，MF874c258f0b87631b386a8567977f43920cf598e77e3336fd96a08191d58dec72。门禁1CPU12GiB、完整1CPU24GiB（实际按Slurm粒度3CPU），无GPU/训练/PPL/新电路。正式process_28nm/cross_models_20261110/；恢复work/rayggxia/225/cross28_20261110/HANDOFF.md、ops.py status。快照不可变，不重交健康任务；55nm与既有Qwen冻结不改，PR未合并，Projects待维护者同步。
+
+---
+
+## 2026-11-10 发布与原生门禁回执
+
+PR249源8fb56f5a2e1c3e69b24bb7927f0488cd25fc3883，本轮30文件远端完整内容回读一致，Issue225评论6759993129、236评论6760001444。三组原生门禁均COMPLETED/EXIT0，SEAL所列全部原件SHA已只读复核；BF16/W8dense/W8screen分别2.763648/2.482360/2.213856ms，均仅一层＋384head，不当完整token。完整数组38650228中W8dense/ W8screen已运行（实际job38650230/38650228），BF16等待数组额度；2026-11-10 13:41北京状态，后续以STATUS为准。概率三seed完整结果已发布；原冻结未改，55/500不改。PR仍待审未合并，Projects待维护者同步。恢复本次HANDOFF、NATIVE_GATES和ops.py status。
+
+---
+
+## 2026-11-10｜28nm250概率完整收齐；55nm式三数字基线已提交
+
+Issue225/PR249，rayggxia。用户本对话确认28nm主数字对照沿55nm的BF16_dense/W8_dense/W8_screen，新增共享尺度P8/W8数字CIM只作补充；此前“CIM唯一主对照”为先前范围，不替代本次最新决定。
+
+概率数组38644764三seed已全部COMPLETED0:0，原件SEAL/SHA、36层/完整151936head、帧/采样/字节与闭合账本通过。完整均值51.132604ms/token，扣head43.594377ms；片上15.267553mJ，外存4pJ情景总188.432048mJ，覆盖6.480303mm²。旧46.01856ms为局部外推，现用完整原生结果。原件project_archives/tlm28p250_full225_20261110，正式process_28nm/250MHz/FULL_RESULTS_20261110_ZH.md及JSON。
+
+数字三组已接28nm实测原语与显式宏价，同832KiB/178宏、同LPDDR/DMA；共享FMA576/448/448路，W8另16整数GU，近等总面积6.449627/6.369820/6.399385mm²（比目标低0.47/1.70/1.25%）。前端448KiB/82端口＋Attention384KiB/96端口，SC不使用的96KiB跨K状态释放，原256KiB CIM区域复用于数字FFN/投影。旧area55字段仅API名，数值28nm×1，未套55nm价或0.81。
+
+三项最终解析一层＋384head检查PASS；原生门禁数组38650227、完整数组38650228已于北京时间13:30提交，下标0BF16_dense/1W8_dense/2W8_screen；aftercorr各组通过后自动跑36层＋完整head。每项请求1CPU12GiB（实际Slurm3CPU），各数组最多2并行，无GPU/训练/新增RTL/PT。最新状态STATUS，不把已提交或解析门禁写成原生完整完成。
+
+恢复work/rayggxia/225/digital250_20261110/HANDOFF.md、ops.py status。包371485605a0d3ba723279345b19f62dea32f7772ba757bd40b938dd75e3f02bd，MF0873dd0ba873923be07792f19cf31f354f6914421100616cbef0ffb0ff67c967。执行快照不可变，不重交健康任务；55nm、500MHz、其他模块原交接不改。完整数字结果待收，PR待审未合并，Projects待维护者同步。
+
+---
+
+## 2026-11-10 完整概率任务与数字接口清单已发布
+
+PR249源80bdfaa9f7a785b4f66469082a269e28cd62968e，20文件远端完整回读一致，Issue225评论6746072666。EDA门禁38644763已通过，完整数组38644764的_0/_1运行、_2等待并行限制，尚未完成。全量36层/151936词表/三seed、原生LPDDR、28nm250新价保持；旧46ms仍为外推，不重标签。数字优先两级量化MAC/CIM，FFN与Attention确认问题已写文件，未发消息/提交数字任务。源包/环境/回执SHA齐，恢复本work/ops.py status；PR待审未合并，Projects待维护者同步。
+
+---
+
+## 2026-11-10 完整概率版已启动
+
+门禁38644763已通过（EXIT0/SEAL/Slurm COMPLETED）；数组38644764_0/1已RUNNING，实际job38644798/38644799；_2依并行限制等待。全量仍未完成。精确观测见OBSERVATION_20261110.json，后续只查状态、不重复提交。数字接口待确认清单已写，未发消息或提交数字任务。
+
+---
+
+## 2026-11-10 28nm250完整概率版已提交：本地回执待发布
+
+Issue225/PR249，rayggxia；沿task/225-tlm-unified250-20261107。北京时间00:46提交EDA门禁38644763与完整三seed数组38644764，afterok依赖、最多2并行；请求1CPU/12GiB，实际Slurm可能分配3CPU，无GPU。36层/151936词表、GU16/Wd32/K128/S64/S12、3核/832KiB保持；原生LPDDR derived8533后端。不是仅跑2层或缩小head的全量任务；门禁本身仍一层/384head。
+
+服务器根/public3/home/t6s011227/pbit_chimera_pipeline_20260920/tlm28p250_full225_3c811d6efe58；源码包SHA9e0125325e3aaae6151786ef16645159f4a82d20c58aa175dd9f9dad12f8bf87，MFf69df7db841445d52d9572732824709130d5cdedacaff99981dbdd957490fd8b。各case独立work防止DRAM统计互相覆盖。现已提交，不把门禁运行/全量依赖等待写成完成；最新状态见本work/STATUS。冻结源码不修改，binary64等值兼容补丁与六检查另存。55/500不变，无新EDA电路/GPU/PPL。
+
+数字新决定：两级量化整数MAC/CIM优先，z25位尾数/指数到共享P8、Wd复用/状态位宽及计费边界需FFN确认；Attention只确认完整PV概率数制/转换和可选R8实际数量归一化。现有参考价格已够，不能再用旧浮点Wd的7.9x/21x称最强数字优势。详细转发文件process_28nm/250MHz/DIGITAL_BASELINE_COORDINATION_20261110_ZH.md；未向其他对话发消息。等面积/数字执行/内存排布由TLM端负责，确认不阻塞概率作业。
+
+恢复本work/ops.py status，完成只认EXIT=0与SEAL/原件SHA；需要修复则独立新快照，不重复提交健康任务。本地提交回执已齐，GitHub同步看本work/PUBLICATION；PR未合并，Projects待维护者同步。
+
+---
+
+## 2026-11-09 28nm250 TLM最新更新已发布
+
+PR249源b64cbb3241dc2f0e6d6bdb5b3ce5269e3cb06d02，31文件远端完整回读一致，Issue225评论6743216455。新零余量FFN/FMA、PV参考与平台宏已接，条件面积6.480303mm²；六CPU回放及六检查通过，250时间/访存未变、500 BUDGET不变。完整46.01856ms/核心15.016133mJ仍为明确外推，不是完整36层实跑；扣head阶段39.408936ms。S12主线、832KiB、55/500默认保持，宏/PV hold限制保留。原件zip/SHA与恢复在本work，PR待审未合并，Projects待维护者同步。
+
+---
+
+## 2026-11-09 28nm250 TLM最新价卡已接入：本地完成待发布
+
+Issue225/PR249，rayggxia；task/225-tlm-unified250-20261107，base task/225-norm-stream-20261106，工作目录tmp/tlm-unified250-issue225-20261107。新SC/FMA/整数GU零余量价、主数字参考、17Attention卡可用，选原Ising/R8，S12优先分数前端保持；PV新实测参考按保留固定状态的2/16结构代理，V控制按真实miss/reuse，平台宏显式闭合，无旧“PV缺价”。不是全芯片PPA。
+
+六CPU回放封存：250两层+384head2.2118ms与原逐项不变，500单层.99729ms且BUDGET不变；新250单层及1024/1152/2048head探针通过；六账本/来源/防覆盖检查通过。面积6.480303mm²，较6.566340少1.31%。一/两层及head条件外推完整46.01856ms、扣head阶段39.408936ms，核心15.016133mJ、4pJ情景总188.191138mJ；不是实际完整36层/原生LPDDR运行。head分账保留前缀重叠预取64KiB，硬件常驻面积不变。
+
+来源与原件SHA见本work/PLAN、EXTRA_PLAN、ARCHIVE_INDEX、UNIT_TESTS及正式250MHz/UPDATED_TLM_20261109.json；报告UPDATED_TLM_20261109_ZH.md。3新归档SHA核验。原冻结任务、55/500默认不改，无新EDA/GPU。当前本地完成，发布回执见本work/PUBLICATION；PR待审未合并，Projects待维护者同步。下一步完整回放用新绑定冻结新目录；数字R8整链必须按可变输出实际轨迹，不能强塞S64。
+
+---
+
+## 2026-11-09 混合宏默认已发布
+
+PR249源d5fe6e97333ba53fbaf925ea8ec990d2a53aa6ea，25文件远端完整回读一致，Issue225评论6738309665。两频默认832KiB/178混合宏，前端共享106、Attention72端口；小配对250/500慢0.133826%/0.016848%，SRAM宏面积减少0.192107mm²，能量估计约+2.4%。S2动态仅库差估价，不是新PT；完整token未重跑，55nm保持。原件zip/SHA与交接在本work，PR待审未合并，Projects待维护者同步。
+
+---
+
+## 2026-11-09 28nm混合宏默认：本地完成，待本次PR同步
+
+Issue225/PR249，rayggxia；分支task/225-tlm-unified250-20261107，PR base task/225-norm-stream-20261106；工作目录tmp/tlm-unified250-issue225-20261107，恢复前确认PR最新head。用户决定30×8KiB＋4×4KiB CIM容量份额；两频832KiB总计30×8KiB＋148×4KiB/178真实宏，前端106共享端口、Attention72，不是独占34端口测量。55nm保持。
+
+本机四case完成封存，250三核两层+384head 2.208844→2.211800ms(+.133826%)；500两核一层+384head .997122→.997290ms(+.016848%)。53248物理字无别名，真实端口、排空、核帧/转换/尺度/算术/采样/外存字节与地址SHA校验通过。首次混合未封存energy断言失败保留，确认binary64累计误差约3.1e-10；按N*epsilon界修复审计，调度不变。
+
+SRAM宏2.471065→2.278958mm²(-7.77%)，条件250/500面积6.566340/6.592880mm²；S2用库面积时序漏电、动态S0_PT＋CLK库差估计，局部SRAM能量约+2.4%，不是新S2PT。新默认执行字段匹配冻结混合配置，四个说明字段纠正；208全4K/960参考保留。完整token、新PPL、nativeLPDDR、芯片PPA未重做，不用旧960时间改标签。无健康服务器任务变动。
+
+正式process_28nm/SRAM_MIXED34_VALIDATION_20261109_ZH.md/json与DEFAULT_SRAM832；原件归档project_archives/mixed34_issue225_20261109/finite_pairs_and_failed_audit.zip/SHA见本work/ARCHIVE_INDEX.json。当前本地完成，发布结果以本work/PUBLICATION.json为准，PR待审未合并；Projects无已核实写接口，待维护者同步。下一步如需完整832 token，使用新WHOLE_CONFIG与独立输出；复现局部测试用归档冻结PLAN命令，不重写旧快照。
+
+---
+
+## 2026-11-09 SRAM端口分析已发布
+
+PR249源0fd26cff0d10bd976bf76190ee724cbc28e54110，5文件远端完整回读一致，Issue225评论6737064311。CIM采样读端口与装载写端口分开：现行约135GB/s装载，32个8KiB独占区250仅128GB/s、500为256GB/s；250可先试40端口混合宏。Norm/元数据/残差优先减，数字权重/热K-V保留供数，状态按RMW突发。分析不是新布局时序/PPA，832默认不变，PR未合并，Projects待同步。
+
+---
+
+## 2026-11-09 SRAM端口削减分析：CIM分计算与装载两阶段
+
+Issue225/PR249。832默认不变，无新时序/PPA。前端136bank条带共享，容量份额不等于专属端口。Norm/冷元数据/残差最适合先减端口；CIM采样驻留不逐拍读，但GU/Wd装载实际约135GB/s。独立256KiB用32×8KiB端口在250MHz只有128GB/s，低于当前需求；500MHz256GB/s有余量。250建议试24×8K＋16×4K=256K/40端口160GB/s，宏面积份额.606642mm²；500可试32×8K=.555413mm²。不是已完成新整机结果。
+
+FFN状态实际读写约33GB/s，12×8K独立区250/500上限48/96GB/s，但RMW突发需回放。256BF16FMA满速权重512B/拍=32个128bit读端口，数字权重/热K-V不按容量随意砍端口。CIM静态并行呈现仍为当前假设，普通SRAM能量代理不代表标准宏天然全权重输出。
+
+正式process_28nm/SRAM_PORT_REDUCTION_20261109_ZH.md/json；来源为两832已封存小流程与真实宏库。无需新训练/重跑S0。发布看本work/PUBLICATION，PR待审未合并，Projects待同步。
+
+---
+
+## 2026-11-09 28nm默认832KiB已发布
+
+PR249源02f43499efd0e7403cf17985e464c95e1962af26，17文件完整远端回读一致；Issue225评论6736646463。250/500默认832KiB/208bank，与已测配置字节SHA相同；面积预算6.758447/6.784987mm²，960显式对照保留，55不变。完整832 token时序/能量未新跑，旧960结果不重标签。PR待审未合并，Projects待同步。
+
+---
+
+## 2026-11-09 用户接受28nm默认832KiB
+
+Issue225/PR249；28nm250/500的WHOLE_CONFIG已逐字节换为通过配对的832配置：208个4KiB/1RW宏，前端136/Attention72、激活96KiB/8×36KiB Attention，其余资源/采样/外存不变。两频默认SHA与冻结测试文件相同，运行函数AST一致，四SEAL保持，55源SHA不变。960参考另存WHOLE_CONFIG_960_REFERENCE。
+
+无15%统一预留的28nm250/500面积预算6.758447/6.784987mm²，SRAM2.471065mm²。已测局部时延+0.159069%/+0.094963%；完整832的36层/full-vocab时延与能量尚未重跑，旧45.901/40.991ms只作960参考，不能改标签。新完整命令默认会实际执行208bank；当前不启动新长任务或PPA，不动冻结运行/55设置。
+
+正式process_28nm/DEFAULT_SRAM832_20261109_ZH.md/json与两频WHOLE_CONFIG；intake_sram.py修复当前默认不能套给历史960结果的容量标签，历史重计仍显式960。旧小配对创建时default_changed=false保留，当前默认状态以新接受文件为准。发布看本work/PUBLICATION.json；PR待审未合并，Projects待同步。
+
+---
+
+## 2026-11-09 SRAM832配对验证与对接清单已发布
+
+PR249科学源b8f605ac5f42a577eede66a7c2cb0edf128b2e29，15文件完整远端回读一致；Issue225评论6736452793。832KiB真实208bank，两频四小流程通过；250/500相对960KiB分别慢0.159069%/0.094963%，外存工作量守恒，SRAM宏面积少.380164mm²。当前阶段用户无需再找模块对话确认，进一步FFN驻留减半才转发对接清单。默认仍960KiB，完整token/nativeLPDDR/其他模型/55频率未在本轮回放，无新PT/PPL；PR未合并，Projects待同步。
+
+---
+
+## 2026-11-09 SRAM缩减分工明确，832KiB两频小配对已由宿主确认
+
+Issue225/PR249，rayggxia。用户无需先找其他对话；激活128→96KiB、八Attention48→36KiB均由宿主实现并实减bank240→208，前端144→136/Attention96→72。Qwen3-4B/B1/2K/K128/S64/GU16/Wd32，250三核两层+384head、500两核一层+384head，四case同冻源7a3335833c8f、单进程顺序完成。250原2.205336→2.208844ms(+0.1591%)，500原.996176→0.997122ms(+0.0950%)；不是完整token时间。
+
+四SEAL/SHA、实际容量/端口/边界/排空、核帧/转换/尺度/采样/算术及外存字节/地址摘要配对通过；SRAM读量和bank冲突按实际调度保留。宏面积少.380164mm²；无15%面积口径下的28nm250/500容量预算6.758447/6.784987mm²，未把小流程周期变化外推为完整token。现默认960KiB不自动切换；55nm/其它模型/长上下文/原生LPDDR/完整36层未在本轮验证，无新RTL/PT/PPL。
+
+正式process_28nm/SRAM832_VALIDATION_20261109_ZH.md/json、可选candidate_sram.py；对接清单module_handoff/SRAM_REDUCTION_COORDINATION_ZH_20261109.md。后续CIM驻留32→16槽/内外存归属向FFN确认；Attention只在推广其他配置时补最大活跃数据约定；S0已有数据，不需重跑SRAM PT。发布看本work/PUBLICATION，PR待审未合并，Projects待同步。
+
+---
+
+## 2026-11-09 无15%面积口径与SRAM候选已发布
+
+PR249源c67d9522a8131cb9b6eeb296de812e7d396d55cc，11文件远端完整回读一致，Issue225评论6736016069。28nm250/500面积7.138610/7.165151mm²；832KiB仅完成逻辑审查、未切默认，当前960KiB/240bank保留。无新长时序/EDA/PPL，PR未合并，Projects待同步。
+
+---
+
+## 2026-11-09 用户决定取消15%统一面积预留，SRAM继续缩减审查
+
+Issue225/PR249。28nm当前面积汇总系数1，具名模块成本保留；250/500中心7.138610/7.165151mm²，时间45.900576/40.990565ms、片上15.012937/15.050444mJ不变。55nm原为模块加和，本轮不改。intake_sram.py与派生结果/说明已同步，旧带15%估计留Git历史。
+
+SRAM默认仍960KiB/240bank，未分配0。逻辑候选：激活128→96KiB（完整旧轨迹高水位96KiB）；八组Attention48→36KiB（保留32KiB缓存/2KiB分数/1KiB输出，输出地址移47→34KiB；两28探针实际粗分数16KiB，生命周期无重叠检查通过），合计832KiB，容量计价250面积6.758446mm²。尚未做缩bank时序，不当已验收默认。后续CIM32→16槽可到704KiB，需验证预取供数；跨K状态观测GU76/Wd20，缩80/64另调映射，不能直接按核数砍状态。Qwen Norm每层10752B可考虑双12KiB，普通投影双32KiB先保留。
+
+8KiB权重宏分区可另减外围面积，但原前端交错共享，端口/划区需回放，不能只换价格。正式process_28nm/AREA_SRAM_REVIEW_20261109_ZH.md/json。只取消统一预留并做逻辑审查，无新长时序/EDA/PPL或容量默认改变。发布状态看本work/PUBLICATION.json；PR待审未合并，Projects待同步。
+
+---
+
+## 2026-11-09 28nm SRAM接入已发布
+
+PR249科学源649e65c44fff4c1360d061bdd077776f1473d25b，24文件远端完整内容回读一致；Issue225评论6735776604。真实S0两频价/时序、3回放重计、12原件SHA、4PT整窗账本复现、中央台账check/render已完成。28面积×1、每16B读写增量＋停钟驻留，CIM权重普通SRAM代理不重复计费。现有条件整机中心更新8.209/8.240mm²、15.013/15.050mJ，时间45.901/40.991ms沿原外推，不是新全36层或芯片签核。55nm保持；PR待审未合并，Projects待同步。
+
+---
+
+## 2026-11-09 28nm SRAM真实宏已接入
+
+Issue225/PR249，rayggxia接入，原表征jieruiz。S0真实4KiB/128bit/1RW、TT0.9V25°C，250/500各六窗；12原功耗报告SHA与归档校验、4完整PT读写窗口账本复现、3原集成回放重计通过。普通SRAM不再用55残差迁移价；240宏面积2.851229052mm²，28面积×1。
+
+两频WHOLE_CONFIG已写真实随机读写价格与停钟增量基线，1拍返回/II1保持。whole_model/run_whole/whole_pricing已实际接接口，SRAM从未计列表移除。普通SRAM代理也用于驻留CIM权重每tile一次读；写入/面积/泄漏不重复。未改55nm或冻结任务，无新EDA/长时序回放。
+
+原条件整机估计只更新SRAM后，250/500中心面积8.209/8.240mm²、时间45.901/40.991ms、片上15.013/15.050mJ，总4pJ情景188.208/188.268mJ。仍是小TLM＋36层/完整head外推，500FMA/PV/平台等原宏限制保留，不能写新完整芯片或原生全层结果。正式process_28nm/SRAM_INTAKE_20261109_ZH.md/json与SRAM_CALIBRATION；历史粗估原件不改。
+
+受限1.5MB完整库表JSON保留本机/授权服务器，只公开所需标量、说明和SHA。中央记录sram28-s0-225-20261109沿原run归档，owner不改。发布状态看本次work/PUBLICATION.json，PR未合并；Projects待维护者同步。
+
+---
+
+## 2026-11-09 用户决定：CIM权重接口采用普通SRAM功耗
+
+Issue225/PR249；55nm250主线的CIM权重并行接口直接采用普通SRAM读写事件价格，不再列待补仿真。写入/物理容量面积/泄漏沿原账本，新增每8KiB驻留tile一次等效读，16B为12.0293pJ，跨GU16/Wd32采样复用；保持并行供数时序，无逐采样重读、无额外权重DFF。已计读事件可去重。
+
+225原三seed实际价格函数重放通过：328320帧/168099840读，新增2.022123mJ，片上均值27.228731mJ、总4pJ情景200.393226mJ，时间50.418948ms、面积22.086073mm²不变。原件SHA、时序、带宽和核价格逐项不变；不是新时序/RTL/PT，冻结任务不改。正式250MHz/CIM_SRAM_POLICY_20261109.md/json及helper/pricing.py；245新价格函数已接同接口，健康冻结任务旧价封存后另派生重计，不能假称已经刷新原表。
+
+这是用户选择的架构成本假设，不宣称定制CIM联合PPA。100MHz/28nm本轮不改，CTS/PHY/NoC沿原平台边界。发布状态看本次PUBLICATION.json，未发布前只能称本地；看板待维护者同步。
+
+---
+
+## 2026-11-09 用户决策：55nm以250MHz为主线，剩余收尾已审计
+
+Issue225/PR249。主结果按55nm250；100仅低频参考，28独立，不取消健康任务、不自动改全局CLI或合并。当前3FFN核/960KiB/16KiB返回保持/256FMA，GU16/Wd32、19/35拍，K128/S64；Qwen/Llama已齐。15:53核全批31/36，250已14/18，仅余4个DeepSeek250；32/33/34运行且无新Traceback，35在健康原worker链。
+
+剩余重点：接最新TT250价卡并核GU/NL/FMA边界和近等面积预算；冻结最终算法/TLM/电路合同；CIM权重并行读出/装载/保持与未表征平台给宏成本/敏感性；将数字Softmax+R8/systematic采样PV接当前小SRAM共享池，不能拿旧2.5MiB结果直接用；原任务自然收齐后固定主表。不是缺PRNG/SRAM/DMA/计数器整套数据，也不要求全片逐门签核。独立ADD新55批DC失败但项目已有Attention250ADD，可先核合同复用。
+
+共享FMA已采用实测TT250价，不仍是2pJ；新旧FMA16面积仅约.04%差，不因此推倒全部结果。只改单价先原动作重计；改变II/延迟/合法FMA切片数再重放。当前W8screen总能量优势仅5.35%，CIM特有未知成本要敏感性，不把小中心差当已验证硅片优势。最新联合质量仍在对应模块核查；数据备齐不等于评测完成。
+
+正式250MHz/PRIMARY_READINESS_ZH_20261109.md，来源SHA/状态为本work/AUDIT.json；无新EDA/TLM/GPU、无默认/旧封存更改。本地未全部公开的新价卡只引用索引，不重新发布原件。PR249待审未合并，Projects待维护者同步，发布看本work/PUBLICATION.json。
+
+---
+
+## 2026-11-09：28nm SRAM仍为估计，最小工艺库校准需求已写
+
+Issue225/PR249，核当前250/500 WHOLE_CONFIG及CACTI来源：没有接入真实28nm SRAM宏PPA，严格价仍null；粗估960KiB约1.6735mm²/2.41mJ来自CACTI＋55nm残差迁移。4/2ns服务仍是假设。没有因已有28nm逻辑PPA就宣称SRAM真实。正式process_28nm/SRAM_CHARACTERIZATION_REQUEST_ZH_20261109.md供用户EDA方执行。
+
+最低S0=256×128b/4KiB/1RW，先TT/SS的lib/ds/lef面积/周期/读返回/功耗状态，再对一个S0跑250/500 TT六窗。S1=128×128、S2=512×128先只库提取，S3=256×64作fallback。明确延迟与II、clk-on/off、毛能量与增量/驻留不双计、真实宏不综合成FF、28面积×1、普通1RW不证明改造CIM全并行。宏库本体不上公开仓库；回传小表/原件路径及SHA，新增结果登记中央台账。
+
+文档/现有空价/容量单位来源核验通过，无新EDA/GPU/TLM/数字仿真run，不改55/28默认和旧封存。用户尚未交付的库/结果不写已仿真。当前待执行方回传S0资料；PR249待审未合并，Projects待同步，发布以本work/PUBLICATION.json为准。
+
+---
+
+## 2026-11-09：独立55nm250 Qwen三seed已全部封存
+
+Issue225/PR249，38629485已3/3 COMPLETED0:0；三原件SEAL/SHA、VALIDATION、36层/完整head、2621440QK/层和全部投影/账本验证，新增第三seed已下载。平均50.418948ms、片上25.206607mJ、外存4pJ情景198.371102mJ/token、覆盖22.086073mm²；无新TLM任务/芯片PPA或PPL。正式250MHz/FULL_RESULTS_20261109.md/json，原件project_archives/tlm_energy225_20261108/。旧partial保留历史。245批胶合含动态数制访存成本，不混seed；55默认/冻结源不改，PR未合并，Projects待同步。发布以本work/FINAL_PUBLICATION_20261109.json为准。
+
+---
+
+## 2026-11-09：28nm Qwen3-4B已有可复算条件整机初估
+
+已推送科学提交 ab2c067e0df0d8287b260762daa7a0e55d2a7a6a；31份文件远端完整内容核验一致，Issue225/PR249已同步，PR待审未合并，Projects待维护者同步。
+
+Issue225 / PR249，rayggxia。用户要求大体面积/时间/功耗；保持严格缺价null，另建process_28nm/rough_estimate_20261109。250三核/500两核、GU16/Wd32、B1/2K/K128/S64、960KiB：核心面积中心6.86/6.89mm²，情景5.4–10.2/5.4–11.0；含head45.90/40.99ms，去head39.29/35.29ms。片上9.74/9.79mJ、.212/.239W；外存4pJ/bit下总182.94/183.00mJ、3.99/4.46W，6.6pJ约295.5/295.6mJ。不是板级功率或含PHY/CPU/pad的die面积。
+
+沿v3有限bank/DMA小回放投影36层，新六head1024/1152/2048探针均SEAL，拟合完整词表593×256+128尾。没有新36层native运行/PPL/RTL/PT。公共CACTI短CPU作业38638027已12s完成0:0，28/55同组织4KiB128b1RW300K结果和SHA已收；28原始240bank面积1.3250mm²，跨工艺55校准残差迁移中心1.6735mm²，明确不是28foundry校准。PV时序失败组成代理保留每头128FP32状态，500FMA用28nm250价代理；DMA/FIFO按实测28寄存器外推，向量/CIM/布局预留显式，缺项不暗当零。
+
+22输入SHA/六headSEAL/两层结果SEAL、面积一次、SRAM动作、能量时间单位/外存对账通过。原v3封存/55默认不改，PR待审不合并，Projects待维护者同步。发布状态以本目录PUBLICATION.json为准；没有把本地完成当远端已完成。
+
+---
+
+## 2026-11-09：最新28nm交接已刷新，当前概率路径未变
+
+已核204/198终态资料；此前已用随机FFN/state/codec/scale和SparQ/S12front/gapIsing，本次补500exp及250 code8非线性/W8Wd（整数GU原已注册）。新数字/exp不在当前SC dispatch，不重复收费。两频各13严格Attention卡、两张hold待修条件卡单列；四PV均setup失败，只诊断，不能因用户暂缓hold就视为通过。500优化SC面积.45458028但setup-.009314未替换，仍.564451146；500FMA无合格完整价，交接这一批已终态而非仍运行。
+
+9源JSON SHA、6绑定检查、3项原SEAL及旧/新价格精确复算通过；三BUDGET全等，活动服务合同不变，无新调度/RTL/PT/Slurm/GPU。正式LATEST_INTAKE_20261109_ZH.md/JSON；BINDINGS可用资源刷新，但新增数字整模型未执行、完整PPA仍缺。原v3封存和55默认不改。PR249发布见work/rayggxia/225/process28_latest_intake_20261109/PUBLICATION；未合并，Projects待同步。
+
+---
+
+## 2026-11-09：28nm条件整机TLM已实现并通过三项冻结门禁
+
+用户要求先搭建；复用既有3a7dd5e0679e有限bank/DMA/16KiB信用/预取/状态/回压模型，新增whole_model/run_whole/whole_pricing/verify_whole和两频WHOLE_CONFIG。28核18/34拍、1KiB有限暂存＋state/scale/codec，A单遍分数读取＋gap后端共用32拍加载；四头共享V miss，SparQ单位修正为每Q一次feature、每四头一次norm。所有周期重执行，不按旧总时间缩放。缺28nm SRAM/PV/DMA/向量/500FMA价格保留null，已知组件小计与完整值分开。
+
+正式冻结执行b90c17725f50：250三核2层＋384词条head2.205336ms，首层1.091888ms；500两核1层0.980398ms；同500 SRAM返回延迟2拍0.981804ms，动作/字节守恒，慢0.1434%。三case SEAL、7源/配置SHA、工作量/转换/采样/V miss字节/有限信用/未知成本及双时钟边沿核验通过。完整151936head只全部tile/字节结构检查；实际head384含128尾块。没有运行完整36层或nativeLPDDR，没有新GPU/RTL/PT/工艺仿真，不把条件时间/部分PPA当芯片实测。
+
+截断2层＋head时Norm仍按36层预取导致阻塞，已绑定截断测试真实逻辑深度，完整36语义保持；只终止本人两个本地诊断进程，服务器健康作业不动。v2一次MAC/字节预检误写也保留失败，不计有效结果。正式只认v3封存，旧源和诊断保留。
+
+入口process_28nm/WHOLE_MODEL_ZH.md，代码run_whole.py；结果WHOLE_VALIDATION.json/WHOLE_RESULTS.csv；恢复work/rayggxia/225/process28_whole_20261109的EXECUTION/SOURCE_INDEX。新PPA到齐先更新价卡；周期/端口/状态改变再改宏并重放。55默认不变，PR249待审不合并；发布看PUBLICATION，Projects待同步。
+
+---
+
+## 2026-11-08：28nm已有数据足够先搭组件接合版
+
+用户询问现有28nm数据可否先搭TLM、等待补测确认。已只读消费204/198最新5份JSON，新增process_28nm/prepare_bindings.py与250/500 BINDINGS：FFN18/34拍、250/500服务72/136和36/68ns、同一GU/Wd后端；state/codec/scale、1KiB暂存代理及13/12张Attention合格卡已收。显式A前端＋gap输入Ising，32加载握手不双计，旧ab_both仅参照；不暗用55价格、28面积×1。已补4项CPU集成验证，无新TLM整机/RTL/PT/EDA/GPU任务。
+
+后续可沿成熟bank/DMA/credit/重叠执行器，存储与公共服务先给显式宏，再用PPA替换；不用等全部PT才能搭。当前缺SRAM28组织/2或4ns/价、DMA向量、PV紧凑价与共享FMA新流水绑定，整机值保持null。250可用旧合格FMA16/C4，500仍待合格数字结果；FFN0setupunc与Attention10%period分别标注。未确定最佳核数、未宣称完整28芯片结果，不改55默认和健康冻结任务。正式process_28nm/README_ZH.md；4检查及输入SHA见VALIDATION；发布以本目录PUBLICATION为准，PR249待审不合并，Projects待同步。
+
+---
+
+## 2026-11-08 22:51：独立250MHz完整评估2/3seed已完成
+
+38629485的seed17/503已完整36层＋head并0:0完成，SEAL/VALIDATION/工作量/账本与原字节SHA通过，已归档project_archives/tlm_energy225_20261108/0和1。时间均50.418948ms，片上25.206577/25.206643mJ，外存4pJ情景总198.370253/198.372088mJ，覆盖22.086073mm²。末seed1009已完成36层及finalnorm、head运行，预计CPU墙钟20～60分钟，不承诺。
+
+正式250MHz/FULL_PARTIAL_20261108.md/JSON，仅部分结果、未算三seed最终汇总；不与245不同胶合源混seed。三模型245目前7/36已核，5健康＋3恢复worker运行，暂无新错误。未重提/改冻结源，无新GPU/RTL/PT/PPL。PR249仍draft/open未合并，Projects待同步。
+
+---
+
+## 2026-11-08 用户决定：小前端成本缺口先沿用，不阻塞现有任务
+
+当前FP32→S12/握手尚未独立拆净的增量PPA可以先用宏预算；已完成结果保留，健康任务继续，不因本项重跑PPL/训练/全TLM。以整个实测A作偏大的额外情景（非严格物理上界），100/250MHz面积.131731/.076112mm²，占当前覆盖.396%/.345%；全程工作逻辑压力计入输入读约占整机能量.061%/.115%。全部服务额外串行.7488/.308736ms，按现8/4实例均摊.0936/.077184ms，非集成延时保证。当前已经有前端非零预留，不再叠加整块A。
+
+正式local_integration_A/PROVISIONAL_USE_ZH.md和PROVISIONAL_BUDGET.json，数值路径A仍S12/F4→整数max-gap→U8/P8；冻结较宽前端时序/成本＋S12地址轨迹的组合标签保留。ready=false只表示未整链PPA，不再作为禁止宏级评估的门槛；不宣称B继承A的PPL。没有改默认/冻结源码或重跑健康任务。另有245残差地址执行bug独立修复，不混为成本近似。发布见PROVISIONAL_PUBLICATION，PR249未合并，Projects待同步。
+
+---
+
+## 2026-11-08 Issue225：侧对话A适配补充已隔离复核
+
+已找到根交接local_integration_A，保留原字节并收录。25来源SHA/192查询24576分数、27组旧S12/P8及6912固定激励递推回归通过，新VALIDATION与原回执字节相同；不是RTL/GF64/PPL/PPA。旧后端仅128全有效，当前固定2K/K128适用；通用mask另列，不重做整核。
+
+数值接口/计费合同已明确，但未补四路FP32→S12转换＋握手增量PPA或匹配去重gap后端、集成握手/分窗，全链仍null/ready=false。未改运行源码/默认/冻结任务，不交新EDA/GPU；发布看LOCAL_ADAPTER_PUBLICATION，PR249不合并，Projects待同步。
+
+## 2026-11-08 Issue225：新前端PPA已核，当前PPL对应A
+
+已读取198/199新交接55e06025，公开profile blob及四张价卡单位/STA/读字检查通过。当前完整PPL明确S12/F4先量化→整数max-gap→U8/P8，后续接入依据选A=s12_max_gap，B仅对照；新版A100/250面积.016466/.019028mm²、gross.176562/.302215nJ、65/67拍。旧审计“B仅宏价”已更新为新实测，旧原文保留。
+
+旧ab_both已有S12 scores/max/gap，优先复用其后端并接FP32/S12转换；不得整块加A或扣A。提供方全链replacement_ready=false，净价待去重；本轮仅消费核验和文档，不改runtime/default/冻结作业，无新TLM/PPL/PT。公开及交接见score_front_audit_20261108/LATEST_PPA_PUBLICATION.json；PR249不合并，Projects待同步。
+
+## 2026-11-08 Issue225：Attention分数前端成本审计已整理
+
+用户要求给其他对话的文件已写：module_handoff/attention_score_front_compare_20261108/HANDOFF_ZH.md。关键：S12后整数差转U8只是clip；已有A的SS100独立PPA为.015050059mm²/.166291667nJ/65拍；B仍宏价，比较／减法／专用转换／存储组织／旧准备资源／代理价卡未配对。FP32差→U8可专用融合，不能直接断言需完整FPU或固定面积倍率。四正式文件、13来源SHA及单位校验通过，根同字节镜像；发布见本任务PUBLICATION。
+
+没有改默认/冻结任务/owner源码，没有新TLM/RTL/PT/GPU/PPL；保留S12为参考是建议，非用户已授权切回。Issue225/PR249接续，关联198/199；PR不合并，Projects待维护者同步。
+
+## 2026-11-08 28nm目录已发布
+
+源23807efcfc338d214047b574103a7b033a8bb8a0，10文件逐内容回读一致；Issue225评论6720845666及PR249已同步。PUBLICATION.json记录回执，PR仍draft/open/unmerged，整机TLM未启动、整机值仍null；Projects待维护者同步。
+
+## 2026-11-08 Issue225：建立独立28nm准备目录，未运行完整TLM
+
+用户要求先建对应工艺文件夹。新增architecture_tlm/process_28nm：250MHz已标定FFN/BF16/同步A9组件、500MHz诊断及零uncertainty条件索引、缺项与来源SHA。28HPC+ TT0.9V，面积×1，不套55的.81；28原C19门限缓存18/34拍与55delta_v3隔离。PROCESS_PROFILE整机时间/面积/能量null、full_system_ready/default_enabled均false，无整机运行入口。四来源SHA/三组件PVT/面积/同步A9/无整机值核验通过。
+
+沿Issue225/PR249/task/225-tlm-unified250-20261107，未改55默认或38629485/38631668冻结运行；无新TLM/EDA/GPU/PT。源与公开状态见work/rayggxia/225/process28_setup_20261108/PUBLICATION.json，未有回执前仅本地完成。Projects待维护者同步，PR不合并。
+
+## 2026-11-08 Issue225：28nm250MHz 44功耗窗口消费端复核
+
+用户问新矩阵结果是否需调TLM；确认44窗口为28HPC+ TT0.9V250MHz，非55nm新价格。复核3主归档及1715报告成员SHA通过：FFN8/BF1615/A921窗口，A9 PT hold−.099703仅诊断。合格FFN .373801302mm²、GU/Wd10.1625/9.254021pJ/DOT64，18/34拍、72/136ns，停源等待.6209mW（漏电.279mW）；28面积×1，不套.81。BF16/FMA16/C4 .06245379mm²、continuous3.304622pJ/FMA；mixed QK wrapper及其他系统模块需独立边界。
+
+正式module_refresh_20261107/tsmc28_review_20261108：报告、review.py、CANDIDATE_COMPONENTS/COMPARISON/SOURCE_INDEX/VALIDATION。候选default_enabled=false；固定旧冷层工作量/时长，三FFN核47.34→13.21µJ/少72.10%，3核面积4.122→1.121mm²，不是新28整机TPOT/PPA。TIE功耗未知null、面积已计；500三配置待收。读取最新POWER_RESULTS而非老profile null；不修改owner204资料或55默认/冻结38629485，不新交TLM/EDA/PPL。接28整片时需同时调服务周期、数字价格/等面积、存储和其他模块，不能混工艺宣称全片收益。发布以本任务PUBLICATION为准，PR249待审不合并，Projects待同步。
+
+---
+
+Published source 07bc39de3f75b3a10628862879921bfde8ae91a4;30 explicit files content-readback verified. PR249 open/draft/unmerged;full38629485 pending. Issue225 comment6718333560,PR247 r16 correction6718334719. Projects pending maintainer sync.
+
+## 2026-11-08 Issue225：TT250 v3已接主线，能量账本在声明边界内闭合
+
+用户要求接入最新核并核对整机能量。复用PR249原250主线，3核/960KiB/16KiB入口及有限FIFO、预取、回压、真实bank/DMA不变；FFN delta_pipeline_v3已验收，单核1.374062065mm²（raw×.81一次），GU16/Wd32服务19/35拍、76/140ns，共覆盖22.086073mm²。原SS100配置语义不变，历史失败及旧封存不改。活动gross＋剩余核时idle，本来已正确；没有查出旧FFN gross/idle重复计费。本轮补逐资源26行、两种FFN等价公式、门控归属、外存和总和校验，ENERGY_LEDGER明确CLOSED_WITHIN_DECLARED_MODEL_BOUNDARY、silicon_complete=false。
+
+原生LPDDR冷单层38629484完成：1.195020ms，片上0.550405mJ，4pJ/bit外存4.120609mJ，合计4.671014mJ；不是整token。5件封存＋SEAL逐SHA、矩阵工作量/32维SparQ核对通过，4项新单测＋11项catalog隔离检查通过。原件project_archives/tlm_energy225_20261108/gate，小汇总/账本CSV/输入SHA在work/rayggxia/225/tt250_v3_energy_closure_20261108。完整36层＋head三seed17/503/1009为38629485_[0-2%2]，各1CPU12GiB8h、最多2并发、0GPU，当前运行/待并发；不重复提交或改冻结快照。snapshot SHA c1820e20bc732959bef691b1ba79ced2037dc3b1e8460331dfffebf9753b3187，manifest6d4c40c2b8ff02e1ee7e59c0d5d3d4dffba27c35f7c7255923750e9e5f8166c5。
+
+重要纠正：配置末尾r16是16路FP32归约，不是SparQ维数。SparQ一直32维、单层2621440 QK MAC；此前245/247文档所谓r32→r16筛选维度缺口是误读，本条明确撤销该项，并非改变算法。仍须对齐跨模型试接的实际供数/访存/计费，24pilot不是整模型。原profile job/ICG标签和incremental/frame兼容字段已整理，执行profile精确字节单存；用到的数值输入不变，原远端快照不改。
+
+尚未标定的CIM并行读出/编程接口增量、全NoC/CTS/PHY和FIFO控制泄漏明确列边界；部分向量/格式/PV2为已有代理，外存4/6.6/8pJ每bit是情景，不是原生LPDDR功率实测。v3仅前布局且有库表告警，非流片签核。正式sram1216_20261106/250MHz/ENERGY_CLOSURE_ZH.md。发布与逐字回读见本目录PUBLICATION.json；PR249保留依赖248、待审不合并，Issue225 open，Projects无写接口待维护者同步。完整token结果待收齐，不造最终数据或冒充已合入main。
+
+---
+
 ## 2026-11-07 Issue225：100MHz SRAM缩减默认1088KiB，1056候选较慢
 
 用户授权缩减100 SRAM。已删旧32KiB DMA逻辑区（16KiB返回寄存器/信用不变），Attention8×64→48KiB，100 QK转置scratch48→34KiB、输出至47KiB；两80KiB投影槽、6核GU16/Wd32/CIM256/状态96/640FMA/PV128/r32不变。初轮1216/1184/1056冷层1.207620/1.245500/1.244230ms，直接删除8个前端bank使QKV/O FIFO等待11.64→26.04、7.69→17.46µs，1056慢3.03%。保留负结果，未称无损。
@@ -5,6 +361,44 @@
 默认选compact1088bw：176前端＋96Attention＝272个4KiB/16B1RW/10ns bank，逻辑对象1056KiB＋32KiB分散未分配容量保端口，未恢复DMA缓存；全部宏计价。第二轮同源原1216/1088完整冷层1.207620/1.206150ms，时间持平；覆盖面积34.14593→33.28471mm²，少.86122/2.52%。1056仍显式可选，额外省.21531但较慢。四项新＋八项旧检查通过，动作/帧/外存地址字节/输入SHA一致，队列排空；每轮源/15原件SHA保留。89bb0b9f初轮、c2d860f6第二轮执行源。
 
 CURRENT_100MHZ与host100指向新默认；历史采样/FFN6默认1216未改，100/250分隔，250960/3核和时序失败门禁不改。范围解析136.4606GB/s30ns、冷第0层含embedding无head，36层地址分配；完整head只查tile形状，非原生整token/PPL/新RTL/PT，无新电路台账run。正式module_refresh_20261107/SRAM100_ZH.md与SRAM100_RESULTS.json；PR248交付及依赖PR249同步以PUBLICATION/DEPENDENT_SYNC为准，不自动合并。Projects待同步。
+
+---
+
+## 2026-11-07 Issue225：100/250资源利用率复核（只读）
+
+当前100/250数字池QKV/O有用MAC槽利用率83.0/87.6%、91.8/92.0%，含流水服务占时88.6/93.1%、97.5/97.7%；没有明显大量闲置数字lane。整层37.3/41.5%因FFN等分阶段工作，不可按整层空闲比例砍核。FFN GU/Wd采样利用率100为49.2/89.7%、250为40.2/75.3%；100GU多结果信用等待、250GU多等权重，核池按更忙Wd配置。6/3核合理；旧100 6→5核FFN多22.8µs省约1.30655mm²，旧250 3→2整层慢2.593%省旧价.96948，均有代价，960版2核未测。
+
+100仍有DMA SRAM32KiB未使用，Attention64→48/组可迁移候选128KiB，合计160KiB/1.0765mm²（1216→1056候选），须100真实重排回放；其投影两槽80KiB确实用满，不能套25032KiB。两版激活128区最高地址96KiB、跨K96区最多76活跃组，可试省32+16KiB/.32296mm²，但状态原高水位到96须改槽映射。跨阶段普通Attention暂存与FFN跨K状态可研究共享bank，未验证，定制CIM权重不得当普通SRAM免费混用。
+
+默认与算子不改，无新仿真/PPL/RTL/PT。250960KiB/3核参考20.87233仍非最终die；TT短T setup−.421007时序失败、合格核价null，失败映射仅诊断；全片CTS/互连/CIM/PHY等也未闭合。正式250MHz/RESOURCE_REVIEW_ZH.md/JSON；Issue225/PR249交付见同任务PUBLICATION.json，不把审阅当新测量。建议100补SRAM迁移、250先收合格核价后冻结论文架构基线，后续小优化做消融。
+
+---
+
+## 2026-11-07 Issue225：250MHz SRAM实际缩至960KiB
+
+已读最新204/198交接：TT250短T/C19 setup−0.421007ns仍失败，去掉0.5uncertainty的＋79ps只作条件解释，未接受新核价/未改约束。用户授权执行上轮SRAM候选，本次250默认1216→960KiB：普通QKV/O/head权重两槽80→32KiB、删未使用DMA SRAM32KiB、八组Attention64→48KiB。16KiB寄存器返回保持/信用、3核GU16-Wd32、256FMA及FFN256权重/96状态KiB不变；100代码/默认/健康冻结任务不动。
+
+真实bank由304→240（前端176→144、Attention128→96），16B/1RW/4ns，输出搬至47～48KiB，粗分数旧对象失效后复用，128项V缓存保留。四项布局/数据/冲突/全词表tile检查通过。三版同源同seed17完整冷单层：1216/1088/960分别1.085980/1.086184/1.085700ms，近似持平；动作/帧/外存各类地址与字节一致，实际SRAM读多400B计费，写入一致，队列排空/4ns通过。解析136.4606GB/s30ns，含embedding无head，按36层分配地址；非完整原生token/PPL。
+
+按已折0.81的宏面积，SRAM8.18162→6.45918、旧TT核参考覆盖面积22.59477→20.87233mm²，少1.72245。SRAM动态约.189587mJ基本不变，漏电.65149→.51420µJ；含4pJ/bit外存参考4.701432→4.701292mJ/冷层，主要省面积。250物理4ns未签核、无新RTL/PT/GPU/PPL/台账run。正式250MHz/SRAM_COMPACT_ZH.md/RESULTS.json；源执行a63cf1de246fb59a6da939cacfca3b76940d4f14，九原件SHA及恢复命令在sram_compact250_20261107。原目录名保留，默认compact960；reference1216/compact1088显式可选。PR249交付/回读见PUBLICATION.json，待审未合并，Projects待同步。
+
+---
+
+## 2026-11-07 Issue225：250面积审查及TT短T时序失败标签
+
+用户询问250还有何缩面积、是否漏接改动。本轮只审查/更正证据，不改资源或bank，不新跑TLM/RTL/PPL。确认250投影tile256×K64×BF16=32KiB，仍继承100两槽各80KiB，多留96KiB，按现4KiB宏约0.645918mm²；历史DMA返回SRAM32KiB另可回收约0.215306；Attention64→48KiB/组是未实施候选，另省128KiB/0.861224。合计1216→960KiB、参考22.59477→20.87233mm²仅容量计价，不是已验证设计；删bank必须重排并回放。2核已有对照慢约2.593%、旧核价省0.96948mm²；不优先256→192数字池，理想权重吞吐128→96GB/s。PV算术减半也只约省0.222，状态不能减半。
+
+最新204交接已收TT250短T/C19，setup−0.421007ns未过，失败映射1.498438mm²/核。公共FFN_PROFILE/bindings与250模型/计价从pending改timing_failed，有效core仍null，失败价格不能替代达标价；100有效价不变。按失败映射面积作敏感性3核24.18165，不能据旧核参考许诺最终20.87。建议先闭合FFN加载侧门限路径并优先整理投影缓冲/历史SRAM。正式AREA_AUDIT_ZH.md/JSON位于250目录；当前304bank/1216KiB/3核/default16与所有冻结原件均不动。
+
+归档SHA、单位、guard及100保留价验证见area_opportunities250_20261107的EVIDENCE/VALIDATION；无新电路台账run。上传以PUBLICATION.json为准，PR249待审未合并，Projects待同步。
+
+---
+
+## 2026-11-07 Issue225：250MHz也改为16KiB返回保持
+
+用户决定250版本也降为16KiB。model.make_model / run.py均默认16，24可显式对照；未改100、1216KiB/304bank或32KiB历史DMA SRAM预留。最新有限FIFO/宽前端宿主下，3核完整冷单层1.085992→1.085980ms，2核1.114148→1.114144ms，只有1～3周期差别，视为时间不变。相同seed17和输入SHA，GU/Wd帧、算术/采样、外存字节/地址摘要守恒，队列排空，4ns tick通过。已返回未落地峰9792B，不包含额外在途预留；原有限信用断言始终保留。
+
+寄存器保持面积代理1.188795→0.792530mm²，少0.396265；3/2核覆盖面积22.594773/21.625293mm²。只随容量减少保持面积/等待漏电，不缩捕获动态能量。TT250短T/C19 PPA仍待收，旧C20面积参考不冒充实测。测试为136.4606GB/s/30ns解析外存完整冷第0层（含embedding无head，36层分配），非完整原生LPDDR token。正式250MHz/DMA16_ZH.md及DMA16_RESULTS.json；旧原件/健康作业不动，无新GPU/EDA/PPL/台账run。发布以PUBLICATION.json为准，PR249待审未合并，Projects待同步。
 
 ---
 

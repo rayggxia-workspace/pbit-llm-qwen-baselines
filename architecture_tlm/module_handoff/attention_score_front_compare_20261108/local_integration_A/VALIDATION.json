@@ -1,0 +1,220 @@
+{
+  "status": "PASS",
+  "scope": "CPU_numerical_and_accounting_regression",
+  "queries": 192,
+  "lanes": 24576,
+  "legacy_all_valid_queries": 27,
+  "winner_recurrence_outputs": 6912,
+  "seeds": [
+    17,
+    503,
+    1009
+  ],
+  "recurrence_randomness": "fixed Python stimulus; modulo rank only for equivalence, not a fair hardware RNG model",
+  "RTL_simulated": false,
+  "new_PPA": false,
+  "new_PPL": false,
+  "host_TLM_modified": false,
+  "cards": {
+    "100": {
+      "area55_mm2": 0.0164663604,
+      "work_gross_nJ": 0.17656166666666667,
+      "extra_wait_nJ": 0.0,
+      "idle_nJ": 0.0,
+      "frontend_logic_nJ": 0.17656166666666667,
+      "SRAM_nJ": null,
+      "total_with_SRAM_nJ": null,
+      "no_extra_idle_on_work": true,
+      "ordinary_MAC_and_sampler_not_repriced": true,
+      "nominal_input_score_words": 32,
+      "frontend_kind": "s12_max_gap",
+      "process": "55nm_area_equivalent",
+      "scope": "standalone_frontend_only",
+      "host_default_changed": false,
+      "integrated_sampler_replacement_ready": false,
+      "integrated_area_mm2": null,
+      "integrated_query_nJ": null
+    },
+    "250": {
+      "area55_mm2": 0.019028066399999998,
+      "work_gross_nJ": 0.30221466666666663,
+      "extra_wait_nJ": 0.0,
+      "idle_nJ": 0.0,
+      "frontend_logic_nJ": 0.30221466666666663,
+      "SRAM_nJ": null,
+      "total_with_SRAM_nJ": null,
+      "no_extra_idle_on_work": true,
+      "ordinary_MAC_and_sampler_not_repriced": true,
+      "nominal_input_score_words": 32,
+      "frontend_kind": "s12_max_gap",
+      "process": "55nm_area_equivalent",
+      "scope": "standalone_frontend_only",
+      "host_default_changed": false,
+      "integrated_sampler_replacement_ready": false,
+      "integrated_area_mm2": null,
+      "integrated_query_nJ": null
+    }
+  },
+  "contract": {
+    "frontend_kind": "s12_max_gap",
+    "candidate_count": 128,
+    "input_lanes": 4,
+    "preferred_path": "FP32_to_S12_plus_handshake_then_original_S12_sampler",
+    "preferred_area_formula": "old_sampler_area + measured_converter_handshake_increment",
+    "preferred_energy_formula": "old_sampler_query_energy + measured_converter_handshake_increment",
+    "alternative_path": "standalone_A_then_deduplicated_gap_sampler",
+    "alternative_area_formula": "A_area + gap_backend_area (matching process/PVT/interface)",
+    "alternative_energy_formula": "A_query_energy + matched_backend_energy + uncovered_wait_energy",
+    "cycle_policy": "schedule handshake events; do not sum two complete prepare latencies",
+    "old_sampler_blocks": [
+      "S12_store",
+      "S12_max",
+      "integer_gap_clip",
+      "LUT_load",
+      "P8_store",
+      "RNG",
+      "compare",
+      "arbiter"
+    ],
+    "keep_in_gap_backend": [
+      "LUT_load",
+      "P8_store",
+      "RNG",
+      "compare",
+      "arbiter"
+    ],
+    "remove_from_gap_backend": [
+      "S12_store",
+      "S12_max",
+      "integer_gap_clip"
+    ],
+    "remove_old_proxies": [
+      "wide_score_front_reserve",
+      "old_front_arithmetic_proxy",
+      "superseded_score_read_reserve"
+    ],
+    "input_score_bytes_per_query": 512,
+    "nominal_score_reads16B": 32,
+    "input_write_owner": "QK producer",
+    "mask_reads": "additional physical events if SRAM-backed",
+    "count_frontend_once_per_query": true,
+    "multiply_frontend_by_sample_count": false,
+    "work_gross_already_includes_work_leakage": true,
+    "idle_time_unit": "sum of instance idle times outside accounted work/wait windows",
+    "integrated_sampler_replacement_ready": false,
+    "missing": [
+      "converter_handshake_increment_or_matched_gap_backend_PPA",
+      "integrated_handshake_latency_and_activity",
+      "28nm_A_250_500_price_cards"
+    ],
+    "all_valid_only_old_backend": true,
+    "general_mask_requirements": [
+      "pass mask to arbiter",
+      "choose valid initial winner",
+      "force invalid P8=0",
+      "skip all-masked query"
+    ]
+  },
+  "sources": {
+    "architecture_tlm/attention_score_front_20261108/profile.py": {
+      "bytes": 4808,
+      "sha256": "7115dc375c6d5cff0aac3ec8f698928893d6cb2c843d2532fa4c325561b0d32d"
+    },
+    "architecture_tlm/attention_score_front_20261108/oracle.py": {
+      "bytes": 6171,
+      "sha256": "76eaecf9dc2680a7f5ed4772cb2260c953ebce5d1aa214523e895b5730c87397"
+    },
+    "architecture_tlm/attention_score_front_20261108/front.sv": {
+      "bytes": 9327,
+      "sha256": "5dfff23dd8a553a12666cfd3f7b47be8432ffe907df535591a1a02e8c65a30b3"
+    },
+    "architecture_tlm/attention_score_front_20261108/RESULTS_v3.json": {
+      "bytes": 67607,
+      "sha256": "8b03e9e9a0de6653b55468cbc53cc1a33fc0a6925103b855fd3d71b9754799bf"
+    },
+    "architecture_tlm/attention_score_front_20261108/RESULTS_v5.json": {
+      "bytes": 37274,
+      "sha256": "0a1ecb901a4336e9ff6da2ed5ffb95e1f6928aa3b8c77fd1bc3a6f617bea86ff"
+    },
+    "tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/sampler_gate_hold_20261105/sampler.sv": {
+      "bytes": 5472,
+      "sha256": "479ebcb98a767822831575191a824e7cdf92b9d36a1db028bed5efec84148bff"
+    },
+    "tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/sampler_gate_hold_20261105/sigmoid.vh": {
+      "bytes": 5436,
+      "sha256": "c7dcf59e633e4650954570d1a1984e8ed3875c74036478d886858212db3fe49d"
+    },
+    "tmp/attention-compare-issue198-20261027/architecture_tlm/attention_compare_20261027/sampler_gate_hold_20261105/ac_winner128.sv": {
+      "bytes": 8644,
+      "sha256": "9e8c619492484ef0e2b05783f1af1952d2325c9d3481ccc536d69ca79e1be040"
+    },
+    "architecture_tlm/module_handoff/attention_score_front_compare_20261108/local_integration_A/adapter.py": {
+      "bytes": 4344,
+      "sha256": "ca8df0f71b18207e4f62c93eb820d17bb0c7387704a8ff87a8703eab8107e295"
+    },
+    "architecture_tlm/module_handoff/attention_score_front_compare_20261108/local_integration_A/verify.py": {
+      "bytes": 5708,
+      "sha256": "24cd79649c92bac00171a5b4ea89342ace7d931d5f9b8ba5be490fa41a00ece5"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s17/scores.mem": {
+      "bytes": 73728,
+      "sha256": "8b3371bb1804039303c40d6cd47aedaf2c988276e947b8cfc4ff9c65cd3606bc"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s17/mask.mem": {
+      "bytes": 16384,
+      "sha256": "0ff7baf88fb37a3be626f4c607ee93082c4dca88ddb06cb1ae0fdf595320ec89"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s17/gap0.mem": {
+      "bytes": 24576,
+      "sha256": "38e47c6c6097fc1cb63b21c34fead1f084a483dd83b15c55e5cd168d64ed3f7c"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s17/active0.mem": {
+      "bytes": 16384,
+      "sha256": "31728001f83bdf8d69e37dc582bd818c49f88aca0fb9c3bda983732db3213dd4"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s17/flags0.mem": {
+      "bytes": 128,
+      "sha256": "dedb0afd01da459fdc3899dfa69d4f28e765fe268d4aa6dc455c5db5bce7eafb"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s503/scores.mem": {
+      "bytes": 73728,
+      "sha256": "6217ae776cfddb071ba9537dc1fe684050ddf871f329342a4458d7a5657d5e25"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s503/mask.mem": {
+      "bytes": 16384,
+      "sha256": "618bff6e1cdc80445bdf04d49505824866a6e431683095b813ef163c344e7591"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s503/gap0.mem": {
+      "bytes": 24576,
+      "sha256": "af682b5834c577aa08ddfa40dad3143b460b5886b28c348fb08099dbeb2a2b41"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s503/active0.mem": {
+      "bytes": 16384,
+      "sha256": "6738e2b63ec6d1bd5c7f43cb14e5cf8b696a3e86b45f082ef5f21559c1fa198c"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s503/flags0.mem": {
+      "bytes": 128,
+      "sha256": "7cbad0a70d8cba371d3ef55d64f296a5722a5b1a2bae9dad74a3274dc27f05f5"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s1009/scores.mem": {
+      "bytes": 73728,
+      "sha256": "e0b9817e4a9d2b8d28415fd7219435f5ebed9b97fe9fd39cefe382454d86cdf3"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s1009/mask.mem": {
+      "bytes": 16384,
+      "sha256": "f8314ec2889749dd5b68d75c57f18fda1ee439bd4e46b4963bdb76e2c504a9f0"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s1009/gap0.mem": {
+      "bytes": 24576,
+      "sha256": "2b0bc626c1f5ac2abdda019f42d51a7db447dafcf2296bba2151c2af1ca6fcc6"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s1009/active0.mem": {
+      "bytes": 16384,
+      "sha256": "1eb08710ff3e0f77aaa13c2307289a069d436b782d758e3a6ac92b8fa2f33941"
+    },
+    "architecture_tlm/attention_score_front_20261108/fixtures/s1009/flags0.mem": {
+      "bytes": 128,
+      "sha256": "76175548c4b72b09854f45a2ae7d72018324b8b74a6a7f9f75f8894d1a14dfb4"
+    }
+  }
+}

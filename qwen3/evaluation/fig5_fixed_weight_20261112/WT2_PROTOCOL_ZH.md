@@ -1,5 +1,7 @@
 # 完整 WT2 cached-decode 计分协议
 
+2026-11-12更新：当前默认任务是[历史表5项补缺](historical_gapfill/README_ZH.md)，采用历史独立Philox。本文语料、计分坐标、总NLL、覆盖要求对两版本均适用；下文GF状态与overlay说明只属于保留的新版本备选，不替换历史补缺的Philox/原始权重定义。
+
 本协议供远程执行者复现本项目 Attention-only PPL。它不是固定1024后缀、训练 loss、chat PPL，也不是一次2048 token向量前向后仅换 decode 内核的假评测。
 
 ## 原文与 tokenizer

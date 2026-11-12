@@ -19,7 +19,11 @@ def main():
     p.add_argument('--assets',required=True)
     p.add_argument('--out',required=True)
     p.add_argument('--case',default='parent_bf16')
-    a=p.parse_args();out=Path(a.out).resolve();out.mkdir(parents=True,exist_ok=True)
+    p.add_argument('--allow-new-sweep',action='store_true',help='Explicitly opt in to the superseded K_WH64 sweep; default task is historical_gapfill/')
+    a=p.parse_args()
+    if not a.allow_new_sweep:
+        p.error('This 41-case new-version sweep is not the current task. Use historical_gapfill/run_eval.py to fill only the five missing configurations.')
+    out=Path(a.out).resolve();out.mkdir(parents=True,exist_ok=True)
     plan=json.loads((HERE/'PLAN.json').read_text());cases={c['id']:c for c in plan['cases']}
     case=cases[a.case];assets=json.loads(Path(a.assets).read_text());spec=assets['spec']
     assert spec==json.loads((HERE/'ASSETS.json').read_text())

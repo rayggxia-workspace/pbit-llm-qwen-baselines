@@ -1,3 +1,11 @@
+## 2026-11-12 Issue198：无K筛选完整2048候选分布实验已完成
+
+负责人rayggxia；task/198-attention-compare / PR199，base main。用户要求补齐Fig.4无筛选对照。5601/5602/5603八分片/5604已完成，准确FFN/native BF16，两WT2窗口六层384头，S16—1024七档各128重复；GF64、IID保持、同P8类别、FP32类别四组。最新先FP32 max再gap量化。24独立oracle/2304输出、252旧128/256前缀、模型/数据/结果SHA、采集前后和历史参考logits逐位相等通过；14项类别PV均方误差与解析期望最大差0.960%。
+
+GF S64/S256/S1024 PV NMSE为.079042/.038923/.028758；P8解析平台.025423，归零原始概率质量平均8.813%。不得声称无限采样无偏拟合FP32；不是完整PPL或RTL/PPA。6×8长链及QKV已归档私有；七份摘要随本提交进入PR199，原件保留私有SHA索引。交付：experiment_result_index/attention_distribution_dense_20261112/REPORT_ZH.md。下一步可直接画无筛选Fig.4；无任务待重交。旧结果、PPT、100/250/28硬件默认不变。PR待审未合并，Projects待维护者同步。
+
+---
+
 ## 2026-11-05 Issue198：数字Attention三路径模块交付
 
 负责人rayggxia；task/198-attention-compare，PR199/base main；成果e15cb6f5162d6127b20deaf308bf4502419a101f，12文件远端blob SHA已核验。26个native LPDDR模块配置和零命中R8边界通过，无运行中本轮任务；台账151record/3873case本地check/render通过。只读依赖#236，没有改FFN1728默认。交付入口architecture_tlm/module_handoff/attention_digital_paths_20261105/PROFILE.json，详细数字/范围/未计成本见同目录REPORT_ZH.md。时间为三代表层模块回放，PPA为既有电路标定与代理；未新整机36层或PPL，不称同精度优势。真实分数/地址/冻结依赖/工艺资料保留私有；公开source/result SHA索引可追溯。原私有工作目录继续复用，不需要新开checkout或重跑。PR保持draft/open、未合并，Projects本轮未操作。下一步宿主按adapter.install和mode计费合同接入；质量匹配和接口精确化另列后续。

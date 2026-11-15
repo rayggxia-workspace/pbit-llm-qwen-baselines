@@ -13,3 +13,7 @@
 ## 发布状态
 
 本提交是供PR审阅的图稿快照；不自动合并。实际远端链接以本任务PUBLICATION.json及PR为准。Projects无写接口，待维护者同步。
+
+## 发布阻塞（2026-11-15）
+
+图稿提交 b8c8a6f3 已本地完成，尚未推送。自动审批拒绝向公开个人 fork zenghongjie26-jpg/pbit-llm-qwen-baselines 推送，理由为用户虽要求上传GitHub，但未明确授权该公开个人仓库作为工作图稿发布位置。当前等待用户明确确认目标，不能改用API或其它方式绕过。组织主仓库当前账号只有pull权限。个人fork已建立，尚无本批图稿；PR未创建、Issue/Projects未更新。

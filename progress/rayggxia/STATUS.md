@@ -1,3 +1,9 @@
+## 2026-11-16 Issue98：Qwen3-4B 快速外部 benchmark
+
+按用户要求优先轻量估算，沿冻结 B1/2K、250 MHz、136.46 GB/s LPDDR 计价，以同一个完整 BF16 head 对齐。BitMoD 重跑作者阵列周期，原阵列 W6/W3 为 187–214 / 130–144 ms/token，映射敏感性 256×4 为 54–80 / 39–53 ms/token。Tender 原 64×64 OS、B1 推导为 248–268 ms/token。上述为解析重叠/串行情景，作者原生运行及完整同库 PPA 独立。P-bit 封存项目 TLM 51.13 ms/token。五个情景的两次运行各约 3 秒且 JSON 原字节相同。见 architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/QUICK_BENCHMARK_ZH.md。Issue #98，PR #246，负责人 rayggxia，分支 `task/98-sofa-asic-comparison-20261106` → `main`。本机复算目录 `C:/Users/86134/Documents/a_P_BIT/tmp/qwen-aligned-ext-issue98-20261116`。Projects 暂无本会话可写入口。
+
+---
+
 ## 2026-11-16 Issue98：Qwen3-4B 外部架构对齐协议与 benchmark
 
 用户要求外部架构运行相同 Qwen3-4B，统一 28HPC+ TT 0.9 V／25°C、250 MHz、原生 Ramulator LPDDR5-derived8533。新版固定模型、原生桥和配置散列，生成项目四组及外部资格状态。已实际运行 BitMoD 作者 e445a5f3 的阵列周期模块，覆盖 325 个矩阵项、36层及全词表。未执行外部整机原生 LPDDR、真实权重推理或 28 nm PPA。远程预检 DNS 11001，未提交作业。此轮所有外部整机值为空。PR246 待审。

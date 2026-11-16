@@ -1,6 +1,6 @@
 # 外部架构运行 Qwen3-4B 的对齐协议
 
-本表的比较对象是各架构在共同配置下执行同一份完整 Qwen3-4B 解码事务。目标参数见 [TARGET.json](TARGET.json)，结果见 [BENCHMARK_ZH.md](BENCHMARK_ZH.md)。
+本表的比较对象是各架构在共同配置下执行同一份完整 Qwen3-4B 解码事务。目标参数见 [TARGET.json](TARGET.json)，结果见 [BENCHMARK_ZH.md](BENCHMARK_ZH.md)。快速阶段级估算见 [BitMoD / Tender 快速 benchmark](QUICK_BENCHMARK_ZH.md)。
 
 ## 对齐顺序
 

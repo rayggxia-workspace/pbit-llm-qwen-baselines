@@ -1,3 +1,80 @@
+## 2026-11-16 Issue98：Fig.11 论文方法段与表注
+
+- 本轮在现有片上能量方法文件中补充可直接引用的英文 LaTeX 方法段、8 项引用键和表注，逐项列出作者原报值、公开图读值、Qwen 片上小计、DeepScaleTool 核心折算及本项目完整 TLM。分析将 23% 片上和约 2.5% 含传输结果归于相同设置下的 W8 + K 筛选比较，并说明 BitMoD 的阵列映射可改变时延排序。
+- 工作分支 `task/98-sofa-asic-comparison-20261106`，base `main`，PR #246，更新起点 b9ae4c0c84f70e09aaadbf2d86ec60dc432089cb。本机可从 `tmp/qwen-aligned-ext-issue98-20261116` 复核，主工作树已有修改保留。
+- 已检查引用键与来源表一一对应、LaTeX 转义及括号、6 类片上范围、原估算正文和数值保留。方法文件 SHA-256 `c7fa9cc6bf67ef932a39aa370dd3abf275307d9dbd25f1de12759ff4636aad57`。本轮仅文档，无新模型运行、模型或数据字节、RTL、PPA、DRAM 实验及工作簿改动。待 PR 审阅和论文集成。
+
+## 2026-11-16 Issue98：Fig.11 片上能量及解码覆盖
+
+- 继续 Issue #98 / PR #246，工作分支 `task/98-sofa-asic-comparison-20261106`，PR base `main`，表格更新以 c2bc743d7c47a2170a9b74a300bae71fe8d99cbe 为基础。
+- 18 行保持每篇一行。11 行有数值片上能量，其中 BitMoD/Tender/EVA/M-ANT 为已计价小计，OASIS/Harmonia/Kelle 为局部算子，OPAL/EdgeCIM/SoulMate 保留明示原生边界。本项目完整 TLM 15.27 mJ/token 片上，173.16 DRAM，188.43 计价总量。新增原论文的 `Original decode coverage`，并标注 embedding、LM head、token selection 的公开范围。
+- [复算方法](../../architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/ONCHIP_PRICE_METHOD_ZH.md) 与输入输出在同目录。DeepScaleTool Fig. 3 读图约 65→28 为 0.37×、45→28 为 0.58×，只用于明确分出的 OPAL/Kelle 逻辑代理。
+- 已本地验证：`python price_onchip.py` 与 JSON 数值一致，XLSX 18 行文献链接、能量列和来源覆盖列有效，唯一匹配总能量为项目自身。XLSX SHA-256 `4a28a15796dc2d65635bbddb4c85c2d28126ba135a5bd28462b35804a9dec9fe`。工作目录 `tmp/qwen-aligned-ext-issue98-20261116`。无新推理、训练、RTL、PPA 或外存仿真，无新数据集/模型字节，沿用已有冻结输入。待 PR 审阅和论文版表格排版。
+
+## 2026-11-16 Issue98：Fig.11 一篇一行 benchmark
+
+18 行覆盖本工作与 17 篇论文。片上、外存传输、含外存总能量分别列示；同一论文的其它精度和调度放在同一行。P-bit 15.27/173.16/188.43 mJ/token；外部部分能量小计保留在备注。Excel 与 Markdown 内容已比对，工作表可筛选。Issue #98 / PR #246，负责人 rayggxia，目标 main，工作目录 C:/Users/86134/Documents/a_P_BIT/tmp/qwen-aligned-ext-issue98-20261116，Projects 待同步。
+
+---
+
+## 2026-11-16 Issue98：EVA / M-ANT 快速外部估算
+
+Qwen3-4B B1/2K、250 MHz、共同 LPDDR 与 BF16 全词表 head。EVA 的 252 个线性算子 × 三种位宽与作者原始 FC 叶函数逐项核对，W2/W3/W4 为约 51–62/67–82/83–103 ms/token，外存约 64/78/93 mJ/token。M-ANT 每 4/8 拍发一个 tile 的情景为约 37–56/67–86 ms/token，外存约 91 mJ/token。文档含 EdgeCIM/CELLA 原报范围。无新整机签核或模型质量；见 architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/EVA_MANT_ESTIMATE_ZH.md。负责人 rayggxia，Issue #98 / PR #246，分支 `task/98-sofa-asic-comparison-20261106` → main。工作目录 `C:/Users/86134/Documents/a_P_BIT/tmp/qwen-aligned-ext-issue98-20261116`。Projects 待同步。
+
+---
+
+## 2026-11-16 Issue98：Qwen3-4B 快速外部 benchmark
+
+按用户要求优先轻量估算，沿冻结 B1/2K、250 MHz、136.46 GB/s LPDDR 计价，以同一个完整 BF16 head 对齐。BitMoD 重跑作者阵列周期，原阵列 W6/W3 为 187–214 / 130–144 ms/token，映射敏感性 256×4 为 54–80 / 39–53 ms/token。Tender 原 64×64 OS、B1 推导为 248–268 ms/token。上述为解析重叠/串行情景，作者原生运行及完整同库 PPA 独立。P-bit 封存项目 TLM 51.13 ms/token。五个情景的两次运行各约 3 秒且 JSON 原字节相同。见 architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/QUICK_BENCHMARK_ZH.md。Issue #98，PR #246，负责人 rayggxia，分支 `task/98-sofa-asic-comparison-20261106` → `main`。本机复算目录 `C:/Users/86134/Documents/a_P_BIT/tmp/qwen-aligned-ext-issue98-20261116`。Projects 暂无本会话可写入口。
+
+---
+
+## 2026-11-16 Issue98：Qwen3-4B 外部架构对齐协议与 benchmark
+
+用户要求外部架构运行相同 Qwen3-4B，统一 28HPC+ TT 0.9 V／25°C、250 MHz、原生 Ramulator LPDDR5-derived8533。新版固定模型、原生桥和配置散列，生成项目四组及外部资格状态。已实际运行 BitMoD 作者 e445a5f3 的阵列周期模块，覆盖 325 个矩阵项、36层及全词表。未执行外部整机原生 LPDDR、真实权重推理或 28 nm PPA。远程预检 DNS 11001，未提交作业。此轮所有外部整机值为空。PR246 待审。
+
+---
+
+## 2026-11-16 Issue98：纠正 Harmonia benchmark 证据
+
+Harmonia 未运行其实现、未接入项目 TLM，也没有 Qwen3-4B 推理或正式同条件整机结果。此前用论文公开参数和 Qwen 形状得到的数值为单独的探索性解析估算，现已撤出正式表。当前 Excel 与正文只标本项目四组为项目 TLM，Harmonia 只列作者发表的综合 PPA 和 Llama-3.1-8B-Instruct 分项。历史脚本和输入结果用于追溯，当前说明加归档标签。此次为证据纠正，未新增仿真。PR246 待审。
+
+---
+
+## 2026-11-16 Issue98：Fig.10/11 benchmark 表
+
+新增可筛选 Excel 和 Markdown，正文候选 13 行，来源 36 行。每个指标保留各自模型、数制、阶段、工艺、内存和计价边界。优先 Harmonia、EdgeCIM、Zhou 等人、NVLLM、Sirius、RS-LPU；BitMoD 工件作为可执行下一轮候选。Harmonia 采用此前已核验的近似情景。本轮做原文审计、表格与取舍，未执行模型推理、TLM 或 EDA。PR246 待审。
+
+---
+
+## 2026-11-16 Issue98：外部估算精度及量化对齐
+
+外部 Harmonia 以情景量级展示，双缓冲约 40–50 ms/token，单缓冲约 60 ms/token，整机能量约 80 mJ/token、面积约 4 mm²。三种子冻结账本证实项目权重流量约 5.36 GB/token，Harmonia 两个情景约 2.14 GB/token，4 pJ/bit 下权重字节差约 100 mJ/token。外部主表保留原生量化，采用共同任务和质量门槛。现有 W8 + Key Selection / P-bit 配对用于机制消融。
+
+报告与基准表见 architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/。已复核封存三种子流量、原 JSON/输入/脚本 SHA-256 以及图表口径。此次为既有数据复核和文档更新，未运行新数值评测或 EDA。PR246 待审。看板待同步。
+
+---
+
+## 2026-11-16 Issue98：Harmonia 外部整机重放
+
+负责人 rayggxia，分支 task/98-sofa-asic-comparison-20261106，目标 main，PR246 待审。Qwen3-4B B1/2K、36 层、含 embedding、完整 LM head 和贪心输出。共同 28 nm/0.9 V、250 MHz、136.4606 GB/s、4 pJ/bit。Harmonia-M8/Mix 为 42.74/41.71 ms、81.96/79.44 mJ 每输出 token，4.21 mm² 计价面积。公开参数重放，W4/BFP 的 Qwen 任务质量、同库 RTL 与详细外存时序待补。Harmonia 是独立对照。EdgeCIM GU 仅为既有局部消融。
+
+报告、脚本、输入、JSON 和 15 项原生 benchmark 位于 architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/。Python 3.8 两轮校验原件 SHA、MAC、全部词表、GQA、能量、带宽敏感性，JSON 逐字一致。无新数值推理、布局布线或实测。进度与 SHA 见同任务 HANDOFF。看板待同步。
+
+---
+
+## 2026-11-06 Issue98：SOFA与八项ASIC比较专题
+
+负责人rayggxia；分支task/98-sofa-asic-comparison-20261106，PR base main@8cd4fba009598184bce4f1c806f038299b011ea0。独立最小目录tmp/sofa-asic-issue98-20261106。
+
+用户要求整理并上传SOFA比较方式和相关ASIC，沿用architecture_tlm/benchmark_inventory_20261029目录命名；本次只新增SOFA_ASIC_COMPARISON_ZH.md，不改PR213作者原文件或分支。文档分开SOFA原文、对手TableII转录、算术推导、NR与建议；包含20组合、137GOP/128乘法器/1GHz的FACT复算、core/interface/DRAM边界、八篇decode协议、SpAtten-e2e与Energon整机范围。保留FACT/DTATrans全文未核，以及DOTA支持decoder但生成协议待核；ELSA表值以用户v1PDF522ms为准，记录HTML252ms差异。
+
+本轮仅文档，模型revision/语料seed/训练推理参数不适用；无新模型/PPL/TLM/RTL/EDA或仿真台账run。验证和文件SHA见work/rayggxia/98/sofa_asic_20261106/VALIDATION.json，执行交接见HANDOFF.md。文献来源核实不等于外部实验复现，不改变质量阈值/默认。
+
+正文已上传并逐内容/Git blob回读通过，科学提交68ccc135fea89ab6b8ba5bcc427877fce762972b；PR246 ready/open待审、未合并。21项检查与git diff --cached --check通过。详细回执见同目录PUBLICATION.json和Issue98。Issue保持open，当前GitHub连接器未提供Projects接口，看板待维护者同步。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

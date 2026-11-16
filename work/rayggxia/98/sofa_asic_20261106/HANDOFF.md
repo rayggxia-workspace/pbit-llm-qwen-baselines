@@ -1,3 +1,16 @@
+## 2026-11-16 Issue98：Fig.10/11 benchmark 表
+
+新增可筛选 Excel 和 Markdown，正文候选 13 行，来源 36 行。每个指标保留各自模型、数制、阶段、工艺、内存和计价边界。优先 Harmonia、EdgeCIM、Zhou 等人、NVLLM、Sirius、RS-LPU；BitMoD 工件作为可执行下一轮候选。Harmonia 采用此前已核验的近似情景。本轮做原文审计、表格与取舍，未执行模型推理、TLM 或 EDA。PR246 待审。
+
+文件路径 architecture_tlm/benchmark_inventory_20261029/LLM_HARDWARE_BENCHMARK_20261116.{md,xlsx}。核验主表与来源页的独立筛选表、Times New Roman、OOXML 文件和两页预览。文件 SHA-256：
+
+- ba2439e3c506706651d7774ece359649e6968d6f06714fc14ebbd9d1dad94cf4 LLM_HARDWARE_BENCHMARK_20261116.md
+- d170e6aaad8f965ab70785684a23b7cf45e6e73b750c49cd5f8a484b0b28cdb9 LLM_HARDWARE_BENCHMARK_20261116.xlsx
+
+原始字节和小数边界见文档及各行来源。当前主表的 EdgeCIM Qwen3-4B 数值仍用原作者 Fig.12 定位，后续按同模型场景复跑。看板待同步。
+
+---
+
 ## 2026-11-16 Harmonia 精度展示与权重流量复核
 
 沿 Issue98、PR246，基于 da0cbb8d16eab453c3d0bf9e0d18fcf0531df11c。外部 Harmonia 以情景量级展示，双缓冲约 40–50 ms/token，单缓冲约 60 ms/token，整机能量约 80 mJ/token、面积约 4 mm²。三种子冻结账本证实项目权重流量约 5.36 GB/token，Harmonia 两个情景约 2.14 GB/token，4 pJ/bit 下权重字节差约 100 mJ/token。外部主表保留原生量化，采用共同任务和质量门槛。现有 W8 + Key Selection / P-bit 配对用于机制消融。

@@ -1,3 +1,15 @@
+## 2026-11-16 Harmonia 精度展示与权重流量复核
+
+沿 Issue98、PR246，基于 da0cbb8d16eab453c3d0bf9e0d18fcf0531df11c。外部 Harmonia 以情景量级展示，双缓冲约 40–50 ms/token，单缓冲约 60 ms/token，整机能量约 80 mJ/token、面积约 4 mm²。三种子冻结账本证实项目权重流量约 5.36 GB/token，Harmonia 两个情景约 2.14 GB/token，4 pJ/bit 下权重字节差约 100 mJ/token。外部主表保留原生量化，采用共同任务和质量门槛。现有 W8 + Key Selection / P-bit 配对用于机制消融。
+
+本次两个科研文件：
+- architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/REPORT_ZH.md SHA-256 da8b57f9b1e9fdb5c6861e8f5b809315069aa530830b1d203405d877c71e25e5
+- architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/BENCHMARKS_ZH.md SHA-256 e56d8e50fb787b17457f5108f47e39b3502eff7d2dc1feb6704a6563e5a5012a
+
+验证采用已有 RESULT.json 三种子 memory.by_kind、封存项目摘要以及外部 RESULTS.json 的八个线性投影和内存事务。读写能量按 32 pJ/B 复算，结果代码/输入/JSON 的原 SHA-256 匹配。权重数值精度和应用质量须在未来的正式对照测定。无新推理、布局或芯片数据。
+
+---
+
 ## 2026-11-16 Qwen3-4B 同条件整机重放
 
 沿 Issue98 / PR246，父提交 588b7f76a1d002c7a04bda01b692bfda80b305f4，分支 task/98-sofa-asic-comparison-20261106 → main，负责人 rayggxia。主比较使用冻结的 PR249 Qwen 原生 LPDDR 数据。算法数值本次不跑，模型形状与工作量取已封存版本。外部证据锚为 Harmonia v3 Table I、§IV、§V-D。

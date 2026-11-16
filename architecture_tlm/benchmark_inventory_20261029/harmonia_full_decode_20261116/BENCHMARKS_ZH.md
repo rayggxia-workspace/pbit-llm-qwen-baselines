@@ -22,6 +22,7 @@
 
 ## 图表采用口径
 
-- **同条件主比较**可用 Harmonia 重建、项目四行消融及未来的 EdgeCIM 重建。Harmonia 标明 `Reconstructed, W4/BFP; Qwen3-4B quality unverified`。项目四方案保留 BF16 Dense 在内，外存与片上按能量分开列。用相同质量阈值、相同计时窗口和经过校准的共同后端后再给架构优势倍率。
+- **整机主表**保留对手原生精度和 KV 策略，固定同一模型来源、任务、解码窗口、硬件比较条件和质量门槛。Harmonia 用约数或情景范围，标明 `Reconstructed, W4/BFP; Qwen3-4B quality unverified`，另列权重及 KV 事务。质量和详细后端对齐后再给整机倍率。
+- **机制消融**保留 BF16 Dense、W8 Dense、W8 + Key Selection、P-bit 四行。若加外部硬件同数制消融，选择双方可支持的存储格式、量化张量和 KV 协议，给转换与缓存重定价。 [M-ANT 的质量对齐先例](https://arxiv.org/html/2502.18755v1#S7.SS1)
 - **原生工作点表**先选 EdgeCIM 同模型、OPAL 同会议、SoulMate/CELLA 或 ReRAM-on-Logic 实测。注明模型、B、已有和生成 token、精度、芯片／外存计价边界。端点只到 Attention 的 Salca 放入 P-Attention 分项表。AccelCIM 的 216.552 ms 是 TTFT，适用于 prefill。
 - **下一个重建**先选 EdgeCIM，正式取得共享或 Qwen 专用配置的每项 PPA 和全词表头路径。拿不到 CIM 宏的 28 nm 数据时，可同时做 Tender 作为纯数字外部对照，保留各自的资源和面积。 

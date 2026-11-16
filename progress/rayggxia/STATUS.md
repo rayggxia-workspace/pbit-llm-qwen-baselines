@@ -1,3 +1,11 @@
+## 2026-11-16 Issue98：外部估算精度及量化对齐
+
+外部 Harmonia 以情景量级展示，双缓冲约 40–50 ms/token，单缓冲约 60 ms/token，整机能量约 80 mJ/token、面积约 4 mm²。三种子冻结账本证实项目权重流量约 5.36 GB/token，Harmonia 两个情景约 2.14 GB/token，4 pJ/bit 下权重字节差约 100 mJ/token。外部主表保留原生量化，采用共同任务和质量门槛。现有 W8 + Key Selection / P-bit 配对用于机制消融。
+
+报告与基准表见 architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/。已复核封存三种子流量、原 JSON/输入/脚本 SHA-256 以及图表口径。此次为既有数据复核和文档更新，未运行新数值评测或 EDA。PR246 待审。看板待同步。
+
+---
+
 ## 2026-11-16 Issue98：Harmonia 外部整机重放
 
 负责人 rayggxia，分支 task/98-sofa-asic-comparison-20261106，目标 main，PR246 待审。Qwen3-4B B1/2K、36 层、含 embedding、完整 LM head 和贪心输出。共同 28 nm/0.9 V、250 MHz、136.4606 GB/s、4 pJ/bit。Harmonia-M8/Mix 为 42.74/41.71 ms、81.96/79.44 mJ 每输出 token，4.21 mm² 计价面积。公开参数重放，W4/BFP 的 Qwen 任务质量、同库 RTL 与详细外存时序待补。Harmonia 是独立对照。EdgeCIM GU 仅为既有局部消融。

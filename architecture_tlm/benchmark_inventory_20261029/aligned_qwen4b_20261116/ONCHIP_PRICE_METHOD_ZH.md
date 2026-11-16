@@ -1,5 +1,61 @@
 # Fig.11 片上能量估算与覆盖口径
 
+
+## 论文正文与表注
+
+下方采用 LaTeX，引文键可与论文现有参考文献库合并。正文适用于 Fig. 11 对应的外部对比表。
+
+### Manuscript paragraph
+
+```latex
+\paragraph{Cross-architecture estimates.}
+Following prior comparisons based on published accelerator configurations~\cite{wang2024sofa,chen2025hsa}, we map one Qwen3-4B decode step at batch size one with 2,048 tokens in the KV cache to selected architectures. We use published mappings or released simulators, retain each evaluated weight and KV-cache precision, and use a common full-vocabulary BF16 output projection and token-selection stage where these stages are modeled. The common timing scenario assumes 250\,MHz and 80\% of the 136.46\,GB/s peak LPDDR bandwidth. We report per-operator overlap and serial cases for computation and transfers~\cite{bazzi2026edgecim}. We estimate on-chip energy as $\sum_j n_j e_j$, where $n_j$ is the modeled count of MACs, array service cycles, or SRAM accesses and $e_j$ is the corresponding component energy cost~\cite{wu2019accelergy,li2025h2llm}. Following cross-node comparisons such as Oltron~\cite{xue2024oltron}, we apply rounded DeepScaleTool switching-energy ratios only to separately identifiable digital logic (0.37 for 65-to-28\,nm and 0.58 for 45-to-28\,nm)~\cite{sarangi2021deepscale}. We estimate DRAM transfer energy separately using 4\,pJ per transferred bit~\cite{chen2025hsa,quinn2025iks}. Table~\ref{tab:arch-benchmark} states the source and component coverage of each estimate.
+```
+
+### Table note
+
+```latex
+\emph{Author-reported} values retain the original workload and hardware settings. Values read from plots are marked as approximate. \emph{Estimated on-chip subtotal} covers only the listed components under the common Qwen3-4B workload. \emph{Technology-scaled core estimate} covers only the specified digital logic after workload and process scaling. \emph{This work (TLM)} covers the full modeled decode from embedding through output-token selection. A dash denotes an unavailable value. Undisclosed stages are marked separately. DRAM energy covers model-data transfers. Background and refresh energy are outside this accounting boundary. Total energy is shown where the on-chip and DRAM estimates cover the same full decode step.
+```
+
+### Citation keys
+
+| Suggested key | Source and use |
+|---|---|
+| `wang2024sofa` | Huizheng Wang et al., *SOFA: A Compute-Memory Optimized Sparsity Accelerator via Cross-Stage Coordinated Tiling*, MICRO 2024. §V-D uses published hardware parameters to estimate latency for the same 137 GOP Llama-7B attention workload. [Paper §V-D](https://arxiv.org/html/2407.10416v1#S5.SS4) · [DOI](https://doi.org/10.1109/MICRO61859.2024.00093) |
+| `chen2025hsa` | Chun-Ting Chen et al., *Hybrid Systolic Array Accelerator with Optimized Dataflow for Edge Large Language Model Inference*, ISLPED 2025. Table I identifies post-layout, estimated, and technology-scaled results. Table II uses 32 pJ/byte for its DDR5 scenario, equivalent to 4 pJ/bit. [Paper §V](https://arxiv.org/html/2507.09010v1#S5) |
+| `bazzi2026edgecim` | Jinane Bazzi et al., *EdgeCIM: A Hardware–Software Co-Design for CIM-Based Acceleration of Small Language Models*, 2026. Eqs. (1)–(3) relate compute and memory time for serial and overlapped tile schedules. [Paper §III-C](https://arxiv.org/html/2604.11512v2#S3.SS3) |
+| `wu2019accelergy` | Yannan Nellie Wu, Joel S. Emer, and Vivienne Sze, *Accelergy: An Architecture-Level Energy Estimation Methodology for Accelerator Designs*, ICCAD 2019. Uses runtime action counts and per-action component energies. [Paper](https://d1qx31qr3h6wln.cloudfront.net/publications/ICCAD_2019_Accelergy.pdf) · [DOI](https://doi.org/10.1109/ICCAD45719.2019.8942149) |
+| `li2025h2llm` | Cong Li et al., *H²-LLM: Hardware-Dataflow Co-Exploration for Heterogeneous Hybrid-Bonding-based Low-Batch LLM Inference*, ISCA 2025. §7.1 uses distinct MAC, SRAM, and memory I/O costs sourced from synthesis, compilers, and prior reports. [Paper §7.1](https://chenzhangsjtu.github.io/files/2025-H2_LLM_ISCA25.pdf#page=10) |
+| `xue2024oltron` | Chenhao Xue et al., *Oltron: Software-Hardware Co-design for Outlier-Aware Quantization of LLMs with Inter-/Intra-Layer Adaptation*, DAC 2024. §5.1 uses DeepScaleTool in the comparison with OliVe and OLAccel. [Paper §5.1](https://chenzhangsjtu.github.io/files/2024-DAC.pdf#page=5) · [DOI](https://doi.org/10.1145/3649329.3656221) |
+| `sarangi2021deepscale` | Satyabrata Sarangi and Bevan Baas, *DeepScaleTool: A Tool for the Accurate Estimation of Technology Scaling in the Deep-Submicron Era*, ISCAS 2021. Fig. 3 is the source of the approximate switching-energy ratios used here. [Paper Fig. 3](https://vcl.ece.ucdavis.edu/pubs/2021.05.ISCAS.DeepScale/2021.05.ISCAS.DeepScale.pdf#page=3) |
+| `quinn2025iks` | Derrick Quinn et al., *Accelerating Retrieval-Augmented Generation*, ASPLOS 2025. §6.1 uses 4 pJ/bit as a reference LPDDR cost for retrieval and describes scaling to 16 nm. [Paper §6.1](https://arxiv.org/html/2412.15246v1#S6.SS1) |
+
+LPDDR 参数引用 IKS §6.1。它对 LPDDR 采用过相同的 4 pJ/bit 参考值，应用是 RAG 检索，并另述了向 16 nm 的换算。HSA 与 IKS 提供单位计价的先例。本项目的 4 pJ/bit 属于固定传输能耗假设，文中可写成 *assumed DRAM transfer energy*。 [IKS，ASPLOS 2025 §6.1](https://arxiv.org/html/2412.15246v1#S6.SS1)
+
+### 现有表中片上能量的来源标记
+
+单位为 mJ/token。标记对应具体数值。同一行的时延、面积和能量可能采用不同来源或不同范围。
+
+| 表注标记 | 适用片上能量 | 覆盖 |
+|---|---|---|
+| This work (TLM) | P-bit **15.27**，同配置数字控制在同一行备注 | Qwen3-4B 完整建模 decode。 |
+| Author-reported | SoulMate **0.0271** | 原报 Llama-3.2-1B 片上 decode 能量。 |
+| Author-reported, plot read | EdgeCIM **约 18**；OPAL **约 1,900** | EdgeCIM 为原报 65 nm、Qwen3-4B INT4 的片上估算，片上口径按版本间同模型数值交叉判断。OPAL 为原报 65 nm、Llama2-70B 的 core 和片上存储（含漏电）。 |
+| Estimated on-chip subtotal | BitMoD W3 **31.34**（另一计价 24.25）；Tender W4 **8.34**；EVA W2 **58.15**（串行 FC 估算约 70.88）；M-ANT W4A8KV4 **7.02** | 统一 Qwen3-4B 工作量下的已计模块小计，包含共有 BF16 词表头。未计模块因架构而异，详见逐篇说明。 |
+| Estimated on-chip subtotal | OASIS **约 12**；Harmonia **约 1.18** | 统一 Qwen3-4B 工作量。OASIS 只计线性 GEMV，Harmonia 只计线性和 QK/PV 峰值算术代理。 |
+| Technology-scaled core estimate | Kelle **约 1.13**；OPAL **约 12.4**（备注） | 统一 Qwen3-4B 工作量下的局部估算。Kelle 折算 INT8 线性 RSA；OPAL 折算计算核心。SRAM、eDRAM、漏电与外存按各自边界处理。 |
+
+其余外部行在片上能量栏留空。论文表中使用上下标时可令同一行的原报面积、重估时延和片上小计各自带标记。嵌入、词表投影与输出选择是否有计价，以逐项公开证据为准。
+
+### 比较的合理性
+
+- **适用的结论。** 工艺折算、模块事件计价及在共同工作量下解析重估都有公开先例。外部表适合展示各设计的量级和覆盖范围。主图的节能结论由同一套 TLM 和存储配置下的本项目数字对照支撑。对 W8 + K 筛选，片上能量从 19.81 降至 15.27 mJ/token（约 **23%**），计入外存传输的模型总量从 193.17 降至 188.43 mJ/token（约 **2.5%**）。 [本项目封存 TLM](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/01a2fb1d13018d381e012630ea1be442e85bdd26/architecture_tlm/process_28nm/results_20261111/REPORT_ZH.md)
+- **调度与活动会改变排名。** BitMoD W3 在同为 1,024 PE 的两个排列下，从 64×16 的 **130–144 ms/token** 变为 256×4 的 **39–53 ms/token**。相对本项目的 51.13 ms/token，排序随映射和重叠假设改变。其两种片上计价约 24–31 mJ/token，反映两种事件价格假设。Tender 的峰值等效 MAC 单价没有完整重建 B1 空闲阵列、FIFO 和静态成本。片上小计仅给出已计模块的量级，误差方向取决于利用率和所用单价。 [共同设定快估](QUICK_BENCHMARK_ZH.md) · [Tender Table V](https://arxiv.org/html/2406.12930v1#S5.SS3)
+- **等面积、等质量和同库 PPA 需要各自证据。** 外部场景统一工作量和名义时钟/带宽，保留不同的权重和 KV 精度、PE 布局及片上存储条件。外部计价映射使用 Qwen 张量形状与事务量，无对应的新 Qwen 检查点或质量评测。即便两个设计都标为 28 nm，仍可能有不同 PDK、电压及工艺角。4 pJ/bit 计算传输部分，背景/刷新及板级分项没有统一计价。跨工作量、跨工艺的局部值宜按项标注，正文中的倍数只用于相同覆盖和控制条件的结果。
+
+## 估算细节
+
 同条件形状为 Qwen3-4B、batch 1、已缓存 2,048 个 token、36 层。每输出一个 token，decoder 线性层有 3.633316 G MAC，QK 与 PV 合计 0.603980 G MAC。表中外部快估用共有的 BF16 全词表 head（输入输出及已计控制的片上代价 2.5983 mJ），各方法保留自己的权重和 KV 位宽；OASIS、Harmonia 和 Kelle 的局部数字保留各自列明的算子范围。LPDDR 136.46 GB/s、80% 有效带宽用于共同时间场景。外存一列是访问字节数乘 8 和 4 pJ/bit，未计单独待机/背景，也不代表板级能量。各版本的时延与读写边界另见同目录的快估。 [工作负载与快估](QUICK_BENCHMARK_ZH.md) · [EVA 与 M-ANT 工作负载](EVA_MANT_ESTIMATE_ZH.md)
 
 ## 能量单位与工艺

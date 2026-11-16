@@ -1,3 +1,9 @@
+## 2026-11-16 Issue98：Fig.11 论文方法段与表注
+
+- 本轮在现有片上能量方法文件中补充可直接引用的英文 LaTeX 方法段、8 项引用键和表注，逐项列出作者原报值、公开图读值、Qwen 片上小计、DeepScaleTool 核心折算及本项目完整 TLM。分析将 23% 片上和约 2.5% 含传输结果归于相同设置下的 W8 + K 筛选比较，并说明 BitMoD 的阵列映射可改变时延排序。
+- 工作分支 `task/98-sofa-asic-comparison-20261106`，base `main`，PR #246，更新起点 b9ae4c0c84f70e09aaadbf2d86ec60dc432089cb。本机可从 `tmp/qwen-aligned-ext-issue98-20261116` 复核，主工作树已有修改保留。
+- 已检查引用键与来源表一一对应、LaTeX 转义及括号、6 类片上范围、原估算正文和数值保留。方法文件 SHA-256 `c7fa9cc6bf67ef932a39aa370dd3abf275307d9dbd25f1de12759ff4636aad57`。本轮仅文档，无新模型运行、模型或数据字节、RTL、PPA、DRAM 实验及工作簿改动。待 PR 审阅和论文集成。
+
 ## 2026-11-16 Issue98：Fig.11 片上能量及解码覆盖
 
 - 继续 Issue #98 / PR #246，工作分支 `task/98-sofa-asic-comparison-20261106`，PR base `main`，表格更新以 c2bc743d7c47a2170a9b74a300bae71fe8d99cbe 为基础。

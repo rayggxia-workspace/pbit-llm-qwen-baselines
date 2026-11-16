@@ -1,3 +1,15 @@
+## 2026-11-16 Issue98：EVA / M-ANT 快速外部估算
+
+Qwen3-4B B1/2K、250 MHz、共同 LPDDR 与 BF16 全词表 head。EVA 的 252 个线性算子 × 三种位宽与作者原始 FC 叶函数逐项核对，W2/W3/W4 为约 51–62/67–82/83–103 ms/token，外存约 64/78/93 mJ/token。M-ANT 每 4/8 拍发一个 tile 的情景为约 37–56/67–86 ms/token，外存约 91 mJ/token。文档含 EdgeCIM/CELLA 原报范围。无新整机签核或模型质量；见 architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/EVA_MANT_ESTIMATE_ZH.md。负责人 rayggxia，Issue #98 / PR #246，分支 `task/98-sofa-asic-comparison-20261106` → main。工作目录 `C:/Users/86134/Documents/a_P_BIT/tmp/qwen-aligned-ext-issue98-20261116`。Projects 待同步。
+
+两次运行 JSON 原字节一致；共 7 情景，以相同 argv、Windows CPU/Python 3.8.1 从冻结模型和封存摘要复算。原作者 EVA FC 取 blob 指定的 `_run_decode` 与 IS helper 逐项验证 756 项，核对周期、外存读写位数、相同带宽时的重叠公式。原始权重/数据集未加载。可复算命令见报告。SHA-256：
+
+- 2c359c61b753b98091daa622ebcf4aeea02fb2a934140682eb148cf02e24e203 estimate_eva_mant.py
+- 7a1eb5e278328c1e8940cc2e64508efd9b2b6481bb0eefe6dc6dbe406e0f7ff5 EVA_MANT_ESTIMATE.json
+- 94da9811e20a68f9673b5e4fd73f34909a3eafeec4b6929fee2ae8742efc378e EVA_MANT_ESTIMATE_ZH.md
+
+---
+
 ## 2026-11-16 Issue98：Qwen3-4B 快速外部 benchmark
 
 按用户要求优先轻量估算，沿冻结 B1/2K、250 MHz、136.46 GB/s LPDDR 计价，以同一个完整 BF16 head 对齐。BitMoD 重跑作者阵列周期，原阵列 W6/W3 为 187–214 / 130–144 ms/token，映射敏感性 256×4 为 54–80 / 39–53 ms/token。Tender 原 64×64 OS、B1 推导为 248–268 ms/token。上述为解析重叠/串行情景，作者原生运行及完整同库 PPA 独立。P-bit 封存项目 TLM 51.13 ms/token。五个情景的两次运行各约 3 秒且 JSON 原字节相同。见 architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/QUICK_BENCHMARK_ZH.md。Issue #98，PR #246，负责人 rayggxia，分支 `task/98-sofa-asic-comparison-20261106` → `main`。本机复算目录 `C:/Users/86134/Documents/a_P_BIT/tmp/qwen-aligned-ext-issue98-20261116`。Projects 暂无本会话可写入口。

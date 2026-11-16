@@ -1,3 +1,10 @@
+## 2026-11-16 Issue98：Fig.11 片上能量及解码覆盖
+
+- 继续 Issue #98 / PR #246，工作分支 `task/98-sofa-asic-comparison-20261106`，PR base `main`，表格更新以 c2bc743d7c47a2170a9b74a300bae71fe8d99cbe 为基础。
+- 18 行保持每篇一行。11 行有数值片上能量，其中 BitMoD/Tender/EVA/M-ANT 为已计价小计，OASIS/Harmonia/Kelle 为局部算子，OPAL/EdgeCIM/SoulMate 保留明示原生边界。本项目完整 TLM 15.27 mJ/token 片上，173.16 DRAM，188.43 计价总量。新增原论文的 `Original decode coverage`，并标注 embedding、LM head、token selection 的公开范围。
+- [复算方法](../../../../architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/ONCHIP_PRICE_METHOD_ZH.md) 与输入输出在同目录。DeepScaleTool Fig. 3 读图约 65→28 为 0.37×、45→28 为 0.58×，只用于明确分出的 OPAL/Kelle 逻辑代理。
+- 已本地验证：`python price_onchip.py` 与 JSON 数值一致，XLSX 18 行文献链接、能量列和来源覆盖列有效，唯一匹配总能量为项目自身。XLSX SHA-256 `4a28a15796dc2d65635bbddb4c85c2d28126ba135a5bd28462b35804a9dec9fe`。工作目录 `tmp/qwen-aligned-ext-issue98-20261116`。无新推理、训练、RTL、PPA 或外存仿真，无新数据集/模型字节，沿用已有冻结输入。待 PR 审阅和论文版表格排版。
+
 ## 2026-11-16 Issue98：Fig.11 一篇一行 benchmark
 
 18 行覆盖本工作与 17 篇论文。片上、外存传输、含外存总能量分别列示；同一论文的其它精度和调度放在同一行。P-bit 15.27/173.16/188.43 mJ/token；外部部分能量小计保留在备注。Excel 与 Markdown 内容已比对，工作表可筛选。Issue #98 / PR #246，负责人 rayggxia，目标 main，工作目录 C:/Users/86134/Documents/a_P_BIT/tmp/qwen-aligned-ext-issue98-20261116，Projects 待同步。

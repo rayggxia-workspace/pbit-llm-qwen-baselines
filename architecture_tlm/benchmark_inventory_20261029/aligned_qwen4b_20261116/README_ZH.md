@@ -40,3 +40,5 @@ python architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/bui
 - [结果表生成器](build_benchmark.py) 核对项目结果 SHA。后续可加 `--external-result <run.json>`，导入经验证的完整外部执行和 28 nm PPA。它核对配置、阶段、250 MHz 与原生 DRAM 证据，按实际读写字节计算含外存能量。
 - 完成记录包含 `candidate`、`scope=complete_decode`、`run_status=completed`、`conditions`、`executed_stages`、`clock_validated`，和三份 `evidence` 文件 `runtime, dram, ppa`（每份 `path, sha256`）。`metrics` 为 `time_ms, core_mJ, area_mm2, dram_read_bytes, dram_write_bytes`。
 - 当前外部各工程覆盖范围见 [对齐 benchmark](BENCHMARK_ZH.md)。真实权重路径及质量实验独立于形状工作量。此轮未生成外部整机估算值。
+
+能量补充版为 [片上能量估算、DeepScaleTool 工艺折算及覆盖](ONCHIP_PRICE_METHOD_ZH.md)。[单行 benchmark 表](FIG11_LLM_BENCHMARK_ZH.md) 同行标明片上范围和原文解码覆盖；[数值](ONCHIP_PRICE_ESTIMATE.json) 可用 `python price_onchip.py ONCHIP_PRICE_ESTIMATE.json` 复算。

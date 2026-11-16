@@ -1,3 +1,20 @@
+## 2026-11-16 Issue98：Qwen3-4B 外部架构对齐协议与 benchmark
+
+用户要求外部架构运行相同 Qwen3-4B，统一 28HPC+ TT 0.9 V／25°C、250 MHz、原生 Ramulator LPDDR5-derived8533。新版固定模型、原生桥和配置散列，生成项目四组及外部资格状态。已实际运行 BitMoD 作者 e445a5f3 的阵列周期模块，覆盖 325 个矩阵项、36层及全词表。未执行外部整机原生 LPDDR、真实权重推理或 28 nm PPA。远程预检 DNS 11001，未提交作业。此轮所有外部整机值为空。PR246 待审。
+
+交付目录 architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/。验证了原生桥与 YAML 的原始 SHA-256，复算并检查项目摘要，复跑上游 BitMoD 矩阵模型，确认局部输出会被整机导入器拒绝。6个交付文件的 SHA-256：
+
+- 5c5c434637d21b25c9fccab186cb68d60d5fe49d2146cd732ed6a55f1d1a6e9e architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/BENCHMARK_ZH.md
+- 928305e927cb0e56d6214cc61c80e7920e0d5a9d660519007ab363522c587676 architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/BITMOD_MATRIX_PILOT.json
+- cbe3f7ca44a47a2336fe6d4ada9cd7215f5fe6c01617da0b05917813375f540e architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/build_benchmark.py
+- ae6656497f35788cca468b938e63a8940a73c44c3cff8acb21837f71d3d4066c architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/README_ZH.md
+- 68f7131823390c08ff4d55458be873b7a6d73a0e615e9887bb9b62dba2a2dd15 architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/run_bitmod_pilot.py
+- 6aaac122d52941a067b070ef6dc4959ecbf27ddbb1228680094090083e9660fc architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/TARGET.json
+
+下次继续需要候选实现和资源证据。BitMoD 首先接入其地址排程与共同原生桥，并补未覆盖算子；EdgeCIM 等需正式架构实现或可校验的移植。看板待同步。
+
+---
+
 ## 2026-11-16 Issue98：纠正 Harmonia benchmark 证据
 
 Harmonia 未运行其实现、未接入项目 TLM，也没有 Qwen3-4B 推理或正式同条件整机结果。此前用论文公开参数和 Qwen 形状得到的数值为单独的探索性解析估算，现已撤出正式表。当前 Excel 与正文只标本项目四组为项目 TLM，Harmonia 只列作者发表的综合 PPA 和 Llama-3.1-8B-Instruct 分项。历史脚本和输入结果用于追溯，当前说明加归档标签。此次为证据纠正，未新增仿真。PR246 待审。

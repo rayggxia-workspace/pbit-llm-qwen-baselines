@@ -1,10 +1,10 @@
 # LLM 硬件 benchmark 比较表
 
-2026-11-16。面向 Fig.10/11 的完整 decode 比较。按 **Harmonia、EdgeCIM、Zhou 等人、NVLLM、Sirius、RS-LPU** 选正文外部行，分别支撑共同工作量、同模型、近工艺的数字 ASIC、DAC 新器件路径、Qwen 硅实测以及堆叠器件参照。若还留一行 DAC 2024 同类论文，放 OPAL。若需要普通数字 CIM 对照，留 RCW-CIM。兼顾校准和可复现性，下一轮重放优先补 EdgeCIM 的宏与全词表边界，BitMoD 的作者工件可独立启动。 [EdgeCIM](https://arxiv.org/html/2604.11512v2#S5) · [BitMoD 工件](https://github.com/abdelfattah-lab/BitMoD-HPCA-25)
+2026-11-16。面向 Fig.10/11 的 decode 结果。项目内表来自封存 TLM，外部表引用论文原报工作点。**Harmonia、EdgeCIM、Zhou 等人、NVLLM、Sirius、RS-LPU** 分别提供低比特数字 ASIC、同模型、近工艺、DAC 新器件、Qwen 硅实测和堆叠器件参照。正式的外部架构同条件整机运行尚无项目结果。 [Harmonia 原文](https://arxiv.org/html/2602.04595v3#S5) · [EdgeCIM 原文](https://arxiv.org/html/2604.11512v2#S5)
 
-## 同一 Qwen3-4B 工作量
+## 项目内 Qwen3-4B 比较
 
-本项目四行来自封存的原生 LPDDR TLM。Harmonia 为按公开参数重建的解析情景。共同窗口为 B1、2K 缓存、一个输出 token，包含全词表头。比较条件为 28 nm、250 MHz、约 136 GB/s 和 4 pJ/bit。质量和 DRAM 后端校准待补，Harmonia 估算保留其 W4/BFP 配置。 [外部重放的证据和流量分解](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/81f8f3baa161d68c90e5f56f86885c9377839246/architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/REPORT_ZH.md)
+本项目四行来自封存的原生 LPDDR TLM。共同窗口为 B1、2K 缓存、一个输出 token，包含全词表头。比较条件为 28 nm、250 MHz、约 136 GB/s 和 4 pJ/bit。
 
 | Work | Model / precision | Process, clock and external memory | ms/output token | mJ/output token | Power (W) | Area (mm²) | Scope and source |
 |---|---|---|---:|---:|---:|---:|---|
@@ -12,7 +12,6 @@
 | Ours W8 + Key Selection | Qwen3-4B; W8 FFN / BF16 QKVO, head | 28 nm / 250 MHz · LPDDR 136.46 GB/s | 85 | 193 | 2.3 | 6.4 | Total energy incl. modeled DRAM; on-chip energy ~20 mJ; paired digital control. [来源](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/01a2fb1d13018d381e012630ea1be442e85bdd26/architecture_tlm/process_28nm/results_20261111/REPORT_ZH.md) |
 | Ours W8 Dense | Qwen3-4B; W8 FFN / BF16 QKVO, head | 28 nm / 250 MHz · LPDDR 136.46 GB/s | 95 | 204 | 2.1 | 6.4 | Total energy incl. modeled DRAM; dense attention and W8 FFN. [来源](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/01a2fb1d13018d381e012630ea1be442e85bdd26/architecture_tlm/process_28nm/results_20261111/REPORT_ZH.md) |
 | Ours BF16 Dense | Qwen3-4B; BF16 | 28 nm / 250 MHz · LPDDR 136.46 GB/s | 111 | 299 | 2.7 | 6.4 | Total energy incl. modeled DRAM; full dense reference. [来源](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/01a2fb1d13018d381e012630ea1be442e85bdd26/architecture_tlm/process_28nm/results_20261111/REPORT_ZH.md) |
-| Harmonia replay | Qwen3-4B; W4 / BFP, M8 or Mix KV | 28 nm / 250 MHz · 136.46 GB/s model | ~40–50 | ~80 | ~2 | ~4 | Analytic replay with double buffer; single buffer ~60 ms. Qwen task quality unverified. [来源](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/81f8f3baa161d68c90e5f56f86885c9377839246/architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/REPORT_ZH.md) |
 
 ## 外部论文原生工作点
 
@@ -20,6 +19,7 @@
 
 | Work | Model / precision | Process, clock and external memory | ms/output token | mJ/output token | Power (W) | Area (mm²) | Scope and source |
 |---|---|---|---:|---:|---:|---:|---|
+| Harmonia · TCAD 2026 | Llama-3.1-8B-Instruct; W4/BFP | 28 nm / 300 MHz · HBM2 model, 256 GB/s | NR | NR | 0.301 synthesized | 3.38 synthesized | Table I reports prototype synthesis. Fig.21 gives relative B1 GEMV and attention results at 2K–16K. [来源](https://arxiv.org/html/2602.04595v3#S5) |
 | EdgeCIM · TCAD 2026 | Qwen3-4B; INT4 and INT8 | 65 nm / NR · LPDDR5X 273 GB/s | Fig. 12 | Fig. 12 | NR | Fig. 12 | Qwen3-4B plotted in Fig.12. Table III 139.3 tok/s is Llama-3.2-3B. Area excludes DRAM controller. [来源](https://arxiv.org/html/2604.11512v2#S5) |
 | Zhou et al. · OJSSCS 2026 | Qwen2.5-7B; bidirectional microscaling | 28 nm / 400 MHz · Modeled DDR4 | ~130 (1/rate) | Fig. 14 | 0.334 chip | 7.18 | Fig. 14 end-to-end rate 7.71 tok/s. Reciprocal shown; B and context NR. Area/power are post-layout estimates. [来源](https://doi.org/10.1109/OJSSCS.2026.3687842) |
 | RCW-CIM · ISCAS 2026 | Llama2-7B; W4A8, FP16 nonlinear | 22 nm / 100 MHz · Dual DDR5-6400 | ~37 (1/rate) | NR | NR | NR | 26.87 tok/s (Table II). 42.3 TOPS/W is compute efficiency; full decoder power and die area NR. [来源](https://arxiv.org/html/2604.27384v1#S3) |
@@ -29,7 +29,7 @@
 | RS-LPU · ISSCC/JSSC 2026 | LLaMA2-7B; clustered low-bit, speculative | 55 nm logic / see §31.1 · Stacked ReRAM | ~56 | 123 | NR | ~56 logic; ~22 ReRAM | MT-Bench 17.82 tok/s. ReRAM holds draft weights; the target still accesses external weights. Keep logic and ReRAM die areas separate. [来源](https://researchportal.hkust.edu.hk/en/publications/rs-lpu-a-reram-on-logic-stacked-large-language-model-accelerator-/) |
 | NVLLM · DAC 2026 | LLaMA2-7B INT8; NVLLM-16C | 28 nm / 350 MHz in-flash; 500 MHz NPU · NAND + LPDDR5X | ~60 (1/rate) | NR | 0.240 NPU | 0.46 NPU | Throughput read approximately (~17 tok/s). Table 2 also lists 2.69 mm² incremental CMOS per reported in-flash block, no complete chip-stack area. [来源](https://arxiv.org/html/2604.25699v2#S4) |
 
-EdgeCIM 的 Qwen3-4B 工作点在 Fig.12 中以图呈现，精确数字待作者表或工件。正文主图可先用已复算的同工作量时延和能量，外部原生点保留在表里。如果表太宽，可以把 `Power` 和 `Area` 按 Fig.10 的格式放到紧邻的 PPA 表，每个原生点保留计价边界与来源。
+EdgeCIM 的 Qwen3-4B 工作点在 Fig.12 中以图呈现，精确数字待作者表或工件。正文主图可用项目内四组的时延与能量，外部原生点保留在文献表。如果表太宽，可以把 `Power` 和 `Area` 按 Fig.10 的格式放到紧邻的 PPA 表，每个原生点保留计价边界与来源。
 
 ## 候补与机制对照
 

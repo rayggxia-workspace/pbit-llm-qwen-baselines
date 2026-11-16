@@ -1,10 +1,10 @@
 # LLM 加速器外部基准候选
 
-2026-11-16。先保留论文报告的工作点，迁入 Qwen3-4B 时再重算时延、能量和面积。**未披露**指下表的核实来源没有给出该比较口径的数据。功耗和面积跟各自边界绑定。统一参数下已完成的结果见 [Harmonia 完整解码重放](REPORT_ZH.md)。
+2026-11-16。先保留论文报告的工作点，后续如开展同条件整机比较，再按所采用的实际实现与工作量测定。**未披露**指下表的核实来源没有给出该比较口径的数据。功耗和面积跟各自边界绑定。正式引用以[修订后的 benchmark 表](../LLM_HARDWARE_BENCHMARK_20261116.md)为准。
 
 | 工作 | 原生工艺、时钟、外存 | 原生结果及边界 | 接入 Qwen3-4B 的条件 |
 |---|---|---|---|
-| **Harmonia v3，2026** | 28 nm，300 MHz、0.9 V，HBM2 256 GB/s、3.9 pJ/bit | 3.3812 mm²、300.60 mW 片上综合。Llama-3.1-8B B1 单 token 线性和 2K–16K Attention 分项；未披露绝对完整步。 | 已完成整步形状重放。Qwen 数值质量和同库综合仍须补。 [原文 §IV–V、Fig.21](https://arxiv.org/html/2602.04595v3#S5) |
+| **Harmonia v3，2026** | 28 nm，300 MHz、0.9 V，HBM2 256 GB/s、3.9 pJ/bit | 3.3812 mm²、300.60 mW 片上综合。Llama-3.1-8B B1 单 token 线性和 2K–16K Attention 分项；未披露绝对完整步。 | 原文参考。本项目未运行 Harmonia 或将其接入项目 TLM。 [原文 §IV–V、Fig.21](https://arxiv.org/html/2602.04595v3#S5) |
 | **EdgeCIM，TCAD 2026** | 65 nm HSPICE/CACTI，外存 LPDDR5X 16 通道、273 GB/s；芯片统一工作频率未披露 | **直接评估 Qwen3-4B INT4/INT8**，B1、128 个已有 token／128 个生成 token。Fig.12 给吞吐、能效、面积。共享设计 44.66 mm²，边界排除 DRAM 控制器。Table III 的 **139.3 token/s（7.18 ms/token）属于 Llama3.2-3B INT4**。 | 第二个整机候选。锁定同一个物理配置，确认全词表头，补 28 nm CIM 宏和外围的面积及每次读写／位操作计价，重跑 2K。 [原文 §IV-A、§V-B/C](https://arxiv.org/html/2604.11512v2#S5) |
 | **OPAL，DAC 2024** | 65 nm，RTL + CACTI；512 KB 全局、2 KB Softmax 缓存；生成比较未给可复用的实际外存时序 | Llama2-70B **1.98 s/token**，Fig.8 分列面积和能量。W4A4/7 单个 OPAL core 约 **0.929 mm² / 335.85 mW**。 | DAC 整机候选。锁定整机核数、外存及词表头，按 28 nm 库重价逻辑和 SRAM。 [原文 §5.2/Table 3](https://arxiv.org/html/2409.05902v3#S5.SS2) |
 | **Tender，ISCA 2024** | 商用 28 nm，1 GHz，HBM2 + Ramulator | 64×64 阵列，计价核心 **3.98 mm² / 1.60 W** 峰值。B1、2048:1 输入输出；作者给归一化时延与能效。Table V 为 INT4 硬件。 | 第二个 28 nm 数字设计候选。需重建 B1 实际阵列占用、重定标和 float attention 路径。 [原文 §V、Table V](https://arxiv.org/html/2406.12930v1#S5.SS3) |
@@ -22,7 +22,7 @@
 
 ## 图表采用口径
 
-- **整机主表**保留对手原生精度和 KV 策略，固定同一模型来源、任务、解码窗口、硬件比较条件和质量门槛。Harmonia 用约数或情景范围，标明 `Reconstructed, W4/BFP; Qwen3-4B quality unverified`，另列权重及 KV 事务。质量和详细后端对齐后再给整机倍率。
+- **文献整机表**保留各论文原生精度、KV 策略、工作量及计价边界。Harmonia 只列原文结果。取得正式共同任务和硬件条件下的结果后，再计算整机倍率。
 - **机制消融**保留 BF16 Dense、W8 Dense、W8 + Key Selection、P-bit 四行。若加外部硬件同数制消融，选择双方可支持的存储格式、量化张量和 KV 协议，给转换与缓存重定价。 [M-ANT 的质量对齐先例](https://arxiv.org/html/2502.18755v1#S7.SS1)
 - **原生工作点表**先选 EdgeCIM 同模型、OPAL 同会议、SoulMate/CELLA 或 ReRAM-on-Logic 实测。注明模型、B、已有和生成 token、精度、芯片／外存计价边界。端点只到 Attention 的 Salca 放入 P-Attention 分项表。AccelCIM 的 216.552 ms 是 TTFT，适用于 prefill。
 - **下一个重建**先选 EdgeCIM，正式取得共享或 Qwen 专用配置的每项 PPA 和全词表头路径。拿不到 CIM 宏的 28 nm 数据时，可同时做 Tender 作为纯数字外部对照，保留各自的资源和面积。 

@@ -1,14 +1,14 @@
-# Harmonia 在共同条件下重放 Qwen3-4B 完整解码
+# Harmonia 公开参数的探索性估算（归档）
 
-2026-11-16。选 Harmonia v3 作第一个外部整机基准。其数字阵列原生执行线性层和 Attention 的 QK、PV，原文披露了各组件面积及功耗，以及 B1 线性 GEMV 只占 8 行中的 1 行。作者在 Llama-3.1-8B-Instruct 上给出 B1 单 token 线性和 2K–16K Attention 的归一化图。本文用公开参数重建独立的 Harmonia 整条路径，并给缺失的非线性和 DMA 补项目已用的公共估算。 [Harmonia v3 §IV、Table I、§V-A/D、Fig.21](https://arxiv.org/html/2602.04595v3)
+2026-11-16。以下是此前根据论文公开参数、Qwen3-4B 张量尺寸及自行设定的调度和计价假设所做的独立解析估算。项目没有执行 Harmonia 的实现，没有将其接入项目 TLM，也没有运行对应的 Qwen3-4B 推理任务。这些数字仅用于追溯此前的推导，正式 benchmark 使用论文原报数据。Harmonia 原文的 decode 分项采用 Llama-3.1-8B-Instruct。 [修订后的 benchmark 表](../LLM_HARDWARE_BENCHMARK_20261116.md) · [Harmonia 原文 §IV–V、Table I、Fig.21](https://arxiv.org/html/2602.04595v3#S5)
 
-## 完整解码结果
+## 解析估算的历史数值
 
-共同工作量采用项目封存的 Qwen3-4B 形状，B1、固定 2,048 个参加注意力的缓存位置、1 个输出 token。覆盖 token 查表、36 层的 QKVO、Q/K Norm、RoPE、KV 更新、QK、Softmax、PV、SwiGLU、残差，以及 final RMSNorm、全部 151,936 个 logits 和贪心输出选择。Prefill 已完成。时间和能量对应此单步窗口。重放将论文的 INT4/BFP8 线性数据通路也用于全词表头，KV 采用原文的 M8 或 Mix。P-bit／项目数字行以原封存精度录入。
+脚本代入项目封存的 Qwen3-4B 形状，假设 B1、2,048 个缓存位置和一个输出 token。它根据各阶段张量尺寸计算工作量，令 INT4/BFP8 线性数据通路适用于全词表头，并假设 KV 采用 M8 或 Mix。项目数字行来自既有项目 TLM 封存，Harmonia 行的结果取决于脚本里的容量、调度和代理计价。
 
 | Qwen3-4B B1/2K | 时延（ms/token） | 片上能量（mJ/token） | 含外存能量（mJ/token） | 含外存平均功率（W） | 已计价面积（mm²） |
 |---|---:|---:|---:|---:|---:|
-| Harmonia W4/BFP，M8 与 Mix 形状级估算 | 约 40–50，双缓冲 | 约 8 | 约 80 | 约 2 | 约 4 |
+| 假设 W4/BFP、M8 与 Mix，仅解析估算 | 约 40–50，双缓冲 | 约 8 | 约 80 | 约 2 | 约 4 |
 | 本项目 BF16 Dense，原生 LPDDR TLM | 111 | 32 | 299 | 2.7 | 6.4 |
 | 本项目 W8 Dense，原生 LPDDR TLM | 95 | 23 | 204 | 2.1 | 6.4 |
 | 本项目 W8 + Key Selection，原生 LPDDR TLM | 85 | 20 | 193 | 2.3 | 6.4 |
@@ -26,7 +26,7 @@
 
 双方线性张量的形状相同。Harmonia 重放用 W4 方式存线性权重，项目端为 W8 FFN、BF16 QKVO 和词表头。仅权重搬运相差约 **3.2 GB/token**，在 4 pJ/bit 下相当于约 **100 mJ/token**。Harmonia 的压缩 KV 用于稠密 QK/PV，KV 及其他事务仍高于项目的 Key Selection 与 V 采样路径，抵消了少量权重收益。词表头本身的权重读取约为 0.21 对 0.78 GB/token。表中列的是单步跨接口搬运量。 [Harmonia v3 Table II/III](https://arxiv.org/html/2602.04595v3#S5.SS2) · [外部事务明细](RESULTS.json) · [项目原始汇总](https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/blob/01a2fb1d13018d381e012630ea1be442e85bdd26/architecture_tlm/process_28nm/results_20261111/SUMMARY.json)
 
-- **整机主表保留原生量化和 KV 策略。** 用同一个 Instruct 权重来源及 revision、同一评测协议、同一 decode 窗口和硬件条件。双方各自证明满足相同质量门槛，列出 PPL 与任务分数后比较时延、能量和面积。Harmonia 目前列为质量待证的外部估算。M-ANT 用混合精度把不同基线的 PPL 拉到接近，正好给出了该比较方式的先例。 [M-ANT §VII-A](https://arxiv.org/html/2502.18755v1#S7.SS1)
+- **未来的同条件整机比较**需要同一个 Instruct 权重来源及 revision、同一评测协议、同一 decode 窗口和硬件条件。双方需验证相同质量门槛。M-ANT 用混合精度对齐基线 PPL。 [M-ANT §VII-A](https://arxiv.org/html/2502.18755v1#S7.SS1)
 - **用片上消融解释概率机制。** 项目 W8 + Key Selection 与 P-bit 的外存都约 5.4 GB/token，可配对观察概率 FFN 和 Attention 采样这套组合的贡献。需要外部架构消融时，只在双方有兼容数制时选共同存储格式、精确量化张量和 KV 协议，放入共同外存模型重跑。可单独试项目端的 W4 打包存储，在片上按各计算路径解包或反量化，计入 scale、zero point、缓冲和转换开销后再核对质量。
 
 ### 芯片、时钟和外存换算

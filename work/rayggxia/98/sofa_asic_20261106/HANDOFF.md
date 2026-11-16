@@ -1,3 +1,16 @@
+## 2026-11-16 Issue98：纠正 Harmonia benchmark 证据
+
+Harmonia 未运行其实现、未接入项目 TLM，也没有 Qwen3-4B 推理或正式同条件整机结果。此前用论文公开参数和 Qwen 形状得到的数值为单独的探索性解析估算，现已撤出正式表。当前 Excel 与正文只标本项目四组为项目 TLM，Harmonia 只列作者发表的综合 PPA 和 Llama-3.1-8B-Instruct 分项。历史脚本和输入结果用于追溯，当前说明加归档标签。此次为证据纠正，未新增仿真。PR246 待审。
+
+工作簿两个工作表已渲染，并检查了 Harmonia 行的来源、能力范围、NR、以及可筛选结构。此次改动文件 SHA-256：
+
+- d65d1208983f13e3dbad02a9ec969d2edcb0c1d62bff9d2cd9eadcb91cb3c2ea architecture_tlm/benchmark_inventory_20261029/LLM_HARDWARE_BENCHMARK_20261116.xlsx
+- 7d4ca46c8eabae887d17cbdf2ceb42611ad94819e6e63542cb7d4b316f029ee5 architecture_tlm/benchmark_inventory_20261029/LLM_HARDWARE_BENCHMARK_20261116.md
+- 5e428618a5603b93b5f7812e9f2214ae97df864df8faf8e1e0fc29b8cdc2069e architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/REPORT_ZH.md
+- 033c10eb4da7885add0de7c0f176275df09bbda71f201d1e6d2e001abd9f314c architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/BENCHMARKS_ZH.md
+
+---
+
 ## 2026-11-16 Issue98：Fig.10/11 benchmark 表
 
 新增可筛选 Excel 和 Markdown，正文候选 13 行，来源 36 行。每个指标保留各自模型、数制、阶段、工艺、内存和计价边界。优先 Harmonia、EdgeCIM、Zhou 等人、NVLLM、Sirius、RS-LPU；BitMoD 工件作为可执行下一轮候选。Harmonia 采用此前已核验的近似情景。本轮做原文审计、表格与取舍，未执行模型推理、TLM 或 EDA。PR246 待审。

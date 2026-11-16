@@ -1,3 +1,9 @@
+## 2026-11-16 Issue98：Fig.11 一篇一行 benchmark
+
+18 行覆盖本工作与 17 篇论文。片上、外存传输、含外存总能量分别列示；同一论文的其它精度和调度放在同一行。P-bit 15.27/173.16/188.43 mJ/token；外部部分能量小计保留在备注。Excel 与 Markdown 内容已比对，工作表可筛选。Issue #98 / PR #246，负责人 rayggxia，目标 main，工作目录 C:/Users/86134/Documents/a_P_BIT/tmp/qwen-aligned-ext-issue98-20261116，Projects 待同步。
+
+---
+
 ## 2026-11-16 Issue98：EVA / M-ANT 快速外部估算
 
 Qwen3-4B B1/2K、250 MHz、共同 LPDDR 与 BF16 全词表 head。EVA 的 252 个线性算子 × 三种位宽与作者原始 FC 叶函数逐项核对，W2/W3/W4 为约 51–62/67–82/83–103 ms/token，外存约 64/78/93 mJ/token。M-ANT 每 4/8 拍发一个 tile 的情景为约 37–56/67–86 ms/token，外存约 91 mJ/token。文档含 EdgeCIM/CELLA 原报范围。无新整机签核或模型质量；见 architecture_tlm/benchmark_inventory_20261029/aligned_qwen4b_20261116/EVA_MANT_ESTIMATE_ZH.md。负责人 rayggxia，Issue #98 / PR #246，分支 `task/98-sofa-asic-comparison-20261106` → main。工作目录 `C:/Users/86134/Documents/a_P_BIT/tmp/qwen-aligned-ext-issue98-20261116`。Projects 待同步。

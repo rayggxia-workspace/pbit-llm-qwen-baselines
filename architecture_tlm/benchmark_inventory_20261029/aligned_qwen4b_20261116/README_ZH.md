@@ -2,6 +2,8 @@
 
 本表的比较对象是各架构在共同配置下执行同一份完整 Qwen3-4B 解码事务。目标参数见 [TARGET.json](TARGET.json)，结果见 [BENCHMARK_ZH.md](BENCHMARK_ZH.md)。快速阶段级估算见 [BitMoD / Tender 快速 benchmark](QUICK_BENCHMARK_ZH.md) 与 [EVA / M-ANT 快速估算](EVA_MANT_ESTIMATE_ZH.md)。
 
+Fig.11 一篇一行汇总见 [benchmark 表](FIG11_LLM_BENCHMARK_ZH.md) 和 [可编辑工作簿](FIG11_LLM_BENCHMARK.xlsx)。
+
 ## 对齐顺序
 
 | 项目 | 目标 | 实施方式 |

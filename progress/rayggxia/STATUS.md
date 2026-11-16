@@ -1,3 +1,11 @@
+## 2026-11-16 Issue98：Harmonia 外部整机重放
+
+负责人 rayggxia，分支 task/98-sofa-asic-comparison-20261106，目标 main，PR246 待审。Qwen3-4B B1/2K、36 层、含 embedding、完整 LM head 和贪心输出。共同 28 nm/0.9 V、250 MHz、136.4606 GB/s、4 pJ/bit。Harmonia-M8/Mix 为 42.74/41.71 ms、81.96/79.44 mJ 每输出 token，4.21 mm² 计价面积。公开参数重放，W4/BFP 的 Qwen 任务质量、同库 RTL 与详细外存时序待补。Harmonia 是独立对照。EdgeCIM GU 仅为既有局部消融。
+
+报告、脚本、输入、JSON 和 15 项原生 benchmark 位于 architecture_tlm/benchmark_inventory_20261029/harmonia_full_decode_20261116/。Python 3.8 两轮校验原件 SHA、MAC、全部词表、GQA、能量、带宽敏感性，JSON 逐字一致。无新数值推理、布局布线或实测。进度与 SHA 见同任务 HANDOFF。看板待同步。
+
+---
+
 ## 2026-11-06 Issue98：SOFA与八项ASIC比较专题
 
 负责人rayggxia；分支task/98-sofa-asic-comparison-20261106，PR base main@8cd4fba009598184bce4f1c806f038299b011ea0。独立最小目录tmp/sofa-asic-issue98-20261106。

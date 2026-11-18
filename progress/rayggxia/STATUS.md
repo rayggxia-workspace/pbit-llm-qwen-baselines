@@ -1,3 +1,13 @@
+# Issue259：原始W8 dense完整WT2已核验
+
+2026-11-18 UTC，rayggxia；task/259-w8-dense-original，base main@206bf81f18ea88c4c625ce8d32edd18a58edd1cd，独立目录tmp/w8-dense-original-issue259-20261118。
+
+CPU5896通过，GPU5897 COMPLETED/0:0。原始Qwen3-4B W8-only FFN＋稠密BF16 Attention的完整WT2 PPL=11.4832106452，同轮BF16=11.5371603731，相对-0.467617%。292窗/299077目标、36层覆盖、108权重量化、逐文件SHA和NLL核验通过。没有训练、采样或K筛选。
+
+成果experiments/w8_dense_original_20261118/REPORT_ZH.md及RESULTS.json，原件project_archives/w8_dense_original259_20261118/d20328393f5f-results.zip。任务已执行、本地核验完成；远端发布以work/rayggxia/259/PUBLICATION.json为准，未自动合并。恢复见同目录HANDOFF.md；Projects待同步。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

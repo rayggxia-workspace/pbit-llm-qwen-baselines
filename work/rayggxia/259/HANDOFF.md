@@ -28,3 +28,13 @@
 配置原始Qwen3-4B，FFN仅W8权重量化；r32、总K128含最近32、四Q共享候选；候选FP32准确QK/Softmax/完整PV，BF16接口，无采样/训练后权重覆盖。2048窗/1024步长、292窗299077唯一目标，未计分前缀原生，计分位置36层全部单token执行，batch_windows32。三GPU独立任务、每项4CPU48GiB/6h时限，非预计耗时，未设置人工并行上限。
 
 恢复命令：python experiments/w8_dense_original_20261118/screen/ops.py status。只在三份COMPLETE均封存后运行同入口collect，验证SHA/连续位置/NLL/36层覆盖并归档。缺失、运行中、失败分开，不填部分PPL，不重交健康任务；修复另建执行目录，原快照保持不可变。结果依旧交付同一PR260，Issue259保持开放，Projects待同步。
+
+## 2026-11-19 04:06 UTC：三组cached完整结果已收齐
+
+本完成回执覆盖上方历史RUNNING描述。BF16_dense=11.538288905420561；W8_dense=11.482329906500434；W8_SparQ128_exactPV=10.769905965405231。计分秒数947.379/948.637/884.820，非TLM延迟。服务器队列已无本批运行项，三份COMPLETE及对应RESULT SHA通过。
+
+screen/ops.py collect已经实际成功：每组292窗/299077目标连续覆盖、NLL与exp、36层各299077计分query、无采样/无训练和token IDs一致性全部通过；15个冻结源码/配置及文件SHA再验通过。唯一原件归档project_archives/w8_dense_original259_20261118/be7740802af7-screen-results.zip，SHA765d6abd6f6e8d0d56de73779b5c85f20d12f0bb75dbb312d4b8bd100d1b0b93。准确数值、结果SHA在screen/RESULTS.json，正式总结screen/REPORT_ZH.md。
+
+三组采用同一cached scorer，旧向量化BF16/W8锚点保留且不能混作同一轮：旧11.5371603731/11.4832106452，新11.5382889054/11.4823299065。后续数字基线PPL比较优先用本轮三组。没有重交或新增训练、TLM/EDA任务；后续只需查看和发布本结果，不重新计算。
+
+本地结果核验已完成。最终远端发布以screen/FINAL_PUBLICATION.json为准；该文件未存在时不声称最终结果已上传。PR260保持待审，不自动合并；Projects待同步。

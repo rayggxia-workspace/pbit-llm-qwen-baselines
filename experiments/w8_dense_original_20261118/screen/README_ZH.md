@@ -1,5 +1,7 @@
 # BF16 / W8 / W8＋K筛选：统一cached完整WT2
 
+已完成并核验：BF16 dense **11.5382889054**，W8 dense **11.4823299065**，W8＋SparQ K128准确PV **10.7699059654**。三组同一cached计分器；配置、边界及归档见[REPORT_ZH.md](REPORT_ZH.md)与RESULTS.json。
+
 接续Issue259/PR260。已完成的原生向量化完整WT2为BF16=11.5371603731、W8-only FFN dense=11.4832106452；保留原结果，不改原执行。
 
 本批补齐同原始模型W8＋SparQ K128准确Softmax/PV，并让三组使用同一个既有cached计分器，排除向量化与逐token执行的差别。分三个确定性任务：BF16 dense、W8 dense、W8＋K筛选。没有FFN采样、Ising或PV采样，没有训练后投影覆盖。

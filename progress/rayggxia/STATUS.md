@@ -1,10 +1,12 @@
-# Issue259：三组统一cached数字PPL补测已启动
+# Issue259：三组统一cached数字PPL已完成核验
 
-2026-11-19 UTC，rayggxia；仍为task/259-w8-dense-original、PR260（open/unmerged）。已完成旧向量化锚点BF16=11.5371603731、W8=11.4832106452，原件保留。
+2026-11-19 04:06 UTC，rayggxia；task/259-w8-dense-original，PR260 open/unmerged，独立目录tmp/w8-dense-original-issue259-20261118。
 
-新补原始W8＋SparQ128/r32/recent32准确Softmax/PV，并统一cached计分器跑BF16/W8控制。CPU5898、GPU5899均PASS；数组5900_0/1/2已实际RUNNING，分别BF16_dense/W8_dense/W8_SparQ128_exactPV，尚无本批完整PPL。全程无概率采样、无训练或投影覆盖；292窗299077目标/36层。每项1GPU4CPU48GiB，6h为时限而非预计时间。
+BF16 dense=11.5382889054，W8 dense=11.4823299065，W8＋SparQ128准确PV=10.7699059654。三份COMPLETE与结果SHA匹配；每组292窗/299077目标连续覆盖、36层全计分query/NLL/exp和无采样核验通过。旧向量化锚点11.5371603731/11.4832106452保留，正式三组比较用本轮同cached协议。
 
-不可变执行screen_be7740802af7、源071e36e6，详细路径/SHA/命令见experiments/w8_dense_original_20261118/screen/SUBMISSION.json及work/rayggxia/259/HANDOFF.md。恢复screen/ops.py status，齐全后collect；不重交健康任务。Projects待同步。
+原CPU5898/GPU5899门禁通过；数组5900_0/1/2已正常产出完整封存，当前队列无本批运行项。原始Qwen3-4B FFN-only W8、r32/k128/recent32、候选准确Softmax/PV，未训练或采样。计分耗时约15–16分钟，不作为TLM时延。
+
+正式结果experiments/w8_dense_original_20261118/screen/REPORT_ZH.md、RESULTS.json；原件project_archives/w8_dense_original259_20261118/be7740802af7-screen-results.zip，SHA765d6abd6f6e8d0d56de73779b5c85f20d12f0bb75dbb312d4b8bd100d1b0b93。发布状态见screen/FINAL_PUBLICATION.json；未自动合并，Projects待同步。交接work/rayggxia/259/HANDOFF.md。
 
 ---
 

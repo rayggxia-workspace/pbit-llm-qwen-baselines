@@ -1,3 +1,25 @@
+# Issue259：三组统一cached数字PPL已完成核验
+
+2026-11-19 04:06 UTC，rayggxia；task/259-w8-dense-original，PR260 open/unmerged，独立目录tmp/w8-dense-original-issue259-20261118。
+
+BF16 dense=11.5382889054，W8 dense=11.4823299065，W8＋SparQ128准确PV=10.7699059654。三份COMPLETE与结果SHA匹配；每组292窗/299077目标连续覆盖、36层全计分query/NLL/exp和无采样核验通过。旧向量化锚点11.5371603731/11.4832106452保留，正式三组比较用本轮同cached协议。
+
+原CPU5898/GPU5899门禁通过；数组5900_0/1/2已正常产出完整封存，当前队列无本批运行项。原始Qwen3-4B FFN-only W8、r32/k128/recent32、候选准确Softmax/PV，未训练或采样。计分耗时约15–16分钟，不作为TLM时延。
+
+正式结果experiments/w8_dense_original_20261118/screen/REPORT_ZH.md、RESULTS.json；原件project_archives/w8_dense_original259_20261118/be7740802af7-screen-results.zip，SHA765d6abd6f6e8d0d56de73779b5c85f20d12f0bb75dbb312d4b8bd100d1b0b93。发布状态见screen/FINAL_PUBLICATION.json；未自动合并，Projects待同步。交接work/rayggxia/259/HANDOFF.md。
+
+---
+
+# Issue259：原始W8 dense完整WT2已核验
+
+2026-11-18 UTC，rayggxia；task/259-w8-dense-original，base main@206bf81f18ea88c4c625ce8d32edd18a58edd1cd，独立目录tmp/w8-dense-original-issue259-20261118。
+
+CPU5896通过，GPU5897 COMPLETED/0:0。原始Qwen3-4B W8-only FFN＋稠密BF16 Attention的完整WT2 PPL=11.4832106452，同轮BF16=11.5371603731，相对-0.467617%。292窗/299077目标、36层覆盖、108权重量化、逐文件SHA和NLL核验通过。没有训练、采样或K筛选。
+
+成果experiments/w8_dense_original_20261118/REPORT_ZH.md及RESULTS.json，原件project_archives/w8_dense_original259_20261118/d20328393f5f-results.zip。任务已执行、本地核验完成；远端发布以work/rayggxia/259/PUBLICATION.json为准，未自动合并。恢复见同目录HANDOFF.md；Projects待同步。
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

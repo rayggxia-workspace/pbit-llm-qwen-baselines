@@ -1,3 +1,13 @@
+# Issue259：三组统一cached数字PPL补测已启动
+
+2026-11-19 UTC，rayggxia；仍为task/259-w8-dense-original、PR260（open/unmerged）。已完成旧向量化锚点BF16=11.5371603731、W8=11.4832106452，原件保留。
+
+新补原始W8＋SparQ128/r32/recent32准确Softmax/PV，并统一cached计分器跑BF16/W8控制。CPU5898、GPU5899均PASS；数组5900_0/1/2已实际RUNNING，分别BF16_dense/W8_dense/W8_SparQ128_exactPV，尚无本批完整PPL。全程无概率采样、无训练或投影覆盖；292窗299077目标/36层。每项1GPU4CPU48GiB，6h为时限而非预计时间。
+
+不可变执行screen_be7740802af7、源071e36e6，详细路径/SHA/命令见experiments/w8_dense_original_20261118/screen/SUBMISSION.json及work/rayggxia/259/HANDOFF.md。恢复screen/ops.py status，齐全后collect；不重交健康任务。Projects待同步。
+
+---
+
 # Issue259：原始W8 dense完整WT2已核验
 
 2026-11-18 UTC，rayggxia；task/259-w8-dense-original，base main@206bf81f18ea88c4c625ce8d32edd18a58edd1cd，独立目录tmp/w8-dense-original-issue259-20261118。

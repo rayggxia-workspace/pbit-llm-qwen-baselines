@@ -1,0 +1,75 @@
+{
+  "root": "/home/Hongjie_Zeng/projects/pbit-w8-dense-original-issue259-20261118/screen_be7740802af7",
+  "source": "/home/Hongjie_Zeng/projects/pbit-w8-dense-original-issue259-20261118/screen_be7740802af7/source",
+  "identity": "be7740802af75e3451a3fbf04d8cf88787c20c84edc4b5c38f23ef849b95fd64",
+  "source_sha256": {
+    "screen_runner.py": "f9d07d8974894bcb2322b0216b7fe7a6acf1c43247242c26b135de08bff9b821",
+    "PLAN.json": "3d00cf5e3f9da49edc035e201c055a5c6895f782647fc6c7d7053177e827eb04",
+    "w8_original_reference.py": "b3a645d9b38c13dd6ff6e44bad22ae17ca51b36389980bfbc50617e6f8c709db",
+    "wt2_reference.py": "697a357b94da297ea462798b242208ab0292141a9707cba276cb5ce55bb7f5e3",
+    "pot64_reference.py": "9602c4451819f51ad09fbdb4628000faf49945258deae0f81ef1600d2f8dcb62",
+    "INPUTS.json": "9fc732c8da8ecc481eb6aa23a8b8cbb332a961d88cce9e9ffc5e51f7d7ebfe6b",
+    "experiments/sparq_ising_20261028/core.py": "25a57d4d6119f8b1174c50b75dbf6df5377fb80387f276513239073116baeed6",
+    "experiments/sparq_ising_20261028/adapter.py": "f6c6725cc6f2044d9dbec1ee20364c3dec3411593d94bc1b5098f4fe28656abe",
+    "experiments/sparq_ising_20261028/scoring.py": "5bf0c902d93080efb081f17d802ed1fb199b432badab3335d97149099c88f6ad",
+    "experiments/sparq_ising_20261028/test_core.py": "307cfffc05522c83f1ed1e74ebd3b675a11a6e040c5dc8504f3a54af5ab383fb",
+    "experiments/sparq_ising_20261028/vendor/plans.py": "4daed453f8171d107f0535189913aa963cd221e490171c1ea4ca48aabdedfa3c",
+    "experiments/sparq_ising_20261028/vendor/sparq_reference.py": "6855f1c5a46cac56bc792e0f8b2ceaeea9e631b1d9a97ed868a15735525dda69",
+    "experiments/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "experiments/sparq_ising_20261028/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "experiments/sparq_ising_20261028/vendor/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "dependency_execution": "1cd58b43aabbf92214f7fe65efd22d9d1234fbd69b6ba0927751c3f9170904ea",
+  "local_code_commit": "071e36e61823cd0aea8c2708dfc740bc8d841b38",
+  "jobs": {
+    "cpu": "5898",
+    "gate": "5899",
+    "full": "5900"
+  },
+  "modes": [
+    "BF16_dense",
+    "W8_dense",
+    "W8_SparQ128_exactPV"
+  ],
+  "commands": {
+    "cpu": [
+      "/opt/slurm/21.08.8/bin/sbatch",
+      "--parsable",
+      "--partition=gpu5090",
+      "--job-name=digital259-cpu",
+      "--output=/home/Hongjie_Zeng/projects/pbit-w8-dense-original-issue259-20261118/screen_be7740802af7/logs/%A_%a-cpu.out",
+      "--cpus-per-task=1",
+      "--mem=8G",
+      "--time=00:15:00",
+      "/home/Hongjie_Zeng/projects/pbit-w8-dense-original-issue259-20261118/screen_be7740802af7/cpu.sh"
+    ],
+    "gate": [
+      "/opt/slurm/21.08.8/bin/sbatch",
+      "--parsable",
+      "--partition=gpu5090",
+      "--job-name=digital259-gate",
+      "--output=/home/Hongjie_Zeng/projects/pbit-w8-dense-original-issue259-20261118/screen_be7740802af7/logs/%A_%a-gate.out",
+      "--gres=gpu:1",
+      "--cpus-per-task=4",
+      "--mem=48G",
+      "--time=01:00:00",
+      "--dependency=afterok:5898",
+      "/home/Hongjie_Zeng/projects/pbit-w8-dense-original-issue259-20261118/screen_be7740802af7/gate.sh"
+    ],
+    "full": [
+      "/opt/slurm/21.08.8/bin/sbatch",
+      "--parsable",
+      "--partition=gpu5090",
+      "--job-name=digital259-full",
+      "--output=/home/Hongjie_Zeng/projects/pbit-w8-dense-original-issue259-20261118/screen_be7740802af7/logs/%A_%a-full.out",
+      "--array=0-2",
+      "--gres=gpu:1",
+      "--cpus-per-task=4",
+      "--mem=48G",
+      "--time=06:00:00",
+      "--dependency=afterok:5899",
+      "/home/Hongjie_Zeng/projects/pbit-w8-dense-original-issue259-20261118/screen_be7740802af7/full.sh"
+    ]
+  },
+  "created_at_UTC": "2026-11-19T01:13:37.408917+00:00"
+}

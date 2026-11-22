@@ -193,3 +193,5 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 成果experiments/ffn_address_coverage_20261122/REPORT_ZH.md和results/RESULTS.json。理想IID单地址K128、权重范数重要性概率下，GU/Wd唯一行覆盖4.71%/1.26%；若64行整组读取则94.88%/53.19%。组读取是条件布局，不是实测DMA；K不是旧并行比特流T，不继承PPL/能耗；没有改变任何模型/TLM/硬件默认，原始张量保留私有服务器。
 
 本地完成，正在通过rayggxia连接器发布；实际PR/head及远端核验查work/rayggxia/261/PUBLICATION.json，未合并前不关闭Issue。Projects接口不可用、看板待维护者同步。根阅读备忘录已与main版本不同，未覆盖；新MEMORY_NOTE_ZH.md供Issue28维护者统一集成。下一步为新地址采样的输出误差/PPL与行向量读取验证，本轮未开展。
+
+发布回执：已通过rayggxia连接器发布PR262，科学提交a03fff8f66aa16ff7efe41fa8090331647422215，完整tree1db52688与本地一致、29个blob逐项一致。PR开放待审未合并；Issue261已同步，Issue28已收到备忘录增量交接，Projects无接口待维护者同步。无遗留作业。

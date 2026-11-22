@@ -73,3 +73,5 @@ a matching unchanged reference at K64/128/256/512/...; first GU-only and Wd-only
 then joint. Separately test a row-vector layout, deduplication and cross-output
 reuse. Do not inherit quality from the old T64 bitstream, or rerun this capture
 merely because the result is a one-window scope.
+
+实际发布：PR262开放待审未合并，科学提交a03fff8f66aa16ff7efe41fa8090331647422215；29文件完整tree逐项核对。Issue261和Issue28交接评论均成功发布。执行捕获提交的3592B增量Git bundle已验证，便于恢复e6a1cb0原提交。后续元数据提交以PUBLICATION/PR为准。

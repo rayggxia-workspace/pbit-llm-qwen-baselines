@@ -75,3 +75,9 @@ reuse. Do not inherit quality from the old T64 bitstream, or rerun this capture
 merely because the result is a one-window scope.
 
 实际发布：PR262开放待审未合并，科学提交a03fff8f66aa16ff7efe41fa8090331647422215；29文件完整tree逐项核对。Issue261和Issue28交接评论均成功发布。执行捕获提交的3592B增量Git bundle已验证，便于恢复e6a1cb0原提交。后续元数据提交以PUBLICATION/PR为准。
+
+## 2026-11-22 用户后续：具体地址/次数/DRAM方案
+
+同一Issue261/PR262新增ADDRESS_SAMPLER_AND_DRAM_PLAN_ZH.md、address_plan.py与test_address_plan.py。新10项CPU整数/地址/次数检查及原5项通过，ARTIFACTS.json原19文件逐SHA未改。新增PLAN_VALIDATION.json记录源码/方案、两份用户PDF的原字节SHA及文献入口。无新模型或硬件任务。远端增量提交和逐blob/tree核验看PLAN_PUBLICATION.json；PR尚待审，未合并。
+
+推荐C256/512输出分条，GU同输入的g/u权重连续；先整数质量树按幅度抽地址，再去重/计数并发DMA。count重放只证明精确归约，不继承OR4价格。原64输入/输出权重尺度分组不能打散。Wd分布不能从z_p8mean无代价取得；先GU-only质量实验，再Wd-only、联合。QKV/O可参考TEAL继续扩展，LM head需独立量化/采样质量验证。下一步不必重复旧捕获。

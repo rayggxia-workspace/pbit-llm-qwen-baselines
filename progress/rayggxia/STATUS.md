@@ -195,3 +195,9 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 本地完成，正在通过rayggxia连接器发布；实际PR/head及远端核验查work/rayggxia/261/PUBLICATION.json，未合并前不关闭Issue。Projects接口不可用、看板待维护者同步。根阅读备忘录已与main版本不同，未覆盖；新MEMORY_NOTE_ZH.md供Issue28维护者统一集成。下一步为新地址采样的输出误差/PPL与行向量读取验证，本轮未开展。
 
 发布回执：已通过rayggxia连接器发布PR262，科学提交a03fff8f66aa16ff7efe41fa8090331647422215，完整tree1db52688与本地一致、29个blob逐项一致。PR开放待审未合并；Issue261已同步，Issue28已收到备忘录增量交接，Projects无接口待维护者同步。无遗留作业。
+
+## Issue261 地址采样与DRAM布局补充（2026-11-22）
+
+负责人rayggxia；分支task/261-ffn-address-coverage；同一PR262/main；工作目录tmp/ffn-address-coverage-issue261-20261122。已完成整数质量树、地址/次数表、输出分条W8布局与精确次数重放的CPU参考，以及TEAL/Deja Vu等文献对QKVO、LM head和流水的分析。新10项CPU检查和原5项通过，原19项归档字节SHA均保持；无新模型PPL/RTL/TLM/EDA任务，未改变现有默认。成果experiments/ffn_address_coverage_20261122/ADDRESS_SAMPLER_AND_DRAM_PLAN_ZH.md，哈希与检查见work/rayggxia/261/PLAN_VALIDATION.json。
+
+发布状态以PLAN_PUBLICATION.json和PR262实际head为准：本地已完成，当前准备上传增量。下一步先验证GU-only地址采样输出误差和PPL，再决定Wd的真实非线性接口；必须分别记录Sx/Tnl/Sd，保留原64×64 PoT尺度。采样准备、原tile命中率和实际DMA burst需进入后续TLM，不能用唯一行比例直接缩放周期。Projects无可用接口；根/正式备忘录由Issue28维护者集成MEMORY_NOTE_ZH.md，未覆盖并发版本。

@@ -184,3 +184,12 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 面积均已按用户要求raw×0.81并保留原始列。S0两尺寸hold−0.041792ns；S2 M8 setup仅0.000099ns，功耗表范围等警告保留。前布局，无CTS/SDF/SPEF、真实模型质量、存储/RNG/比较器/编码/最终浮点尺度及实际广播线成本。D0是未优化q9参考，不称成熟最佳INT8。SRAM/门控权重与内部位宽收紧属于后续，不伪称本轮全链路完成。
 
 中央台账新增matrix-t32-204-20261028，82记录联合check/render、81旧record逐字保留；main缺全台账，本PR只交付增量record及校验回执，不复制别人记录。失败波形/别名/调试可见性版本保留；v3旧数字后处理实际已跑1分34秒后取消并由v9替代，如实记录。Projects既有权限限制待同步。下一步：审阅本轮PR，修hold/功耗表范围，M8数字控制、SC位宽/真实ICG及驻留权重端口验证；不自动启动新模型或昂贵作业。
+
+
+## 2026-11-22 Issue261：真实FFN地址采样覆盖率
+
+负责人rayggxia；分支task/261-ffn-address-coverage；base main@206bf81f18ea88c4c625ce8d32edd18a58edd1cd；独立tmp/ffn-address-coverage-issue261-20261122。捕获GPU6094、分析CPU6099已封存完成；CPU6096启动路径失败原日志保留，未重跑模型，无遗留任务。36层×16位置×四信号完整向量，整窗logits逐位一致与9项历史检查通过。五个枚举/边界测试通过、440汇总/15840逐层/264三seed行及原字节SHA通过；三seed最大平均覆盖误差0.228个百分点。
+
+成果experiments/ffn_address_coverage_20261122/REPORT_ZH.md和results/RESULTS.json。理想IID单地址K128、权重范数重要性概率下，GU/Wd唯一行覆盖4.71%/1.26%；若64行整组读取则94.88%/53.19%。组读取是条件布局，不是实测DMA；K不是旧并行比特流T，不继承PPL/能耗；没有改变任何模型/TLM/硬件默认，原始张量保留私有服务器。
+
+本地完成，正在通过rayggxia连接器发布；实际PR/head及远端核验查work/rayggxia/261/PUBLICATION.json，未合并前不关闭Issue。Projects接口不可用、看板待维护者同步。根阅读备忘录已与main版本不同，未覆盖；新MEMORY_NOTE_ZH.md供Issue28维护者统一集成。下一步为新地址采样的输出误差/PPL与行向量读取验证，本轮未开展。

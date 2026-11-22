@@ -1,0 +1,36 @@
+{
+  "status": "submitted",
+  "restore_job": "6107",
+  "restore_command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--gres=gpu:1",
+    "--cpus-per-task=4",
+    "--mem=8G",
+    "--time=00:15:00",
+    "--job-name=guaddr261-restore",
+    "--output=/home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/logs/restore-%j.log",
+    "--wrap",
+    "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=4 TRITON_CACHE_DIR=/home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/triton-restore-896fe5515afe /home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python -B /home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/control-896fe5515afe/check_restore.py --source /home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/source-a9d9af6a494d --output /home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/restore-896fe5515afe/RESULT.json"
+  ],
+  "continuation_job": "6108",
+  "continuation_command": [
+    "/opt/slurm/21.08.8/bin/sbatch",
+    "--parsable",
+    "--partition=gpu5090",
+    "--cpus-per-task=1",
+    "--mem=4G",
+    "--time=00:15:00",
+    "--dependency=afterany:6107",
+    "--job-name=guaddr261-launch",
+    "--output=/home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/logs/launch-%j.log",
+    "--wrap",
+    "/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python -B /home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/control-896fe5515afe/submit_followups.py --phase after_gate --source /home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/source-a9d9af6a494d --gate /home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/gate-a9d9af6a494d-v2/RESULT.json --root /home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122 --restore-proof /home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/restore-896fe5515afe/RESULT.json"
+  ],
+  "source": "/home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/source-a9d9af6a494d",
+  "control": "/home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/control-896fe5515afe",
+  "gate": "/home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/gate-a9d9af6a494d-v2/RESULT.json",
+  "restore_proof": "/home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/restore-896fe5515afe/RESULT.json",
+  "scope": "screen only after both sealed checks pass; full only after three-seed8window selection"
+}

@@ -201,3 +201,15 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 负责人rayggxia；分支task/261-ffn-address-coverage；同一PR262/main；工作目录tmp/ffn-address-coverage-issue261-20261122。已完成整数质量树、地址/次数表、输出分条W8布局与精确次数重放的CPU参考，以及TEAL/Deja Vu等文献对QKVO、LM head和流水的分析。新10项CPU检查和原5项通过，原19项归档字节SHA均保持；无新模型PPL/RTL/TLM/EDA任务，未改变现有默认。成果experiments/ffn_address_coverage_20261122/ADDRESS_SAMPLER_AND_DRAM_PLAN_ZH.md，哈希与检查见work/rayggxia/261/PLAN_VALIDATION.json。
 
 发布状态以PLAN_PUBLICATION.json和PR262实际head为准：科学增量已发布93f492abd3f6e07e581d891a52724fc7efa4876b，7个blob及完整tree与本地一致，PR开放待审未合并。下一步先验证GU-only地址采样输出误差和PPL，再决定Wd的真实非线性接口；必须分别记录Sx/Tnl/Sd，保留原64×64 PoT尺度。采样准备、原tile命中率和实际DMA burst需进入后续TLM，不能用唯一行比例直接缩放周期。Projects无可用接口；根/正式备忘录由Issue28维护者集成MEMORY_NOTE_ZH.md，未覆盖并发版本。
+
+## Issue261：已授权并提交GU-only小规模PPL（2026-11-22）
+
+用户确认使用训练100M的Qwen3-4B T64，先采样地址/次数、直接读取所选W8行并累计，再恢复/平均；先GU-only，后级和Attention不变。执行源码a9d9af6a494d，控制/加强核验896fe5515afe；同一分支/PR262、独立原工作目录。源码包与manifest在work/rayggxia/261/quality_gate_v1和quality_control_v1，服务器为/home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/。
+
+6105仅Slurm spool启动路径失败，未跑模型；6106绝对路径包装复用冻结源码完成，8 GPU/独立整数检查、全36层GU no-op和2048窗口logits一致；6107的9配置独立尺度恢复通过。本地4数学+3选择门禁通过。原权重/代码/归档不改，无训练/RTL/TLM/PPA。
+
+6109/6110/6111为seed101/202/303的9配置×8窗口screen，最近观察均运行中；6112为afterany选择任务，只有三seed完成、PPL比<=1.10（<=1.05优先）且地址减少>=5%才最多选择两个候选做完整WT2。完整WT2尚未提交。小型结果已见PILOT_REPORT_ZH.md：单窗口seed101原P-FFN地址99.79%，cat64约2.44%但PPL严重退化，不当作8窗口或完整WT2。源/数据/模型/SHA及实际命令在SUBMISSION_INDEX和封存汇总。
+
+下一步读取三个screen的completed封存JSON与SHA、核对同一目标ledger，区分失败/运行中/完成；再看6112及条件full提交回执。不要重跑健康任务或修改冻结snapshot。当前本地代码/证据已准备，远端代码发布待本次PR同步；Projects与正式备忘录由维护者接续，不覆盖他人版本。
+
+同步状态：提交后的队列核对曾确认三个screen运行约4m35s；随后SSH banner超时，尚未取得正式初筛完成JSON。不是Slurm任务失败证据，不重提任务。已核验gate与restore原件和BF16参考，本地GATE_RESULT.json为212KB未发布读回镜像；正式发布采用汇总/原件SHA。SSH恢复后读取原路径续接。

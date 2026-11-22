@@ -143,3 +143,12 @@ Issue204/PR209，[方案](../digital_circuit_simulation_registry/12_双随机分
 ## 2026-10-29 双随机SRAM存内比较主架构与旧估算延续
 
 Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内比较估算口径与证据.md)。用户要求保留SRAM驻留/本地比较，双全局LFSR不变，DFF仅对照。沿旧宏本体+邻近SNG/分发+存储节点带载增量估算；普通预读保持及M1单seed前端数据各保留边界，不能当完整定制CIM。新W7比较与接口动态待测，不每拍重复收费普通全读，也不把缺项当0。无新RTL/EDA/SPICE/PPL，旧run未改。
+
+
+## 2026-11-22 GU地址采样与稀疏W8读取质量筛选（Issue261/PR262）
+
+[执行与pilot](../experiments/ffn_address_quality_20261122/PILOT_REPORT_ZH.md)：T64已训练100M的Qwen3-4B，仅GU入口改变。输入P8/PoT生成CSR地址/次数，GPU-global按512输出分条只加载所选W8行，signed64计数归约与原64×64尺度恢复；下游P8/LUT/AND/Wd、Attention保持。原T64权重不训练、不重标定。GPU时间不作ASIC/LPDDR时序，读取量仅GU有效payload。
+
+执行a9d9af6a494d、控制896fe5515afe；6105仅Slurm spool启动失败，6106同源码绝对路径包装通过8项GPU检查、36层整数与2048logits no-op；6107全部9配置独立恢复通过。本地4数学+3选择门禁。6109/6110/6111三seed9配置8窗口运行，6112完成后按预设质量与读取约束选择完整WT2。原19归档SHA保持；无新RTL/PPA/TLM。
+
+重要边界：旧categorical低覆盖率不适用于原P-FFN。单窗口seed101原64/64分层地址99.79%，÷2仍99.52%，cat64约2.44%但PPL已严重退化。pilot不是正式8窗口或完整WT2；待汇总completed JSON/SHA，不据此宣布系统能效。证据与可执行下一步在work/rayggxia/261/HANDOFF.md及quality_run_v1/SUBMISSION_INDEX.json。

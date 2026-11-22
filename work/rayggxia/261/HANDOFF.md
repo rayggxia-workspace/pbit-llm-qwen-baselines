@@ -83,3 +83,19 @@ merely because the result is a one-window scope.
 推荐C256/512输出分条，GU同输入的g/u权重连续；先整数质量树按幅度抽地址，再去重/计数并发DMA。count重放只证明精确归约，不继承OR4价格。原64输入/输出权重尺度分组不能打散。Wd分布不能从z_p8mean无代价取得；先GU-only质量实验，再Wd-only、联合。QKV/O可参考TEAL继续扩展，LM head需独立量化/采样质量验证。下一步不必重复旧捕获。
 
 增量发布核验：科学提交93f492abd3f6e07e581d891a52724fc7efa4876b，7个blob与完整tree d4de6ed83d781a79fd2f1b8a663917c3775b727b匹配本地；远端方案blob938de588亦匹配。PR262开放待审未合并。后续只有交付回执/STATUS/PR说明同步，不把新方案误记成PPL或TLM结果。
+
+## 2026-11-22 新授权的GU-only PPL执行
+
+用户已明确授权远程Slurm小规模PPL/地址比例，合格候选再完整WT2。正式实现experiments/ffn_address_quality_20261122/。GPU执行快照a9d9af6a494d7dec338e0df9fc030dc021244476，控制/加强恢复核验896fe5515afebab43ebf1f6187aa826459658733。服务器本人项目/home/Hongjie_Zeng/projects/ffn-address-quality-issue261-20261122/；原checkpoint/inputs/helpers/runtime全部只读。
+
+算法已确认：P8输入/原四档PoT→采样→CSR地址/次数（每输入唯一）→GPU-global bank仅加载选中输入的Wg/Wu W8权重→signed64计数累加、原64×64权重指数对齐→PoT或整数总质量补偿/平均/RNE24。后级P8、sigmoid LUT、AND和Wd原函数保持，Attention原SDPA。不是把零输入送全量GU矩阵乘法，不是DRAM时序或芯片PPA。
+
+作业：6105 launcher spool路径失败（无模型），6106同源码绝对路径bash--wrap通过8GPU检查/36层整数与2048logits no-op；6107独立9配置恢复检查通过；6108实际提交screen 6109/6110/6111（三seed）；6112等待全部screen后选择，合格时自动提交候选及匹配原P-FFN全量对照。所有正式GPU脚本必须用绝对bash路径--wrap，避免$0指向spool；不修改source-a9d9af6a494d。
+
+恢复检查：source-a9d9af6a494d/EXECUTION_MANIFEST.json SHA3f8d1880c7e9f45238ab30dcdc2f4ec51c18bb7516666a9ce68234ba15fd558d；gate-a9d9af6a494d-v2/RESULT.json SHA37d930b57386202d9cb97b01759b118c2a2f1fef10a3967c2dfe8e9156b34b2a；restore-896fe5515afe/RESULT.json SHA2f262c2eb5226622ae4465a71230ea9660a774b803eccdce73dd10390341efc6。每RESULT有.sha256，PROGRESS不能作完成证据。
+
+下一步：读取screen-gate-a9d9af6a494d-v2/seed{101,202,303}/{case}/RESULT.json，要求9case×3seed相同8窗口/9215目标及token ledger；读取FOLLOWUP_gate-a9d9af6a494d-v2.json、SCREEN_SUMMARY_gate-a9d9af6a494d-v2.json和FULL_SUBMISSION_gate-a9d9af6a494d-v2.json。三seed齐且PPL比<=1.05优先/<=1.10上限、地址减少>=5%才完整；无合格则不扩大。screen最近运行，full未提交。保留pilot负结果，不把原P-FFN近99.79%覆盖与新cat64的2.44%混淆；后者pilot PPL已严重下降。
+
+本地证据见quality_gate_v1/GATE_SUMMARY.json、quality_control_v1/RESTORE_RESULT.json及FOLLOWUP回执、quality_run_v1/SUBMISSION_INDEX.json。仅原gate JSON本地镜像212KB未发布，原件与SHA在服务器；小型源码包用于恢复精确执行字节。当前等待PR同步/审核，勿称已合并或全WT2完成。
+
+后续SSH banner超时（8s与25s有界重试），最后一次成功队列读回为screen三任务运行4m35s、6112等待。没有取消/重提作业，不能把读回阻塞写成作业失败。另有SUBMISSION_GATE_v1/v2及gate-6105.log原件仍在服务器，本地只登记路径/既读SHA，首次多文件scp已取消；其它小型proof与screen命令回执已成功取回。恢复先检查原job/output，不重新执行gate或健康screen。

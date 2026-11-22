@@ -210,6 +210,6 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 
 6109/6110/6111为seed101/202/303的9配置×8窗口screen，最近观察均运行中；6112为afterany选择任务，只有三seed完成、PPL比<=1.10（<=1.05优先）且地址减少>=5%才最多选择两个候选做完整WT2。完整WT2尚未提交。小型结果已见PILOT_REPORT_ZH.md：单窗口seed101原P-FFN地址99.79%，cat64约2.44%但PPL严重退化，不当作8窗口或完整WT2。源/数据/模型/SHA及实际命令在SUBMISSION_INDEX和封存汇总。
 
-下一步读取三个screen的completed封存JSON与SHA、核对同一目标ledger，区分失败/运行中/完成；再看6112及条件full提交回执。不要重跑健康任务或修改冻结snapshot。当前本地代码/证据已准备，远端代码发布待本次PR同步；Projects与正式备忘录由维护者接续，不覆盖他人版本。
+下一步读取三个screen的completed封存JSON与SHA、核对同一目标ledger，区分失败/运行中/完成；再看6112及条件full提交回执。不要重跑健康任务或修改冻结snapshot。实现与证据已发布aef86f11adea55e476a4b56b787852bc0da73e8e，29个blob/完整tree核验一致，PR262开放待审未合并；交付查quality_run_v1/PUBLICATION.json。Projects与正式备忘录由维护者接续，不覆盖他人版本。
 
 同步状态：提交后的队列核对曾确认三个screen运行约4m35s；随后SSH banner超时，尚未取得正式初筛完成JSON。不是Slurm任务失败证据，不重提任务。已核验gate与restore原件和BF16参考，本地GATE_RESULT.json为212KB未发布读回镜像；正式发布采用汇总/原件SHA。SSH恢复后读取原路径续接。

@@ -98,4 +98,6 @@ merely because the result is a one-window scope.
 
 本地证据见quality_gate_v1/GATE_SUMMARY.json、quality_control_v1/RESTORE_RESULT.json及FOLLOWUP回执、quality_run_v1/SUBMISSION_INDEX.json。仅原gate JSON本地镜像212KB未发布，原件与SHA在服务器；小型源码包用于恢复精确执行字节。当前等待PR同步/审核，勿称已合并或全WT2完成。
 
+实际发布：科学提交aef86f11adea55e476a4b56b787852bc0da73e8e，29个blob和完整tree30a428bde07ffaec9161af33dc87dc93ccb86c02与本地一致，运行manifest远端读回匹配。PR262已更新为稀疏W8执行与T64质量筛选，保持开放待审未合并。原执行a9d9/控制896f的准确字节可从已发布小型tar恢复，清单SHA不变；当前源码HEAD新增的是文档/控制/回执，不改服务器冻结snapshot。
+
 后续SSH banner超时（8s与25s有界重试），最后一次成功队列读回为screen三任务运行4m35s、6112等待。没有取消/重提作业，不能把读回阻塞写成作业失败。另有SUBMISSION_GATE_v1/v2及gate-6105.log原件仍在服务器，本地只登记路径/既读SHA，首次多文件scp已取消；其它小型proof与screen命令回执已成功取回。恢复先检查原job/output，不重新执行gate或健康screen。

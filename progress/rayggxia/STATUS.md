@@ -200,4 +200,4 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 
 负责人rayggxia；分支task/261-ffn-address-coverage；同一PR262/main；工作目录tmp/ffn-address-coverage-issue261-20261122。已完成整数质量树、地址/次数表、输出分条W8布局与精确次数重放的CPU参考，以及TEAL/Deja Vu等文献对QKVO、LM head和流水的分析。新10项CPU检查和原5项通过，原19项归档字节SHA均保持；无新模型PPL/RTL/TLM/EDA任务，未改变现有默认。成果experiments/ffn_address_coverage_20261122/ADDRESS_SAMPLER_AND_DRAM_PLAN_ZH.md，哈希与检查见work/rayggxia/261/PLAN_VALIDATION.json。
 
-发布状态以PLAN_PUBLICATION.json和PR262实际head为准：本地已完成，当前准备上传增量。下一步先验证GU-only地址采样输出误差和PPL，再决定Wd的真实非线性接口；必须分别记录Sx/Tnl/Sd，保留原64×64 PoT尺度。采样准备、原tile命中率和实际DMA burst需进入后续TLM，不能用唯一行比例直接缩放周期。Projects无可用接口；根/正式备忘录由Issue28维护者集成MEMORY_NOTE_ZH.md，未覆盖并发版本。
+发布状态以PLAN_PUBLICATION.json和PR262实际head为准：科学增量已发布93f492abd3f6e07e581d891a52724fc7efa4876b，7个blob及完整tree与本地一致，PR开放待审未合并。下一步先验证GU-only地址采样输出误差和PPL，再决定Wd的真实非线性接口；必须分别记录Sx/Tnl/Sd，保留原64×64 PoT尺度。采样准备、原tile命中率和实际DMA burst需进入后续TLM，不能用唯一行比例直接缩放周期。Projects无可用接口；根/正式备忘录由Issue28维护者集成MEMORY_NOTE_ZH.md，未覆盖并发版本。

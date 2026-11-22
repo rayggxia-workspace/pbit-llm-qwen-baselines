@@ -81,3 +81,5 @@ merely because the result is a one-window scope.
 同一Issue261/PR262新增ADDRESS_SAMPLER_AND_DRAM_PLAN_ZH.md、address_plan.py与test_address_plan.py。新10项CPU整数/地址/次数检查及原5项通过，ARTIFACTS.json原19文件逐SHA未改。新增PLAN_VALIDATION.json记录源码/方案、两份用户PDF的原字节SHA及文献入口。无新模型或硬件任务。远端增量提交和逐blob/tree核验看PLAN_PUBLICATION.json；PR尚待审，未合并。
 
 推荐C256/512输出分条，GU同输入的g/u权重连续；先整数质量树按幅度抽地址，再去重/计数并发DMA。count重放只证明精确归约，不继承OR4价格。原64输入/输出权重尺度分组不能打散。Wd分布不能从z_p8mean无代价取得；先GU-only质量实验，再Wd-only、联合。QKV/O可参考TEAL继续扩展，LM head需独立量化/采样质量验证。下一步不必重复旧捕获。
+
+增量发布核验：科学提交93f492abd3f6e07e581d891a52724fc7efa4876b，7个blob与完整tree d4de6ed83d781a79fd2f1b8a663917c3775b727b匹配本地；远端方案blob938de588亦匹配。PR262开放待审未合并。后续只有交付回执/STATUS/PR说明同步，不把新方案误记成PPL或TLM结果。

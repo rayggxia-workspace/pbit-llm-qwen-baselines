@@ -1,0 +1,35 @@
+{
+  "issue": 261,
+  "owner": "rayggxia",
+  "checkpoint_case": "T64",
+  "trained_tokens": 100000000,
+  "input_samples": 64,
+  "nonlinear_samples": 64,
+  "nonlinear_law": "joint_grid_4_4_4_unchanged",
+  "attention": "original_sdpa",
+  "weight_bits": 8,
+  "output_stripe": 512,
+  "deployment_seeds": [101, 202, 303],
+  "screen_window_indices": [0, 41, 82, 123, 164, 205, 246, 287],
+  "cases": [
+    {"id": "original_strat64", "family": "baseline", "kind": "original", "samples": 64},
+    {"id": "pot2", "family": "pot", "kind": "pot", "divisor": 2, "samples": 64},
+    {"id": "pot4", "family": "pot", "kind": "pot", "divisor": 4, "samples": 64},
+    {"id": "pot16", "family": "pot", "kind": "pot", "divisor": 16, "samples": 64},
+    {"id": "pot64", "family": "pot", "kind": "pot", "divisor": 64, "samples": 64},
+    {"id": "norm_bern64", "family": "normalized_bernoulli", "kind": "normalized_bernoulli", "samples": 64},
+    {"id": "cat64", "family": "categorical", "kind": "categorical", "samples": 64},
+    {"id": "cat256", "family": "categorical", "kind": "categorical", "samples": 256},
+    {"id": "cat1024", "family": "categorical", "kind": "categorical", "samples": 1024}
+  ],
+  "promotion": {
+    "preferred_max_ppl_ratio": 1.05,
+    "absolute_max_ppl_ratio": 1.10,
+    "minimum_relative_unique_address_reduction": 0.05,
+    "max_full_candidates": 2,
+    "selection": "lowest_unique_address_ratio_among_preferred;else_lowest_ppl_ratio_among_absolute;prefer_distinct_pot_and_normalized_families",
+    "require_three_seeds": true,
+    "require_completed_json_and_sha": true
+  },
+  "scope": "GU-only;CSR selected W8 loads and exact counted accumulation;GPU quality test,not hardware DRAM timing or PPA"
+}

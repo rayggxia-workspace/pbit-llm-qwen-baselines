@@ -1,0 +1,37 @@
+{
+  "issue": 261,
+  "owner": "rayggxia",
+  "model": "Qwen/Qwen3-4B",
+  "checkpoint": "trained100M_T64",
+  "reference_source_commit": "a9d9af6a494d7dec338e0df9fc030dc021244476",
+  "reference_manifest_sha256": "3f8d1880c7e9f45238ab30dcdc2f4ec51c18bb7516666a9ce68234ba15fd558d",
+  "export_manifest_sha256": "187fa827daa5e162b0753ffd4b2687c11a17eea289193cdead614c8a722556ff",
+  "inputs_sha256": "84302bdff04a6bd78216dc03df24ebec309c666207879e2f3a468b057111bc5a",
+  "train_text_sha256": "6707892fa3788b5ab9ed78ab5ff37d9fe825f6011a2ad4fcd6a6d467f0e7da57",
+  "input_samples": 64,
+  "nonlinear_samples": 64,
+  "attention": "unchanged_exact_SDPA",
+  "calibration": {
+    "corpus": "WT2_train_only",
+    "windows": 4,
+    "tokens_per_window": 2048,
+    "sample_token_stride": 64,
+    "seed": 101,
+    "forward": "unpruned_T64",
+    "threshold": "fixed_per_layer_per_score;drop_score_le_threshold;ties_recorded",
+    "weight_norm": "joint_Wg_Wu_L2_of_represented_W8_times_tile_PoT_LSB",
+    "norm_encoding": "nearest_power_of_two;zero_vectors_remain_zero"
+  },
+  "cases": [
+    {"id": "original_strat64", "kind": "original", "score": "input", "prune_percent": 0},
+    {"id": "input_p10", "kind": "fixed_prune", "score": "input", "prune_percent": 10},
+    {"id": "input_p20", "kind": "fixed_prune", "score": "input", "prune_percent": 20},
+    {"id": "potnorm_p10", "kind": "fixed_prune", "score": "potnorm", "prune_percent": 10},
+    {"id": "potnorm_p20", "kind": "fixed_prune", "score": "potnorm", "prune_percent": 20}
+  ],
+  "screen_window_indices": [0, 41, 82, 123, 164, 205, 246, 287],
+  "deployment_seeds": [101, 202, 303],
+  "mask_scope": "one_mask_per_token_layer_shared_GU_all64_ticks_all_output_stripes",
+  "retained_arithmetic": "original_P8_four_scales_shared64_strat64_counts_no_rescale_no_inverse_probability_compensation",
+  "scope": "GU_only;fixed_train_calibrated_threshold;no_training_no_full_WT2_no_new_PPA"
+}

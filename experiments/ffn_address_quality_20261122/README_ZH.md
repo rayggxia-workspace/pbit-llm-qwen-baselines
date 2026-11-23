@@ -41,3 +41,8 @@ PLAN.json含9个FFN配置：原对照、L2/4/16/64、归一化伯努利64、单�
 执行源码a9d9af6a494d，冻结于`source-a9d9af6a494d`。6105仅因Slurm spool启动路径失败，未运行模型；6106使用绝对路径`bash --wrap`复用同一冻结源码，已完成8项GPU/独立整数检查、全36层GU整数no-op和整2048窗口logits一致性，以及9配置单窗口pilot。所有后续任务也必须通过绝对路径包装启动，不能直接依赖sbatch脚本的`$0`所在目录。
 
 `check_restore.py`是单独的加强核验：使用独立NumPy dyadic公式检查全部9配置的质量、计数、权重PoT恢复与RNE24结果。它不修改已执行的GPU快照。`submit_followups.py`只有同时取得gate与恢复核验的completed封存JSON，才会提交三seed的8窗口screen；CPU选择任务等待全部screen结束，符合预先固定条件时再提交完整WT2及匹配对照。
+
+2026-11-23正式状态：[SCREEN_REPORT_ZH.md](SCREEN_REPORT_ZH.md)。9配置×3seed均
+completed且原字节SHA/8窗口/9215目标/36层/身份检查通过；无合格完整WT2候选，
+未启动全量。原小型JSON摘要与核验在results_screen_20261123；本地复核脚本为
+audit_completed_screen.py。旧pilot保留，不能用它覆盖正式三seed结果。

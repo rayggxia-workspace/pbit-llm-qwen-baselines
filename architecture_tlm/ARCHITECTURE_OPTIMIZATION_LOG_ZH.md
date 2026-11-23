@@ -152,3 +152,11 @@ Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内
 执行a9d9af6a494d、控制896fe5515afe；6105仅Slurm spool启动失败，6106同源码绝对路径包装通过8项GPU检查、36层整数与2048logits no-op；6107全部9配置独立恢复通过。本地4数学+3选择门禁。6109/6110/6111三seed9配置8窗口运行，6112完成后按预设质量与读取约束选择完整WT2。原19归档SHA保持；无新RTL/PPA/TLM。
 
 重要边界：旧categorical低覆盖率不适用于原P-FFN。单窗口seed101原64/64分层地址99.79%，÷2仍99.52%，cat64约2.44%但PPL已严重退化。pilot不是正式8窗口或完整WT2；待汇总completed JSON/SHA，不据此宣布系统能效。证据与可执行下一步在work/rayggxia/261/HANDOFF.md及quality_run_v1/SUBMISSION_INDEX.json。
+
+### 2026-11-23 正式筛选结束
+
+[8窗三seed结果](../experiments/ffn_address_quality_20261122/SCREEN_REPORT_ZH.md)：
+27份封存completed JSON通过SHA、目标位置、模型/输入身份、36层及字节账检查。
+原T64 PPL9.1849/唯一地址99.7896%；÷2 PPL9.8190/99.5164%，相对省地址仅0.2737%。
+分类S64/256/1024和归一化Bernoulli等省地址方案严重退化，无候选同时满足质量
+与读量门槛，未提交完整WT2。无新训练/TLM/PPA；不得把地址覆盖率继承成质量收益。

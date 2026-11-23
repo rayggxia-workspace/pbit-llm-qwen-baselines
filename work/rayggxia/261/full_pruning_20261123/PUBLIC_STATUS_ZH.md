@@ -1,4 +1,29 @@
-# 完整硬阈值验证：运行中交接
+# 完整硬阈值验证：13项已完成
+
+2026-11-23最新：4项完整WT2、9项完整下游全部completed并核验；原6141/6146队列
+已空，没有失败补跑或改动冻结源码。完整结果见
+experiments/ffn_pruning_full_eval_20261123/REPORT_ZH.md及results/。
+
+训练T64 PPL9.270730；纯输入20%9.304866（+0.3682%）；范数PoT20%9.298672
+（+0.3014%）。唯一GU行需求相对减少17.84%。未剪枝→剪枝，PIQA acc
+73.2862%→73.2318%、acc_norm 73.7214%→73.2862%；ARC-C acc
+47.0990%→47.5256%、acc_norm 50.2560%→50.9386%；WinoGrande acc
+65.6669%→64.7987%。PIQA有97题变差、96题变好，净少1题不是只改1题。
+
+seed101、FFN64/64、准确Attention、36层、完整WT2及全部任务提示/答案位置范围
+不变。44成员原件SHA、13完成、相同权重/输入/校准、目标/题数/36层及配对批次
+通过；本地独立复算SHA/NLL/指标/正误转移通过。COMPLETED_RAW.tar.gz为4698022B，
+SHA85396a156a8f58a1da1cca49c12a4ed54fbe3d3b196219d875b23a12e39642fb，
+原服务器readback_completed_v1和本地原work目录保留。逐题文本不公开，私人命令
+及绝对路径仍仅本地HANDOFF维护。结果收集器collect_completed.py是只读后处理。
+
+30%/40%硬阈值和边界带概率剪枝只是下一步建议，未启动；不把它们称已验证。
+PR继续开放待审未合并、默认不变，公开回执见PUBLICATION_FINAL.json。完整历史
+STATUS/HANDOFF没有上传，Projects及正式备忘录由维护者接续。
+
+---
+
+以下是初始提交时的历史快照，不代表当前运行状态：
 
 2026-11-23；rayggxia；Issue261 / PR262；task/261-ffn-address-coverage，base main。
 继续原独立工作目录；本文件为提交后快照，恢复必须重新读取Slurm/封存JSON。

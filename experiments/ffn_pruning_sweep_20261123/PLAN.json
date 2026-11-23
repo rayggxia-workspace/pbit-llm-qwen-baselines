@@ -1,0 +1,119 @@
+{
+  "issue": 261,
+  "seed": 101,
+  "model": "Qwen/Qwen3-4B",
+  "checkpoint": "trained100M_T64",
+  "input_samples": 64,
+  "nonlinear_samples": 64,
+  "attention": "unchanged_exact_SDPA",
+  "mild_manifest_sha256": "6f60e40c1941eb9ab0b12e56c28bd423d943bec189101d90b228923c81c09d9b",
+  "reference_manifest_sha256": "3f8d1880c7e9f45238ab30dcdc2f4ec51c18bb7516666a9ce68234ba15fd558d",
+  "mild_gate_sha256": "1439dd296c29517738dec0f58a9fbdf4b1ff2c76a92f5ce4655be69796bb2887",
+  "calibration_sha256": "e627eb746affbcfdb6b8f9927207a3edaa3755aa53ef23c16be7d455759557a4",
+  "inputs_sha256": "84302bdff04a6bd78216dc03df24ebec309c666207879e2f3a468b057111bc5a",
+  "tasks": {
+    "piqa": {
+      "split": "validation",
+      "count": 1838,
+      "sha256": "40e1677bba609c8801deacc171d76f3e24c083f365c95a1cbda7520c923dfea2"
+    },
+    "arc_challenge": {
+      "split": "test",
+      "count": 1172,
+      "sha256": "62f03257e737aed263f55c6abf87c7bb0028a44a6bdd2a26eb1279eb42c1d1e9"
+    },
+    "winogrande": {
+      "split": "validation",
+      "count": 1267,
+      "sha256": "f9d914d1818c0aba98cabdf8af2bc4bd943c462b9c5e7062647e05c2ce3315d1"
+    }
+  },
+  "task_protocol": {
+    "lm_eval": "0.4.8",
+    "num_fewshot": 0,
+    "chat_template": false,
+    "thinking_template": false,
+    "batch_size": 1,
+    "logits_cache": false,
+    "scope": "all_prompt_and_answer_positions_all36_layers;exact_SDPA;no_native_prefix"
+  },
+  "no_recalibration": false,
+  "no_training": true,
+  "owner": "rayggxia",
+  "export_manifest_sha256": "187fa827daa5e162b0753ffd4b2687c11a17eea289193cdead614c8a722556ff",
+  "full_source_manifest_sha256": "807238c8e2d1e995aba9f75eb949899aa63b5178189d9f774ae788560a507d1f",
+  "train_text_sha256": "6707892fa3788b5ab9ed78ab5ff37d9fe825f6011a2ad4fcd6a6d467f0e7da57",
+  "screen_window_indices": [
+    0,
+    41,
+    82,
+    123,
+    164,
+    205,
+    246,
+    287
+  ],
+  "calibration": {
+    "tokens_per_window": 2048,
+    "windows": 4,
+    "sample_token_stride": 64,
+    "seed": 101,
+    "percentiles": [
+      10,
+      20,
+      30,
+      40
+    ],
+    "scope": "same frozen WT2 train first8192 tokens;unpruned T64"
+  },
+  "cases": [
+    {
+      "id": "original_strat64",
+      "kind": "original"
+    },
+    {
+      "id": "input_p20",
+      "kind": "hard",
+      "percent": 20
+    },
+    {
+      "id": "input_p30",
+      "kind": "hard",
+      "percent": 30
+    },
+    {
+      "id": "input_p40",
+      "kind": "hard",
+      "percent": 40
+    },
+    {
+      "id": "band20_40_half",
+      "kind": "boundary_half",
+      "lower_percent": 20,
+      "upper_percent": 40,
+      "keep_probability": "1/2",
+      "compensation_shift": 1
+    },
+    {
+      "id": "random18",
+      "kind": "random18",
+      "drop_threshold_R8": 46,
+      "drop_probability": "46/256",
+      "compensation_shift": 0
+    }
+  ],
+  "candidates": [
+    "input_p30",
+    "input_p40",
+    "band20_40_half",
+    "random18"
+  ],
+  "promotion": {
+    "max_ppl_ratio": 1.02,
+    "minimum_relative_unique_address_reduction": 0.15,
+    "max_candidates": 4,
+    "tasks_only_after_full_PPL_pass": true
+  },
+  "prior_full_PPL_sha256": "cb3361f32bf5f76820d6ae0600397982cec1a2dc81cf1b41d3c520810385bbb5",
+  "prior_summary_sha256": "443ab9bda6b418012142cf44843cbd76101f39aa05e1303c7a7a31669b229ea6"
+}

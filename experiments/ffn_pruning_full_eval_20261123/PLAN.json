@@ -1,0 +1,78 @@
+{
+  "issue": 261,
+  "seed": 101,
+  "model": "Qwen/Qwen3-4B",
+  "checkpoint": "trained100M_T64",
+  "input_samples": 64,
+  "nonlinear_samples": 64,
+  "attention": "unchanged_exact_SDPA",
+  "mild_manifest_sha256": "6f60e40c1941eb9ab0b12e56c28bd423d943bec189101d90b228923c81c09d9b",
+  "reference_manifest_sha256": "3f8d1880c7e9f45238ab30dcdc2f4ec51c18bb7516666a9ce68234ba15fd558d",
+  "mild_gate_sha256": "1439dd296c29517738dec0f58a9fbdf4b1ff2c76a92f5ce4655be69796bb2887",
+  "calibration_sha256": "e627eb746affbcfdb6b8f9927207a3edaa3755aa53ef23c16be7d455759557a4",
+  "inputs_sha256": "84302bdff04a6bd78216dc03df24ebec309c666207879e2f3a468b057111bc5a",
+  "ppl_cases": [
+    {
+      "id": "bf16",
+      "kind": "native"
+    },
+    {
+      "id": "original_strat64",
+      "kind": "original",
+      "score": "input",
+      "prune_percent": 0
+    },
+    {
+      "id": "input_p20",
+      "kind": "fixed_prune",
+      "score": "input",
+      "prune_percent": 20
+    },
+    {
+      "id": "potnorm_p20",
+      "kind": "fixed_prune",
+      "score": "potnorm",
+      "prune_percent": 20
+    }
+  ],
+  "task_cases": [
+    "bf16",
+    "original_strat64",
+    "input_p20"
+  ],
+  "tasks": {
+    "piqa": {
+      "split": "validation",
+      "count": 1838,
+      "sha256": "40e1677bba609c8801deacc171d76f3e24c083f365c95a1cbda7520c923dfea2"
+    },
+    "arc_challenge": {
+      "split": "test",
+      "count": 1172,
+      "sha256": "62f03257e737aed263f55c6abf87c7bb0028a44a6bdd2a26eb1279eb42c1d1e9"
+    },
+    "winogrande": {
+      "split": "validation",
+      "count": 1267,
+      "sha256": "f9d914d1818c0aba98cabdf8af2bc4bd943c462b9c5e7062647e05c2ce3315d1"
+    }
+  },
+  "task_protocol": {
+    "lm_eval": "0.4.8",
+    "num_fewshot": 0,
+    "chat_template": false,
+    "thinking_template": false,
+    "batch_size": 1,
+    "logits_cache": false,
+    "scope": "all_prompt_and_answer_positions_all36_layers;exact_SDPA;no_native_prefix"
+  },
+  "no_recalibration": true,
+  "no_training": true,
+  "historical_task_selection_only": {
+    "source": "figures/fig9_quality_table_20261116/build/pptx/abcd-20261116/expected.json",
+    "old_PIQA_drop_pp": 5.44,
+    "old_ARC_C_drop_pp": 8.11,
+    "old_WinoGrande_drop_pp": 6.95,
+    "warning": "different historical joint setting;not causal baseline for present pruning"
+  }
+}

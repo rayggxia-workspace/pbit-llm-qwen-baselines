@@ -1,6 +1,6 @@
 # Issue204 P-CIM cross-conversation summary - 2026-11-24
 
-Owner rayggxia. Branch task/204-pcim-summary-20261124, base main206bf81f18ea; sparse worktree tmp/pcim-summary-issue204-20261124. New documentation only: docs/P_CIM_SUMMARY_ZH_20261124.md; same-byte root reading copy in local a_P_BIT.14 local evidence files hashed and checked, counter/tile arithmetic and primary PPA figures verified; UTF8/LF and mirror match. No source/default or running-job changes, no new model/EDA experiments. Local file completed; branch/PR publication pending. Exact validation and handoff: work/rayggxia/204/pcim_summary_20261124. This subtask does not close Issue204 or claim Issue263 quality results. Projects pending.
+Owner rayggxia. Branch task/204-pcim-summary-20261124, base main206bf81f18ea; sparse worktree tmp/pcim-summary-issue204-20261124. New documentation only: docs/P_CIM_SUMMARY_ZH_20261124.md; same-byte root reading copy in local a_P_BIT.14 local evidence files hashed and checked, counter/tile arithmetic and primary PPA figures verified; UTF8/LF and mirror match. No source/default or running-job changes, no new model/EDA experiments. Local file completed; core publication25b5dddef149, PR265 ready/open/unmerged. Four blobs and remote document bytes verified. Exact validation and handoff: work/rayggxia/204/pcim_summary_20261124. This subtask does not close Issue204 or claim Issue263 quality results. Projects pending.
 
 ---
 

@@ -11,3 +11,7 @@ Validation: UTF-8/LF, root-mirror byte identity, 14 existing local source SHA-25
 Publication must include only this document, this task's manifest/handoff, and the new entry in the owner's existing STATUS. Do not upload mixed root directories or source evidence archives. Some paths are local evidence pointers and are labeled accordingly. Published source libraries are not implied by a local path existing. Keep the document and local reading copy byte-identical after future revisions.
 
 Next: use the summary as the handoff entry, then read the relevant dated source contract before changing an interface or reusing a PPA value. Formal model quality for the new 128-cell configuration belongs to Issue263/PR264. This document task does not take over or close that experiment or Issue204's other work. No automatic PR merge; Projects board sync remains pending without a verified write route.
+
+## Publication
+
+Core document/source-index publication:25b5dddef1495a7ed8949eb7eb2eb7ba342e0082. PR265 targets main,ready/open,not merged. All4 blob hashes verified; remote document raw bytes matched the local summary/root mirror. No data or source archives uploaded. The document SHA256 is e9d986eb832b03a5d79991f712d214aba9f68b57f08fe96acc151709fea65558. Publication receipt and memo navigation check remain local operational metadata.

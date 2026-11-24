@@ -1,0 +1,13 @@
+# 后级128格联合分层对照
+
+2026-11-24，rayggxia；Issue263，分支task/263-ffn-and128-grid，base main206bf81f18ea88c4c625ce8d32edd18a58edd1cd。独立最小目录，不改其他任务执行源码或STATUS。
+
+已核对Issue254/PR255中64/128实际为前级64区间、后级4×2×4格×4次；联合main原件在本人现有服务器，版本及SHA与既有清单一致。本次将重做同环境coarse32对照，候选为8×2×8格×1次，总T128保持。Attention、W8/PoT/P8和联合权重不变。
+
+本地4096组三元概率数学检查通过。首版冻结模型执行源f12f885efa7b1a7d1593f64a054cb9b8f238ec13，manifest SHA517b34110819156487a74f0374b52b38be3b8d7cb857b23e79f550666492334c。GPU门禁6210完成计数检查、native短测与两方案pilot前向后，在保存首个两题任务结果时因未创建pilot目录退出；依赖CPU6214未启动正式数组。失败源码/输出保留，不能宣称门禁或完整评测已完成。
+
+修复仅在run_task入口创建该次输出目录，不改数值、随机键、分层或权重。独立run-v2已提交门禁6215与afterok续接6216，执行源bba0b5a8f8eb6ee9b42d57e9e0a22c6cec8a575a，manifest SHA f5e8768da55fad18d47372221118c982cb6f6fa36066bcc39ee0f0ef75748610。门禁尚待完整封存，正式数组尚未启动。
+
+门禁通过后，Slurm续接器自动提交完整WT2两方案三部署seed、原BF16一组，以及PIQA/ARC-C/Wino三任务两方案首seed101；按4分片共52个GPU子任务，没有人为并发cap，原数据量并非52种模型方案。后续CPU收集器只汇总完整封存项，不将部分seed/分片充作完整结果。不依赖本地电脑持续开机。
+
+源包与manifest保留在run_v1，SOURCE_INDEX.json登记字节SHA。dispatch/schedule为独立冻结控制脚本，不修改已提交的模型源码；私人路径/SSH运维回执不公开。预计时间以门禁pilot实测吞吐和实际队列更新，不将24h作业时限当ETA。无需重复原八任务全套，无训练、PPA、默认改变；PR待审后再验收。

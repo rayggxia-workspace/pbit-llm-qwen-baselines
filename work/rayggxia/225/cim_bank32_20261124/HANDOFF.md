@@ -26,3 +26,7 @@ Limits:512B custom-bank PPA remains explicit capacity-equivalentS0 area/idle plu
 Next executable actions: use existing EDA connection with a workingSSH environment, stage this small overlay beside the immutable PR249 host, run native first-layer4/5/6 comparisons through Slurm; only then run complete36-layer/native cases as needed. Do not resubmit healthy GPU/model tasks or change rawPPA. Review/merge only this task's PR; keep Issue225 open for its other work. Projects board sync requires a verified write route.
 
 Publication state: local code and validation complete; branch/PR publication receipt will be appended after remote verification.
+
+## Published
+
+PR266 is ready/open,not merged: https://github.com/rayggxia-workspace/pbit-llm-qwen-baselines/pull/266 . Source commit db7c7ebd58adc5d0ce0945bf44db44f3bb81a701;12 files read back exactly. PUBLICATION.json records blob IDs. Local source commit c8cd633 and connector-created commit share the same source tree;do not blindly native-push a diverging local ref. New profile is available in this branch/local reading mirror,not merged into main. No remote compute jobs.

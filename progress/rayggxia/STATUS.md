@@ -1,3 +1,9 @@
+# Issue204 P-CIM cross-conversation summary - 2026-11-24
+
+Owner rayggxia. Branch task/204-pcim-summary-20261124, base main206bf81f18ea; sparse worktree tmp/pcim-summary-issue204-20261124. New documentation only: docs/P_CIM_SUMMARY_ZH_20261124.md; same-byte root reading copy in local a_P_BIT.14 local evidence files hashed and checked, counter/tile arithmetic and primary PPA figures verified; UTF8/LF and mirror match. No source/default or running-job changes, no new model/EDA experiments. Local file completed; branch/PR publication pending. Exact validation and handoff: work/rayggxia/204/pcim_summary_20261124. This subtask does not close Issue204 or claim Issue263 quality results. Projects pending.
+
+---
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

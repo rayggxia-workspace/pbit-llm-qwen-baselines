@@ -139,10 +139,18 @@ def main():
     assert len(specs) == 52 and len({s['output'] for s in specs}) == 52
     spec_path = a.root / 'JOB_SPECS.json';save(spec_path, specs)
     assert sha(settings['dispatcher']) == settings['dispatcher_sha256']
-    cmd = [settings['sbatch'], '--parsable', '--partition=' + settings['partition'], '--gres=gpu:1',
-           '--cpus-per-task=4', '--mem=48G', '--time=1440', '--array=0-51', '--job-name=and128-263-eval',
-           '--output=' + str(a.root / 'logs/eval-%A_%a.log'),
-           '--wrap', shlex.join([settings['python'], settings['dispatcher'], '--settings', str(a.settings), '--specs', str(spec_path)])]
+    if settings.get('resource_pool'):
+        cmd = [settings['sbatch'], '--parsable', '--partition=' + settings['partition'],
+               '--gres=' + settings['pool_gres'], '--cpus-per-task=8', '--mem=160G',
+               '--time=10080', '--job-name=and128-263-eval-pool',
+               '--output=' + str(a.root / 'logs/pool-%j.log'), '--wrap',
+               shlex.join([settings['python'], settings['resource_pool'], '--phase', 'evaluate',
+                           '--settings', str(a.settings)])]
+    else:
+        cmd = [settings['sbatch'], '--parsable', '--partition=' + settings['partition'], '--gres=gpu:1',
+               '--cpus-per-task=4', '--mem=48G', '--time=1440', '--array=0-51', '--job-name=and128-263-eval',
+               '--output=' + str(a.root / 'logs/eval-%A_%a.log'),
+               '--wrap', shlex.join([settings['python'], settings['dispatcher'], '--settings', str(a.settings), '--specs', str(spec_path)])]
     save(receipt, {'status': 'submitting', 'specs_sha256': sha(spec_path), 'command': cmd})
     job = subprocess.check_output(cmd, text=True).strip().split(';')[0];assert job.isdigit()
     child_cmd = [settings['sbatch'], '--parsable', '--partition=' + settings['partition'], '--cpus-per-task=1',
@@ -155,7 +163,9 @@ def main():
     estimate = gate['native_reference']['seconds'] / gate['native_reference']['targets'] * 299077
     estimate += sum(rates[c] * 299077 * 3 for c in ['coarse32', 'fine128'])
     estimate += sum(r['seconds'] / r['documents'] * plan['tasks'][r['task']]['count'] for r in gate['task_pilots'])
-    save(receipt, {'status': 'submitted', 'array_job': job, 'array_tasks': len(specs), 'collector_job': child,
+    save(receipt, {'status': 'submitted', 'evaluation_job': job,
+                   'execution': 'allocated_GPU_pool' if settings.get('resource_pool') else 'Slurm_array',
+                   'logical_tasks': len(specs), 'collector_job': child,
                    'specs_sha256': sha(spec_path), 'settings_sha256': sha(a.settings),
                    'dispatcher_sha256': settings['dispatcher_sha256'], 'scheduler_sha256': sha(__file__),
                    'gate_sha256': sha(a.root / 'gate/RESULT.json'),

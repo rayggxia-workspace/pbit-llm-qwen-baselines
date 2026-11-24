@@ -17,9 +17,13 @@ Issue263，负责人rayggxia，2026-11-24；关联Issue254/PR255的已执行联�
 
 `checks.py`本地可运行analytic_checks，无torch依赖；4096组边界三元组检查同均值及嵌套方差。GPU门禁比较原采样器的计数矩与逐格三比较器AND的矩，检查端点、总次数、原前级、native缓存无操作等价、旧coarse路径重复logits一致、36层实际T、权重不变和官方任务覆盖。软件沿用原七类边界区域的精确条件二项计数压缩，不是物理/GF64比特流回放。
 
-运行时依赖必须用确切SHA核对：旧联合参考身份f1612d5cb4e450d80b8497fcef7e61ba8b6e50d2cc2bc772b39cc187da72770f，及其59文件清单；原seven runtime、模型和WT2由冻结prepare/load_model核验；官方任务加载器引用原source-5df53bac765c的manifest807238c8e2d1e995aba9f75eb949899aa63b5178189d9f774ae788560a507d1f。原件从既有授权存储读取，不修改或复制大权重。
+运行时依赖必须用确切SHA核对：旧联合参考身份f1612d5cb4e450d80b8497fcef7e61ba8b6e50d2cc2bc772b39cc187da72770f，及其59文件清单；原seven runtime、模型和WT2由冻结prepare/load_model核验；官方任务加载器引用原source-5df53bac765c的manifest807238c8e2d1e995aba9f75eb949899aa63b5178189d9f774ae788560a507d1f。跨服务器迁移只复制清单内原字节，验证目标SHA；不在Git或Windows重复保存大权重。
 
 runner.py需要显式提供reference-source、runtime、task-source、data-root、output；输出目录必须全新，GPU运行必须有SLURM_JOB_ID。运维命令与私人绝对路径只在work交接/原服务器保存，公开代码通过参数接入。
+
+迁移环境可通过`--inputs`和`--overlay`传入新位置。原INPUTS及59文件参考保持不动，新INPUTS只能改变parent_model/tokenizer/T64_deployment/text四个位置字段；权重、语料、版本与SHA仍相同。软件/GPU版本进入provenance，新环境重做BF16和coarse32，不能继承旧环境数值。
+
+当共享服务器Slurm空闲槽与实际显存不一致时，可显式选择`resource_pool.py`。它只使用该Slurm作业获配设备中实际空闲显存≥40GiB的卡，逐卡执行相同52个逻辑分片；不访问获配集合外的卡，不终止他人进程。普通Slurm数组入口保留；pool模式按实际可用卡并行，记录资源选择和每分片退出码。任何分片失败均保留，收集器不能将其标为完整。
 
 门禁先重跑未改动BF16及同权重配对pilot；通过后提交完整WT2：coarse/fine各部署seed101/202/303，另同环境原BF16一次。每组按37个八窗口块分4个独立作业，逐目标不重叠，共292窗/299077目标。随机域固定到块，不由Slurm作业号决定。
 

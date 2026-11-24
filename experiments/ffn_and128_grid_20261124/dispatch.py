@@ -35,6 +35,9 @@ def main():
            '--task', spec['task'], '--gate', str(root / 'gate/RESULT.json'), '--output', str(out)]
     for key in ['reference_source', 'runtime', 'task_source', 'data_root']:
         cmd += ['--' + key.replace('_', '-'), settings[key]]
+    for key in ['inputs', 'overlay']:
+        if key in settings:
+            cmd += ['--' + key, settings[key]]
     os.execve(settings['python'], cmd, env)
 
 

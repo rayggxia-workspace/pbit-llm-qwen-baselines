@@ -55,9 +55,9 @@ def unchanged(state):
     assert all(v.data_ptr() == ptr and v._version == version for v, ptr, version in state)
 
 
-def overlay(model, identity, record, plan):
+def overlay(model, identity, record, plan, actual_path=None):
     import torch
-    path = Path(record['path'])
+    path = Path(actual_path or record['path'])
     assert path.stat().st_size == plan['overlay_bytes'] and sha(path) == plan['overlay_sha256']
     assert identity['export_manifest_sha256'] == plan['parent_export_manifest_sha256']
     assert record['revision'] == plan['overlay_revision']
@@ -138,7 +138,7 @@ def gate(a, plan, inputs, tokens, provenance):
     del model, context, modules
     gc.collect(); torch.cuda.empty_cache()
     model, context, modules, identity = load_model(inputs)
-    applied = overlay(model, identity, json.loads((a.reference_source / 'ADAPTATION_WEIGHT.json').read_bytes()), plan)
+    applied = overlay(model, identity, json.loads((a.reference_source / 'ADAPTATION_WEIGHT.json').read_bytes()), plan, a.overlay)
     tokenizer, tasks, task_info = task_metadata(a, plan, inputs)
     pilots, fingerprints, task_pilots = [], [], []
     for index in [0, 0, 1]:
@@ -173,7 +173,7 @@ def gate(a, plan, inputs, tokens, provenance):
                                     'targets': r['audit']['targets'], 'seconds': time.monotonic() - start,
                                     'metrics': r['metrics']})
         unchanged(state)
-    assert torch.cuda.max_memory_allocated() < 31.0 * 2**30
+    assert torch.cuda.max_memory_allocated() < 0.95 * torch.cuda.get_device_properties(0).total_memory
     return {'status': 'completed', 'phase': 'gate', 'checks': checks, 'native_cached_noop_bitwise': True,
             'coarse_repeat_logits_bitwise': True, 'front_shared64_unchanged': True,
             'weights_unchanged_after_scoring': True, 'native_reference': native_ref,
@@ -191,6 +191,8 @@ def main():
     ap.add_argument('--shard', type=int, default=0)
     ap.add_argument('--task', default='piqa')
     ap.add_argument('--gate', type=Path)
+    ap.add_argument('--inputs', type=Path, help='Relocated input paths; original identity fields must match.')
+    ap.add_argument('--overlay', type=Path, help='Relocated, SHA-identical QKVO checkpoint.')
     a = ap.parse_args()
     assert not a.output.exists(), 'Use a fresh immutable result directory.'
     a.output.mkdir(parents=True)
@@ -215,14 +217,22 @@ def main():
     from run_wt2 import prepare, load_model
     from adapter import SamplingOverride
     (a.output / 'protocol').mkdir()
-    inputs, tokens, ledger, protocol = prepare(a.reference_source / 'ffn/INPUTS.json', a.runtime, a.output / 'protocol')
+    original_inputs = a.reference_source / 'ffn/INPUTS.json'
+    actual_inputs = a.inputs or original_inputs
+    if a.inputs:
+        before, after = json.loads(original_inputs.read_bytes()), json.loads(a.inputs.read_bytes())
+        locations = {'parent_model', 'tokenizer', 'T64_deployment', 'text'}
+        assert set(before) == set(after)
+        assert all(before[k] == after[k] for k in before if k not in locations)
+    inputs, tokens, ledger, protocol = prepare(actual_inputs, a.runtime, a.output / 'protocol')
     assert protocol['text_sha256'] == plan['test_text_sha256'] and protocol['token_sha256'] == plan['test_token_sha256']
     provenance = {'source_commit': json.loads(manifest.read_bytes())['git_commit'],
                   'source_manifest_sha256': sha(manifest), 'plan_sha256': sha(own / 'PLAN.json'),
                   'reference_identity': ref['identity'], 'reference_manifest_sha256': sha(ref_manifest),
                   'inputs_sha256': sha(a.reference_source / 'ffn/INPUTS.json'),
+                  'effective_inputs_sha256': sha(actual_inputs),
                   'task_source_manifest_sha256': sha(task_manifest), 'protocol': protocol,
-                  'versions': {x: importlib.metadata.version(x) for x in ['torch', 'transformers', 'triton', 'lm_eval']}}
+                  'versions': {x: importlib.metadata.version(x) for x in ['torch', 'transformers', 'triton', 'lm_eval', 'datasets', 'accelerate']}}
     native = a.phase == 'gate' or a.case == 'bf16'
     if a.phase == 'gate':
         result = gate(a, plan, inputs, tokens, provenance)
@@ -232,7 +242,7 @@ def main():
         assert g['provenance'] == provenance and g['native_cached_noop_bitwise']
         assert g['coarse_repeat_logits_bitwise'] and g['front_shared64_unchanged']
         case = None if native else next(c for c in plan['cases'] if c['id'] == a.case)
-        applied = None if native else overlay(model, identity, json.loads((a.reference_source / 'ADAPTATION_WEIGHT.json').read_bytes()), plan)
+        applied = None if native else overlay(model, identity, json.loads((a.reference_source / 'ADAPTATION_WEIGHT.json').read_bytes()), plan, a.overlay)
         if not native:
             assert identity == g['identity'] and applied == g['overlay']
         patch = nullcontext() if native else SamplingOverride(case)

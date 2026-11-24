@@ -1,3 +1,11 @@
+## 2026-11-24 Issue225：32×128-bit CIM单权重区TLM
+
+负责人rayggxia；分支task/225-cim-bank32-20261124，base main206bf81f18ea；独立目录tmp/cim-bank32-tlm-issue225-20261124。用户选定16bank/核、32字×128bit、K64/M128/W8不变，默认5核，删除32槽池。普通SRAM576KiB＋CIM40KiB＝616KiB，另有原16KiB DMA寄存器保持。
+
+本地完成3合同测试、父BeatSRAM真实调度128ns装载测试、4/5/6核FFN完整事务及旧3核/新5核首层对照，封存SHA/队列/工作量与能量账本通过。FFN620.860/566.452/554.264us；首层1.094636→1.106372ms，覆盖面积6.480303→6.776269mm²，片上0.344964→0.342181mJ。定制512B宏面积/idle仍为明确代理；无新PPA/PPL或36层原生回放，不改旧封存结果。源码/结果：architecture_tlm/process_28nm/cim_bank32_20261124/；交接work/rayggxia/225/cim_bank32_20261124/HANDOFF.md。
+
+当前本地完成，准备任务PR；远端未运行，SSH依赖/代理环境待修复；Projects待维护者同步。下一步先做Slurm原生首层验证，其他模块/模型任务不接管。
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。

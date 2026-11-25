@@ -1,3 +1,19 @@
+## 2026-11-25 T64组共享尺度PPL已Slurm提交（Issue225/PR266）
+
+用户要求同一T64训练权重验证每64共享尺度，GU16/Wd32和GU64/Wd128，采用随预算细化的分层。正式代码experiments/t64_group64_scale_20261125/，源码提交b44974f9c44c22ea238d06b571de4d4d3245a6c0。未改其他owner冻结源码/原始PPL/TLM默认。
+
+尺度：x/g/u分别每连续64项共用最小覆盖档；保留T64各组四档原表，不是全局同四个绝对值。逐元素选档为同预算配对。前级16/64层，每层1次；后级4×2×4或8×2×8，每联合格1次。三流AND直接作为Wd事件，没有重新统计再编码。sigmoid仍为原生true-scale P8 g恢复到S8Q3后查冻结P8 LUT；不使用浮点精确SiLU。准确Attention，T64原配套non_ffn保持，无重新训练/校准。
+
+Slurm新任务：CPU6297（6项通过，0.046秒测试）；GPU门禁6298运行；BF16完整参考6299、12配置的四分片数组6300_0…47、汇总6301均afterok等待。48分片不是48独立配置；三seed12组完整WT2292窗/299077目标。数组并发上限4，另一个BF16独立参考；其他用户已有3张卡运行。只能从封存completed RESULT/SHA与逐窗位置/36层覆盖核验后认定完整。
+
+服务器root=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1；source=source-b44974f9c44c。全部新文件在zhj。模型/数据复用授权只读既有存储，INPUTS.json为原身份清单同字节副本。不需要本机保持在线。
+
+SOURCE-b44974f9c44c.tar.gz为16290字节，SHA aba0a2f3dcbe14914558a9bca79b3a1e0fb2c99af7b8019f3b946e79db68b526；EXECUTION_MANIFEST SHA fc4305b1992d28a118786d91545c7b4cb0c4c1196362b33ad02972dad5dc0ca8。SUBMISSION.json含精确命令/全部ID，SETTINGS及其SHA保留。只读复用runtime SOURCE_MANIFEST SHA eb23a172efbd18e3e56060a6b10d2bfcde33fc7a014c5b10949038921ffb9076，逐文件在进程中核验。
+
+
+
+---
+
 ## 2026-11-25追加：21bit与本地PRNG
 
 rayggxia，同Issue225/PR266、task/225-cim-bank32-20261124，独立目录不变。TLM局部计数/结果槽21bit，默认GU16/Wd32；本地PRNG持续供数，无默认中央跳步/逐tile播种。10unit＋六回放＋六错误轨迹拒绝通过；新PPA待定，旧19bit价格仅参考，相关新预算合计为null。无新RTL/整机/PPL或远端作业。正式报告COUNTER21_LOCAL_RNG_ZH_20261125.md，交接work/rayggxia/225/cim_count21_localrng_20261125/HANDOFF.md；PR266交付、未合并，实际head由PR核实。尺度封装、描述符握手未在本轮完成。Projects待同步。

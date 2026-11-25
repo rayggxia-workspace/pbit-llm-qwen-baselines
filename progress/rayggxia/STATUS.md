@@ -1,3 +1,9 @@
+## 2026-11-25 T64 group64 resource-aware continuation6309/6310
+
+资源接续（最新优先）：BF166299完整完成PPL11.537160。原6300_0/1/3资源OOM；5/6确认被占满后取消；7…47仍未启动即取消；保留健康2/4（实际6304/6306），不重跑。原依赖父数组的6301取消。新6309（afterok:6304:6306，Slurm请求5卡，仅使用分配范围内空闲≥24GiB的卡，最多2worker）接续其余46片；6310 afterok:6309组合原健康片与新片并调用冻结runner汇总。RESUME_SUBMISSION.json含精确命令、resource_resume.py SHA和各类状态。新目录resource_resume_v1，collection索引与结果均留该目录；不要等待旧6301或将旧3次OOM写成算法失败。原数值source/manifest均不变；只新增资源包装器，不覆盖已提交快照。学院GPU也可连接，但Issue263已有健康任务，本轮不重复其部署或评测。
+
+---
+
 ## 2026-11-25 T64 group64 GPU preflight completed; full WT2 running
 
 更新：GPU6298已completed，311.289秒，两项原生无操作逐位检查通过；6299及6300首四片已运行。新两窗口初筛、消融和实际T64表范围见experiments/t64_group64_scale_20261125/results/SCREEN_ZH.md。3071目标的组64两档PPL20911.71/31.54，不是完整WT2；完整结果未出。封存RESULT及SCALE_TABLES的SHA已本地核验。下方提交时快照保留。

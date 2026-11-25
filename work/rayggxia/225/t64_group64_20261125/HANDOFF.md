@@ -1,3 +1,7 @@
+最新2026-11-25 16:01：原GPU可登录；23/48分片封存SHA、逐窗目标SHA、36层覆盖核验；完整5/12配置。lane16/32 seed101/202 PPL10.758346/10.749732；group64原四档16/32三seed PPL22080.554872/21999.098386/22297.607950。lane303 shard2 CUDA超时，仅补该片6316 afterany6309；6317新汇总，旧6310取消；6309健康任务保留。64/128未完成。小结果392758B/416成员已本地保全，归档SHA89de5e55655050808c1e80b9a8310ca2351a4a77c8a3ae871857566c2d650d72。新动态PoT EDA1871089仍Priority排队、未跑PPL。下一步读single_retry_v2/collection/SUMMARY.json与全部sealed结果，不重跑健康片。详见FULL_WT2_PROGRESS_ZH.md和SINGLE_RETRY_SUBMISSION.json。
+
+Latest launch verified: original shards6304/6306 completed (73 windows each); continuation6309 RUNNING on assigned GPUs0/6 only, each >32100MiB free at selection. Collector6310 pending. Numerical snapshot and prior completed reference unchanged. See resource_resume_v1/RESOURCE.json and RECEIPT_*.json; final collection/SUMMARY.json only after all46 retries complete.
+
 # T64组共享尺度PPL交接
 
 资源接续（最新优先）：BF166299完整完成PPL11.537160。原6300_0/1/3资源OOM；5/6确认被占满后取消；7…47仍未启动即取消；保留健康2/4（实际6304/6306），不重跑。原依赖父数组的6301取消。新6309（afterok:6304:6306，Slurm请求5卡，仅使用分配范围内空闲≥24GiB的卡，最多2worker）接续其余46片；6310 afterok:6309组合原健康片与新片并调用冻结runner汇总。RESUME_SUBMISSION.json含精确命令、resource_resume.py SHA和各类状态。新目录resource_resume_v1，collection索引与结果均留该目录；不要等待旧6301或将旧3次OOM写成算法失败。原数值source/manifest均不变；只新增资源包装器，不覆盖已提交快照。学院GPU也可连接，但Issue263已有健康任务，本轮不重复其部署或评测。

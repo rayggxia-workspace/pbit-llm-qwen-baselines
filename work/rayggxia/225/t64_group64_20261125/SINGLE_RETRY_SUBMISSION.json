@@ -1,0 +1,53 @@
+{
+  "status": "submitted_failed_shard_only",
+  "utc": "20261125T080055Z",
+  "jobs": {
+    "retry": {
+      "id": "6316",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--partition=gpu5090",
+        "--cpus-per-task=4",
+        "--mem=48G",
+        "--time=180",
+        "--job-name=g64-225-retry-v2",
+        "--dependency=afterany:6309",
+        "--kill-on-invalid-dep=yes",
+        "--output=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/single_retry_v2/retry-%j.log",
+        "--gres=gpu:1",
+        "--wrap",
+        "/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/retry_failed_v2.py --settings /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/single_retry_v2/SETTINGS.json --phase retry"
+      ]
+    },
+    "collect": {
+      "id": "6317",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--partition=gpu5090",
+        "--cpus-per-task=1",
+        "--mem=8G",
+        "--time=30",
+        "--job-name=g64-225-collect-v2",
+        "--dependency=afterok:6316",
+        "--kill-on-invalid-dep=yes",
+        "--output=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/single_retry_v2/collect-%j.log",
+        "--wrap",
+        "/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/retry_failed_v2.py --settings /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/single_retry_v2/SETTINGS.json --phase collect"
+      ]
+    }
+  },
+  "healthy_pool": "6309 unchanged",
+  "replaced_collector": "6310 canceled; cannot collect the missing shard",
+  "failed_index": 10,
+  "numerical_source": "b44974f9c44c22ea238d06b571de4d4d3245a6c0",
+  "wrapper_sha256": "72813bc9dbc55507db50635cb320242b7694cb7896f36159b5065529c8127679",
+  "retry_root": "/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/single_retry_v2",
+  "snapshot": {
+    "remote_path": "/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/SMALL_RESULTS_20261125T080055Z.tar.gz",
+    "bytes": 392758,
+    "sha256": "89de5e55655050808c1e80b9a8310ca2351a4a77c8a3ae871857566c2d650d72",
+    "members": 416
+  }
+}

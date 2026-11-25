@@ -1,3 +1,5 @@
+2026-11-25：g/u机理诊断完成。6320唯一采集并通过观察器末logits逐位一致；median统计失败，6321 cuBLAS环境失败，6322复用同一6.23MB激活完成5层×16位置解析后级诊断，无重跑模型/PPL。极端幅度组只占少数；纯共享造成低事件概率更关键。简单截断伤害首/末层；共享基准＋1bit修正后局部NMSE接近原四档，尚无该新方案PPL/PPA。优先候选为组64基准＋1bit，而非再缩组或全层统一裁剪；这是建议，未修改默认。报告experiments/t64_dynamic_scale_20261125/diagnostic_results/REPORT_ZH.md，raw/source/失败记录均归档并校验。
+
 2026-11-25：新增小型g/u尺度机理诊断6320，单窗口、五层各16位置，不是PPL；父算术9789339冻结，新增patch SHA在diagnostic_v1/EXECUTION_MANIFEST.json。解析moment对逐格枚举断言通过，模型加载/无操作观察器核对及分析待完成。不得重复提交，恢复读work/rayggxia/225/t64_dynamic_20261125/diagnostic_v1/HANDOFF.md。
 
 2026-11-25最终：原GPU本人队列已空；原四档完整48/48分片和12/12配置/seed、6316补跑/6317汇总均sealed完成。逐元素GU16/Wd32完整PPL均值10.753594，GU64/Wd128 8.975547；旧组64四档分别22125.753736/28.551581。动态64/32/16的10项8窗初筛亦全完成。学院Issue263仍34/52逻辑分片，完整WT2七项齐，coarse32/fine128三seed均值9.446296/9.406494，任务仅coarse32 PIQA齐，主池62220保留运行、62221等待。总览experiments/t64_dynamic_scale_20261125/ALL_SUBMITTED_RESULTS_ZH.md。

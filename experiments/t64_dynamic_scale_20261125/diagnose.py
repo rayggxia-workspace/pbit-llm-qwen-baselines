@@ -68,7 +68,7 @@ def scale(value, policy, top, cap):
     import torch
     if policy == 'lane4':
         return __import__('seven_forward').encode_p8(value, top)
-    group = 64 if policy == 'max64' else 32 if policy == 'max32' else 16
+    group = 64 if policy in ('max64', 'correction1_64') else 32 if policy == 'max32' else 16
     a = value.abs().reshape(value.shape[0], -1, group)
     maximum = a.amax(-1, keepdim=True)
     if policy == 'second16':
@@ -79,7 +79,7 @@ def scale(value, policy, top, cap):
         exp = exp - 1
     exp = exp.clamp(-6, int(math.log2(cap)))
     e = exp.expand_as(a).reshape_as(value).long()
-    if policy == 'correction1':
+    if policy in ('correction1', 'correction1_64'):
         base = torch.ldexp(torch.ones_like(value), e)
         e = torch.where(value.abs() <= base * .25, e - 2, e).clamp_min(-6)
     selected = torch.ldexp(torch.ones_like(value), e)
@@ -140,9 +140,17 @@ def main():
     print('Captured five layers; observer last-token logits bitwise equality PASS', flush=True)
     raw = {str(i): {name: value.cpu() for name, value in pair.items()} for i, pair in captured.items()}
     torch.save(raw, a.output / 'ACTIVATIONS.pt')
+    analyze(captured, modules, identity, protocol, a.output, manifest,
+            a.output/'ACTIVATIONS.pt', dict(observer_logits_noop_bitwise=True, numeric_moments_tests=True))
+
+
+def analyze(captured, modules, identity, protocol, output, manifest, raw_path, checks):
+    import torch
+    import seven_forward as sf
+    from score_reference import save
     layers = []
     with torch.no_grad():
-        for i in selected:
+        for i in sorted(captured):
             g, u = captured[i]['g'], captured[i]['u']
             module = modules[i]
             wd = module.frozen_down_decoded.float()
@@ -151,7 +159,8 @@ def main():
             power = float(reference.double().square().sum())
             stats = {}
             for name, value in [('g', g), ('u', u)]:
-                v = value.abs().reshape(value.shape[0], -1, 16)
+                # Statistics do not need CUDA; CPU median is deterministic.
+                v = value.detach().abs().cpu().reshape(value.shape[0], -1, 16)
                 maximum = v.amax(-1)
                 median = v.median(-1).values
                 rms = v.square().mean(-1).sqrt()
@@ -161,7 +170,7 @@ def main():
                      groups_max_over_16_median=float((maximum>16*median).double().mean()),
                      top1_energy_fraction=quantiles(maximum.square()/v.square().sum(-1).clamp_min(1e-30)))
             results = []
-            for policy in ['lane4', 'max64', 'max32', 'max16', 'second16', 'half16', 'correction1']:
+            for policy in ['lane4', 'max64', 'max32', 'max16', 'second16', 'half16', 'correction1', 'correction1_64']:
                 gq, gs, ge, _ = scale(g, policy, module.g_top, 256.)
                 uq, us, ue, _ = scale(u, policy, module.u_top, 512.)
                 sg = torch.ldexp(torch.ones_like(g), ge)
@@ -183,12 +192,12 @@ def main():
                         g_clipped_fraction=float((g.abs()>sg).double().mean()),u_clipped_fraction=float((u.abs()>su).double().mean())))
             layers.append(dict(layer=i,outlier_statistics=stats,results=results))
             print('Analyzed layer '+str(i), flush=True)
-    save(a.output/'RESULT.json',dict(status='completed',scope='one context/five layers/16 tokens per layer fixed-GU posterior diagnostics;not PPL',
-         source=manifest,identity=identity,protocol=protocol,source_window=0,positions=positions,layers=layers,
-         observer_logits_noop_bitwise=True,numeric_moments_tests=True,
+    save(output/'RESULT.json',dict(status='completed',scope='one context/five layers/16 tokens per layer fixed-GU posterior diagnostics;not PPL',
+         source=manifest,identity=identity,protocol=protocol,source_window=0,positions=list(range(64,2048,128)),layers=layers,
+         **checks,
          upstream='dynamic group16,GU16/Wd32',probability_model='independent within-cell/channels as frozen joint_counts',
          reference='floating SiLU and linear solely as diagnostic error reference;not candidate hardware path',
-         raw_activations_sha256=hashlib.sha256((a.output/'ACTIVATIONS.pt').read_bytes()).hexdigest()))
+         raw_activations_sha256=hashlib.sha256(raw_path.read_bytes()).hexdigest(),raw_activations_path=str(raw_path)))
 
 
 if __name__ == '__main__':

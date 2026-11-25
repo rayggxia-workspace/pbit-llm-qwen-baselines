@@ -48,7 +48,7 @@ def scales(modules):
         row = {'layer': i}
         for name, table in [('x', m.x_scales), ('g', m.g_top[:, None] * m.g_top.new_tensor([1., .25, .0625, .015625])),
                             ('u', m.u_top[:, None] * m.u_top.new_tensor([1., .25, .0625, .015625]))]:
-            v = table.cpu().contiguous()
+            v = table.float().cpu().contiguous()
             mantissa, e = torch.frexp(v)
             assert bool((mantissa == .5).all())
             row[name] = {'exponents': (e-1).tolist(),
@@ -97,7 +97,7 @@ def score(model, context, modules, tokens, ledger, windows, seed, out, case=None
             assert math.isfinite(row['nll_sum'])
             records.append(row)
             if capture:
-                digest.update(logits.detach().cpu().contiguous().numpy().tobytes())
+                digest.update(logits.detach().float().cpu().contiguous().numpy().tobytes())
             save(out / 'PROGRESS.json', dict(status='running', records=records, seconds=time.monotonic()-started))
             print(json.dumps(dict(window=wi, ppl=math.exp(row['nll_sum']/row['targets']), seconds=time.monotonic()-started)), flush=True)
             del logits, loss, ids

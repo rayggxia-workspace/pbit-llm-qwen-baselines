@@ -1,3 +1,5 @@
+2026-11-25：用户要求动态组32/16都跑；已核实Slurm6318缩组触发为真，并实际执行四项，复用健康作业而不重复提交。当前四项状态completed，未完成[]。同seed101/8窗/9215目标，T64/W8/准确Attention不变。结果与SHA见experiments/t64_dynamic_scale_20261125/GROUP32_16_SCREEN_ZH.md及work/rayggxia/225/t64_dynamic_20261125/GROUP32_16_REQUIREMENT.json。
+
 # Issue225 最新：动态组64 PoT已在原GPU启动
 
 2026-11-25 17:30北京时间，用户要求改在原GPU先测，已提交Slurm6318并实际RUNNING，分配GPU1/RTX5090，开始时32105MiB空闲。4项CPU测试通过；GPU整数核R6/12/15/29 oracle检查通过（在driver加载BF16之前执行）；同轮完整BF16已跑至292窗，尚待封存汇总，未宣称动态候选PPL完成。

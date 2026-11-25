@@ -1,0 +1,15 @@
+# PPL尺度共享范围核查（本地只读审阅）
+
+2026-11-25。用户指出曾比较共享尺度和分别设置尺度。本轮未改算法/RTL/TLM、未提交或重跑PPL。以下只说明已读取执行源码的范围，不把未知的新版本推断为已验证。
+
+1. Issue206确有逐元素选档、仅x64共享、仅g/u64共享、全部64共享的配对PPL。qwen3/group_shared/core.py的group_choice要求scales形状为(groups,4)，每64元素选一个档号；这不是证明所有组使用同四个绝对值。原PoTW8后缀结果lane15.6967、仅x共享16.2740、全部共享67.8732；后来risk4重新校准G64/B4完整WT2为14.883993±0.018381，不同权重/预算/协议不与T64训练结果直接比较。
+
+2. 已验证的e888 risk4表SHA9a26ddde7c2ed935e652cefbadd5bf63b9f5b4f23a269775f47d38f0963987f7中，layer0 g组0指数[-4,-3,-2,0]，组1[-4,-3,-1,0]，实际候选表不同。该表属于旧Issue206，不代表后来T64检查点。
+
+3. T64原生运行时SOURCE_MANIFEST SHA eb23a172efbd18e3e56060a6b10d2bfcde33fc7a014c5b10949038921ffb9076核验通过。seven_forward.py SHA2fbb36ab7641ff48b9d1276772f6c0651bcc2c93c01ca7ffe8d95c6ba296f315，hard_forward第232行调用_encode_static_validated，第237行保留逐元素bin_id；static_core.py SHA1bba58ce0597a38d11e0ab7b498184c6d692df0bec705bec26077329fb0eff2a，第62行函数是逐元素选择。分层评测adapter只替换两处采样函数，没有改尺度选择。因此不能用这些T64分层PPL证明每64共用一个尺度或全模型共用四个绝对值。
+
+4. 20261117 fixed4配对执行生成器恢复原生T64 forward，检查四档数量，并未强制组内bin_id一致。需区分固定四档、随机字共享64、尺度档号共享64、全局四个绝对尺度。
+
+本地证据位置：project_archives/ffn_stratified204_20261105/hf_code_review/runtime_original/；tmp/group64-scale-issue206-20261028/qwen3/group_shared/及results/group_shared_20261028/；experiment_result_index/attention_accuracy/joint_t64_ffn_original_qkvo_fixed4_wt2_20261117/stage_remote.py。
+
+当前待办：将具体PPL运行的实际尺度选择与当前TLM/五核RTL匹配。若主线采用组内共享，需找到同T64权重/当前预算且真正启用共享选择的结果，或补同轮配对；不得继续仅凭shared64或fixed4标签继承质量结论。全局四个绝对值的实现和成绩尚未在本轮找到。

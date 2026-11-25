@@ -1,3 +1,9 @@
+## 2026-11-25 T64 group64 GPU preflight completed; full WT2 running
+
+更新：GPU6298已completed，311.289秒，两项原生无操作逐位检查通过；6299及6300首四片已运行。新两窗口初筛、消融和实际T64表范围见experiments/t64_group64_scale_20261125/results/SCREEN_ZH.md。3071目标的组64两档PPL20911.71/31.54，不是完整WT2；完整结果未出。封存RESULT及SCALE_TABLES的SHA已本地核验。下方提交时快照保留。
+
+---
+
 ## 2026-11-25 T64组共享尺度PPL已Slurm提交（Issue225/PR266）
 
 用户要求同一T64训练权重验证每64共享尺度，GU16/Wd32和GU64/Wd128，采用随预算细化的分层。正式代码experiments/t64_group64_scale_20261125/，源码提交b44974f9c44c22ea238d06b571de4d4d3245a6c0。未改其他owner冻结源码/原始PPL/TLM默认。

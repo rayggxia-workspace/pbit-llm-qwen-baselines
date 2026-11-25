@@ -17,3 +17,9 @@
 后续动作：RTL对话按正式接口表实现五核调度、实体槽和共享DMA，导出同名事件；起始随机状态提供器目前为1拍/II1条件宏，需要真实实现/PPA差额；512B定制CIM bank仍为普通S0容量等效价格代理。64描述符当前峰值30，若未来超过64需补生产端等待而不能扩大为无界队列。完整36层原生回放仍待独立执行，不将首层乘36当新TPOT。
 
 发布：沿同一PR266增量交付，不合并。发布前远端头e29befa4272fd92e7e72a71d7ae6059a19447d44。本地Git与API提交历史不同但旧树一致，不直接native push。实际新提交、树及回读验证以PUBLICATION.json为准；尚未写入该回执时只表示本地完成。Projects待有权限的维护者同步。
+
+## 已发布核验
+
+source commit401d1db5715a1814d8e7e31aeceedd2c5f1e180b，tree5e5cd5755242aa3b661d7d8e61535ef7d6433354与本地25文件来源树一致；8个关键文件blob回读通过。PR266 ready/open，未合并。PUBLICATION.json保存回执，Projects仍待维护者同步。后续元数据提交不改变以上执行结果或源码身份。
+
+本地根阅读镜像21文件逐SHA同步。PROJECT_MEMORY_ZH.md与Issue28规范编辑副本同字节追加本次记忆，SHA fc998bc7d8388c3909e76cb79a0c66968fa422b2c32fd50dadadb71a8d6fbb7b；本PR发布PROJECT_MEMORY_DELTA.md，未把规范备忘录的其他未发布历史混入。

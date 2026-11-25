@@ -4,7 +4,7 @@
 
 本地完成：每核双结果槽与128列捕获、32项/拍四次传输、结果/状态分开释放、当前4ns时钟入口、缓存生命周期/16B动作、共享16KiB DMA及64描述符容量、逻辑tile随机状态接口。8项unit、父BeatSRAM、六组trace回放、五份错误轨迹拒绝、完整首层及封存SHA闭合。首层1.106372→1.106300ms，616KiB，面积6.776269mm²不变，片上0.342181→0.342178mJ；是解析外存首层，不是新36层/native/PPL或五核RTL等价验收。
 
-目前本地完成，准备增量发布同一PR266；新提交/回读状态以work/rayggxia/225/cim_alignment_20261125/PUBLICATION.json为准。原件归档project_archives/cim_alignment225_20261125/RAW_AND_EXECUTED_SOURCE.zip，SHA de69a693f7a88f32b22a1314289659bbe35f2b94d53e95202b6e2ec43479e5d3，86成员全部复核。无运行中/新增远端任务，无新电路台账run。
+已增量发布同一PR266，ready/open、未合并；source commit401d1db5715a1814d8e7e31aeceedd2c5f1e180b，完整25文件树匹配，8个关键文件blob回读通过。实际回执work/rayggxia/225/cim_alignment_20261125/PUBLICATION.json。原件归档project_archives/cim_alignment225_20261125/RAW_AND_EXECUTED_SOURCE.zip，SHA de69a693f7a88f32b22a1314289659bbe35f2b94d53e95202b6e2ec43479e5d3，86成员全部复核。无运行中/新增远端任务，无新电路台账run。
 
 下一步：RTL对话实现相同五核接口；真实随机状态提供器/PPA及512B定制CIM外围仍待补。默认随机状态1拍/II1为条件宏；64描述符峰值30，超出需补生产端等待。PR待审不合并；Projects待维护者同步。完整交接：work/rayggxia/225/cim_alignment_20261125/HANDOFF.md。
 

@@ -54,7 +54,9 @@ def main():
         folder = root / name
         folder.mkdir(exist_ok=True)
         env[key] = str(folder)
-    cmd = [s['python'], str(source / 'driver.py'), '--assets', str(root / 'assets'),
+    entrypoint = s.get('entrypoint', 'driver.py')
+    assert Path(entrypoint).name == entrypoint and entrypoint.endswith('.py')
+    cmd = [s['python'], str(source / entrypoint), '--assets', str(root / 'assets'),
            '--inputs', s['inputs'], '--output', str(root / 'outputs')]
     rc = subprocess.call(cmd, env=env)
     save(root / 'EXECUTION.json', dict(status='completed' if rc == 0 else 'failed', returncode=rc,

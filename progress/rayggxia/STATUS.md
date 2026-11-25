@@ -1,3 +1,19 @@
+# Issue225 最新：动态组64 PoT已在原GPU启动
+
+2026-11-25 17:30北京时间，用户要求改在原GPU先测，已提交Slurm6318并实际RUNNING，分配GPU1/RTX5090，开始时32105MiB空闲。4项CPU测试通过；GPU整数核R6/12/15/29 oracle检查通过（在driver加载BF16之前执行）；同轮完整BF16已跑至292窗，尚待封存汇总，未宣称动态候选PPL完成。
+
+实验：固定训练100M T64 W8及其原non_ffn，准确Attention。x/g/u各连续64项独立计算max(abs)，选覆盖它的最小二次幂。取消每组原四档候选表；最小指数−6，初始上限x512/g256/u512，超上限明确饱和并统计，不声称任意输入都不截断。g/u各自尺度独立；sigmoid仍用恢复真实幅度的S8Q3/P8 LUT；三流AND事件直接送Wd，最终整数归约/恢复。随机字共享仍64路。
+
+GU16/Wd32与GU64/Wd128两档，前级16/64层各1次，后级4×2×4或8×2×8联合分层。单seed101，8个分散2048上下文WT2窗口，逐元素四档和组64四档同轮对照。若动态64任一档比同预算逐元素对照PPL高5%以上，按此前用户授权补组32/16；5%只是调度触发阈值，不是质量合格线。不是候选完整WT2或重新训练。
+
+数值源码9789339555f8059dc02cf42d152db02d43a3cf81，manifest SHA e87991b403e4c72bc765ee5106e78cc16cf4a6c056e669cdae1fa7eb5953a89c。原GPU root=/home/Hongjie_Zeng/projects/zhj/t64-dynamic-scale-issue225-20261125/gpu_run_v1；outputs/PROGRESS.json为中间进度，outputs/RESULT.json及其SHA才是完成回执。source和outputs提交后不修改；权重、数据和runtime只读复用，未复制大文件。resource_launch.py是独立资源包装器，不在原数值manifest内，其SHA与精确命令见original_gpu_v1/SUBMISSION.json。
+
+原组四档完整WT2作业6309及单片补跑6316/汇总6317保持；不重复其健康计算。EDA1871089环境导入已通过，但仍等待模型暂存；已核对未传输模型并取消重复作业，释放GPU，成功环境配置记录保留。原GPU任务提交后不依赖本机保持在线。
+
+本轮无新训练、RTL/PT/PPA或TLM默认修改；Issue225 / PR266沿用、未合并。下一步读取6318封存门禁和candidate逐窗目标/模型/数据SHA，比较对应预算与缩组结果。失败则保留快照另开执行目录修复，不改已提交source。
+
+---
+
 最新2026-11-25 16:01：原GPU可登录；23/48分片封存SHA、逐窗目标SHA、36层覆盖核验；完整5/12配置。lane16/32 seed101/202 PPL10.758346/10.749732；group64原四档16/32三seed PPL22080.554872/21999.098386/22297.607950。lane303 shard2 CUDA超时，仅补该片6316 afterany6309；6317新汇总，旧6310取消；6309健康任务保留。64/128未完成。小结果392758B/416成员已本地保全，归档SHA89de5e55655050808c1e80b9a8310ca2351a4a77c8a3ae871857566c2d650d72。新动态PoT EDA1871089仍Priority排队、未跑PPL。下一步读single_retry_v2/collection/SUMMARY.json与全部sealed结果，不重跑健康片。详见FULL_WT2_PROGRESS_ZH.md和SINGLE_RETRY_SUBMISSION.json。
 
 Latest launch verified: original shards6304/6306 completed (73 windows each); continuation6309 RUNNING on assigned GPUs0/6 only, each >32100MiB free at selection. Collector6310 pending. Numerical snapshot and prior completed reference unchanged. See resource_resume_v1/RESOURCE.json and RECEIPT_*.json; final collection/SUMMARY.json only after all46 retries complete.

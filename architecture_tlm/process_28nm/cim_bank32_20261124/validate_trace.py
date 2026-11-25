@@ -7,6 +7,7 @@ def validate(path,contract,sram=None):
     tiles={}; cores={}; used=defaultdict(set); expected=defaultdict(int)
     returns=Counter(); counts=Counter(); phase_scope=None; terminal=False
     physical=Counter(); caches={}; output_cores=defaultdict(set); owners={}
+    rng_steps=Counter();seeded=set()
     for line in path.open(encoding='utf-8'):
         r=json.loads(line);event=r['event'];counts[event]+=1;terminal=False
         ident=r.get('transaction_id');core=r.get('core');t=r['ns']
@@ -20,6 +21,11 @@ def validate(path,contract,sram=None):
                 'beats':[],'beat_ns':[],'capture':None,'input':False,'rng':False}
         if event=='rng_state_ready':
             assert ident in tiles;tiles[ident]['rng']=True
+            if r.get('mapping')=='local_persistent':
+                assert core in seeded and r['start_steps']==rng_steps[core,r['mode']],r
+        if event=='rng_seed_load':
+            assert core not in seeded,r
+            seeded.add(core)
         if event=='dma_return' and r['target'].startswith('CIM_core'):
             returns[ident]+=r['bytes']
         if event=='dma_landed' and r['resource'].startswith('CIM_core'):
@@ -55,6 +61,7 @@ def validate(path,contract,sram=None):
         if event=='sample_last':
             row=tiles[ident];row['last_sample']=t;row['samples']=r['samples']
             assert t-row['accept']==r['samples']*contract['period_ns']
+            rng_steps[core,r['mode']]+=r['samples']
         if event=='result_valid':tiles[ident]['valid']=t
         if event=='result_capture':
             row=tiles[ident];assert row['valid']<=t and r['slot'] in used[core]
@@ -98,4 +105,5 @@ def validate(path,contract,sram=None):
         crossK_commit_order=True,result_capture_before_CIM_release=True,
         result_slot_released_after_four_beats=True,state_owner_exclusion=True,weight_bytes_and_routes=True,
         physical_16B_actions_match_parent_SRAM=bool(sram),
+        local_seed_loads=len(seeded),local_PRNG_advances_only_on_accepted_samples=True,
         outputs_executed_across_multiple_cores=sum(len(x)>1 for x in output_cores.values()))

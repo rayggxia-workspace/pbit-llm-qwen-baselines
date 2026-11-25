@@ -1,3 +1,7 @@
+## 2026-11-25追加：21bit与本地PRNG
+
+rayggxia，同Issue225/PR266、task/225-cim-bank32-20261124，独立目录不变。TLM局部计数/结果槽21bit，默认GU16/Wd32；本地PRNG持续供数，无默认中央跳步/逐tile播种。10unit＋六回放＋六错误轨迹拒绝通过；新PPA待定，旧19bit价格仅参考，相关新预算合计为null。无新RTL/整机/PPL或远端作业。正式报告COUNTER21_LOCAL_RNG_ZH_20261125.md，交接work/rayggxia/225/cim_count21_localrng_20261125/HANDOFF.md；PR266交付、未合并，实际head由PR核实。尺度封装、描述符握手未在本轮完成。Projects待同步。
+
 ## 2026-11-25 Issue225：TLM／RTL对齐完善
 
 负责人rayggxia；复用task/225-cim-bank32-20261124 / PR266（main206bf81f18ea），独立目录tmp/cim-bank32-tlm-issue225-20261124。正式实现仍在process_28nm/cim_bank32_20261124；新增ALIGNMENT_CONTRACT、RTL接口表、事件检查器与结果报告，不另开分叉TLM，不改冻结parent/旧结果。

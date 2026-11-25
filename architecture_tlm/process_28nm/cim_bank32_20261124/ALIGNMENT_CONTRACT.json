@@ -1,13 +1,17 @@
 {
-  "version": "20261125",
+  "version": "20261125-count21-localPRNG",
   "period_ns": 4,
   "base_frame_cycles": {"GU": 18, "Wd": 34},
   "result": {
     "slots_per_core": 2,
     "columns": 128,
-    "stored_count_bits": 19,
+    "stored_count_bits": 21,
+    "local_counter_bits": 21,
+    "max_supported_samples": 128,
+    "calibrated_reference_bits": 19,
+    "width_delta_PPA": "uncharacterized;do not relabel the measured19bit price as21bit",
     "metadata_bits": 33,
-    "core_output_wire_bits": 20,
+    "core_output_wire_bits": 21,
     "reference_RTL_wire_bits": 21,
     "state_input_bits": 32,
     "wide_state_bits": 64,
@@ -29,16 +33,19 @@
     "test_initial_stall_cycles": 0
   },
   "rng_assignment": {
-    "provider": "external logical-tile state provider",
-    "reference_order": "output_major_then_K_within_one_FFN_command",
+    "provider": "module-local persistent PRNG;existing random-service reseed interface",
+    "assignment_mode": "local_persistent",
+    "reference_order": "physical core accepted-sample order;logical jump order is optional validation only",
+    "cross_core_bitwise_reproduction_required": false,
+    "reseed_policy": "initial load per core;later explicit random-service reseed,not every tile",
     "state_bits_per_stream": 32,
     "GU_streams": 1,
     "Wd_streams": 3,
     "latency_cycles": 1,
     "issue_II_cycles": 1,
     "start_during_weight_loading": true,
-    "cost_owner": "existing conditional platform control/distribution macro",
-    "implementation_status": "timed interface plus software jump reference;no new jump hardware PPA"
+    "cost_owner": "existing FFN local PRNG and random-service seed-load control;no central jump hardware",
+    "implementation_status": "timed local initialization;sample advancement counted on actual consumption;no numeric words replayed"
   },
   "DMA": {
     "shared_payload_bytes": 16384,

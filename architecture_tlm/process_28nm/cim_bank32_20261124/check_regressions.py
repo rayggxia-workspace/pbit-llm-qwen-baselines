@@ -22,6 +22,9 @@ def main():
             assert hashlib.sha256((d/filename).read_bytes()).hexdigest()==sha,(name,filename)
         checks[name]=validate(d/'EVENTS.jsonl',load(d/'EFFECTIVE_ALIGNMENT.json'),r['SRAM'])
         assert r['alignment']['events']['trace_complete']
+        assert not r['alignment']['central_jump_hardware_required']
+        assert r['alignment']['local_PRNG_seed_loads']==r['FFN_cores']
+        assert r['alignment']['results']['payload_bits']==r['FFN_cores']*2*128*21
         results[name]=r
     assert results['small1_repeat']['commands']==2
     assert checks['small1_repeat']['events']['input_cache_hit']>0
@@ -47,6 +50,7 @@ def main():
         'wrong_K':lambda rows:next(x for x in rows if x['event']=='command_accept').update(k=1),
         'weight_overwrite':lambda rows:next(x for x in rows if x['event']=='cim_release').update(event='unreleased_CIM'),
         'truncated':lambda rows:rows.pop(),
+        'PRNG_advanced_during_wait':lambda rows:next(x for x in rows if x['event']=='rng_state_ready').update(start_steps=1),
     }
     rejected=[]
     with tempfile.TemporaryDirectory(prefix='trace-negative-',dir=str(a.results_root)) as temp:

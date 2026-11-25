@@ -104,19 +104,34 @@ class ResultSlots:
 
 class RNGAssignments:
     def __init__(self, m):
-        self.m=m; self.free=0.; self.count=0
+        self.m=m; self.free=0.; self.count=0; self.initialized={}; self.steps=Counter()
+        self.seed_loads=0
+    def consume(self,core,mode,samples):
+        self.steps[core,mode]+=samples
     def request(self, tile, core):
         from architecture_tlm.unified_v6.shared_memory import Signal
         m=self.m; cfg=m.alignment['rng_assignment']; p=m.alignment['period_ns']; e=m.alignment_events
-        start=max(math.ceil(m.h.now/p-1e-7)*p,self.free)
-        self.free=start+cfg['issue_II_cycles']*p; done=Signal(); self.count+=1
+        edge=math.ceil(m.h.now/p-1e-7)*p
+        local=cfg.get('assignment_mode')=='local_persistent'
+        done=Signal(); self.count+=1
+        if local:
+            if core not in self.initialized:
+                self.initialized[core]=edge+cfg['latency_cycles']*p;self.seed_loads+=1
+                e.emit('rng_seed_load',tile,core,resource='local_PRNG',state_bits=128)
+            finish=max(edge,self.initialized[core])
+        else:
+            start=max(edge,self.free);self.free=start+cfg['issue_II_cycles']*p
+            finish=start+cfg['latency_cycles']*p
+        resource='local_PRNG' if local else 'legacy_reference_state_provider'
         token=dict(reference_ordinal=tile['reference_ordinal'],
             stream_count=cfg[tile['mode']+'_streams'],
-            start_steps=tile['reference_ordinal']*m.p28_cim_binding['FFN_core']['modes'][tile['mode']]['samples'])
-        e.emit('rng_state_request',tile,core,resource='shared_state_provider',**token)
+            mapping='local_persistent' if local else 'legacy_logical_tile',
+            start_steps=self.steps[core,tile['mode']] if local else
+                tile['reference_ordinal']*m.p28_cim_binding['FFN_core']['modes'][tile['mode']]['samples'])
+        e.emit('rng_state_request',tile,core,resource=resource,**token)
         def ready():
-            e.emit('rng_state_ready',tile,core,resource='shared_state_provider',**token);done.set()
-        m.h.later(start+cfg['latency_cycles']*p,ready)
+            e.emit('rng_state_ready',tile,core,resource=resource,**token);done.set()
+        m.h.later(finish,ready)
         return done
 
 
@@ -124,6 +139,8 @@ def install(m, contract, trace_path=None, trace_limit=100000):
     c=contract; r=c['result']; state=c['state']; d=c['DMA']
     assert c['period_ns']==m.compute_period_ns==4
     assert state['ports']==m.state_ports and state['lanes']*state['packet_beats']==r['columns']==128
+    assert r['local_counter_bits']==r['stored_count_bits']==r['core_output_wire_bits']==21
+    assert 64*127*r['max_supported_samples'] < 2**(r['local_counter_bits']-1)
     assert 64*127*max(x['samples'] for x in m.p28_cim_binding['FFN_core']['modes'].values()) < 2**(r['stored_count_bits']-1)
     assert d['shared_payload_bytes']==m.h.response_bytes and d['outstanding_limit']==m.h.credit
     assert 256*d['header_bits_per_beat']//8+d['descriptor_slots']*d['descriptor_bytes']==4096
@@ -182,7 +199,27 @@ def report(m):
     return dict(contract=c,events=m.alignment_events.report(),results=m.result_slots.report(),
         input_cache_storage_bits=bits,input_cache_cost_owner=c['result']['input_cache_cost_owner'],
         rng_state_assignments=m.rng_assignments.count,
+        local_PRNG_seed_loads=m.rng_assignments.seed_loads,
+        consumed_PRNG_steps={('%d/%s'%k):v for k,v in m.rng_assignments.steps.items()},
+        central_jump_hardware_required=c['rng_assignment'].get('assignment_mode')!='local_persistent',
+        extra_count_and_FIFO_state_bits=m.common_cores*128*3*(c['result']['stored_count_bits']-19),
         RNG_numeric_streams_replayed=False,
         DMA=dict(shared_payload_bytes=h.response_bytes,peak_descriptors=r['counts']['peak_descriptors'],
             header_capacity_bytes=2048,descriptor_capacity_bytes=2048,
             metadata_cost_owner=c['DMA']['metadata_cost_owner'],extra_payload_bytes=0))
+
+
+def mark_unpriced_counter_delta(budget,contract):
+    """Keep the old price recoverable without presenting it as measured21bit PPA."""
+    if contract['result']['stored_count_bits']==contract['result']['calibrated_reference_bits']:return
+    names=('conditional_subsystem_area_mm2','conditional_subsystem_energy_mJ',
+        'conditional_subsystem_average_W','conditional_total_energy_mJ_by_external_pJbit',
+        'covered_component_area_mm2','covered_component_energy_mJ')
+    for name in names:
+        if name in budget:budget['reference19_'+name]=budget[name];budget[name]=None
+    row=next(x for x in budget['rows'] if x['component']=='FFN_shared_GU_Wd')
+    budget['reference19_FFN_core_row']=dict(row)
+    for name in ('area_mm2','incremental_activity_mJ','full_residency_idle_mJ','energy_mJ'):row[name]=None
+    row['basis']='21bit candidate;19bit reference price retained separately;21bit delta requires characterization'
+    budget['counter_width_status']='21bit function/timing contract;PPA delta uncharacterized'
+    budget['status']='COUNTER21_CANDIDATE_WITH_EXPLICIT_UNPRICED_WIDTH_DELTA'

@@ -143,11 +143,13 @@ def main():
                         row['basis'] = cfg['CIM_price_status']
                 budget['CIM_interface_status'] = cfg['CIM_price_status']
                 budget['alignment_cost_ownership']=dict(
-                    result_slots='already included in calibrated FFN core sh_ab_result_fifo',
+                    result_slots='19bit reference included in core;21bit width delta pending',
                     input_caches='already included in calibrated FFN core',
                     state_beats='existing FFN_state action price;no extra transfer charged',
                     DMA_headers='2048B inside existing4KiB descriptors_control',
-                    RNG_tile_assignment='existing conditional platform controller macro;not new characterized jump circuit')
+                    RNG_tile_assignment='local PRNG persistent state;no central per-tile state generator')
+                from alignment import mark_unpriced_counter_delta
+                mark_unpriced_counter_delta(budget,contract)
             save(a.out/'BUDGET.json', budget)
         save(a.out/'RESULT.json', result)
         validation = dict(status='PASS', queues_drained=True, exact_frame_and_MAC_coverage=True,

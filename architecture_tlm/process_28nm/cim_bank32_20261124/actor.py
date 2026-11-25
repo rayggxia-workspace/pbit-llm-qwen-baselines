@@ -103,6 +103,7 @@ def common_stage(self,layer,mode):
             assert drain>=0
             begin=h.now; e.emit('command_accept',tile,core,resource='FFN_core')
             yield from cycles(self,samples,'common_'+mode+'_core')
+            self.rng_assignments.consume(core,mode,samples)
             e.emit('sample_last',tile,core,resource='FFN_core',samples=samples)
             if drain: yield from cycles(self,drain,'common_'+mode+'_core')
             e.emit('result_valid',tile,core,resource='FFN_core',slot=slot)

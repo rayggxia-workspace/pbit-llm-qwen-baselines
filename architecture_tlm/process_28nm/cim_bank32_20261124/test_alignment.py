@@ -5,7 +5,7 @@ import random
 import unittest
 from types import SimpleNamespace
 from collections import Counter
-from alignment import Events, ResultSlots, cycles, physical_bytes, tile_identity
+from alignment import Events, ResultSlots, cycles, physical_bytes, tile_identity, mark_unpriced_counter_delta
 from rng_reference import Jump
 
 HERE=Path(__file__).resolve().parent
@@ -42,7 +42,7 @@ class Alignment(unittest.TestCase):
         with self.assertRaises(AssertionError):r.read(0,a)
         r.capture(0,a);r.read(0,a);self.assertFalse(r.available(0))
         r.release(0,a);self.assertTrue(r.available(0))
-        self.assertEqual(r.report()['payload_bits'],5*2*128*19)
+        self.assertEqual(r.report()['payload_bits'],5*2*128*21)
         self.assertEqual(r.report()['metadata_bits'],5*2*33)
         self.assertFalse(r.report()['duplicate_storage_charge'])
 
@@ -55,6 +55,25 @@ class Alignment(unittest.TestCase):
                     self.assertEqual(j.jump(seed,steps),s)
                 s=j.step(s)
             self.assertEqual(j.jump(j.jump(seed,12345),67890),j.jump(seed,80235))
+
+    def test_counter128_and_result_interface_no_truncation(self):
+        r=self.contract['result'];bound=64*127*128
+        self.assertEqual(bound,1040384)
+        for value in (-bound,bound):
+            bits=value&((1<<r['stored_count_bits'])-1)
+            decoded=bits-(1<<21) if bits&(1<<20) else bits
+            self.assertEqual(decoded,value)
+        self.assertGreater(bound,2**19-1)
+        self.assertEqual(r['local_counter_bits'],r['core_output_wire_bits'])
+
+    def test_old_PPA_is_not_presented_as_counter21(self):
+        row=dict(component='FFN_shared_GU_Wd',area_mm2=1.,energy_mJ=2.)
+        budget=dict(rows=[row],conditional_subsystem_area_mm2=6.)
+        mark_unpriced_counter_delta(budget,self.contract)
+        self.assertIsNone(budget['conditional_subsystem_area_mm2'])
+        self.assertEqual(budget['reference19_conditional_subsystem_area_mm2'],6.)
+        self.assertIsNone(row['area_mm2'])
+        self.assertEqual(budget['reference19_FFN_core_row']['area_mm2'],1.)
 
     def test_logical_streams_independent_of_core_and_arrival_order(self):
         c=json.loads((HERE/'RNG_TRANSITION.json').read_bytes());j=Jump(c['row_masks'])

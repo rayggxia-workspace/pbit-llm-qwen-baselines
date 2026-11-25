@@ -69,7 +69,8 @@ class DynamicOverride(AbstractContextManager):
                     scale_group=self.group,input_rng='stratified R8 shared64',dynamic_caps=CAPS,
                     active_alignment_bits_gu=rx,active_alignment_bits_wd=rr,
                     accumulator_container_bits=64,and_events=int(events.sum()),and_zero=int((events==0).sum()))
-                return y,None
+                # Frozen inference only: upstream saves every cache item as a tensor.
+                return y,()
         sf.upstream.hard_forward=hard
         return self
 

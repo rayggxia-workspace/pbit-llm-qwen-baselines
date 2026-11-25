@@ -2,6 +2,8 @@
 from collections import Counter
 from types import MethodType
 import copy
+import json
+from pathlib import Path
 
 
 def packed_byte(i, o):
@@ -10,7 +12,8 @@ def packed_byte(i, o):
     return (i // 2) * 256 + (o // 8) * 16 + (i % 2) * 8 + o % 8
 
 
-def install(m, config, macros, binding, finish_output):
+def install(m, config, macros, binding, finish_output, alignment_contract=None,
+            trace_path=None, trace_limit=100000):
     from architecture_tlm.unified_v6.shared_memory import Region
     from actor import common_stage, prefetch_gu
     h, mem = m.h, m.h.mem
@@ -100,6 +103,11 @@ def install(m, config, macros, binding, finish_output):
             assert m.cim_states[core] == 'loading'
         return original(region, off, size, write, tag, callback)
     mem.submit = submit
+    from alignment import install as install_alignment
+    contract = alignment_contract or json.loads((Path(__file__).parent/'ALIGNMENT_CONTRACT.json').read_bytes())
+    install_alignment(m, contract, trace_path, trace_limit)
+    m.cim_contract.update(alignment_contract_version=contract['version'],
+        result_slots_per_core=contract['result']['slots_per_core'])
     return m.cim_contract
 
 

@@ -1,5 +1,7 @@
 # 28 nm / 250 MHz：32×128-bit bank、每核单权重区
 
+**2026-11-25更新：** 当前入口已接入TLM／RTL服务合同、实体结果槽、随机状态接口及可检查事件。最新结果见 [对齐报告](ALIGNMENT_REPORT_ZH_20261125.md) 和 [RTL接口表](RTL_CONTRACT_ZH_20261125.md)。五核首层1.106300ms，616KiB SRAM，条件化面积6.776269mm²；未新增完整36层原生回放。以下11月24日数据保留为历史版本。
+
 2026-11-24，Issue225，负责人rayggxia。新选定配置默认**5核**；父模型为PR249的完整28nm/250MHz执行模型。旧封存结果保持原样。
 
 ## 本次改变
@@ -67,6 +69,8 @@ python -B run.py --process-root <PR249的process_28nm目录> --snapshot <当前�
 ```
 
 `--scope ffn`执行FFN探针；`--scope full --backend native`执行36层和完整lm_head，需要原生Ramulator库。`--legacy-control --cores 3`执行旧组织，便于同后端对照。不得向已经封存的输出目录写入。
+
+对齐版新增 `--scope small --trace`、`--scope stress --trace --state-stall-cycles 2000`；`--commands 2` 可检查小形状缓存跨命令失效。`--capture-lanes 32`、`--rng-assignment-latency 1000` 为接口时延敏感性配置，不继承为新实测PPA。`--trace`有记录数上限，截断时检查失败，不将残缺轨迹写成验证通过。常规单层/整机运行可关闭明细trace而保留事件统计。`--legacy-control`不使用新合同，不与trace或小形状组合。
 
 普通SRAM分配：Attention288 KiB、宽累加96 KiB、激活/概率码96 KiB、数字权重双缓冲64 KiB、Norm32 KiB，合计576 KiB；加5核CIM40 KiB得到616 KiB。16 KiB DMA、8 KiB操作数FIFO、4 KiB描述符属于原有寄存器/接口账本，不重复并入SRAM。
 

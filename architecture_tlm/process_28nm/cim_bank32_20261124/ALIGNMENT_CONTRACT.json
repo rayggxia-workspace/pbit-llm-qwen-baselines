@@ -1,0 +1,65 @@
+{
+  "version": "20261125",
+  "period_ns": 4,
+  "base_frame_cycles": {"GU": 18, "Wd": 34},
+  "result": {
+    "slots_per_core": 2,
+    "columns": 128,
+    "stored_count_bits": 19,
+    "metadata_bits": 33,
+    "core_output_wire_bits": 20,
+    "reference_RTL_wire_bits": 21,
+    "state_input_bits": 32,
+    "wide_state_bits": 64,
+    "capture_lanes": 128,
+    "capture_cycles_in_original_frame": 1,
+    "storage_cost_owner": "FFN_shared_GU_Wd:sh_ab_result_fifo,not ordinary_operand_FIFO",
+    "input_cache_cost_owner": "FFN_shared_GU_Wd:x_cache,input_cache"
+  },
+  "state": {
+    "ports": 2,
+    "lanes": 32,
+    "beat_II_cycles": 1,
+    "beat_latency_cycles": 1,
+    "packet_beats": 4,
+    "result_slot_release": "last beat accepted,at end of its input cycle",
+    "same_output_next_K": "after actual state/output write completion",
+    "worker_overlap": "two independent read/update/write workers;no hidden per-port packet prefetch",
+    "cost_owner": "FFN_state and actual SRAM transactions",
+    "test_initial_stall_cycles": 0
+  },
+  "rng_assignment": {
+    "provider": "external logical-tile state provider",
+    "reference_order": "output_major_then_K_within_one_FFN_command",
+    "state_bits_per_stream": 32,
+    "GU_streams": 1,
+    "Wd_streams": 3,
+    "latency_cycles": 1,
+    "issue_II_cycles": 1,
+    "start_during_weight_loading": true,
+    "cost_owner": "existing conditional platform control/distribution macro",
+    "implementation_status": "timed interface plus software jump reference;no new jump hardware PPA"
+  },
+  "DMA": {
+    "shared_payload_bytes": 16384,
+    "beat_bytes": 64,
+    "outstanding_limit": 256,
+    "header_bits_per_beat": 64,
+    "descriptor_slots": 64,
+    "descriptor_bytes": 32,
+    "metadata_cost_owner": "existing4KiB descriptors_control",
+    "reservation": "pending64B+returned_not_landed<=shared_payload_bytes",
+    "credit_return": "all four16B target writes completed",
+    "target_route": "core from private region;bank=(tile_offset//16)%16;row=tile_offset//256",
+    "test_block_core": null,
+    "test_block_until_cycle": 0
+  },
+  "encoding": {
+    "GU_scale_cycles": 6,
+    "vector_codec_cycles": 9,
+    "codec_lanes": 16,
+    "codec_II_cycles": 1,
+    "codec_latency_cycles": 2,
+    "cost_owner": "existing FFN_scale,FFN_codec,platform staging;not charged again"
+  }
+}

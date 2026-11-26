@@ -151,3 +151,10 @@ Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内
 - 已有8窗seed101质量证据：16/32的lane11.554504、g/u单尺度64 163.806031、g/u加1bit11.917554；64/128的lane9.600821、g/u加1bit9.662735、x也动态64 9.616025。见experiments/t64_group64_onebit_20261126/results/REPORT_ZH.md；两个较优候选三seed完整WT2另在原lab运行，不能以pilot代替full。
 - 新准确率范围：PIQA1838、ARC-C1172，三个候选各GU16/Wd32与64/128、单seed101；加同预算lane和原BF16共18组。全题干与答案均启用FFN，官方lm-eval0.4.8零样本／无模板／无截断，比较acc及acc_norm。source ea293caea14b8ec5b271a937919ae21693ccae9c，方法experiments/t64_scale_task_accuracy_20261126/README_ZH.md。
 - 状态：独立CPU62231九项PASS，Gate62228完整BF1611.5364289819、整数oracle／包装器／官方计分等通过，62229四卡A6000正式运行，尚无完整准确率；225个sealed分片和18组文档集合／请求ledger／36层覆盖核验后才汇总。详细验证和环境身份见VALIDATION_AND_SUBMISSION.json。旧动态32／64实验没有任务准确率，不借用学院另一Attention配置成绩。硬件增量及PPA尚待表征，不从本次评测推断面积或能量收益；评测GPU资源与芯片资源分开。
+
+
+## 2026-11-26｜1bit小档S/S2与S/S4的配对PPL（Issue225 / PR266）
+
+- 用户要求尝试S/S2以减小尺度对齐。保持每64项动态基准和单元素1bit，阈值同时由S/4改S/2；g/u独立，x原四档或动态64，T64 W8／原non_ffn、准确SDPA、16/32及64/128分层不变，AND直连Wd。组内g×u指数档间0/−1/−2相对S4的0/−2/−4最多少2bit，跨组基准／权重指数仍需处理。
+- 数值源90b7742ac88beeb95203ab600c5a78adac809bf4；experiments/t64_onebit_half_20261126/README_ZH.md／PLAN.json。8项8窗／9215目标单seed101，无自动full／任务／训练。CPU6379的14独立oracle／边界／S4一致性／原测试已通过；GPU6380等原6355_5结束，仅一个模型worker使用一张5090，当前PPL未出。新S4包装器、旧逐窗SHA和BF16必须核验后比较。
+- 新增软件诊断为概率码、组内乘积跨度、实际整数输出对称范围和保守界；尚无RTL宽度／PPA结论，不据此改64bit主线状态。原已运行实验和学院准确率保持。私有／公开交接work/rayggxia/225/onebit_half_20261126，PR266未合并。

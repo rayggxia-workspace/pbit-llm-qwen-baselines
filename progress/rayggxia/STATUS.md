@@ -1,3 +1,7 @@
+## 2026-11-26｜Issue225／PR266：S/S2单5090 PPL小测已排队
+
+负责人rayggxia，同task/225-cim-bank32-20261124。数值源90b7742ac88beeb95203ab600c5a78adac809bf4已发布且6文件原始Git blob逐SHA一致。CPU6379十四项PASS；6380资源探测数组等待其成功及原完整PPL内部6361（6355_5）结束，独占claim最多一个模型worker，仅一张5090跑数值。x原四档／动态64×16/32及64/128×S/S2与同轮S/S4，共8项8窗seed101，T64 W8／原non_ffn、准确SDPA、分层与AND直连Wd不变。尚无S2 PPL；不自动扩full／任务／训练。另记组内档间跨度和整数后端范围，档间最多少2bit不等于整链64→32。入口experiments/t64_onebit_half_20261126，公开／私有交接work/rayggxia/225/onebit_half_20261126。原lab／学院任务保持，PR未合并，Projects待维护者同步。
+
 ## 2026-11-26｜Issue225／PR266：共享尺度准确率门禁通过，四卡正式运行
 
 负责人rayggxia，同task/225-cim-bank32-20261124，数值源ea293caea14b8ec5b271a937919ae21693ccae9c不变。独立CPU62231九项PASS；Gate62228 completed，新完整BF16 PPL11.5364289819、整数核／两预算四档包装器及采样重复逐位一致、官方HFLM一致和16个路径短任务通过。62229_0～3四个A6000 worker实际RUNNING，62230等待汇总。三候选×两预算×两任务12项，加lane／BF16参考共18完整组、225分片；seed101、准确SDPA、全题干／答案FFN。尚无完整准确率，初估3～5小时。验证experiments/t64_scale_task_accuracy_20261126/VALIDATION_AND_SUBMISSION.json；公开／私有HANDOFF及只读状态入口已更新。原lab PPL保持，不变更RTL/TLM默认、不合并，Projects待维护者同步。

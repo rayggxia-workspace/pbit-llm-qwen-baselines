@@ -1,3 +1,7 @@
+## 2026-11-26｜Issue225／PR266：共享尺度准确率门禁通过，四卡正式运行
+
+负责人rayggxia，同task/225-cim-bank32-20261124，数值源ea293caea14b8ec5b271a937919ae21693ccae9c不变。独立CPU62231九项PASS；Gate62228 completed，新完整BF16 PPL11.5364289819、整数核／两预算四档包装器及采样重复逐位一致、官方HFLM一致和16个路径短任务通过。62229_0～3四个A6000 worker实际RUNNING，62230等待汇总。三候选×两预算×两任务12项，加lane／BF16参考共18完整组、225分片；seed101、准确SDPA、全题干／答案FFN。尚无完整准确率，初估3～5小时。验证experiments/t64_scale_task_accuracy_20261126/VALIDATION_AND_SUBMISSION.json；公开／私有HANDOFF及只读状态入口已更新。原lab PPL保持，不变更RTL/TLM默认、不合并，Projects待维护者同步。
+
 ## 2026-11-26｜Issue225／PR266：共享尺度PIQA／ARC-C准确率已提交
 
 负责人rayggxia，同task/225-cim-bank32-20261124。源ea293caea14b8ec5b271a937919ae21693ccae9c已推送且5文件回读一致。Gate62228实际RUNNING、9单测PASS；62229_[0-3]四张A6000正式worker依赖Gate成功，62230 CPU汇总。候选dynamic32／gu_onebit64／all64_onebit×GU16/Wd32和GU64/Wd128，seed101；加同预算lane与原BF16，共18完整任务配置、225分片。PIQA1838、ARC-C1172官方全量、lm-eval0.4.8、题干和答案FFN全覆盖，准确SDPA，无模板／截断。尚无正式准确率，完整模型及计分Gate待封存。原lab PPL6355_5保持。方法experiments/t64_scale_task_accuracy_20261126/README_ZH.md；公开交接work/rayggxia/225/scale_tasks_20261126/HANDOFF_PUBLIC_ZH.md，私有回执另存。不训练、不改RTL/TLM或合并；Projects待维护者同步。

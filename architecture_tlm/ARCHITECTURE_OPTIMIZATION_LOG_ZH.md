@@ -143,3 +143,11 @@ Issue204/PR209，[方案](../digital_circuit_simulation_registry/12_双随机分
 ## 2026-10-29 双随机SRAM存内比较主架构与旧估算延续
 
 Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内比较估算口径与证据.md)。用户要求保留SRAM驻留/本地比较，双全局LFSR不变，DFF仅对照。沿旧宏本体+邻近SNG/分发+存储节点带载增量估算；普通预读保持及M1单seed前端数据各保留边界，不能当完整定制CIM。新W7比较与接口动态待测，不每拍重复收费普通全读，也不把缺项当0。无新RTL/EDA/SPICE/PPL，旧run未改。
+
+
+## 2026-11-26｜T64共享尺度：一位修正质量与任务对照（Issue225 / PR266）
+
+- 机制：g/u各64项动态最小覆盖PoT基准S，逐元素仅1bit选择S或S/4，乘积按0／2／4位对齐；x保持原四档或改动态64。另将x/g/u全动态32单尺度作为共享控制；冻结T64 trained100M W8／原non_ffn、准确SDPA和P8/S8F3/AND直连Wd。没有新RTL/PPA，未作为默认硬件替换。
+- 已有8窗seed101质量证据：16/32的lane11.554504、g/u单尺度64 163.806031、g/u加1bit11.917554；64/128的lane9.600821、g/u加1bit9.662735、x也动态64 9.616025。见experiments/t64_group64_onebit_20261126/results/REPORT_ZH.md；两个较优候选三seed完整WT2另在原lab运行，不能以pilot代替full。
+- 新准确率范围：PIQA1838、ARC-C1172，三个候选各GU16/Wd32与64/128、单seed101；加同预算lane和原BF16共18组。全题干与答案均启用FFN，官方lm-eval0.4.8零样本／无模板／无截断，比较acc及acc_norm。source ea293caea14b8ec5b271a937919ae21693ccae9c，方法experiments/t64_scale_task_accuracy_20261126/README_ZH.md。
+- 状态：独立CPU62231九项PASS，Gate62228完整BF1611.5364289819、整数oracle／包装器／官方计分等通过，62229四卡A6000正式运行，尚无完整准确率；225个sealed分片和18组文档集合／请求ledger／36层覆盖核验后才汇总。详细验证和环境身份见VALIDATION_AND_SUBMISSION.json。旧动态32／64实验没有任务准确率，不借用学院另一Attention配置成绩。硬件增量及PPA尚待表征，不从本次评测推断面积或能量收益；评测GPU资源与芯片资源分开。

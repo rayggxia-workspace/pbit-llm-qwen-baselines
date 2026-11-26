@@ -1,3 +1,7 @@
+## 2026-11-26｜Issue225／PR266：共享尺度PIQA／ARC-C准确率已提交
+
+负责人rayggxia，同task/225-cim-bank32-20261124。源ea293caea14b8ec5b271a937919ae21693ccae9c已推送且5文件回读一致。Gate62228实际RUNNING、9单测PASS；62229_[0-3]四张A6000正式worker依赖Gate成功，62230 CPU汇总。候选dynamic32／gu_onebit64／all64_onebit×GU16/Wd32和GU64/Wd128，seed101；加同预算lane与原BF16，共18完整任务配置、225分片。PIQA1838、ARC-C1172官方全量、lm-eval0.4.8、题干和答案FFN全覆盖，准确SDPA，无模板／截断。尚无正式准确率，完整模型及计分Gate待封存。原lab PPL6355_5保持。方法experiments/t64_scale_task_accuracy_20261126/README_ZH.md；公开交接work/rayggxia/225/scale_tasks_20261126/HANDOFF_PUBLIC_ZH.md，私有回执另存。不训练、不改RTL/TLM或合并；Projects待维护者同步。
+
 ## 2026-11-26｜Issue225／PR266：64共享基准＋1bit PPL初筛完成，完整WT2运行中
 
 负责人rayggxia，同task/225-cim-bank32-20261124。数值源7283f04157ff6cdb3d526271766ed64eb5db4461已发布；CPU6351九项PASS、GPU6355_5实际执行。新完整BF16为11.5371603731；两预算四档包装器逐位一致及8候选计分位置／36层覆盖／SHA核验通过。8窗单seed：原四档16/32=11.554504、64/128=9.600821；g/u动态64基准＋1bit=11.917554／9.662735；x也动态64共享=12.541277／9.616025。gu_onebit64_16_32与all64_onebit_64_128已接完整WT2三seed，尚未收齐。报告experiments/t64_group64_onebit_20261126/results/REPORT_ZH.md，公开交接work/rayggxia/225/onebit_20261126/HANDOFF_PUBLIC_ZH.md；私有原件／执行索引在原任务目录。旧无四档动态64／32／16无任务准确率；学院任务另一配置，不继承。只读原权重、不修改RTL/TLM默认、不重复健康任务、不合并PR。Projects待维护者同步。

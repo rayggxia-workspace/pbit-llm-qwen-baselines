@@ -1,3 +1,7 @@
+## 2026-11-26｜Issue225／PR266：三批尺度质量任务全部完成并复核
+
+负责人rayggxia，同task/225-cim-bank32-20261124。5090 S4完整WT26项齐、S2/S4八窗8项齐；学院PIQA／ARC-C225/225分片、18/18完整配置全部completed，无失败／缺项。独立CPU62235重算27090配置×题目评分、原文档／请求ledger／模型与源码身份，全部一致。正式报告experiments/t64_scale_results_20261126/REPORT_ZH.md，CSV／原字节evidence／SHA与复算脚本同目录。S4完整三seed16/32为10.958236±.011138，64/128为8.989489±.005269；S2四种小测均优于S4，但尚无S2完整WT2或任务成绩。S4高预算共享1bit接近原四档，纯32共享低预算严重退化。所有本批GPU作业退出且队列为空，原件在共享存储及项目小归档。数值源7283f041／90b7742a／ea293cae均未修改；未训练／改RTL/TLM默认／合并，Projects待维护者同步。复核／发布恢复work/rayggxia/225/final_scale_results_20261126/HANDOFF_PUBLIC_ZH.md及私有记录。
+
 ## 2026-11-26｜Issue225／PR266：S/S2单5090 PPL小测已排队
 
 负责人rayggxia，同task/225-cim-bank32-20261124。数值源90b7742ac88beeb95203ab600c5a78adac809bf4已发布且6文件原始Git blob逐SHA一致。CPU6379十四项PASS；6380资源探测数组等待其成功及原完整PPL内部6361（6355_5）结束，独占claim最多一个模型worker，仅一张5090跑数值。x原四档／动态64×16/32及64/128×S/S2与同轮S/S4，共8项8窗seed101，T64 W8／原non_ffn、准确SDPA、分层与AND直连Wd不变。尚无S2 PPL；不自动扩full／任务／训练。另记组内档间跨度和整数后端范围，档间最多少2bit不等于整链64→32。入口experiments/t64_onebit_half_20261126，公开／私有交接work/rayggxia/225/onebit_half_20261126。原lab／学院任务保持，PR未合并，Projects待维护者同步。

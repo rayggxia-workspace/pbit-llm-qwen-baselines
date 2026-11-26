@@ -1,3 +1,7 @@
+## 2026-11-26｜Issue225／PR266：64共享基准＋1bit PPL初筛完成，完整WT2运行中
+
+负责人rayggxia，同task/225-cim-bank32-20261124。数值源7283f04157ff6cdb3d526271766ed64eb5db4461已发布；CPU6351九项PASS、GPU6355_5实际执行。新完整BF16为11.5371603731；两预算四档包装器逐位一致及8候选计分位置／36层覆盖／SHA核验通过。8窗单seed：原四档16/32=11.554504、64/128=9.600821；g/u动态64基准＋1bit=11.917554／9.662735；x也动态64共享=12.541277／9.616025。gu_onebit64_16_32与all64_onebit_64_128已接完整WT2三seed，尚未收齐。报告experiments/t64_group64_onebit_20261126/results/REPORT_ZH.md，公开交接work/rayggxia/225/onebit_20261126/HANDOFF_PUBLIC_ZH.md；私有原件／执行索引在原任务目录。旧无四档动态64／32／16无任务准确率；学院任务另一配置，不继承。只读原权重、不修改RTL/TLM默认、不重复健康任务、不合并PR。Projects待维护者同步。
+
 2026-11-25：g/u机理诊断完成。6320唯一采集并通过观察器末logits逐位一致；median统计失败，6321 cuBLAS环境失败，6322复用同一6.23MB激活完成5层×16位置解析后级诊断，无重跑模型/PPL。极端幅度组只占少数；纯共享造成低事件概率更关键。简单截断伤害首/末层；共享基准＋1bit修正后局部NMSE接近原四档，尚无该新方案PPL/PPA。优先候选为组64基准＋1bit，而非再缩组或全层统一裁剪；这是建议，未修改默认。报告experiments/t64_dynamic_scale_20261125/diagnostic_results/REPORT_ZH.md，raw/source/失败记录均归档并校验。
 
 2026-11-25：新增小型g/u尺度机理诊断6320，单窗口、五层各16位置，不是PPL；父算术9789339冻结，新增patch SHA在diagnostic_v1/EXECUTION_MANIFEST.json。解析moment对逐格枚举断言通过，模型加载/无操作观察器核对及分析待完成。不得重复提交，恢复读work/rayggxia/225/t64_dynamic_20261125/diagnostic_v1/HANDOFF.md。

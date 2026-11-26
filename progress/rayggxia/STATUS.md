@@ -1,3 +1,7 @@
+## 2026-11-26｜Issue225／PR266：S/S2完整PIQA／ARC-C已提交
+
+负责人rayggxia，同task/225-cim-bank32-20261124及原独立目录。数值源354bef257affa393d5677c04c9d71004e9d88286已推送，6个新源文件的远端内容与原始Git blob逐SHA一致；35文件执行快照沿用冻结S2编码和旧官方任务前向。CPU62236已COMPLETED/0:0、18项PASS，GPU Gate62237运行；两个worker62238_[0-1]依赖门禁，CPU62239依赖汇总。四配置为x原四档／动态64×GU16/Wd32及64/128，g/u64共享基准+逐元素S/S2；PIQA1838／ARC-C1172，100分片／8完整任务组，seed101。当前尚无S2正式准确率。新完整BF16、原S4逐答案分数/请求ledger、S2重复一致需门禁通过；不复跑旧S4全任务，不改训练/RTL/TLM。预计两卡约2～3小时，排队另算；PR266未合并、Projects待维护者同步。入口experiments/t64_onebit_half_tasks_20261126，私有恢复work/rayggxia/225/onebit_half_tasks_20261126/HANDOFF.md。
+
 ## 2026-11-26｜Issue225／PR266：三批尺度质量任务全部完成并复核
 
 负责人rayggxia，同task/225-cim-bank32-20261124。5090 S4完整WT26项齐、S2/S4八窗8项齐；学院PIQA／ARC-C225/225分片、18/18完整配置全部completed，无失败／缺项。独立CPU62235重算27090配置×题目评分、原文档／请求ledger／模型与源码身份，全部一致。正式报告experiments/t64_scale_results_20261126/REPORT_ZH.md，CSV／原字节evidence／SHA与复算脚本同目录。S4完整三seed16/32为10.958236±.011138，64/128为8.989489±.005269；S2四种小测均优于S4，但尚无S2完整WT2或任务成绩。S4高预算共享1bit接近原四档，纯32共享低预算严重退化。所有本批GPU作业退出且队列为空，原件在共享存储及项目小归档。数值源7283f041／90b7742a／ea293cae均未修改；未训练／改RTL/TLM默认／合并，Projects待维护者同步。复核／发布恢复work/rayggxia/225/final_scale_results_20261126/HANDOFF_PUBLIC_ZH.md及私有记录。

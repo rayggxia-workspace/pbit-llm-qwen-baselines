@@ -237,3 +237,15 @@ Issue225/PR266，rayggxia。[报告](process_28nm/prefill_core_sizing_20261127/R
 
 已测任务价格、独立MAC/MLA形状、分项求和、状态与工作区容量及最小两文件字节复算通过；没有新GPU/EDA/完整prefill事务或模型PPL。公开表未披露checkpoint/文本/板型/所有算子数制，未补造已对齐；19bit旧价只作参考，21bit未标定。旧decode/RTL默认不改，Issue28远端备忘录待维护流程，Projects未操作，PR未合并。
 
+
+
+## 2026-11-27｜Prefill控制原型：真实握手与多行权重复用
+
+Issue225/PR266，rayggxia，task/225-cim-bank32-20261124。独立目录architecture_tlm/process_28nm/prefill_controller_20261127，[报告](architecture_tlm/process_28nm/prefill_controller_20261127/REPORT_ZH.md)。16项矩阵命令FIFO、动态派核/组K依赖、每块8KiB驻留最多32行、每核双结果槽、共享16KiB DMA和两路32通道交错状态SRAM；Prompt sequencer单独遍历prompt/层/最后位置head。沿上游真实整数采样核，未改decode默认或上游源。
+
+本地Verilator5.054，29个进程/215项检查PASS，三seed17/29/43、随机回压、T8..128、3行尾块、40/152长K、1/4/5/6核。独立事件整数oracle逐项一致；命令队列16项满等待、双结果槽填满、DMA256×64B credit满、取消排空重启均覆盖。状态双II1的2048beat为1027拍，同bank2050、同地址4096拍；没有把冲突当成无成本。32行跨token权重复用使对应权重读取4MiB→128KiB（−96.875%）。
+
+实测GU16/Wd32最短行间隔21/37拍，旧预算18/34为核级简化；本次复用的RTL DMA每核128包×II2使8KiB装载下限256拍，不是CIM写口的32拍，6核实际首行接收需376～389拍。仅回填两项下限并保留旧数字/Attention宏预算、128输入/27GB/s有效外存：MiniCPM3-4B 6核由1.228→1.545秒；若回填实测装载区间则约1.664–1.677秒。均为组件预算，完整prefill Decoder、数字计算与激活物理映射尚未接入；GU/Wd合成码分阶段回放，不是完整FFN模型/PPL，也无新PPA/STA。优先DMA每核发包与行间交接，再做整层集成。
+
+中央run prefill-controller-225-20261127，任务与根镜像分别增量check/render，通过并保留旧记录。SOURCE_BINDINGS/RUN_MANIFEST记录准确源码/原日志与可执行文件SHA。旧decode/64bit状态/价格不改，无远端作业；PR待审不合并，Issue225广义工作保留，Projects未操作，Issue28远端备忘录按原维护流程待同步。
+

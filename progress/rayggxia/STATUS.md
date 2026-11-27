@@ -1,3 +1,9 @@
+## 2026-11-27｜Issue225／PR266：24/32位状态数值验证与PPL已提交
+
+负责人rayggxia，同task/225-cim-bank32-20261124。只读审核用户ffn_narrow_state报告/RTL，19源/结果SHA匹配；32位0/5248与24位44/5248 BF16变化均为短K合成样本，不当模型精度。按报告同一保守界/逐K64 RNE/显式溢出合同新增数字参考，正确合并输出恢复指数，真实GU40/Wd152块，固定T64/W8、x/g/u64基准+S2、16/32、准确Attention。修复源0d1e85176fd52205669148296c585a06c47bc369，9文件远端内容与原字节blob核验（索引重读通过），51执行文件冻结。v1 GPU62256已撤回且原快照/日志保留，不采用其数值；只动本人新任务，旧x实验保留。
+
+CPU62257二十六项PASS且COMPLETED/0:0，GPU62258在run_v2运行；先16组独立整数oracle/完整BF16/64位无操作及旧pilot字节验证，再64/32/24位同8窗PPL；宽32/24若≤1.01×64则自动完整WT2，1%仅资源触发。尚无已完成窄位宽PPL，不更改默认64位、RTL/TLM或PPA。RTL原g sigmoid与当前PPL P8重建g存在独立入口差异，本轮保持PPL入口以隔离缩位。分析experiments/t64_narrow_state_20261127/ASSESSMENT_ZH.md；恢复work/rayggxia/225/narrow_state_20261127/HANDOFF.md及v2/SUBMISSION，根check_narrow_20261127.py只读。无训练，不合并PR，Projects待同步。
+
 ## 2026-11-27｜Issue225／PR266：x加1bit的部分结果，完整评测仍运行
 
 负责人rayggxia，同task/225-cim-bank32-20261124。新源fa079820冻结。CPU19PASS、GPU Gate62243已COMPLETED/0:0，完整BF16 PPL11.5364289819、关闭x标志与原共享logits逐位一致及任务回放通过。62244 PPL和62245任务仍健康运行，62246等待；无失败，不重复提交。

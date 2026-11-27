@@ -45,7 +45,7 @@ def main():
                 cf,ex=self.old_coeff(*args,**kw);self.ex=ex;return cf,ex
             def output(c,s,h,w,cf,T,R,qmax=127):
                 result=self.old_output(c,s,h,w,cf,T,R,qmax)
-                assert qmax==127 and c.shape[0]==128 and len(rows)<72
+                assert qmax==127 and c.numel()//c.shape[-1]==128 and len(rows)<72
                 role='GU' if w.shape[0]==19456 else 'Wd';assert w.shape[0] in (19456,2560)
                 expected='GU' if len(rows)%2==0 else 'Wd';assert role==expected
                 rowidx=torch.tensor([0,1,64,127],device=c.device)
@@ -54,15 +54,16 @@ def main():
                     blocks=gs+[x+count for x in gs]
                 else:blocks=[0,1,w.shape[0]//64-2,w.shape[0]//64-1]
                 cols=torch.cat([torch.arange(x*64,(x+1)*64,device=c.device) for x in blocks])
-                cs=c[rowidx].cpu().numpy().astype(np.int64);ss=s[rowidx].cpu().numpy().astype(np.int64)
-                hs=h[rowidx].cpu().numpy().astype(np.int64);ws=w[cols].cpu().numpy().astype(np.int64)
+                cs=c.reshape(128,-1)[rowidx].cpu().numpy().astype(np.int64)
+                ss=s.reshape(128,-1)[rowidx].cpu().numpy().astype(np.int64)
+                hs=h.reshape(128,-1)[rowidx].cpu().numpy().astype(np.int64);ws=w[cols].cpu().numpy().astype(np.int64)
                 coeff=cf[blocks].cpu().numpy().astype(np.int64);ex=self.ex[blocks].cpu().numpy().astype(np.int64)
                 G=c.shape[-1]//64;hi=hs.reshape(4,G,64).max(-1);lo=hs.reshape(4,G,64).min(-1);parts=[]
                 assert (hi-lo).max()<=2
                 for k in range(G):
                     local=(cs[:,k*64:(k+1)*64]<<(hi[:,k,None]-hs[:,k*64:(k+1)*64]))*ss[:,k*64:(k+1)*64]
                     parts.append(local@ws[:,k*64:(k+1)*64].T)
-                ref=result[rowidx][:,cols].contiguous();chosen_ex=self.ex[blocks].contiguous()
+                ref=result.reshape(128,-1)[rowidx][:,cols].contiguous();chosen_ex=self.ex[blocks].contiguous()
                 z=dict(parts=np.stack(parts),hi=hi,minimum_shift=lo,coeff=coeff,ex=ex,reference=ref.cpu().numpy(),
                        samples=np.array(T),R=np.array(R),role=np.array(role),layer=np.array(len(rows)//2),
                        rows=rowidx.cpu().numpy(),columns=cols.cpu().numpy(),g_cap=np.array(onebit.CAPS['g']),u_cap=np.array(onebit.CAPS['u']))

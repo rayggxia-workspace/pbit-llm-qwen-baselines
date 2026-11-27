@@ -23,7 +23,10 @@ def merge_rows(old,new,reference):
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--original',type=Path,required=True)
-    ap.add_argument('--output',type=Path,required=True);a=ap.parse_args()
+    ap.add_argument('--output',type=Path,required=True)
+    ap.add_argument('--width',type=int,choices=[24,32])
+    ap.add_argument('--fast-gate',type=Path)
+    a=ap.parse_args()
     assert os.environ.get('SLURM_JOB_ID') and not a.output.exists()
     root=a.original;source=root/'source'
     def read(p):
@@ -40,6 +43,17 @@ def main():
     gate,_,_=read(root/'outputs/GATE.json');assert gate['status']=='completed'
     selected,_,_=read(root/'outputs/FULL_SELECTION.json')
     assert selected['status']=='completed' and selected['selected']==[32,24]
+    widths=[a.width] if a.width else selected['selected']
+    fast_meta=None
+    if a.fast_gate:
+        fast_gate,_,gate_hash=read(a.fast_gate)
+        assert fast_gate['status']=='completed' and fast_gate['same_math']
+        assert fast_gate['original_numerical_commit']==mf['git_commit']
+        assert fast_gate['oracle']['cases']==16 and len(fast_gate['pairs'])==4
+        assert {x['width'] for x in fast_gate['model_windows'] if x['archived_window_exact']}=={24,32}
+        fast_path=Path(__file__).parent/'fast_narrow.py'
+        assert hashlib.sha256(fast_path.read_bytes()).hexdigest()==fast_gate['fast_source_sha256']
+        fast_meta=dict(gate_sha256=gate_hash,source_sha256=fast_gate['fast_source_sha256'])
     reference,_,_=read(root/'outputs/BF16_full/WINDOWS.json')
     assert len(reference)==292 and sum(x['targets'] for x in reference)==299077
     a.output.mkdir(parents=True)
@@ -47,7 +61,7 @@ def main():
     sys.path.insert(0,str(source/'experiments/t64_dynamic_scale_20261125'))
     from score_reference import save,score
     oldrows={};sources={}
-    for width in selected['selected']:
+    for width in widths:
         folder=root/('outputs/full'+str(width));p=folder/'WINDOWS.json'
         if not p.exists():p=folder/'PROGRESS.json'
         rows=[];entry=dict(status='absent',original=str(p))
@@ -64,13 +78,18 @@ def main():
                 evidence.write_bytes(raw);evidence.with_suffix('.sha256').write_text(h+'\n')
                 entry=dict(status='verified',original=str(p),sha256=h,reused_windows=len(rows))
         oldrows[width]=rows;sources[str(width)]=entry
-    remaining={w:[x['window'] for x in reference if x['window'] not in {v['window'] for v in oldrows[w]}] for w in selected['selected']}
-    save(a.output/'REUSE.json',dict(status='verified',source_commit=mf['git_commit'],sources=sources,remaining=remaining))
+    remaining={w:[x['window'] for x in reference if x['window'] not in {v['window'] for v in oldrows[w]}] for w in widths}
+    save(a.output/'REUSE.json',dict(status='verified',source_commit=mf['git_commit'],sources=sources,remaining=remaining,fast=fast_meta))
     model=None;results=[]
     if any(remaining.values()):
         import torch
         torch.set_num_threads(4);torch.backends.cuda.matmul.allow_tf32=False
         d=source/'experiments/t64_narrow_state_20261127';sys.path.insert(0,str(d))
+        if fast_meta:
+            import core
+            fast_spec=importlib.util.spec_from_file_location('verified_fast_backend',fast_path)
+            fast_impl=importlib.util.module_from_spec(fast_spec);fast_spec.loader.exec_module(fast_impl)
+            core.narrow=fast_impl.narrow
         spec=importlib.util.spec_from_file_location('frozen_narrow',d/'runner.py')
         frozen=importlib.util.module_from_spec(spec);spec.loader.exec_module(frozen)
         from reference import prepare,load_model
@@ -87,7 +106,7 @@ def main():
         assert actual==expected[:1], 'resumed-window numerical replay differs'
         save(a.output/'REPLAY_GATE.json',dict(status='passed',width=32,window=0,
              actual_sha256=probe['records_sha256'],original_pilot_sha256=hashlib.sha256((root/'outputs/pilot32/WINDOWS.json').read_bytes()).hexdigest()))
-    for width in selected['selected']:
+    for width in widths:
         rows=[];extra=None
         if remaining[width]:
             extra=score(model,context,modules,tokens,ledger,remaining[width],101,a.output/('new'+str(width)),frozen.case(width))
@@ -101,6 +120,6 @@ def main():
     save(a.output/'RESULT.json',dict(status='completed',full=results,source_commit=mf['git_commit'],
          original_gate_sha256=hashlib.sha256((root/'outputs/GATE.json').read_bytes()).hexdigest(),
          continuation_source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-         slurm_job_id=os.environ['SLURM_JOB_ID'],no_training=True,no_PPA=True))
+         fast=fast_meta,slurm_job_id=os.environ['SLURM_JOB_ID'],no_training=True,no_PPA=True))
 
 if __name__=='__main__':main()

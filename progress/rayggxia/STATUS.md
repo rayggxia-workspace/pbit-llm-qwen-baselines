@@ -1,3 +1,9 @@
+## 2026-11-27｜Issue225／PR266：x加1bit的部分结果，完整评测仍运行
+
+负责人rayggxia，同task/225-cim-bank32-20261124。新源fa079820冻结。CPU19PASS、GPU Gate62243已COMPLETED/0:0，完整BF16 PPL11.5364289819、关闭x标志与原共享logits逐位一致及任务回放通过。62244 PPL和62245任务仍健康运行，62246等待；无失败，不重复提交。
+
+已完成4项同8窗PPL/9215目标：原逐元素四档11.512866，x原四档+g/uS2为11.357426，x纯64共享+g/uS2为12.090864，新x/g/u均64基准+S/S2为11.406840。已完整ARC-C1172题，新方案acc42.74744%、acc_norm44.453925%；原x纯共享对应41.29693%/43.856655%，提升1.4505/.5973pp。原逐元素四档ARC-C43.17406%/45.56314%，新方案仍略低。逐窗NLL/目标SHA/36层与ARC逐题/SHA/配对ledger复核通过。PIQA只8/15片、完整PPL原四档182/292窗且新候选尚未开始，不能报完整成绩。按当前约13秒/窗，完整PPL剩余约1～1.5小时，PIQA约15分钟，随吞吐变化。正式部分记录experiments/t64_x_onebit_20261127/progress_20261127/REPORT_ZH.md，私有PARTIAL_RESULTS_VERIFIED_20261127.json；不混入旧环境PPL，不训练/改RTL/TLM/PPA，不合并，Projects待同步。
+
 ## 2026-11-27｜Issue225／PR266：x也增加S/S2一位选档，16/32评测已提交
 
 负责人rayggxia，同task/225-cim-bank32-20261124。推理源fa079820e849966c5d5f1ecbf2ea5eb825a28135已推送，7文件内容/原字节blob回读一致；42文件执行快照冻结。只给x增加组64基准+逐元素S/S2，g/u维持组64基准+S/S2、T64/W8、GU16/Wd32及准确Attention。CPU62242十九项PASS且COMPLETED/0:0；GPU Gate62243运行，PPL62244与单任务worker62245依赖门禁，CPU62246自动汇总，最多两GPU并行。PPL含4项同窗pilot和新候选/原逐元素四档各一份完整WT2；PIQA1838/ARC-C1172完整25分片/2组，seed101，全部题干答案36层FFN覆盖。尚无正式新结果；初估1～2小时，以实测为准。入口experiments/t64_x_onebit_20261127；私有恢复work/rayggxia/225/x_onebit_20261127/HANDOFF.md及SUBMISSION。无训练/PPA/RTL/TLM默认变化，旧健康结果不重跑/覆盖。PR未合并，Projects待维护者同步。

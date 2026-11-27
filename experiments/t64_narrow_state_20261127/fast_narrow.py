@@ -71,7 +71,7 @@ def narrow(counts,sign,shifts,weights,coeff,samples,R,width,role,unit_exponents=
     flags=torch.empty(shape,device=c.device,dtype=torch.int32)
     rounded=torch.empty_like(flags);maximum=torch.empty(shape,device=c.device,dtype=torch.int64)
     _state[shape](c,s,h.reshape(m,k),weights.contiguous(),ce.contiguous(),base,out,flags,rounded,maximum,
-                  m,k,n,R,width,num_warps=4)
+                  m,k,n,R,width,num_warps=4,num_stages=1)
     assert not bool(flags.any()),'narrow state overflow or invalid restoration; no wrap/saturation'
     return out.reshape(*counts.shape[:-1],n),dict(base_shift_min=int(base.min()),base_shift_max=int(base.max()),
         rounded_tile_values=int(rounded.sum()),cross_K_blocks=ng,stored_bits=width,

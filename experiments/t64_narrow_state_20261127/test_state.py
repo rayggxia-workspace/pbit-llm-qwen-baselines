@@ -1,7 +1,7 @@
 from fractions import Fraction
 import random,unittest
 import torch
-from core import rne_signed_shift,ceil_log2_positive
+from core import rne_signed_shift,ceil_log2_positive,common_base
 from oracle import rne,state
 class Tests(unittest.TestCase):
     def test_signed_RNE_ties(self):
@@ -30,4 +30,9 @@ class Tests(unittest.TestCase):
     def test_not_final_output_dependent(self):
         b=1234567890123
         self.assertEqual(state([1,-1],[0,0],b,24)[1],state([1000000,1000000],[0,0],b,24)[1])
+    def test_common_physical_unit_with_different_group_exponents(self):
+        bounds=torch.tensor([[1<<20,1<<20]])
+        ex=torch.tensor([-10,3]);base=common_base(bounds,ex,24,'GU')
+        self.assertEqual(base.tolist(),[[11,-2]])
+        self.assertEqual((base+ex).tolist(),[[1,1]])
 if __name__=='__main__':unittest.main()

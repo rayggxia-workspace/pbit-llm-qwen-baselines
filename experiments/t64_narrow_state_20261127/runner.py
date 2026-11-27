@@ -41,9 +41,9 @@ def main():
         suite=unittest.TestSuite()
         for folder,pattern in [(parent.ONEBIT,'test_onebit.py'),(parent.HALF,'test_half.py'),(parent.PARENT,'test_dynamic.py'),(PARENT,'test_x.py'),(OWN,'test_state.py')]:
             suite.addTests(unittest.TestLoader().discover(str(folder),pattern=pattern))
-        z=unittest.TextTestRunner(verbosity=2).run(suite);assert z.wasSuccessful() and z.testsRun==25
-        save(root/'CPU_PREFLIGHT.json',dict(status='completed',tests=25));return
-    assert sealed(root/'CPU_PREFLIGHT.json')['tests']==25
+        z=unittest.TextTestRunner(verbosity=2).run(suite);assert z.wasSuccessful() and z.testsRun==26
+        save(root/'CPU_PREFLIGHT.json',dict(status='completed',tests=26));return
+    assert sealed(root/'CPU_PREFLIGHT.json')['tests']==26
     assert torch.cuda.is_available() and torch.cuda.device_count()==1
     from reference import prepare,load_model
     from gpu_oracle import run

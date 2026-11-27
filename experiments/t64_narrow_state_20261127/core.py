@@ -15,7 +15,15 @@ def rne_signed_shift(value,delta):
     q=torch.where(-delta>=24,torch.zeros_like(q),q)
     return torch.where(delta>=0,left,q*value.sign())
 
-def narrow(counts,sign,shifts,weights,coeff,samples,R,width,role):
+def common_base(bounds,unit_exponents,width,role):
+    level=ceil_log2_positive(bounds)+unit_exponents[None,:]
+    m,nb=level.shape
+    if role=='GU':
+        half=nb//2;p=torch.maximum(level[:,:half],level[:,half:]);level=torch.cat((p,p),-1)
+    else:level=level.reshape(m,nb//2,2).amax(-1).repeat_interleave(2,-1)
+    return level-(width-2)-unit_exponents[None,:]
+
+def narrow(counts,sign,shifts,weights,coeff,samples,R,width,role,unit_exponents=None):
     if width not in (24,32) or role not in ('GU','Wd'):raise ValueError('validated widths and roles only')
     if torch.backends.cuda.matmul.allow_tf32:raise ValueError('bounded integer FP32 GEMM requires TF32 disabled')
     k=counts.shape[-1];n=weights.shape[0];m=counts.numel()//k;ng=k//64;nb=n//64
@@ -31,10 +39,9 @@ def narrow(counts,sign,shifts,weights,coeff,samples,R,width,role):
     # weight values, output magnitudes, or cancellation.
     b=((64*samples*127)<<(R-lo))[:,None,:]*coeff[None,:,:]
     b=b.sum(-1)
-    if role=='GU':
-        halves=nb//2;pair=torch.maximum(b[:,:halves],b[:,halves:]);b=torch.cat((pair,pair),-1)
-    else:b=b.reshape(m,nb//2,2).amax(-1).repeat_interleave(2,-1)
-    base=ceil_log2_positive(b)-(width-2)
+    if unit_exponents is None:unit_exponents=torch.zeros(nb,device=c.device,dtype=torch.int64)
+    assert unit_exponents.numel()==nb
+    base=common_base(b,unit_exponents.reshape(nb).long(),width,role)
     state=torch.zeros((m,nb,64),dtype=torch.int64,device=c.device)
     errors=torch.zeros_like(state,dtype=torch.bool)
     rounded=torch.zeros((),dtype=torch.int64,device=c.device)
@@ -70,7 +77,11 @@ class NarrowOverride(AbstractContextManager):
     def __init__(self,width):
         assert width in (24,32,64);self.width=width;self.stats={}
     def __enter__(self):
-        import wide_wd
+        import wide_wd,seven_forward as sf
+        self.sf=sf;self.old_coeff=sf.exact_coefficients
+        def coefficients(*a,**kw):
+            cf,ex=self.old_coeff(*a,**kw);self.pending_ex=ex;return cf,ex
+        sf.exact_coefficients=coefficients
         self.old=wide_wd.shifted_output
         def output(counts,sign,shifts,weights,coeff,samples,max_shift,qmax=127):
             assert qmax==127
@@ -78,17 +89,21 @@ class NarrowOverride(AbstractContextManager):
             if self.width==64:return ref
             role='GU' if weights.shape[0]==19456 else 'Wd'
             assert weights.shape[0] in (19456,2560)
-            value,info=narrow(counts,sign,shifts,weights,coeff,samples,max_shift,self.width,role)
+            value,info=narrow(counts,sign,shifts,weights,coeff,samples,max_shift,self.width,role,self.pending_ex)
             z=self.stats.setdefault(role,dict(calls=0,values=0,changed_integer_values=0,max_integer_error=0,
                          max_group_relative_error=0.,max_base_shift=-99,min_base_shift=99,rounded_tile_values=0))
             z['calls']+=1;z['values']+=value.numel();z['changed_integer_values']+=int((value!=ref).sum())
             err=(value-ref).abs();p=ref.abs().reshape(-1,ref.shape[-1]//64,64).amax(-1)
+            p=torch.ldexp(p.double(),self.pending_ex[None,:])
             if role=='GU':
                 nb=p.shape[-1]//2;pair=torch.maximum(p[:,:nb],p[:,nb:]);p=torch.cat((pair,pair),-1)
             else:p=p.reshape(p.shape[0],-1,2).amax(-1).repeat_interleave(2,-1)
-            peak=p.clamp_min(1)[:,:,None]
+            peak=p[:,:,None]
             z['max_integer_error']=max(z['max_integer_error'],int(err.max()))
-            z['max_group_relative_error']=max(z['max_group_relative_error'],float((err.reshape_as(peak.expand(-1,-1,64)).double()/peak).max()))
+            physical_error=torch.ldexp(err.reshape_as(peak.expand(-1,-1,64)).double(),self.pending_ex[None,:,None])
+            ratio=torch.where(peak>0,physical_error/peak.clamp_min(torch.finfo(torch.float64).tiny),0.)
+            z['max_group_relative_error']=max(z['max_group_relative_error'],float(ratio.max()))
+            z['zero_reference_values_changed']=z.get('zero_reference_values_changed',0)+int(((peak==0)&(physical_error>0)).sum())
             z['max_base_shift']=max(z['max_base_shift'],info['base_shift_max'])
             z['min_base_shift']=min(z['min_base_shift'],info['base_shift_min'])
             z['rounded_tile_values']+=info['rounded_tile_values'];z['cross_K_blocks']=info['cross_K_blocks']
@@ -98,5 +113,6 @@ class NarrowOverride(AbstractContextManager):
     def __exit__(self,*exc):
         import wide_wd
         wide_wd.shifted_output=self.old
+        self.sf.exact_coefficients=self.old_coeff
     def report(self):return dict(stored_state_bits=self.width,stages=self.stats,
         contract='K64 local signed23, metadata-derived common base with 2 guard bits, per-tile RNE, error on overflow; original sigmoid unchanged')

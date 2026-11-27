@@ -1,3 +1,13 @@
+## 2026-11-27｜FP24真实链小测完成；24/32定点完整WT2完成
+
+Issue225/PR266，负责人rayggxia，分支task/225-cim-bank32-20261124。FP24执行源d81f77f1，62265 COMPLETED/0:0（6分59秒）；本地/Slurm各9项CPU测试PASS。72真实GU/Wd投影样本、36层、4个token位置、完整40/152块；原GPU整数重放精确，288真实链Fraction、72 NPZ SHA及原结果汇总独立核验通过。FP24正常数E8/M15、逐tile与逐更新RNE，无溢出/下溢；g/u成对码34/27648变化（0.123%），Wd最终BF16 8/36864（0.0217%）。固定24分别15.57%/92.21%，固定32为0.0072%/1.389%，BF16部分和79.30%/86.47%。这是同事件局部重放，不是FP24前向PPL。
+
+同环境原BF16完整WT2 PPL11.5364289819；模型/文本/源身份一致。FP24 REPORT_ZH.md、RESULTS.json位于experiments/t64_fp24_state_20261127，原RESULT SHA b8eebabe055440df04aead97dcf9f8b94f78555c32480321148b47ba1ca38cb4，私有run_v1下原件/VERIFICATION/SUBMISSION保留。
+
+此前完整WT2已齐并核验：64位10.6283923845、32位10.6254049102（−0.0281%）、24位定点10.7427570709（+1.0760%），单seed101、每项292窗/299077目标，完整窗口与NLL/目标SHA/36层覆盖匹配；62263/62264 COMPLETED/0:0。FULL_RESULTS_ZH.md、FULL_RESULTS.json位于experiments/t64_narrow_state_20261127；私有fast_full_v1/FULL_VERIFIED.json。32位微小改善不称显著提升；没有FP24完整PPL结果。当前这些作业均结束，不重交。
+
+未改变现有RTL/TLM默认64位或PPA，无训练/新硬件结果。FP24下一步为实际前向PPL与共享浮点流水线电路比较。PR未合并，Issue225更广工作不关闭；Projects未操作。Issue28远端备忘录仍按维护流程待同步。
+
 ## 2026-11-27｜窄位宽PPL快核已验证并切换并行
 
 Issue225/PR266，负责人rayggxia。原T64/W8、GU16/Wd32、x/g/u组64基准+S/S2、准确Attention不变。原逐tile Python参考约93秒/窗；融合Triton核通过16独立oracle、4长K逐位及计数对照、24/32各一个真实模型原窗含NLL逐项一致，计时33.005/24.887秒。独立原件SHA/覆盖复核通过，FAST_VALIDATION.json；无新PPA或默认修改。原数值源0d1e8517，分宽度接续128432ba。

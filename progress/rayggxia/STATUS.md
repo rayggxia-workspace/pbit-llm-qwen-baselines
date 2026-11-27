@@ -1,3 +1,12 @@
+
+## 2026-11-27｜FP24指数缩减与0.5B独立验证完成
+
+Issue225/PR266，rayggxia。源00e025c4671aa61751d6585b5ab874b13e93e3af，Slurm62267/62268 COMPLETED0:0，87/5秒，各6项CPU测试PASS。4B全36层封存轨迹写回指数GU−18..7、Wd−18..12；Qwen2.5-0.5B-Instruct全24层/3上下文独立随机FFN回放为−17..3、−17..10。E6/M15(22bit)与E8/M15全部同值无上下溢；常规E5有下溢，候选22bit状态载荷12×128为4.125KiB，较FP24少8.33%(384B)，物理宏不保证同比减。E6/M17可保留24bit增加2bit有效精度。
+
+0.5B固定后训练revision7ae557604adf67be50417f59c2c2f167def9a775，7文件/官方LFS SHA核对，未用Base。匹配原BF16完整WT2 292窗/299077目标PPL12.8361204065；3上下文×24层×2路径144轨迹，完整GU14/Wd76 K64；GPU整数oracle、144轨迹SHA、原生logits不变及账本核验通过。该新模型未作T64适配训练，数制回放不反馈后续层，不是FP24模型PPL。
+
+FP24整数直出S/S2 P8与旧参考逐项一致，raw-g S8/F3也匹配；原模型仍用P8重建g，4B/0.5B raw路径阈值不同3.78%/3.54%，未切换。现有RTL/TLM/默认64位及PPA不改。正式experiments/fp_state_exponent_20261127/REPORT_ZH.md、RESULTS.json/sha；私有work/rayggxia/225/fp_exponent_20261127/HANDOFF.md及各run/original，远端个人/lustre/home/lgzhang/zhj/fp-state-range225-20261127。下一步候选实际FP24/22前向PPL与共享浮点流水线电路比较。PR待审未合并、Projects未操作；Issue28远端依维护流程待同步。
+
 ## 2026-11-27｜FP24真实链小测完成；24/32定点完整WT2完成
 
 Issue225/PR266，负责人rayggxia，分支task/225-cim-bank32-20261124。FP24执行源d81f77f1，62265 COMPLETED/0:0（6分59秒）；本地/Slurm各9项CPU测试PASS。72真实GU/Wd投影样本、36层、4个token位置、完整40/152块；原GPU整数重放精确，288真实链Fraction、72 NPZ SHA及原结果汇总独立核验通过。FP24正常数E8/M15、逐tile与逐更新RNE，无溢出/下溢；g/u成对码34/27648变化（0.123%），Wd最终BF16 8/36864（0.0217%）。固定24分别15.57%/92.21%，固定32为0.0072%/1.389%，BF16部分和79.30%/86.47%。这是同事件局部重放，不是FP24前向PPL。

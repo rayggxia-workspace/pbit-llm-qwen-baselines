@@ -74,6 +74,7 @@ def main():
         spec=importlib.util.spec_from_file_location('frozen_narrow',d/'runner.py')
         frozen=importlib.util.module_from_spec(spec);spec.loader.exec_module(frozen)
         from reference import prepare,load_model
+        (a.output/'prepared').mkdir()
         inputs,tokens,ledger,protocol=prepare(Path(settings['inputs']),Path(settings['runtime']),a.output/'prepared')
         assert protocol==gate['protocol']
         model,context,modules,identity=load_model(inputs);assert identity==gate['identity']

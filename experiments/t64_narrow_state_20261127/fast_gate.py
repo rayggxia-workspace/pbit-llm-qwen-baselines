@@ -46,6 +46,8 @@ def main():
     oldgate=sealed(a.original/'outputs/GATE.json')
     from reference import prepare,load_model
     a.output.mkdir(parents=True)
+    save(a.output/'INTEGER_GATE.json',dict(status='passed',oracle=oracle,pairs=pairs))
+    (a.output/'prepared').mkdir()
     inputs,tokens,ledger,protocol=prepare(Path(settings['inputs']),Path(settings['runtime']),a.output/'prepared')
     assert protocol==oldgate['protocol']
     model,context,modules,identity=load_model(inputs);assert identity==oldgate['identity']

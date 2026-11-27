@@ -91,8 +91,12 @@ def analyze(z):
             for k in ['q','sign','exponent','field']:assert np.array_equal(actual[k],expected[k]),k
             direct=np.rint(value*8).clip(-128,127).astype(np.int64)
             assert np.array_equal(actual['raw_field'],direct),'raw sigmoid integer codec differs'
+            lut=np.array([math.floor(256/(1+math.exp(-i/8))+.5) for i in range(-128,128)],dtype=np.int64)
+            threshold_error=np.abs(lut[direct+128]-lut[expected['field']+128])
             codec[label]=dict(values=int(value.size),amplitude_codec_exact=True,raw_field_codec_exact=True,
-                              raw_vs_reconstructed_field_changed=int(np.count_nonzero(direct!=expected['field'])))
+                              raw_vs_reconstructed_field_changed=int(np.count_nonzero(direct!=expected['field'])),
+                              raw_vs_reconstructed_threshold_changed=int(np.count_nonzero(threshold_error)),
+                              threshold_absolute_step_sum=int(threshold_error.sum()),threshold_step_max=int(threshold_error.max()))
     return dict(role=role,K_blocks=G,histograms=hist,formats=result,codec=codec)
 
 def summarize(rows):
@@ -106,8 +110,11 @@ def summarize(rows):
             for k in ['values','changed_vs_E8M15','squared_error','reference_squared']:s[k]+=x[k]
             for k,v in x['events'].items():s['events'][k]=s['events'].get(k,0)+v
         for name,x in r['codec'].items():
-            s=group['codec'].setdefault(name,dict(values=0,raw_vs_reconstructed_field_changed=0))
-            for k in s:s[k]+=x[k]
+            s=group['codec'].setdefault(name,dict(values=0,raw_vs_reconstructed_field_changed=0,
+              raw_vs_reconstructed_threshold_changed=0,threshold_absolute_step_sum=0,threshold_step_max=0))
+            for k in s:
+                if k=='threshold_step_max':s[k]=max(s[k],x[k])
+                else:s[k]+=x[k]
     for r in out.values():
         r['histograms']={k:hist_summary(v) for k,v in r['histograms'].items()}
         for x in r['formats'].values():x['relative_rms']=math.sqrt(x['squared_error']/x['reference_squared']) if x['reference_squared'] else 0.

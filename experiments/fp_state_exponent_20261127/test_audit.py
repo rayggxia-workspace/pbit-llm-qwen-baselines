@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 from audit import qformat,integer_codec,histogram,hist_summary
 from formats import quantize,encode_gu
+from small_model import quantize_numpy
 
 class Tests(unittest.TestCase):
     def test_E8_matches_frozen_format(self):
@@ -22,5 +23,14 @@ class Tests(unittest.TestCase):
     def test_histogram_zero_exclusion(self):
         h=hist_summary(histogram(np.array([0.,0.,2.**-20,1.,-8.])))
         self.assertEqual((h['minimum'],h['maximum'],h['zero'],h['nonzero']),(-20,3,2,3))
+    def test_new_model_weight_quantization(self):
+        x=np.random.default_rng(101).integers(-1000,1001,(128,128)).astype(np.float32)/1024
+        q,s=quantize_numpy(x);e=s.repeat(64,0).repeat(64,1)
+        self.assertTrue(np.all(np.frexp(s)[0]==.5))
+        self.assertTrue(np.all(np.abs(q.astype(np.float32)*e-x)<=e/2))
+        self.assertTrue(np.all(np.abs(q.astype(np.int16))<=127))
+    def test_zero_weight_block(self):
+        q,s=quantize_numpy(np.zeros((64,64),dtype=np.float32))
+        self.assertTrue(np.all(q==0));self.assertEqual(s[0,0],2.**-24)
 
 if __name__=='__main__':unittest.main()

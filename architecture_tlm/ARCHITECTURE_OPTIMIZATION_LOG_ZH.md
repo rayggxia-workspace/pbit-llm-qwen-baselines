@@ -227,3 +227,13 @@ Issue225/PR266，[报告](process_28nm/prefill_core_sizing_20261127/REPORT_ZH.md
 ## 2026-11-27｜Prefill面积复核与INT8 Attention
 
 Issue225/PR266，[文献与量级复核](process_28nm/prefill_core_sizing_20261127/LITERATURE_AND_INT8_ZH.md)。用户允许INT8 Attention：原96核配套的BF16矩阵62.22mm²可用已测同吞吐数字CIM/WS计算预算4.03/8.86mm²对照，非完整Attention价。当前SC GU吞吐密度.611 vs DCIM2.067TOPS/mm²，SC局部能量低19.5%，不混称等PPL胜负。多播8token簇/每核16行候选保全局128行复用，状态12→1.5MiB载荷，保带宽2MiB物理；本地CIM写8倍，未bank验证。P-CIM+INT8矩阵+状态+CIM容量四项48.17–53.00mm²（沿当前16×512B/核的S0容量代理），非完整面积或已测性能。SoulMate原图Input32脚注、DUET28阵列/7nm系统、MFSAcell/die边界均核对。四旧PPA来源及三作者文件SHA/最小快照复算通过；无新EDA/TLM/GPU/质量，旧数字结果及decode默认不改。
+
+
+## 2026-11-27｜对齐RK3588短输入的P-CIM核数预算
+
+Issue225/PR266，rayggxia。[报告](process_28nm/prefill_core_sizing_20261127/ROCKCHIP_MATCH_ZH.md)。按官方MiniCPM3-4B/W8A8/128输入/64生成、TTFT1.40849秒，采用实际62层和MLA形状；28nm250MHz GU16/Wd32、32行权重复用、8个WS16整数阵列约.883TOPS、32向量、2state32、256KiB状态及约1MiB共享激活/数字操作数工作区。外存峰值参照ROCK5B为33.792GB/s，20/27/30有效带宽扫描，不冒称知道官方板型或原轨迹。
+
+27GB/s下4/5/6/8核预算1.614/1.382/1.228/1.035秒，8核若状态阶段串行则1.210秒；5核临界，6核候选。6核20/30GB/s约1.327/1.219秒。采样8/32、16/32、32/64、64/128满足同目标的条件最小核数4/5/10/18；质量未测，不能用6核保证高采样。同协议Qwen6核约1.118秒，异模型不直接计算加速比。
+
+已测任务价格、独立MAC/MLA形状、分项求和、状态与工作区容量及最小两文件字节复算通过；没有新GPU/EDA/完整prefill事务或模型PPL。公开表未披露checkpoint/文本/板型/所有算子数制，未补造已对齐；19bit旧价只作参考，21bit未标定。旧decode/RTL默认不改，Issue28远端备忘录待维护流程，Projects未操作，PR未合并。
+

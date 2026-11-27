@@ -1,3 +1,11 @@
+## 2026-11-27｜对齐RK3588短输入的P-CIM核数预算
+
+Issue225/PR266，rayggxia。[报告](architecture_tlm/process_28nm/prefill_core_sizing_20261127/ROCKCHIP_MATCH_ZH.md)。按官方MiniCPM3-4B/W8A8/128输入/64生成、TTFT1.40849秒，采用实际62层和MLA形状；28nm250MHz GU16/Wd32、32行权重复用、8个WS16整数阵列约.883TOPS、32向量、2state32、256KiB状态及约1MiB共享激活/数字操作数工作区。外存峰值参照ROCK5B为33.792GB/s，20/27/30有效带宽扫描，不冒称知道官方板型或原轨迹。
+
+27GB/s下4/5/6/8核预算1.614/1.382/1.228/1.035秒，8核若状态阶段串行则1.210秒；5核临界，6核候选。6核20/30GB/s约1.327/1.219秒。采样8/32、16/32、32/64、64/128满足同目标的条件最小核数4/5/10/18；质量未测，不能用6核保证高采样。同协议Qwen6核约1.118秒，异模型不直接计算加速比。
+
+已测任务价格、独立MAC/MLA形状、分项求和、状态与工作区容量及最小两文件字节复算通过；没有新GPU/EDA/完整prefill事务或模型PPL。公开表未披露checkpoint/文本/板型/所有算子数制，未补造已对齐；19bit旧价只作参考，21bit未标定。旧decode/RTL默认不改，Issue28远端备忘录待维护流程，Projects未操作，PR未合并。
+
 ## 2026-11-27｜28nm prefill文献与INT8面积复核
 
 Issue225/PR266，负责人rayggxia。用户允许Attention改INT8做硬件对照。报告architecture_tlm/process_28nm/prefill_core_sizing_20261127/LITERATURE_AND_INT8_ZH.md；新review_int8_area.py/AREA_REVIEW_INPUTS/INT8_AREA_REVIEW及验证。原RESULTS/estimate未改，只给旧报告新增复核入口；96/192核和12/48MiB是未优化参考，不是最低配置。

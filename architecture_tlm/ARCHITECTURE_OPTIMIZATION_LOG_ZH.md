@@ -222,3 +222,8 @@ Issue225/PR266，[报告](../experiments/fp_state_exponent_20261127/REPORT_ZH.md
 ## 2026-11-27｜2K prefill核数选型预算
 
 Issue225/PR266，[报告](process_28nm/prefill_core_sizing_20261127/REPORT_ZH.md)。沿当前K64/M128/250MHz/GU16-Wd32，纯FFN62.7573核秒，32/64核仅FFN约1.96/.98秒。提出96CIM+16384FMA及192CIM+32768FMA配套，权重复用128/256行、扩大向量/状态/编码，100GB/s有效外存，解析服务1.80/.943秒；共享状态须独立行流水，否则2.46/1.27秒。默认两state32口至少5.38秒、当前256lane QKVO约32.09秒，不能只扩CIM。64bit状态载荷预算12/48MiB，FP24另待PPL，不预支为本轮条件。独立MAC/pair/来源SHA与两文件最小快照复算通过。只硬件选型预算，无原生prefill TLM/RTL/PPA/质量或新服务器任务，decode默认不改。
+
+
+## 2026-11-27｜Prefill面积复核与INT8 Attention
+
+Issue225/PR266，[文献与量级复核](process_28nm/prefill_core_sizing_20261127/LITERATURE_AND_INT8_ZH.md)。用户允许INT8 Attention：原96核配套的BF16矩阵62.22mm²可用已测同吞吐数字CIM/WS计算预算4.03/8.86mm²对照，非完整Attention价。当前SC GU吞吐密度.611 vs DCIM2.067TOPS/mm²，SC局部能量低19.5%，不混称等PPL胜负。多播8token簇/每核16行候选保全局128行复用，状态12→1.5MiB载荷，保带宽2MiB物理；本地CIM写8倍，未bank验证。P-CIM+INT8矩阵+状态+CIM容量四项48.17–53.00mm²（沿当前16×512B/核的S0容量代理），非完整面积或已测性能。SoulMate原图Input32脚注、DUET28阵列/7nm系统、MFSAcell/die边界均核对。四旧PPA来源及三作者文件SHA/最小快照复算通过；无新EDA/TLM/GPU/质量，旧数字结果及decode默认不改。

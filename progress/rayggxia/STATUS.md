@@ -1,3 +1,13 @@
+## 2026-11-27｜28nm prefill文献与INT8面积复核
+
+Issue225/PR266，负责人rayggxia。用户允许Attention改INT8做硬件对照。报告architecture_tlm/process_28nm/prefill_core_sizing_20261127/LITERATURE_AND_INT8_ZH.md；新review_int8_area.py/AREA_REVIEW_INPUTS/INT8_AREA_REVIEW及验证。原RESULTS/estimate未改，只给旧报告新增复核入口；96/192核和12/48MiB是未优化参考，不是最低配置。
+
+原96核计算价P-CIM35.78、BF16 FMA62.22mm²，12MiB状态26.66–36.50mm²。以同8.192TOPS目标，用已测16行P8/W8 DCIM21份或Gemmini风格WS75份，计算逻辑4.03/8.86mm²；不是完整Attention价，量化/尺度/累加/供数另计，INT8质量未测。现有250M局部SC GU T16 .37269mm²/72ns/.611TOPSmm²/10.1625pJDOT64，对DCIM .19180/41.33ns/2.067/12.6313：后者吞吐密度3.38倍，SC局部能量低19.5%，非等PPL整机结论。
+
+原始文献视觉核对：DUET DAC26的28nm64×32 FP16阵列3.01mm²/763M，系统最终7nm缩放；MFSA预印本28nm1GHz/3.27mm²cell/5.76mm²版图，BF16FP32及INT8INT32均1.024TOPS；SoulMate28nm20.25mm²216.4ms原图脚注为输入32/输出32/context1024，还有MXFP低位/混合低秩，不是完整2K 4B prefill。
+
+8token簇×12核、每核16行的权重多播候选可保持全局128行复用，将64bit状态12→1.5MiB载荷；保带宽用512×4KiB bank、2MiB物理约6.08mm²；DRAM字节不变，本地CIM写8倍，计算+编程约.710秒。该映射未做bank回放。96核P-CIM+INT8计算+2MiB状态+CIM容量四项小计48.17–53.00mm²，CIM容量沿当前16×512B/核的S0代理；非完整裸片面积/性能结果。21bit价格增量/互连等不预支。四原PPA来源SHA、三作者原件SHA/图表脚注、最小三文件逐字复算及计数检查PASS。无新PPA/TLM/GPU任务，不改decode默认。下一步优先多token广播/状态驻留及共享数字位串行prefill模式对照，不直接堆核。
+
 ## 2026-11-27｜2K prefill一至两秒资源预算
 
 Issue225/PR266，rayggxia，沿task/225-cim-bank32-20261124独立目录。按28nm/250MHz、Qwen3-4B36层、2048prompt、W8 GU16/Wd32，K64/M128、32拍装载。FFN共448266240/224133120帧，62.7573单核秒；32/64核仅FFN理想约1.96/.98秒。当前256 FMA与两state32口分别限制QKV/O约32.09秒、状态更新至少5.38秒，不能仅扩P-CIM。

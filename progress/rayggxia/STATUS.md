@@ -1,3 +1,7 @@
+## 2026-11-27｜Issue225／PR266：x也增加S/S2一位选档，16/32评测已提交
+
+负责人rayggxia，同task/225-cim-bank32-20261124。推理源fa079820e849966c5d5f1ecbf2ea5eb825a28135已推送，7文件内容/原字节blob回读一致；42文件执行快照冻结。只给x增加组64基准+逐元素S/S2，g/u维持组64基准+S/S2、T64/W8、GU16/Wd32及准确Attention。CPU62242十九项PASS且COMPLETED/0:0；GPU Gate62243运行，PPL62244与单任务worker62245依赖门禁，CPU62246自动汇总，最多两GPU并行。PPL含4项同窗pilot和新候选/原逐元素四档各一份完整WT2；PIQA1838/ARC-C1172完整25分片/2组，seed101，全部题干答案36层FFN覆盖。尚无正式新结果；初估1～2小时，以实测为准。入口experiments/t64_x_onebit_20261127；私有恢复work/rayggxia/225/x_onebit_20261127/HANDOFF.md及SUBMISSION。无训练/PPA/RTL/TLM默认变化，旧健康结果不重跑/覆盖。PR未合并，Projects待维护者同步。
+
 ## 2026-11-27｜Issue225／PR266：S/S2完整任务8/8完成并独立复核
 
 负责人rayggxia，同task/225-cim-bank32-20261124。S2的PIQA1838／ARC-C1172、100/100片与8/8组全部完成，无缺项/失败；GPU62237、62238_0/1及CPU62239均COMPLETED/0:0，队列为空。独立CPU62241重算S2 12040与S4 27090配置×题目计分、原文档SHA/输入ledger/36层/模型源码身份通过；只读复核不重跑GPU。正式汇总experiments/t64_onebit_half_tasks_20261126/results_20261127/REPORT_ZH.md，原字节evidence及SHA/CSV/复算脚本同目录。S2并非任务全面改善：x原四档16/32 acc为68.44%／42.41%，比S4 +.435／+.768个百分点；x动态64的16/32为67.57%／41.30%，PIQA降低1.523pp。64/128两x路径分别74.27%／48.46%、74.10%／48.38%，接近S4。准确Attention、T64/W8、seed101不变；没有S2完整WT2、新训练/PPA/RTL/TLM默认变更。原件小归档project_archives/scale_results225_20261126/S2_TASKS_AND_AUDIT_20261127.tar.gz；私有恢复work/rayggxia/225/onebit_half_tasks_20261126/HANDOFF.md。PR未合并，Projects待维护者同步。

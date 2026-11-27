@@ -182,3 +182,10 @@ S2八窗PPL四对均改善后，按用户要求提交PIQA1838和ARC-C1172完整�
 - S2对S4的acc变化：x原四档16/32为PIQA +0.435pp、ARC-C +0.768pp；x动态64为PIQA −1.523pp、ARC-C +0.597pp。64/128两路径PIQA −0.381/−0.272pp、ARC-C +0.171/+0.085pp。PIQA acc_norm四项均提高，ARC-C高预算acc_norm下降0.60～0.68pp；保留全部指标。
 - 前期8窗PPL均改善，不等于任务质量全面改善。64/128 S2整体接近S4；16/32 x动态64的PIQA负面变化保留。单部署seed101、原T64/W8/准确Attention，无训练或采样预算变更；没有S2完整WT2，64bit状态与TLM默认不改。
 - 正式证据experiments/t64_onebit_half_tasks_20261126/results_20261127/REPORT_ZH.md、CSV、原字节evidence/SHA和独立verify_results.py；冻结推理源354bef257affa393d5677c04c9d71004e9d88286未改。小归档SHA6a3dc66d3768b7be7d540f5f13a159bd2247044f2294fe6723dac84fa3e78bca，原大输出留共享存储。
+
+
+## 2026-11-27｜x也增加一位尺度：16/32单因素任务（Issue225 / PR266）
+
+用户要求补x共享基准+逐元素S/S2。新XOnebitOverride只替换dynamic.encode的x入口，复用已验证half.encode；g/u S/S2、sigmoid真实幅度、联合4×2×4计数直连Wd和W8整数恢复保持。新增x尺度在GU归约前按原整数路径对齐；x小档阈值S/2、下限2^-6/x上限512，禁用越界小档。
+
+推理源fa079820e849966c5d5f1ecbf2ea5eb825a28135，7文件原字节blob已读回；42执行文件冻结。CPU62242十九项PASS，GPU Gate62243运行，PPL62244及单任务worker62245依赖，CPU62246汇总；正式阶段至多两张A6000。单seed101，PPL原四档/新候选各完整292窗299077目标，另4项8窗同轮对照；PIQA1838/ARC-C1172全量25分片/2组、全题干答案36层FFN。没有GPU正式结果，不推测质量。预计1～2小时待实测修正，冻结快照不改，旧完整任务对照只读复用。未训练/新增PPA或修改RTL/TLM/64bit状态，PR不合并。

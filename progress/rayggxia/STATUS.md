@@ -1,3 +1,11 @@
+## 2026-11-27｜2K prefill一至两秒资源预算
+
+Issue225/PR266，rayggxia，沿task/225-cim-bank32-20261124独立目录。按28nm/250MHz、Qwen3-4B36层、2048prompt、W8 GU16/Wd32，K64/M128、32拍装载。FFN共448266240/224133120帧，62.7573单核秒；32/64核仅FFN理想约1.96/.98秒。当前256 FMA与两state32口分别限制QKV/O约32.09秒、状态更新至少5.38秒，不能仅扩P-CIM。
+
+配套候选：96CIM/16384FMA/512vector/16state32worker/4encoder、权重跨128行复用，100GB/s有效外存、2048GB/s状态SRAM预算，解析服务1.7998秒；192/32768/1024/32/8、256行复用、4096GB/s状态SRAM，.9429秒。共享状态SRAM/更新须按独立行流水，若保留阶段串行则2.4595/1.2727秒。两档状态按现有64位载荷预算分别12/48MiB，不是decode12KiB；FP24是另待PPL候选，不用于此次性能。
+
+硬件选型解析模型，不是新完整prefill TLM/RTL/PPA或实际性能。QKV/O仍BF16、Attention稠密因果、head只最后prompt位置。QKV/O也改P-CIM属未测质量的新方案，单列线性核时79.74秒。正式architecture_tlm/process_28nm/prefill_core_sizing_20261127：estimate/最小SOURCE_INPUTS/RESULTS/REPORT/VERIFICATION，独立矩阵计数/因果sum/来源及结果SHA、两文件最小快照逐字复算通过。无远端作业、不改decode默认；下一步代表性prefill tile的状态流水/GEMM供数/bank回放。Issue28远端备忘录待原维护流程，Projects未操作。
+
 
 ## 2026-11-27｜FP24指数缩减与0.5B独立验证完成
 

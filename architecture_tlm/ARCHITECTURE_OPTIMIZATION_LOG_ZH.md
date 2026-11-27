@@ -174,3 +174,11 @@ Issue204/PR209，[13口径](../digital_circuit_simulation_registry/13_SRAM存内
 S2八窗PPL四对均改善后，按用户要求提交PIQA1838和ARC-C1172完整任务。新源354bef257affa393d5677c04c9d71004e9d88286，原S2编码/官方S4任务参考冻结；四case×两任务，8完整组100分片，单seed101。CPU62236十八项PASS，Gate62237运行，两个GPU worker62238_[0-1]及CPU汇总62239依赖等待；尚无新S2正式准确率。先重跑完整BF16与原S4逐位回放，验证数据和采样key配对，再复用旧全量对照。
 
 机制：S4→S2同时提高小档门限；S/4<|v|≤S/2的数概率翻倍并减小单事件恢复步长，而|v|≤S/4时S4有更细分辨率。IID参考Var=|v|(L-|v|)/T解释取舍，不能代替实际分层/联合AND的方差或PPL测量。组内乘积对齐从0/2/4缩为0/1/2，未标定新PPA；不直接改64bit状态、训练、RTL或TLM默认。正式入口experiments/t64_onebit_half_tasks_20261126；预计两卡2～3小时，随实测调整。
+
+
+## 2026-11-27｜S/S2完整任务结果（Issue225 / PR266）
+
+- 全部100片/8组已封存，CPU18PASS、GPU门禁与两worker/汇总均退出0；资源归还。独立CPU62241校验650份原逐题/分片JSON，S2 12040与S4 27090个配置×题目评分、文档/请求ledger/36层/模型源码SHA一致。
+- S2对S4的acc变化：x原四档16/32为PIQA +0.435pp、ARC-C +0.768pp；x动态64为PIQA −1.523pp、ARC-C +0.597pp。64/128两路径PIQA −0.381/−0.272pp、ARC-C +0.171/+0.085pp。PIQA acc_norm四项均提高，ARC-C高预算acc_norm下降0.60～0.68pp；保留全部指标。
+- 前期8窗PPL均改善，不等于任务质量全面改善。64/128 S2整体接近S4；16/32 x动态64的PIQA负面变化保留。单部署seed101、原T64/W8/准确Attention，无训练或采样预算变更；没有S2完整WT2，64bit状态与TLM默认不改。
+- 正式证据experiments/t64_onebit_half_tasks_20261126/results_20261127/REPORT_ZH.md、CSV、原字节evidence/SHA和独立verify_results.py；冻结推理源354bef257affa393d5677c04c9d71004e9d88286未改。小归档SHA6a3dc66d3768b7be7d540f5f13a159bd2247044f2294fe6723dac84fa3e78bca，原大输出留共享存储。

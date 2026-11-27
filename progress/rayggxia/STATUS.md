@@ -1,3 +1,7 @@
+## 2026-11-27｜Issue225／PR266：S/S2完整任务8/8完成并独立复核
+
+负责人rayggxia，同task/225-cim-bank32-20261124。S2的PIQA1838／ARC-C1172、100/100片与8/8组全部完成，无缺项/失败；GPU62237、62238_0/1及CPU62239均COMPLETED/0:0，队列为空。独立CPU62241重算S2 12040与S4 27090配置×题目计分、原文档SHA/输入ledger/36层/模型源码身份通过；只读复核不重跑GPU。正式汇总experiments/t64_onebit_half_tasks_20261126/results_20261127/REPORT_ZH.md，原字节evidence及SHA/CSV/复算脚本同目录。S2并非任务全面改善：x原四档16/32 acc为68.44%／42.41%，比S4 +.435／+.768个百分点；x动态64的16/32为67.57%／41.30%，PIQA降低1.523pp。64/128两x路径分别74.27%／48.46%、74.10%／48.38%，接近S4。准确Attention、T64/W8、seed101不变；没有S2完整WT2、新训练/PPA/RTL/TLM默认变更。原件小归档project_archives/scale_results225_20261126/S2_TASKS_AND_AUDIT_20261127.tar.gz；私有恢复work/rayggxia/225/onebit_half_tasks_20261126/HANDOFF.md。PR未合并，Projects待维护者同步。
+
 ## 2026-11-26｜Issue225／PR266：S/S2完整PIQA／ARC-C已提交
 
 负责人rayggxia，同task/225-cim-bank32-20261124及原独立目录。数值源354bef257affa393d5677c04c9d71004e9d88286已推送，6个新源文件的远端内容与原始Git blob逐SHA一致；35文件执行快照沿用冻结S2编码和旧官方任务前向。CPU62236已COMPLETED/0:0、18项PASS，GPU Gate62237运行；两个worker62238_[0-1]依赖门禁，CPU62239依赖汇总。四配置为x原四档／动态64×GU16/Wd32及64/128，g/u64共享基准+逐元素S/S2；PIQA1838／ARC-C1172，100分片／8完整任务组，seed101。当前尚无S2正式准确率。新完整BF16、原S4逐答案分数/请求ledger、S2重复一致需门禁通过；不复跑旧S4全任务，不改训练/RTL/TLM。预计两卡约2～3小时，排队另算；PR266未合并、Projects待维护者同步。入口experiments/t64_onebit_half_tasks_20261126，私有恢复work/rayggxia/225/onebit_half_tasks_20261126/HANDOFF.md。

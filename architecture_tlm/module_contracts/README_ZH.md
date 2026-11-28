@@ -69,3 +69,5 @@ python -B architecture_tlm/module_contracts/validate.py --self-test
 ```
 
 本目录验证的是字段、边界与计划一致性；没有新增RTL仿真、工艺价格或GPU任务。后续模块只需填能力、数值、资源和完成事件四类信息，无需为每次优化另建一套整机TLM。
+
+2026-11-28会话控制扩展：已增加[Prefill到连续Decode执行入口](../unified_v6/SESSION_ZH.md)，完成Qwen3完整36层短输入的控制/形状/流量回放。新路径使用FP24宏服务并保留旧默认；原生LPDDR与真实Attention轨迹仍待绑定，不把它写成已完成prefill RTL或新模型PPL。

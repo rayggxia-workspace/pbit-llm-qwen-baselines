@@ -1,3 +1,13 @@
+## 2026-11-28｜Prefill到Decode会话TLM已接通
+
+Issue225/PR266，rayggxia，task/225-cim-bank32-20261124。入口[SESSION_ZH.md](architecture_tlm/unified_v6/SESSION_ZH.md)，[结果](architecture_tlm/unified_v6/results/session_control_20261128/REPORT_ZH.md)。软件层模板/容量规划、有限任务/资源池、共享DMA/SRAM及本地引擎控制已串成会话；复用原unified_v6事件内核并同字节打包最小依赖，不改原decode默认或上游RTL。
+
+实际完成Qwen3-4B全宽36层、4输入/2输出、seed17、250MHz五核、GU16/Wd32/PV64：从空KV写入prefill，各层KV最终5位置，首输出后仅一次decode，GU/Wd合计1094400/547200帧。宏访存条件下TTFT256.297724ms、后续间隔98.350092ms、总354.647816ms；final Norm+head合计24.223736ms。宿主591.41s，本地执行无Slurm/GPU任务。完整JSON通过独立MAC/字节/KV/封存SHA复核；12项单测通过。小形状17/503/1009三seed与原有逐拍SRAM/64B请求后端对照通过。
+
+**范围**：这是控制完整、数值/外存后端尚待升级的会话TLM。Attention地址是合成fixture；两种DRAM均解析带宽/延迟，不是新Ramulator回放；不能替换旧51ms/token封存结果或声明PPL。FP24统计格式/动作及存储，不做4B数值前向；完整能量/面积为null，只计已知SRAM/4pJbit分项。当前计划4行只允许3输出组并行，12槽限制导致五核不能假定全满。prefill RTL仍是旧21/64参考，未假称完成移植。
+
+下一步接真实Attention轨迹与现有模块服务、原生LPDDR，再做128/2K输入和状态/核数扫描，补齐FP24/23bit等价格。长输入尚未运行。STATUS/HANDOFF/源manifest与本地项目备忘录同步；无新数字电路run。PR待审不合并，Projects未操作，Issue28远端备忘录依既有维护流程待同步。
+
 ## 2026-11-28｜通用模块合同与FP24数值接口
 
 Issue225/PR266，rayggxia，task/225-cim-bank32-20261124。正式入口[模块合同](architecture_tlm/module_contracts/README_ZH.md)，[数值合同](architecture_tlm/module_contracts/FP24_ZH.md)。用户确定中间数值接口采用FP24 E8/M15；局部23bit计数、W8、P8码/符号/尺度、事件与地址继续保留各自格式。任务描述采用形状/模式、存储引用、全局K范围、init/continue/final、状态所有权、采样/RNG与依赖，不是已综合指令字。
@@ -377,4 +387,5 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 面积均已按用户要求raw×0.81并保留原始列。S0两尺寸hold−0.041792ns；S2 M8 setup仅0.000099ns，功耗表范围等警告保留。前布局，无CTS/SDF/SPEF、真实模型质量、存储/RNG/比较器/编码/最终浮点尺度及实际广播线成本。D0是未优化q9参考，不称成熟最佳INT8。SRAM/门控权重与内部位宽收紧属于后续，不伪称本轮全链路完成。
 
 中央台账新增matrix-t32-204-20261028，82记录联合check/render、81旧record逐字保留；main缺全台账，本PR只交付增量record及校验回执，不复制别人记录。失败波形/别名/调试可见性版本保留；v3旧数字后处理实际已跑1分34秒后取消并由v9替代，如实记录。Projects既有权限限制待同步。下一步：审阅本轮PR，修hold/功耗表范围，M8数字控制、SC位宽/真实ICG及驻留权重端口验证；不自动启动新模型或昂贵作业。
+
 

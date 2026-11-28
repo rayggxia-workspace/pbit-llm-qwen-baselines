@@ -1,0 +1,1551 @@
+{
+  "status": "COMPLETED_CONTROLLER_TLM_MACRO_MEMORY",
+  "plan": {
+    "model": {
+      "name": "synthetic128",
+      "revision": "fixture",
+      "layers": 2,
+      "hidden": 128,
+      "ffn": 256,
+      "q_heads": 2,
+      "kv_heads": 1,
+      "head_dim": 64,
+      "vocab": 137,
+      "qk_norm": true,
+      "ffn_type": "SWIGLU"
+    },
+    "prompt": 3,
+    "generated": 2,
+    "prefill_rows": 3,
+    "prefill_blocks": 1,
+    "max_live_front_bytes": 46566,
+    "prefill_pcim_parallel_groups": 4,
+    "program": [
+      "ATTN_NORM",
+      "QKV",
+      "QK_NORM",
+      "ROPE",
+      "KV_APPEND",
+      "P_ATTENTION",
+      "O",
+      "ATTN_RESIDUAL",
+      "FFN_NORM",
+      "X_ENCODE",
+      "GU",
+      "GU_ENCODE",
+      "WD",
+      "FFN_RESIDUAL"
+    ],
+    "intermediate": "FP24_E8_M15",
+    "weight": "W8_FFN_BF16_QKVO_HEAD",
+    "activation_backing_bytes": 2304,
+    "gu_record_bytes_per_row": 1152,
+    "kv_layout": "layer,token,kv_head,D; K and V separate BF16 arrays",
+    "model_parser": "SOFTWARE",
+    "mapping": "SOFTWARE",
+    "runtime": "finite per-engine queues and completion dependencies",
+    "generation": "GREEDY_TIMING; token identities supplied by trace",
+    "attention_addresses": "SYNTHETIC_FINITE_TRACE_NOT_MODEL_QUALITY"
+  },
+  "elapsed_ms": 0.237656,
+  "first_token_ms": 0.174016,
+  "final_norm_head_ms": 0.00284,
+  "elapsed_without_final_norm_head_ms": 0.234816,
+  "inter_token_ms": [
+    0.06364
+  ],
+  "output_times_ms": [
+    0.174016,
+    0.237656
+  ],
+  "layers": [
+    {
+      "phase": "prefill",
+      "layer": 0,
+      "token_begin": 0,
+      "rows": 3,
+      "begin_ns": 468.0,
+      "end_ns": 86532.0
+    },
+    {
+      "phase": "prefill",
+      "layer": 1,
+      "token_begin": 0,
+      "rows": 3,
+      "begin_ns": 86532.0,
+      "end_ns": 172596.0
+    },
+    {
+      "phase": "decode",
+      "layer": 0,
+      "token_begin": 3,
+      "rows": 1,
+      "begin_ns": 174172.0,
+      "end_ns": 205204.0
+    },
+    {
+      "phase": "decode",
+      "layer": 1,
+      "token_begin": 3,
+      "rows": 1,
+      "begin_ns": 205204.0,
+      "end_ns": 236236.0
+    }
+  ],
+  "frames": {
+    "prefill/GU": 48,
+    "prefill/WD": 24,
+    "decode/GU": 16,
+    "decode/WD": 8
+  },
+  "actions": {
+    "coarse_feature_dimensions": 379,
+    "coarse_QK_MAC": 1280,
+    "attention_pbit_draws_requested": 2560,
+    "unique_V_fetches": 20,
+    "V_samples": 1024,
+    "V_cache_hits": 1004,
+    "peak_sample_fifo": 8,
+    "causal_queries": 16,
+    "CIM_read_equivalent_words": 24576,
+    "local_count_values": 12288,
+    "rng_words": 4096,
+    "head_streamed_logits": 274
+  },
+  "events": [
+    {
+      "time_ns": 468.0,
+      "phase": "prefill",
+      "event": "embedding_complete",
+      "position": 0,
+      "rows": 3
+    },
+    {
+      "time_ns": 472.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ATTN_NORM"
+    },
+    {
+      "time_ns": 1436.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QKV"
+    },
+    {
+      "time_ns": 4788.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 5044.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 5300.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 5556.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 5812.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 6068.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 6324.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 6580.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 6836.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 7132.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ROPE"
+    },
+    {
+      "time_ns": 7456.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ROPE"
+    },
+    {
+      "time_ns": 7780.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ROPE"
+    },
+    {
+      "time_ns": 8704.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "P_ATTENTION"
+    },
+    {
+      "time_ns": 78488.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "O"
+    },
+    {
+      "time_ns": 80284.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ATTN_RESIDUAL"
+    },
+    {
+      "time_ns": 80556.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "FFN_NORM"
+    },
+    {
+      "time_ns": 81696.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "GU"
+    },
+    {
+      "time_ns": 83088.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 0,
+      "rows": 3
+    },
+    {
+      "time_ns": 83224.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 1,
+      "rows": 3
+    },
+    {
+      "time_ns": 83360.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 2,
+      "rows": 3
+    },
+    {
+      "time_ns": 83420.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 3,
+      "rows": 3
+    },
+    {
+      "time_ns": 83424.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "WD"
+    },
+    {
+      "time_ns": 86264.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "WD",
+      "output_group": 0,
+      "rows": 3
+    },
+    {
+      "time_ns": 86536.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ATTN_NORM"
+    },
+    {
+      "time_ns": 87500.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QKV"
+    },
+    {
+      "time_ns": 90852.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 91108.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 91364.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 91620.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 91876.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 92132.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 92388.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 92644.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 92900.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 93196.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ROPE"
+    },
+    {
+      "time_ns": 93520.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ROPE"
+    },
+    {
+      "time_ns": 93844.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ROPE"
+    },
+    {
+      "time_ns": 94768.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "P_ATTENTION"
+    },
+    {
+      "time_ns": 164552.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "O"
+    },
+    {
+      "time_ns": 166348.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "ATTN_RESIDUAL"
+    },
+    {
+      "time_ns": 166620.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "FFN_NORM"
+    },
+    {
+      "time_ns": 167760.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "GU"
+    },
+    {
+      "time_ns": 169152.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 0,
+      "rows": 3
+    },
+    {
+      "time_ns": 169288.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 1,
+      "rows": 3
+    },
+    {
+      "time_ns": 169424.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 2,
+      "rows": 3
+    },
+    {
+      "time_ns": 169484.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 3,
+      "rows": 3
+    },
+    {
+      "time_ns": 169488.0,
+      "phase": "prefill",
+      "event": "command",
+      "op": "WD"
+    },
+    {
+      "time_ns": 172328.0,
+      "phase": "prefill",
+      "event": "state_group_complete",
+      "mode": "WD",
+      "output_group": 0,
+      "rows": 3
+    },
+    {
+      "time_ns": 172600.0,
+      "phase": "first_token",
+      "event": "command",
+      "op": "FINAL_NORM"
+    },
+    {
+      "time_ns": 172948.0,
+      "phase": "first_token",
+      "event": "command",
+      "op": "LM_HEAD"
+    },
+    {
+      "time_ns": 174016.0,
+      "phase": "first_token",
+      "event": "token_emitted",
+      "output_index": 0,
+      "kv_length": 3
+    },
+    {
+      "time_ns": 174172.0,
+      "phase": "decode",
+      "event": "embedding_complete",
+      "position": 3,
+      "rows": 1
+    },
+    {
+      "time_ns": 174176.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "ATTN_NORM"
+    },
+    {
+      "time_ns": 174524.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "QKV"
+    },
+    {
+      "time_ns": 176208.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 176464.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 176720.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 177012.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "ROPE"
+    },
+    {
+      "time_ns": 177536.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "P_ATTENTION"
+    },
+    {
+      "time_ns": 200960.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "O"
+    },
+    {
+      "time_ns": 201884.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "ATTN_RESIDUAL"
+    },
+    {
+      "time_ns": 202020.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "FFN_NORM"
+    },
+    {
+      "time_ns": 202476.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "GU"
+    },
+    {
+      "time_ns": 203248.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 0,
+      "rows": 1
+    },
+    {
+      "time_ns": 203308.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 1,
+      "rows": 1
+    },
+    {
+      "time_ns": 203384.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 2,
+      "rows": 1
+    },
+    {
+      "time_ns": 203444.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 3,
+      "rows": 1
+    },
+    {
+      "time_ns": 203448.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "WD"
+    },
+    {
+      "time_ns": 205072.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "WD",
+      "output_group": 0,
+      "rows": 1
+    },
+    {
+      "time_ns": 205208.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "ATTN_NORM"
+    },
+    {
+      "time_ns": 205556.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "QKV"
+    },
+    {
+      "time_ns": 207240.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 207496.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 207752.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "QK_NORM"
+    },
+    {
+      "time_ns": 208044.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "ROPE"
+    },
+    {
+      "time_ns": 208568.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "P_ATTENTION"
+    },
+    {
+      "time_ns": 231992.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "O"
+    },
+    {
+      "time_ns": 232916.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "ATTN_RESIDUAL"
+    },
+    {
+      "time_ns": 233052.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "FFN_NORM"
+    },
+    {
+      "time_ns": 233508.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "GU"
+    },
+    {
+      "time_ns": 234280.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 0,
+      "rows": 1
+    },
+    {
+      "time_ns": 234340.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 1,
+      "rows": 1
+    },
+    {
+      "time_ns": 234416.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 2,
+      "rows": 1
+    },
+    {
+      "time_ns": 234476.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "GU",
+      "output_group": 3,
+      "rows": 1
+    },
+    {
+      "time_ns": 234480.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "WD"
+    },
+    {
+      "time_ns": 236104.0,
+      "phase": "decode",
+      "event": "state_group_complete",
+      "mode": "WD",
+      "output_group": 0,
+      "rows": 1
+    },
+    {
+      "time_ns": 236240.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "FINAL_NORM"
+    },
+    {
+      "time_ns": 236588.0,
+      "phase": "decode",
+      "event": "command",
+      "op": "LM_HEAD"
+    },
+    {
+      "time_ns": 237656.0,
+      "phase": "decode",
+      "event": "token_emitted",
+      "output_index": 1,
+      "kv_length": 4
+    },
+    {
+      "time_ns": 237656.0,
+      "phase": "done",
+      "event": "session_complete"
+    }
+  ],
+  "kv_lengths": [
+    4,
+    4
+  ],
+  "kv_audit": [
+    {
+      "phase": "prefill",
+      "layer": 0,
+      "begin": 0,
+      "end": 3
+    },
+    {
+      "phase": "prefill",
+      "layer": 1,
+      "begin": 0,
+      "end": 3
+    },
+    {
+      "phase": "decode",
+      "layer": 0,
+      "begin": 3,
+      "end": 4
+    },
+    {
+      "phase": "decode",
+      "layer": 1,
+      "begin": 3,
+      "end": 4
+    }
+  ],
+  "external_allocations": {
+    "W/0/QKV": {
+      "address": 0,
+      "bytes": 65536
+    },
+    "W/0/O": {
+      "address": 65536,
+      "bytes": 32768
+    },
+    "W/0/GU": {
+      "address": 98304,
+      "bytes": 65536
+    },
+    "W/0/WD": {
+      "address": 163840,
+      "bytes": 32768
+    },
+    "W/1/QKV": {
+      "address": 196608,
+      "bytes": 65536
+    },
+    "W/1/O": {
+      "address": 262144,
+      "bytes": 32768
+    },
+    "W/1/GU": {
+      "address": 294912,
+      "bytes": 65536
+    },
+    "W/1/WD": {
+      "address": 360448,
+      "bytes": 32768
+    },
+    "head_and_tied_embedding": {
+      "address": 393216,
+      "bytes": 49152
+    },
+    "norm/0": {
+      "address": 442368,
+      "bytes": 768
+    },
+    "norm/1": {
+      "address": 450560,
+      "bytes": 768
+    },
+    "final_gamma": {
+      "address": 458752,
+      "bytes": 256
+    },
+    "rope_table": {
+      "address": 466944,
+      "bytes": 1024
+    },
+    "scale/0/GU": {
+      "address": 475136,
+      "bytes": 16
+    },
+    "scale/0/WD": {
+      "address": 483328,
+      "bytes": 8
+    },
+    "scale/1/GU": {
+      "address": 491520,
+      "bytes": 16
+    },
+    "scale/1/WD": {
+      "address": 499712,
+      "bytes": 8
+    },
+    "K/0": {
+      "address": 507904,
+      "bytes": 512
+    },
+    "V/0": {
+      "address": 516096,
+      "bytes": 512
+    },
+    "K/1": {
+      "address": 524288,
+      "bytes": 512
+    },
+    "V/1": {
+      "address": 532480,
+      "bytes": 512
+    },
+    "activation/0": {
+      "address": 540672,
+      "bytes": 1152
+    },
+    "activation/1": {
+      "address": 548864,
+      "bytes": 1152
+    },
+    "norm": {
+      "address": 557056,
+      "bytes": 1152
+    },
+    "qkv": {
+      "address": 565248,
+      "bytes": 2304
+    },
+    "attn": {
+      "address": 573440,
+      "bytes": 1152
+    },
+    "projection": {
+      "address": 581632,
+      "bytes": 1152
+    }
+  },
+  "external_capacity_bytes": 582784,
+  "SRAM": {
+    "counts": {
+      "logical_write_bytes": 1016376,
+      "peak_jobs": 80,
+      "write_words": 63532,
+      "write_physical_bytes": 1016512,
+      "cycles_with_grants": 4686,
+      "peak_banks_per_cycle": 72,
+      "peak_words_per_cycle": 72,
+      "logical_read_bytes": 770760,
+      "read_words": 48288,
+      "read_physical_bytes": 772608,
+      "bank_head_conflicts": 230888
+    },
+    "by_tag": {
+      "embedding_output_produce": {
+        "write_bytes": 1536,
+        "write_words": 96
+      },
+      "ATTN_NORM_sumsq_read": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "ATTN_NORM_scale_read": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "ATTN_NORM_gamma_read": {
+        "read_bytes": 2048,
+        "read_words": 128
+      },
+      "ATTN_NORM_output_produce": {
+        "write_bytes": 3072,
+        "write_words": 192
+      },
+      "QKV_weight_use": {
+        "read_bytes": 262144,
+        "read_words": 16384
+      },
+      "QKV_operand": {
+        "read_bytes": 12288,
+        "read_words": 768
+      },
+      "QKV_output_produce": {
+        "write_bytes": 6144,
+        "write_words": 384
+      },
+      "QK_NORM_sumsq_read": {
+        "read_bytes": 4608,
+        "read_words": 288
+      },
+      "QK_NORM_scale_read": {
+        "read_bytes": 4608,
+        "read_words": 288
+      },
+      "QK_NORM_gamma_read": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "QK_NORM_output_produce": {
+        "write_bytes": 4608,
+        "write_words": 288
+      },
+      "ROPE_consume": {
+        "read_bytes": 4608,
+        "read_words": 288
+      },
+      "ROPE_output_produce": {
+        "write_bytes": 4608,
+        "write_words": 288
+      },
+      "KV_append_K_produce": {
+        "write_bytes": 1024,
+        "write_words": 64
+      },
+      "KV_append_V_produce": {
+        "write_bytes": 1024,
+        "write_words": 64
+      },
+      "selected_K_use": {
+        "read_bytes": 2560,
+        "read_words": 160
+      },
+      "P8_threshold_write": {
+        "write_bytes": 40,
+        "write_words": 8
+      },
+      "P8_sampler_input": {
+        "read_bytes": 40,
+        "read_words": 16
+      },
+      "PV_cached_V": {
+        "read_bytes": 131072,
+        "read_words": 8192
+      },
+      "attention_output_produce": {
+        "write_bytes": 3072,
+        "write_words": 192
+      },
+      "O_weight_use": {
+        "read_bytes": 131072,
+        "read_words": 8192
+      },
+      "O_operand": {
+        "read_bytes": 6144,
+        "read_words": 384
+      },
+      "O_output_produce": {
+        "write_bytes": 3072,
+        "write_words": 192
+      },
+      "ATTN_RESIDUAL_consume": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "ATTN_RESIDUAL_skip_consume": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "ATTN_RESIDUAL_output_produce": {
+        "write_bytes": 3072,
+        "write_words": 192
+      },
+      "FFN_NORM_sumsq_read": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "FFN_NORM_scale_read": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "FFN_NORM_gamma_read": {
+        "read_bytes": 2048,
+        "read_words": 128
+      },
+      "FFN_NORM_output_produce": {
+        "write_bytes": 3072,
+        "write_words": 192
+      },
+      "X_encode_read": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "X_P8_codes": {
+        "write_bytes": 1280,
+        "write_words": 80
+      },
+      "X_shared_exponents": {
+        "write_bytes": 16,
+        "write_words": 4
+      },
+      "GU_weight_scale": {
+        "read_bytes": 64,
+        "read_words": 32
+      },
+      "GU_code": {
+        "read_bytes": 5120,
+        "read_words": 320
+      },
+      "GU_x_shared_exponent": {
+        "read_bytes": 64,
+        "read_words": 64
+      },
+      "FP24_state_write": {
+        "write_bytes": 21504,
+        "write_words": 1344
+      },
+      "FP24_state_read": {
+        "read_bytes": 21504,
+        "read_words": 1344
+      },
+      "GU_event_record": {
+        "write_bytes": 9216,
+        "write_words": 576
+      },
+      "WD_weight_scale": {
+        "read_bytes": 32,
+        "read_words": 16
+      },
+      "WD_code": {
+        "read_bytes": 9216,
+        "read_words": 576
+      },
+      "WD_FP24_output_write": {
+        "write_bytes": 3072,
+        "write_words": 192
+      },
+      "FFN_residual_skip_read": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "WD_output_consume": {
+        "read_bytes": 3072,
+        "read_words": 192
+      },
+      "layer_output_produce": {
+        "write_bytes": 3072,
+        "write_words": 192
+      },
+      "FINAL_NORM_sumsq_read": {
+        "read_bytes": 768,
+        "read_words": 48
+      },
+      "FINAL_NORM_scale_read": {
+        "read_bytes": 768,
+        "read_words": 48
+      },
+      "FINAL_NORM_gamma_read": {
+        "read_bytes": 512,
+        "read_words": 32
+      },
+      "FINAL_NORM_output_produce": {
+        "write_bytes": 768,
+        "write_words": 48
+      },
+      "LM_HEAD_weight_use": {
+        "read_bytes": 98304,
+        "read_words": 6144
+      },
+      "LM_HEAD_operand": {
+        "read_bytes": 2304,
+        "read_words": 144
+      }
+    },
+    "dynamic_mJ_known": 0.001436777210432,
+    "capacity_bytes": 630784
+  },
+  "DMA": {
+    "counts": {
+      "read_logical_bytes": 942688,
+      "read_physical_bytes": 943104,
+      "scatter_segments": 476,
+      "ranges": 452,
+      "write_logical_bytes": 38144,
+      "write_physical_bytes": 38144
+    },
+    "by_tag": {
+      "prefill/embedding": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "prefill/embedding_output": {
+        "write_logical_bytes": 1152,
+        "write_physical_bytes": 1152
+      },
+      "prefill/ATTN_NORM_gamma": {
+        "read_logical_bytes": 512,
+        "read_physical_bytes": 512
+      },
+      "prefill/ATTN_NORM_row": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/ATTN_NORM_output": {
+        "write_logical_bytes": 2304,
+        "write_physical_bytes": 2304
+      },
+      "prefill/QKV_input": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/QKV_weight": {
+        "read_logical_bytes": 131072,
+        "read_physical_bytes": 131072
+      },
+      "prefill/QKV_output": {
+        "write_logical_bytes": 4608,
+        "write_physical_bytes": 4608
+      },
+      "prefill/QK_NORM_gamma": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/QK_NORM_row": {
+        "read_logical_bytes": 3456,
+        "read_physical_bytes": 3456
+      },
+      "prefill/QK_NORM_output": {
+        "write_logical_bytes": 3456,
+        "write_physical_bytes": 3456
+      },
+      "prefill/rope_parameters": {
+        "read_logical_bytes": 1536,
+        "read_physical_bytes": 1536
+      },
+      "prefill/ROPE_input": {
+        "read_logical_bytes": 3456,
+        "read_physical_bytes": 3456
+      },
+      "prefill/ROPE_output": {
+        "write_logical_bytes": 3456,
+        "write_physical_bytes": 3456
+      },
+      "prefill/KV_source_K": {
+        "read_logical_bytes": 1152,
+        "read_physical_bytes": 1152
+      },
+      "prefill/KV_append_K": {
+        "write_logical_bytes": 768,
+        "write_physical_bytes": 768
+      },
+      "prefill/KV_source_V": {
+        "read_logical_bytes": 1152,
+        "read_physical_bytes": 1152
+      },
+      "prefill/KV_append_V": {
+        "write_logical_bytes": 768,
+        "write_physical_bytes": 768
+      },
+      "prefill/attention_Q": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/coarse_K_sector": {
+        "read_logical_bytes": 1536,
+        "read_physical_bytes": 1536
+      },
+      "prefill/selected_K": {
+        "read_logical_bytes": 1536,
+        "read_physical_bytes": 1536
+      },
+      "prefill/sampled_V": {
+        "read_logical_bytes": 1536,
+        "read_physical_bytes": 1536
+      },
+      "prefill/attention_output": {
+        "write_logical_bytes": 2304,
+        "write_physical_bytes": 2304
+      },
+      "prefill/O_input": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/O_weight": {
+        "read_logical_bytes": 65536,
+        "read_physical_bytes": 65536
+      },
+      "prefill/O_output": {
+        "write_logical_bytes": 2304,
+        "write_physical_bytes": 2304
+      },
+      "prefill/attention_residual_skip": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/ATTN_RESIDUAL_input": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/ATTN_RESIDUAL_output": {
+        "write_logical_bytes": 2304,
+        "write_physical_bytes": 2304
+      },
+      "prefill/FFN_NORM_gamma": {
+        "read_logical_bytes": 512,
+        "read_physical_bytes": 512
+      },
+      "prefill/FFN_NORM_row": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/FFN_NORM_output": {
+        "write_logical_bytes": 2304,
+        "write_physical_bytes": 2304
+      },
+      "prefill/X_encode_source": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/GU_weight_scales": {
+        "read_logical_bytes": 32,
+        "read_physical_bytes": 128
+      },
+      "prefill/GU_weights": {
+        "read_logical_bytes": 131072,
+        "read_physical_bytes": 131072
+      },
+      "prefill/WD_weight_scales": {
+        "read_logical_bytes": 16,
+        "read_physical_bytes": 128
+      },
+      "prefill/WD_weights": {
+        "read_logical_bytes": 65536,
+        "read_physical_bytes": 65536
+      },
+      "prefill/FFN_residual_skip": {
+        "read_logical_bytes": 2304,
+        "read_physical_bytes": 2304
+      },
+      "prefill/layer_output": {
+        "write_logical_bytes": 2304,
+        "write_physical_bytes": 2304
+      },
+      "first_token/FINAL_NORM_gamma": {
+        "read_logical_bytes": 256,
+        "read_physical_bytes": 256
+      },
+      "first_token/FINAL_NORM_row": {
+        "read_logical_bytes": 384,
+        "read_physical_bytes": 384
+      },
+      "first_token/FINAL_NORM_output": {
+        "write_logical_bytes": 384,
+        "write_physical_bytes": 384
+      },
+      "first_token/LM_HEAD_input": {
+        "read_logical_bytes": 384,
+        "read_physical_bytes": 384
+      },
+      "first_token/LM_HEAD_weight": {
+        "read_logical_bytes": 49152,
+        "read_physical_bytes": 49152
+      },
+      "decode/embedding": {
+        "read_logical_bytes": 256,
+        "read_physical_bytes": 256
+      },
+      "decode/embedding_output": {
+        "write_logical_bytes": 384,
+        "write_physical_bytes": 384
+      },
+      "decode/ATTN_NORM_gamma": {
+        "read_logical_bytes": 512,
+        "read_physical_bytes": 512
+      },
+      "decode/ATTN_NORM_row": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/ATTN_NORM_output": {
+        "write_logical_bytes": 768,
+        "write_physical_bytes": 768
+      },
+      "decode/QKV_input": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/QKV_weight": {
+        "read_logical_bytes": 131072,
+        "read_physical_bytes": 131072
+      },
+      "decode/QKV_output": {
+        "write_logical_bytes": 1536,
+        "write_physical_bytes": 1536
+      },
+      "decode/QK_NORM_gamma": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/QK_NORM_row": {
+        "read_logical_bytes": 1152,
+        "read_physical_bytes": 1152
+      },
+      "decode/QK_NORM_output": {
+        "write_logical_bytes": 1152,
+        "write_physical_bytes": 1152
+      },
+      "decode/rope_parameters": {
+        "read_logical_bytes": 512,
+        "read_physical_bytes": 512
+      },
+      "decode/ROPE_input": {
+        "read_logical_bytes": 1152,
+        "read_physical_bytes": 1152
+      },
+      "decode/ROPE_output": {
+        "write_logical_bytes": 1152,
+        "write_physical_bytes": 1152
+      },
+      "decode/KV_source_K": {
+        "read_logical_bytes": 384,
+        "read_physical_bytes": 384
+      },
+      "decode/KV_append_K": {
+        "write_logical_bytes": 256,
+        "write_physical_bytes": 256
+      },
+      "decode/KV_source_V": {
+        "read_logical_bytes": 384,
+        "read_physical_bytes": 384
+      },
+      "decode/KV_append_V": {
+        "write_logical_bytes": 256,
+        "write_physical_bytes": 256
+      },
+      "decode/attention_Q": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/coarse_K_sector": {
+        "read_logical_bytes": 1024,
+        "read_physical_bytes": 1024
+      },
+      "decode/selected_K": {
+        "read_logical_bytes": 1024,
+        "read_physical_bytes": 1024
+      },
+      "decode/sampled_V": {
+        "read_logical_bytes": 1024,
+        "read_physical_bytes": 1024
+      },
+      "decode/attention_output": {
+        "write_logical_bytes": 768,
+        "write_physical_bytes": 768
+      },
+      "decode/O_input": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/O_weight": {
+        "read_logical_bytes": 65536,
+        "read_physical_bytes": 65536
+      },
+      "decode/O_output": {
+        "write_logical_bytes": 768,
+        "write_physical_bytes": 768
+      },
+      "decode/attention_residual_skip": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/ATTN_RESIDUAL_input": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/ATTN_RESIDUAL_output": {
+        "write_logical_bytes": 768,
+        "write_physical_bytes": 768
+      },
+      "decode/FFN_NORM_gamma": {
+        "read_logical_bytes": 512,
+        "read_physical_bytes": 512
+      },
+      "decode/FFN_NORM_row": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/FFN_NORM_output": {
+        "write_logical_bytes": 768,
+        "write_physical_bytes": 768
+      },
+      "decode/X_encode_source": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/GU_weight_scales": {
+        "read_logical_bytes": 32,
+        "read_physical_bytes": 128
+      },
+      "decode/GU_weights": {
+        "read_logical_bytes": 131072,
+        "read_physical_bytes": 131072
+      },
+      "decode/WD_weight_scales": {
+        "read_logical_bytes": 16,
+        "read_physical_bytes": 128
+      },
+      "decode/WD_weights": {
+        "read_logical_bytes": 65536,
+        "read_physical_bytes": 65536
+      },
+      "decode/FFN_residual_skip": {
+        "read_logical_bytes": 768,
+        "read_physical_bytes": 768
+      },
+      "decode/layer_output": {
+        "write_logical_bytes": 768,
+        "write_physical_bytes": 768
+      },
+      "decode/FINAL_NORM_gamma": {
+        "read_logical_bytes": 256,
+        "read_physical_bytes": 256
+      },
+      "decode/FINAL_NORM_row": {
+        "read_logical_bytes": 384,
+        "read_physical_bytes": 384
+      },
+      "decode/FINAL_NORM_output": {
+        "write_logical_bytes": 384,
+        "write_physical_bytes": 384
+      },
+      "decode/LM_HEAD_input": {
+        "read_logical_bytes": 384,
+        "read_physical_bytes": 384
+      },
+      "decode/LM_HEAD_weight": {
+        "read_logical_bytes": 49152,
+        "read_physical_bytes": 49152
+      }
+    },
+    "peak_8KiB_credits": 0,
+    "credit_limit": 2,
+    "address_digest": 11073292366122848768
+  },
+  "request_backend_counts": {
+    "descriptors": 452,
+    "peak_descriptors": 4,
+    "peak_outstanding": 207,
+    "issue_batches": 1308,
+    "dram_read_bytes": 943104,
+    "peak_response_bytes": 5632,
+    "descriptors_completed": 452,
+    "peak_write_source_slots": 8,
+    "dram_write_bytes": 38144
+  },
+  "state_peak_slots": 12,
+  "engines": {
+    "vector": {
+      "busy_ns": 40368.0,
+      "actions": {
+        "BF16_TO_FP24_embedding": 512,
+        "ATTN_NORM_SUMSQ": 1024,
+        "ATTN_NORM_REDUCE_RSQRT": 8,
+        "ATTN_NORM_SCALE": 1024,
+        "FP24_TO_BF16": 2304,
+        "FP32_TO_FP24": 3072,
+        "QK_NORM_SUMSQ": 1536,
+        "QK_NORM_REDUCE_RSQRT": 24,
+        "QK_NORM_SCALE": 1536,
+        "ROPE": 1536,
+        "FP24_TO_BF16_KV": 1024,
+        "SparQ_selection": 20,
+        "PV_SCALE_FP32_TO_FP24": 1024,
+        "ATTN_RESIDUAL": 1024,
+        "FFN_NORM_SUMSQ": 1024,
+        "FFN_NORM_REDUCE_RSQRT": 8,
+        "FFN_NORM_SCALE": 1024,
+        "X_P8_GROUP64": 1024,
+        "GU_P8_S_S2_SIGMOID": 4096,
+        "WD_FP24_output": 1024,
+        "FFN_RESIDUAL": 1024,
+        "FINAL_NORM_SUMSQ": 256,
+        "FINAL_NORM_REDUCE_RSQRT": 2,
+        "FINAL_NORM_SCALE": 256,
+        "ARGMAX": 274
+      }
+    },
+    "digital": {
+      "busy_ns": 8000.0,
+      "actions": {
+        "QKV": 262144,
+        "SparQ_coarse": 1280,
+        "selected_QK": 2560,
+        "O": 131072,
+        "LM_HEAD": 35072
+      }
+    },
+    "fp24_state": {
+      "busy_ns": 8848.0,
+      "actions": {
+        "count_to_fp24": 12288,
+        "fp24_add": 12288
+      }
+    },
+    "winner_hold": {
+      "busy_ns": 146000.0,
+      "actions": {
+        "winner_hold_query": 16
+      }
+    },
+    "PV": {
+      "busy_ns": 159744.0,
+      "actions": {
+        "PV_add": 65536
+      }
+    }
+  },
+  "DRAM_transfer_mJ": 0.031399936,
+  "total_energy_mJ": null,
+  "total_area_mm2": null,
+  "memory_backend": {
+    "SRAM": "beat",
+    "DMA": "beat_analytic",
+    "DRAM": "analytic bandwidth/latency,not Ramulator"
+  },
+  "scope": "Full shape/control/traffic; macro DRAM and burst-calendar SRAM; synthetic Attention addresses; no numerical PPL or new RTL/PPA",
+  "pending": [
+    "native LPDDR replay",
+    "exact Attention trace binding",
+    "FP24 worker and23bit PPA",
+    "fine bank arbitration cross-check"
+  ],
+  "host_seconds": 0.7041566371917725,
+  "sources_sha256": {
+    "session_control.py": "0199c90fe46edbf1e0fdb21531b7cc6ebe87112d5bdbfd885d69ee9e1284e474",
+    "session_memory_reference.py": "8a6479a6f94109722d35fdad22f9e33cc80157a8e645d7f86c5cd89fd0aaa1d9",
+    "session_program.py": "dadd8e14b0015daf88cf1fb18c6a390648d98a489c600f704d89b7fd32fac898",
+    "session_services.py": "1967378171336f8bc7d9b531e4ae2d7867c038e403b856ac3f94855bee6c4da7",
+    "run_session.py": "2744d75334828de24186722ccf2fed652f70ae57a97831c31cf3196743930333",
+    "session_profile.json": "175f30535dc1be7c1334bb84d8eb66256e8e9b66207281adf7125def78c0accc",
+    "external_shared_memory.py": "8a6479a6f94109722d35fdad22f9e33cc80157a8e645d7f86c5cd89fd0aaa1d9"
+  }
+}

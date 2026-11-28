@@ -1,3 +1,11 @@
+## 2026-11-28｜通用模块合同与FP24数值接口
+
+Issue225/PR266，rayggxia，task/225-cim-bank32-20261124。正式入口[模块合同](architecture_tlm/module_contracts/README_ZH.md)，[数值合同](architecture_tlm/module_contracts/FP24_ZH.md)。用户确定中间数值接口采用FP24 E8/M15；局部23bit计数、W8、P8码/符号/尺度、事件与地址继续保留各自格式。任务描述采用形状/模式、存储引用、全局K范围、init/continue/final、状态所有权、采样/RNG与依赖，不是已综合指令字。
+
+核对本地20261128五核FFN/单层Decoder：FP24共享状态12×128项＝4.5KiB payload；sigmoid沿P8重建g→S8/F3→原P8 LUT；三AND直连Wd。旧prefill仍21bit/64bit，旧model_rtl_services与主TLM未自动切换。本轮不改上游RTL或冻结实验，未跑新RTL/STA/PPA/PPL/GPU/Slurm。20项描述符合同检查通过，包括跨命令状态保留、拒绝隐藏FP32、错误尺度、K重叠、缺提交依赖及提前重用状态。
+
+优先下一步：prefill替换为23bit/FP24并适配init/continue/final与四beat捕获；数字/Attention桥接保留native_math而非假定FP24运算；补underflow收集及BF16舍入溢出；用实际状态组织/转换worker价格回填TLM。未知周期/II/PPA在contract.json为null，不继承旧64bit价格。PR待审，不合并；Projects未操作，Issue28远端备忘录待原维护流程同步。
+
 ## 2026-11-27｜Prefill控制RTL原型与实测开销回填
 
 Issue225/PR266，rayggxia，task/225-cim-bank32-20261124。独立目录architecture_tlm/process_28nm/prefill_controller_20261127，[报告](architecture_tlm/process_28nm/prefill_controller_20261127/REPORT_ZH.md)。16项矩阵命令FIFO、动态派核/组K依赖、每块8KiB驻留最多32行、每核双结果槽、共享16KiB DMA和两路32通道交错状态SRAM；Prompt sequencer单独遍历prompt/层/最后位置head。沿上游真实整数采样核，未改decode默认或上游源。
@@ -369,3 +377,4 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 面积均已按用户要求raw×0.81并保留原始列。S0两尺寸hold−0.041792ns；S2 M8 setup仅0.000099ns，功耗表范围等警告保留。前布局，无CTS/SDF/SPEF、真实模型质量、存储/RNG/比较器/编码/最终浮点尺度及实际广播线成本。D0是未优化q9参考，不称成熟最佳INT8。SRAM/门控权重与内部位宽收紧属于后续，不伪称本轮全链路完成。
 
 中央台账新增matrix-t32-204-20261028，82记录联合check/render、81旧record逐字保留；main缺全台账，本PR只交付增量record及校验回执，不复制别人记录。失败波形/别名/调试可见性版本保留；v3旧数字后处理实际已跑1分34秒后取消并由v9替代，如实记录。Projects既有权限限制待同步。下一步：审阅本轮PR，修hold/功耗表范围，M8数字控制、SC位宽/真实ICG及驻留权重端口验证；不自动启动新模型或昂贵作业。
+

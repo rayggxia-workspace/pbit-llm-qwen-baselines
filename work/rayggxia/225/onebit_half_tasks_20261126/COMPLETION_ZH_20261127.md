@@ -1,0 +1,7 @@
+# 2026-11-27 最终完成回执
+
+S/S2完整任务已全部完成：100/100分片、8/8组，PIQA1838/ARC-C1172，单seed101、准确SDPA和T64/W8；无失败。独立CPU62241逐题/SHA/输入ledger/36层覆盖及模型代码身份通过，复核S2的12040与S4的27090配置×题目计分。GPU门禁62237与workers62238_0/1及CPU62239全部COMPLETED/0:0、资源释放。当前无需重新提交。
+
+总览experiments/t64_onebit_half_tasks_20261126/results_20261127/REPORT_ZH.md，含acc、acc_norm和逐对差值。S2任务效果混合，高预算接近S4；低预算x原四档两任务改善，但x动态64的PIQA下降1.52pp。没有S2完整WT2，不改RTL/TLM默认、64bit状态或训练。原推理源354bef257affa393d5677c04c9d71004e9d88286冻结；新增独立审计在原执行目录之外。
+
+原字节归档project_archives/scale_results225_20261126/S2_TASKS_AND_AUDIT_20261127.tar.gz，SHA6a3dc66d3768b7be7d540f5f13a159bd2247044f2294fe6723dac84fa3e78bca，90875B。原始大逐题输出和模型留原共享存储。私有路径和回执见同目录HANDOFF.md、FINAL_COLLECTION_20261127.json、AUDIT_SUBMISSION_20261127.json。报告可通过build_report.py离线复算，无GPU。PR266保持未合并，Issue225更广硬件任务不自动关闭，Projects待维护者同步。

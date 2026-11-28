@@ -1,3 +1,196 @@
+## 2026-11-28｜通用模块合同与FP24数值接口
+
+Issue225/PR266，rayggxia，task/225-cim-bank32-20261124。正式入口[模块合同](architecture_tlm/module_contracts/README_ZH.md)，[数值合同](architecture_tlm/module_contracts/FP24_ZH.md)。用户确定中间数值接口采用FP24 E8/M15；局部23bit计数、W8、P8码/符号/尺度、事件与地址继续保留各自格式。任务描述采用形状/模式、存储引用、全局K范围、init/continue/final、状态所有权、采样/RNG与依赖，不是已综合指令字。
+
+核对本地20261128五核FFN/单层Decoder：FP24共享状态12×128项＝4.5KiB payload；sigmoid沿P8重建g→S8/F3→原P8 LUT；三AND直连Wd。旧prefill仍21bit/64bit，旧model_rtl_services与主TLM未自动切换。本轮不改上游RTL或冻结实验，未跑新RTL/STA/PPA/PPL/GPU/Slurm。20项描述符合同检查通过，包括跨命令状态保留、拒绝隐藏FP32、错误尺度、K重叠、缺提交依赖及提前重用状态。
+
+优先下一步：prefill替换为23bit/FP24并适配init/continue/final与四beat捕获；数字/Attention桥接保留native_math而非假定FP24运算；补underflow收集及BF16舍入溢出；用实际状态组织/转换worker价格回填TLM。未知周期/II/PPA在contract.json为null，不继承旧64bit价格。PR待审，不合并；Projects未操作，Issue28远端备忘录待原维护流程同步。
+
+## 2026-11-27｜Prefill控制RTL原型与实测开销回填
+
+Issue225/PR266，rayggxia，task/225-cim-bank32-20261124。独立目录architecture_tlm/process_28nm/prefill_controller_20261127，[报告](architecture_tlm/process_28nm/prefill_controller_20261127/REPORT_ZH.md)。16项矩阵命令FIFO、动态派核/组K依赖、每块8KiB驻留最多32行、每核双结果槽、共享16KiB DMA和两路32通道交错状态SRAM；Prompt sequencer单独遍历prompt/层/最后位置head。沿上游真实整数采样核，未改decode默认或上游源。
+
+本地Verilator5.054，29个进程/215项检查PASS，三seed17/29/43、随机回压、T8..128、3行尾块、40/152长K、1/4/5/6核。独立事件整数oracle逐项一致；命令队列16项满等待、双结果槽填满、DMA256×64B credit满、取消排空重启均覆盖。状态双II1的2048beat为1027拍，同bank2050、同地址4096拍；没有把冲突当成无成本。32行跨token权重复用使对应权重读取4MiB→128KiB（−96.875%）。
+
+实测GU16/Wd32最短行间隔21/37拍，旧预算18/34为核级简化；本次复用的RTL DMA每核128包×II2使8KiB装载下限256拍，不是CIM写口的32拍，6核实际首行接收需376～389拍。仅回填两项下限并保留旧数字/Attention宏预算、128输入/27GB/s有效外存：MiniCPM3-4B 6核由1.228→1.545秒；若回填实测装载区间则约1.664–1.677秒。均为组件预算，完整prefill Decoder、数字计算与激活物理映射尚未接入；GU/Wd合成码分阶段回放，不是完整FFN模型/PPL，也无新PPA/STA。优先DMA每核发包与行间交接，再做整层集成。
+
+中央run prefill-controller-225-20261127，任务与根镜像分别增量check/render，通过并保留旧记录。SOURCE_BINDINGS/RUN_MANIFEST记录准确源码/原日志与可执行文件SHA。旧decode/64bit状态/价格不改，无远端作业；PR待审不合并，Issue225广义工作保留，Projects未操作，Issue28远端备忘录按原维护流程待同步。
+
+## 2026-11-27｜对齐RK3588短输入的P-CIM核数预算
+
+Issue225/PR266，rayggxia。[报告](architecture_tlm/process_28nm/prefill_core_sizing_20261127/ROCKCHIP_MATCH_ZH.md)。按官方MiniCPM3-4B/W8A8/128输入/64生成、TTFT1.40849秒，采用实际62层和MLA形状；28nm250MHz GU16/Wd32、32行权重复用、8个WS16整数阵列约.883TOPS、32向量、2state32、256KiB状态及约1MiB共享激活/数字操作数工作区。外存峰值参照ROCK5B为33.792GB/s，20/27/30有效带宽扫描，不冒称知道官方板型或原轨迹。
+
+27GB/s下4/5/6/8核预算1.614/1.382/1.228/1.035秒，8核若状态阶段串行则1.210秒；5核临界，6核候选。6核20/30GB/s约1.327/1.219秒。采样8/32、16/32、32/64、64/128满足同目标的条件最小核数4/5/10/18；质量未测，不能用6核保证高采样。同协议Qwen6核约1.118秒，异模型不直接计算加速比。
+
+已测任务价格、独立MAC/MLA形状、分项求和、状态与工作区容量及最小两文件字节复算通过；没有新GPU/EDA/完整prefill事务或模型PPL。公开表未披露checkpoint/文本/板型/所有算子数制，未补造已对齐；19bit旧价只作参考，21bit未标定。旧decode/RTL默认不改，Issue28远端备忘录待维护流程，Projects未操作，PR未合并。
+
+## 2026-11-27｜28nm prefill文献与INT8面积复核
+
+Issue225/PR266，负责人rayggxia。用户允许Attention改INT8做硬件对照。报告architecture_tlm/process_28nm/prefill_core_sizing_20261127/LITERATURE_AND_INT8_ZH.md；新review_int8_area.py/AREA_REVIEW_INPUTS/INT8_AREA_REVIEW及验证。原RESULTS/estimate未改，只给旧报告新增复核入口；96/192核和12/48MiB是未优化参考，不是最低配置。
+
+原96核计算价P-CIM35.78、BF16 FMA62.22mm²，12MiB状态26.66–36.50mm²。以同8.192TOPS目标，用已测16行P8/W8 DCIM21份或Gemmini风格WS75份，计算逻辑4.03/8.86mm²；不是完整Attention价，量化/尺度/累加/供数另计，INT8质量未测。现有250M局部SC GU T16 .37269mm²/72ns/.611TOPSmm²/10.1625pJDOT64，对DCIM .19180/41.33ns/2.067/12.6313：后者吞吐密度3.38倍，SC局部能量低19.5%，非等PPL整机结论。
+
+原始文献视觉核对：DUET DAC26的28nm64×32 FP16阵列3.01mm²/763M，系统最终7nm缩放；MFSA预印本28nm1GHz/3.27mm²cell/5.76mm²版图，BF16FP32及INT8INT32均1.024TOPS；SoulMate28nm20.25mm²216.4ms原图脚注为输入32/输出32/context1024，还有MXFP低位/混合低秩，不是完整2K 4B prefill。
+
+8token簇×12核、每核16行的权重多播候选可保持全局128行复用，将64bit状态12→1.5MiB载荷；保带宽用512×4KiB bank、2MiB物理约6.08mm²；DRAM字节不变，本地CIM写8倍，计算+编程约.710秒。该映射未做bank回放。96核P-CIM+INT8计算+2MiB状态+CIM容量四项小计48.17–53.00mm²，CIM容量沿当前16×512B/核的S0代理；非完整裸片面积/性能结果。21bit价格增量/互连等不预支。四原PPA来源SHA、三作者原件SHA/图表脚注、最小三文件逐字复算及计数检查PASS。无新PPA/TLM/GPU任务，不改decode默认。下一步优先多token广播/状态驻留及共享数字位串行prefill模式对照，不直接堆核。
+
+## 2026-11-27｜2K prefill一至两秒资源预算
+
+Issue225/PR266，rayggxia，沿task/225-cim-bank32-20261124独立目录。按28nm/250MHz、Qwen3-4B36层、2048prompt、W8 GU16/Wd32，K64/M128、32拍装载。FFN共448266240/224133120帧，62.7573单核秒；32/64核仅FFN理想约1.96/.98秒。当前256 FMA与两state32口分别限制QKV/O约32.09秒、状态更新至少5.38秒，不能仅扩P-CIM。
+
+配套候选：96CIM/16384FMA/512vector/16state32worker/4encoder、权重跨128行复用，100GB/s有效外存、2048GB/s状态SRAM预算，解析服务1.7998秒；192/32768/1024/32/8、256行复用、4096GB/s状态SRAM，.9429秒。共享状态SRAM/更新须按独立行流水，若保留阶段串行则2.4595/1.2727秒。两档状态按现有64位载荷预算分别12/48MiB，不是decode12KiB；FP24是另待PPL候选，不用于此次性能。
+
+硬件选型解析模型，不是新完整prefill TLM/RTL/PPA或实际性能。QKV/O仍BF16、Attention稠密因果、head只最后prompt位置。QKV/O也改P-CIM属未测质量的新方案，单列线性核时79.74秒。正式architecture_tlm/process_28nm/prefill_core_sizing_20261127：estimate/最小SOURCE_INPUTS/RESULTS/REPORT/VERIFICATION，独立矩阵计数/因果sum/来源及结果SHA、两文件最小快照逐字复算通过。无远端作业、不改decode默认；下一步代表性prefill tile的状态流水/GEMM供数/bank回放。Issue28远端备忘录待原维护流程，Projects未操作。
+
+
+## 2026-11-27｜FP24指数缩减与0.5B独立验证完成
+
+Issue225/PR266，rayggxia。源00e025c4671aa61751d6585b5ab874b13e93e3af，Slurm62267/62268 COMPLETED0:0，87/5秒，各6项CPU测试PASS。4B全36层封存轨迹写回指数GU−18..7、Wd−18..12；Qwen2.5-0.5B-Instruct全24层/3上下文独立随机FFN回放为−17..3、−17..10。E6/M15(22bit)与E8/M15全部同值无上下溢；常规E5有下溢，候选22bit状态载荷12×128为4.125KiB，较FP24少8.33%(384B)，物理宏不保证同比减。E6/M17可保留24bit增加2bit有效精度。
+
+0.5B固定后训练revision7ae557604adf67be50417f59c2c2f167def9a775，7文件/官方LFS SHA核对，未用Base。匹配原BF16完整WT2 292窗/299077目标PPL12.8361204065；3上下文×24层×2路径144轨迹，完整GU14/Wd76 K64；GPU整数oracle、144轨迹SHA、原生logits不变及账本核验通过。该新模型未作T64适配训练，数制回放不反馈后续层，不是FP24模型PPL。
+
+FP24整数直出S/S2 P8与旧参考逐项一致，raw-g S8/F3也匹配；原模型仍用P8重建g，4B/0.5B raw路径阈值不同3.78%/3.54%，未切换。现有RTL/TLM/默认64位及PPA不改。正式experiments/fp_state_exponent_20261127/REPORT_ZH.md、RESULTS.json/sha；私有work/rayggxia/225/fp_exponent_20261127/HANDOFF.md及各run/original，远端个人/lustre/home/lgzhang/zhj/fp-state-range225-20261127。下一步候选实际FP24/22前向PPL与共享浮点流水线电路比较。PR待审未合并、Projects未操作；Issue28远端依维护流程待同步。
+
+## 2026-11-27｜FP24真实链小测完成；24/32定点完整WT2完成
+
+Issue225/PR266，负责人rayggxia，分支task/225-cim-bank32-20261124。FP24执行源d81f77f1，62265 COMPLETED/0:0（6分59秒）；本地/Slurm各9项CPU测试PASS。72真实GU/Wd投影样本、36层、4个token位置、完整40/152块；原GPU整数重放精确，288真实链Fraction、72 NPZ SHA及原结果汇总独立核验通过。FP24正常数E8/M15、逐tile与逐更新RNE，无溢出/下溢；g/u成对码34/27648变化（0.123%），Wd最终BF16 8/36864（0.0217%）。固定24分别15.57%/92.21%，固定32为0.0072%/1.389%，BF16部分和79.30%/86.47%。这是同事件局部重放，不是FP24前向PPL。
+
+同环境原BF16完整WT2 PPL11.5364289819；模型/文本/源身份一致。FP24 REPORT_ZH.md、RESULTS.json位于experiments/t64_fp24_state_20261127，原RESULT SHA b8eebabe055440df04aead97dcf9f8b94f78555c32480321148b47ba1ca38cb4，私有run_v1下原件/VERIFICATION/SUBMISSION保留。
+
+此前完整WT2已齐并核验：64位10.6283923845、32位10.6254049102（−0.0281%）、24位定点10.7427570709（+1.0760%），单seed101、每项292窗/299077目标，完整窗口与NLL/目标SHA/36层覆盖匹配；62263/62264 COMPLETED/0:0。FULL_RESULTS_ZH.md、FULL_RESULTS.json位于experiments/t64_narrow_state_20261127；私有fast_full_v1/FULL_VERIFIED.json。32位微小改善不称显著提升；没有FP24完整PPL结果。当前这些作业均结束，不重交。
+
+未改变现有RTL/TLM默认64位或PPA，无训练/新硬件结果。FP24下一步为实际前向PPL与共享浮点流水线电路比较。PR未合并，Issue225更广工作不关闭；Projects未操作。Issue28远端备忘录仍按维护流程待同步。
+
+## 2026-11-27｜窄位宽PPL快核已验证并切换并行
+
+Issue225/PR266，负责人rayggxia。原T64/W8、GU16/Wd32、x/g/u组64基准+S/S2、准确Attention不变。原逐tile Python参考约93秒/窗；融合Triton核通过16独立oracle、4长K逐位及计数对照、24/32各一个真实模型原窗含NLL逐项一致，计时33.005/24.887秒。独立原件SHA/覆盖复核通过，FAST_VALIDATION.json；无新PPA或默认修改。原数值源0d1e8517，分宽度接续128432ba。
+
+Gate62262 COMPLETED/0:0，前两次失败62260/62261原件保留。用户明确授权取消慢62258/旧接续62259后，快测62263（32位）/62264（24位）已RUNNING。32位已19窗原件复用、余273；24位292待算。预计两卡约2～3h，随连续吞吐修正。已通过的8窗9215目标PPL为64位11.4068403048、32位11.4645418153、24位11.4897787234；后两者相对+0.506%/+0.727%。完整WT2尚待核验，不当成已完成。
+
+正式入口experiments/t64_narrow_state_20261127/PERFORMANCE_ZH.md，私有work/rayggxia/225/narrow_state_20261127/fast_full_v1/SUBMISSION.json、SWITCH_RECEIPT.json及STATUS_OBSERVED.json。根local_tools/dynamic_scale_225_20261125/check_narrow_fast_full_20261127.py只读。无训练，默认64位及RTL/TLM不改，PR不合并；Projects待同步。
+
+## 2026-11-27｜Issue225／PR266：24/32位状态数值验证与PPL已提交
+
+负责人rayggxia，同task/225-cim-bank32-20261124。只读审核用户ffn_narrow_state报告/RTL，19源/结果SHA匹配；32位0/5248与24位44/5248 BF16变化均为短K合成样本，不当模型精度。按报告同一保守界/逐K64 RNE/显式溢出合同新增数字参考，正确合并输出恢复指数，真实GU40/Wd152块，固定T64/W8、x/g/u64基准+S2、16/32、准确Attention。修复源0d1e85176fd52205669148296c585a06c47bc369，9文件远端内容与原字节blob核验（索引重读通过），51执行文件冻结。v1 GPU62256已撤回且原快照/日志保留，不采用其数值；只动本人新任务，旧x实验保留。
+
+CPU62257二十六项PASS且COMPLETED/0:0，GPU62258在run_v2运行；先16组独立整数oracle/完整BF16/64位无操作及旧pilot字节验证，再64/32/24位同8窗PPL；宽32/24若≤1.01×64则自动完整WT2，1%仅资源触发。尚无已完成窄位宽PPL，不更改默认64位、RTL/TLM或PPA。RTL原g sigmoid与当前PPL P8重建g存在独立入口差异，本轮保持PPL入口以隔离缩位。分析experiments/t64_narrow_state_20261127/ASSESSMENT_ZH.md；恢复work/rayggxia/225/narrow_state_20261127/HANDOFF.md及v2/SUBMISSION，根check_narrow_20261127.py只读。无训练，不合并PR，Projects待同步。
+
+## 2026-11-27｜Issue225／PR266：x加1bit的部分结果，完整评测仍运行
+
+负责人rayggxia，同task/225-cim-bank32-20261124。新源fa079820冻结。CPU19PASS、GPU Gate62243已COMPLETED/0:0，完整BF16 PPL11.5364289819、关闭x标志与原共享logits逐位一致及任务回放通过。62244 PPL和62245任务仍健康运行，62246等待；无失败，不重复提交。
+
+已完成4项同8窗PPL/9215目标：原逐元素四档11.512866，x原四档+g/uS2为11.357426，x纯64共享+g/uS2为12.090864，新x/g/u均64基准+S/S2为11.406840。已完整ARC-C1172题，新方案acc42.74744%、acc_norm44.453925%；原x纯共享对应41.29693%/43.856655%，提升1.4505/.5973pp。原逐元素四档ARC-C43.17406%/45.56314%，新方案仍略低。逐窗NLL/目标SHA/36层与ARC逐题/SHA/配对ledger复核通过。PIQA只8/15片、完整PPL原四档182/292窗且新候选尚未开始，不能报完整成绩。按当前约13秒/窗，完整PPL剩余约1～1.5小时，PIQA约15分钟，随吞吐变化。正式部分记录experiments/t64_x_onebit_20261127/progress_20261127/REPORT_ZH.md，私有PARTIAL_RESULTS_VERIFIED_20261127.json；不混入旧环境PPL，不训练/改RTL/TLM/PPA，不合并，Projects待同步。
+
+## 2026-11-27｜Issue225／PR266：x也增加S/S2一位选档，16/32评测已提交
+
+负责人rayggxia，同task/225-cim-bank32-20261124。推理源fa079820e849966c5d5f1ecbf2ea5eb825a28135已推送，7文件内容/原字节blob回读一致；42文件执行快照冻结。只给x增加组64基准+逐元素S/S2，g/u维持组64基准+S/S2、T64/W8、GU16/Wd32及准确Attention。CPU62242十九项PASS且COMPLETED/0:0；GPU Gate62243运行，PPL62244与单任务worker62245依赖门禁，CPU62246自动汇总，最多两GPU并行。PPL含4项同窗pilot和新候选/原逐元素四档各一份完整WT2；PIQA1838/ARC-C1172完整25分片/2组，seed101，全部题干答案36层FFN覆盖。尚无正式新结果；初估1～2小时，以实测为准。入口experiments/t64_x_onebit_20261127；私有恢复work/rayggxia/225/x_onebit_20261127/HANDOFF.md及SUBMISSION。无训练/PPA/RTL/TLM默认变化，旧健康结果不重跑/覆盖。PR未合并，Projects待维护者同步。
+
+## 2026-11-27｜Issue225／PR266：S/S2完整任务8/8完成并独立复核
+
+负责人rayggxia，同task/225-cim-bank32-20261124。S2的PIQA1838／ARC-C1172、100/100片与8/8组全部完成，无缺项/失败；GPU62237、62238_0/1及CPU62239均COMPLETED/0:0，队列为空。独立CPU62241重算S2 12040与S4 27090配置×题目计分、原文档SHA/输入ledger/36层/模型源码身份通过；只读复核不重跑GPU。正式汇总experiments/t64_onebit_half_tasks_20261126/results_20261127/REPORT_ZH.md，原字节evidence及SHA/CSV/复算脚本同目录。S2并非任务全面改善：x原四档16/32 acc为68.44%／42.41%，比S4 +.435／+.768个百分点；x动态64的16/32为67.57%／41.30%，PIQA降低1.523pp。64/128两x路径分别74.27%／48.46%、74.10%／48.38%，接近S4。准确Attention、T64/W8、seed101不变；没有S2完整WT2、新训练/PPA/RTL/TLM默认变更。原件小归档project_archives/scale_results225_20261126/S2_TASKS_AND_AUDIT_20261127.tar.gz；私有恢复work/rayggxia/225/onebit_half_tasks_20261126/HANDOFF.md。PR未合并，Projects待维护者同步。
+
+## 2026-11-26｜Issue225／PR266：S/S2完整PIQA／ARC-C已提交
+
+负责人rayggxia，同task/225-cim-bank32-20261124及原独立目录。数值源354bef257affa393d5677c04c9d71004e9d88286已推送，6个新源文件的远端内容与原始Git blob逐SHA一致；35文件执行快照沿用冻结S2编码和旧官方任务前向。CPU62236已COMPLETED/0:0、18项PASS，GPU Gate62237运行；两个worker62238_[0-1]依赖门禁，CPU62239依赖汇总。四配置为x原四档／动态64×GU16/Wd32及64/128，g/u64共享基准+逐元素S/S2；PIQA1838／ARC-C1172，100分片／8完整任务组，seed101。当前尚无S2正式准确率。新完整BF16、原S4逐答案分数/请求ledger、S2重复一致需门禁通过；不复跑旧S4全任务，不改训练/RTL/TLM。预计两卡约2～3小时，排队另算；PR266未合并、Projects待维护者同步。入口experiments/t64_onebit_half_tasks_20261126，私有恢复work/rayggxia/225/onebit_half_tasks_20261126/HANDOFF.md。
+
+## 2026-11-26｜Issue225／PR266：三批尺度质量任务全部完成并复核
+
+负责人rayggxia，同task/225-cim-bank32-20261124。5090 S4完整WT26项齐、S2/S4八窗8项齐；学院PIQA／ARC-C225/225分片、18/18完整配置全部completed，无失败／缺项。独立CPU62235重算27090配置×题目评分、原文档／请求ledger／模型与源码身份，全部一致。正式报告experiments/t64_scale_results_20261126/REPORT_ZH.md，CSV／原字节evidence／SHA与复算脚本同目录。S4完整三seed16/32为10.958236±.011138，64/128为8.989489±.005269；S2四种小测均优于S4，但尚无S2完整WT2或任务成绩。S4高预算共享1bit接近原四档，纯32共享低预算严重退化。所有本批GPU作业退出且队列为空，原件在共享存储及项目小归档。数值源7283f041／90b7742a／ea293cae均未修改；未训练／改RTL/TLM默认／合并，Projects待维护者同步。复核／发布恢复work/rayggxia/225/final_scale_results_20261126/HANDOFF_PUBLIC_ZH.md及私有记录。
+
+## 2026-11-26｜Issue225／PR266：S/S2单5090 PPL小测已排队
+
+负责人rayggxia，同task/225-cim-bank32-20261124。数值源90b7742ac88beeb95203ab600c5a78adac809bf4已发布且6文件原始Git blob逐SHA一致。CPU6379十四项PASS；6380资源探测数组等待其成功及原完整PPL内部6361（6355_5）结束，独占claim最多一个模型worker，仅一张5090跑数值。x原四档／动态64×16/32及64/128×S/S2与同轮S/S4，共8项8窗seed101，T64 W8／原non_ffn、准确SDPA、分层与AND直连Wd不变。尚无S2 PPL；不自动扩full／任务／训练。另记组内档间跨度和整数后端范围，档间最多少2bit不等于整链64→32。入口experiments/t64_onebit_half_20261126，公开／私有交接work/rayggxia/225/onebit_half_20261126。原lab／学院任务保持，PR未合并，Projects待维护者同步。
+
+## 2026-11-26｜Issue225／PR266：共享尺度准确率门禁通过，四卡正式运行
+
+负责人rayggxia，同task/225-cim-bank32-20261124，数值源ea293caea14b8ec5b271a937919ae21693ccae9c不变。独立CPU62231九项PASS；Gate62228 completed，新完整BF16 PPL11.5364289819、整数核／两预算四档包装器及采样重复逐位一致、官方HFLM一致和16个路径短任务通过。62229_0～3四个A6000 worker实际RUNNING，62230等待汇总。三候选×两预算×两任务12项，加lane／BF16参考共18完整组、225分片；seed101、准确SDPA、全题干／答案FFN。尚无完整准确率，初估3～5小时。验证experiments/t64_scale_task_accuracy_20261126/VALIDATION_AND_SUBMISSION.json；公开／私有HANDOFF及只读状态入口已更新。原lab PPL保持，不变更RTL/TLM默认、不合并，Projects待维护者同步。
+
+## 2026-11-26｜Issue225／PR266：共享尺度PIQA／ARC-C准确率已提交
+
+负责人rayggxia，同task/225-cim-bank32-20261124。源ea293caea14b8ec5b271a937919ae21693ccae9c已推送且5文件回读一致。Gate62228实际RUNNING、9单测PASS；62229_[0-3]四张A6000正式worker依赖Gate成功，62230 CPU汇总。候选dynamic32／gu_onebit64／all64_onebit×GU16/Wd32和GU64/Wd128，seed101；加同预算lane与原BF16，共18完整任务配置、225分片。PIQA1838、ARC-C1172官方全量、lm-eval0.4.8、题干和答案FFN全覆盖，准确SDPA，无模板／截断。尚无正式准确率，完整模型及计分Gate待封存。原lab PPL6355_5保持。方法experiments/t64_scale_task_accuracy_20261126/README_ZH.md；公开交接work/rayggxia/225/scale_tasks_20261126/HANDOFF_PUBLIC_ZH.md，私有回执另存。不训练、不改RTL/TLM或合并；Projects待维护者同步。
+
+## 2026-11-26｜Issue225／PR266：64共享基准＋1bit PPL初筛完成，完整WT2运行中
+
+负责人rayggxia，同task/225-cim-bank32-20261124。数值源7283f04157ff6cdb3d526271766ed64eb5db4461已发布；CPU6351九项PASS、GPU6355_5实际执行。新完整BF16为11.5371603731；两预算四档包装器逐位一致及8候选计分位置／36层覆盖／SHA核验通过。8窗单seed：原四档16/32=11.554504、64/128=9.600821；g/u动态64基准＋1bit=11.917554／9.662735；x也动态64共享=12.541277／9.616025。gu_onebit64_16_32与all64_onebit_64_128已接完整WT2三seed，尚未收齐。报告experiments/t64_group64_onebit_20261126/results/REPORT_ZH.md，公开交接work/rayggxia/225/onebit_20261126/HANDOFF_PUBLIC_ZH.md；私有原件／执行索引在原任务目录。旧无四档动态64／32／16无任务准确率；学院任务另一配置，不继承。只读原权重、不修改RTL/TLM默认、不重复健康任务、不合并PR。Projects待维护者同步。
+
+2026-11-25：g/u机理诊断完成。6320唯一采集并通过观察器末logits逐位一致；median统计失败，6321 cuBLAS环境失败，6322复用同一6.23MB激活完成5层×16位置解析后级诊断，无重跑模型/PPL。极端幅度组只占少数；纯共享造成低事件概率更关键。简单截断伤害首/末层；共享基准＋1bit修正后局部NMSE接近原四档，尚无该新方案PPL/PPA。优先候选为组64基准＋1bit，而非再缩组或全层统一裁剪；这是建议，未修改默认。报告experiments/t64_dynamic_scale_20261125/diagnostic_results/REPORT_ZH.md，raw/source/失败记录均归档并校验。
+
+2026-11-25：新增小型g/u尺度机理诊断6320，单窗口、五层各16位置，不是PPL；父算术9789339冻结，新增patch SHA在diagnostic_v1/EXECUTION_MANIFEST.json。解析moment对逐格枚举断言通过，模型加载/无操作观察器核对及分析待完成。不得重复提交，恢复读work/rayggxia/225/t64_dynamic_20261125/diagnostic_v1/HANDOFF.md。
+
+2026-11-25最终：原GPU本人队列已空；原四档完整48/48分片和12/12配置/seed、6316补跑/6317汇总均sealed完成。逐元素GU16/Wd32完整PPL均值10.753594，GU64/Wd128 8.975547；旧组64四档分别22125.753736/28.551581。动态64/32/16的10项8窗初筛亦全完成。学院Issue263仍34/52逻辑分片，完整WT2七项齐，coarse32/fine128三seed均值9.446296/9.406494，任务仅coarse32 PIQA齐，主池62220保留运行、62221等待。总览experiments/t64_dynamic_scale_20261125/ALL_SUBMITTED_RESULTS_ZH.md。
+
+2026-11-25：用户要求动态组32/16都跑；已核实Slurm6318缩组触发为真，并实际执行四项，复用健康作业而不重复提交。当前四项状态completed，未完成[]。同seed101/8窗/9215目标，T64/W8/准确Attention不变。结果与SHA见experiments/t64_dynamic_scale_20261125/GROUP32_16_SCREEN_ZH.md及work/rayggxia/225/t64_dynamic_20261125/GROUP32_16_REQUIREMENT.json。
+
+# Issue225 最新：动态组64 PoT已在原GPU启动
+
+2026-11-25 17:30北京时间，用户要求改在原GPU先测，已提交Slurm6318并实际RUNNING，分配GPU1/RTX5090，开始时32105MiB空闲。4项CPU测试通过；GPU整数核R6/12/15/29 oracle检查通过（在driver加载BF16之前执行）；同轮完整BF16已跑至292窗，尚待封存汇总，未宣称动态候选PPL完成。
+
+实验：固定训练100M T64 W8及其原non_ffn，准确Attention。x/g/u各连续64项独立计算max(abs)，选覆盖它的最小二次幂。取消每组原四档候选表；最小指数−6，初始上限x512/g256/u512，超上限明确饱和并统计，不声称任意输入都不截断。g/u各自尺度独立；sigmoid仍用恢复真实幅度的S8Q3/P8 LUT；三流AND事件直接送Wd，最终整数归约/恢复。随机字共享仍64路。
+
+GU16/Wd32与GU64/Wd128两档，前级16/64层各1次，后级4×2×4或8×2×8联合分层。单seed101，8个分散2048上下文WT2窗口，逐元素四档和组64四档同轮对照。若动态64任一档比同预算逐元素对照PPL高5%以上，按此前用户授权补组32/16；5%只是调度触发阈值，不是质量合格线。不是候选完整WT2或重新训练。
+
+数值源码9789339555f8059dc02cf42d152db02d43a3cf81，manifest SHA e87991b403e4c72bc765ee5106e78cc16cf4a6c056e669cdae1fa7eb5953a89c。原GPU root=/home/Hongjie_Zeng/projects/zhj/t64-dynamic-scale-issue225-20261125/gpu_run_v1；outputs/PROGRESS.json为中间进度，outputs/RESULT.json及其SHA才是完成回执。source和outputs提交后不修改；权重、数据和runtime只读复用，未复制大文件。resource_launch.py是独立资源包装器，不在原数值manifest内，其SHA与精确命令见original_gpu_v1/SUBMISSION.json。
+
+原组四档完整WT2作业6309及单片补跑6316/汇总6317保持；不重复其健康计算。EDA1871089环境导入已通过，但仍等待模型暂存；已核对未传输模型并取消重复作业，释放GPU，成功环境配置记录保留。原GPU任务提交后不依赖本机保持在线。
+
+本轮无新训练、RTL/PT/PPA或TLM默认修改；Issue225 / PR266沿用、未合并。下一步读取6318封存门禁和candidate逐窗目标/模型/数据SHA，比较对应预算与缩组结果。失败则保留快照另开执行目录修复，不改已提交source。
+
+---
+
+最新2026-11-25 16:01：原GPU可登录；23/48分片封存SHA、逐窗目标SHA、36层覆盖核验；完整5/12配置。lane16/32 seed101/202 PPL10.758346/10.749732；group64原四档16/32三seed PPL22080.554872/21999.098386/22297.607950。lane303 shard2 CUDA超时，仅补该片6316 afterany6309；6317新汇总，旧6310取消；6309健康任务保留。64/128未完成。小结果392758B/416成员已本地保全，归档SHA89de5e55655050808c1e80b9a8310ca2351a4a77c8a3ae871857566c2d650d72。新动态PoT EDA1871089仍Priority排队、未跑PPL。下一步读single_retry_v2/collection/SUMMARY.json与全部sealed结果，不重跑健康片。详见FULL_WT2_PROGRESS_ZH.md和SINGLE_RETRY_SUBMISSION.json。
+
+Latest launch verified: original shards6304/6306 completed (73 windows each); continuation6309 RUNNING on assigned GPUs0/6 only, each >32100MiB free at selection. Collector6310 pending. Numerical snapshot and prior completed reference unchanged. See resource_resume_v1/RESOURCE.json and RECEIPT_*.json; final collection/SUMMARY.json only after all46 retries complete.
+
+## 2026-11-25 T64 group64 resource-aware continuation6309/6310
+
+资源接续（最新优先）：BF166299完整完成PPL11.537160。原6300_0/1/3资源OOM；5/6确认被占满后取消；7…47仍未启动即取消；保留健康2/4（实际6304/6306），不重跑。原依赖父数组的6301取消。新6309（afterok:6304:6306，Slurm请求5卡，仅使用分配范围内空闲≥24GiB的卡，最多2worker）接续其余46片；6310 afterok:6309组合原健康片与新片并调用冻结runner汇总。RESUME_SUBMISSION.json含精确命令、resource_resume.py SHA和各类状态。新目录resource_resume_v1，collection索引与结果均留该目录；不要等待旧6301或将旧3次OOM写成算法失败。原数值source/manifest均不变；只新增资源包装器，不覆盖已提交快照。学院GPU也可连接，但Issue263已有健康任务，本轮不重复其部署或评测。
+
+---
+
+## 2026-11-25 T64 group64 GPU preflight completed; full WT2 running
+
+更新：GPU6298已completed，311.289秒，两项原生无操作逐位检查通过；6299及6300首四片已运行。新两窗口初筛、消融和实际T64表范围见experiments/t64_group64_scale_20261125/results/SCREEN_ZH.md。3071目标的组64两档PPL20911.71/31.54，不是完整WT2；完整结果未出。封存RESULT及SCALE_TABLES的SHA已本地核验。下方提交时快照保留。
+
+---
+
+## 2026-11-25 T64组共享尺度PPL已Slurm提交（Issue225/PR266）
+
+用户要求同一T64训练权重验证每64共享尺度，GU16/Wd32和GU64/Wd128，采用随预算细化的分层。正式代码experiments/t64_group64_scale_20261125/，源码提交b44974f9c44c22ea238d06b571de4d4d3245a6c0。未改其他owner冻结源码/原始PPL/TLM默认。
+
+尺度：x/g/u分别每连续64项共用最小覆盖档；保留T64各组四档原表，不是全局同四个绝对值。逐元素选档为同预算配对。前级16/64层，每层1次；后级4×2×4或8×2×8，每联合格1次。三流AND直接作为Wd事件，没有重新统计再编码。sigmoid仍为原生true-scale P8 g恢复到S8Q3后查冻结P8 LUT；不使用浮点精确SiLU。准确Attention，T64原配套non_ffn保持，无重新训练/校准。
+
+Slurm新任务：CPU6297（6项通过，0.046秒测试）；GPU门禁6298运行；BF16完整参考6299、12配置的四分片数组6300_0…47、汇总6301均afterok等待。48分片不是48独立配置；三seed12组完整WT2292窗/299077目标。数组并发上限4，另一个BF16独立参考；其他用户已有3张卡运行。只能从封存completed RESULT/SHA与逐窗位置/36层覆盖核验后认定完整。
+
+服务器root=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1；source=source-b44974f9c44c。全部新文件在zhj。模型/数据复用授权只读既有存储，INPUTS.json为原身份清单同字节副本。不需要本机保持在线。
+
+SOURCE-b44974f9c44c.tar.gz为16290字节，SHA aba0a2f3dcbe14914558a9bca79b3a1e0fb2c99af7b8019f3b946e79db68b526；EXECUTION_MANIFEST SHA fc4305b1992d28a118786d91545c7b4cb0c4c1196362b33ad02972dad5dc0ca8。SUBMISSION.json含精确命令/全部ID，SETTINGS及其SHA保留。只读复用runtime SOURCE_MANIFEST SHA eb23a172efbd18e3e56060a6b10d2bfcde33fc7a014c5b10949038921ffb9076，逐文件在进程中核验。
+
+
+
+---
+
+## 2026-11-25追加：21bit与本地PRNG
+
+rayggxia，同Issue225/PR266、task/225-cim-bank32-20261124，独立目录不变。TLM局部计数/结果槽21bit，默认GU16/Wd32；本地PRNG持续供数，无默认中央跳步/逐tile播种。10unit＋六回放＋六错误轨迹拒绝通过；新PPA待定，旧19bit价格仅参考，相关新预算合计为null。无新RTL/整机/PPL或远端作业。正式报告COUNTER21_LOCAL_RNG_ZH_20261125.md，交接work/rayggxia/225/cim_count21_localrng_20261125/HANDOFF.md；PR266交付、未合并，实际head由PR核实。尺度封装、描述符握手未在本轮完成。Projects待同步。
+
+## 2026-11-25 Issue225：TLM／RTL对齐完善
+
+负责人rayggxia；复用task/225-cim-bank32-20261124 / PR266（main206bf81f18ea），独立目录tmp/cim-bank32-tlm-issue225-20261124。正式实现仍在process_28nm/cim_bank32_20261124；新增ALIGNMENT_CONTRACT、RTL接口表、事件检查器与结果报告，不另开分叉TLM，不改冻结parent/旧结果。
+
+本地完成：每核双结果槽与128列捕获、32项/拍四次传输、结果/状态分开释放、当前4ns时钟入口、缓存生命周期/16B动作、共享16KiB DMA及64描述符容量、逻辑tile随机状态接口。8项unit、父BeatSRAM、六组trace回放、五份错误轨迹拒绝、完整首层及封存SHA闭合。首层1.106372→1.106300ms，616KiB，面积6.776269mm²不变，片上0.342181→0.342178mJ；是解析外存首层，不是新36层/native/PPL或五核RTL等价验收。
+
+已增量发布同一PR266，ready/open、未合并；source commit401d1db5715a1814d8e7e31aeceedd2c5f1e180b，完整25文件树匹配，8个关键文件blob回读通过。实际回执work/rayggxia/225/cim_alignment_20261125/PUBLICATION.json。原件归档project_archives/cim_alignment225_20261125/RAW_AND_EXECUTED_SOURCE.zip，SHA de69a693f7a88f32b22a1314289659bbe35f2b94d53e95202b6e2ec43479e5d3，86成员全部复核。无运行中/新增远端任务，无新电路台账run。
+
+下一步：RTL对话实现相同五核接口；真实随机状态提供器/PPA及512B定制CIM外围仍待补。默认随机状态1拍/II1为条件宏；64描述符峰值30，超出需补生产端等待。PR待审不合并；Projects待维护者同步。完整交接：work/rayggxia/225/cim_alignment_20261125/HANDOFF.md。
+
+## 2026-11-24 Issue225：32×128-bit CIM单权重区TLM
+
+负责人rayggxia；分支task/225-cim-bank32-20261124，base main206bf81f18ea；独立目录tmp/cim-bank32-tlm-issue225-20261124。用户选定16bank/核、32字×128bit、K64/M128/W8不变，默认5核，删除32槽池。普通SRAM576KiB＋CIM40KiB＝616KiB，另有原16KiB DMA寄存器保持。
+
+本地完成3合同测试、父BeatSRAM真实调度128ns装载测试、4/5/6核FFN完整事务及旧3核/新5核首层对照，封存SHA/队列/工作量与能量账本通过。FFN620.860/566.452/554.264us；首层1.094636→1.106372ms，覆盖面积6.480303→6.776269mm²，片上0.344964→0.342181mJ。定制512B宏面积/idle仍为明确代理；无新PPA/PPL或36层原生回放，不改旧封存结果。源码/结果：architecture_tlm/process_28nm/cim_bank32_20261124/；交接work/rayggxia/225/cim_bank32_20261124/HANDOFF.md。
+
+已推送PR266，ready/open、待审未合并；核心提交db7c7ebd58adc5d0ce0945bf44db44f3bb81a701，12文件远端内容/blob回读一致。远端未运行，SSH依赖/代理环境待修复；Projects待维护者同步。下一步先做Slurm原生首层验证，其他模块/模型任务不接管。
+
 # Issue95 九项预算整理
 
 2026-11-02，rayggxia；task/95-nineway-power-20261102，main0320f486，工作区tmp/rng-nineway-issue95-20261102。
@@ -184,3 +377,4 @@ M8共享输入计数相对S0：1331.137→479.067pJ/帧（−64.01%），174255.
 面积均已按用户要求raw×0.81并保留原始列。S0两尺寸hold−0.041792ns；S2 M8 setup仅0.000099ns，功耗表范围等警告保留。前布局，无CTS/SDF/SPEF、真实模型质量、存储/RNG/比较器/编码/最终浮点尺度及实际广播线成本。D0是未优化q9参考，不称成熟最佳INT8。SRAM/门控权重与内部位宽收紧属于后续，不伪称本轮全链路完成。
 
 中央台账新增matrix-t32-204-20261028，82记录联合check/render、81旧record逐字保留；main缺全台账，本PR只交付增量record及校验回执，不复制别人记录。失败波形/别名/调试可见性版本保留；v3旧数字后处理实际已跑1分34秒后取消并由v9替代，如实记录。Projects既有权限限制待同步。下一步：审阅本轮PR，修hold/功耗表范围，M8数字控制、SC位宽/真实ICG及驻留权重端口验证；不自动启动新模型或昂贵作业。
+

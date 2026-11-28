@@ -1,0 +1,71 @@
+{
+  "version": "plpu-module-contract-v1",
+  "date": "2026-11-28",
+  "status": "CONTRACT_FIXED_ADAPTERS_PENDING",
+  "numeric_interface": "FP24_E8_M15",
+  "fp24": {
+    "bits": 24, "exponent_bits": 8, "fraction_bits": 15,
+    "bias": 127, "rounding": "RNE", "underflow": "FTZ_BEFORE_ROUNDING_FLAGGED",
+    "overflow": "SATURATE_MAX_FINITE_FLAGGED_FAILURE", "special_inputs": "REJECT",
+    "cross_k": "Q24(Q24(count_times_scale) + previous_fp24)",
+    "byte_order": "little", "packed_bytes": 3
+  },
+  "pcim": {
+    "modes": ["GU", "WD"], "k_tile": 64, "physical_n": 128,
+    "gu_outputs": {"g": 64, "u": 64},
+    "weight_bits": 8, "max_weight_magnitude": 127,
+    "samples": [8, 16, 32, 64, 128],
+    "local_count_bits": 23, "weight_tile_bytes": 8192,
+    "current_decode_cores": 5, "state_slots": 12, "state_payload_bytes": 4608,
+    "input_formats": {"GU": "P8_SIGN_FULL_SCALE", "WD": "GU_EVENT_RECORD_S_S2"},
+    "input_storage_bytes": {"GU": 80, "WD": 288},
+    "output_format": "FP24_E8_M15",
+    "target_command_limit": "TILER_DEFINED_NOT_OLD_8BIT_K_FIELD",
+    "current_state_initialization": "META_K_EQUALS_ZERO",
+    "continuation_adapter": "REQUIRED",
+    "latency_cycles": null, "initiation_interval_cycles": null,
+    "area_mm2": null, "energy_pj": null
+  },
+  "codecs": {
+    "x": "GROUP64_SHARED_POT",
+    "gu": "INDEPENDENT_GROUP64_BASE_PLUS_ELEMENT_S_OR_S2",
+    "scale_exponent_bits": 8, "scale_floor": -6,
+    "scale_cap": "MODEL_CONFIG_NOT_YET_CALIBRATED",
+    "sigmoid_input": "P8_RECONSTRUCTED_G_S8_F3",
+    "sigmoid_threshold": "P8_EXISTING_LUT",
+    "wd_alignment": "COMMON_SG_SU_DIV4_SHIFT_0_1_2",
+    "wd_exponent_offset": -2,
+    "current_activation": "SWIGLU", "extension_activations": ["RELU", "GELU", "GEGLU"]
+  },
+  "random": {
+    "endpoint": "LOCAL_8BIT_WORD_SHARED_64_INPUTS",
+    "sequence": "BIND_EXACT_CORE_VERSION_AND_STRATIFICATION",
+    "advance": "ACCEPTED_SAMPLE_EVENT_ONLY",
+    "and_inputs": "KEEP_EXISTING_JOINT_MAPPING_DO_NOT_REUSE_IDENTICAL_WORD_BLINDLY"
+  },
+  "task_fields": [
+    "id", "request", "layer", "token_begin", "output_group", "mode",
+    "m", "n", "k_total", "k_begin", "k_end", "samples", "state_id",
+    "accumulation", "input_format", "output_format", "weight_bits",
+    "weight_layout", "input_storage_bytes", "scale_metadata",
+    "src", "weights", "dst", "depends_on", "rng"
+  ],
+  "memory_reference_fields": ["space", "address", "bytes", "row_stride_bytes"],
+  "execution": {
+    "accept": "VALID_AND_READY",
+    "blocked": "HOLD_PAYLOAD_AND_METADATA",
+    "full_queue": "WAIT",
+    "cim_release": "FULL_TILE_RESULT_CAPTURED",
+    "result_slot_release": "ALL_RESULT_BEATS_ACCEPTED",
+    "state_release": "FINAL_OUTPUT_ACCEPTED_AND_COMMITTED",
+    "cancel": "STOP_ISSUE_DRAIN_THEN_REUSE",
+    "unknown_cost_policy": "DO_NOT_INHERIT_OLD_FIXED64_PRICE_OR_ASSUME_ZERO"
+  },
+  "bindings": {
+    "ffn_fp24_shared_20261128": "LOCAL_FUNCTIONAL_ONLY",
+    "decoder_fp24_shared_20261128": "LOCAL_SINGLE_LAYER_FUNCTIONAL_ONLY",
+    "prefill_controller_20261127": "OLD21_COUNT_FIXED64_STATE_ADAPTER_REQUIRED",
+    "model_rtl_services_20261126": "OLD_FIXED64_STATE_ADAPTER_REQUIRED",
+    "main_tlm": "NOT_SWITCHED_BY_THIS_CONTRACT"
+  }
+}

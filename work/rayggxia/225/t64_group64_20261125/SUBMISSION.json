@@ -1,0 +1,104 @@
+{
+  "status": "submitted",
+  "root": "/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1",
+  "source": "/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c",
+  "source_commit": "b44974f9c44c22ea238d06b571de4d4d3245a6c0",
+  "manifest_sha256": "fc4305b1992d28a118786d91545c7b4cb0c4c1196362b33ad02972dad5dc0ca8",
+  "source_archive_sha256": "aba0a2f3dcbe14914558a9bca79b3a1e0fb2c99af7b8019f3b946e79db68b526",
+  "settings_sha256": "b2971b6a14c606dcb25831fc7205678b114b1c6ca6abf206369bfb398bc732c9",
+  "created_utc": "2026-11-25T05:42:43.079270+00:00",
+  "jobs": {
+    "cpu": {
+      "id": "6297",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--partition=gpu5090",
+        "--cpus-per-task=4",
+        "--mem=8G",
+        "--time=120",
+        "--job-name=g64-225-cpu",
+        "--chdir=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c",
+        "--output=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/logs/cpu-%A_%a.log",
+        "--wrap",
+        "/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c/dispatch.py --settings /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/SETTINGS.json --kind cpu"
+      ]
+    },
+    "gate": {
+      "id": "6298",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--partition=gpu5090",
+        "--cpus-per-task=4",
+        "--mem=48G",
+        "--time=120",
+        "--job-name=g64-225-gate",
+        "--chdir=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c",
+        "--output=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/logs/gate-%A_%a.log",
+        "--gres=gpu:1",
+        "--dependency=afterok:6297",
+        "--kill-on-invalid-dep=yes",
+        "--wrap",
+        "/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c/dispatch.py --settings /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/SETTINGS.json --kind gate"
+      ]
+    },
+    "bf16": {
+      "id": "6299",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--partition=gpu5090",
+        "--cpus-per-task=4",
+        "--mem=48G",
+        "--time=480",
+        "--job-name=g64-225-bf16",
+        "--chdir=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c",
+        "--output=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/logs/bf16-%A_%a.log",
+        "--gres=gpu:1",
+        "--dependency=afterok:6298",
+        "--kill-on-invalid-dep=yes",
+        "--wrap",
+        "/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c/dispatch.py --settings /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/SETTINGS.json --kind bf16"
+      ]
+    },
+    "array": {
+      "id": "6300",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--partition=gpu5090",
+        "--cpus-per-task=4",
+        "--mem=48G",
+        "--time=480",
+        "--job-name=g64-225-array",
+        "--chdir=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c",
+        "--output=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/logs/array-%A_%a.log",
+        "--gres=gpu:1",
+        "--dependency=afterok:6298",
+        "--kill-on-invalid-dep=yes",
+        "--array=0-47%4",
+        "--wrap",
+        "/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c/dispatch.py --settings /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/SETTINGS.json --kind array"
+      ]
+    },
+    "merge": {
+      "id": "6301",
+      "command": [
+        "/opt/slurm/21.08.8/bin/sbatch",
+        "--parsable",
+        "--partition=gpu5090",
+        "--cpus-per-task=1",
+        "--mem=8G",
+        "--time=120",
+        "--job-name=g64-225-merge",
+        "--chdir=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c",
+        "--output=/home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/logs/merge-%A_%a.log",
+        "--dependency=afterok:6299:6300",
+        "--kill-on-invalid-dep=yes",
+        "--wrap",
+        "/home/Hongjie_Zeng/projects/pbit-qwen3-baseline-20261023-issue136/venv/bin/python /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/source-b44974f9c44c/dispatch.py --settings /home/Hongjie_Zeng/projects/zhj/t64-group64-issue225-20261125/run-v1/SETTINGS.json --kind merge"
+      ]
+    }
+  }
+}

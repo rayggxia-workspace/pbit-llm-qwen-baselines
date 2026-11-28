@@ -1,0 +1,21 @@
+{
+  "issue": 225,
+  "seed": 101,
+  "model": "Qwen3-4B frozen trained100M T64 W8/native non_ffn",
+  "attention": "accurate SDPA, unchanged",
+  "tasks": {
+    "piqa": {"split": "validation", "count": 1838, "sha256": "40e1677bba609c8801deacc171d76f3e24c083f365c95a1cbda7520c923dfea2"},
+    "arc_challenge": {"split": "test", "count": 1172, "sha256": "62f03257e737aed263f55c6abf87c7bb0028a44a6bdd2a26eb1279eb42c1d1e9"}
+  },
+  "budgets": [[16, 32]],
+  "grids": [[4, 2, 4]],
+  "documents_per_shard": 128,
+  "batch_size": 1,
+  "max_length": 2048,
+  "pilot_windows": [0, 41, 83, 125, 166, 208, 250, 290],
+  "full_ppl_policies": ["lane", "x64s2_gu64s2"],
+  "x_rule": "group64 ceilPoT S; per-element S/2 if abs(x)<=S/2 and exponent floor allows, else S",
+  "bounds": {"min_exponent": -6, "x_max": 512, "g_max": 256, "u_max": 512},
+  "gu_rule": "frozen group64 S/S2; real-amplitude sigmoid P8; joint AND events directly to integer W8 Wd",
+  "scope": "one candidate, two complete tasks; fresh matched single-seed complete WT2 candidate and lane; four paired 8-window PPL controls; no training"
+}

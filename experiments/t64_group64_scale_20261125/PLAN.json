@@ -1,0 +1,33 @@
+{
+  "issue": 225,
+  "model": "Qwen/Qwen3-4B",
+  "model_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+  "checkpoint": "T64 trained100M; native exported non_ffn and FFN",
+  "checkpoint_repository": "CyberPrometheus/p-computing4llm-models",
+  "checkpoint_revision": "fa0a9e4a7ad394ffb60e8175cb0d1e34dff93caf",
+  "checkpoint_path": "submissions/20261031T115253Z-xhy12309-seven-case-weights/models/t64",
+  "export_manifest_sha256": "187fa827daa5e162b0753ffd4b2687c11a17eea289193cdead614c8a722556ff",
+  "runtime_manifest_sha256": "eb23a172efbd18e3e56060a6b10d2bfcde33fc7a014c5b10949038921ffb9076",
+  "test_text_sha256": "173c87a53759e0201f33e0ccf978e510c2042d7f2cb78229d9a50d79b9e7dd08",
+  "test_token_sha256": "8557ef42be22a592e5f1704026fedbedc937b484e52f517add9f478adc0de20f",
+  "seeds": [101, 202, 303],
+  "window": 2048,
+  "stride": 1024,
+  "windows": 292,
+  "targets": 299077,
+  "shards": 4,
+  "cases": [
+    {"id":"lane16_32", "scale_policy":"lane", "T_x":16, "T_and":32, "input_law":"stratified_T", "and_law":"joint_grid", "grid_g_sig_u":[4,2,4]},
+    {"id":"group64_16_32", "scale_policy":"group64", "T_x":16, "T_and":32, "input_law":"stratified_T", "and_law":"joint_grid", "grid_g_sig_u":[4,2,4]},
+    {"id":"lane64_128", "scale_policy":"lane", "T_x":64, "T_and":128, "input_law":"stratified_T", "and_law":"joint_grid", "grid_g_sig_u":[8,2,8]},
+    {"id":"group64_64_128", "scale_policy":"group64", "T_x":64, "T_and":128, "input_law":"stratified_T", "and_law":"joint_grid", "grid_g_sig_u":[8,2,8]}
+  ],
+  "attention": "unchanged accurate BF16 SDPA at every input and scored position",
+  "group_rule": "contiguous64; x,g,u independently choose smallest frozen PoT candidate covering group maximum; clip above top",
+  "catalog": "unchanged T64 per-layer/per-signal/per-group four choices; not four globally identical absolute scales",
+  "sigmoid": "unchanged seven_forward: restore encoded g scale, integer RNE signed8 Q3 field, frozen P8 LUT",
+  "weight_and_reduction": "unchanged fixed W8/PoT64, exact signed integer alignment; AND count directly reused by all Wd outputs",
+  "sampling_scope": "front one shared R8 per group and stratum; rear independent within-cell/channel/axis jitter; exact compressed event-count law, not physical/GF64 bit replay",
+  "retraining": false,
+  "recalibration": false
+}

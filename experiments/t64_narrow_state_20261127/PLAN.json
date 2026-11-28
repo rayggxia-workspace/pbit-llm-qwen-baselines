@@ -1,0 +1,11 @@
+{
+  "issue":225,"seed":101,"model":"Qwen3-4B trained100M T64 W8/native non_ffn",
+  "attention":"accurate SDPA","sampling":"GU16, Wd32; x/g/u group64 base + per-element S/S2",
+  "state_widths":[64,32,24],"local_tile_bits":23,"K_blocks":{"GU":40,"Wd":152},
+  "unit":"max(ceil_log2(sum(shape/sample/W8-limit/input-exponent bounds_i))+output_recovery_exponent_i)-(W-2); shared physical unit across both half groups",
+  "update":"per-K64 signed RNE alignment followed by W-bit addition; error on overflow, no saturation/wrap; fixed base throughout output group",
+  "pilot_windows":[0,41,83,125,166,208,250,290],
+  "full_trigger":"narrow pilot PPL <=1.01x paired state64; trigger allocates full WT2, not an accuracy acceptance criterion",
+  "sigmoid":"keep original P8-reconstructed-g S8/F3 address; analyze RTL raw-g difference separately",
+  "scope":"numeric counterfactual only; metadata-derived base generator is software, no hardware scale-service timing or PPA claim"
+}

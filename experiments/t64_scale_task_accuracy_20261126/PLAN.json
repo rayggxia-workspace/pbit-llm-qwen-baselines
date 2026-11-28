@@ -1,0 +1,25 @@
+{
+  "issue": 225,
+  "seed": 101,
+  "model": "Qwen/Qwen3-4B frozen trained100M T64 W8 with native non_ffn",
+  "attention": "accurate SDPA everywhere; no QKVO overlay",
+  "tasks": {
+    "piqa": {"split": "validation", "count": 1838, "sha256": "40e1677bba609c8801deacc171d76f3e24c083f365c95a1cbda7520c923dfea2"},
+    "arc_challenge": {"split": "test", "count": 1172, "sha256": "62f03257e737aed263f55c6abf87c7bb0028a44a6bdd2a26eb1279eb42c1d1e9"}
+  },
+  "policies": ["lane", "dynamic32", "gu_onebit64", "all64_onebit"],
+  "budgets": [[16, 32], [64, 128]],
+  "grids": [[4, 2, 4], [8, 2, 8]],
+  "native_BF16_control": true,
+  "documents_per_shard": 128,
+  "batch_size": 1,
+  "max_length": 2048,
+  "fewshot": 0,
+  "chat_template": false,
+  "truncation": false,
+  "scope": "all prompt and answer positions use selected FFN; one deployment seed; no training",
+  "parent_numeric_commit": "7283f04157ff6cdb3d526271766ed64eb5db4461",
+  "old_dynamic_numeric_commit": "9789339555f8059dc02cf42d152db02d43a3cf81",
+  "RNG_key": "seed101 + task name + shard start + official model-call index; paired cases share request order",
+  "numerical_contract": "frozen scale encoders, P8 endpoints, scale-aware signed8/F3 sigmoid LUT, stratified shared64 R8 input, joint-cell AND counts direct to integer W8 Wd"
+}
